@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:explorer/widgets/CardScrollWidget.dart';
-import 'package:explorer/locale.dart';
+import 'package:violet/widgets/CardScrollWidget.dart';
+import 'package:violet/locale.dart';
 
 class MainPage extends StatefulWidget {
   @override
