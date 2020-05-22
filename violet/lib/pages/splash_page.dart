@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/pages/afterloading_page.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:violet/dialogs.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -13,15 +17,26 @@ class _SplashPageState extends State<SplashPage> {
     return new Timer(_duration, navigationPage);
   }
 
-  void navigationPage() {
-    Navigator.of(context).pushReplacementNamed('/AfterLoading');
-    //Navigator.of(context).push(_createRoute());
+  Future<void> navigationPage() async {
+    if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1)
+      Navigator.of(context).pushReplacementNamed('/AfterLoading');
+    else
+      Navigator.of(context).pushReplacementNamed('/Test');
+  }
+
+  Future<void> checkAuth() async {
+    if (await Permission.storage.isUndetermined) {
+      if (await Permission.storage.request() == PermissionStatus.denied) {
+        await Dialogs.okDialog(context, "파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.");
+      }
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    startTime();
+    SchedulerBinding.instance.addPostFrameCallback(
+        (_) async => checkAuth().whenComplete(() => startTime()));
   }
 
   Route _createRoute() {
@@ -40,7 +55,6 @@ class _SplashPageState extends State<SplashPage> {
           position: animation.drive(tween),
           child: child,
         );
-        ;
       },
     );
   }

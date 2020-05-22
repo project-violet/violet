@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+//import 'package:explorer/pages/download_page.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'dart:async';
@@ -650,40 +651,40 @@ import 'package:violet/pages/splash_page.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/pages/afterloading_page.dart';
 
-
 void main() async {
   runApp(MaterialApp(
-      home: SplashPage(),//AfterLoadingPage(),
-      supportedLocales: [
-        const Locale('ko', 'KR'),
-        const Locale('en', 'US'),
-      ],
-      routes: <String, WidgetBuilder> {
-        //'/Loading':
-        '/AfterLoading': (BuildContext context) => new AfterLoadingPage(),
-      },
-      localizationsDelegates: [
-        const TranslationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      localeResolutionCallback:
-          (Locale locale, Iterable<Locale> supportedLocales) {
-        if (locale == null) {
-          debugPrint("*language locale is null!!!");
-          return supportedLocales.first;
-        }
-
-        for (Locale supportedLocale in supportedLocales) {
-          if (supportedLocale.languageCode == locale.languageCode ||
-              supportedLocale.countryCode == locale.countryCode) {
-            debugPrint("*language ok $supportedLocale");
-            return supportedLocale;
-          }
-        }
-
-        debugPrint("*language to fallback ${supportedLocales.first}");
+    home: SplashPage(), //AfterLoadingPage(),
+    supportedLocales: [
+      const Locale('ko', 'KR'),
+      const Locale('en', 'US'),
+    ],
+    routes: <String, WidgetBuilder>{
+      //'/Loading':
+      '/AfterLoading': (BuildContext context) => new AfterLoadingPage(),
+      '/Test': (BuildContext context) => new MyApp(),
+    },
+    localizationsDelegates: [
+      const TranslationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate
+    ],
+    localeResolutionCallback:
+        (Locale locale, Iterable<Locale> supportedLocales) {
+      if (locale == null) {
+        debugPrint("*language locale is null!!!");
         return supportedLocales.first;
-      },
-    ));
+      }
+
+      for (Locale supportedLocale in supportedLocales) {
+        if (supportedLocale.languageCode == locale.languageCode ||
+            supportedLocale.countryCode == locale.countryCode) {
+          debugPrint("*language ok $supportedLocale");
+          return supportedLocale;
+        }
+      }
+
+      debugPrint("*language to fallback ${supportedLocales.first}");
+      return supportedLocales.first;
+    },
+  ));
 }
