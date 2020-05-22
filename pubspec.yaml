@@ -32,6 +32,14 @@ dependencies:
   convert:
   intl: ^0.16.0
   encrypt: ^4.0.1
+  stacked:
+  path_provider:
+  permission_handler:
+  dio:
+  flutter_file_picker:
+  shared_preferences:
+  #connectivity:
+  flutter_downloader:
 
 dev_dependencies:
   flutter_test:
