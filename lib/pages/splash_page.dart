@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:explorer/pages/afterloading_page.dart';
+import 'package:violet/pages/afterloading_page.dart';
 
 class SplashPage extends StatefulWidget {
   @override

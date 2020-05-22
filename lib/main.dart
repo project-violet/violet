@@ -640,15 +640,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:developer';
 import 'locale.dart';
-import 'package:explorer/pages/bookmark_page.dart';
-import 'package:explorer/pages/download_page.dart';
-import 'package:explorer/pages/loading_page.dart';
-import 'package:explorer/pages/main_page.dart';
-import 'package:explorer/pages/search_page.dart';
-import 'package:explorer/pages/settings_page.dart';
-import 'package:explorer/pages/splash_page.dart';
-import 'package:explorer/widgets/CardScrollWidget.dart';
-import 'package:explorer/pages/afterloading_page.dart';
+import 'package:violet/pages/bookmark_page.dart';
+import 'package:violet/pages/download_page.dart';
+import 'package:violet/pages/loading_page.dart';
+import 'package:violet/pages/main_page.dart';
+import 'package:violet/pages/search_page.dart';
+import 'package:violet/pages/settings_page.dart';
+import 'package:violet/pages/splash_page.dart';
+import 'package:violet/widgets/CardScrollWidget.dart';
+import 'package:violet/pages/afterloading_page.dart';
 
 
 void main() async {
