@@ -4,12 +4,14 @@ import 'dart:isolate';
 import 'dart:ui';
 
 //import 'package:connectivity/connectivity.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:stacked/stacked.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,6 +19,8 @@ import 'package:violet/dialogs.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_downloader/flutter_downloader.dart';
+
+import '../database.dart';
 
 // class MyViewModel extends ChangeNotifier {
 //   double _progress = 0;
@@ -157,11 +161,41 @@ class MyAppState extends State<MyApp> {
     } catch (e) {}
 
     if (await Dialogs.yesnoDialog(context, '미리 다운로드해둔 데이터베이스가 있나요?') == true) {
-      // @TODO("asdf");
+      File file;
+      file = await FilePicker.getFile(
+        type: FileType.any,
+        //allowedExtensions: ['db'],
+      );
+
+      if (file == null) {
+        await Dialogs.okDialog(context, '오류! 선택된 파일이 없습니다!\n재시도해주세요.');
+        SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        return;
+      }
+
+      setState(() {
+        downloading = false;
+        baseString = "데이터베이스 확인중...";
+      });
+
+      if (await (await DataBaseManager.create(file.path)).test() == false) {
+        await Dialogs.okDialog(context, '데이터베이스 파일이 아니거나 파일이 손상되었습니다!\n다시시도 해주세요!');
+        await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        return;
+      }
+
+      await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
+      await (await SharedPreferences.getInstance()).setString('db_path', file.path);
+
+      setState(() {
+        downloading = false;
+        baseString = "완료!\n앱을 재실행 해주세요!";
+      });
+      return;
     }
 
     if (await Dialogs.yesnoDialog(
-            context, '데이터베이스 약 300MB를 다운로드해야 합니다. 다운로드할까요?') ==
+            context, '데이터베이스 약 314MB를 다운로드해야 합니다. 다운로드할까요?') ==
         true) {
       //var connectivityResult = await (Connectivity().checkConnectivity());
 
@@ -224,17 +258,24 @@ class MyAppState extends State<MyApp> {
       //   // Process the response.
       //   //esponse.re
       // });
+
+      setState(() {
+        downloading = false;
+        baseString = "다운로드완료!\n앱을 재실행 해주세요!";
+      });
+
+      await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
+      await (await SharedPreferences.getInstance())
+          .setString('db_path', "${dir.path}/db.sql");
+      return;
     } catch (e) {
       print(e);
     }
 
     setState(() {
       downloading = false;
-      baseString = "다운로드완료!\n앱을 재실행 해주세여!";
+      baseString = "인터넷 연결을 확인하고 재시도해주세요!";
     });
-
-    (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-    //print("Download completed");
   }
 
   // ReceivePort _port = ReceivePort();
@@ -296,6 +337,7 @@ class MyAppState extends State<MyApp> {
     return Scaffold(
       appBar: AppBar(
         title: Text("데이터베이스 다운로더"),
+        backgroundColor: Colors.purple,
       ),
       body: Center(
         child: downloading
