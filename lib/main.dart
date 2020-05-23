@@ -4,10 +4,7 @@
 
 //import 'package:explorer/pages/download_page.dart';
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
-import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 
 //void main() => runApp(MyApp());
 
@@ -639,16 +636,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'dart:developer';
 import 'locale.dart';
-import 'package:violet/pages/bookmark_page.dart';
 import 'package:violet/pages/download_page.dart';
-import 'package:violet/pages/loading_page.dart';
-import 'package:violet/pages/main_page.dart';
-import 'package:violet/pages/search_page.dart';
-import 'package:violet/pages/settings_page.dart';
 import 'package:violet/pages/splash_page.dart';
-import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/pages/afterloading_page.dart';
 
 void main() async {
