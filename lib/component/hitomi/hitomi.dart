@@ -8,8 +8,6 @@ class HitomiManager {
   static Future<List<String>> getImageList(String id) async {
     var gg = await http.get('https://ltn.hitomi.la/galleries/$id.js');
     var urls = gg.body;
-    //print(urls);
-    //print(jsonDecode(urls.substring(urls.indexOf('=') + 1)));
     var files = jsonDecode(urls.substring(urls.indexOf('=') + 1)).cast<String, dynamic>()['files'];
     const number_of_frontends = 3;
     final subdomain = String.fromCharCode(97 + (id[id.length - 1].codeUnitAt(0) % number_of_frontends));
