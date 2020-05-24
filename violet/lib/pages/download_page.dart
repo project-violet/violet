@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
@@ -178,19 +180,23 @@ class MyAppState extends State<MyApp> {
         baseString = "데이터베이스 확인중...";
       });
 
-      if (await (await DataBaseManager.create(file.path)).test() == false) {
-        await Dialogs.okDialog(context, '데이터베이스 파일이 아니거나 파일이 손상되었습니다!\n다시시도 해주세요!');
+      if (await DataBaseManager.create(file.path).test() == false) {
+        await Dialogs.okDialog(
+            context, '데이터베이스 파일이 아니거나 파일이 손상되었습니다!\n다시시도 해주세요!');
         await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         return;
       }
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance()).setString('db_path', file.path);
+      await (await SharedPreferences.getInstance())
+          .setString('db_path', file.path);
 
-      setState(() {
-        downloading = false;
-        baseString = "완료!\n앱을 재실행 해주세요!";
-      });
+      await indexing();
+
+      //setState(() {
+      //  downloading = false;
+      //  baseString = "완료!\n앱을 재실행 해주세요!";
+      //});
       return;
     }
 
@@ -261,12 +267,15 @@ class MyAppState extends State<MyApp> {
 
       setState(() {
         downloading = false;
-        baseString = "다운로드완료!\n앱을 재실행 해주세요!";
+        //baseString = "다운로드완료!\n앱을 재실행 해주세요!";
       });
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
           .setString('db_path', "${dir.path}/db.sql");
+
+      await indexing();
+
       return;
     } catch (e) {
       print(e);
@@ -276,6 +285,83 @@ class MyAppState extends State<MyApp> {
       downloading = false;
       baseString = "인터넷 연결을 확인하고 재시도해주세요!";
     });
+  }
+
+  void insert(Map<String, int> map, dynamic qr) {
+    if (qr == null) return;
+    if (qr as String == "") return;
+    for (var tag in (qr as String).split('|'))
+      if (tag != null && tag != '') {
+        if (!map.containsKey(tag)) map[tag] = 0;
+        map[tag] += 1;
+      }
+  }
+
+  void insertSingle(Map<String, int> map, dynamic qr) {
+    if (qr == null) return;
+    if (qr as String == "") return;
+    var str = qr as String;
+    if (str != null && str != '') {
+      if (!map.containsKey(str)) map[str] = 0;
+      map[str] += 1;
+    }
+  }
+
+  Future indexing() async {
+    QueryManager qm;
+    qm = QueryManager.queryPagination('SELECT * FROM HitomiColumnModel');
+    qm.itemsPerPage = 50000;
+
+    var tags = Map<String, int>();
+    var languages = Map<String, int>();
+    var artists = Map<String, int>();
+    var groups = Map<String, int>();
+    var types = Map<String, int>();
+    var uploaders = Map<String, int>();
+    var series = Map<String, int>();
+
+    int i = 0;
+    while (true) {
+      setState(() {
+        baseString = '인덱싱 작업중... 작업수 [$i/13]';
+      });
+
+      var ll = await qm.next();
+      for (var item in ll) {
+        insert(tags, item.tags());
+        insert(artists, item.artists());
+        insert(groups, item.groups());
+        insert(series, item.series());
+        insertSingle(languages, item.language());
+        insertSingle(types, item.type());
+        insertSingle(uploaders, item.uploader());
+      }
+
+      // var sk = tags.keys.toList(growable: true)
+      //   ..sort((a, b) => tags[b].compareTo(tags[a]));
+      // var sortedMap = new LinkedHashMap.fromIterable(sk,
+      //     key: (k) => k, value: (k) => tags[k]);
+
+      if (ll.length == 0) {
+        var index = {
+          "tags": tags,
+          "artists": artists,
+          "groups": groups,
+          "series": series,
+          "languages": languages,
+          "types": types,
+          "uploaders": uploaders
+        };
+
+        ;
+
+        setState(() {
+          baseString = '완료!\n앱을 재실행해 주세요!'; //\n' + jsonEncode(index);
+        });
+        break;
+      }
+      i++;
+    }
   }
 
   // ReceivePort _port = ReceivePort();

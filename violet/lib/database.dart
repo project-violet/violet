@@ -23,21 +23,21 @@ class DataBaseManager {
     db = await openDatabase(dbPath);
   }
 
-  Future _close() async {
+  Future close() async {
     await db.close();
   }
 
-  Future<List<Map<String, dynamic>>> _query(String str) async {
+  Future<List<Map<String, dynamic>>> query(String str) async {
     await _open();
     var rr = await db.rawQuery(str);
-    await _close();
+    await close();
     return rr;
   }
 
   Future<bool> test() async {
     try
     {
-      final x = await _query('SELECT count(*) FROM HitomiColumnModel');
+      final x = await query('SELECT count(*) FROM HitomiColumnModel');
       if ((x[0]['count(*)'] as int) < 500000) return false;
       return true;
     }
@@ -72,12 +72,12 @@ class QueryManager {
   List<QueryResult> results;
   bool isPagination;
   int curPage;
-  final int itemsPerPage = 25;
+  int itemsPerPage = 25;
 
   static Future<QueryManager> query(String rawQuery) async {
     QueryManager qm = new QueryManager();
     qm.queryString = rawQuery;
-    qm.results = (await (await DataBaseManager.getInstance())._query(rawQuery)).map((e) => QueryResult(result: e));
+    qm.results = (await (await DataBaseManager.getInstance()).query(rawQuery)).map((e) => QueryResult(result: e));
     return qm;
   }
 
@@ -91,6 +91,6 @@ class QueryManager {
 
   Future<List<QueryResult>> next() async {
     curPage += 1;
-    return (await (await DataBaseManager.getInstance())._query("$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage-1)}")).map((e) => QueryResult(result: e));
+    return (await (await DataBaseManager.getInstance()).query("$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage-1)}")).map((e) => QueryResult(result: e)).toList();
   }
 }

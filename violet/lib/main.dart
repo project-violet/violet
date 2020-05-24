@@ -5,7 +5,6 @@
 //import 'package:explorer/pages/download_page.dart';
 import 'package:flutter/material.dart';
 
-
 //void main() => runApp(MyApp());
 
 // class MyApp extends StatelessWidget {
@@ -492,7 +491,6 @@ import 'package:flutter/material.dart';
 //   }
 // }
 
-import 'package:flutter/material.dart';
 //import 'tabbar.dart';
 //void main() => runApp(MyApp2());
 
@@ -636,10 +634,23 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 import 'locale.dart';
 import 'package:violet/pages/download_page.dart';
 import 'package:violet/pages/splash_page.dart';
 import 'package:violet/pages/afterloading_page.dart';
+
+DateTime currentBackPressTime;
+Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null || 
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      //Fluttertoast.showToast(msg: '한 번 더 누르면 종료합니다.');
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
 
 void main() async {
   runApp(MaterialApp(
@@ -650,7 +661,10 @@ void main() async {
     ],
     routes: <String, WidgetBuilder>{
       //'/Loading':
-      '/AfterLoading': (BuildContext context) => new AfterLoadingPage(),
+      '/AfterLoading': (BuildContext context) => WillPopScope(
+            child: new AfterLoadingPage(),
+            onWillPop: onWillPop,
+          ),
       '/Test': (BuildContext context) => new MyApp(),
     },
     localizationsDelegates: [

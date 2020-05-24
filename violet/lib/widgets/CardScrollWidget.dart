@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 List<String> images = [
-  "assets/test/001.jpg",
-  "assets/test/001.png",
-  "assets/test/001.webp",
-  "assets/test/001.webp",
-  "assets/test/001.png",
+  "assets/test/image_01.png",
+  "assets/test/image_02.jpg",
+  "assets/test/image_03.jpg",
+  "assets/test/image_04.jpg",
 ];
 
 List<String> title = [
