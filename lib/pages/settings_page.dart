@@ -1,4 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:violet/pages/test_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // https://www.youtube.com/watch?v=gzfJaDt9ok8
 class SettingsPage extends StatelessWidget {
@@ -39,6 +43,20 @@ class SettingsPage extends StatelessWidget {
                   title: Text("정보"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(Icons.developer_mode, color: Colors.orange),
+                  title: Text("개발자 도구"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => TestPage(),
+                      ),
+                    );
+                  },
                 ),
               ]),
               _build_group('뷰어'),
@@ -100,6 +118,75 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
               ]),
+              _build_group('네트워크'),
+              _build_items([
+                ListTile(
+                  leading: Icon(
+                    Icons.router,
+                    color: Colors.purple,
+                  ),
+                  title: Text("라우팅 규칙"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+              ]),
+              _build_group('기타'),
+              _build_items([
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.discord,
+                    color: Color(0xFF7189da),
+                  ),
+                  title: Text("디스코드 채널"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () async {
+                    const url = 'https://discord.gg/K8qny6E';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    }
+                  },
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.gmail,
+                    color: Colors.redAccent,
+                  ),
+                  title: Text("개발자 문의"),
+                  trailing: Icon(
+                      // Icons.email,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.heart,
+                    color: Colors.orange,
+                  ),
+                  title: Text("후원"),
+                  trailing: Icon(
+                      // Icons.email,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(
+                    Icons.open_in_new,
+                    color: Colors.purple,
+                  ),
+                  title: Text("외부 링크"),
+                  trailing: Icon(
+                      // Icons.email,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ), 
+              ]),
               Container(
                 margin: EdgeInsets.all(40),
                 child: Center(
@@ -133,7 +220,7 @@ class SettingsPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Copyright (C) 2020 by dc-koromo',
+                        'Copyright (C) 2020 by rollrat',
                         style: TextStyle(
                           color: Colors.black87,
                           fontSize: 12.0,
@@ -183,7 +270,7 @@ class SettingsPage extends StatelessWidget {
 
   Container _build_items(List<Widget> items) {
     return Container(
-      transform: Matrix4.translationValues(0, -4, 0),
+      transform: Matrix4.translationValues(0, -2, 0),
       child: Card(
         elevation: 4.0,
         margin: EdgeInsets.fromLTRB(16, 8, 16, 8),

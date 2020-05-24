@@ -42,6 +42,12 @@ dependencies:
   flutter_downloader:
   file_picker:
   sqflite:
+  #fluttertoast: ^2.2.1
+  material_design_icons_flutter:
+  url_launcher:
+  extended_image:
+  photo_view:
+  cached_network_image:
 
 dev_dependencies:
   flutter_test:
@@ -68,9 +74,14 @@ flutter:
     - assets/locale/ko.json
     - assets/images/loading.gif
 
-    - assets/test/001.jpg
-    - assets/test/001.png
-    - assets/test/001.webp
+    # - assets/test/001.jpg
+    # - assets/test/001.png
+    # - assets/test/001.webp
+
+    - assets/test/image_01.png
+    - assets/test/image_02.jpg
+    - assets/test/image_03.jpg
+    - assets/test/image_04.jpg
 
     - assets/images/logo.png
 
