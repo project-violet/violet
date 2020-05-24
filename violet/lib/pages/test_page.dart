@@ -12,6 +12,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/main.dart';
+import 'package:violet/widgets/viewer_widget.dart';
 
 class TestPage extends StatelessWidget {
   @override
@@ -396,84 +397,85 @@ class _ImageTestPageState extends State<ImageTestPage> {
         //showDialog(context: context, child: Dialog(child: Container(child: Text('asdf'),),));
       };
 
-  List<GalleryExampleItem> galleryItems;
-  List<GlobalKey> moveKey;
+  // List<GalleryExampleItem> galleryItems;
+  // List<GlobalKey> moveKey;
 
-  void open(BuildContext context, final int index) async {
-    var w = GalleryPhotoViewWrapper(
-      galleryItems: galleryItems,
-      backgroundDecoration: const BoxDecoration(
-        color: Colors.black,
-      ),
-      minScale: 2.0,
-      maxScale: 4.0,
-      totalPage: galleryItems.length,
-      initialIndex: index,
-      scrollDirection: Axis.horizontal,
-    );
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => w),
-    );
-    // 지금 인덱스랑 다르면 그쪽으로 이동시킴
-    if (w.currentIndex != index)
-      Scrollable.ensureVisible(moveKey[w.currentIndex].currentContext, alignment: 0.5);
-  }
+  // void open(BuildContext context, final int index) async {
+  //   var w = GalleryPhotoViewWrapper(
+  //     galleryItems: galleryItems,
+  //     backgroundDecoration: const BoxDecoration(
+  //       color: Colors.black,
+  //     ),
+  //     minScale: 2.0,
+  //     maxScale: 4.0,
+  //     totalPage: galleryItems.length,
+  //     initialIndex: index,
+  //     scrollDirection: Axis.horizontal,
+  //   );
+  //   await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => w),
+  //   );
+  //   // 지금 인덱스랑 다르면 그쪽으로 이동시킴
+  //   if (w.currentIndex != index)
+  //     Scrollable.ensureVisible(moveKey[w.currentIndex].currentContext,
+  //         alignment: 0.5);
+  // }
 
   @override
   Widget build(BuildContext context) {
     var imgs = [
-      'https://aa.hitomi.la/webp/a/c0/1b955264f25fb240e84a2a227452a38e2980eedd12e6e6dfee0c72b06eedcc0a.webp',
-      'https://ba.hitomi.la/webp/e/7f/ec2c31db322578533e8d71d02a3364d9ca8bc75fb77230db3165d8f4731db7fe.webp',
-      'https://aa.hitomi.la/webp/d/b7/efd83a507953f7252931098791c9a85a315c327e593d83174e10c3a3c300bb7d.webp',
-      //'https://cdn.mos.cms.futurecdn.net/42E9as7NaTaAi4A6JcuFwG-650-80.jpg',
-      //'https://images.indianexpress.com/2019/12/banana_759-1.jpg',
-      //'https://media.nationalgeographic.org/assets/photos/218/954/a4b922dc-def3-4a5d-a6e0-ab5dce621fc2.jpg',
-      //'https://www.raisingarizonakids.com/wp-content/uploads/2019/08/SariScience-Bananas.jpg',
-      //'https://www.thespruceeats.com/thmb/k6XNwcfk3IAMfBoBMGAJ4aPLOb4=/960x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/vegan-chocolate-peanut-butter-banana-smoothie-1000994-bananas-cropped-e4bdab5174cf461baf30bcdb8193c3e0.jpg',
+      //'https://aa.hitomi.la/webp/a/c0/1b955264f25fb240e84a2a227452a38e2980eedd12e6e6dfee0c72b06eedcc0a.webp',
+      //'https://ba.hitomi.la/webp/e/7f/ec2c31db322578533e8d71d02a3364d9ca8bc75fb77230db3165d8f4731db7fe.webp',
+      //'https://aa.hitomi.la/webp/d/b7/efd83a507953f7252931098791c9a85a315c327e593d83174e10c3a3c300bb7d.webp',
+      'https://cdn.mos.cms.futurecdn.net/42E9as7NaTaAi4A6JcuFwG-650-80.jpg',
+      'https://images.indianexpress.com/2019/12/banana_759-1.jpg',
+      'https://media.nationalgeographic.org/assets/photos/218/954/a4b922dc-def3-4a5d-a6e0-ab5dce621fc2.jpg',
+      'https://www.raisingarizonakids.com/wp-content/uploads/2019/08/SariScience-Bananas.jpg',
+      'https://www.thespruceeats.com/thmb/k6XNwcfk3IAMfBoBMGAJ4aPLOb4=/960x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/vegan-chocolate-peanut-butter-banana-smoothie-1000994-bananas-cropped-e4bdab5174cf461baf30bcdb8193c3e0.jpg',
       //'https://image.dcinside.com/viewimage.php?id=3dafdf21f7d335ab67b1d1&no=24b0d769e1d32ca73ded81fa11d02831ecb95a6124af73c1834c571bf8e46ae03d8dbf637738d1d3e75b72a95475652892a6b1b3789c1da73058f9c7064ca30e47a2'
       //'https://aa.hitomi.la/webp/a/c0/1b955264f25fb240e84a2a227452a38e2980eedd12e6e6dfee0c72b06eedcc0a.webp',
       //'https://ba.hitomi.la/webp/e/7f/ec2c31db322578533e8d71d02a3364d9ca8bc75fb77230db3165d8f4731db7fe.webp',
       //'https://aa.hitomi.la/webp/d/b7/efd83a507953f7252931098791c9a85a315c327e593d83174e10c3a3c300bb7d.webp',
       //'https://aa.hitomi.la/webp/a/c0/1b955264f25fb240e84a2a227452a38e2980eedd12e6e6dfee0c72b06eedcc0a.webp',
     ];
-    List<Widget> ww = List<Widget>();
-    galleryItems = new List<GalleryExampleItem>();
-    moveKey = new List<GlobalKey>();
-    int i = 0;
-    for (var l in imgs) {
-      galleryItems.add(GalleryExampleItem(
-          id: l,
-          url: l,
-          headers: {"Referer": "https://hitomi.la/reader/16440821.html/"}));
-      moveKey.add(new GlobalKey());
-      int j = i;
-      ww.add(
-        Container(
-          padding: EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: const Color(0xff444444),
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.grey.withOpacity(0.9),
-            //     spreadRadius: 5,
-            //     blurRadius: 7,
-            //     offset: Offset(0, 3), // changes position of shadow
-            //   ),
-            // ],
-          ),
-          child: GalleryExampleItemThumbnail(
-            galleryExampleItem: galleryItems[j],
-            onTap: () {
-              print(j);
-              open(context, j);
-            },
-            key: moveKey[j],
-          ),
-        ),
-      );
-      i++;
-    }
+    // List<Widget> ww = List<Widget>();
+    // galleryItems = new List<GalleryExampleItem>();
+    // moveKey = new List<GlobalKey>();
+    // int i = 0;
+    // for (var l in imgs) {
+    //   galleryItems.add(GalleryExampleItem(
+    //       id: l,
+    //       url: l,
+    //       headers: {"Referer": "https://hitomi.la/reader/16440821.html/"}));
+    //   moveKey.add(new GlobalKey());
+    //   int j = i;
+    //   ww.add(
+    //     Container(
+    //       padding: EdgeInsets.all(2),
+    //       decoration: BoxDecoration(
+    //         color: const Color(0xff444444),
+    //         // boxShadow: [
+    //         //   BoxShadow(
+    //         //     color: Colors.grey.withOpacity(0.9),
+    //         //     spreadRadius: 5,
+    //         //     blurRadius: 7,
+    //         //     offset: Offset(0, 3), // changes position of shadow
+    //         //   ),
+    //         // ],
+    //       ),
+    //       child: GalleryExampleItemThumbnail(
+    //         galleryExampleItem: galleryItems[j],
+    //         onTap: () {
+    //           print(j);
+    //           open(context, j);
+    //         },
+    //         key: moveKey[j],
+    //       ),
+    //     ),
+    //   );
+    //   i++;
+    // }
     //ww.add(Container(
     //  child: InkWell(
     //    onTap: () {
@@ -536,207 +538,211 @@ class _ImageTestPageState extends State<ImageTestPage> {
           title: Text('이미지 테스트'),
           backgroundColor: Colors.orange,
         ),
-        body: Scrollbar(
-          child: SingleChildScrollView(
-            child: Container(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: ww,
-                ),
-              ),
-            ),
-          ),
+        body: ViewerWidget(
+          urls: imgs,
+          headers: {"Referer": "https://hitomi.la/reader/16440821.html/"},
         ),
+        //Scrollbar(
+        //  child: SingleChildScrollView(
+        //    child: Container(
+        //      child: Center(
+        //        child: Column(
+        //          mainAxisAlignment: MainAxisAlignment.center,
+        //          children: ww,
+        //        ),
+        //      ),
+        //    ),
+        //  ),
+        //),
       ),
     );
   }
 }
 
-class HeroPhotoViewWrapper extends StatelessWidget {
-  const HeroPhotoViewWrapper({
-    this.imageProvider,
-    this.loadingBuilder,
-    this.backgroundDecoration,
-    this.minScale,
-    this.maxScale,
-    this.tag,
-  });
+// class HeroPhotoViewWrapper extends StatelessWidget {
+//   const HeroPhotoViewWrapper({
+//     this.imageProvider,
+//     this.loadingBuilder,
+//     this.backgroundDecoration,
+//     this.minScale,
+//     this.maxScale,
+//     this.tag,
+//   });
 
-  final ImageProvider imageProvider;
-  final LoadingBuilder loadingBuilder;
-  final Decoration backgroundDecoration;
-  final dynamic minScale;
-  final dynamic maxScale;
-  final String tag;
+//   final ImageProvider imageProvider;
+//   final LoadingBuilder loadingBuilder;
+//   final Decoration backgroundDecoration;
+//   final dynamic minScale;
+//   final dynamic maxScale;
+//   final String tag;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints.expand(
-        height: MediaQuery.of(context).size.height,
-      ),
-      child: PhotoView(
-        imageProvider: imageProvider,
-        loadingBuilder: loadingBuilder,
-        backgroundDecoration: backgroundDecoration,
-        minScale: minScale,
-        maxScale: maxScale,
-        heroAttributes: PhotoViewHeroAttributes(tag: tag),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       constraints: BoxConstraints.expand(
+//         height: MediaQuery.of(context).size.height,
+//       ),
+//       child: PhotoView(
+//         imageProvider: imageProvider,
+//         loadingBuilder: loadingBuilder,
+//         backgroundDecoration: backgroundDecoration,
+//         minScale: minScale,
+//         maxScale: maxScale,
+//         heroAttributes: PhotoViewHeroAttributes(tag: tag),
+//       ),
+//     );
+//   }
+// }
 
-class GalleryExampleItem {
-  GalleryExampleItem({this.id, this.url, this.headers, this.isSvg = false});
+// class GalleryExampleItem {
+//   GalleryExampleItem({this.id, this.url, this.headers, this.isSvg = false});
 
-  final String id;
-  final String url;
-  final Map<String, String> headers;
-  final bool isSvg;
-}
+//   final String id;
+//   final String url;
+//   final Map<String, String> headers;
+//   final bool isSvg;
+// }
 
-class GalleryExampleItemThumbnail extends StatelessWidget {
-  const GalleryExampleItemThumbnail(
-      {Key key, this.galleryExampleItem, this.onTap})
-      : super(key: key);
+// class GalleryExampleItemThumbnail extends StatelessWidget {
+//   const GalleryExampleItemThumbnail(
+//       {Key key, this.galleryExampleItem, this.onTap})
+//       : super(key: key);
 
-  final GalleryExampleItem galleryExampleItem;
+//   final GalleryExampleItem galleryExampleItem;
 
-  final GestureTapCallback onTap;
+//   final GestureTapCallback onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      //padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Hero(
-          tag: galleryExampleItem.id.toString(),
-          child: 
-          //CachedNetworkImage(
-          //  imageUrl: galleryExampleItem.url,
-          //  httpHeaders: galleryExampleItem.headers,
-          //  placeholder: (c,u) => CircularProgressIndicator(),
-          //)
-         // FadeInImage.assetNetwork(placeholder: CircularProgressIndicator(), image: null)
-          Image.network(galleryExampleItem.url,
-              headers: galleryExampleItem.headers),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       //padding: const EdgeInsets.symmetric(horizontal: 5.0),
+//       child: GestureDetector(
+//         onTap: onTap,
+//         child: Hero(
+//           tag: galleryExampleItem.id.toString(),
+//           child:
+//           //CachedNetworkImage(
+//           //  imageUrl: galleryExampleItem.url,
+//           //  httpHeaders: galleryExampleItem.headers,
+//           //  placeholder: (c,u) => CircularProgressIndicator(),
+//           //)
+//          // FadeInImage.assetNetwork(placeholder: CircularProgressIndicator(), image: null)
+//           Image.network(galleryExampleItem.url,
+//               headers: galleryExampleItem.headers),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-class GalleryPhotoViewWrapper extends StatefulWidget {
-  GalleryPhotoViewWrapper({
-    this.loadingBuilder,
-    this.backgroundDecoration,
-    this.minScale,
-    this.maxScale,
-    this.initialIndex,
-    @required this.galleryItems,
-    this.totalPage,
-    this.scrollDirection = Axis.horizontal,
-  }) : pageController = PageController(initialPage: initialIndex);
+// class GalleryPhotoViewWrapper extends StatefulWidget {
+//   GalleryPhotoViewWrapper({
+//     this.loadingBuilder,
+//     this.backgroundDecoration,
+//     this.minScale,
+//     this.maxScale,
+//     this.initialIndex,
+//     @required this.galleryItems,
+//     this.totalPage,
+//     this.scrollDirection = Axis.horizontal,
+//   }) : pageController = PageController(initialPage: initialIndex);
 
-  final LoadingBuilder loadingBuilder;
-  final Decoration backgroundDecoration;
-  final dynamic minScale;
-  final dynamic maxScale;
-  final int initialIndex;
-  final PageController pageController;
-  final List<GalleryExampleItem> galleryItems;
-  final Axis scrollDirection;
-  final int totalPage;
-  int currentIndex;
+//   final LoadingBuilder loadingBuilder;
+//   final Decoration backgroundDecoration;
+//   final dynamic minScale;
+//   final dynamic maxScale;
+//   final int initialIndex;
+//   final PageController pageController;
+//   final List<GalleryExampleItem> galleryItems;
+//   final Axis scrollDirection;
+//   final int totalPage;
+//   int currentIndex;
 
-  @override
-  State<StatefulWidget> createState() {
-    return _GalleryPhotoViewWrapperState();
-  }
-}
+//   @override
+//   State<StatefulWidget> createState() {
+//     return _GalleryPhotoViewWrapperState();
+//   }
+// }
 
-class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
-  @override
-  void initState() {
-    widget.currentIndex = widget.initialIndex;
-    super.initState();
-  }
+// class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
+//   @override
+//   void initState() {
+//     widget.currentIndex = widget.initialIndex;
+//     super.initState();
+//   }
 
-  void onPageChanged(int index) {
-    setState(() {
-      widget.currentIndex = index;
-    });
-  }
+//   void onPageChanged(int index) {
+//     setState(() {
+//       widget.currentIndex = index;
+//     });
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: widget.backgroundDecoration,
-        constraints: BoxConstraints.expand(
-          height: MediaQuery.of(context).size.height,
-        ),
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: <Widget>[
-            PhotoViewGallery.builder(
-              scrollPhysics: const BouncingScrollPhysics(),
-              builder: _buildItem,
-              itemCount: widget.galleryItems.length,
-              loadingBuilder: widget.loadingBuilder,
-              backgroundDecoration: widget.backgroundDecoration,
-              pageController: widget.pageController,
-              onPageChanged: onPageChanged,
-              scrollDirection: widget.scrollDirection,
-              reverse: true,
-            ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "${widget.currentIndex + 1}/${widget.totalPage}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.0,
-                  decoration: null,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Container(
+//         decoration: widget.backgroundDecoration,
+//         constraints: BoxConstraints.expand(
+//           height: MediaQuery.of(context).size.height,
+//         ),
+//         child: Stack(
+//           alignment: Alignment.bottomRight,
+//           children: <Widget>[
+//             PhotoViewGallery.builder(
+//               scrollPhysics: const BouncingScrollPhysics(),
+//               builder: _buildItem,
+//               itemCount: widget.galleryItems.length,
+//               loadingBuilder: widget.loadingBuilder,
+//               backgroundDecoration: widget.backgroundDecoration,
+//               pageController: widget.pageController,
+//               onPageChanged: onPageChanged,
+//               scrollDirection: widget.scrollDirection,
+//               reverse: true,
+//             ),
+//             Container(
+//               padding: const EdgeInsets.all(8.0),
+//               child: Text(
+//                 "${widget.currentIndex + 1}/${widget.totalPage}",
+//                 style: const TextStyle(
+//                   color: Colors.white,
+//                   fontSize: 14.0,
+//                   decoration: null,
+//                 ),
+//               ),
+//             )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 
-  PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    final GalleryExampleItem item = widget.galleryItems[index];
-    return item.isSvg
-        ? PhotoViewGalleryPageOptions.customChild(
-            child: Container(
-              width: 300,
-              height: 300,
-              // child: SvgPicture.asset(
-              //   item.resource,
-              //   height: 200.0,
-              // ),
-            ),
-            childSize: const Size(300, 300),
-            initialScale: PhotoViewComputedScale.contained,
-            minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-            maxScale: PhotoViewComputedScale.covered * 1.1,
-            heroAttributes: PhotoViewHeroAttributes(tag: item.id),
-          )
-        : PhotoViewGalleryPageOptions(
-            imageProvider: NetworkImage(item.url, headers: item.headers),
-            initialScale: PhotoViewComputedScale.contained,
-            //minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-            //maxScale: PhotoViewComputedScale.covered * 1.1,
-            minScale: PhotoViewComputedScale.contained * 1.0,
-            // 3만배 확대기능 지원!!
-            maxScale: PhotoViewComputedScale.contained * 30000.0,
-            heroAttributes: PhotoViewHeroAttributes(tag: item.id),
-          );
-  }
-}
+//   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
+//     final GalleryExampleItem item = widget.galleryItems[index];
+//     return item.isSvg
+//         ? PhotoViewGalleryPageOptions.customChild(
+//             child: Container(
+//               width: 300,
+//               height: 300,
+//               // child: SvgPicture.asset(
+//               //   item.resource,
+//               //   height: 200.0,
+//               // ),
+//             ),
+//             childSize: const Size(300, 300),
+//             initialScale: PhotoViewComputedScale.contained,
+//             minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
+//             maxScale: PhotoViewComputedScale.covered * 1.1,
+//             heroAttributes: PhotoViewHeroAttributes(tag: item.id),
+//           )
+//         : PhotoViewGalleryPageOptions(
+//             imageProvider: NetworkImage(item.url, headers: item.headers),
+//             initialScale: PhotoViewComputedScale.contained,
+//             //minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
+//             //maxScale: PhotoViewComputedScale.covered * 1.1,
+//             minScale: PhotoViewComputedScale.contained * 1.0,
+//             // 3만배 확대기능 지원!!
+//             maxScale: PhotoViewComputedScale.contained * 30000.0,
+//             heroAttributes: PhotoViewHeroAttributes(tag: item.id),
+//           );
+//   }
+// }
