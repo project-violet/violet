@@ -1,8 +1,16 @@
 // 네트워크 이미지들을 보기위한 위젯
 
+//import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:violet/widgets/flutter_scrollable_positioned_list_with_draggable_scrollbar.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ViewerWidget extends StatefulWidget {
   final List<String> urls;
@@ -16,7 +24,7 @@ class ViewerWidget extends StatefulWidget {
 
 class _ViewerWidgetState extends State<ViewerWidget> {
   List<GalleryExampleItem> galleryItems;
-  List<GlobalKey> moveKey;
+  //List<GlobalKey> moveKey;
 
   void open(BuildContext context, final int index) async {
     var w = GalleryPhotoViewWrapper(
@@ -28,56 +36,150 @@ class _ViewerWidgetState extends State<ViewerWidget> {
       initialIndex: index,
       scrollDirection: Axis.horizontal,
     );
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => w),
     );
+    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     // 지금 인덱스랑 다르면 그쪽으로 이동시킴
+    //if (w.currentIndex != index)
+    //  Scrollable.ensureVisible(moveKey[w.currentIndex].currentContext,
+    //      alignment: 0.5);
     if (w.currentIndex != index)
-      Scrollable.ensureVisible(moveKey[w.currentIndex].currentContext,
-          alignment: 0.5);
+      isc.scrollTo(
+        index: w.currentIndex,
+        duration: Duration(microseconds: 500),
+        alignment: 0.1,
+      );
   }
+
+  ScrollController sc = ScrollController();
+  ScrollController sc1 = ScrollController();
+  ItemScrollController isc = ItemScrollController();
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> ww = List<Widget>();
+    //List<Widget> ww = List<Widget>();
+    // List<GalleryExampleItem> galleryItems;
+    // List<GlobalKey> moveKey;
     galleryItems = new List<GalleryExampleItem>();
-    moveKey = new List<GlobalKey>();
-    int i = 0;
-    for (var link in widget.urls) {
-      galleryItems
-          .add(GalleryExampleItem(id: link, url: link, headers: widget.headers));
-      moveKey.add(new GlobalKey());
-      int j = i;
-      ww.add(
-        Container(
-          padding: EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: const Color(0xff444444),
-          ),
-          child: GalleryExampleItemThumbnail(
-            galleryExampleItem: galleryItems[j],
-            onTap: () {
-              print(j);
-              open(context, j);
-            },
-            key: moveKey[j],
-          ),
-        ),
-      );
-      i++;
+    //moveKey = new List<GlobalKey>();
+    // int i = 0;
+    // for (var link in widget.urls) {
+    //   galleryItems.add(
+    //       GalleryExampleItem(id: link, url: link, headers: widget.headers));
+    //   moveKey.add(new GlobalKey());
+    //   int j = i;
+    //   ww.add(
+    //     Container(
+    //       padding: EdgeInsets.all(2),
+    //       decoration: BoxDecoration(
+    //         color: const Color(0xff444444),
+    //       ),
+    //       child: GalleryExampleItemThumbnail(
+    //         galleryExampleItem: galleryItems[j],
+    //         onTap: () {
+    //           print(j);
+    //           open(context, j);
+    //         },
+    //         key: moveKey[j],
+    //       ),
+    //     ),
+    //   );
+    //   i++;
+    // }
+
+    //DraggableScrollbar.semicircle()
+
+    // return Container(
+    //   child: Scrollbar(
+    //       child: SingleChildScrollView(
+    //           child: Container(
+    //               child: Center(
+    //                   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: ww,
+    //   ))))),
+    // );
+
+    for (int i = 0; i < widget.urls.length; i++) {
+      galleryItems.add(GalleryExampleItem(
+          id: widget.urls[i], url: widget.urls[i], headers: widget.headers));
+      //moveKey.add(new GlobalKey());
     }
 
+    print(galleryItems.length);
     return Container(
+      //child: SingleChildScrollView(
+      //  child: SingleChildScrollView(
+      //      child: Container(
+      //          child: Center(
+      //              child: Column(
+      //mainAxisAlignment: MainAxisAlignment.center,
+      //children: ww,
+      //rcontroller: null,
+      //child: DraggableScrollbar.semicircle(
+      //  labelTextBuilder: (double offset) => Text("${offset ~/ 100}"),
+      //  controller: isc,
+      color: const Color(0xff444444),
       child: Scrollbar(
-          child: SingleChildScrollView(
-              child: Container(
-                  child: Center(
-                      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: ww,
-      ))))),
+        child: ScrollablePositionedList.builder(
+          itemCount: widget.urls.length,
+          //itemExtent: 100.0,
+          minCacheExtent: 100,
+          //shrinkWrap: true,
+          // /,
+
+          //controller: sc,
+          itemScrollController: isc,
+
+          itemBuilder: (context, index) {
+            //return Container(child: Text('asdf'));
+
+            //galleryItems.add(GalleryExampleItem(
+            //    id: widget.urls[index],
+            //    url: widget.urls[index],
+            //    headers: widget.headers));
+            //moveKey.add(new GlobalKey());
+            //print('asdf');
+            //int j = i;
+            //ww.add(
+            return Container(
+              padding: EdgeInsets.all(2),
+              // decoration: BoxDecoration(
+              //   color: const Color(0xff444444),
+              // ),
+              child: GalleryExampleItemThumbnail(
+                galleryExampleItem: galleryItems[index],
+                onTap: () => open(context, index),
+                //key: moveKey[index],
+              ),
+            );
+          },
+        ),
+      ),
+      //),
     );
+
+    // return Container(
+    //   //child: Scrollbar(
+    //     //child: SingleChildScrollView(
+    //       child: DraggableScrollbar.rrect(
+    //         controller: sc,
+    //         child: ListView.builder(
+    //             controller: sc1,
+    //             itemCount: 1,
+    //             itemBuilder: (context, index) {
+    //               return Column(
+    //                 mainAxisAlignment: MainAxisAlignment.center,
+    //                 children: ww,
+    //               );
+    //             }),
+    //       ),
+    //     //),
+    //   //),
+    // );
   }
 }
 
@@ -102,17 +204,57 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      //padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Hero(
-          tag: galleryExampleItem.id.toString(),
-          child: Image.network(galleryExampleItem.url,
-              headers: galleryExampleItem.headers),
+      child: VisibilityDetector(
+        key: Key(galleryExampleItem.url),
+        onVisibilityChanged: (info) {
+          //print(info.toString());
+        },
+        child: ConstrainedBox(
+          constraints: new BoxConstraints(
+            minHeight: 100.0,
+            //maxHeight: 100.0,
+          ),
+          //padding: const EdgeInsets.symmetric(horizontal: 5.0),
+          child: GestureDetector(
+            onTap: onTap,
+            child: Hero(
+              tag: galleryExampleItem.id.toString(),
+              //child: Image.network(galleryExampleItem.url,
+              //    headers: galleryExampleItem.headers),
+              // child: FadeInImage(
+              //   image: NetworkImage(
+              //     galleryExampleItem.url,
+              //     headers: galleryExampleItem.headers,
+              //   ),
+              //   placeholder: AssetImage('assets/images/loading.gif'),
+              // )),
+              child: CachedNetworkImage(
+                  imageUrl: galleryExampleItem.url,
+                  httpHeaders: galleryExampleItem.headers,
+                  placeholder: (context, url) => Container(
+                        padding: EdgeInsets.fromLTRB(150, 150, 150, 150),
+                        child: CircularProgressIndicator(),
+                      ),
+                  placeholderFadeInDuration: Duration(microseconds: 500),
+                  fadeInDuration: Duration(microseconds: 500),
+                  fadeInCurve: Curves.easeIn,
+                  progressIndicatorBuilder: (context, string, progress) {
+                    //print(string);
+                    return CircularProgressIndicator();
+                  }
+                  //height: 100,
+                  //(context, url) => Image.file(File('assets/images/loading.gif')),
+                  ),
+            ),
+          ),
         ),
       ),
     );
   }
+
+  // Widget get(BuildContext context, String string, DownloadProgress progress) {
+
+  // }
 }
 
 class GalleryPhotoViewWrapper extends StatefulWidget {
@@ -195,12 +337,17 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     final GalleryExampleItem item = widget.galleryItems[index];
     return PhotoViewGalleryPageOptions(
-      imageProvider: NetworkImage(item.url, headers: item.headers),
+      imageProvider: CachedNetworkImageProvider(
+        item.url,
+        headers: item.headers,
+        //(context, url) => Image.file(File('assets/images/loading.gif')),
+      ),
+      // NetworkImage(item.url, headers: item.headers),
       initialScale: PhotoViewComputedScale.contained,
       //minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
       //maxScale: PhotoViewComputedScale.covered * 1.1,
       minScale: PhotoViewComputedScale.contained * 1.0,
-      maxScale: PhotoViewComputedScale.contained * 3.0,
+      maxScale: PhotoViewComputedScale.contained * 5.0,
       heroAttributes: PhotoViewHeroAttributes(tag: item.id),
     );
   }

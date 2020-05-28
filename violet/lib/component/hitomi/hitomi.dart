@@ -26,7 +26,7 @@ class HitomiManager {
         result.add('https://${subdomain}a.hitomi.la/webp/$hash.webp');
       else {
         var postfix = hash.substring(hash.length - 3); 
-        result.add('https://${subdomain}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.webp');
+        result.add('https://${subdomain}a.hitomi.la/webp/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.webp');
       }
     }
     return result;
