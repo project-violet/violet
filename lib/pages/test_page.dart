@@ -4,6 +4,10 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flare_dart/math/mat2d.dart';
+import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -13,6 +17,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/main.dart';
 import 'package:violet/widgets/viewer_widget.dart';
+import 'package:flutter_sidekick/flutter_sidekick.dart';
 
 class TestPage extends StatelessWidget {
   @override
@@ -72,9 +77,49 @@ class TestPage extends StatelessWidget {
                 },
               ),
               RaisedButton(
+                child: Text('애니메이션 Test'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => AnimationTestPage(
+                        title: '애니메이션 Test',
+                      ),
+                    ),
+                  );
+                },
+              ),
+              RaisedButton(
                 child: Text('히토미 Test'),
                 onPressed: () async {
-                  await HitomiManager.getImageList('991015');
+                  var lists = await HitomiManager.getImageList('1644532');
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => Scaffold(
+                          appBar: AppBar(
+                            title: Text('히토미 테스트'),
+                          ),
+                          body: ViewerWidget(
+                            urls: lists,
+                            headers: {
+                              'Referer':
+                                  "https://hitomi.la/reader/1644532.html/"
+                            },
+                          )),
+                    ),
+                  );
+                },
+              ),
+              RaisedButton(
+                child: Text('검색 Test'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => SearchTestPage(),
+                    ),
+                  );
                 },
               ),
               Container(
@@ -82,6 +127,7 @@ class TestPage extends StatelessWidget {
               ),
               Text('소스코드 및 개발문의'),
               Text('koromo.software@gmail.com'),
+              Text('Project Violet은 Closed Source입니다.'),
             ],
           ),
         ),
@@ -371,31 +417,31 @@ class ImageTestPage extends StatefulWidget {
 }
 
 class _ImageTestPageState extends State<ImageTestPage> {
-  VoidCallback openDialog(BuildContext context, String url, String refer) =>
-      () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return Dialog(
-              child: Container(
-                child: PhotoView(
-                  tightMode: true,
-                  minScale: 0.1,
-                  imageProvider: NetworkImage(
-                    url,
-                    headers: {
-                      "Referer": "https://hitomi.la/reader/16440821.html/"
-                    },
-                  ),
-                  heroAttributes: PhotoViewHeroAttributes(tag: url),
-                ),
-              ),
-            );
-          },
-        );
-        //print('x');
-        //showDialog(context: context, child: Dialog(child: Container(child: Text('asdf'),),));
-      };
+  // VoidCallback openDialog(BuildContext context, String url, String refer) =>
+  //     () {
+  //       showDialog(
+  //         context: context,
+  //         builder: (BuildContext context) {
+  //           return Dialog(
+  //             child: Container(
+  //               child: PhotoView(
+  //                 tightMode: true,
+  //                 minScale: 0.1,
+  //                 imageProvider: NetworkImage(
+  //                   url,
+  //                   headers: {
+  //                     "Referer": "https://hitomi.la/reader/16440821.html/"
+  //                   },
+  //                 ),
+  //                 heroAttributes: PhotoViewHeroAttributes(tag: url),
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //       //print('x');
+  //       //showDialog(context: context, child: Dialog(child: Container(child: Text('asdf'),),));
+  //     };
 
   // List<GalleryExampleItem> galleryItems;
   // List<GlobalKey> moveKey;
@@ -428,6 +474,7 @@ class _ImageTestPageState extends State<ImageTestPage> {
       //'https://aa.hitomi.la/webp/a/c0/1b955264f25fb240e84a2a227452a38e2980eedd12e6e6dfee0c72b06eedcc0a.webp',
       //'https://ba.hitomi.la/webp/e/7f/ec2c31db322578533e8d71d02a3364d9ca8bc75fb77230db3165d8f4731db7fe.webp',
       //'https://aa.hitomi.la/webp/d/b7/efd83a507953f7252931098791c9a85a315c327e593d83174e10c3a3c300bb7d.webp',
+      //'https://ca.hitomi.la/webp/c/f5/70304459b4890da62c0b8a2b92dbf8a619a81015a1fcc192b33f0fda1a798f5c.webp',
       'https://cdn.mos.cms.futurecdn.net/42E9as7NaTaAi4A6JcuFwG-650-80.jpg',
       'https://images.indianexpress.com/2019/12/banana_759-1.jpg',
       'https://media.nationalgeographic.org/assets/photos/218/954/a4b922dc-def3-4a5d-a6e0-ab5dce621fc2.jpg',
@@ -439,6 +486,9 @@ class _ImageTestPageState extends State<ImageTestPage> {
       //'https://aa.hitomi.la/webp/d/b7/efd83a507953f7252931098791c9a85a315c327e593d83174e10c3a3c300bb7d.webp',
       //'https://aa.hitomi.la/webp/a/c0/1b955264f25fb240e84a2a227452a38e2980eedd12e6e6dfee0c72b06eedcc0a.webp',
     ];
+
+    //var imgs = Future.wait(HitomiManager.getImageList('991015'));
+
     // List<Widget> ww = List<Widget>();
     // galleryItems = new List<GalleryExampleItem>();
     // moveKey = new List<GlobalKey>();
@@ -746,3 +796,332 @@ class _ImageTestPageState extends State<ImageTestPage> {
 //           );
 //   }
 // }
+
+// class AnimationTestPage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+
+//     );
+//   }
+// }
+
+class AnimationTestPage extends StatefulWidget {
+  AnimationTestPage({Key key, this.title}) : super(key: key);
+  final String title;
+
+  @override
+  _AnimationTestPageState createState() => new _AnimationTestPageState();
+}
+
+class _AnimationTestPageState extends State<AnimationTestPage>
+    with FlareController {
+  double _rockAmount = 0.5;
+  double _speed = 1.0;
+  double _rockTime = 0.0;
+  bool _isPaused = false;
+
+  ActorAnimation _rock;
+
+  @override
+  void initialize(FlutterActorArtboard artboard) {
+    _rock = artboard.getAnimation("Untitled");
+  }
+
+  @override
+  void setViewTransform(Mat2D viewTransform) {}
+
+  @override
+  bool advance(FlutterActorArtboard artboard, double elapsed) {
+    _rockTime += elapsed * _speed;
+    _rock.apply(_rockTime % _rock.duration, artboard, _rockAmount);
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      backgroundColor: Colors.grey,
+      appBar: new AppBar(title: new Text(widget.title)),
+      body: new Stack(
+        children: [
+          Positioned.fill(
+              child: FlareActor("assets/flare/Cosmos.flr",
+                  alignment: Alignment.center,
+                  isPaused: _isPaused,
+                  fit: BoxFit.cover,
+                  animation: "walk",
+                  controller: this)),
+          Positioned.fill(
+              child: new Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                Container(
+                    height: 200,
+                    color: Colors.black.withOpacity(0.5),
+                    child: new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new Text("Mix Amount",
+                            style: TextStyle(color: Colors.white)),
+                        new Slider(
+                          value: _rockAmount,
+                          min: 0.0,
+                          max: 1.0,
+                          divisions: null,
+                          onChanged: (double value) {
+                            setState(() {
+                              _rockAmount = value;
+                            });
+                          },
+                        ),
+                        new Text("Speed",
+                            style: TextStyle(color: Colors.white)),
+                        new Slider(
+                          value: _speed,
+                          min: 0.2,
+                          max: 3.0,
+                          divisions: null,
+                          onChanged: (double value) {
+                            setState(() {
+                              _speed = value;
+                            });
+                          },
+                        ),
+                        new Text("Paused",
+                            style: TextStyle(color: Colors.white)),
+                        new Checkbox(
+                          value: _isPaused,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _isPaused = value;
+                            });
+                          },
+                        )
+                      ],
+                    )),
+              ]))
+        ],
+      ),
+    );
+  }
+}
+
+class SearchTestPage extends StatefulWidget {
+  @override
+  _SearchTestPageState createState() => _SearchTestPageState();
+}
+
+class _SearchTestPageState extends State<SearchTestPage> {
+  bool selected = false;
+  Widget chip(String label, Color color) {
+    var fc = Chip(
+      labelPadding: EdgeInsets.all(0.0),
+      avatar: CircleAvatar(
+        backgroundColor: Colors.grey.shade600,
+        child: Text(label[0].toUpperCase()),
+      ),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: color,
+      elevation: 6.0,
+      //selected: selected,
+      shadowColor: Colors.grey[60],
+      padding: EdgeInsets.all(6.0),
+      //onPressed: () {},
+      // onSelected: (ss) {
+      //   setState(() {
+      //     selected = ss;
+      //   });
+      // },
+    );
+    return fc;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('인덱싱 테스트'),
+          backgroundColor: Colors.orange,
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            child: Center(
+              child: SidekickTeamBuilder<String>(
+                  animationDuration: Duration(milliseconds: 300),
+                  initialSourceList: <String>[
+                    'ASasdf',
+                    'asdfasdf1',
+                    'asdfasdf2',
+                    'asdfasdf3',
+                    'asdfasdf4',
+                    'asdfasdf5',
+                  ],
+                  builder: (context, sourceBuilderDelegates,
+                      targetBuilderDelegates) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        TextField(),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: 150.0),
+                          child: AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            child: Wrap(
+                              spacing: 4.0,
+                              runSpacing: -10.0,
+                              // For each target child, there is a targetBuilderDelegate.
+                              children:
+                                  targetBuilderDelegates.map((builderDelegate) {
+                                // We build the child using the build method of the delegate.
+                                // This is how the Sidekicks are added automatically.
+                                return builderDelegate.build(
+                                    context,
+                                    GestureDetector(
+                                        // We can use the builderDelegate.state property
+                                        // to trigger the move.
+                                        // The element to move is determined by the message.
+                                        // So it should be unique.
+                                        onTap: () => builderDelegate.state
+                                            .move(builderDelegate.message),
+                                        child: chip(builderDelegate.message,
+                                            Colors.orange)),
+                                    // You can set all the properties you would set on
+                                    // a Sidekick.
+                                    animationBuilder: (animation) =>
+                                        CurvedAnimation(
+                                          parent: animation,
+                                          curve: FlippedCurve(Curves.easeOut),
+                                        ),
+                                    flightShuttleBuilder: (
+                                      context,
+                                      animation,
+                                      type,
+                                      from,
+                                      to,
+                                    ) =>
+                                        Card(
+                                          child: chip('asdf', Colors.orange),
+                                          color: Colors.transparent,
+                                          elevation: 0,
+                                        )
+                                    // chip(builderDelegate.message,
+                                    //     Colors.orange)
+                                    //    buildShuttle(
+                                    //  animation,
+                                    //  builderDelegate.message,
+                                    //),
+                                    );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                        // Wrap(
+                        //   runSpacing: -10,
+                        //   children: <Widget>[
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //     chip('asdf', Colors.pink),
+                        //   ],
+                        // ),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: 150.0),
+                          child: AnimatedContainer(
+                            duration: Duration(seconds: 1),
+                            child: Wrap(
+                              spacing: 4.0,
+                              runSpacing: 4.0,
+                              // For each target child, there is a targetBuilderDelegate.
+                              children:
+                                  sourceBuilderDelegates.map((builderDelegate) {
+                                // We build the child using the build method of the delegate.
+                                // This is how the Sidekicks are added automatically.
+                                return builderDelegate.build(
+                                    context,
+                                    GestureDetector(
+                                        // We can use the builderDelegate.state property
+                                        // to trigger the move.
+                                        // The element to move is determined by the message.
+                                        // So it should be unique.
+                                        onTap: () => builderDelegate.state
+                                            .move(builderDelegate.message),
+                                        child: chip(builderDelegate.message,
+                                            Colors.orange)),
+                                    // You can set all the properties you would set on
+                                    // a Sidekick.
+                                    animationBuilder: (animation) =>
+                                        CurvedAnimation(
+                                          parent: animation,
+                                          curve: FlippedCurve(Curves.easeOut),
+                                        ),
+                                    flightShuttleBuilder: (
+                                      context,
+                                      animation,
+                                      type,
+                                      from,
+                                      to,
+                                    ) =>
+                                        Card(
+                                          child: chip('asdf', Colors.orange),
+                                          color: Colors.transparent,
+                                          elevation: 0,
+                                        )
+                                    //    buildShuttle(
+                                    //  animation,
+                                    //  builderDelegate.message,
+                                    //),
+                                    );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //Widget buildShuttle(
+  //  Animation<double> animation,
+  //  String message,
+  //) {
+  //  return AnimatedBuilder(
+  //    animation: animation,
+  //    builder: (_, __) {
+  //      return Bubble(
+  //        radius: Tween<double>(begin: 50.0, end: 30.0).evaluate(animation),
+  //        fontSize: Tween<double>(begin: 20.0, end: 12.0).evaluate(animation),
+  //        backgroundColor: ColorTween(begin: Colors.green, end: Colors.blue)
+  //            .evaluate(animation),
+  //        foregroundColor: Colors.white,
+  //        child: Padding(
+  //          padding: const EdgeInsets.all(2.0),
+  //          child: Text(
+  //            message,
+  //            textAlign: TextAlign.center,
+  //          ),
+  //        ),
+  //      );
+  //    },
+  //  );
+  //}
+}
