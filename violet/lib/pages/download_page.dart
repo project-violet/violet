@@ -353,7 +353,9 @@ class MyAppState extends State<MyApp> {
           "uploaders": uploaders
         };
 
-        ;
+        final directory = await getExternalStorageDirectory();
+        final path = File('${directory.path}/index.json');
+        path.writeAsString(jsonEncode(index));
 
         setState(() {
           baseString = '완료!\n앱을 재실행해 주세요!'; //\n' + jsonEncode(index);
