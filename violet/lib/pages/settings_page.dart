@@ -220,7 +220,7 @@ class SettingsPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Copyright (C) 2020 by rollrat',
+                        'Copyright (C) 2020 by NViolet',
                         style: TextStyle(
                           color: Colors.black87,
                           fontSize: 12.0,
