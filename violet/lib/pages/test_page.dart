@@ -90,28 +90,6 @@ class TestPage extends StatelessWidget {
                 },
               ),
               RaisedButton(
-                child: Text('히토미 Test'),
-                onPressed: () async {
-                  var lists = await HitomiManager.getImageList('1644532');
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            title: Text('히토미 테스트'),
-                          ),
-                          body: ViewerWidget(
-                            urls: lists,
-                            headers: {
-                              'Referer':
-                                  "https://hitomi.la/reader/1644532.html/"
-                            },
-                          )),
-                    ),
-                  );
-                },
-              ),
-              RaisedButton(
                 child: Text('검색 Test'),
                 onPressed: () {
                   Navigator.push(
