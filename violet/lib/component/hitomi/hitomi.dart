@@ -37,7 +37,7 @@ class HitomiManager {
     return result;
   }
 
-  static Map<String, Map<String, int>> tagmap;
+  static Map<String, dynamic> tagmap;
   static Future<List<Tuple3<String, String, int>>> queryAutoComplete(
       String prefix) async {
     if (tagmap == null) {
@@ -82,7 +82,7 @@ class HitomiManager {
             results.add(Tuple3<String, String, int>(pp, key, value));
         });
       }
-      results.sort((a, b) => b.item2.compareTo(a.item2));
+      results.sort((a, b) => b.item3.compareTo(a.item3));
       return results;
     } else {
       var results = new List<Tuple3<String, String, int>>();
@@ -108,6 +108,7 @@ class HitomiManager {
           });
         }
       });
+      results.sort((a, b) => b.item3.compareTo(a.item3));
       return results;
     }
   }
