@@ -946,7 +946,10 @@ class _SearchTestPageState extends State<SearchTestPage> {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        TextField(),
+                        TextField(onChanged: (str) async {
+                          final rr = await HitomiManager.queryAutoComplete(str);
+                          print(rr.take(10));
+                        },),
                         ConstrainedBox(
                           constraints: BoxConstraints(minHeight: 150.0),
                           child: AnimatedContainer(
