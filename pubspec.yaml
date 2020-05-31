@@ -56,6 +56,7 @@ dependencies:
   flare_flutter: ^1.8.3
   flare_dart:
   flutter_sidekick:
+  tuple:
 
 dev_dependencies:
   flutter_test:
@@ -86,10 +87,10 @@ flutter:
     # - assets/test/001.png
     # - assets/test/001.webp
 
-    # - assets/test/image_01.png
-    # - assets/test/image_02.jpg
-    # - assets/test/image_03.jpg
-    # - assets/test/image_04.jpg
+    - assets/test/image_01.png
+    - assets/test/image_02.jpg
+    - assets/test/image_03.jpg
+    - assets/test/image_04.jpg
 
     - assets/images/logo.png
 
