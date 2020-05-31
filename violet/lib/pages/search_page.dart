@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:keyboard_visibility/keyboard_visibility.dart';
+// import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -20,14 +20,14 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
 
-    KeyboardVisibilityNotification().addNewListener(
-      onChange: (bool visible) {
-        //print('asd');
-        setState(() {
-          into = visible;
-        });
-      },
-    );
+    // KeyboardVisibilityNotification().addNewListener(
+    //   onChange: (bool visible) {
+    //     //print('asd');
+    //     setState(() {
+    //       into = visible;
+    //     });
+    //   },
+    // );
     //_focus.addListener(_onFocusChange);
   }
 
