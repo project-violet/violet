@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/main.dart';
@@ -892,20 +893,20 @@ class SearchTestPage extends StatefulWidget {
 
 class _SearchTestPageState extends State<SearchTestPage> {
   bool selected = false;
-  Widget chip(String label, Color color) {
+  Widget chip(Tuple3<String, String, int> info /*, String label, Color color*/) {
     var fc = Chip(
       labelPadding: EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(label[0].toUpperCase()),
+        child: Text(info.item1[0].toUpperCase()),
       ),
       label: Text(
-        label,
+        ' ' + info.item2,
         style: TextStyle(
           color: Colors.white,
         ),
       ),
-      backgroundColor: color,
+      backgroundColor: info.item1 == 'female' ? Colors.red : info.item1 == 'male' ? Colors.blue : Colors.grey,
       elevation: 6.0,
       //selected: selected,
       shadowColor: Colors.grey[60],
@@ -920,8 +921,14 @@ class _SearchTestPageState extends State<SearchTestPage> {
     return fc;
   }
 
+  List<Tuple3<String, String, int>> initLists;
+
   @override
   Widget build(BuildContext context) {
+    if (initLists == null) {
+      initLists = List<Tuple3<String, String, int>>();
+    }
+
     return Container(
       child: Scaffold(
         appBar: AppBar(
@@ -931,16 +938,9 @@ class _SearchTestPageState extends State<SearchTestPage> {
         body: SingleChildScrollView(
           child: Container(
             child: Center(
-              child: SidekickTeamBuilder<String>(
+              child: SidekickTeamBuilder<Tuple3<String, String, int>>(
                   animationDuration: Duration(milliseconds: 300),
-                  initialSourceList: <String>[
-                    'ASasdf',
-                    'asdfasdf1',
-                    'asdfasdf2',
-                    'asdfasdf3',
-                    'asdfasdf4',
-                    'asdfasdf5',
-                  ],
+                  initialSourceList: initLists,
                   builder: (context, sourceBuilderDelegates,
                       targetBuilderDelegates) {
                     return Column(
@@ -949,9 +949,12 @@ class _SearchTestPageState extends State<SearchTestPage> {
                         TextField(onChanged: (str) async {
                           final rr = await HitomiManager.queryAutoComplete(str);
                           print(rr.take(10));
+                          setState(() {
+                            initLists = rr.take(20).toList();
+                          });
                         },),
                         ConstrainedBox(
-                          constraints: BoxConstraints(minHeight: 150.0),
+                          constraints: BoxConstraints(minHeight: 50.0),
                           child: AnimatedContainer(
                             duration: Duration(seconds: 1),
                             child: Wrap(
@@ -971,8 +974,7 @@ class _SearchTestPageState extends State<SearchTestPage> {
                                         // So it should be unique.
                                         onTap: () => builderDelegate.state
                                             .move(builderDelegate.message),
-                                        child: chip(builderDelegate.message,
-                                            Colors.orange)),
+                                        child: chip(builderDelegate.message)),
                                     // You can set all the properties you would set on
                                     // a Sidekick.
                                     animationBuilder: (animation) =>
@@ -988,7 +990,7 @@ class _SearchTestPageState extends State<SearchTestPage> {
                                       to,
                                     ) =>
                                         Card(
-                                          child: chip('asdf', Colors.orange),
+                                          child: chip(builderDelegate.message),
                                           color: Colors.transparent,
                                           elevation: 0,
                                         )
@@ -1021,12 +1023,12 @@ class _SearchTestPageState extends State<SearchTestPage> {
                         //   ],
                         // ),
                         ConstrainedBox(
-                          constraints: BoxConstraints(minHeight: 150.0),
+                          constraints: BoxConstraints(minHeight: 50.0),
                           child: AnimatedContainer(
                             duration: Duration(seconds: 1),
                             child: Wrap(
                               spacing: 4.0,
-                              runSpacing: 4.0,
+                              runSpacing: -4.0,
                               // For each target child, there is a targetBuilderDelegate.
                               children:
                                   sourceBuilderDelegates.map((builderDelegate) {
@@ -1041,8 +1043,7 @@ class _SearchTestPageState extends State<SearchTestPage> {
                                         // So it should be unique.
                                         onTap: () => builderDelegate.state
                                             .move(builderDelegate.message),
-                                        child: chip(builderDelegate.message,
-                                            Colors.orange)),
+                                        child: chip(builderDelegate.message)),
                                     // You can set all the properties you would set on
                                     // a Sidekick.
                                     animationBuilder: (animation) =>
@@ -1058,7 +1059,7 @@ class _SearchTestPageState extends State<SearchTestPage> {
                                       to,
                                     ) =>
                                         Card(
-                                          child: chip('asdf', Colors.orange),
+                                          child: chip(builderDelegate.message),
                                           color: Colors.transparent,
                                           elevation: 0,
                                         )

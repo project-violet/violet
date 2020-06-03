@@ -319,6 +319,7 @@ class MyAppState extends State<MyApp> {
     var types = Map<String, int>();
     var uploaders = Map<String, int>();
     var series = Map<String, int>();
+    var characters = Map<String, int>();
 
     int i = 0;
     while (true) {
@@ -332,6 +333,7 @@ class MyAppState extends State<MyApp> {
         insert(artists, item.artists());
         insert(groups, item.groups());
         insert(series, item.series());
+        insert(characters, item.characters());
         insertSingle(languages, item.language());
         insertSingle(types, item.type());
         insertSingle(uploaders, item.uploader());
@@ -350,7 +352,8 @@ class MyAppState extends State<MyApp> {
           "series": series,
           "languages": languages,
           "types": types,
-          "uploaders": uploaders
+          "uploaders": uploaders,
+          "characters": characters,
         };
 
         final directory = await getExternalStorageDirectory();
