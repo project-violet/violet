@@ -1,3 +1,6 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020. rollrat. Licensed under the MIT Licence.
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -2075,7 +2078,7 @@ class HitomiManager {
       case "male:dicknipples":
         return "male:dicknipples";
     }
-    return ta
+    return tag;
   }
 
   static String mapSeries2Kor(String series) {

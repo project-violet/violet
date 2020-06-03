@@ -1,6 +1,5 @@
-// Copyright 2018 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// This source code is a part of Project Violet.
+// Copyright (C) 2020. rollrat. Licensed under the MIT Licence.
 
 //import 'package:explorer/pages/download_page.dart';
 import 'package:flutter/material.dart';

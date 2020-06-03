@@ -1,3 +1,6 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020. rollrat. Licensed under the MIT Licence.
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
