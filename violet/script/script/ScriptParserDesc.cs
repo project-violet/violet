@@ -137,6 +137,5 @@ namespace script
             return gen.CreateExtendedShiftReduceParserInstance();
         }
 
-
     }
 }

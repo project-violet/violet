@@ -6,6 +6,7 @@
 
 */
 
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -1942,11 +1943,17 @@ namespace ParserGenerator
     {
         public class ParsingTreeNode
         {
+            [JsonProperty(PropertyName = "p")]
             public string Production;
+            [JsonProperty(PropertyName = "t")]
             public string Contents;
+            [JsonIgnore]
             public object UserContents;
+            [JsonIgnore]
             public int ProductionRuleIndex;
+            [JsonIgnore]
             public ParsingTreeNode Parent;
+            [JsonProperty(PropertyName = "c")]
             public List<ParsingTreeNode> Childs;
 
             public static ParsingTreeNode NewNode()
@@ -1980,6 +1987,23 @@ namespace ParserGenerator
                 }
                 for (int i = 0; i < Childs.Count; i++)
                     Childs[i].Print(builder, indent, i == Childs.Count - 1);
+            }
+
+            public void Tidy()
+            {
+                if (Childs.Count == 0)
+                {
+                    Childs = null;
+
+                    if (Contents == Production)
+                        Contents = null;
+                }
+                else
+                {
+                    Contents = null;
+                    Childs.ForEach(x => x.Tidy());
+                    Childs.RemoveAll(x => x.Childs == null && x.Production.Length == 1 );
+                }
             }
         }
 

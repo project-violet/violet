@@ -7,8 +7,8 @@ Therefore, all characters that exceed the maximum value of ASCII code
 must be replaced with one of the ASCII code alphabets.
 
 ```
-¥å          => [\r\n ]
-¥å          => //[^\n]*\n
+ï¿½ï¿½          => [\r\n ]
+ï¿½ï¿½          => //[^\n]*\n
 =          => =
 [          => \[
 ]          => \]
@@ -394,6 +394,10 @@ if (or(gre(sum(x,y), sub(x,y)), iscon(x,y,z))) [
     |       |       +-] ]
     |       +-block
     +-block
+```
+
+```
+{"p":"script","c":[{"p":"block","c":[{"p":"line","c":[{"p":"stmt","c":[{"p":"runnable","c":[{"p":"if"},{"p":"index","c":[{"p":"variable","c":[{"p":"function","c":[{"p":"name","t":"or"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"function","c":[{"p":"name","t":"gre"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"function","c":[{"p":"name","t":"sum"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"x"}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"y"}]}]}]}]}]}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"function","c":[{"p":"name","t":"sub"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"x"}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"y"}]}]}]}]}]}]}]}]}]}]}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"function","c":[{"p":"name","t":"iscon"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"x"}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"y"}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"z"}]}]}]}]}]}]}]}]}]}]}]}]}]},{"p":"block","c":[{"p":"block","c":[{"p":"line","c":[{"p":"stmt","c":[{"p":"runnable","c":[{"p":"foreach"},{"p":"name","t":"k"},{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"arrayx"}]}]},{"p":"block","c":[{"p":"line","c":[{"p":"stmt","c":[{"p":"function","c":[{"p":"name","t":"print"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"k"}]}]}]}]}]}]},{"p":"block","c":[{"p":"line","c":[{"p":"stmt","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"k"}]},{"p":"variable","c":[{"p":"consts","c":[{"p":"number","t":"3"}]}]}]},{"p":"index","c":[{"p":"variable","c":[{"p":"consts","c":[{"p":"number","t":"6"}]}]}]}]}]},{"p":"block","t":""}]}]}]}]}]},{"p":"block","t":""}]}]},{"p":"else"},{"p":"block","c":[{"p":"line","c":[{"p":"stmt","c":[{"p":"runnable","c":[{"p":"if"},{"p":"index","c":[{"p":"variable","c":[{"p":"function","c":[{"p":"name","t":"not"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"function","c":[{"p":"name","t":"iscon"},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"x"}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"y"}]}]},{"p":"argument","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"z"}]}]}]}]}]}]}]}]}]}]}]}]},{"p":"block","c":[{"p":"block","c":[{"p":"line","c":[{"p":"stmt","c":[{"p":"index","c":[{"p":"variable","c":[{"p":"name","t":"k"}]},{"p":"variable","c":[{"p":"consts","c":[{"p":"number","t":"2"}]}]}]},{"p":"index","c":[{"p":"variable","c":[{"p":"consts","c":[{"p":"number","t":"7"}]}]}]}]}]},{"p":"block","t":""}]}]}]}]}]},{"p":"block","t":""}]}]}]}]},{"p":"block","t":""}]}]}
 ```
 
 ### Test 5
