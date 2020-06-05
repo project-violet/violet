@@ -97,6 +97,10 @@ flutter:
     # - assets/script_valid_pub.pem
 
     - assets/flare/Cosmos.flr
+    - assets/flare/search_close.flr
+
+    - assets/flare/Chatbot-back.flr
+    - assets/flare/Chatbot-front.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

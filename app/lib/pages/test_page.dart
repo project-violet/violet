@@ -7,21 +7,28 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:flare_dart/math/aabb.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controller.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/main.dart';
+import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/widgets/viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
+import 'package:flare_flutter/flare_render_box.dart';
+import 'package:flutter/rendering.dart';
 
 class TestPage extends StatelessWidget {
   @override
@@ -100,6 +107,17 @@ class TestPage extends StatelessWidget {
                     context,
                     CupertinoPageRoute(
                       builder: (context) => SearchTestPage(),
+                    ),
+                  );
+                },
+              ),
+              RaisedButton(
+                child: Text('Flare Hero Test'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => FlareHeroTestPage(),
                     ),
                   );
                 },
@@ -896,7 +914,8 @@ class SearchTestPage extends StatefulWidget {
 
 class _SearchTestPageState extends State<SearchTestPage> {
   bool selected = false;
-  Widget chip(Tuple3<String, String, int> info /*, String label, Color color*/) {
+  Widget chip(
+      Tuple3<String, String, int> info /*, String label, Color color*/) {
     var fc = Chip(
       labelPadding: EdgeInsets.all(0.0),
       avatar: CircleAvatar(
@@ -909,7 +928,9 @@ class _SearchTestPageState extends State<SearchTestPage> {
           color: Colors.white,
         ),
       ),
-      backgroundColor: info.item1 == 'female' ? Colors.red : info.item1 == 'male' ? Colors.blue : Colors.grey,
+      backgroundColor: info.item1 == 'female'
+          ? Colors.red
+          : info.item1 == 'male' ? Colors.blue : Colors.grey,
       elevation: 6.0,
       //selected: selected,
       shadowColor: Colors.grey[60],
@@ -949,13 +970,16 @@ class _SearchTestPageState extends State<SearchTestPage> {
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        TextField(onChanged: (str) async {
-                          final rr = await HitomiManager.queryAutoComplete(str);
-                          print(rr.take(10));
-                          setState(() {
-                            initLists = rr.take(20).toList();
-                          });
-                        },),
+                        TextField(
+                          onChanged: (str) async {
+                            final rr =
+                                await HitomiManager.queryAutoComplete(str);
+                            print(rr.take(10));
+                            setState(() {
+                              initLists = rr.take(20).toList();
+                            });
+                          },
+                        ),
                         ConstrainedBox(
                           constraints: BoxConstraints(minHeight: 50.0),
                           child: AnimatedContainer(
@@ -1109,4 +1133,132 @@ class _SearchTestPageState extends State<SearchTestPage> {
   //    },
   //  );
   //}
+}
+
+class FlareHeroTestPage extends StatefulWidget {
+  @override
+  _FlareHeroTestPageState createState() => _FlareHeroTestPageState();
+}
+
+class _FlareHeroTestPageState extends State<FlareHeroTestPage> {
+  FlutterActorArtboard artboardFront;
+  FlutterActorArtboard artboardBack;
+  final FlareControls heroFlareControls = FlareControls();
+
+  @override
+  void initState() {
+    super.initState();
+
+    (() async {
+      var asset =
+          await cachedActor(rootBundle, 'assets/flare/search_close.flr');
+      asset.ref();
+      artboardBack =
+          asset.actor.artboard.makeInstance() as FlutterActorArtboard;
+      artboardBack.initializeGraphics();
+      artboardBack.advance(0);
+
+      var asset2 =
+          await cachedActor(rootBundle, 'assets/flare/search_close.flr');
+      asset2.ref();
+      artboardFront =
+          asset2.actor.artboard.makeInstance() as FlutterActorArtboard;
+      artboardFront.initializeGraphics();
+      artboardFront.advance(0);
+    })();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //timeDilation = 5;
+    return Container(
+      color: Colors.grey,
+      child: MaterialApp(
+        title: "Flare Bot",
+        routes: {
+          "/page1": (context) => Page1(
+              artboardBack: artboardBack,
+              artboardFront: artboardFront,
+              heroControls: heroFlareControls),
+          "/page2": (context) => Page2(
+              artboardBack: artboardBack,
+              artboardFront: artboardFront,
+              heroControls: heroFlareControls),
+        },
+        home: Page1(
+            artboardBack: artboardBack,
+            artboardFront: artboardFront,
+            heroControls: heroFlareControls),
+      ),
+    );
+    ;
+  }
+}
+
+
+class Page1 extends StatelessWidget {
+  final FlutterActorArtboard artboardFront;
+  final FlutterActorArtboard artboardBack;
+  final FlareControls heroControls;
+  const Page1({this.artboardFront, this.artboardBack, this.heroControls});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        heroControls.play("close2search");
+        Navigator.pushNamed(context, "/page2");
+      },
+      child: Container(
+        child: Align(
+            alignment: Alignment.topCenter,
+            child: Hero(
+              tag: "tag",
+              child: Container(
+                width: 300,
+                height: 300,
+                child: Stack(
+                  children: <Widget>[
+                    //FlareArtboard(artboardBack),
+                    FlareArtboard(artboardFront, controller: heroControls)
+                  ],
+                ),
+              ),
+            )),
+      ),
+    );
+  }
+}
+
+class Page2 extends StatelessWidget {
+  final FlutterActorArtboard artboardFront;
+  final FlutterActorArtboard artboardBack;
+  final FlareControls heroControls;
+
+  Page2({this.artboardFront, this.artboardBack, this.heroControls});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        heroControls.play("search2close");
+        Navigator.pushNamed(context, "/page1");
+      },
+      child: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            width: 300,
+            height: 300,
+            child: Hero(
+              tag: "tag",
+              child: Stack(
+                children: <Widget>[
+                  //FlareArtboard(artboardBack),
+                  FlareArtboard(artboardFront, controller: heroControls)
+                ],
+              ),
+            ),
+          )),
+    );
+  }
 }
