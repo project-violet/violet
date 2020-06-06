@@ -653,6 +653,7 @@ Future<bool> onWillPop() {
 
 void main() async {
   runApp(MaterialApp(
+    theme: ThemeData(accentColor: Colors.purple, primaryColor: Colors.purple),
     home: SplashPage(), //AfterLoadingPage(),
     supportedLocales: [
       const Locale('ko', 'KR'),
