@@ -56,19 +56,21 @@ class HitomiManager {
       final opp = prefix.split(':')[0];
       var pp = opp;
 
-      if (pp == 'female' || pp == 'male' || pp == 'tag')
-        pp = 'tags';
-      else if (pp == 'lang')
-        pp = 'languages';
-      else if (pp == 'artist')
-        pp = 'aritsts';
-      else if (pp == 'group')
-        pp = 'groups';
-      else if (pp == 'uploader')
-        pp = 'uploaders';
-      else if (pp == 'type')
-        pp = 'types';
-      else if (pp == 'character') pp = 'characters';
+      if (pp == 'female' || pp == 'male' || pp == 'tags')
+        pp = 'tag';
+      else if (pp == 'language' || pp == 'languages')
+        pp = 'lang';
+      else if (pp == 'artists')
+        pp = 'aritst';
+      else if (pp == 'groups')
+        pp = 'group';
+      else if (pp == 'uploaders')
+        pp = 'uploader';
+      else if (pp == 'types')
+        pp = 'type';
+      else if (pp == 'characters')
+        pp = 'character';
+      else if (pp == 'classes') pp = 'class';
 
       var results = new List<Tuple3<String, String, int>>();
       if (!tagmap.containsKey(pp)) return results;
@@ -76,13 +78,22 @@ class HitomiManager {
       final ch = tagmap[pp];
       if (opp == 'female' || opp == 'male') {
         ch.forEach((key, value) {
-          if (key.toLowerCase().startsWith(opp) && key.toLowerCase().contains(prefix))
+          if (key.toLowerCase().startsWith(opp + ':') &&
+              key.toLowerCase().contains(prefix))
+            results.add(Tuple3<String, String, int>(opp, key, value));
+        });
+      } else if (opp == 'tag') {
+        var po = prefix.split(':')[1];;
+        ch.forEach((key, value) {
+          if (!key.toLowerCase().startsWith('female:') &&
+              !key.toLowerCase().startsWith('male:') &&
+              key.toLowerCase().contains(po))
             results.add(Tuple3<String, String, int>(opp, key, value));
         });
       } else {
         var po = prefix.split(':')[1];
 
-        if (prefix.split(':').length == 3) po += ':${prefix.split(':')[2]}';
+        //if (prefix.split(':').length == 3) po += ':${prefix.split(':')[2]}';
 
         ch.forEach((key, value) {
           if (key.toLowerCase().contains(po))
@@ -94,7 +105,7 @@ class HitomiManager {
     } else {
       var results = new List<Tuple3<String, String, int>>();
       tagmap.forEach((key1, value) {
-        if (key1 == 'tags') {
+        if (key1 == 'tag') {
           value.forEach((key2, value2) {
             if (key2.contains(':')) {
               if (key2.split(':')[1].contains(prefix))
@@ -105,7 +116,7 @@ class HitomiManager {
                 results.add(Tuple3<String, String, int>(
                     key2.split(':')[0], key2, value2));
               else
-                results.add(Tuple3<String, String, int>('tags', key2, value2));
+                results.add(Tuple3<String, String, int>('tag', key2, value2));
             }
           });
         } else {
@@ -2091,7 +2102,6 @@ class HitomiManager {
     switch (series) {
       case "princess connect":
         return "프린세스 커넥트 시리즈";
-
 
       case "touhou project":
         return "동방 프로젝트";

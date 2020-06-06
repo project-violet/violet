@@ -13,6 +13,7 @@ import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/other/flare_artboard.dart';
@@ -374,13 +375,14 @@ class _SearchBarState extends State<SearchBar>
       search_lists.add(Tuple3<String, String, int>('prefix', 'female', 0));
       search_lists.add(Tuple3<String, String, int>('prefix', 'male', 0));
       search_lists.add(Tuple3<String, String, int>('prefix', 'tag', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'languages', 0));
+      search_lists.add(Tuple3<String, String, int>('prefix', 'lang', 0));
       search_lists.add(Tuple3<String, String, int>('prefix', 'series', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'artists', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'groups', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'uploaders', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'characters', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'types', 0));
+      search_lists.add(Tuple3<String, String, int>('prefix', 'artist', 0));
+      search_lists.add(Tuple3<String, String, int>('prefix', 'group', 0));
+      search_lists.add(Tuple3<String, String, int>('prefix', 'uploader', 0));
+      search_lists.add(Tuple3<String, String, int>('prefix', 'character', 0));
+      search_lists.add(Tuple3<String, String, int>('prefix', 'type', 0));
+      search_lists.add(Tuple3<String, String, int>('prefix', 'class', 0));
     }
 
     return Container(
@@ -424,7 +426,8 @@ class _SearchBarState extends State<SearchBar>
                               suffixIcon: IconButton(
                                 onPressed: () async {
                                   search_controller.clear();
-                                  search_controller.selection = TextSelection(baseOffset: 0, extentOffset: 0);
+                                  search_controller.selection = TextSelection(
+                                      baseOffset: 0, extentOffset: 0);
                                   await searchProcess(
                                       '', search_controller.selection);
                                 },
@@ -566,7 +569,29 @@ class _SearchBarState extends State<SearchBar>
                                       activeTrackColor: Colors.purple,
                                       activeColor: Colors.purpleAccent,
                                     ),
-                                    //Icon(Icons.keyboard_arrow_right),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                    ),
+                                    width: double.infinity,
+                                    height: 1.0,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  ListTile(
+                                    leading: Icon(MdiIcons.counter,
+                                        color: Colors.purple),
+                                    title: Text("카운트 표시"),
+                                    trailing: Switch(
+                                      value: show_count,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          show_count = value;
+                                        });
+                                      },
+                                      activeTrackColor: Colors.purple,
+                                      activeColor: Colors.purpleAccent,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -685,6 +710,7 @@ class _SearchBarState extends State<SearchBar>
   }
 
   bool tag_translation = false;
+  bool show_count = true;
   int search_result_maximum = 60;
 
   // Create tag-chip
@@ -698,7 +724,7 @@ class _SearchBarState extends State<SearchBar>
       tag_raw =
           HitomiManager.mapSeries2Kor(HitomiManager.mapTag2Kor(info.item2));
 
-    if (info.item3 > 0) count = ' (${info.item3})';
+    if (info.item3 > 0 && show_count) count = ' (${info.item3})';
 
     if (info.item1 == 'female')
       color = Colors.pink;
@@ -737,18 +763,25 @@ class _SearchBarState extends State<SearchBar>
             extentOffset: insert_pos + insert.length,
           );
         } else {
-          //search_controller.text = info.item2 + ':';
           var offset = search_controller.selection.baseOffset;
-          search_controller.text = search_controller.text
-                  .substring(0, search_controller.selection.base.offset) +
-              info.item2 +
-              ': ' +
-              search_controller.text
-                  .substring(search_controller.selection.base.offset);
-          search_controller.selection = TextSelection(
-            baseOffset: offset + info.item2.length + 1,
-            extentOffset: offset + info.item2.length + 1,
-          );
+          if (offset != -1) {
+            search_controller.text = search_controller.text
+                    .substring(0, search_controller.selection.base.offset) +
+                info.item2 +
+                ': ' +
+                search_controller.text
+                    .substring(search_controller.selection.base.offset);
+            search_controller.selection = TextSelection(
+              baseOffset: offset + info.item2.length + 1,
+              extentOffset: offset + info.item2.length + 1,
+            );
+          } else {
+            search_controller.text = info.item2 + ': ';
+            search_controller.selection = TextSelection(
+              baseOffset: info.item2.length + 1,
+              extentOffset: info.item2.length + 1,
+            );
+          }
           await searchProcess(
               search_controller.text, search_controller.selection);
         }
@@ -756,7 +789,4 @@ class _SearchBarState extends State<SearchBar>
     );
     return fc;
   }
-
-  //List<Tuple3<String, String, int>> initLists;
-  //List<Tuple3<String, String, int>> selectedLists;
 }
