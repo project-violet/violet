@@ -138,7 +138,7 @@ class MyApp extends StatefulWidget {
 
 class MyAppState extends State<MyApp> {
   final imgUrl =
-      "https://github.com/iiccpp/downloader/releases/download/base_database/hitomidata.db";
+      "https://github.com/iiccpp/downloader/releases/download/base_database1/hitomidata.db";
   bool downloading = false;
   var baseString = "요청을 기다리는 중...";
   var progressString = "";
@@ -323,6 +323,7 @@ class MyAppState extends State<MyApp> {
     var uploaders = Map<String, int>();
     var series = Map<String, int>();
     var characters = Map<String, int>();
+    var classes = Map<String, int>();
 
     int i = 0;
     while (true) {
@@ -340,6 +341,7 @@ class MyAppState extends State<MyApp> {
         insertSingle(languages, item.language());
         insertSingle(types, item.type());
         insertSingle(uploaders, item.uploader());
+        insertSingle(classes, item.classname());
       }
 
       // var sk = tags.keys.toList(growable: true)
@@ -349,14 +351,15 @@ class MyAppState extends State<MyApp> {
 
       if (ll.length == 0) {
         var index = {
-          "tags": tags,
-          "artists": artists,
-          "groups": groups,
+          "tag": tags,
+          "artist": artists,
+          "group": groups,
           "series": series,
-          "languages": languages,
-          "types": types,
-          "uploaders": uploaders,
-          "characters": characters,
+          "lang": languages,
+          "type": types,
+          "uploader": uploaders,
+          "character": characters,
+          "class": classes,
         };
 
         final directory = await getExternalStorageDirectory();
