@@ -76,7 +76,7 @@ class HitomiManager {
       final ch = tagmap[pp];
       if (opp == 'female' || opp == 'male') {
         ch.forEach((key, value) {
-          if (key.toLowerCase().startsWith(prefix))
+          if (key.toLowerCase().startsWith(opp) && key.toLowerCase().contains(prefix))
             results.add(Tuple3<String, String, int>(opp, key, value));
         });
       } else {
@@ -84,9 +84,8 @@ class HitomiManager {
 
         if (prefix.split(':').length == 3) po += ':${prefix.split(':')[2]}';
 
-        print(po);
         ch.forEach((key, value) {
-          if (key.toLowerCase().startsWith(po))
+          if (key.toLowerCase().contains(po))
             results.add(Tuple3<String, String, int>(pp, key, value));
         });
       }
@@ -98,10 +97,10 @@ class HitomiManager {
         if (key1 == 'tags') {
           value.forEach((key2, value2) {
             if (key2.contains(':')) {
-              if (key2.split(':')[1].startsWith(prefix))
+              if (key2.split(':')[1].contains(prefix))
                 results.add(Tuple3<String, String, int>(
                     key2.split(':')[0], key2, value2));
-            } else if (key2.startsWith(prefix)) {
+            } else if (key2.contains(prefix)) {
               if (key2.contains(':'))
                 results.add(Tuple3<String, String, int>(
                     key2.split(':')[0], key2, value2));
@@ -111,7 +110,7 @@ class HitomiManager {
           });
         } else {
           value.forEach((key2, value2) {
-            if (key2.toLowerCase().startsWith(prefix))
+            if (key2.toLowerCase().contains(prefix))
               results.add(Tuple3<String, String, int>(key1, key2, value2));
           });
         }
@@ -123,6 +122,13 @@ class HitomiManager {
 
   static String mapTag2Kor(String tag) {
     switch (tag) {
+      case 'doujinshi':
+        return '동인지';
+      case 'artist cg':
+        return '아티스트 CG';
+      case 'game cg':
+        return '게임 CG';
+
       case "group":
         return "그룹";
       case "mosaic censorship":
@@ -2083,6 +2089,10 @@ class HitomiManager {
 
   static String mapSeries2Kor(String series) {
     switch (series) {
+      case "princess connect":
+        return "프린세스 커넥트 시리즈";
+
+
       case "touhou project":
         return "동방 프로젝트";
       case "kantai collection":

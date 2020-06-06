@@ -57,6 +57,7 @@ dependencies:
   flare_dart:
   flutter_sidekick:
   tuple:
+  fading_edge_scrollview:
 
 dev_dependencies:
   flutter_test:
