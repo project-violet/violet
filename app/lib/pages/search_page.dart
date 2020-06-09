@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/database.dart';
 import 'package:violet/other/flare_artboard.dart';
 // import 'package:keyboard_visibility/keyboard_visibility.dart';
 
@@ -67,6 +68,8 @@ class _SearchPageState extends State<SearchPage> {
   // void _onFocusChange(){
   //   print("Focus: "+_focus.hasFocus.toString());
   // }
+
+  QueryManager latestQuery;
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +159,7 @@ class _SearchPageState extends State<SearchPage> {
                                 await Future.delayed(
                                     Duration(milliseconds: 200));
                                 heroFlareControls.play('search2close');
-                                Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
@@ -171,11 +174,14 @@ class _SearchPageState extends State<SearchPage> {
                                   //PageRouteBuilder(
                                   //    transitionDuration: Duration(seconds: 2),
                                   //    pageBuilder: (_, __, ___) => SearchBar()),
-                                ).then((value) => {
-                                      setState(() {
-                                        heroFlareControls.play('close2search');
-                                      })
-                                    });
+                                ).then((value) {
+                                  latestQuery = value;
+                                  setState(() {
+                                    heroFlareControls.play('close2search');
+                                  });
+                                });
+                                loadNextQuery();
+                                // print(latestQuery);
                               },
                             ),
                           ),
@@ -302,6 +308,10 @@ class _SearchPageState extends State<SearchPage> {
       ),
       //),
     );
+  }
+
+  void loadNextQuery() {
+    
   }
 }
 
@@ -489,7 +499,16 @@ class _SearchBarState extends State<SearchBar>
                               color: Colors.purple,
                               textColor: Colors.white,
                               child: Text('검색'),
-                              onPressed: () {},
+                              onPressed: () async {
+                                final query = HitomiManager.translate2query(
+                                    search_controller.text);
+                                // print(query);
+                                final result =
+                                    QueryManager.queryPagination(query);
+                                // var rr = await result.next();
+                                // rr.forEach((x) => print(x.result));
+                                Navigator.pop(context, result);
+                              },
                             ),
                           ),
                         ),
