@@ -310,9 +310,7 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  void loadNextQuery() {
-    
-  }
+  void loadNextQuery() {}
 }
 
 class SearchBar extends StatefulWidget {
@@ -336,10 +334,18 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar>
     with SingleTickerProviderStateMixin {
-  //final int num;
+  
   AnimationController controller;
-  List<Tuple3<String, String, int>> search_lists =
+  List<Tuple3<String, String, int>> _searchLists =
       List<Tuple3<String, String, int>>();
+
+  TextEditingController _searchController = TextEditingController();
+  int _insertPos, _insertLength;
+  String _searchText;
+  bool _nothing = false;
+  bool _tagTranslation = false;
+  bool _showCount = true;
+  int _searchResultMaximum = 60;
 
   @override
   void initState() {
@@ -349,50 +355,25 @@ class _SearchBarState extends State<SearchBar>
       duration: Duration(milliseconds: 400),
       reverseDuration: Duration(milliseconds: 400),
     );
-
-    SchedulerBinding.instance.addPostFrameCallback((_) async => {
-          //widget.heroController.play('search2close')
-        });
   }
 
   @override
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
-
-    AppBar appBar = new AppBar(
-      primary: false,
-      leading: IconTheme(
-          data: IconThemeData(color: Colors.white), child: CloseButton()),
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black.withOpacity(0.4),
-              Colors.black.withOpacity(0.1),
-            ],
-          ),
-        ),
-      ),
-      backgroundColor: Colors.transparent,
-    );
-    final MediaQueryData mediaQuery = MediaQuery.of(context);
-
     controller.forward();
 
-    if (search_lists.length == 0 && !nothing) {
-      search_lists.add(Tuple3<String, String, int>('prefix', 'female', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'male', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'tag', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'lang', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'series', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'artist', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'group', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'uploader', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'character', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'type', 0));
-      search_lists.add(Tuple3<String, String, int>('prefix', 'class', 0));
+    if (_searchLists.length == 0 && !_nothing) {
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'female', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'male', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'tag', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'lang', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'series', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'artist', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'group', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'uploader', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'character', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'type', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'class', 0));
     }
 
     return Container(
@@ -402,31 +383,22 @@ class _SearchBarState extends State<SearchBar>
           Hero(
             tag: "searchbar",
             child: Card(
-              //margin: EdgeInsets.fromLTRB(0, statusBarHeight, 0, 0),
               elevation: 100,
-              //margin: EdgeInsets.all(12),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4)),
               child: Material(
                 child: Container(
-                  //padding: EdgeInsets.fromLTRB(10, 8, 0, 0),
                   child: Column(
                     children: <Widget>[
-                      // AspectRatio(
-                      //   aspectRatio: 485.0 / 384.0,
-                      //   child: Image.network(
-                      //       ""),
-                      // ),
                       Material(
                         child: ListTile(
                           title: TextFormField(
                             cursorColor: Colors.black,
-                            //keyboardType: inputType,
                             onChanged: (String str) async {
                               await searchProcess(
-                                  str, search_controller.selection);
+                                  str, _searchController.selection);
                             },
-                            controller: search_controller,
+                            controller: _searchController,
                             decoration: new InputDecoration(
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
@@ -435,11 +407,11 @@ class _SearchBarState extends State<SearchBar>
                               disabledBorder: InputBorder.none,
                               suffixIcon: IconButton(
                                 onPressed: () async {
-                                  search_controller.clear();
-                                  search_controller.selection = TextSelection(
+                                  _searchController.clear();
+                                  _searchController.selection = TextSelection(
                                       baseOffset: 0, extentOffset: 0);
                                   await searchProcess(
-                                      '', search_controller.selection);
+                                      '', _searchController.selection);
                                 },
                                 icon: Icon(Icons.clear),
                               ),
@@ -447,7 +419,7 @@ class _SearchBarState extends State<SearchBar>
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: '검색',
                             ),
-                          ), //Text("검색"),
+                          ),
                           leading: SizedBox(
                             width: 25,
                             height: 25,
@@ -455,36 +427,16 @@ class _SearchBarState extends State<SearchBar>
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
-                                //elevation: 2.0,
-                                //fillColor: Colors.white,
-                                //padding: EdgeInsets.all(15.0),
                                 shape: CircleBorder(),
                                 child: FlareArtboard(widget.artboard,
-                                    controller: widget.heroController)
-                                // FlareActor(
-                                //   "assets/flare/search_close.flr",
-                                //   color: Colors.grey,
-                                //   //alignment: Alignment.center,
-                                //   //fit: BoxFit.cover,
-                                //   animation: "search2close",
-                                //   //controller: this
-                                // ),
-                                ),
+                                    controller: widget.heroController)),
                           ),
-                          // AnimatedIcon(
-                          //   icon: AnimatedIcons.search_ellipsis,
-                          //   progress: controller,
-                          //   semanticLabel: 'Search',
-                          // )
-                          //Icon(Icons.arrow_back),
-                          //subtitle: Text("This is item #2"),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Container(
                           height: 1.0,
-                          //width: 130.0,
                           color: Colors.black12,
                         ),
                       ),
@@ -501,35 +453,26 @@ class _SearchBarState extends State<SearchBar>
                               child: Text('검색'),
                               onPressed: () async {
                                 final query = HitomiManager.translate2query(
-                                    search_controller.text);
-                                // print(query);
+                                    _searchController.text);
                                 final result =
                                     QueryManager.queryPagination(query);
-                                // var rr = await result.next();
-                                // rr.forEach((x) => print(x.result));
                                 Navigator.pop(context, result);
                               },
                             ),
                           ),
                         ),
                       ),
-                      // Divider(
-                      //   color: Colors.grey,
-                      //   indent: 10,
-                      //   endIndent: 10,
-                      // ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Container(
                           height: 1.0,
-                          //width: 130.0,
                           color: Colors.black12,
                         ),
                       ),
                       Expanded(
-                        child: search_lists.length == 0 || nothing
+                        child: _searchLists.length == 0 || _nothing
                             ? Center(
-                                child: Text(nothing
+                                child: Text(_nothing
                                     ? '검색 결과가 없습니다 :('
                                     : "검색어를 입력해 주세요!"))
                             : Padding(
@@ -541,7 +484,7 @@ class _SearchBarState extends State<SearchBar>
                                     child: Wrap(
                                       spacing: 4.0,
                                       runSpacing: -10.0,
-                                      children: search_lists
+                                      children: _searchLists
                                           .map((item) => chip(item))
                                           .toList(),
                                     ),
@@ -551,16 +494,10 @@ class _SearchBarState extends State<SearchBar>
                                 ),
                               ),
                       ),
-                      // Divider(
-                      //   color: Colors.grey,
-                      //   indent: 10,
-                      //   endIndent: 10,
-                      // ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Container(
                           height: 1.0,
-                          //width: 130.0,
                           color: Colors.black12,
                         ),
                       ),
@@ -579,10 +516,10 @@ class _SearchBarState extends State<SearchBar>
                                         color: Colors.purple),
                                     title: Text("태그 한글화"),
                                     trailing: Switch(
-                                      value: tag_translation,
+                                      value: _tagTranslation,
                                       onChanged: (value) {
                                         setState(() {
-                                          tag_translation = value;
+                                          _tagTranslation = value;
                                         });
                                       },
                                       activeTrackColor: Colors.purple,
@@ -602,10 +539,10 @@ class _SearchBarState extends State<SearchBar>
                                         color: Colors.purple),
                                     title: Text("카운트 표시"),
                                     trailing: Switch(
-                                      value: show_count,
+                                      value: _showCount,
                                       onChanged: (value) {
                                         setState(() {
-                                          show_count = value;
+                                          _showCount = value;
                                         });
                                       },
                                       activeTrackColor: Colors.purple,
@@ -624,72 +561,16 @@ class _SearchBarState extends State<SearchBar>
                   ),
                 ),
               ),
-              //child: Material(
-              //  child: Column(
-              //    children: <Widget>[
-              //      AspectRatio(
-              //        aspectRatio: 485.0 / 384.0,
-              //        child: Image.network(""),
-              //      ),
-              //      Material(
-              //        child: ListTile(
-              //          title: Text("Item "),
-              //          subtitle: Text("This is item "),
-              //        ),
-              //      ),
-              //      Expanded(
-              //        child: Center(child: Text("Some more content goes here!")),
-              //      )
-              //    ],
-              //  ),
-              //),
             ),
           ),
-          // Column(
-          //   children: <Widget>[
-          //     Container(
-          //       height: mediaQuery.padding.top,
-          //     ),
-          //     ConstrainedBox(
-          //       constraints:
-          //           BoxConstraints(maxHeight: appBar.preferredSize.height),
-          //       child: appBar,
-          //     )
-          //   ],
-          // ),
         ]));
   }
 
-  ActorAnimation _rock;
-  double _rockAmount = 0.5;
-  double _speed = 1.5;
-  double _rockTime = 0.0;
-
-  @override
-  bool advance(FlutterActorArtboard artboard, double elapsed) {
-    _rockTime += elapsed * _speed;
-    _rock.apply(_rockTime % _rock.duration, artboard, _rockAmount);
-    return true;
-  }
-
-  @override
-  void initialize(FlutterActorArtboard artboard) {
-    _rock = artboard.getAnimation("search2close");
-  }
-
-  @override
-  void setViewTransform(Mat2D viewTransform) {}
-
-  TextEditingController search_controller = TextEditingController();
-  int insert_pos, insert_length;
-  String search_text;
-  bool nothing = false;
-
   Future<void> searchProcess(String target, TextSelection selection) async {
-    nothing = false;
+    _nothing = false;
     if (target.trim() == '') {
       setState(() {
-        search_lists.clear();
+        _searchLists.clear();
       });
       return;
     }
@@ -711,39 +592,35 @@ class _SearchBarState extends State<SearchBar>
     }
     if (token == '') {
       setState(() {
-        search_lists.clear();
+        _searchLists.clear();
       });
       return;
     }
 
-    insert_pos = pos;
-    insert_length = token.length;
-    search_text = target;
+    _insertPos = pos;
+    _insertLength = token.length;
+    _searchText = target;
     final result = (await HitomiManager.queryAutoComplete(token))
-        .take(search_result_maximum)
+        .take(_searchResultMaximum)
         .toList();
     setState(() {
-      if (result.length == 0) nothing = true;
-      search_lists = result;
+      if (result.length == 0) _nothing = true;
+      _searchLists = result;
     });
   }
-
-  bool tag_translation = false;
-  bool show_count = true;
-  int search_result_maximum = 60;
 
   // Create tag-chip
   // group, name, counts
   Widget chip(Tuple3<String, String, int> info) {
-    var tag_raw = info.item2;
+    var tagRaw = info.item2;
     var count = '';
     var color = Colors.grey;
 
-    if (tag_translation) // Korean
-      tag_raw =
+    if (_tagTranslation) // Korean
+      tagRaw =
           HitomiManager.mapSeries2Kor(HitomiManager.mapTag2Kor(info.item2));
 
-    if (info.item3 > 0 && show_count) count = ' (${info.item3})';
+    if (info.item3 > 0 && _showCount) count = ' (${info.item3})';
 
     if (info.item1 == 'female')
       color = Colors.pink;
@@ -758,7 +635,7 @@ class _SearchBarState extends State<SearchBar>
         child: Text(info.item1[0].toUpperCase()),
       ),
       label: Text(
-        ' ' + tag_raw + count,
+        ' ' + tagRaw + count,
         style: TextStyle(
           color: Colors.white,
         ),
@@ -773,36 +650,36 @@ class _SearchBarState extends State<SearchBar>
           if (info.item1 != 'female' && info.item1 != 'male')
             insert = info.item1 + ':' + insert;
 
-          search_controller.text = search_text.substring(0, insert_pos) +
+          _searchController.text = _searchText.substring(0, _insertPos) +
               insert +
-              search_text.substring(
-                  insert_pos + insert_length, search_text.length);
-          search_controller.selection = TextSelection(
-            baseOffset: insert_pos + insert.length,
-            extentOffset: insert_pos + insert.length,
+              _searchText.substring(
+                  _insertPos + _insertLength, _searchText.length);
+          _searchController.selection = TextSelection(
+            baseOffset: _insertPos + insert.length,
+            extentOffset: _insertPos + insert.length,
           );
         } else {
-          var offset = search_controller.selection.baseOffset;
+          var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
-            search_controller.text = search_controller.text
-                    .substring(0, search_controller.selection.base.offset) +
+            _searchController.text = _searchController.text
+                    .substring(0, _searchController.selection.base.offset) +
                 info.item2 +
                 ': ' +
-                search_controller.text
-                    .substring(search_controller.selection.base.offset);
-            search_controller.selection = TextSelection(
+                _searchController.text
+                    .substring(_searchController.selection.base.offset);
+            _searchController.selection = TextSelection(
               baseOffset: offset + info.item2.length + 1,
               extentOffset: offset + info.item2.length + 1,
             );
           } else {
-            search_controller.text = info.item2 + ': ';
-            search_controller.selection = TextSelection(
+            _searchController.text = info.item2 + ': ';
+            _searchController.selection = TextSelection(
               baseOffset: info.item2.length + 1,
               extentOffset: info.item2.length + 1,
             );
           }
           await searchProcess(
-              search_controller.text, search_controller.selection);
+              _searchController.text, _searchController.selection);
         }
       },
     );
