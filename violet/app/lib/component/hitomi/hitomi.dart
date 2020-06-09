@@ -83,7 +83,8 @@ class HitomiManager {
             results.add(Tuple3<String, String, int>(opp, key, value));
         });
       } else if (opp == 'tag') {
-        var po = prefix.split(':')[1];;
+        var po = prefix.split(':')[1];
+        ;
         ch.forEach((key, value) {
           if (!key.toLowerCase().startsWith('female:') &&
               !key.toLowerCase().startsWith('male:') &&
@@ -129,6 +130,90 @@ class HitomiManager {
       results.sort((a, b) => b.item3.compareTo(a.item3));
       return results;
     }
+  }
+
+  static String translate2query(String tokens) {
+    tokens = tokens.trim();
+    final nn = int.tryParse(tokens);
+    if (nn != null) {
+      return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
+    }
+
+    final split =
+        tokens.split(' ').map((x) => x.trim()).where((x) => x != '').toList();
+    var where = '';
+
+    for (int i = 0; i < split.length; i++) {
+      var negative = false;
+      var val = split[i];
+      if (split[i].startsWith('-')) {
+        negative = true;
+        val = split[i].substring(1);
+      }
+      if (split[i].contains(':')) {
+        var prefix = '';
+        var ss = val.split(':');
+        var postfix = '';
+
+        switch (ss[0]) {
+          case 'male':
+          case 'female':
+            postfix = val.replaceAll('_', ' ') + '|';
+            prefix = 'Tags';
+            break;
+
+          case 'tag':
+            postfix = ss[1].replaceAll('_', ' ') + '|';
+            prefix = 'Tag';
+            break;
+
+          case 'lang':
+            prefix = 'Language';
+            break;
+          case 'series':
+            postfix = ss[1].replaceAll('_', ' ') + '|';
+            prefix = 'Series';
+            break;
+          case 'artist':
+            postfix = ss[1].replaceAll('_', ' ') + '|';
+            prefix = 'Artists';
+            break;
+          case 'group':
+            postfix = ss[1].replaceAll('_', ' ') + '|';
+            prefix = 'Groups';
+            break;
+          case 'uploader':
+            prefix = 'Uploader';
+            break;
+          case 'character':
+            postfix = ss[1].replaceAll('_', ' ') + '|';
+            prefix = 'Characters';
+            break;
+          case 'type':
+            prefix = 'Type';
+            break;
+          case 'class':
+            prefix = 'Class';
+            break;
+        }
+        if (prefix == '') return '';
+        if (postfix == '') postfix = ss[1].replaceAll('_', ' ');
+
+        if (negative)
+          where += "$prefix NOT LIKE '%$postfix%'";
+        else
+          where += "$prefix LIKE '%$postfix%'";
+      } else {
+        if (negative)
+          where += "Title NOT LIKE '%$val%'";
+        else
+          where += "Title LIKE '%$val%'";
+      }
+
+      if (i != split.length - 1) where += ' AND ';
+    }
+
+    return 'SELECT * FROM HitomiColumnModel WHERE $where';
   }
 
   static String mapTag2Kor(String tag) {
