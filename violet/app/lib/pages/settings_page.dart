@@ -19,6 +19,50 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              _build_group('검색'),
+              _build_items([
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.tagHeartOutline,
+                    color: Colors.purple,
+                  ),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("기본 태그 (언어 설정)"),
+                      Text("현재 태그: "),
+                    ],
+                  ),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.tagOff,
+                    color: Colors.purple,
+                  ),
+                  title: Text("기본 제외 태그"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.imageMultipleOutline,
+                    color: Colors.purple,
+                  ),
+                  title: Text("검색 결과 표시 방법"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+              ]),
               _build_group('시스템'),
               _build_items([
                 ListTile(
@@ -144,10 +188,27 @@ class SettingsPage extends StatelessWidget {
                   ),
                   title: Text("디스코드 채널"),
                   trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
+                      // Icons.message
+                      Icons.open_in_new),
                   onTap: () async {
                     const url = 'https://discord.gg/K8qny6E';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    }
+                  },
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.github,
+                    color: Colors.black,
+                  ),
+                  title: Text("Github 프로젝트"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.open_in_new),
+                  onTap: () async {
+                    const url = 'https://github.com/project-violet/violet';
                     if (await canLaunch(url)) {
                       await launch(url);
                     }
@@ -163,7 +224,12 @@ class SettingsPage extends StatelessWidget {
                   trailing: Icon(
                       // Icons.email,
                       Icons.keyboard_arrow_right),
-                  onTap: () {},
+                  onTap: () async {
+                    const url = 'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    }
+                  },
                 ),
                 _build_divider(),
                 ListTile(
@@ -188,7 +254,19 @@ class SettingsPage extends StatelessWidget {
                       // Icons.email,
                       Icons.keyboard_arrow_right),
                   onTap: () {},
-                ), 
+                ),
+                _build_divider(),
+                ListTile(
+                  leading: Icon(
+                    MdiIcons.library,
+                    color: Colors.purple,
+                  ),
+                  title: Text("라이센스"),
+                  trailing: Icon(
+                      // Icons.email,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
               ]),
               Container(
                 margin: EdgeInsets.all(40),
@@ -223,7 +301,7 @@ class SettingsPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Copyright (C) 2020 by NViolet',
+                        'Copyright (C) 2020 by Violet-Developer',
                         style: TextStyle(
                           color: Colors.black87,
                           fontSize: 12.0,
