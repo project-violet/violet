@@ -553,10 +553,8 @@ class _SearchBarState extends State<SearchBar>
                               ),
                             ),
                           ),
-                          //Center(child: Text("검색창 소환!")),
                         ),
                       ),
-                      //Text('zxcv')
                     ],
                   ),
                 ),
