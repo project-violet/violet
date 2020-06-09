@@ -26,14 +26,14 @@ class DataBaseManager {
     db = await openDatabase(dbPath);
   }
 
-  Future close() async {
+  Future _close() async {
     await db.close();
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {
     await _open();
     var rr = await db.rawQuery(str);
-    await close();
+    await _close();
     return rr;
   }
 
