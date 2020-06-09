@@ -7,11 +7,11 @@
     "settings": "설정",
     "news": "업데이트",
     "system": "시스템",
-    "set_save_dir": "저장 위치 설정",
-    "current_dir": "현재 위치",
-    "log_record": "로그 기록",
+    "setSaveDir": "저장 위치 설정",
+    "currentDir": "현재 위치",
+    "logRecord": "로그 기록",
     "info": "정보",
-    "dev_tool": "개발자 도구",
+    "devTool": "개발자 도구",
     "viewer": "뷰어",
     "viewer_type": "뷰어 타입",
     "current_type": "현재 타입",
@@ -24,6 +24,6 @@
     "discord_channel": "디스코드 채널",
     "contact": "개발자 문의",
     "donate": "후원",
-    "external_link": "외부 링크",
-    "_showCount": "카운트 표시"
+    "externalLink": "외부 링크",
+    "showCount": "카운트 표시"
 }
