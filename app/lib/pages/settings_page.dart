@@ -19,8 +19,8 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              _build_group('검색'),
-              _build_items([
+              _buildGroup('검색'),
+              _buildItems([
                 ListTile(
                   leading: Icon(
                     MdiIcons.tagHeartOutline,
@@ -38,7 +38,7 @@ class SettingsPage extends StatelessWidget {
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.tagOff,
@@ -50,7 +50,7 @@ class SettingsPage extends StatelessWidget {
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.imageMultipleOutline,
@@ -63,8 +63,8 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
               ]),
-              _build_group('시스템'),
-              _build_items([
+              _buildGroup('시스템'),
+              _buildItems([
                 ListTile(
                   leading: Icon(Icons.folder_open, color: Colors.purple),
                   title: Column(
@@ -77,21 +77,21 @@ class SettingsPage extends StatelessWidget {
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.receipt, color: Colors.purple),
                   title: Text("로그 기록"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.info_outline, color: Colors.purple),
                   title: Text("정보"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.developer_mode, color: Colors.orange),
                   title: Text("개발자 도구"),
@@ -106,8 +106,8 @@ class SettingsPage extends StatelessWidget {
                   },
                 ),
               ]),
-              _build_group('뷰어'),
-              _build_items([
+              _buildGroup('뷰어'),
+              _buildItems([
                 ListTile(
                   leading: Icon(Icons.view_array, color: Colors.purple),
                   title: Column(
@@ -121,8 +121,8 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
               ]),
-              _build_group('캐시'),
-              _build_items([
+              _buildGroup('캐시'),
+              _buildItems([
                 ListTile(
                   leading: Icon(Icons.lock_outline, color: Colors.purple),
                   title: Text("Enable Locking"),
@@ -143,8 +143,8 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
               ]),
-              _build_group('잠금'),
-              _build_items([
+              _buildGroup('잠금'),
+              _buildItems([
                 ListTile(
                   leading: Icon(Icons.lock_outline, color: Colors.purple),
                   title: Text("잠금 기능 켜기"),
@@ -165,8 +165,8 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
               ]),
-              _build_group('네트워크'),
-              _build_items([
+              _buildGroup('네트워크'),
+              _buildItems([
                 ListTile(
                   leading: Icon(
                     Icons.router,
@@ -179,8 +179,8 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
               ]),
-              _build_group('기타'),
-              _build_items([
+              _buildGroup('기타'),
+              _buildItems([
                 ListTile(
                   leading: Icon(
                     MdiIcons.discord,
@@ -197,7 +197,7 @@ class SettingsPage extends StatelessWidget {
                     }
                   },
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.github,
@@ -214,7 +214,7 @@ class SettingsPage extends StatelessWidget {
                     }
                   },
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.gmail,
@@ -231,7 +231,7 @@ class SettingsPage extends StatelessWidget {
                     }
                   },
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.heart,
@@ -243,7 +243,7 @@ class SettingsPage extends StatelessWidget {
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     Icons.open_in_new,
@@ -255,7 +255,7 @@ class SettingsPage extends StatelessWidget {
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _build_divider(),
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.library,
@@ -320,7 +320,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Container _build_divider() {
+  Container _buildDivider() {
     return Container(
       margin: const EdgeInsets.symmetric(
         horizontal: 8.0,
@@ -331,7 +331,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Padding _build_group(String name) {
+  Padding _buildGroup(String name) {
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Row(
@@ -349,7 +349,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Container _build_items(List<Widget> items) {
+  Container _buildItems(List<Widget> items) {
     return Container(
       transform: Matrix4.translationValues(0, -2, 0),
       child: Card(
