@@ -2,6 +2,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
 
 //import 'package:explorer/pages/download_page.dart';
+import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/material.dart';
 
 //void main() => runApp(MyApp());
@@ -632,6 +633,7 @@ import 'package:flutter/material.dart';
 // }
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'locale.dart';
@@ -641,54 +643,72 @@ import 'package:violet/pages/afterloading_page.dart';
 
 DateTime currentBackPressTime;
 Future<bool> onWillPop() {
-    DateTime now = DateTime.now();
-    if (currentBackPressTime == null || 
-        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
-      currentBackPressTime = now;
-      //Fluttertoast.showToast(msg: '한 번 더 누르면 종료합니다.');
-      return Future.value(false);
-    }
-    return Future.value(true);
+  DateTime now = DateTime.now();
+  if (currentBackPressTime == null ||
+      now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+    currentBackPressTime = now;
+    //Fluttertoast.showToast(msg: '한 번 더 누르면 종료합니다.');
+    return Future.value(false);
   }
+  return Future.value(true);
+}
+
+const _filesToWarmup = [
+  'assets/flare/Loading2.flr',
+];
+
+Future<void> warmupFlare() async {
+  for (final filename in _filesToWarmup) {
+    await cachedActor(rootBundle, filename);
+  }
+}
 
 void main() async {
-  runApp(MaterialApp(
-    theme: ThemeData(accentColor: Colors.purple, primaryColor: Colors.purple),
-    home: SplashPage(), //AfterLoadingPage(),
-    supportedLocales: [
-      const Locale('ko', 'KR'),
-      const Locale('en', 'US'),
-    ],
-    routes: <String, WidgetBuilder>{
-      //'/Loading':
-      '/AfterLoading': (BuildContext context) => WillPopScope(
-            child: new AfterLoadingPage(),
-            onWillPop: onWillPop,
-          ),
-      '/Test': (BuildContext context) => new MyApp(),
-    },
-    localizationsDelegates: [
-      const TranslationsDelegate(),
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate
-    ],
-    localeResolutionCallback:
-        (Locale locale, Iterable<Locale> supportedLocales) {
-      if (locale == null) {
-        debugPrint("*language locale is null!!!");
-        return supportedLocales.first;
-      }
+  WidgetsFlutterBinding.ensureInitialized();
+  FlareCache.doesPrune = false;
 
-      for (Locale supportedLocale in supportedLocales) {
-        if (supportedLocale.languageCode == locale.languageCode ||
-            supportedLocale.countryCode == locale.countryCode) {
-          debugPrint("*language ok $supportedLocale");
-          return supportedLocale;
-        }
-      }
+  warmupFlare().then((_) {
+    runApp(
+      MaterialApp(
+        theme:
+            ThemeData(accentColor: Colors.purple, primaryColor: Colors.purple),
+        home: SplashPage(), //AfterLoadingPage(),
+        supportedLocales: [
+          const Locale('ko', 'KR'),
+          const Locale('en', 'US'),
+        ],
+        routes: <String, WidgetBuilder>{
+          //'/Loading':
+          '/AfterLoading': (BuildContext context) => WillPopScope(
+                child: new AfterLoadingPage(),
+                onWillPop: onWillPop,
+              ),
+          '/Test': (BuildContext context) => new MyApp(),
+        },
+        localizationsDelegates: [
+          const TranslationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate
+        ],
+        localeResolutionCallback:
+            (Locale locale, Iterable<Locale> supportedLocales) {
+          if (locale == null) {
+            debugPrint("*language locale is null!!!");
+            return supportedLocales.first;
+          }
 
-      debugPrint("*language to fallback ${supportedLocales.first}");
-      return supportedLocales.first;
-    },
-  ));
+          for (Locale supportedLocale in supportedLocales) {
+            if (supportedLocale.languageCode == locale.languageCode ||
+                supportedLocale.countryCode == locale.countryCode) {
+              debugPrint("*language ok $supportedLocale");
+              return supportedLocale;
+            }
+          }
+
+          debugPrint("*language to fallback ${supportedLocales.first}");
+          return supportedLocales.first;
+        },
+      ),
+    );
+  });
 }
