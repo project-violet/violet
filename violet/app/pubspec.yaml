@@ -58,6 +58,8 @@ dependencies:
   flutter_sidekick:
   tuple:
   fading_edge_scrollview:
+  infinite_listview: ^1.0.1+1
+  auto_animated: any
 
 dev_dependencies:
   flutter_test:
@@ -100,8 +102,8 @@ flutter:
     - assets/flare/Cosmos.flr
     - assets/flare/search_close.flr
 
-    - assets/flare/Chatbot-back.flr
-    - assets/flare/Chatbot-front.flr
+    - assets/flare/Loading.flr
+    - assets/flare/Loading2.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

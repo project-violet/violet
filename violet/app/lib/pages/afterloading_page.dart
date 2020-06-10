@@ -32,16 +32,16 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> {
     super.initState();
   }
 
-  var currentPage = images.length - 1.0;
+  // var currentPage = images.length - 1.0;
 
   @override
   Widget build(BuildContext context) {
-    PageController controller = PageController(initialPage: images.length - 1);
-    controller.addListener(() {
-      setState(() {
-        currentPage = controller.page;
-      });
-    });
+    // PageController controller = PageController(initialPage: images.length - 1);
+    // controller.addListener(() {
+    //   setState(() {
+    //     currentPage = controller.page;
+    //   });
+    // });
 
     return new Scaffold(
       bottomNavigationBar: //new Theme(

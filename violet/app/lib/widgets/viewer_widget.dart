@@ -206,6 +206,7 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // print(galleryExampleItem.url);
     return Container(
       child: VisibilityDetector(
         key: Key(galleryExampleItem.url),

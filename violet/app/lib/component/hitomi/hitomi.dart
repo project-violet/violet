@@ -22,10 +22,10 @@ class HitomiManager {
     for (var row in files) {
       var rr = row.cast<String, String>();
       var hash = rr['hash'] as String;
-      if (rr['hashwebp'] == 0) {
+      if (rr['hashwebp'] == 0 || rr['hashwebp'] == null) {
         var postfix = hash.substring(hash.length - 3);
         result.add(
-            'https://${subdomain}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['hash'] as String).split('.').last}');
+            'https://${subdomain}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
       } else if (hash == "")
         result.add(
             'https://${subdomain}a.hitomi.la/webp/${rr['name'] as String}.webp');
@@ -164,7 +164,7 @@ class HitomiManager {
 
           case 'tag':
             postfix = ss[1].replaceAll('_', ' ') + '|';
-            prefix = 'Tag';
+            prefix = 'Tags';
             break;
 
           case 'lang':

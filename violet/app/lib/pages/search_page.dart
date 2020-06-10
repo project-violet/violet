@@ -13,11 +13,14 @@ import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:infinite_listview/infinite_listview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/widgets/article_list_item_widget.dart';
+// import 'package:infinite_listview/infinite_listview.dart';
 // import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 class SearchPage extends StatefulWidget {
@@ -69,14 +72,19 @@ class _SearchPageState extends State<SearchPage> {
   //   print("Focus: "+_focus.hasFocus.toString());
   // }
 
-  QueryManager latestQuery;
+  Tuple2<QueryManager, String> latestQuery;
 
   @override
   Widget build(BuildContext context) {
+    final InfiniteScrollController _infiniteController =
+        InfiniteScrollController(
+      initialScrollOffset: 0.0,
+    );
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     double width = MediaQuery.of(context).size.width;
-    double _sigmaX = 8.0; // from 0-10
-    double _sigmaY = 8.0; // from 0-10
+    // double _sigmaX = 8.0; // from 0-10
+    // double _sigmaY = 8.0; // from 0-10
+    // TextEditingController _searchController = TextEditingController();
     //color = Colors.green;
 
     return Container(
@@ -84,7 +92,7 @@ class _SearchPageState extends State<SearchPage> {
       //padding: EdgeInsets.fromLTRB(8, statusBarHeight + 4, 60, 0),
       //child: BackdropFilter(
       //   filter: ImageFilter.blur(sigmaX: _sigmaX, sigmaY: _sigmaY),
-      child: Stack(
+      child: Column(
         children: <Widget>[
           // GestureDetector(
           //     onTap: () {
@@ -92,193 +100,161 @@ class _SearchPageState extends State<SearchPage> {
           //         into = !into;
           //       });
           //     },
-          Container(
-            //color: Colors.white,// Colors.black.withOpacity(0.1),
-            padding: EdgeInsets.fromLTRB(8, statusBarHeight + 4, 8, 0),
-            child: SizedBox(
-                height: 64,
-                child: Hero(
-                  tag: "searchbar",
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(8.0),
-                      ),
-                    ),
-                    elevation: 100,
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    child: Stack(
-                      children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            // AspectRatio(
-                            //   aspectRatio: 485.0 / 384.0,
-                            //   child: Image.network(
-                            //       ""),
-                            // ),
-                            Material(
-                              child: ListTile(
-                                title: TextFormField(
-                                  cursorColor: Colors.black,
-                                  //keyboardType: inputType,
-                                  decoration: new InputDecoration(
-                                      border: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      disabledBorder: InputBorder.none,
-                                      contentPadding: EdgeInsets.only(
-                                          left: 15,
-                                          bottom: 11,
-                                          top: 11,
-                                          right: 15),
-                                      hintText: '검색'),
-                                ), //Text("검색"),
-                                leading: SizedBox(
-                                  width: 25,
-                                  height: 25,
-                                  child: FlareArtboard(artboard,
-                                      controller: heroFlareControls),
-                                ),
-                                //Icon(Icons.search),
-                                //subtitle: Text("This is item #2"),
-                              ),
-                            )
-                            //Text('zxcv')
-                          ],
+          Stack(children: <Widget>[
+            Container(
+              //color: Colors.white,// Colors.black.withOpacity(0.1),
+              padding: EdgeInsets.fromLTRB(8, statusBarHeight + 4, 72, 0),
+              child: SizedBox(
+                  height: 64,
+                  child: Hero(
+                    tag: "searchbar",
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(8.0),
                         ),
-                        Positioned(
-                          left: 0.0,
-                          top: 0.0,
-                          bottom: 0.0,
-                          right: 0.0,
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: InkWell(
-                              onTap: () async {
-                                await Future.delayed(
-                                    Duration(milliseconds: 200));
-                                heroFlareControls.play('search2close');
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return new SearchBar(
-                                        artboard: artboard,
-                                        heroController: heroFlareControls,
-                                      );
-                                    },
-                                    fullscreenDialog: true,
+                      ),
+                      elevation: 100,
+                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                      child: Stack(
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              // AspectRatio(
+                              //   aspectRatio: 485.0 / 384.0,
+                              //   child: Image.network(
+                              //       ""),
+                              // ),
+                              Material(
+                                child: ListTile(
+                                  title: TextFormField(
+                                    cursorColor: Colors.black,
+                                    //keyboardType: inputType,
+                                    // Search Controller Not Working Why?
+                                    // controller: _searchController,
+                                    decoration: new InputDecoration(
+                                        border: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                        contentPadding: EdgeInsets.only(
+                                            left: 15,
+                                            bottom: 11,
+                                            top: 11,
+                                            right: 15),
+                                        hintText: latestQuery != null &&
+                                                latestQuery.item2.trim() != ''
+                                            ? latestQuery.item2
+                                            : '검색'),
+                                  ), //Text("검색"),
+                                  leading: SizedBox(
+                                    width: 25,
+                                    height: 25,
+                                    child: FlareArtboard(artboard,
+                                        controller: heroFlareControls),
                                   ),
+                                  //Icon(Icons.search),
+                                  //subtitle: Text("This is item #2"),
+                                ),
+                              )
+                              //Text('zxcv')
+                            ],
+                          ),
+                          Positioned(
+                            left: 0.0,
+                            top: 0.0,
+                            bottom: 0.0,
+                            right: 0.0,
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: InkWell(
+                                onTap: () async {
+                                  await Future.delayed(
+                                      Duration(milliseconds: 200));
+                                  heroFlareControls.play('search2close');
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return new SearchBar(
+                                          artboard: artboard,
+                                          heroController: heroFlareControls,
+                                        );
+                                      },
+                                      fullscreenDialog: true,
+                                    ),
 
-                                  //PageRouteBuilder(
-                                  //    transitionDuration: Duration(seconds: 2),
-                                  //    pageBuilder: (_, __, ___) => SearchBar()),
-                                ).then((value) {
-                                  latestQuery = value;
-                                  setState(() {
-                                    heroFlareControls.play('close2search');
+                                    //PageRouteBuilder(
+                                    //    transitionDuration: Duration(seconds: 2),
+                                    //    pageBuilder: (_, __, ___) => SearchBar()),
+                                  ).then((value) async {
+                                    setState(() {
+                                      heroFlareControls.play('close2search');
+                                    });
+                                    if (value == null) return;
+                                    latestQuery = value;
+                                    queryResult = List<QueryResult>();
+                                    await loadNextQuery();
                                   });
-                                });
-                                loadNextQuery();
-                                // print(latestQuery);
-                              },
+                                  // print(latestQuery);
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  //   AnimatedContainer(
-                  //     duration: Duration(milliseconds: 5000),
-                  //     //color: Colors.green,
-                  //     curve: Curves.easeInOut,
-                  //     // decoration: BoxDecoration(
-                  //     //   color: Colors.white, // added
-                  //     //   border: Border.all(color: Colors.orange, width: 5), // added
-                  //     //   borderRadius: BorderRadius.circular(into ? 25 : 0),
-                  //     // ),
-                  //     child: Card(
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(into ? 0 : 4),
-                  //       ),
-                  //       elevation: 3,
-                  //       //child: Expanded(
-                  //       //mainAxisAlignment: MainAxisAlignment.start,
-                  //       child: into ? Column(
-                  //         children: <Widget>[
-                  //           TextField(
-                  //             controller: _controller,
-                  //             decoration: new InputDecoration.collapsed(
-                  //               hintText: '입력',
-                  //               border: InputBorder.none,
-                  //             ),
-                  //             //focusNode: _focus,
-                  //             onSubmitted: (str) {
-                  //               setState(() {
-                  //                 //color = Colors.red;
-                  //                 into = false;
-                  //               });
-                  //             },
+                  )
+                  // child: Padding(
+                  //   padding: EdgeInsets.fromLTRB(8, statusBarHeight, 8, 0),
+                  //   child: Center(
+                  //     child: Column(
+                  //       children: <Widget>[
+                  //         AnimatedContainer(
+                  //           duration: Duration(microseconds: 15000),
+                  //           color: color,
+                  //           child: TextField(
                   //             onTap: () {
                   //               setState(() {
-                  //                 //color = Colors.red;
-                  //                 into = true;
+                  //                 print('asdf');
+                  //                 color = Colors.red;
                   //               });
                   //             },
                   //           ),
-                  //           Expanded(child: Container()),
-                  //           //into ? SizedBox(height: 100,) : Container()
-                  //         ],
-                  //       ) : TextField(
-                  //             controller: _controller,
-                  //             decoration: new InputDecoration.collapsed(
-                  //               hintText: '입력',
-                  //               border: InputBorder.none,
-                  //             ),
-                  //             //focusNode: _focus,
-                  //             onSubmitted: (str) {
-                  //               setState(() {
-                  //                 //color = Colors.red;
-                  //                 into = false;
-                  //               });
-                  //             },
-                  //             onTap: () {
-                  //               setState(() {
-                  //                 //color = Colors.red;
-                  //                 into = true;
-                  //               });
-                  //             },
-                  //           ),
-                  //       //),
+                  //         )
+                  //       ],
                   //     ),
                   //   ),
-                  //   //),
-                  // ],
-                )
-                // child: Padding(
-                //   padding: EdgeInsets.fromLTRB(8, statusBarHeight, 8, 0),
-                //   child: Center(
-                //     child: Column(
-                //       children: <Widget>[
-                //         AnimatedContainer(
-                //           duration: Duration(microseconds: 15000),
-                //           color: color,
-                //           child: TextField(
-                //             onTap: () {
-                //               setState(() {
-                //                 print('asdf');
-                //                 color = Colors.red;
-                //               });
-                //             },
-                //           ),
-                //         )
-                //       ],
-                //     ),
-                //   ),
-                // ),
+                  // ),
+                  ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(
+                  width - 8 - 64, statusBarHeight + 4, 8, 0),
+              child: SizedBox(
+                height: 64,
+                child: Card(
+                  color: Colors.grey.shade200,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8.0),
+                    ),
+                  ),
+                  elevation: 100,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: InkWell(
+                    child: SizedBox(
+                      height: 64,
+                      width: 64,
+                      child: Icon(MdiIcons.formatListText, color: Colors.grey,),
+                    ),
+                    onTap: () async {},
+                  ),
                 ),
-          ),
+              ),
+            ),
+          ]),
           // Container(
           //   padding:
           //       EdgeInsets.fromLTRB(width - 8 - 64, statusBarHeight + 4, 8, 0),
@@ -298,19 +274,54 @@ class _SearchPageState extends State<SearchPage> {
           //         child: SizedBox(
           //           height: 64,
           //           width: 64,
-          //           child: Stack(Icon(Icons.star),
+          //           child: Icon(Icons.star),
           //         ),
           //       ),
           //     ),
           //   ),
           // ),
+          // InfiniteListView.builder()
+          Expanded(
+            child: ListView.builder(
+              itemCount: queryResult.length,
+              itemBuilder: (context, index) {
+                return Align(
+                    alignment: Alignment.center,
+                    child: ArticleListItemVerySimpleWidget(
+                        queryResult: queryResult[
+                            index]) //FadeInImage(placeholder: Text('loading'), image: ,)
+                    // Text(
+                    //   queryResult[index].title(),
+                    // ),
+
+                    // Card(
+                    //   elevation: 10,
+                    //   child: Container(
+                    //     width: width - 100,
+                    //     height: 200,
+                    //     child: Text(
+                    //       queryResult[index].title(),
+                    //     ),
+                    //   ),
+                    // ),
+                    );
+              },
+            ),
+          ),
         ],
       ),
       //),
     );
   }
 
-  void loadNextQuery() {}
+  List<QueryResult> queryResult = List<QueryResult>();
+
+  Future<void> loadNextQuery() async {
+    var nn = await latestQuery.item1.next();
+    setState(() {
+      queryResult.addAll(nn);
+    });
+  }
 }
 
 class SearchBar extends StatefulWidget {
@@ -334,7 +345,6 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar>
     with SingleTickerProviderStateMixin {
-  
   AnimationController controller;
   List<Tuple3<String, String, int>> _searchLists =
       List<Tuple3<String, String, int>>();
@@ -374,6 +384,7 @@ class _SearchBarState extends State<SearchBar>
       _searchLists.add(Tuple3<String, String, int>('prefix', 'character', 0));
       _searchLists.add(Tuple3<String, String, int>('prefix', 'type', 0));
       _searchLists.add(Tuple3<String, String, int>('prefix', 'class', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'recent', 0));
     }
 
     return Container(
@@ -456,7 +467,10 @@ class _SearchBarState extends State<SearchBar>
                                     _searchController.text);
                                 final result =
                                     QueryManager.queryPagination(query);
-                                Navigator.pop(context, result);
+                                Navigator.pop(
+                                    context,
+                                    Tuple2<QueryManager, String>(
+                                        result, _searchController.text));
                               },
                             ),
                           ),

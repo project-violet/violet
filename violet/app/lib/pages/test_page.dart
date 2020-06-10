@@ -233,12 +233,10 @@ class _SqlTestPageState extends State<SqlTestPage> {
                             setState(() {
                               status = '쿼리중...';
                             });
-                            if (latest != null) await latest.close();
                             var dt = DateTime.now();
                             latest = await DataBaseManager.getInstance();
                             var text =
                                 await latest.query(textEditingController.text);
-                            latest = null;
 
                             //var text =
                             //    (await (await DataBaseManager.getInstance())

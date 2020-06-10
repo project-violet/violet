@@ -120,6 +120,18 @@ class SettingsPage extends StatelessWidget {
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
+                _buildDivider(), 
+                ListTile(
+                  leading: Icon(
+                    Icons.blur_linear,
+                    color: Colors.purple,
+                  ),
+                  title: Text("이미지 품질"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
               ]),
               _buildGroup('캐시'),
               _buildItems([
