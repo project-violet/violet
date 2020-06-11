@@ -2,6 +2,8 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
 
 //import 'package:explorer/pages/download_page.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/material.dart';
 
@@ -635,11 +637,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:logging/logging.dart';
+import 'package:usage/usage.dart';
+import 'package:usage/usage_io.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'locale.dart';
 import 'package:violet/pages/download_page.dart';
 import 'package:violet/pages/splash_page.dart';
 import 'package:violet/pages/afterloading_page.dart';
+import 'package:path_provider/path_provider.dart';
 
 DateTime currentBackPressTime;
 Future<bool> onWillPop() {
@@ -667,9 +673,21 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FlareCache.doesPrune = false;
 
+  // final String UA = '';
+  // Analytics ga = new AnalyticsIO(UA, 'ga_test', '3.0',
+  //   documentDirectory: await getApplicationDocumentsDirectory());
+  // ga.analyticsOpt = AnalyticsOpt.optIn;
+  // ga.sendScreenView('home');
+
+  FirebaseAnalytics analytics = FirebaseAnalytics();
+  await analytics.setUserId('some-user');
+
   warmupFlare().then((_) {
     runApp(
       MaterialApp(
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: analytics),
+        ],
         theme:
             ThemeData(accentColor: Colors.purple, primaryColor: Colors.purple),
         home: SplashPage(), //AfterLoadingPage(),

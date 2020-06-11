@@ -252,6 +252,42 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {},
                 ),
               ]),
+              _buildGroup('테마'),
+              _buildItems([
+                ListTile(
+                  leading: ShaderMask(
+                    shaderCallback: (bounds) => RadialGradient(
+                      center: Alignment.topLeft,
+                      radius: 1.3,
+                      colors: [Colors.black, Colors.white],
+                      tileMode: TileMode.clamp,
+                    ).createShader(bounds),
+                    child: Icon(MdiIcons.themeLightDark, color: Colors.white),
+                  ),
+                  title: Text("기본 테마 설정"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: ShaderMask(
+                    shaderCallback: (bounds) => RadialGradient(
+                      center: Alignment.bottomLeft,
+                      radius: 1.2,
+                      colors: [Colors.orange, Colors.pink],
+                      tileMode: TileMode.clamp,
+                    ).createShader(bounds),
+                    child: Icon(MdiIcons.formatColorFill, color: Colors.white),
+                  ),
+                  title: Text("컬러 설정"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+              ]),
               _buildGroup('기타'),
               _buildItems([
                 ListTile(
@@ -340,7 +376,21 @@ class SettingsPage extends StatelessWidget {
                   trailing: Icon(
                       // Icons.email,
                       Icons.keyboard_arrow_right),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                        builder: (context) => LicensePage(
+                          applicationName: 'Project Violet\n',
+                          applicationIcon: Image.asset(
+                            'assets/images/logo.png',
+                            width: 100,
+                            height: 100,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ]),
               Container(
@@ -509,7 +559,7 @@ class VersionViewPage extends StatelessWidget {
                       style: TextStyle(fontSize: 20),
                     ),
                     Text(''),
-                    Text('Project-Violet은 모두에게 무료로 제공됩니다.'),
+                    Text('Project-Violet 서비스는 모두에게 무료로 제공됩니다.'),
                   ],
                 ),
                 width: 250,
