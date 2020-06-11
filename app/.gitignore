@@ -42,3 +42,4 @@ script_valid_pub.pem
 #key.jks
 real_key.jks
 assets/test/*
+android/app/google-services.json
