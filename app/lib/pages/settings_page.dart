@@ -220,7 +220,7 @@ class SettingsPage extends StatelessWidget {
                       // Icons.message,
                       Icons.open_in_new),
                   onTap: () async {
-                    const url = 'https://github.com/project-violet/violet';
+                    const url = 'https://github.com/project-violet/';
                     if (await canLaunch(url)) {
                       await launch(url);
                     }
