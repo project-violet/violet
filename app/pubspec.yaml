@@ -61,6 +61,10 @@ dependencies:
   infinite_listview: ^1.0.1+1
   auto_animated: any
   flutter_svg:
+  flutter_markdown:
+  usage:
+  cloud_firestore: ^0.13.0+1 
+  firebase_analytics:
 
 dev_dependencies:
   flutter_test:
