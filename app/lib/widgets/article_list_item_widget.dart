@@ -210,7 +210,7 @@ class _ArticleListItemVerySimpleWidgetState
         var sz = await _calculateImageDimension(thumbnail);
         Navigator.of(context).push(PageRouteBuilder(
           opaque: false,
-          // transitionDuration: Duration(milliseconds: 100),
+          transitionDuration: Duration(milliseconds: 500),
           pageBuilder: (_, __, ___) => ThumbnailViewPage(
             size: sz,
             thumbnail: thumbnail,
