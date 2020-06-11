@@ -103,7 +103,7 @@ class _SearchPageState extends State<SearchPage> {
           Stack(children: <Widget>[
             Container(
               //color: Colors.white,// Colors.black.withOpacity(0.1),
-              padding: EdgeInsets.fromLTRB(8, statusBarHeight + 4, 72, 0),
+              padding: EdgeInsets.fromLTRB(8, statusBarHeight + 8, 72, 0),
               child: SizedBox(
                   height: 64,
                   child: Hero(
@@ -231,7 +231,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             Container(
               padding: EdgeInsets.fromLTRB(
-                  width - 8 - 64, statusBarHeight + 4, 8, 0),
+                  width - 8 - 64, statusBarHeight + 8, 8, 0),
               child: SizedBox(
                 height: 64,
                 child: Card(
