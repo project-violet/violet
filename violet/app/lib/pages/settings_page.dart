@@ -86,10 +86,40 @@ class SettingsPage extends StatelessWidget {
                 ),
                 _buildDivider(),
                 ListTile(
+                  leading: Icon(Icons.language, color: Colors.purple),
+                  title: Text("언어 (Language)"),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _buildDivider(),
+                ListTile(
                   leading: Icon(Icons.info_outline, color: Colors.purple),
                   title: Text("정보"),
                   trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        opaque: false,
+                        pageBuilder: (_, __, ___) {
+                          return VersionViewPage();
+                        },
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          var begin = Offset(0.0, 1.0);
+                          var end = Offset.zero;
+                          var curve = Curves.ease;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
                 _buildDivider(),
                 ListTile(
@@ -120,7 +150,7 @@ class SettingsPage extends StatelessWidget {
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _buildDivider(), 
+                _buildDivider(),
                 ListTile(
                   leading: Icon(
                     Icons.blur_linear,
@@ -130,6 +160,37 @@ class SettingsPage extends StatelessWidget {
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+              ]),
+              _buildGroup('다운로더'),
+              _buildItems([
+                ListTile(
+                  leading: ShaderMask(
+                    shaderCallback: (bounds) => RadialGradient(
+                      center: Alignment.bottomLeft,
+                      radius: 1.3,
+                      colors: [Colors.yellow, Colors.red, Colors.purple],
+                      tileMode: TileMode.clamp,
+                    ).createShader(bounds),
+                    child: Icon(MdiIcons.instagram, color: Colors.white),
+                  ),
+                  title: Text('인스타그램'),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: Icon(MdiIcons.twitter, color: Colors.blue),
+                  title: Text('트위터'),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: Image.asset('assets/icons/pixiv.ico', width: 25),
+                  title: Text('픽시브'),
+                  trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
               ]),
@@ -199,9 +260,7 @@ class SettingsPage extends StatelessWidget {
                     color: Color(0xFF7189da),
                   ),
                   title: Text("디스코드 채널"),
-                  trailing: Icon(
-                      // Icons.message
-                      Icons.open_in_new),
+                  trailing: Icon(Icons.open_in_new),
                   onTap: () async {
                     const url = 'https://discord.gg/K8qny6E';
                     if (await canLaunch(url)) {
@@ -216,9 +275,7 @@ class SettingsPage extends StatelessWidget {
                     color: Colors.black,
                   ),
                   title: Text("Github 프로젝트"),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.open_in_new),
+                  trailing: Icon(Icons.open_in_new),
                   onTap: () async {
                     const url = 'https://github.com/project-violet/';
                     if (await canLaunch(url)) {
@@ -237,7 +294,8 @@ class SettingsPage extends StatelessWidget {
                       // Icons.email,
                       Icons.keyboard_arrow_right),
                   onTap: () async {
-                    const url = 'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
+                    const url =
+                        'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
                     if (await canLaunch(url)) {
                       await launch(url);
                     }
@@ -252,8 +310,13 @@ class SettingsPage extends StatelessWidget {
                   title: Text("후원"),
                   trailing: Icon(
                       // Icons.email,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
+                      Icons.open_in_new),
+                  onTap: () async {
+                    const url = 'https://www.patreon.com/projectviolet';
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    }
+                  },
                 ),
                 _buildDivider(),
                 ListTile(
@@ -417,5 +480,56 @@ class _SettingsItemState extends State<SettingsItem> {
   @override
   Widget build(BuildContext context) {
     return Container();
+  }
+}
+
+class VersionViewPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Card(
+            color: Colors.white.withOpacity(0.9),
+            elevation: 10,
+            child: SizedBox(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(''),
+                    Text(
+                      'Violet App',
+                      style: TextStyle(fontSize: 30),
+                    ),
+                    Text(
+                      '0.1.0',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text(''),
+                    Text('Project-Violet은 모두에게 무료로 제공됩니다.'),
+                  ],
+                ),
+                width: 250,
+                height: 150,
+              ),
+            ),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(1)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -125,9 +125,8 @@ class TestPage extends StatelessWidget {
               Container(
                 height: 10,
               ),
-              Text('소스코드 및 개발문의'),
-              Text('koromo.software@gmail.com'),
               Text('Project Violet은 Closed Source입니다.'),
+              Text('Copyright (C) 2020 by dc-koromo'),
             ],
           ),
         ),

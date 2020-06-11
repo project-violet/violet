@@ -60,6 +60,7 @@ dependencies:
   fading_edge_scrollview:
   infinite_listview: ^1.0.1+1
   auto_animated: any
+  flutter_svg:
 
 dev_dependencies:
   flutter_test:
@@ -104,6 +105,8 @@ flutter:
 
     - assets/flare/Loading.flr
     - assets/flare/Loading2.flr
+
+    - assets/icons/pixiv.ico
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
