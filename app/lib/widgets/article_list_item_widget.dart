@@ -147,36 +147,35 @@ class _ArticleListItemVerySimpleWidgetState
           ),
         ),
       ),
-      onScaleStart: (detail) {
-        onScaling = true;
-        setState(() {
-          pad = 0;
-        });
-      },
-      onScaleUpdate: (detail) async {
-        if (detail.scale > 1.1 &&
-            !scaleAnimationController.isAnimating &&
-            !scaleAnimationController.isCompleted) {
-          scaleAnimationController.forward(from: 1.0);
-        }
-
-        if (detail.scale > 1.1 && !scaleAnimationController.isCompleted) {
-          var sz = await _calculateImageDimension(thumbnail);
-          Navigator.of(context).push(PageRouteBuilder(
-            opaque: false,
-            transitionDuration: Duration(milliseconds: 500),
-            pageBuilder: (_, __, ___) => ThumbnailViewPage(
-              size: sz,
-              thumbnail: thumbnail,
-              headers: headers,
-            ),
-          ));
-        }
-      },
-      onScaleEnd: (detail) {
-        onScaling = false;
-        scaleAnimationController.reverse();
-      },
+      // onScaleStart: (detail) {
+      //   onScaling = true;
+      //   setState(() {
+      //     pad = 0;
+      //   });
+      // },
+      // onScaleUpdate: (detail) async {
+      //   if (detail.scale > 1.1 &&
+      //       !scaleAnimationController.isAnimating &&
+      //       !scaleAnimationController.isCompleted) {
+      //     scaleAnimationController.forward(from: 1.0);
+      //   }
+      //   if (detail.scale > 1.1 && !scaleAnimationController.isCompleted) {
+      //     var sz = await _calculateImageDimension(thumbnail);
+      //     Navigator.of(context).push(PageRouteBuilder(
+      //       opaque: false,
+      //       transitionDuration: Duration(milliseconds: 500),
+      //       pageBuilder: (_, __, ___) => ThumbnailViewPage(
+      //         size: sz,
+      //         thumbnail: thumbnail,
+      //         headers: headers,
+      //       ),
+      //     ));
+      //   }
+      // },
+      // onScaleEnd: (detail) {
+      //   onScaling = false;
+      //   scaleAnimationController.reverse();
+      // },
       onTapDown: (detail) {
         if (onScaling) return;
         setState(() {

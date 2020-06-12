@@ -184,6 +184,7 @@ class HitomiManager {
             break;
           case 'uploader':
             prefix = 'Uploader';
+            postfix = ss[1];
             break;
           case 'character':
             postfix = ss[1].replaceAll('_', ' ') + '|';
