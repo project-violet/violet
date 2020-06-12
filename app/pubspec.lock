@@ -364,6 +364,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.2"
+  kdtree:
+    dependency: "direct main"
+    description:
+      name: kdtree
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   markdown:
     dependency: transitive
     description:

@@ -286,6 +286,8 @@ class _SearchPageState extends State<SearchPage> {
           // InfiniteListView.builder()
           Expanded(
             child: ListView.builder(
+              
+        physics: const BouncingScrollPhysics(), // new
               itemCount: queryResult.length,
               itemBuilder: (context, index) {
                 return Align(
