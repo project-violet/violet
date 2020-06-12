@@ -6,7 +6,7 @@
 import 'dart:math';
 
 class Distance {
-  static int hammingDistance<T extends Comparable<T>>(List<T> l1, List<T> l2) {
+  static int hammingDistance<T extends num>(List<T> l1, List<T> l2) {
     if (l1.length != l2.length) return -1;
 
     int result = 0;
@@ -15,7 +15,7 @@ class Distance {
     return result;
   }
 
-  static int levenshteinDistance<T extends Comparable<T>>(List<T> l1, List<T> l2) {
+  static int levenshteinDistance<T extends num>(List<T> l1, List<T> l2) {
     int x = l1.length;
     int y = l2.length;
     int i, j;

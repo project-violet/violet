@@ -21,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/component/hitomi/artist_cluster.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/main.dart';
@@ -120,6 +121,15 @@ class TestPage extends StatelessWidget {
                       builder: (context) => FlareHeroTestPage(),
                     ),
                   );
+                },
+              ),
+              RaisedButton(
+                child: Text('Clustering Test'),
+                onPressed: () async {
+                  var qq = await (await DataBaseManager.getInstance()).query('SELECT * FROM HitomiColumnModel WHERE Artists LIKE "%michiking|%" AND Language="korean" ORDER BY Id DESC LIMIT 50 OFFSET 0');
+                  var titles = qq.map((e) => QueryResult(result: e).title() as String).toList();
+                  print(titles);
+                  HitomiArtistCluster.doClustering(titles);
                 },
               ),
               Container(
