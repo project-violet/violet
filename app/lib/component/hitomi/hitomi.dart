@@ -203,6 +203,9 @@ class HitomiManager {
           where += "$prefix NOT LIKE '%$postfix%'";
         else
           where += "$prefix LIKE '%$postfix%'";
+
+        if (prefix == 'Uploader')
+          where += ' COLLATE NOCASE';
       } else {
         if (negative)
           where += "Title NOT LIKE '%$val%'";
