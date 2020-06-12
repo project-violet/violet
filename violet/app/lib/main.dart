@@ -637,7 +637,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:logging/logging.dart';
 import 'package:usage/usage.dart';
 import 'package:usage/usage_io.dart';
 //import 'package:fluttertoast/fluttertoast.dart';

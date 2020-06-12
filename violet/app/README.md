@@ -14,3 +14,8 @@ So, we must have to apply our own caching rules.
 
 
 ### 3. Bookmark Management
+
+
+### 4. Bloc Pattern?
+
+I hate it because it's just useless code.

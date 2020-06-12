@@ -109,6 +109,8 @@ flutter:
 
     - assets/flare/Loading.flr
     - assets/flare/Loading2.flr
+    - assets/flare/Trim.flr
+    - assets/flare/SlidinSquaresLoader.flr
 
     - assets/icons/pixiv.ico
 

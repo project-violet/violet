@@ -247,7 +247,10 @@ class _SearchPageState extends State<SearchPage> {
                     child: SizedBox(
                       height: 64,
                       width: 64,
-                      child: Icon(MdiIcons.formatListText, color: Colors.grey,),
+                      child: Icon(
+                        MdiIcons.formatListText,
+                        color: Colors.grey,
+                      ),
                     ),
                     onTap: () async {},
                   ),
@@ -334,15 +337,6 @@ class SearchBar extends StatefulWidget {
   _SearchBarState createState() => _SearchBarState();
 }
 
-// class _SearchBarState extends State<SearchBar> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-
-//     );
-//   }
-// }
-
 class _SearchBarState extends State<SearchBar>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
@@ -353,6 +347,7 @@ class _SearchBarState extends State<SearchBar>
   int _insertPos, _insertLength;
   String _searchText;
   bool _nothing = false;
+  bool _onChip = false;
   bool _tagTranslation = false;
   bool _showCount = true;
   int _searchResultMaximum = 60;
@@ -518,55 +513,84 @@ class _SearchBarState extends State<SearchBar>
                       Expanded(
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
-                          child: FadingEdgeScrollView.fromSingleChildScrollView(
-                            child: SingleChildScrollView(
+                          child: LayoutBuilder(builder: (BuildContext context,
+                              BoxConstraints constraints) {
+                            return SingleChildScrollView(
                               controller: ScrollController(),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: <Widget>[
-                                  ListTile(
-                                    leading: Icon(Icons.translate,
-                                        color: Colors.purple),
-                                    title: Text("태그 한글화"),
-                                    trailing: Switch(
-                                      value: _tagTranslation,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _tagTranslation = value;
-                                        });
-                                      },
-                                      activeTrackColor: Colors.purple,
-                                      activeColor: Colors.purpleAccent,
-                                    ),
+                              child: ConstrainedBox(
+                                constraints: constraints.copyWith(
+                                  minHeight: constraints.maxHeight,
+                                  maxHeight: double.infinity,
+                                ),
+                                child: IntrinsicHeight(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: <Widget>[
+                                      ListTile(
+                                        leading: Icon(Icons.translate,
+                                            color: Colors.purple),
+                                        title: Text("태그 한글화"),
+                                        trailing: Switch(
+                                          value: _tagTranslation,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _tagTranslation = value;
+                                            });
+                                          },
+                                          activeTrackColor: Colors.purple,
+                                          activeColor: Colors.purpleAccent,
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                        ),
+                                        width: double.infinity,
+                                        height: 1.0,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      ListTile(
+                                        leading: Icon(MdiIcons.counter,
+                                            color: Colors.purple),
+                                        title: Text("카운트 표시"),
+                                        trailing: Switch(
+                                          value: _showCount,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _showCount = value;
+                                            });
+                                          },
+                                          activeTrackColor: Colors.purple,
+                                          activeColor: Colors.purpleAccent,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                              horizontal: 2,
+                                              vertical: 8,
+                                            ),
+                                            width: double.infinity,
+                                            height: 60,
+                                            child: RaisedButton(
+                                              child: Icon(MdiIcons.autoFix),
+                                              onPressed: () {
+                                                magicProcess();
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                      horizontal: 8.0,
-                                    ),
-                                    width: double.infinity,
-                                    height: 1.0,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  ListTile(
-                                    leading: Icon(MdiIcons.counter,
-                                        color: Colors.purple),
-                                    title: Text("카운트 표시"),
-                                    trailing: Switch(
-                                      value: _showCount,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _showCount = value;
-                                        });
-                                      },
-                                      activeTrackColor: Colors.purple,
-                                      activeColor: Colors.purpleAccent,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
+                            );
+                          }),
                         ),
                       ),
                     ],
@@ -580,6 +604,7 @@ class _SearchBarState extends State<SearchBar>
 
   Future<void> searchProcess(String target, TextSelection selection) async {
     _nothing = false;
+    _onChip = false;
     if (target.trim() == '') {
       setState(() {
         _searchLists.clear();
@@ -615,10 +640,24 @@ class _SearchBarState extends State<SearchBar>
     final result = (await HitomiManager.queryAutoComplete(token))
         .take(_searchResultMaximum)
         .toList();
+    if (result.length == 0) _nothing = true;
     setState(() {
-      if (result.length == 0) _nothing = true;
       _searchLists = result;
     });
+  }
+
+  void magicProcess() {
+    var text = _searchController.text;
+    var selection = _searchController.selection;
+
+    if (_nothing) {
+      if (text == null || text.trim() == '')
+        return;
+
+      // DateTime()
+    }
+
+
   }
 
   // Create tag-chip
@@ -690,6 +729,7 @@ class _SearchBarState extends State<SearchBar>
               extentOffset: info.item2.length + 1,
             );
           }
+          _onChip = true;
           await searchProcess(
               _searchController.text, _searchController.selection);
         }

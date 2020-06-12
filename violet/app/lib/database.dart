@@ -17,7 +17,8 @@ class DataBaseManager {
 
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
-      _instance = create((await SharedPreferences.getInstance()).getString('db_path'));
+      _instance =
+          create((await SharedPreferences.getInstance()).getString('db_path'));
     }
     return _instance;
   }
@@ -38,13 +39,11 @@ class DataBaseManager {
   }
 
   Future<bool> test() async {
-    try
-    {
+    try {
       final x = await query('SELECT count(*) FROM HitomiColumnModel');
       if ((x[0]['count(*)'] as int) < 500000) return false;
       return true;
-    }
-    catch (e) {
+    } catch (e) {
       return false;
     }
   }
@@ -68,6 +67,17 @@ class QueryResult {
   published() => result['Published'];
   files() => result['Files'];
   classname() => result['Class'];
+
+  DateTime getDateTime() {
+    if (published() == null || published() == 0) return null;
+
+    const epochTicks = 621355968000000000;
+    const ticksPerMillisecond = 10000;
+
+    var ticksSinceEpoch = (published() as int) - epochTicks;
+    var ms = ticksSinceEpoch / ticksPerMillisecond;
+    return DateTime.fromMillisecondsSinceEpoch(ms as int);
+  }
 }
 
 class QueryManager {
@@ -80,7 +90,8 @@ class QueryManager {
   static Future<QueryManager> query(String rawQuery) async {
     QueryManager qm = new QueryManager();
     qm.queryString = rawQuery;
-    qm.results = (await (await DataBaseManager.getInstance()).query(rawQuery)).map((e) => QueryResult(result: e));
+    qm.results = (await (await DataBaseManager.getInstance()).query(rawQuery))
+        .map((e) => QueryResult(result: e));
     return qm;
   }
 
@@ -89,11 +100,14 @@ class QueryManager {
     qm.isPagination = true;
     qm.curPage = 0;
     qm.queryString = rawQuery;
-    return qm; 
+    return qm;
   }
 
   Future<List<QueryResult>> next() async {
     curPage += 1;
-    return (await (await DataBaseManager.getInstance()).query("$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage-1)}")).map((e) => QueryResult(result: e)).toList();
+    return (await (await DataBaseManager.getInstance()).query(
+            "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage - 1)}"))
+        .map((e) => QueryResult(result: e))
+        .toList();
   }
 }

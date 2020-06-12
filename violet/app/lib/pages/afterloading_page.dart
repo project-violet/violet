@@ -128,13 +128,27 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> {
           // ),
           SearchPage(),
           new Center(
-            child: FlareActor(
-              "assets/flare/check_profile.flr2d",
-              animation: "check_profile",
-              alignment: Alignment.center,
-              fit: BoxFit.cover,
-              isPaused: false,
-              snapToEnd: true,
+            child: Padding(
+              padding: EdgeInsets.all(128),
+              child: ShaderMask(
+                shaderCallback: (bounds) => RadialGradient(
+                  center: Alignment.centerLeft,
+                  radius: 1,
+                  colors: [Colors.yellow, Colors.red, Colors.purple],
+                  tileMode: TileMode.clamp,
+                ).createShader(bounds),
+                child: FlareActor(
+                  "assets/flare/SlidinSquaresLoader.flr",
+                  animation: "SlideThem",
+                  // 'assets/flare/Trim.flr',
+                  // animation: "Untitled",
+                  alignment: Alignment.center,
+                  color: Colors.white,
+                  fit: BoxFit.contain,
+                  isPaused: false,
+                  snapToEnd: true,
+                ),
+              ),
             ),
             // child: new Column(
             //   mainAxisAlignment: MainAxisAlignment.center,
@@ -148,10 +162,32 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> {
             //   Positioned.fill()
             // ),
           ),
+          // new Center(
+          //   child: new Column(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: <Widget>[new Icon(Icons.mail), new Text("Inbox")],
+          //   ),
+          // ),
           new Center(
-            child: new Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[new Icon(Icons.mail), new Text("Inbox")],
+            child: Padding(
+              padding: EdgeInsets.all(64),
+              child: ShaderMask(
+                shaderCallback: (bounds) => RadialGradient(
+                  center: Alignment.bottomLeft,
+                  radius: 2,
+                  colors: [Colors.yellow, Colors.red, Colors.purple],
+                  tileMode: TileMode.clamp,
+                ).createShader(bounds),
+                child: FlareActor(
+                  'assets/flare/Trim.flr',
+                  animation: "Untitled",
+                  alignment: Alignment.center,
+                  color: Colors.white,
+                  fit: BoxFit.cover,
+                  isPaused: false,
+                  snapToEnd: true,
+                ),
+              ),
             ),
           ),
           SettingsPage(),
