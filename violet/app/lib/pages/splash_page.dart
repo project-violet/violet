@@ -24,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1)
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     else
-      Navigator.of(context).pushReplacementNamed('/Test');
+      Navigator.of(context).pushReplacementNamed('/DatabaseDownload');
   }
 
   Future<void> checkAuth() async {
