@@ -14,6 +14,7 @@ import 'package:violet/pages/main_page.dart';
 import 'package:violet/pages/search_page.dart';
 import 'package:violet/pages/settings_page.dart';
 import 'package:violet/pages/splash_page.dart';
+import 'package:violet/settings.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
 
 class AfterLoadingPage extends StatefulWidget {
@@ -58,7 +59,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> {
           BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         //  backgroundColor: Colors.black,
-        fixedColor: Colors.purple,
+        fixedColor: Settings.majorColor,
         unselectedItemColor: Colors.black,
         //backgroundColor: Color(0x4FB200ED),
         //backgroundColor: Color(0x4FB200ED),

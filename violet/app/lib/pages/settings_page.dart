@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/pages/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:violet/settings.dart';
 
 // https://www.youtube.com/watch?v=gzfJaDt9ok8
 class SettingsPage extends StatelessWidget {
@@ -24,7 +25,7 @@ class SettingsPage extends StatelessWidget {
                 ListTile(
                   leading: Icon(
                     MdiIcons.tagHeartOutline,
-                    color: Colors.purple,
+                    color: Settings.majorColor,
                   ),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +43,7 @@ class SettingsPage extends StatelessWidget {
                 ListTile(
                   leading: Icon(
                     MdiIcons.tagOff,
-                    color: Colors.purple,
+                    color: Settings.majorColor,
                   ),
                   title: Text("기본 제외 태그"),
                   trailing: Icon(
@@ -53,8 +54,20 @@ class SettingsPage extends StatelessWidget {
                 _buildDivider(),
                 ListTile(
                   leading: Icon(
+                    MdiIcons.blur,
+                    color: Settings.majorColor,
+                  ),
+                  title: Text("블러 처리할 태그"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: Icon(
                     MdiIcons.imageMultipleOutline,
-                    color: Colors.purple,
+                    color: Settings.majorColor,
                   ),
                   title: Text("검색 결과 표시 방법"),
                   trailing: Icon(
@@ -66,7 +79,7 @@ class SettingsPage extends StatelessWidget {
               _buildGroup('시스템'),
               _buildItems([
                 ListTile(
-                  leading: Icon(Icons.folder_open, color: Colors.purple),
+                  leading: Icon(Icons.folder_open, color: Settings.majorColor),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -79,21 +92,21 @@ class SettingsPage extends StatelessWidget {
                 ),
                 _buildDivider(),
                 ListTile(
-                  leading: Icon(Icons.receipt, color: Colors.purple),
+                  leading: Icon(Icons.receipt, color: Settings.majorColor),
                   title: Text("로그 기록"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
                 _buildDivider(),
                 ListTile(
-                  leading: Icon(Icons.language, color: Colors.purple),
+                  leading: Icon(Icons.language, color: Settings.majorColor),
                   title: Text("언어 (Language)"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
                 _buildDivider(),
                 ListTile(
-                  leading: Icon(Icons.info_outline, color: Colors.purple),
+                  leading: Icon(Icons.info_outline, color: Settings.majorColor),
                   title: Text("정보"),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
@@ -139,7 +152,7 @@ class SettingsPage extends StatelessWidget {
               _buildGroup('뷰어'),
               _buildItems([
                 ListTile(
-                  leading: Icon(Icons.view_array, color: Colors.purple),
+                  leading: Icon(Icons.view_array, color: Settings.majorColor),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -154,7 +167,7 @@ class SettingsPage extends StatelessWidget {
                 ListTile(
                   leading: Icon(
                     Icons.blur_linear,
-                    color: Colors.purple,
+                    color: Settings.majorColor,
                   ),
                   title: Text("이미지 품질"),
                   trailing: Icon(
@@ -197,7 +210,7 @@ class SettingsPage extends StatelessWidget {
               _buildGroup('캐시'),
               _buildItems([
                 ListTile(
-                  leading: Icon(Icons.lock_outline, color: Colors.purple),
+                  leading: Icon(Icons.lock_outline, color: Settings.majorColor),
                   title: Text("Enable Locking"),
                   trailing: AbsorbPointer(
                     child: Switch(
@@ -208,8 +221,8 @@ class SettingsPage extends StatelessWidget {
                         //  print(isSwitched);
                         //});
                       },
-                      activeTrackColor: Colors.purple,
-                      activeColor: Colors.purpleAccent,
+                      activeTrackColor: Settings.majorColor,
+                      activeColor: Settings.majorAccentColor, 
                     ),
                   ),
                   //Icon(Icons.keyboard_arrow_right),
@@ -219,7 +232,7 @@ class SettingsPage extends StatelessWidget {
               _buildGroup('잠금'),
               _buildItems([
                 ListTile(
-                  leading: Icon(Icons.lock_outline, color: Colors.purple),
+                  leading: Icon(Icons.lock_outline, color: Settings.majorColor),
                   title: Text("잠금 기능 켜기"),
                   trailing: AbsorbPointer(
                     child: Switch(
@@ -230,8 +243,8 @@ class SettingsPage extends StatelessWidget {
                         //  print(isSwitched);
                         //});
                       },
-                      activeTrackColor: Colors.purple,
-                      activeColor: Colors.purpleAccent,
+                      activeTrackColor: Settings.majorColor,
+                      activeColor: Settings.majorAccentColor,
                     ),
                   ),
                   //Icon(Icons.keyboard_arrow_right),
@@ -243,7 +256,7 @@ class SettingsPage extends StatelessWidget {
                 ListTile(
                   leading: Icon(
                     Icons.router,
-                    color: Colors.purple,
+                    color: Settings.majorColor,
                   ),
                   title: Text("라우팅 규칙"),
                   trailing: Icon(
@@ -358,7 +371,7 @@ class SettingsPage extends StatelessWidget {
                 ListTile(
                   leading: Icon(
                     Icons.open_in_new,
-                    color: Colors.purple,
+                    color: Settings.majorColor,
                   ),
                   title: Text("외부 링크"),
                   trailing: Icon(
@@ -370,7 +383,7 @@ class SettingsPage extends StatelessWidget {
                 ListTile(
                   leading: Icon(
                     MdiIcons.library,
-                    color: Colors.purple,
+                    color: Settings.majorColor,
                   ),
                   title: Text("라이센스"),
                   trailing: Icon(
@@ -580,6 +593,20 @@ class VersionViewPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class ColorSettingsPage extends StatefulWidget {
+  @override
+  _ColorSettingsPageState createState() => _ColorSettingsPageState();
+}
+
+class _ColorSettingsPageState extends State<ColorSettingsPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      
     );
   }
 }
