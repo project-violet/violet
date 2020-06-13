@@ -505,7 +505,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       width: double.infinity,
       height: 1.0,
-      color: Colors.grey.shade400,
+      color:  Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
     );
   }
 
