@@ -113,6 +113,7 @@ flutter:
     - assets/flare/Loading2.flr
     - assets/flare/Trim.flr
     - assets/flare/SlidinSquaresLoader.flr
+    - assets/flare/switch_daytime.flr
 
     - assets/icons/pixiv.ico
 

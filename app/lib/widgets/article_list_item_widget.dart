@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -51,6 +52,7 @@ class _ArticleListItemVerySimpleWidgetState
   double scale = 1.0;
   bool onScaling = false;
   AnimationController scaleAnimationController;
+  bool isBlurred = false;
 
   @override
   void initState() {
@@ -125,6 +127,23 @@ class _ArticleListItemVerySimpleWidgetState
                             imageUrl: thumbnail,
                             fit: BoxFit.cover,
                             httpHeaders: headers,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: imageProvider, fit: BoxFit.cover),
+                              ),
+                              child: isBlurred
+                                  ? new BackdropFilter(
+                                      filter: new ImageFilter.blur(
+                                          sigmaX: 5.0, sigmaY: 5.0),
+                                      child: new Container(
+                                        decoration: new BoxDecoration(
+                                            color:
+                                                Colors.white.withOpacity(0.0)),
+                                      ),
+                                    )
+                                  : Container(),
+                            ),
                             placeholder: (b, c) {
                               return FlareActor(
                                 "assets/flare/Loading2.flr",
@@ -318,15 +337,15 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
 
 class ArticleListItemSmallWidget extends StatefulWidget {
   @override
-  _ArticleListItemSmallWidgetState createState() => _ArticleListItemSmallWidgetState();
+  _ArticleListItemSmallWidgetState createState() =>
+      _ArticleListItemSmallWidgetState();
 }
 
-class _ArticleListItemSmallWidgetState extends State<ArticleListItemSmallWidget> {
+class _ArticleListItemSmallWidgetState
+    extends State<ArticleListItemSmallWidget> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
-    );
+    return Container();
   }
 }
 

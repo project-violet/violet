@@ -6,12 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings {
   static Color themeColor; // default light
+  static bool themeWhat; // default false == light
   static Color majorColor; // default purple
   static Color majorAccentColor;
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
-    var mac = (await SharedPreferences.getInstance()).getInt('majorAccentColor');
+    var mac =
+        (await SharedPreferences.getInstance()).getInt('majorAccentColor');
     if (mc == null) {
       (await SharedPreferences.getInstance())
           .setInt('majorColor', Colors.purple.value);
@@ -25,15 +27,23 @@ class Settings {
     majorColor = Color(mc);
     majorAccentColor = Color(mac);
 
-    var tc = (await SharedPreferences.getInstance()).getBool('themeColor');
-    if (tc == null) {
-      (await SharedPreferences.getInstance())
-          .setBool('themeColor', false);
-      tc = false;
+    themeWhat = (await SharedPreferences.getInstance()).getBool('themeColor');
+    if (themeWhat == null) {
+      (await SharedPreferences.getInstance()).setBool('themeColor', false);
+      themeWhat = false;
     }
-    if (!tc)
+    if (!themeWhat)
       themeColor = Colors.white;
     else
       themeColor = Colors.black;
+  }
+
+  static Future<void> setThemeWhat(bool wh) async {
+    themeWhat = wh;
+    if (!themeWhat)
+      themeColor = Colors.white;
+    else
+      themeColor = Colors.black;
+    (await SharedPreferences.getInstance()).setBool('themeColor', themeWhat);
   }
 }
