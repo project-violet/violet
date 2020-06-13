@@ -60,7 +60,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> {
         type: BottomNavigationBarType.shifting,
         //  backgroundColor: Colors.black,
         fixedColor: Settings.majorColor,
-        unselectedItemColor: Colors.black,
+        unselectedItemColor: Settings.themeWhat ? Colors.white : Colors.black,//Colors.black,
         //backgroundColor: Color(0x4FB200ED),
         //backgroundColor: Color(0x4FB200ED),
         // selectedItemColor: Colors.black,

@@ -2,6 +2,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
 
 //import 'package:explorer/pages/download_page.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flare_flutter/flare_cache.dart';
@@ -686,47 +687,57 @@ void main() async {
 
   warmupFlare().then((_) {
     runApp(
-      MaterialApp(
-        navigatorObservers: [
-          FirebaseAnalyticsObserver(analytics: analytics),
-        ],
-        theme:
-            ThemeData(accentColor: Settings.majorColor, primaryColor: Settings.majorColor),
-        home: SplashPage(), //AfterLoadingPage(),
-        supportedLocales: [
-          const Locale('ko', 'KR'),
-          const Locale('en', 'US'),
-        ],
-        routes: <String, WidgetBuilder>{
-          //'/Loading':
-          '/AfterLoading': (BuildContext context) => WillPopScope(
-                child: new AfterLoadingPage(),
-                onWillPop: onWillPop,
-              ),
-          '/DatabaseDownload': (BuildContext context) => new DataBaseDownloadPage(),
-        },
-        localizationsDelegates: [
-          const TranslationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate
-        ],
-        localeResolutionCallback:
-            (Locale locale, Iterable<Locale> supportedLocales) {
-          if (locale == null) {
-            debugPrint("*language locale is null!!!");
-            return supportedLocales.first;
-          }
+      DynamicTheme(
+        defaultBrightness: Brightness.light,
+        data: (brightness) => new ThemeData(
+          accentColor: Settings.majorColor,
+          primaryColor: Settings.majorColor,
+          brightness: brightness,
+        ),
+        themedWidgetBuilder: (context, theme) {
+          return MaterialApp(
+            navigatorObservers: [
+              FirebaseAnalyticsObserver(analytics: analytics),
+            ],
+            theme: theme,
+            home: SplashPage(), //AfterLoadingPage(),
+            supportedLocales: [
+              const Locale('ko', 'KR'),
+              const Locale('en', 'US'),
+            ],
+            routes: <String, WidgetBuilder>{
+              //'/Loading':
+              '/AfterLoading': (BuildContext context) => WillPopScope(
+                    child: new AfterLoadingPage(),
+                    onWillPop: onWillPop,
+                  ),
+              '/DatabaseDownload': (BuildContext context) =>
+                  new DataBaseDownloadPage(),
+            },
+            localizationsDelegates: [
+              const TranslationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
+            ],
+            localeResolutionCallback:
+                (Locale locale, Iterable<Locale> supportedLocales) {
+              if (locale == null) {
+                debugPrint("*language locale is null!!!");
+                return supportedLocales.first;
+              }
 
-          for (Locale supportedLocale in supportedLocales) {
-            if (supportedLocale.languageCode == locale.languageCode ||
-                supportedLocale.countryCode == locale.countryCode) {
-              debugPrint("*language ok $supportedLocale");
-              return supportedLocale;
-            }
-          }
+              for (Locale supportedLocale in supportedLocales) {
+                if (supportedLocale.languageCode == locale.languageCode ||
+                    supportedLocale.countryCode == locale.countryCode) {
+                  debugPrint("*language ok $supportedLocale");
+                  return supportedLocale;
+                }
+              }
 
-          debugPrint("*language to fallback ${supportedLocales.first}");
-          return supportedLocales.first;
+              debugPrint("*language to fallback ${supportedLocales.first}");
+              return supportedLocales.first;
+            },
+          );
         },
       ),
     );

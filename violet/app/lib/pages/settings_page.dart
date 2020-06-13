@@ -1,6 +1,10 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
 
+import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controller.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -8,8 +12,21 @@ import 'package:violet/pages/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings.dart';
 
-// https://www.youtube.com/watch?v=gzfJaDt9ok8
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
+  @override
+  _SettingsPageState createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  FlareControls _flareController = FlareControls();
+  bool _themeSwitch = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _themeSwitch = Settings.themeWhat;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
@@ -222,7 +239,7 @@ class SettingsPage extends StatelessWidget {
                         //});
                       },
                       activeTrackColor: Settings.majorColor,
-                      activeColor: Settings.majorAccentColor, 
+                      activeColor: Settings.majorAccentColor,
                     ),
                   ),
                   //Icon(Icons.keyboard_arrow_right),
@@ -278,10 +295,29 @@ class SettingsPage extends StatelessWidget {
                     child: Icon(MdiIcons.themeLightDark, color: Colors.white),
                   ),
                   title: Text("기본 테마 설정"),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
+                  trailing: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: FlareActor(
+                      'assets/flare/switch_daytime.flr',
+                      animation: _themeSwitch ? "night_idle" : "day_idle",
+                      controller: _flareController,
+                      snapToEnd: true,
+                    ),
+                  ),
+                  onTap: () async {
+                    if (!_themeSwitch)
+                      _flareController.play('switch_night');
+                    else
+                      _flareController.play('switch_day');
+                    _themeSwitch = !_themeSwitch;
+                    Settings.setThemeWhat(_themeSwitch);
+                    DynamicTheme.of(context).setBrightness(
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Brightness.light
+                            : Brightness.dark);
+                    setState(() {});
+                  },
                 ),
                 _buildDivider(),
                 ListTile(
@@ -432,7 +468,9 @@ class SettingsPage extends StatelessWidget {
                       Text(
                         'Project Violet',
                         style: TextStyle(
-                          color: Colors.black87,
+                          color: Settings.themeWhat
+                              ? Colors.white
+                              : Colors.black87,
                           fontSize: 16.0,
                           fontFamily: "Calibre-Semibold",
                           letterSpacing: 1.0,
@@ -441,7 +479,9 @@ class SettingsPage extends StatelessWidget {
                       Text(
                         'Copyright (C) 2020 by Violet-Developer',
                         style: TextStyle(
-                          color: Colors.black87,
+                          color: Settings.themeWhat
+                              ? Colors.white
+                              : Colors.black87,
                           fontSize: 12.0,
                           fontFamily: "Calibre-Semibold",
                           letterSpacing: 1.0,
@@ -477,7 +517,7 @@ class SettingsPage extends StatelessWidget {
         children: <Widget>[
           Text(name,
               style: TextStyle(
-                color: Colors.black87,
+                color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 24.0,
                 fontFamily: "Calibre-Semibold",
                 letterSpacing: 1.0,
@@ -605,8 +645,6 @@ class ColorSettingsPage extends StatefulWidget {
 class _ColorSettingsPageState extends State<ColorSettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
-    );
+    return Container();
   }
 }
