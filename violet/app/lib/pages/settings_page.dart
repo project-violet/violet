@@ -551,7 +551,7 @@ class VersionViewPage extends StatelessWidget {
                   children: <Widget>[
                     Text(''),
                     Text(
-                      'Violet App',
+                      'Violet',
                       style: TextStyle(fontSize: 30),
                     ),
                     Text(
@@ -559,11 +559,11 @@ class VersionViewPage extends StatelessWidget {
                       style: TextStyle(fontSize: 20),
                     ),
                     Text(''),
-                    Text('Project-Violet 서비스는 모두에게 무료로 제공됩니다.'),
+                    Text('Project-Violet Android App'),
                   ],
                 ),
                 width: 250,
-                height: 150,
+                height: 130,
               ),
             ),
           ),
