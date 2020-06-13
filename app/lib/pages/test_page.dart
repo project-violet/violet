@@ -136,6 +136,12 @@ class TestPage extends StatelessWidget {
                   HitomiTitleCluster.doClustering(titles);
                 },
               ),
+              RaisedButton(
+                child: Text('Settings Test'),
+                onPressed: () {
+                  print(Colors.black.toString());
+                },
+              ),
               Container(
                 height: 10,
               ),

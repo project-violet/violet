@@ -19,6 +19,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/settings.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
 // import 'package:infinite_listview/infinite_listview.dart';
 // import 'package:keyboard_visibility/keyboard_visibility.dart';
@@ -456,7 +457,7 @@ class _SearchBarState extends State<SearchBar>
                             minWidth: double.infinity,
                             height: 30,
                             child: RaisedButton(
-                              color: Colors.purple,
+                              color: Settings.majorColor,
                               textColor: Colors.white,
                               child: Text('검색'),
                               onPressed: () async {
@@ -532,7 +533,7 @@ class _SearchBarState extends State<SearchBar>
                                     children: <Widget>[
                                       ListTile(
                                         leading: Icon(Icons.translate,
-                                            color: Colors.purple),
+                                            color: Settings.majorColor),
                                         title: Text("태그 한글화"),
                                         trailing: Switch(
                                           value: _tagTranslation,
@@ -541,8 +542,8 @@ class _SearchBarState extends State<SearchBar>
                                               _tagTranslation = value;
                                             });
                                           },
-                                          activeTrackColor: Colors.purple,
-                                          activeColor: Colors.purpleAccent,
+                                          activeTrackColor: Settings.majorColor,
+                                          activeColor: Settings.majorAccentColor,
                                         ),
                                       ),
                                       Container(
@@ -555,7 +556,7 @@ class _SearchBarState extends State<SearchBar>
                                       ),
                                       ListTile(
                                         leading: Icon(MdiIcons.counter,
-                                            color: Colors.purple),
+                                            color: Settings.majorColor),
                                         title: Text("카운트 표시"),
                                         trailing: Switch(
                                           value: _showCount,
@@ -564,8 +565,8 @@ class _SearchBarState extends State<SearchBar>
                                               _showCount = value;
                                             });
                                           },
-                                          activeTrackColor: Colors.purple,
-                                          activeColor: Colors.purpleAccent,
+                                          activeTrackColor: Settings.majorColor,
+                                          activeColor: Settings.majorAccentColor,
                                         ),
                                       ),
                                       Expanded(

@@ -639,6 +639,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:usage/usage.dart';
 import 'package:usage/usage_io.dart';
+import 'package:violet/settings.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'locale.dart';
 import 'package:violet/pages/database_download_page.dart';
@@ -681,6 +682,8 @@ void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics();
   await analytics.setUserId('some-user');
 
+  await Settings.init();
+
   warmupFlare().then((_) {
     runApp(
       MaterialApp(
@@ -688,7 +691,7 @@ void main() async {
           FirebaseAnalyticsObserver(analytics: analytics),
         ],
         theme:
-            ThemeData(accentColor: Colors.purple, primaryColor: Colors.purple),
+            ThemeData(accentColor: Settings.majorColor, primaryColor: Settings.majorColor),
         home: SplashPage(), //AfterLoadingPage(),
         supportedLocales: [
           const Locale('ko', 'KR'),

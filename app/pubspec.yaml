@@ -66,6 +66,7 @@ dependencies:
   cloud_firestore: ^0.13.0+1 
   firebase_analytics:
   kdtree:
+  dynamic_theme: ^1.0.1
 
 dev_dependencies:
   flutter_test:
