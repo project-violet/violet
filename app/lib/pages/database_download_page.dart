@@ -129,14 +129,14 @@ import '../database.dart';
 //   }
 // }
 
-class MyApp extends StatefulWidget {
+class DataBaseDownloadPage extends StatefulWidget {
   @override
-  MyAppState createState() {
-    return new MyAppState();
+  DataBaseDownloadPagepState createState() {
+    return new DataBaseDownloadPagepState();
   }
 }
 
-class MyAppState extends State<MyApp> {
+class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   final imgUrl =
       "https://github.com/iiccpp/downloader/releases/download/base_database1/hitomidata.db";
   bool downloading = false;

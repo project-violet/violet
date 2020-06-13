@@ -641,7 +641,7 @@ import 'package:usage/usage.dart';
 import 'package:usage/usage_io.dart';
 //import 'package:fluttertoast/fluttertoast.dart';
 import 'locale.dart';
-import 'package:violet/pages/download_page.dart';
+import 'package:violet/pages/database_download_page.dart';
 import 'package:violet/pages/splash_page.dart';
 import 'package:violet/pages/afterloading_page.dart';
 import 'package:path_provider/path_provider.dart';
@@ -700,7 +700,7 @@ void main() async {
                 child: new AfterLoadingPage(),
                 onWillPop: onWillPop,
               ),
-          '/Test': (BuildContext context) => new MyApp(),
+          '/DatabaseDownload': (BuildContext context) => new DataBaseDownloadPage(),
         },
         localizationsDelegates: [
           const TranslationsDelegate(),

@@ -8,7 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:developer';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/bookmark_page.dart';
-import 'package:violet/pages/download_page.dart';
+import 'package:violet/pages/database_download_page.dart';
 import 'package:violet/pages/loading_page.dart';
 import 'package:violet/pages/main_page.dart';
 import 'package:violet/pages/search_page.dart';
