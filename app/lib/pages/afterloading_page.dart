@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
+// Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
