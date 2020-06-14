@@ -691,7 +691,8 @@ void main() async {
         defaultBrightness: Brightness.light,
         data: (brightness) => new ThemeData(
           accentColor: Settings.majorColor,
-          primaryColor: Settings.majorColor,
+          // primaryColor: Settings.majorColor,
+          // primarySwatch: Settings.majorColor,
           brightness: brightness,
         ),
         themedWidgetBuilder: (context, theme) {
