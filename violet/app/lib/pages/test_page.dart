@@ -156,6 +156,7 @@ class TestPage extends StatelessWidget {
                   // print(EHParser.parseArticleData(res.body).comment);
                   var res = await http.get('https://e-hentai.org/', headers: {'Cookie':'sl=dm_2'});
                   print(EHParser.parseReulstPageExtendedListView(res.body).length);
+                  EHParser.parseReulstPageExtendedListView(res.body).forEach((element) {print(element.thumbnail);});
                 },
               ),
               Container(

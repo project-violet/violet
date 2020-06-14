@@ -35,9 +35,10 @@ class ThumbnailManager {
 }
 
 class ArticleListItemVerySimpleWidget extends StatefulWidget {
+  bool addBottomPadding = true;
   final QueryResult queryResult;
 
-  ArticleListItemVerySimpleWidget({this.queryResult});
+  ArticleListItemVerySimpleWidget({this.queryResult, this.addBottomPadding});
 
   @override
   _ArticleListItemVerySimpleWidgetState createState() =>
@@ -94,17 +95,17 @@ class _ArticleListItemVerySimpleWidgetState
     };
 
     return GestureDetector(
-      child: Transform.scale(
-        scale: scale,
-        child: SizedBox(
-          width: windowWidth - 100,
-          height: 500,
+      // child: Transform.scale(
+      //   scale: scale,
+      //   child: SizedBox(
+      //     width: windowWidth - 100,
+      //     height: 500,
           child: AnimatedContainer(
             curve: Curves.easeInOut,
             duration: Duration(milliseconds: 300),
             padding: EdgeInsets.all(pad),
             child: Container(
-              margin: EdgeInsets.only(bottom: 50),
+              margin: widget.addBottomPadding ? EdgeInsets.only(bottom: 50) : EdgeInsets.zero,
               decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.2),
                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -162,8 +163,8 @@ class _ArticleListItemVerySimpleWidgetState
                         animation: "Alarm",
                       ),
               ),
-            ),
-          ),
+        //     ),
+          // ),
         ),
       ),
       // onScaleStart: (detail) {

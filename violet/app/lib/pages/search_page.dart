@@ -3,6 +3,7 @@
 
 import 'dart:ui';
 
+import 'package:auto_animated/auto_animated.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_dart/math/mat2d.dart';
@@ -25,6 +26,16 @@ import 'package:violet/widgets/article_list_item_widget.dart';
 // import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 class SearchPage extends StatefulWidget {
+  SearchPage({Key key}) : super(key: key) {
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    //   statusBarColor: Colors.transparent,
+    //   statusBarBrightness: Brightness.light,
+    //   statusBarIconBrightness: Brightness.dark,
+    //   systemNavigationBarColor: Colors.white,
+    //   systemNavigationBarIconBrightness: Brightness.dark,
+    // ));
+  }
+
   @override
   _SearchPageState createState() => _SearchPageState();
 }
@@ -285,34 +296,7 @@ class _SearchPageState extends State<SearchPage> {
           //   ),
           // ),
           // InfiniteListView.builder()
-          Expanded(
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(), // new
-              itemCount: queryResult.length,
-              itemBuilder: (context, index) {
-                return Align(
-                    alignment: Alignment.center,
-                    child: ArticleListItemVerySimpleWidget(
-                        queryResult: queryResult[
-                            index]) //FadeInImage(placeholder: Text('loading'), image: ,)
-                    // Text(
-                    //   queryResult[index].title(),
-                    // ),
-
-                    // Card(
-                    //   elevation: 10,
-                    //   child: Container(
-                    //     width: width - 100,
-                    //     height: 200,
-                    //     child: Text(
-                    //       queryResult[index].title(),
-                    //     ),
-                    //   ),
-                    // ),
-                    );
-              },
-            ),
-          ),
+          Expanded(child: makeResult()),
         ],
       ),
       //),
@@ -326,6 +310,111 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       queryResult.addAll(nn);
     });
+  }
+
+  Widget makeResult() {
+    switch (Settings.searchResultType) {
+      case 0:
+        return ListView.builder(
+          physics: const BouncingScrollPhysics(), // new
+          itemCount: queryResult.length,
+          itemBuilder: (context, index) {
+            return Align(
+                alignment: Alignment.center,
+                child: ArticleListItemVerySimpleWidget(
+                    queryResult: queryResult[index])
+                //FadeInImage(placeholder: Text('loading'), image: ,)
+                // Text(
+                //   queryResult[index].title(),
+                // ),
+
+                // Card(
+                //   elevation: 10,
+                //   child: Container(
+                //     width: width - 100,
+                //     height: 200,
+                //     child: Text(
+                //       queryResult[index].title(),
+                //     ),
+                //   ),
+                // ),
+                );
+          },
+        );
+      case 1:
+        return LiveGrid(
+          padding: EdgeInsets.all(16),
+          showItemInterval: Duration(milliseconds: 50),
+          showItemDuration: Duration(milliseconds: 150),
+          visibleFraction: 0.001,
+          itemCount: queryResult.length,
+          shrinkWrap: false,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 3 / 4,
+          ),
+          itemBuilder: (context, index, animation) {
+            return FadeTransition(
+              opacity: Tween<double>(
+                begin: 0,
+                end: 1,
+              ).animate(animation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, -0.1),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: Padding(
+                  padding: EdgeInsets.zero,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child:
+                        // Text(queryResult[index].title())
+                        SizedBox(
+                      // height: 250,
+                      // width: 100,
+                      child:
+                          //               ClipRRect(
+                          //   borderRadius: BorderRadius.circular(4),
+                          //   child: Material(
+                          //     color: Colors.white,
+                          //     child: Center(
+                          //       child: Text(
+                          //         queryResult[index].title(),
+                          //         style: Theme.of(context).textTheme.headline4,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+
+                          // Text(queryResult[index].title())
+                          ArticleListItemVerySimpleWidget(
+                        queryResult: queryResult[index],
+                        addBottomPadding: false,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+            // Align(
+            //   alignment: Alignment.center,
+            //   child: ArticleListItemVerySimpleWidget(
+            //     queryResult: queryResult[index],
+            //   ),
+            // );
+          },
+        );
+
+      default:
+        return Container(
+          child: Center(
+            child: Text('Error :('),
+          ),
+        );
+    }
   }
 }
 
