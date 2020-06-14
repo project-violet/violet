@@ -35,7 +35,7 @@ class ThumbnailManager {
 }
 
 class ArticleListItemVerySimpleWidget extends StatefulWidget {
-  bool addBottomPadding = true;
+  final bool addBottomPadding;
   final QueryResult queryResult;
 
   ArticleListItemVerySimpleWidget({this.queryResult, this.addBottomPadding});
@@ -49,11 +49,13 @@ class _ArticleListItemVerySimpleWidgetState
     extends State<ArticleListItemVerySimpleWidget>
     with TickerProviderStateMixin {
   String thumbnail;
+  int imageCount = 0;
   double pad = 0.0;
   double scale = 1.0;
   bool onScaling = false;
   AnimationController scaleAnimationController;
   bool isBlurred = false;
+  bool disposed = false;
 
   @override
   void initState() {
@@ -73,22 +75,28 @@ class _ArticleListItemVerySimpleWidgetState
 
   @override
   void dispose() {
+    disposed = true;
     super.dispose();
     scaleAnimationController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (disposed) return null;
     var windowWidth = MediaQuery.of(context).size.width;
     if (!ThumbnailManager.isExists(widget.queryResult.id())) {
       HitomiManager.getImageList(widget.queryResult.id().toString())
           .then((images) {
         thumbnail = images[0];
+        imageCount = images.length;
         ThumbnailManager.insert(widget.queryResult.id(), images);
         setState(() {});
       });
-    } else
-      thumbnail = ThumbnailManager.get(widget.queryResult.id())[0];
+    } else {
+      var thumbnails = ThumbnailManager.get(widget.queryResult.id());
+      thumbnail = thumbnails[0];
+      imageCount = thumbnails.length; 
+    }
 
     var headers = {
       "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
@@ -100,30 +108,34 @@ class _ArticleListItemVerySimpleWidgetState
       //   child: SizedBox(
       //     width: windowWidth - 100,
       //     height: 500,
-          child: AnimatedContainer(
-            curve: Curves.easeInOut,
-            duration: Duration(milliseconds: 300),
-            padding: EdgeInsets.all(pad),
-            child: Container(
-              margin: widget.addBottomPadding ? EdgeInsets.only(bottom: 50) : EdgeInsets.zero,
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.2),
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
-                  ),
-                ],
+      child: AnimatedContainer(
+        curve: Curves.easeInOut,
+        duration: Duration(milliseconds: 300),
+        padding: EdgeInsets.all(pad),
+        child: Container(
+          margin: widget.addBottomPadding
+              ? EdgeInsets.only(bottom: 50)
+              : EdgeInsets.zero,
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.2),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
               ),
-              child: Container(
-                child: thumbnail != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Hero(
-                          tag: thumbnail,
+            ],
+          ),
+          child: Container(
+            child: thumbnail != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Stack(
+                      children: <Widget>[
+                        Hero(
+                          tag: 'thumbnail' + widget.queryResult.id().toString(),
                           child: CachedNetworkImage(
                             imageUrl: thumbnail,
                             fit: BoxFit.cover,
@@ -155,15 +167,44 @@ class _ArticleListItemVerySimpleWidgetState
                             },
                           ),
                         ),
-                      )
-                    : FlareActor(
-                        "assets/flare/Loading2.flr",
-                        alignment: Alignment.center,
-                        fit: BoxFit.fitHeight,
-                        animation: "Alarm",
-                      ),
-              ),
-        //     ),
+                        Align(
+                          alignment: FractionalOffset.bottomRight,
+                          child: Transform(
+                            transform: new Matrix4.identity()..scale(0.9),
+                            child: Theme(
+                              data: ThemeData(canvasColor: Colors.transparent),
+                              child: RawChip(
+                                labelPadding: EdgeInsets.all(0.0),
+                                // avatar: CircleAvatar(
+                                //   backgroundColor: Colors.grey.shade600,
+                                //   child: Text('P'),
+                                // ),
+                                label: Text(
+                                  '' + imageCount.toString() + ' Page',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+
+                                // backgroundColor: Colors.pink,
+                                elevation: 6.0,
+                                shadowColor: Colors.grey[60],
+                                padding: EdgeInsets.all(6.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : FlareActor(
+                    "assets/flare/Loading2.flr",
+                    alignment: Alignment.center,
+                    fit: BoxFit.fitHeight,
+                    animation: "Alarm",
+                  ),
+          ),
+          //     ),
           // ),
         ),
       ),
@@ -213,6 +254,7 @@ class _ArticleListItemVerySimpleWidgetState
             fullscreenDialog: true,
             builder: (context) {
               return ViewerPage(
+                id: widget.queryResult.id().toString(),
                 images: ThumbnailManager.get(widget.queryResult.id()),
                 headers: headers,
               );
@@ -234,6 +276,7 @@ class _ArticleListItemVerySimpleWidgetState
             size: sz,
             thumbnail: thumbnail,
             headers: headers,
+            heroKey: 'thumbnail' + widget.queryResult.id().toString(),
           ),
         ));
       },
@@ -258,10 +301,11 @@ class _ArticleListItemVerySimpleWidgetState
 
 class ThumbnailViewPage extends StatefulWidget {
   final String thumbnail;
+  final String heroKey;
   final Map<String, String> headers;
   final Size size;
 
-  ThumbnailViewPage({this.thumbnail, this.headers, this.size});
+  ThumbnailViewPage({this.thumbnail, this.headers, this.size, this.heroKey});
 
   @override
   _ThumbnailViewPageState createState() => _ThumbnailViewPageState();
@@ -293,7 +337,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Hero(
-                  tag: widget.thumbnail,
+                  tag: widget.heroKey,
                   child: CachedNetworkImage(
                     imageUrl: widget.thumbnail,
                     fit: BoxFit.cover,

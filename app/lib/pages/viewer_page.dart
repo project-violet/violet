@@ -7,8 +7,9 @@ import 'package:violet/widgets/viewer_widget.dart';
 class ViewerPage extends StatefulWidget {
   final List<String> images;
   final Map<String, String> headers;
+  final String id;
 
-  ViewerPage({this.images, this.headers});
+  ViewerPage({this.images, this.headers, this.id});
 
   @override
   _ViewerPageState createState() => _ViewerPageState();
@@ -18,6 +19,6 @@ class _ViewerPageState extends State<ViewerPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: ViewerWidget(headers: widget.headers, urls: widget.images));
+        child: ViewerWidget(id: widget.id, headers: widget.headers, urls: widget.images));
   }
 }

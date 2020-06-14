@@ -9,6 +9,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 
 class HitomiManager {
+  // [Big Thumbnails(maybe just one)], [Small Thumbnails]
+  static Future<Tuple2<List<String>, List<String>>> getThumbnailList(String id) async {
+    var gg = await http.get('https://hitomi.la/reader/$id.html');
+
+
+  }
+
   static Future<List<String>> getImageList(String id) async {
     var gg = await http.get('https://ltn.hitomi.la/galleries/$id.js');
     var urls = gg.body;
@@ -205,8 +212,7 @@ class HitomiManager {
         else
           where += "$prefix LIKE '%$postfix%'";
 
-        if (prefix == 'Uploader')
-          where += ' COLLATE NOCASE';
+        if (prefix == 'Uploader') where += ' COLLATE NOCASE';
       } else {
         if (negative)
           where += "Title NOT LIKE '%$val%'";

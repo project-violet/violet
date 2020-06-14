@@ -18,8 +18,9 @@ import 'package:visibility_detector/visibility_detector.dart';
 class ViewerWidget extends StatefulWidget {
   final List<String> urls;
   final Map<String, String> headers;
+  final String id;
 
-  ViewerWidget({this.urls, this.headers});
+  ViewerWidget({this.urls, this.headers, this.id});
 
   @override
   _ViewerWidgetState createState() => _ViewerWidgetState();
@@ -108,7 +109,9 @@ class _ViewerWidgetState extends State<ViewerWidget> {
 
     for (int i = 0; i < widget.urls.length; i++) {
       galleryItems.add(GalleryExampleItem(
-          id: widget.urls[i], url: widget.urls[i], headers: widget.headers));
+          id: i == 0 ? 'thumbnail' + widget.id : widget.urls[i],
+          url: widget.urls[i],
+          headers: widget.headers));
       //moveKey.add(new GlobalKey());
     }
 
