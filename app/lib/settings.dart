@@ -9,6 +9,7 @@ class Settings {
   static bool themeWhat; // default false == light
   static Color majorColor; // default purple
   static Color majorAccentColor;
+  static int searchResultType; // 0: BigImage, 1: Grid, 2: Detail
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
@@ -36,6 +37,13 @@ class Settings {
       themeColor = Colors.white;
     else
       themeColor = Colors.black;
+
+    searchResultType = (await SharedPreferences.getInstance()).getInt('searchResultType');
+    if (searchResultType == null) {
+      (await SharedPreferences.getInstance())
+          .setInt('searchResultType', searchResultType);
+      searchResultType = 1; 
+    }
   }
 
   static Future<void> setThemeWhat(bool wh) async {
