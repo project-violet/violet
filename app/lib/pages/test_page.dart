@@ -21,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database.dart';
@@ -30,6 +31,7 @@ import 'package:violet/widgets/viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
 import 'package:flare_flutter/flare_render_box.dart';
 import 'package:flutter/rendering.dart';
+import 'package:http/http.dart' as http;
 
 class TestPage extends StatelessWidget {
   @override
@@ -140,6 +142,18 @@ class TestPage extends StatelessWidget {
                 child: Text('Settings Test'),
                 onPressed: () {
                   print(Colors.black.toString());
+                },
+              ),
+              RaisedButton(
+                child: Text('Parsing Test'),
+                onPressed: () async {
+                  var res = await http.get('https://e-hentai.org/g/1660354/a75db0c661/');
+                  // EHParser.getImagesUrl(res.body);
+                  // var res = await http.get('https://e-hentai.org/s/f0a5929ebf/1660354-3');
+                  // print(EHParser.getImagesAddress(res.body));
+                  // var res = await http.get('https://e-hentai.org/g/1201400/48f9b8e20a/');
+                  //  print(EHParser.getPagesUrl(res.body).length);
+                  print(EHParser.parseArticleData(res.body).comment);
                 },
               ),
               Container(
@@ -1189,7 +1203,8 @@ class _FlareHeroTestPageState extends State<FlareHeroTestPage> {
   Widget build(BuildContext context) {
     //timeDilation = 5;
     return Container(
-      color: Colors.grey,
+      color: Colors.white,
+      // color: Colors.grey,
       child: MaterialApp(
         title: "Flare Bot",
         routes: {
@@ -1263,6 +1278,7 @@ class Page2 extends StatelessWidget {
       child: Align(
           alignment: Alignment.bottomCenter,
           child: Container(
+            color: Colors.white,
             width: 300,
             height: 300,
             child: Hero(

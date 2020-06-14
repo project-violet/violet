@@ -288,13 +288,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   leading: ShaderMask(
                     shaderCallback: (bounds) => RadialGradient(
                       center: Alignment.topLeft,
-                      radius: 1.3,
+                      radius: 1.0,
                       colors: [Colors.black, Colors.white],
                       tileMode: TileMode.clamp,
                     ).createShader(bounds),
                     child: Icon(MdiIcons.themeLightDark, color: Colors.white),
                   ),
-                  title: Text("기본 테마 설정"),
+                  title: Text("다크 모드 스위칭"),
                   trailing: SizedBox(
                     width: 50,
                     height: 50,

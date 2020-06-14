@@ -67,6 +67,8 @@ dependencies:
   firebase_analytics:
   kdtree:
   dynamic_theme: ^1.0.1
+  html:
+  html_unescape:
 
 dev_dependencies:
   flutter_test:
