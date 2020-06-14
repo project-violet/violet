@@ -287,8 +287,7 @@ class _SearchPageState extends State<SearchPage> {
           // InfiniteListView.builder()
           Expanded(
             child: ListView.builder(
-              
-        physics: const BouncingScrollPhysics(), // new
+              physics: const BouncingScrollPhysics(), // new
               itemCount: queryResult.length,
               itemBuilder: (context, index) {
                 return Align(
@@ -543,7 +542,8 @@ class _SearchBarState extends State<SearchBar>
                                             });
                                           },
                                           activeTrackColor: Settings.majorColor,
-                                          activeColor: Settings.majorAccentColor,
+                                          activeColor:
+                                              Settings.majorAccentColor,
                                         ),
                                       ),
                                       Container(
@@ -566,7 +566,8 @@ class _SearchBarState extends State<SearchBar>
                                             });
                                           },
                                           activeTrackColor: Settings.majorColor,
-                                          activeColor: Settings.majorAccentColor,
+                                          activeColor:
+                                              Settings.majorAccentColor,
                                         ),
                                       ),
                                       Expanded(
@@ -654,13 +655,10 @@ class _SearchBarState extends State<SearchBar>
     var selection = _searchController.selection;
 
     if (_nothing) {
-      if (text == null || text.trim() == '')
-        return;
+      if (text == null || text.trim() == '') return;
 
       // DateTime()
     }
-
-
   }
 
   // Create tag-chip
@@ -699,6 +697,7 @@ class _SearchBarState extends State<SearchBar>
       shadowColor: Colors.grey[60],
       padding: EdgeInsets.all(6.0),
       onPressed: () async {
+        // Insert text to cursor.
         if (info.item1 != 'prefix') {
           var insert = info.item2.replaceAll(' ', '_');
           if (info.item1 != 'female' && info.item1 != 'male')
