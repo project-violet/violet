@@ -16,6 +16,8 @@ So, we must have to apply our own caching rules.
 ### 3. Bookmark Management
 
 
-### 4. Bloc Pattern?
+### 4. Bloc Pattern? Refactoring?
 
-I hate it because it's just useless code.
+This project started three days after learning `Flutter`, so I don't know much about Flutter. 
+If you fix my code, I will follow it.
+Thanks.
