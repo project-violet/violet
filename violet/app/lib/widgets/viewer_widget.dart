@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
+// Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 // 네트워크 이미지들을 보기위한 위젯
 
