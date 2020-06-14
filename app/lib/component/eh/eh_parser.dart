@@ -259,7 +259,7 @@ class EHParser {
 
     var q = List<Element>();
     parse(html)
-        .querySelectorAll('div.itg > tr')
+        .querySelectorAll("table.itg.glte")
         .forEach((element) => q.add(element));
 
     while (q.isNotEmpty) {

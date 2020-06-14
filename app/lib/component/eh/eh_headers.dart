@@ -22,6 +22,6 @@ class EHSession {
   }
 
   static Future<String> requestString(String url) async {
-    return (await http.get(url, headers: {"cookie": cookies[0]})).body;
+    return (await http.get(url, headers: {"Cookie": cookies[0]})).body;
   }
 }

@@ -147,13 +147,15 @@ class TestPage extends StatelessWidget {
               RaisedButton(
                 child: Text('Parsing Test'),
                 onPressed: () async {
-                  var res = await http.get('https://e-hentai.org/g/1660354/a75db0c661/');
+                  // var res = await http.get('https://e-hentai.org/g/1660354/a75db0c661/');
                   // EHParser.getImagesUrl(res.body);
                   // var res = await http.get('https://e-hentai.org/s/f0a5929ebf/1660354-3');
                   // print(EHParser.getImagesAddress(res.body));
                   // var res = await http.get('https://e-hentai.org/g/1201400/48f9b8e20a/');
                   //  print(EHParser.getPagesUrl(res.body).length);
-                  print(EHParser.parseArticleData(res.body).comment);
+                  // print(EHParser.parseArticleData(res.body).comment);
+                  var res = await http.get('https://e-hentai.org/', headers: {'Cookie':'sl=dm_2'});
+                  print(EHParser.parseReulstPageExtendedListView(res.body).length);
                 },
               ),
               Container(
