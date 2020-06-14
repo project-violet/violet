@@ -322,7 +322,7 @@ class _SearchPageState extends State<SearchPage> {
             return Align(
                 alignment: Alignment.center,
                 child: ArticleListItemVerySimpleWidget(
-                    queryResult: queryResult[index])
+                    addBottomPadding: true, queryResult: queryResult[index])
                 //FadeInImage(placeholder: Text('loading'), image: ,)
                 // Text(
                 //   queryResult[index].title(),
@@ -343,6 +343,7 @@ class _SearchPageState extends State<SearchPage> {
         );
       case 1:
         return LiveGrid(
+          physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.all(16),
           showItemInterval: Duration(milliseconds: 50),
           showItemDuration: Duration(milliseconds: 150),

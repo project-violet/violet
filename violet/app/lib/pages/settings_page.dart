@@ -37,6 +37,61 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              _buildGroup('테마'),
+              _buildItems([
+                ListTile(
+                  leading: ShaderMask(
+                    shaderCallback: (bounds) => RadialGradient(
+                      center: Alignment.topLeft,
+                      radius: 1.0,
+                      colors: [Colors.black, Colors.white],
+                      tileMode: TileMode.clamp,
+                    ).createShader(bounds),
+                    child: Icon(MdiIcons.themeLightDark, color: Colors.white),
+                  ),
+                  title: Text("다크 모드 스위칭"),
+                  trailing: SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: FlareActor(
+                      'assets/flare/switch_daytime.flr',
+                      animation: _themeSwitch ? "night_idle" : "day_idle",
+                      controller: _flareController,
+                      snapToEnd: true,
+                    ),
+                  ),
+                  onTap: () async {
+                    if (!_themeSwitch)
+                      _flareController.play('switch_night');
+                    else
+                      _flareController.play('switch_day');
+                    _themeSwitch = !_themeSwitch;
+                    Settings.setThemeWhat(_themeSwitch);
+                    DynamicTheme.of(context).setBrightness(
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Brightness.light
+                            : Brightness.dark);
+                    setState(() {});
+                  },
+                ),
+                _buildDivider(),
+                ListTile(
+                  leading: ShaderMask(
+                    shaderCallback: (bounds) => RadialGradient(
+                      center: Alignment.bottomLeft,
+                      radius: 1.2,
+                      colors: [Colors.orange, Colors.pink],
+                      tileMode: TileMode.clamp,
+                    ).createShader(bounds),
+                    child: Icon(MdiIcons.formatColorFill, color: Colors.white),
+                  ),
+                  title: Text("컬러 설정"),
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
+              ]),
               _buildGroup('검색'),
               _buildItems([
                 ListTile(
@@ -267,6 +322,18 @@ class _SettingsPageState extends State<SettingsPage> {
                   //Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
+                _buildDivider(),
+                ListTile(
+                  leading: Icon(
+                    Icons.security,
+                    color: Settings.majorColor,
+                  ),
+                  title: Text("보호 설정"), // blurring
+                  trailing: Icon(
+                      // Icons.message,
+                      Icons.keyboard_arrow_right),
+                  onTap: () {},
+                ),
               ]),
               _buildGroup('네트워크'),
               _buildItems([
@@ -282,55 +349,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   onTap: () {},
                 ),
               ]),
-              _buildGroup('테마'),
+              _buildGroup('업데이트'),
               _buildItems([
                 ListTile(
-                  leading: ShaderMask(
-                    shaderCallback: (bounds) => RadialGradient(
-                      center: Alignment.topLeft,
-                      radius: 1.0,
-                      colors: [Colors.black, Colors.white],
-                      tileMode: TileMode.clamp,
-                    ).createShader(bounds),
-                    child: Icon(MdiIcons.themeLightDark, color: Colors.white),
+                  leading: Icon(
+                    Icons.update,
+                    color: Settings.majorColor,
                   ),
-                  title: Text("다크 모드 스위칭"),
-                  trailing: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: FlareActor(
-                      'assets/flare/switch_daytime.flr',
-                      animation: _themeSwitch ? "night_idle" : "day_idle",
-                      controller: _flareController,
-                      snapToEnd: true,
-                    ),
-                  ),
-                  onTap: () async {
-                    if (!_themeSwitch)
-                      _flareController.play('switch_night');
-                    else
-                      _flareController.play('switch_day');
-                    _themeSwitch = !_themeSwitch;
-                    Settings.setThemeWhat(_themeSwitch);
-                    DynamicTheme.of(context).setBrightness(
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Brightness.light
-                            : Brightness.dark);
-                    setState(() {});
-                  },
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: ShaderMask(
-                    shaderCallback: (bounds) => RadialGradient(
-                      center: Alignment.bottomLeft,
-                      radius: 1.2,
-                      colors: [Colors.orange, Colors.pink],
-                      tileMode: TileMode.clamp,
-                    ).createShader(bounds),
-                    child: Icon(MdiIcons.formatColorFill, color: Colors.white),
-                  ),
-                  title: Text("컬러 설정"),
+                  title: Text("업데이트 확인"),
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
@@ -505,7 +531,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       width: double.infinity,
       height: 1.0,
-      color:  Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
+      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
     );
   }
 
@@ -530,13 +556,16 @@ class _SettingsPageState extends State<SettingsPage> {
   Container _buildItems(List<Widget> items) {
     return Container(
       transform: Matrix4.translationValues(0, -2, 0),
-      child: Card(
-        elevation: 4.0,
-        margin: EdgeInsets.fromLTRB(16, 8, 16, 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+        child: Card(
+          elevation: 4.0,
+          margin: EdgeInsets.fromLTRB(16, 8, 16, 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Column(children: items),
         ),
-        child: Column(children: items),
       ),
     );
   }

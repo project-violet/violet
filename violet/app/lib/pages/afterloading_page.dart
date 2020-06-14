@@ -23,16 +23,38 @@ class AfterLoadingPage extends StatefulWidget {
   _AfterLoadingPageState createState() => new _AfterLoadingPageState();
 }
 
-class _AfterLoadingPageState extends State<AfterLoadingPage> {
+class _AfterLoadingPageState extends State<AfterLoadingPage> with WidgetsBindingObserver {
   int _page = 0;
   PageController _c;
+  bool isBlurred = false;
+
   @override
   void initState() {
     _c = new PageController(
       initialPage: _page,
     );
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
+
+  
+  @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    // await new Future.delayed(const Duration(seconds: 3));
+    setState(() {
+      if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive)
+        isBlurred = true;
+      else
+        isBlurred = false;
+    });
+  }
+
+  @override
+  void disposed(){
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
 
   // var currentPage = images.length - 1.0;
 
