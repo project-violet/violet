@@ -1,6 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
 
+import 'dart:collection';
+
+import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +16,7 @@ class EHArticle {
   String type;
   String uploader;
 
+  // Left side of article info
   String posted;
   String parent;
   String visible;
@@ -21,6 +25,7 @@ class EHArticle {
   int length;
   int favorited;
 
+  // Right side of article info
   String reclass;
   List<String> languages;
   List<String> group;
@@ -50,6 +55,7 @@ class EHResultArticle {
 }
 
 // E-Hentai, EX-Hentai Parser
+// You can use both of the previous.
 class EHParser {
   // ex: https://exhentai.org/g/1212168/421ef300a8/
   static List<String> getImagesUrl(String html) {
@@ -247,7 +253,115 @@ class EHParser {
   }
 
   // ex: https://exhentai.org/?inline_set=dm_e
-  static List<EHArticle> parseReulstPageExtendedListView(String html) {}
+  // The html source is broken. Therefore, you have to do fucking like this.
+  static List<EHResultArticle> parseReulstPageExtendedListView(String html) {
+    var result = List<EHResultArticle>();
+
+    var q = List<Element>();
+    parse(html)
+        .querySelectorAll('div.itg > tr')
+        .forEach((element) => q.add(element));
+
+    while (q.isNotEmpty) {
+      var node = q[0];
+      q.removeAt(0);
+
+      try {
+        var article = EHResultArticle();
+
+        article.url = node.querySelector('a').attributes['href'];
+        try {
+          article.thumbnail = node.querySelector('img').attributes['src'];
+        } catch (e) {}
+
+        var g13 = node.querySelectorAll('td')[1].querySelector('div > div');
+        var g13div = g13.querySelectorAll('div');
+
+        article.type = g13div[0].text.toLowerCase();
+        article.published = g13div[1].text;
+        article.uploader = g13div[3].text;
+        article.files = g13div[4].text;
+
+        var gref =
+            node.querySelectorAll('td')[1].querySelector('div > a > div');
+
+        article.title = gref.querySelector('div').text;
+
+        try {
+          var dict = Map<String, List<String>>();
+
+          gref.querySelectorAll('div > tr').forEach((element) {
+            var cont = element.querySelector('td').text.trim();
+            cont = cont.substring(0, cont.length - 1);
+
+            var cc = List<String>();
+
+            element
+                .querySelectorAll('td')[1]
+                .querySelectorAll('div')
+                .forEach((element) => cc.add(element.text));
+
+            dict[cont] = cc;
+          });
+          article.descripts = dict;
+        } catch (e) {}
+
+        result.add(article);
+
+        var next = node.querySelectorAll('tr');
+
+        if (next != null) q.addAll(next);
+      } catch (e) {}
+    }
+
+    return result;
+  }
+
   // ex: https://exhentai.org/?inline_set=dm_m
-  static List<EHArticle> parseReulstPageMinimalListView(String html) {}
+  static List<EHResultArticle> parseReulstPageMinimalListView(String html) {
+    var result = List<EHResultArticle>();
+
+    var nodes = parse(html).querySelectorAll("table[class='itg gltm'] > tr");
+
+    if (nodes.length > 1) nodes.removeAt(0);
+
+    nodes.forEach((element) {
+      var article = EHResultArticle();
+
+      article.type =
+          element.querySelector('td > div').text.trim().toLowerCase();
+      article.thumbnail = element.querySelector('img').attributes['src'];
+      if (article.thumbnail.startsWith('data'))
+        article.thumbnail = element.querySelector('img').attributes['data-src'];
+      article.published = element
+          .querySelectorAll('td')[1]
+          .querySelectorAll('div')[1]
+          .querySelectorAll('div')[1]
+          .querySelectorAll('div')[0]
+          .querySelectorAll('div')[1]
+          .text
+          .trim();
+      article.files = element
+          .querySelectorAll('td')[1]
+          .querySelectorAll('div')[1]
+          .querySelectorAll('div')[1]
+          .querySelectorAll('div')[1]
+          .querySelectorAll('div')[1]
+          .text
+          .trim();
+
+      article.url = element
+          .querySelectorAll('td')[3]
+          .querySelector('a')
+          .attributes['href'];
+      article.title =
+          element.querySelectorAll('td')[3].querySelector('a  div').text.trim();
+      article.uploader =
+          element.querySelectorAll('td')[5].querySelector('div a').text.trim();
+
+      result.add(article);
+    });
+
+    return result;
+  }
 }

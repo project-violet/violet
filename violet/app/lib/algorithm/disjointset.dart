@@ -1,7 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
 
-// Forrest based on union-find data structure.
+// Forrest based union-find data structure.
 class DisjointSet {
   // Disjoint Set Array
   List<int> array;
@@ -31,4 +31,9 @@ class DisjointSet {
 
     array[bb] = aa;
   }
+}
+
+// Linked List based union-find data structure.
+class UnionFind {
+
 }

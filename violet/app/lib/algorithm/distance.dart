@@ -15,6 +15,8 @@ class Distance {
     return result;
   }
 
+  // Why is fuck num not a comparable<t> interface?
+  // Why fuck I have to make two identical functions?
   static int levenshteinDistance<T extends num>(List<T> l1, List<T> l2) {
     int x = l1.length;
     int y = l2.length;

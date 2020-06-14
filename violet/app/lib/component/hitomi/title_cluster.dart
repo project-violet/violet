@@ -34,7 +34,7 @@ class HitomiTitleCluster {
 
     // If there is an original title, it is written in front of '|'.
 
-    // Compare similarity word by word.
+    // Compare similarity word by word. (DO NOT DELETE THIS SHIT.)
     // var abb = astr.split('|')[0].split(' ');
     // var bbb = bstr.split('|')[0].split(' ');
 
