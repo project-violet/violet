@@ -1,1 +1,0 @@
-dotnet publish -r win10-arm -c Release /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true
