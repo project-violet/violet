@@ -876,7 +876,7 @@ class _SearchTypeState extends State<SearchType> {
             child: Card(
               // color: Colors.grey.shade200,
               color: Settings.themeWhat
-                  ? Colors.grey.shade800.withOpacity(0.4)
+                  ? Colors.grey.shade800.withOpacity(0.8)
                   : Colors.grey.shade100.withOpacity(0.9),
               child:  SizedBox(
               child: Container(
