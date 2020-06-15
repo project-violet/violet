@@ -21,13 +21,6 @@ This can be easily done by anyone without programming, but it can be very tediou
 Be sure to attach a png, gif or video file that clearly identifies the edits.
 If you don't anything, it will be rejected.
 
-## Copyright
-
-To protect against copyright infringement, copyright holders can prevent their work from being searched for. 
-Please e-mail us proof of copyright violations!
-Be sure to attach proof of copyright and copyright infringement example photos and information to the proof of contents!
-This action should take at least a day.
-
 ## Development
 
 If you want to contribute to this project, please leave an issue or pull request.
