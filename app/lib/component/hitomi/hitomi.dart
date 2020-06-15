@@ -9,14 +9,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 
 class HitomiManager {
-  // [Big Thumbnails(maybe just one)], [Small Thumbnails]
-  static Future<Tuple2<List<String>, List<String>>> getThumbnailList(String id) async {
-    var gg = await http.get('https://hitomi.la/reader/$id.html');
-
-
-  }
-
-  static Future<List<String>> getImageList(String id) async {
+  // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
+  static Future<Tuple3<List<String>, List<String>, List<String>>> getImageList(
+      String id) async {
     var gg = await http.get('https://ltn.hitomi.la/galleries/$id.js');
     var urls = gg.body;
     var files = jsonDecode(urls.substring(urls.indexOf('=') + 1))
@@ -25,12 +20,14 @@ class HitomiManager {
     final subdomain = String.fromCharCode(
         97 + (id[id.length - 1].codeUnitAt(0) % number_of_frontends));
 
+    var btresult = List<String>();
+    var stresult = List<String>();
     var result = List<String>();
     for (var row in files) {
       var rr = row.cast<String, String>();
       var hash = rr['hash'] as String;
+      var postfix = hash.substring(hash.length - 3);
       if (rr['hashwebp'] == 0 || rr['hashwebp'] == null) {
-        var postfix = hash.substring(hash.length - 3);
         result.add(
             'https://${subdomain}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
       } else if (hash == "")
@@ -39,12 +36,16 @@ class HitomiManager {
       else if (hash.length < 3)
         result.add('https://${subdomain}a.hitomi.la/webp/$hash.webp');
       else {
-        var postfix = hash.substring(hash.length - 3);
         result.add(
             'https://${subdomain}a.hitomi.la/webp/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.webp');
       }
+      btresult.add(
+          'https://tn.hitomi.la/bigtn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
+      stresult.add(
+        'https://${subdomain}tn.hitomi.la/smalltn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg'
+      );
     }
-    return result;
+    return Tuple3<List<String>, List<String>, List<String>>(result, btresult, stresult);
   }
 
   static Map<String, dynamic> tagmap;

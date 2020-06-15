@@ -10,22 +10,23 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/pages/viewer_page.dart';
 
 class ThumbnailManager {
-  static HashMap<int, List<String>> _ids = HashMap<int, List<String>>();
+  static HashMap<int, Tuple3<List<String>, List<String>, List<String>>> _ids = HashMap<int, Tuple3<List<String>, List<String>, List<String>>>();
 
   static bool isExists(int id) {
     return _ids.containsKey(id);
   }
 
-  static void insert(int id, List<String> url) {
+  static void insert(int id, Tuple3<List<String>, List<String>, List<String>> url) {
     _ids[id] = url;
   }
 
-  static List<String> get(int id) {
+  static Tuple3<List<String>, List<String>, List<String>> get(int id) {
     return _ids[id];
   }
 
@@ -87,13 +88,14 @@ class _ArticleListItemVerySimpleWidgetState
     if (!ThumbnailManager.isExists(widget.queryResult.id())) {
       HitomiManager.getImageList(widget.queryResult.id().toString())
           .then((images) {
-        thumbnail = images[0];
-        imageCount = images.length;
+        thumbnail = images.item2[0];
+        imageCount = images.item2.length;
         ThumbnailManager.insert(widget.queryResult.id(), images);
+        if (disposed) return null;
         setState(() {});
       });
     } else {
-      var thumbnails = ThumbnailManager.get(widget.queryResult.id());
+      var thumbnails = ThumbnailManager.get(widget.queryResult.id()).item2;
       thumbnail = thumbnails[0];
       imageCount = thumbnails.length; 
     }
@@ -242,6 +244,7 @@ class _ArticleListItemVerySimpleWidgetState
         setState(() {
           pad = 10.0;
         });
+        print(widget.queryResult.id());
       },
       onTapUp: (detail) {
         if (onScaling) return;
@@ -255,7 +258,7 @@ class _ArticleListItemVerySimpleWidgetState
             builder: (context) {
               return ViewerPage(
                 id: widget.queryResult.id().toString(),
-                images: ThumbnailManager.get(widget.queryResult.id()),
+                images: ThumbnailManager.get(widget.queryResult.id()).item1,
                 headers: headers,
               );
             },
