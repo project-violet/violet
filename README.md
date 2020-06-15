@@ -1,8 +1,6 @@
-# Violet
+# Violet App
 
-<p align="center">
-  <img src="app/assets/images/logo.png" width=400/>
-</p>
+![](1.gif) ![](2.gif)
 
 Project Violet Source Code
 
