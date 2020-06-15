@@ -93,6 +93,7 @@ flutter:
   assets:
     - assets/locale/en.json
     - assets/locale/ko.json
+    - assets/locale/ja.json
     - assets/images/loading.gif
 
     # - assets/test/001.jpg

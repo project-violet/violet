@@ -85,7 +85,7 @@ class QueryManager {
   List<QueryResult> results;
   bool isPagination;
   int curPage;
-  int itemsPerPage = 50;
+  int itemsPerPage = 500;
 
   static Future<QueryManager> query(String rawQuery) async {
     QueryManager qm = new QueryManager();

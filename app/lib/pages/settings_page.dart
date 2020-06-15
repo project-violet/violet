@@ -8,6 +8,7 @@ import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:violet/locale.dart';
 import 'package:violet/pages/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings.dart';
@@ -37,7 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              _buildGroup('테마'),
+              _buildGroup(Translations.of(context).trans('theme')),
               _buildItems([
                 ListTile(
                   leading: ShaderMask(
@@ -49,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ).createShader(bounds),
                     child: Icon(MdiIcons.themeLightDark, color: Colors.white),
                   ),
-                  title: Text("다크 모드 스위칭"),
+                  title: Text(Translations.of(context).trans('darkmode')),
                   trailing: SizedBox(
                     width: 50,
                     height: 50,
@@ -85,14 +86,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     ).createShader(bounds),
                     child: Icon(MdiIcons.formatColorFill, color: Colors.white),
                   ),
-                  title: Text("컬러 설정"),
+                  title: Text(Translations.of(context).trans('colorsetting')),
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
               ]),
-              _buildGroup('검색'),
+              _buildGroup(Translations.of(context).trans('search')),
               _buildItems([
                 ListTile(
                   leading: Icon(
@@ -102,8 +103,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("기본 태그 (언어 설정)"),
-                      Text("현재 태그: "),
+                      Text(Translations.of(context).trans('defaulttag')),
+                      Text(Translations.of(context).trans('currenttag')),
                     ],
                   ),
                   trailing: Icon(
@@ -117,7 +118,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     MdiIcons.tagOff,
                     color: Settings.majorColor,
                   ),
-                  title: Text("기본 제외 태그"),
+                  title: Text(Translations.of(context).trans('excludetag')),
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
@@ -129,7 +130,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     MdiIcons.blur,
                     color: Settings.majorColor,
                   ),
-                  title: Text("블러 처리할 태그"),
+                  title: Text(Translations.of(context).trans('blurredtag')),
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
@@ -141,22 +142,22 @@ class _SettingsPageState extends State<SettingsPage> {
                     MdiIcons.imageMultipleOutline,
                     color: Settings.majorColor,
                   ),
-                  title: Text("검색 결과 표시 방법"),
+                  title: Text(Translations.of(context).trans('howtoshowsearchresult')),
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
               ]),
-              _buildGroup('시스템'),
+              _buildGroup(Translations.of(context).trans('system')),
               _buildItems([
                 ListTile(
                   leading: Icon(Icons.folder_open, color: Settings.majorColor),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("저장 위치 설정"),
-                      Text("현재 위치: /android/Pictures"),
+                      Text(Translations.of(context).trans('savedir')),
+                      Text(Translations.of(context).trans('curdir') + ": /android/Pictures"),
                     ],
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
@@ -165,21 +166,21 @@ class _SettingsPageState extends State<SettingsPage> {
                 _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.receipt, color: Settings.majorColor),
-                  title: Text("로그 기록"),
+                  title: Text(Translations.of(context).trans('logrecord')),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
                 _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.language, color: Settings.majorColor),
-                  title: Text("언어 (Language)"),
+                  title: Text(Translations.of(context).trans('language')),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
                 _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.info_outline, color: Settings.majorColor),
-                  title: Text("정보"),
+                  title: Text(Translations.of(context).trans('info')),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     Navigator.of(context).push(
@@ -209,7 +210,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.developer_mode, color: Colors.orange),
-                  title: Text("개발자 도구"),
+                  title: Text(Translations.of(context).trans('devtool')),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {
                     Navigator.push(
@@ -221,15 +222,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
               ]),
-              _buildGroup('뷰어'),
+              _buildGroup(Translations.of(context).trans('viewer')),
               _buildItems([
                 ListTile(
                   leading: Icon(Icons.view_array, color: Settings.majorColor),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("뷰어 타입"),
-                      Text("현재 타입: 스크롤 뷰"),
+                      Text(Translations.of(context).trans('viewertype')),
+                      Text(Translations.of(context).trans('currenttype') + ": 스크롤 뷰"),
                     ],
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
@@ -241,14 +242,14 @@ class _SettingsPageState extends State<SettingsPage> {
                     Icons.blur_linear,
                     color: Settings.majorColor,
                   ),
-                  title: Text("이미지 품질"),
+                  title: Text(Translations.of(context).trans('imgquality')),
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
               ]),
-              _buildGroup('다운로더'),
+              _buildGroup(Translations.of(context).trans('downloader')),
               _buildItems([
                 ListTile(
                   leading: ShaderMask(
@@ -260,26 +261,26 @@ class _SettingsPageState extends State<SettingsPage> {
                     ).createShader(bounds),
                     child: Icon(MdiIcons.instagram, color: Colors.white),
                   ),
-                  title: Text('인스타그램'),
+                  title: Text(Translations.of(context).trans('instagram')),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
                 _buildDivider(),
                 ListTile(
                   leading: Icon(MdiIcons.twitter, color: Colors.blue),
-                  title: Text('트위터'),
+                  title: Text(Translations.of(context).trans('twitter')),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
                 _buildDivider(),
                 ListTile(
                   leading: Image.asset('assets/icons/pixiv.ico', width: 25),
-                  title: Text('픽시브'),
+                  title: Text(Translations.of(context).trans('pixiv')),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
               ]),
-              _buildGroup('캐시'),
+              _buildGroup(Translations.of(context).trans('cache')),
               _buildItems([
                 ListTile(
                   leading: Icon(Icons.lock_outline, color: Settings.majorColor),

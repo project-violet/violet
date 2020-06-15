@@ -19,6 +19,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
+import 'package:violet/locale.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
@@ -158,7 +159,7 @@ class _SearchPageState extends State<SearchPage> {
                                         hintText: latestQuery != null &&
                                                 latestQuery.item2.trim() != ''
                                             ? latestQuery.item2
-                                            : '검색'),
+                                            : Translations.of(context).trans('search')),
                                   ), //Text("검색"),
                                   leading: SizedBox(
                                     width: 25,
@@ -475,7 +476,7 @@ class _SearchBarState extends State<SearchBar>
     }
 
     return Container(
-        color: Colors.white,
+        color: Settings.themeWhat ? Colors.grey.shade900 : Colors.white,
         padding: EdgeInsets.fromLTRB(2, statusBarHeight + 2, 0, 0),
         child: Stack(children: <Widget>[
           Hero(
@@ -515,7 +516,7 @@ class _SearchBarState extends State<SearchBar>
                               ),
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: '검색',
+                              hintText: Translations.of(context).trans('search'),
                             ),
                           ),
                           leading: SizedBox(
@@ -548,7 +549,7 @@ class _SearchBarState extends State<SearchBar>
                             child: RaisedButton(
                               color: Settings.majorColor,
                               textColor: Colors.white,
-                              child: Text('검색'),
+                              child: Text(Translations.of(context).trans('search')),
                               onPressed: () async {
                                 final query = HitomiManager.translate2query(
                                     _searchController.text);
@@ -574,8 +575,8 @@ class _SearchBarState extends State<SearchBar>
                         child: _searchLists.length == 0 || _nothing
                             ? Center(
                                 child: Text(_nothing
-                                    ? '검색 결과가 없습니다 :('
-                                    : "검색어를 입력해 주세요!"))
+                                    ? Translations.of(context).trans('nosearchresult')
+                                    : Translations.of(context).trans('inputsearchtoken')))
                             : Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8),
                                 child: FadingEdgeScrollView
@@ -623,7 +624,7 @@ class _SearchBarState extends State<SearchBar>
                                       ListTile(
                                         leading: Icon(Icons.translate,
                                             color: Settings.majorColor),
-                                        title: Text("태그 한글화"),
+                                        title: Text(Translations.of(context).trans('tagtranslation')),
                                         trailing: Switch(
                                           value: _tagTranslation,
                                           onChanged: (value) {
@@ -647,7 +648,7 @@ class _SearchBarState extends State<SearchBar>
                                       ListTile(
                                         leading: Icon(MdiIcons.counter,
                                             color: Settings.majorColor),
-                                        title: Text("카운트 표시"),
+                                        title: Text(Translations.of(context).trans('showcount')),
                                         trailing: Switch(
                                           value: _showCount,
                                           onChanged: (value) {
@@ -671,6 +672,7 @@ class _SearchBarState extends State<SearchBar>
                                             width: double.infinity,
                                             height: 60,
                                             child: RaisedButton(
+                                              color: Settings.themeWhat ? Colors.grey.shade800 : Colors.grey,
                                               child: Icon(MdiIcons.autoFix),
                                               onPressed: () {
                                                 magicProcess();
