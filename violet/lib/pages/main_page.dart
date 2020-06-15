@@ -1,7 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/locale.dart';
 
@@ -59,15 +61,18 @@ class _MainPageState extends State<MainPage> {
         padding: EdgeInsets.only(top: statusBarHeight),
         child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(50),
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(Translations.of(context).trans('news'),
+                    Text('Notice',//Translations.of(context).trans('notice'),
                         style: TextStyle(
-                          color: Colors.black87,
                           fontSize: 46.0,
                           fontFamily: "Calibre-Semibold",
                           letterSpacing: 1.0,
@@ -75,24 +80,89 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
               ),
-              Container(
-                transform: Matrix4.translationValues(0, 0, 0),
-                child: Stack(
-                  children: <Widget>[
-                    CardScrollWidget(currentPage),
-                    Positioned.fill(
-                      child: PageView.builder(
-                        itemCount: images.length,
-                        controller: controller,
-                        reverse: true,
-                        itemBuilder: (context, index) {
-                          return Container();
-                        },
+               Padding(
+                padding: EdgeInsets.all(12),
+              ),
+              Text(Translations.of(context).trans('notice1'),),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: Translations.of(context).trans('notice21'),
+                    ),
+                    TextSpan(
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                        decoration: TextDecoration.underline,
                       ),
-                    )
+                      text: 'violet.dev.master@gmail.com',
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          final url = 'mailto:violet.dev.master@gmail.com';
+                          if (await canLaunch(url)) {
+                            await launch(
+                              url,
+                              forceSafariVC: false,
+                            );
+                          }
+                        },
+                    ),
+                    TextSpan(
+                      text: Translations.of(context).trans('notice22'),
+                    ),
                   ],
                 ),
               ),
+              Text(Translations.of(context).trans('notice3')),
+              Text(''),
+              Text(Translations.of(context).trans('notice4')),
+              Text(Translations.of(context).trans('notice5')),
+              Text(''),
+              Text('Copyright (C) 2020. dc-koromo. All rights reserved.'),
+              Padding(
+                padding: EdgeInsets.all(10),
+              ),
+              Text('Violet 0.3'),
+              Text(
+                'Thanks to Flutter developers.',
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
+              // Padding(
+              //   padding: EdgeInsets.all(100),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: <Widget>[
+              //       Text(Translations.of(context).trans('news'),
+              //           style: TextStyle(
+              //             fontSize: 46.0,
+              //             fontFamily: "Calibre-Semibold",
+              //             letterSpacing: 1.0,
+              //           )),
+              //     ],
+              //   ),
+              // ),
+              // Container(
+              //   transform: Matrix4.translationValues(0, 0, 0),
+              //   child: Stack(
+              //     children: <Widget>[
+              //       CardScrollWidget(currentPage),
+              //       Positioned.fill(
+              //         child: PageView.builder(
+              //           itemCount: images.length,
+              //           controller: controller,
+              //           reverse: true,
+              //           itemBuilder: (context, index) {
+              //             return Container();
+              //           },
+              //         ),
+              //       )
+              //     ],
+              //   ),
+              // ),
               // Stack(
               //   children: <Widget>[
               //     CardScrollWidget(currentPage2),

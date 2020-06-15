@@ -136,34 +136,34 @@ class _SettingsPageState extends State<SettingsPage> {
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.imageMultipleOutline,
-                    color: Settings.majorColor,
-                  ),
-                  title: Text(Translations.of(context).trans('howtoshowsearchresult')),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
+                // _buildDivider(),
+                // ListTile(
+                //   leading: Icon(
+                //     MdiIcons.imageMultipleOutline,
+                //     color: Settings.majorColor,
+                //   ),
+                //   title: Text(Translations.of(context).trans('howtoshowsearchresult')),
+                //   trailing: Icon(
+                //       // Icons.message,
+                //       Icons.keyboard_arrow_right),
+                //   onTap: () {},
+                // ),
               ]),
               _buildGroup(Translations.of(context).trans('system')),
               _buildItems([
-                ListTile(
-                  leading: Icon(Icons.folder_open, color: Settings.majorColor),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(Translations.of(context).trans('savedir')),
-                      Text(Translations.of(context).trans('curdir') + ": /android/Pictures"),
-                    ],
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
+                // ListTile(
+                //   leading: Icon(Icons.folder_open, color: Settings.majorColor),
+                //   title: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.start,
+                //     children: [
+                //       Text(Translations.of(context).trans('savedir')),
+                //       Text(Translations.of(context).trans('curdir') + ": /android/Pictures"),
+                //     ],
+                //   ),
+                //   trailing: Icon(Icons.keyboard_arrow_right),
+                //   onTap: () {},
+                // ),
+                // _buildDivider(),
                 ListTile(
                   leading: Icon(Icons.receipt, color: Settings.majorColor),
                   title: Text(Translations.of(context).trans('logrecord')),
@@ -222,156 +222,156 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
               ]),
-              _buildGroup(Translations.of(context).trans('viewer')),
-              _buildItems([
-                ListTile(
-                  leading: Icon(Icons.view_array, color: Settings.majorColor),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(Translations.of(context).trans('viewertype')),
-                      Text(Translations.of(context).trans('currenttype') + ": 스크롤 뷰"),
-                    ],
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    Icons.blur_linear,
-                    color: Settings.majorColor,
-                  ),
-                  title: Text(Translations.of(context).trans('imgquality')),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-              ]),
-              _buildGroup(Translations.of(context).trans('downloader')),
-              _buildItems([
-                ListTile(
-                  leading: ShaderMask(
-                    shaderCallback: (bounds) => RadialGradient(
-                      center: Alignment.bottomLeft,
-                      radius: 1.3,
-                      colors: [Colors.yellow, Colors.red, Colors.purple],
-                      tileMode: TileMode.clamp,
-                    ).createShader(bounds),
-                    child: Icon(MdiIcons.instagram, color: Colors.white),
-                  ),
-                  title: Text(Translations.of(context).trans('instagram')),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(MdiIcons.twitter, color: Colors.blue),
-                  title: Text(Translations.of(context).trans('twitter')),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Image.asset('assets/icons/pixiv.ico', width: 25),
-                  title: Text(Translations.of(context).trans('pixiv')),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-              ]),
-              _buildGroup(Translations.of(context).trans('cache')),
-              _buildItems([
-                ListTile(
-                  leading: Icon(Icons.lock_outline, color: Settings.majorColor),
-                  title: Text("Enable Locking"),
-                  trailing: AbsorbPointer(
-                    child: Switch(
-                      value: true,
-                      onChanged: (value) {
-                        //setState(() {
-                        //  isSwitched = value;
-                        //  print(isSwitched);
-                        //});
-                      },
-                      activeTrackColor: Settings.majorColor,
-                      activeColor: Settings.majorAccentColor,
-                    ),
-                  ),
-                  //Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-              ]),
-              _buildGroup('잠금'),
-              _buildItems([
-                ListTile(
-                  leading: Icon(Icons.lock_outline, color: Settings.majorColor),
-                  title: Text("잠금 기능 켜기"),
-                  trailing: AbsorbPointer(
-                    child: Switch(
-                      value: true,
-                      onChanged: (value) {
-                        //setState(() {
-                        //  isSwitched = value;
-                        //  print(isSwitched);
-                        //});
-                      },
-                      activeTrackColor: Settings.majorColor,
-                      activeColor: Settings.majorAccentColor,
-                    ),
-                  ),
-                  //Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    Icons.security,
-                    color: Settings.majorColor,
-                  ),
-                  title: Text("보호 설정"), // blurring
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-              ]),
-              _buildGroup('네트워크'),
-              _buildItems([
-                ListTile(
-                  leading: Icon(
-                    Icons.router,
-                    color: Settings.majorColor,
-                  ),
-                  title: Text("라우팅 규칙"),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-              ]),
-              _buildGroup('업데이트'),
+              // _buildGroup(Translations.of(context).trans('viewer')),
+              // _buildItems([
+              //   ListTile(
+              //     leading: Icon(Icons.view_array, color: Settings.majorColor),
+              //     title: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(Translations.of(context).trans('viewertype')),
+              //         Text(Translations.of(context).trans('currenttype') + ": " + Translations.of(context).trans('scrollview')),
+              //       ],
+              //     ),
+              //     trailing: Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              //   _buildDivider(),
+              //   ListTile(
+              //     leading: Icon(
+              //       Icons.blur_linear,
+              //       color: Settings.majorColor,
+              //     ),
+              //     title: Text(Translations.of(context).trans('imgquality')),
+              //     trailing: Icon(
+              //         // Icons.message,
+              //         Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              // ]),
+              // _buildGroup(Translations.of(context).trans('downloader')),
+              // _buildItems([
+              //   ListTile(
+              //     leading: ShaderMask(
+              //       shaderCallback: (bounds) => RadialGradient(
+              //         center: Alignment.bottomLeft,
+              //         radius: 1.3,
+              //         colors: [Colors.yellow, Colors.red, Colors.purple],
+              //         tileMode: TileMode.clamp,
+              //       ).createShader(bounds),
+              //       child: Icon(MdiIcons.instagram, color: Colors.white),
+              //     ),
+              //     title: Text(Translations.of(context).trans('instagram')),
+              //     trailing: Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              //   _buildDivider(),
+              //   ListTile(
+              //     leading: Icon(MdiIcons.twitter, color: Colors.blue),
+              //     title: Text(Translations.of(context).trans('twitter')),
+              //     trailing: Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              //   _buildDivider(),
+              //   ListTile(
+              //     leading: Image.asset('assets/icons/pixiv.ico', width: 25),
+              //     title: Text(Translations.of(context).trans('pixiv')),
+              //     trailing: Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              // ]),
+              // _buildGroup(Translations.of(context).trans('cache')),
+              // _buildItems([
+              //   ListTile(
+              //     leading: Icon(Icons.lock_outline, color: Settings.majorColor),
+              //     title: Text("Enable Locking"),
+              //     trailing: AbsorbPointer(
+              //       child: Switch(
+              //         value: true,
+              //         onChanged: (value) {
+              //           //setState(() {
+              //           //  isSwitched = value;
+              //           //  print(isSwitched);
+              //           //});
+              //         },
+              //         activeTrackColor: Settings.majorColor,
+              //         activeColor: Settings.majorAccentColor,
+              //       ),
+              //     ),
+              //     //Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              // ]),
+              // _buildGroup('잠금'),
+              // _buildItems([
+              //   ListTile(
+              //     leading: Icon(Icons.lock_outline, color: Settings.majorColor),
+              //     title: Text("잠금 기능 켜기"),
+              //     trailing: AbsorbPointer(
+              //       child: Switch(
+              //         value: true,
+              //         onChanged: (value) {
+              //           //setState(() {
+              //           //  isSwitched = value;
+              //           //  print(isSwitched);
+              //           //});
+              //         },
+              //         activeTrackColor: Settings.majorColor,
+              //         activeColor: Settings.majorAccentColor,
+              //       ),
+              //     ),
+              //     //Icon(Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              //   _buildDivider(),
+              //   ListTile(
+              //     leading: Icon(
+              //       Icons.security,
+              //       color: Settings.majorColor,
+              //     ),
+              //     title: Text("보호 설정"), // blurring
+              //     trailing: Icon(
+              //         // Icons.message,
+              //         Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              // ]),
+              // _buildGroup('네트워크'),
+              // _buildItems([
+              //   ListTile(
+              //     leading: Icon(
+              //       Icons.router,
+              //       color: Settings.majorColor,
+              //     ),
+              //     title: Text("라우팅 규칙"),
+              //     trailing: Icon(
+              //         // Icons.message,
+              //         Icons.keyboard_arrow_right),
+              //     onTap: () {},
+              //   ),
+              // ]),
+              _buildGroup(Translations.of(context).trans('update')),
               _buildItems([
                 ListTile(
                   leading: Icon(
                     Icons.update,
                     color: Settings.majorColor,
                   ),
-                  title: Text("업데이트 확인"),
+                  title: Text(Translations.of(context).trans('checkupdate')),
                   trailing: Icon(
                       // Icons.message,
                       Icons.keyboard_arrow_right),
                   onTap: () {},
                 ),
               ]),
-              _buildGroup('기타'),
+              _buildGroup(Translations.of(context).trans('etc')),
               _buildItems([
                 ListTile(
                   leading: Icon(
                     MdiIcons.discord,
                     color: Color(0xFF7189da),
                   ),
-                  title: Text("디스코드 채널"),
+                  title: Text(Translations.of(context).trans('discord')),
                   trailing: Icon(Icons.open_in_new),
                   onTap: () async {
                     const url = 'https://discord.gg/K8qny6E';
@@ -380,28 +380,28 @@ class _SettingsPageState extends State<SettingsPage> {
                     }
                   },
                 ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.github,
-                    color: Colors.black,
-                  ),
-                  title: Text("Github 프로젝트"),
-                  trailing: Icon(Icons.open_in_new),
-                  onTap: () async {
-                    const url = 'https://github.com/project-violet/';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    }
-                  },
-                ),
+                // _buildDivider(),
+                // ListTile(
+                //   leading: Icon(
+                //     MdiIcons.github,
+                //     color: Colors.black,
+                //   ),
+                //   title: Text("Github " + Translations.of(context).trans('project')),
+                //   trailing: Icon(Icons.open_in_new),
+                //   onTap: () async {
+                //     const url = 'https://github.com/project-violet/';
+                //     if (await canLaunch(url)) {
+                //       await launch(url);
+                //     }
+                //   },
+                // ),
                 _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.gmail,
                     color: Colors.redAccent,
                   ),
-                  title: Text("개발자 문의"),
+                  title: Text(Translations.of(context).trans('contact')),
                   trailing: Icon(
                       // Icons.email,
                       Icons.keyboard_arrow_right),
@@ -419,7 +419,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     MdiIcons.heart,
                     color: Colors.orange,
                   ),
-                  title: Text("후원"),
+                  title: Text(Translations.of(context).trans('donate')),
                   trailing: Icon(
                       // Icons.email,
                       Icons.open_in_new),
@@ -430,25 +430,25 @@ class _SettingsPageState extends State<SettingsPage> {
                     }
                   },
                 ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    Icons.open_in_new,
-                    color: Settings.majorColor,
-                  ),
-                  title: Text("외부 링크"),
-                  trailing: Icon(
-                      // Icons.email,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
+                // _buildDivider(),
+                // ListTile(
+                //   leading: Icon(
+                //     Icons.open_in_new,
+                //     color: Settings.majorColor,
+                //   ),
+                //   title: Text(Translations.of(context).trans('externallink')),
+                //   trailing: Icon(
+                //       // Icons.email,
+                //       Icons.keyboard_arrow_right),
+                //   onTap: () {},
+                // ),
                 _buildDivider(),
                 ListTile(
                   leading: Icon(
                     MdiIcons.library,
                     color: Settings.majorColor,
                   ),
-                  title: Text("라이센스"),
+                  title: Text(Translations.of(context).trans('license')),
                   trailing: Icon(
                       // Icons.email,
                       Icons.keyboard_arrow_right),
@@ -625,7 +625,7 @@ class VersionViewPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Card(
-            color: Colors.white.withOpacity(0.9),
+            color: Settings.themeWhat ? Colors.black.withOpacity(0.9) : Colors.white.withOpacity(0.9),
             elevation: 10,
             child: SizedBox(
               child: Container(

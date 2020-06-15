@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'dart:developer';
 import 'package:violet/locale.dart';
+import 'package:violet/main.dart';
 import 'package:violet/pages/bookmark_page.dart';
 import 'package:violet/pages/database_download_page.dart';
 import 'package:violet/pages/loading_page.dart';
@@ -74,6 +76,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> with WidgetsBinding
     //   ),
     //   child: 
       new Scaffold(
+        key: scaffoldKey,
         bottomNavigationBar: //new Theme(
             // data: Theme.of(context).copyWith(
             //     // sets the background color of the `BottomNavigationBar`
@@ -103,14 +106,14 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> with WidgetsBinding
           },
           items: <BottomNavigationBarItem>[
             new BottomNavigationBarItem(
-                icon: new Icon(Icons.personal_video),
+                icon: new Icon(MdiIcons.home),
                 title: new Text(Translations.of(context).trans('main'))),
             new BottomNavigationBarItem(
                 icon: new Icon(Icons.search),
                 title: new Text(Translations.of(context).trans('search'))),
-            new BottomNavigationBarItem(
-                icon: new Icon(Icons.file_download),
-                title: new Text(Translations.of(context).trans('download'))),
+            // new BottomNavigationBarItem(
+            //     icon: new Icon(Icons.file_download),
+            //     title: new Text(Translations.of(context).trans('download'))),
             new BottomNavigationBarItem(
                 icon: new Icon(Icons.bookmark),
                 title: new Text(Translations.of(context).trans('bookmark'))),
@@ -158,41 +161,30 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> with WidgetsBinding
             //   ),
             // ),
             SearchPage(),
-            new Center(
-              child: Padding(
-                padding: EdgeInsets.all(128),
-                child: ShaderMask(
-                  shaderCallback: (bounds) => RadialGradient(
-                    center: Alignment.centerLeft,
-                    radius: 1,
-                    colors: [Colors.yellow, Colors.red, Colors.purple],
-                    tileMode: TileMode.clamp,
-                  ).createShader(bounds),
-                  child: FlareActor(
-                    "assets/flare/SlidinSquaresLoader.flr",
-                    animation: "SlideThem",
-                    // 'assets/flare/Trim.flr',
-                    // animation: "Untitled",
-                    alignment: Alignment.center,
-                    color: Colors.white,
-                    fit: BoxFit.contain,
-                    isPaused: false,
-                    snapToEnd: true,
-                  ),
-                ),
-              ),
-              // child: new Column(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   //children: <Widget>[new Icon(Icons.mail), new Text("Inbox")],
-              //   //children: <Widget>[
-              //   //  FlareActor(
-              //   //    "assets/flare/check_profile.flr2d",
-              //   //    //animation: "On",
-              //   //  )
-              //   //],
-              //   Positioned.fill()
-              // ),
-            ),
+            // new Center(
+            //   child: Padding(
+            //     padding: EdgeInsets.all(128),
+            //     child: ShaderMask(
+            //       shaderCallback: (bounds) => RadialGradient(
+            //         center: Alignment.centerLeft,
+            //         radius: 1,
+            //         colors: [Colors.yellow, Colors.red, Colors.purple],
+            //         tileMode: TileMode.clamp,
+            //       ).createShader(bounds),
+            //       child: FlareActor(
+            //         "assets/flare/SlidinSquaresLoader.flr",
+            //         animation: "SlideThem",
+            //         // 'assets/flare/Trim.flr',
+            //         // animation: "Untitled",
+            //         alignment: Alignment.center,
+            //         color: Colors.white,
+            //         fit: BoxFit.contain,
+            //         isPaused: false,
+            //         snapToEnd: true,
+            //       ),
+            //     ),
+            //   ),
+            // ),
             // new Center(
             //   child: new Column(
             //     mainAxisAlignment: MainAxisAlignment.center,

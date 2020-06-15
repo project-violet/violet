@@ -204,6 +204,8 @@ class HitomiManager {
           case 'class':
             prefix = 'Class';
             break;
+          case 'recent':
+            return 'SELECT * FROM HitomiColumnModel';
         }
         if (prefix == '') return '';
         if (postfix == '') postfix = ss[1].replaceAll('_', ' ');

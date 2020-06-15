@@ -641,7 +641,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:usage/usage.dart';
 import 'package:usage/usage_io.dart';
 import 'package:violet/settings.dart';
-//import 'package:fluttertoast/fluttertoast.dart';
 import 'locale.dart';
 import 'package:violet/pages/database_download_page.dart';
 import 'package:violet/pages/splash_page.dart';
@@ -649,16 +648,7 @@ import 'package:violet/pages/afterloading_page.dart';
 import 'package:path_provider/path_provider.dart';
 
 DateTime currentBackPressTime;
-Future<bool> onWillPop() {
-  DateTime now = DateTime.now();
-  if (currentBackPressTime == null ||
-      now.difference(currentBackPressTime) > Duration(seconds: 2)) {
-    currentBackPressTime = now;
-    //Fluttertoast.showToast(msg: '한 번 더 누르면 종료합니다.');
-    return Future.value(false);
-  }
-  return Future.value(true);
-}
+final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
 const _filesToWarmup = [
   'assets/flare/Loading2.flr',
@@ -701,17 +691,33 @@ void main() async {
               FirebaseAnalyticsObserver(analytics: analytics),
             ],
             theme: theme,
-            home: SplashPage(), //AfterLoadingPage(),
+            home: SplashPage(),
             supportedLocales: [
               const Locale('ko', 'KR'),
               const Locale('en', 'US'),
               const Locale('ja', 'JP'),
             ],
             routes: <String, WidgetBuilder>{
-              //'/Loading':
               '/AfterLoading': (BuildContext context) => WillPopScope(
                     child: new AfterLoadingPage(),
-                    onWillPop: onWillPop,
+                    onWillPop: () {
+                      DateTime now = DateTime.now();
+                      if (currentBackPressTime == null ||
+                          now.difference(currentBackPressTime) >
+                              Duration(seconds: 2)) {
+                        currentBackPressTime = now;
+                        scaffoldKey.currentState.showSnackBar(new SnackBar(
+                          duration: Duration(seconds: 2),
+                          content: new Text(
+                            Translations.of(context).trans('closedoubletap'),
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          backgroundColor: Colors.grey.shade800,
+                        ));
+                        return Future.value(false);
+                      }
+                      return Future.value(true);
+                    },
                   ),
               '/DatabaseDownload': (BuildContext context) =>
                   new DataBaseDownloadPage(),

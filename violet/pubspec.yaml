@@ -42,7 +42,7 @@ dependencies:
   flutter_downloader:
   file_picker:
   sqflite:
-  #fluttertoast: ^2.2.1
+  # fluttertoast: #^2.2.1
   material_design_icons_flutter:
   url_launcher:
   extended_image:
@@ -69,6 +69,7 @@ dependencies:
   dynamic_theme: ^1.0.1
   html:
   html_unescape:
+  vibration: ^1.4.0
 
 dev_dependencies:
   flutter_test:
