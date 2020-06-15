@@ -1,4 +1,4 @@
-# Violet - Flutter Based Hentai Viewer
+# Violet 
 
 ![](1.gif) ![](2.gif)
 
