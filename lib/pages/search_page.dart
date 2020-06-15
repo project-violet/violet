@@ -115,7 +115,7 @@ class _SearchPageState extends State<SearchPage> {
           //     },
           Stack(children: <Widget>[
             Container(
-              //color: Colors.white,// Colors.black.withOpacity(0.1),
+              // color: Colors.white,// Colors.black.withOpacity(0.1),
               padding: EdgeInsets.fromLTRB(8, statusBarHeight + 8, 72, 0),
               child: SizedBox(
                   height: 64,
@@ -139,6 +139,9 @@ class _SearchPageState extends State<SearchPage> {
                               //       ""),
                               // ),
                               Material(
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade900.withOpacity(0.4)
+                                    : Colors.grey.shade100.withOpacity(0.4),
                                 child: ListTile(
                                   title: TextFormField(
                                     cursorColor: Colors.black,
@@ -159,7 +162,8 @@ class _SearchPageState extends State<SearchPage> {
                                         hintText: latestQuery != null &&
                                                 latestQuery.item2.trim() != ''
                                             ? latestQuery.item2
-                                            : Translations.of(context).trans('search')),
+                                            : Translations.of(context)
+                                                .trans('search')),
                                   ), //Text("검색"),
                                   leading: SizedBox(
                                     width: 25,
@@ -247,25 +251,37 @@ class _SearchPageState extends State<SearchPage> {
                   width - 8 - 64, statusBarHeight + 8, 8, 0),
               child: SizedBox(
                 height: 64,
-                child: Card(
-                  color: Colors.grey.shade200,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(8.0),
-                    ),
-                  ),
-                  elevation: 100,
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  child: InkWell(
-                    child: SizedBox(
-                      height: 64,
-                      width: 64,
-                      child: Icon(
-                        MdiIcons.formatListText,
-                        color: Colors.grey,
+                child: Hero(
+                  tag: "searchtype",
+                  child: Card(
+                    // color: Colors.grey.shade200,
+                    color: Settings.themeWhat
+                        ? Colors.grey.shade800.withOpacity(0.4)
+                        : Colors.grey.shade100.withOpacity(0.9),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(8.0),
                       ),
                     ),
-                    onTap: () async {},
+                    elevation: 100,
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    child: InkWell(
+                      child: SizedBox(
+                        height: 64,
+                        width: 64,
+                        child: Icon(
+                          MdiIcons.formatListText,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      onTap: () async {
+                        Navigator.of(context).push(PageRouteBuilder(
+                          opaque: false,
+                          transitionDuration: Duration(milliseconds: 500),
+                          pageBuilder: (_, __, ___) => SearchType(),
+                        ));
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -516,7 +532,8 @@ class _SearchBarState extends State<SearchBar>
                               ),
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: Translations.of(context).trans('search'),
+                              hintText:
+                                  Translations.of(context).trans('search'),
                             ),
                           ),
                           leading: SizedBox(
@@ -549,7 +566,8 @@ class _SearchBarState extends State<SearchBar>
                             child: RaisedButton(
                               color: Settings.majorColor,
                               textColor: Colors.white,
-                              child: Text(Translations.of(context).trans('search')),
+                              child: Text(
+                                  Translations.of(context).trans('search')),
                               onPressed: () async {
                                 final query = HitomiManager.translate2query(
                                     _searchController.text);
@@ -575,8 +593,10 @@ class _SearchBarState extends State<SearchBar>
                         child: _searchLists.length == 0 || _nothing
                             ? Center(
                                 child: Text(_nothing
-                                    ? Translations.of(context).trans('nosearchresult')
-                                    : Translations.of(context).trans('inputsearchtoken')))
+                                    ? Translations.of(context)
+                                        .trans('nosearchresult')
+                                    : Translations.of(context)
+                                        .trans('inputsearchtoken')))
                             : Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8),
                                 child: FadingEdgeScrollView
@@ -624,7 +644,8 @@ class _SearchBarState extends State<SearchBar>
                                       ListTile(
                                         leading: Icon(Icons.translate,
                                             color: Settings.majorColor),
-                                        title: Text(Translations.of(context).trans('tagtranslation')),
+                                        title: Text(Translations.of(context)
+                                            .trans('tagtranslation')),
                                         trailing: Switch(
                                           value: _tagTranslation,
                                           onChanged: (value) {
@@ -648,7 +669,8 @@ class _SearchBarState extends State<SearchBar>
                                       ListTile(
                                         leading: Icon(MdiIcons.counter,
                                             color: Settings.majorColor),
-                                        title: Text(Translations.of(context).trans('showcount')),
+                                        title: Text(Translations.of(context)
+                                            .trans('showcount')),
                                         trailing: Switch(
                                           value: _showCount,
                                           onChanged: (value) {
@@ -672,7 +694,9 @@ class _SearchBarState extends State<SearchBar>
                                             width: double.infinity,
                                             height: 60,
                                             child: RaisedButton(
-                                              color: Settings.themeWhat ? Colors.grey.shade800 : Colors.grey,
+                                              color: Settings.themeWhat
+                                                  ? Colors.grey.shade800
+                                                  : Colors.grey,
                                               child: Icon(MdiIcons.autoFix),
                                               onPressed: () {
                                                 magicProcess();
@@ -830,5 +854,59 @@ class _SearchBarState extends State<SearchBar>
       },
     );
     return fc;
+  }
+}
+
+class SearchType extends StatefulWidget {
+  @override
+  _SearchTypeState createState() => _SearchTypeState();
+}
+
+class _SearchTypeState extends State<SearchType> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // color: Settings.themeWhat ? Colors.grey.shade900 : Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Hero(
+            tag: "searchtype",
+            child: Card(
+              // color: Colors.grey.shade200,
+              color: Settings.themeWhat
+                  ? Colors.grey.shade800.withOpacity(0.4)
+                  : Colors.grey.shade100.withOpacity(0.9),
+              child:  SizedBox(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Column(
+                  children: <Widget>[
+                  ],
+                ),
+                width: 250,
+                height: 300,
+              ),
+            ),
+            ),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(1)),
+        // color: Colors.black,
+        boxShadow: [
+          BoxShadow(
+            color: Settings.themeWhat
+                ? Colors.black.withOpacity(0.2)
+                : Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -1,5 +1,6 @@
 {
     "title": "Violet",
+    "notice": "공지",
     "main": "메인",
     "search": "검색",
     "download": "다운로드",
@@ -24,6 +25,8 @@
     "viewer": "뷰어",
     "viewertype": "뷰어 타입",
     "currenttype": "현재 타입",
+    "scrollview": "스크롤 뷰",
+    "bookview": "책 뷰",
     "imgquality": "이미지 품질",
     "downloader": "다운로더",
     "instagram": "인스타그램",
@@ -32,19 +35,33 @@
     "cache": "캐시",
     "tagtranslation": "태그 한글화",
     "showcount": "카운트 표시",
+    "update":"업데이트",
+    "checkupdate": "업데이트 확인",
+    "etc":"기타",
+    "discord":"디스코드 채널",
+    "project":"프로젝트",
+    "contact":"개발자 문의",
+    "donate": "후원",
+    "externallink": "외부 링크",
+    "license":"라이센스",
+
 
     "nosearchresult": "검색 결과가 없습니다 :(",
     "inputsearchtoken": "검색어를 입력해주세요!",
+    "closedoubletap": "한 번 더 누르면 종료합니다.",
 
-    "scroll_view": "스크롤 뷰",
+    "notice1": "제 어플을 다운로드해 주셔서 감사합니다.",
+    "notice21": "문의는 ",
+    "notice22": "로 보내주세요!",
+    "notice3": "어떠한 문의라도 환영합니다!",
+    "notice4": "이 앱은 hitomi.la, e-hentai.org, exhentai.org와",
+    "notice5": "어떠한 상관도 없습니다.",
+
     "locking": "잠금",
     "enable_locking": "잠금 기능 켜기",
     "network": "네트워크",
     "routing_rule": "라우팅 규칙",
-    "proxy": "프록시 설정",
-    "discord_channel": "디스코드 채널",
-    "contact": "개발자 문의",
-    "donate": "후원",
-    "externalLink": "외부 링크"
+    "proxy": "프록시 설정"
+    
 
 }

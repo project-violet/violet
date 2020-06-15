@@ -14,6 +14,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/pages/viewer_page.dart';
+import 'package:violet/settings.dart';
 
 class ThumbnailManager {
   static HashMap<int, Tuple3<List<String>, List<String>, List<String>>> _ids = HashMap<int, Tuple3<List<String>, List<String>, List<String>>>();
@@ -361,7 +362,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
           borderRadius: BorderRadius.all(Radius.circular(1)),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
+              color: Settings.themeWhat ? Colors.black.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 1,
               offset: Offset(0, 3), // changes position of shadow
