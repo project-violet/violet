@@ -1,4 +1,4 @@
-# Violet App
+# Violet - Flutter Based Hentai Viewer
 
 ![](1.gif) ![](2.gif)
 
