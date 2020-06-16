@@ -121,12 +121,10 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //     icon: new Icon(Icons.file_download),
           //     title: new Text(Translations.of(context).trans('download'))),
           new BottomNavigationBarItem(
-            //  backgroundColor: Colors.grey.shade900.withOpacity(0.90),
              backgroundColor: Settings.themeWhat ? Colors.grey.shade900.withOpacity(0.90) : Colors.grey.shade50,
               icon: new Icon(Icons.bookmark),
               title: new Text(Translations.of(context).trans('bookmark'))),
           new BottomNavigationBarItem(
-            //  backgroundColor: Colors.grey.shade900.withOpacity(0.90),
              backgroundColor: Settings.themeWhat ? Colors.grey.shade900.withOpacity(0.90) : Colors.grey.shade50,
               icon: new Icon(Icons.settings),
               title: new Text(Translations.of(context).trans('settings'))),
