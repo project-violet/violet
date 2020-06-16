@@ -8,7 +8,6 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-//import 'package:connectivity/connectivity.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -20,114 +19,11 @@ import 'package:sqflite/sqflite.dart';
 import 'package:stacked/stacked.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:violet/database.dart';
 import 'package:violet/dialogs.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_downloader/flutter_downloader.dart';
-
-import '../database.dart';
-
-// class MyViewModel extends ChangeNotifier {
-//   double _progress = 0;
-//   get downloadProgress => _progress;
-
-//   void startDownloading() async {
-//     _progress = null;
-//     notifyListeners();
-
-//     // final url =
-//     //     'https://github.com/iiccpp/downloader/releases/download/base_database/hitomidata.db';
-//     // final request = Request('GET', Uri.parse(url));
-//     // final StreamedResponse response = await Client().send(request);
-
-//     // final contentLength = response.contentLength;
-//     // // final contentLength = double.parse(response.headers['x-decompressed-content-length']);
-
-//     // _progress = 0;
-//     // notifyListeners();
-
-//     // List<int> bytes = [];
-
-//     // final file = await _getFile('song.mp3');
-//     // response.stream.listen(
-//     //   (List<int> newBytes) {
-//     //     bytes.addAll(newBytes);
-//     //     final downloadedLength = bytes.length;
-//     //     _progress = downloadedLength / contentLength;
-//     //     notifyListeners();
-//     //   },
-//     //   onDone: () async {
-//     //     _progress = 0;
-//     //     notifyListeners();
-//     //     await file.writeAsBytes(bytes);
-//     //   },
-//     //   onError: (e) {
-//     //     print(e);
-//     //   },
-//     //   cancelOnError: true,
-//     // );
-
-//   }
-
-//   Future<File> _getFile(String filename) async {
-//     final dir = await getApplicationDocumentsDirectory();
-//     return File("${dir.path}/$filename");
-//   }
-// }
-
-// void main() => runApp(MyApp());
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: Scaffold(
-//         appBar: AppBar(title: Text('File download demo')),
-//         body: BodyWidget(),
-//         backgroundColor: Colors.white,
-//       ),
-//     );
-//   }
-// }
-
-// class BodyWidget extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return ViewModelBuilder<MyViewModel>.reactive(
-//       viewModelBuilder: () => MyViewModel(),
-//       //onModelReady: (model) => model.(),,
-//       builder: (context, model, child) => Stack(
-//         children: <Widget>[
-//           Center(
-//             child: SizedBox(
-//               width: 100,
-//               height: 100,
-//               child: CircularProgressIndicator(
-//                 strokeWidth: 20,
-//                 value: model.downloadProgress,
-//               ),
-//             ),
-//           ),
-//           Align(
-//             alignment: Alignment.bottomCenter,
-//             child: Padding(
-//               padding: const EdgeInsets.all(20.0),
-//               child: RaisedButton(
-//                 child: Text('Download file'),
-//                 onPressed: () {
-//                   model.startDownloading();
-//                 },
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class DataBaseDownloadPage extends StatefulWidget {
   @override
@@ -255,22 +151,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       });
       _timer.cancel();
 
-      // HttpClient client = new HttpClient();
-      // client
-      //     .getUrl(Uri.parse(imgUrl))
-      //     .then((HttpClientRequest request) {
-      //   // Optionally set up headers...
-      //   // Optionally write to the request object...
-      //   // Then call close.
-      //   return request.close();
-      // }).then((HttpClientResponse response) {
-      //   // Process the response.
-      //   //esponse.re
-      // });
-
       setState(() {
         downloading = false;
-        //baseString = "다운로드완료!\n앱을 재실행 해주세요!";
       });
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
@@ -344,11 +226,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         insertSingle(classes, item.classname());
       }
 
-      // var sk = tags.keys.toList(growable: true)
-      //   ..sort((a, b) => tags[b].compareTo(tags[a]));
-      // var sortedMap = new LinkedHashMap.fromIterable(sk,
-      //     key: (k) => k, value: (k) => tags[k]);
-
       if (ll.length == 0) {
         var index = {
           "tag": tags,
@@ -374,41 +251,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       i++;
     }
   }
-
-  // ReceivePort _port = ReceivePort();
-  // Future<void> downloadFile2() async {
-  //   WidgetsFlutterBinding.ensureInitialized();
-  //   await FlutterDownloader.initialize(
-  //       debug: true // optional: set false to disable printing logs to console
-  //       );
-
-  //   FlutterDownloader.registerCallback(downloadCallback);
-  //   IsolateNameServer.registerPortWithName(
-  //       _port.sendPort, 'downloader_send_port');
-  //   _port.listen((dynamic data) {
-  //     String id = data[0];
-  //     DownloadTaskStatus status = data[1];
-  //     int progress = data[2];
-  //     setState(() {
-  //       downloading = true;
-  //       progressString = progress.toString() + "%";
-  //     });
-  //   });
-
-  //   var dir = await getApplicationDocumentsDirectory();
-
-  //   final taskId = await FlutterDownloader.enqueue(
-  //     url: imgUrl,
-  //     savedDir: "${dir.path}",
-  //     fileName: "db.sql",
-  //     showNotification:
-  //         true, // show download progress in status bar (for Android)
-  //     openFileFromNotification:
-  //         true, // click on notification to open downloaded file (for Android)
-  //   );
-
-  //   (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-  // }
 
   @override
   void dispose() {
