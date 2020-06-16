@@ -15,9 +15,11 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:tuple/tuple.dart';
+import 'package:vibration/vibration.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/locale.dart';
+import 'package:violet/pages/search_page.dart';
 import 'package:violet/pages/viewer_page.dart';
 import 'package:violet/settings.dart';
 
@@ -66,7 +68,12 @@ class _ArticleListItemVerySimpleWidgetState
   bool isBlurred = false;
   bool disposed = false;
   bool isBookmarked = false;
+  bool checkSearchPageBlur = false;
+  bool animating = false;
   FlareControls _flareController = FlareControls();
+  Animation<double> _animation;
+  Tween<double> _tween;
+  AnimationController _animationController;
 
   @override
   void initState() {
@@ -82,6 +89,20 @@ class _ArticleListItemVerySimpleWidgetState
         scale = scaleAnimationController.value;
       });
     });
+    _animationController =
+        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
+    _tween = Tween(begin: 0.0, end: 5.0);
+    _animation = _tween.animate(_animationController)
+      ..addListener(() {
+        setState(() {});
+      })
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed ||
+            status == AnimationStatus.dismissed) {
+          checkSearchPageBlur = searchPageBlur;
+          animating = false;
+        }
+      });
   }
 
   @override
@@ -94,6 +115,16 @@ class _ArticleListItemVerySimpleWidgetState
   @override
   Widget build(BuildContext context) {
     if (disposed) return null;
+    if (checkSearchPageBlur != searchPageBlur && animating == false) {
+      // _animationController.reset();
+      animating = true;
+      checkSearchPageBlur = searchPageBlur;
+      if (searchPageBlur == true) {
+        _animationController.forward();
+      } else {
+        _animationController.reverse();
+      }
+    }
     var windowWidth = MediaQuery.of(context).size.width;
     if (!ThumbnailManager.isExists(widget.queryResult.id())) {
       HitomiManager.getImageList(widget.queryResult.id().toString())
@@ -113,7 +144,6 @@ class _ArticleListItemVerySimpleWidgetState
     var headers = {
       "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
     };
-
     return PimpedButton(
         particle: Rectangle2DemoParticle(),
         pimpedWidgetBuilder: (context, controller) {
@@ -165,10 +195,13 @@ class _ArticleListItemVerySimpleWidgetState
                                               image: imageProvider,
                                               fit: BoxFit.cover),
                                         ),
-                                        child: isBlurred
-                                            ? new BackdropFilter(
+                                        child: isBlurred ||
+                                                checkSearchPageBlur ||
+                                                animating
+                                            ? BackdropFilter(
                                                 filter: new ImageFilter.blur(
-                                                    sigmaX: 5.0, sigmaY: 5.0),
+                                                    sigmaX: isBlurred ? 5.0 : _animation.value,
+                                                    sigmaY: isBlurred ? 5.0 : _animation.value),
                                                 child: new Container(
                                                   decoration: new BoxDecoration(
                                                       color: Colors.white
@@ -328,11 +361,18 @@ class _ArticleListItemVerySimpleWidgetState
                 _flareController.play('Like');
               }
               await HapticFeedback.vibrate();
+
+              // await Vibration.vibrate(duration: 50, amplitude: 50);
               setState(() {
                 pad = 0;
               });
             },
             onLongPressEnd: (detail) {
+              setState(() {
+                pad = 0;
+              });
+            },
+            onTapCancel: () {
               setState(() {
                 pad = 0;
               });
@@ -355,6 +395,9 @@ class _ArticleListItemVerySimpleWidgetState
                   heroKey: 'thumbnail' + widget.queryResult.id().toString(),
                 ),
               ));
+              setState(() {
+                pad = 0;
+              });
             },
           );
         });
@@ -405,84 +448,96 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        child: Container(
-          padding: EdgeInsets.all(0),
-          child: Transform.scale(
-            scale: scale,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Hero(
-                    tag: widget.heroKey,
-                    child: CachedNetworkImage(
-                      imageUrl: widget.thumbnail,
-                      fit: BoxFit.cover,
-                      httpHeaders: widget.headers,
-                      placeholder: (b, c) {
-                        return FlareActor(
-                          "assets/flare/Loading2.flr",
-                          alignment: Alignment.center,
-                          fit: BoxFit.fitHeight,
-                          animation: "Alarm",
-                        );
-                      },
-                    ),
+      child: Container(
+        padding: EdgeInsets.all(0),
+        child: Transform.scale(
+          scale: scale,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Hero(
+                  tag: widget.heroKey,
+                  child: CachedNetworkImage(
+                    imageUrl: widget.thumbnail,
+                    fit: BoxFit.cover,
+                    httpHeaders: widget.headers,
+                    placeholder: (b, c) {
+                      return FlareActor(
+                        "assets/flare/Loading2.flr",
+                        alignment: Alignment.center,
+                        fit: BoxFit.fitHeight,
+                        animation: "Alarm",
+                      );
+                    },
                   ),
-                ]),
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(1)),
-            boxShadow: [
-              BoxShadow(
-                color: Settings.themeWhat
-                    ? Colors.black.withOpacity(0.2)
-                    : Colors.grey.withOpacity(0.2),
-                spreadRadius: 1,
-                blurRadius: 1,
-                offset: Offset(0, 3), // changes position of shadow
-              ),
-            ],
-          ),
+                ),
+              ]),
         ),
-        onScaleUpdate: (detail) {
-          setState(() {
-            scale = latest * detail.scale;
-          });
-
-          if (scale < 0.6) Navigator.pop(context);
-        },
-        onScaleEnd: (detail) {
-          latest = scale;
-        },
-        onVerticalDragStart: (detail) {
-          dragStart = detail.localPosition.dy;
-        },
-        onVerticalDragUpdate: (detail) {
-          if (zooming) {
-            setState(() {
-              scale += (detail.delta.dy) / 100;
-            });
-            latest = scale;
-            if (scale < 0.6) Navigator.pop(context);
-          } else if (detail.localPosition.dy - dragStart > 50)
-            Navigator.pop(context);
-        },
-        onTapDown: (detail) {
-          DateTime now = DateTime.now();
-          if (currentBackPressTime == null ||
-              now.difference(currentBackPressTime) > Duration(milliseconds: 300)) {
-            currentBackPressTime = now;
-            return;
-          }
-          zooming = true;
-        },
-        onTapUp: (detail) {
-          zooming = false;
-          print('asdf');
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.2)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+      ),
+      onScaleStart: (detail) {
+        tapCount = 2;
+      },
+      onScaleUpdate: (detail) {
+        setState(() {
+          scale = latest * detail.scale;
         });
+
+        if (scale < 0.6) Navigator.pop(context);
+      },
+      onScaleEnd: (detail) {
+        latest = scale;
+        tapCount = 0;
+      },
+      onVerticalDragStart: (detail) {
+        dragStart = detail.localPosition.dy;
+      },
+      onVerticalDragUpdate: (detail) {
+        if (zooming || tapCount == 2) {
+          setState(() {
+            scale += (detail.delta.dy) / 100;
+          });
+          latest = scale;
+          if (scale < 0.6) Navigator.pop(context);
+        } else if (tapCount != 2 ||
+            (detail.localPosition.dy - dragStart).abs() > 70)
+          Navigator.pop(context);
+      },
+      onTapDown: (detail) {
+        tapCount++;
+        DateTime now = DateTime.now();
+        if (currentBackPressTime == null ||
+            now.difference(currentBackPressTime) >
+                Duration(milliseconds: 300)) {
+          currentBackPressTime = now;
+          return;
+        }
+        zooming = true;
+      },
+      onTapUp: (detail) {
+        tapCount--;
+        zooming = false;
+      },
+      onTapCancel: () {
+        tapCount = 0;
+      },
+    );
   }
 
+  int tapCount = 0;
   double dragStart;
   bool zooming = false;
   DateTime currentBackPressTime;
