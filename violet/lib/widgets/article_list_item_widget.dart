@@ -405,67 +405,87 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Container(
-        padding: EdgeInsets.all(0),
-        child: Transform.scale(
-          scale: scale,
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Hero(
-                  tag: widget.heroKey,
-                  child: CachedNetworkImage(
-                    imageUrl: widget.thumbnail,
-                    fit: BoxFit.cover,
-                    httpHeaders: widget.headers,
-                    placeholder: (b, c) {
-                      return FlareActor(
-                        "assets/flare/Loading2.flr",
-                        alignment: Alignment.center,
-                        fit: BoxFit.fitHeight,
-                        animation: "Alarm",
-                      );
-                    },
+        child: Container(
+          padding: EdgeInsets.all(0),
+          child: Transform.scale(
+            scale: scale,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Hero(
+                    tag: widget.heroKey,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.thumbnail,
+                      fit: BoxFit.cover,
+                      httpHeaders: widget.headers,
+                      placeholder: (b, c) {
+                        return FlareActor(
+                          "assets/flare/Loading2.flr",
+                          alignment: Alignment.center,
+                          fit: BoxFit.fitHeight,
+                          animation: "Alarm",
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ]),
+                ]),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(1)),
+            boxShadow: [
+              BoxShadow(
+                color: Settings.themeWhat
+                    ? Colors.black.withOpacity(0.2)
+                    : Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 1,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
         ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.2)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-      ),
-      onScaleUpdate: (detail) {
-        setState(() {
-          scale = latest * detail.scale;
-        });
+        onScaleUpdate: (detail) {
+          setState(() {
+            scale = latest * detail.scale;
+          });
 
-        if (scale < 0.6) Navigator.pop(context);
-      },
-      onScaleEnd: (detail) {
-        latest = scale;
-      },
-      onVerticalDragStart: (detail) {
-        dragStart = detail.localPosition.dy;
-      },
-      onVerticalDragUpdate: (detail) {
-        if (detail.localPosition.dy - dragStart > 100)
-          Navigator.pop(context);
-      },
-    );
+          if (scale < 0.6) Navigator.pop(context);
+        },
+        onScaleEnd: (detail) {
+          latest = scale;
+        },
+        onVerticalDragStart: (detail) {
+          dragStart = detail.localPosition.dy;
+        },
+        onVerticalDragUpdate: (detail) {
+          if (zooming) {
+            setState(() {
+              scale += (detail.delta.dy) / 100;
+            });
+            latest = scale;
+            if (scale < 0.6) Navigator.pop(context);
+          } else if (detail.localPosition.dy - dragStart > 50)
+            Navigator.pop(context);
+        },
+        onTapDown: (detail) {
+          DateTime now = DateTime.now();
+          if (currentBackPressTime == null ||
+              now.difference(currentBackPressTime) > Duration(milliseconds: 300)) {
+            currentBackPressTime = now;
+            return;
+          }
+          zooming = true;
+        },
+        onTapUp: (detail) {
+          zooming = false;
+          print('asdf');
+        });
   }
 
   double dragStart;
+  bool zooming = false;
+  DateTime currentBackPressTime;
 }
 
 class ArticleListItemDetailWidget extends StatefulWidget {
