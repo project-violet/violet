@@ -27,6 +27,7 @@ import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database.dart';
 import 'package:violet/main.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/widgets/article_list_item_widget.dart';
 import 'package:violet/widgets/viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
 import 'package:flare_flutter/flare_render_box.dart';
@@ -92,6 +93,7 @@ class TestPage extends StatelessWidget {
               ),
               RaisedButton(
                 child: Text('애니메이션 Test'),
+                // child: Fireworks(),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -155,6 +157,12 @@ class TestPage extends StatelessWidget {
                   print(Colors.black.toString());
                 },
               ),
+              // RaisedButton(
+              //   // child: Fireworks(),
+              //   onPressed: () {
+              //     print(Colors.black.toString());
+              //   },
+              // ),
               RaisedButton(
                 child: Text('Parsing Test'),
                 onPressed: () async {

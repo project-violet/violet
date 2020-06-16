@@ -9,7 +9,7 @@ class Settings {
   static bool themeWhat; // default false == light
   static Color majorColor; // default purple
   static Color majorAccentColor;
-  static int searchResultType; // 0: BigImage, 1: Grid, 2: Detail
+  static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
@@ -42,8 +42,9 @@ class Settings {
     if (searchResultType == null) {
       (await SharedPreferences.getInstance())
           .setInt('searchResultType', searchResultType);
-      searchResultType = 1; 
+      searchResultType = 0; 
     }
+    // majorColor = Color(0xFF5656E7);
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -53,5 +54,10 @@ class Settings {
     else
       themeColor = Colors.black;
     (await SharedPreferences.getInstance()).setBool('themeColor', themeWhat);
+  }
+
+  static Future<void> setSearchResultType(int wh) async {
+    searchResultType = wh;
+    (await SharedPreferences.getInstance()).setInt('searchResultType', searchResultType); 
   }
 }

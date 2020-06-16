@@ -70,6 +70,7 @@ dependencies:
   html:
   html_unescape:
   vibration: ^1.4.0
+  pimp_my_button: ^1.0.0
 
 dev_dependencies:
   flutter_test:
