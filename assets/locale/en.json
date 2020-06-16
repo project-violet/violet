@@ -44,6 +44,10 @@
     "donate": "Donate",
     "externallink": "External Links",
     "license":"License",
+    "srt0": "3 Line Grid View",
+    "srt1": "2 Line Grid View",
+    "str2": "Lined View",
+    "str3": "Detail View",
 
     "nosearchresult": "No search results found :(",
     "inputsearchtoken": "Please enter a search term!",

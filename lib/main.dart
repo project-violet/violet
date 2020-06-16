@@ -652,6 +652,7 @@ final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
 const _filesToWarmup = [
   'assets/flare/Loading2.flr',
+  'assets/flare/likeUtsua.flr'
 ];
 
 Future<void> warmupFlare() async {
