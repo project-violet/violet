@@ -4,6 +4,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:violet/settings.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/locale.dart';
 
@@ -71,7 +72,7 @@ class _MainPageState extends State<MainPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('Notice',//Translations.of(context).trans('notice'),
+                    Text('Notice', //Translations.of(context).trans('notice'),
                         style: TextStyle(
                           fontSize: 46.0,
                           fontFamily: "Calibre-Semibold",
@@ -80,15 +81,20 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
               ),
-               Padding(
+              Padding(
                 padding: EdgeInsets.all(12),
               ),
-              Text(Translations.of(context).trans('notice1'),),
+              Text(
+                Translations.of(context).trans('notice1'),
+              ),
               RichText(
                 text: TextSpan(
                   children: [
                     TextSpan(
                       text: Translations.of(context).trans('notice21'),
+                      style: TextStyle(
+                          color:
+                              Settings.themeWhat ? Colors.white : Colors.black),
                     ),
                     TextSpan(
                       style: TextStyle(
@@ -110,6 +116,9 @@ class _MainPageState extends State<MainPage> {
                     ),
                     TextSpan(
                       text: Translations.of(context).trans('notice22'),
+                      style: TextStyle(
+                          color:
+                              Settings.themeWhat ? Colors.white : Colors.black),
                     ),
                   ],
                 ),
