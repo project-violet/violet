@@ -455,8 +455,17 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
       onScaleEnd: (detail) {
         latest = scale;
       },
+      onVerticalDragStart: (detail) {
+        dragStart = detail.localPosition.dy;
+      },
+      onVerticalDragUpdate: (detail) {
+        if (detail.localPosition.dy - dragStart > 100)
+          Navigator.pop(context);
+      },
     );
   }
+
+  double dragStart;
 }
 
 class ArticleListItemDetailWidget extends StatefulWidget {
