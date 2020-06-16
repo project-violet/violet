@@ -24,6 +24,8 @@ import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
 
+bool searchPageBlur = false;
+
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -226,13 +228,28 @@ class _SearchPageState extends State<SearchPage>
               ),
             ),
           ]),
-          Expanded(child: makeResult()),
+          Expanded(
+            child: GestureDetector(
+              child: makeResult(),
+              onScaleStart: (detail) {
+                scaleOnce = false;
+              },
+              onScaleUpdate: (detail) {
+                if ((detail.scale > 1.2 || detail.scale < 0.8) && scaleOnce == false) {
+                  scaleOnce = true;
+                  setState(() {
+                    searchPageBlur = !searchPageBlur;
+                  });
+                }
+              },
+            ),
+          ),
         ],
       ),
-      //),
     );
   }
 
+  bool scaleOnce = false;
   List<QueryResult> queryResult = List<QueryResult>();
 
   Future<void> loadNextQuery() async {
