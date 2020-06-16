@@ -41,7 +41,10 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMixin<SearchPage> {
+  @override
+  bool get wantKeepAlive => true;
+  
   Color color = Colors.green;
   //double radius = 0;
   bool into = false;

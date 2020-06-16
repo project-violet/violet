@@ -7,23 +7,28 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
+import 'package:violet/locale.dart';
 import 'package:violet/pages/viewer_page.dart';
 import 'package:violet/settings.dart';
 
 class ThumbnailManager {
-  static HashMap<int, Tuple3<List<String>, List<String>, List<String>>> _ids = HashMap<int, Tuple3<List<String>, List<String>, List<String>>>();
+  static HashMap<int, Tuple3<List<String>, List<String>, List<String>>> _ids =
+      HashMap<int, Tuple3<List<String>, List<String>, List<String>>>();
 
   static bool isExists(int id) {
     return _ids.containsKey(id);
   }
 
-  static void insert(int id, Tuple3<List<String>, List<String>, List<String>> url) {
+  static void insert(
+      int id, Tuple3<List<String>, List<String>, List<String>> url) {
     _ids[id] = url;
   }
 
@@ -58,6 +63,8 @@ class _ArticleListItemVerySimpleWidgetState
   AnimationController scaleAnimationController;
   bool isBlurred = false;
   bool disposed = false;
+  bool isBookmarked = false;
+  FlareControls _flareController = FlareControls();
 
   @override
   void initState() {
@@ -98,7 +105,7 @@ class _ArticleListItemVerySimpleWidgetState
     } else {
       var thumbnails = ThumbnailManager.get(widget.queryResult.id()).item2;
       thumbnail = thumbnails[0];
-      imageCount = thumbnails.length; 
+      imageCount = thumbnails.length;
     }
 
     var headers = {
@@ -168,6 +175,23 @@ class _ArticleListItemVerySimpleWidgetState
                                 animation: "Alarm",
                               );
                             },
+                          ),
+                        ),
+                        Align(
+                          alignment: FractionalOffset.topLeft,
+                          child: Transform(
+                            transform: new Matrix4.identity()..scale(0.9),
+                            child: SizedBox(
+                              width: 35,
+                              height: 35,
+                              child: FlareActor(
+                                'assets/flare/likeUtsua.flr',
+                                animation: isBookmarked ? "Like" : "IdleUnlike",
+                                controller: _flareController,
+                                // color: Colors.orange,
+                                // snapToEnd: true,
+                              ),
+                            ),
                           ),
                         ),
                         Align(
@@ -245,7 +269,6 @@ class _ArticleListItemVerySimpleWidgetState
         setState(() {
           pad = 10.0;
         });
-        print(widget.queryResult.id());
       },
       onTapUp: (detail) {
         if (onScaling) return;
@@ -265,6 +288,25 @@ class _ArticleListItemVerySimpleWidgetState
             },
           ),
         );
+      },
+      onLongPress: () async {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          duration: Duration(seconds: 2),
+          content: new Text(
+            isBookmarked ? '${widget.queryResult.id()}가 북마크에서 삭제되었습니다.' : '${widget.queryResult.id()}가 북마크에 추가되었습니다.',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.grey.shade800,
+        ));
+        isBookmarked = !isBookmarked;
+        if (!isBookmarked)
+          _flareController.play('Unlike');
+        else
+          _flareController.play('Like');
+        await HapticFeedback.vibrate();
+        setState(() {
+          pad = 0;
+        });
       },
       onLongPressEnd: (detail) {
         setState(() {
@@ -362,7 +404,9 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
           borderRadius: BorderRadius.all(Radius.circular(1)),
           boxShadow: [
             BoxShadow(
-              color: Settings.themeWhat ? Colors.black.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.2)
+                  : Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 1,
               offset: Offset(0, 3), // changes position of shadow
@@ -383,7 +427,6 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
     );
   }
 }
-
 
 class ArticleListItemDetailWidget extends StatefulWidget {
   @override

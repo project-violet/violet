@@ -129,6 +129,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> with WidgetsBinding
               this._page = newPage;
             });
           },
+          
           children: <Widget>[
             MainPage(),
             // new Center(
@@ -225,4 +226,39 @@ class _AfterLoadingPageState extends State<AfterLoadingPage> with WidgetsBinding
       // ),
     );
   }
+}
+
+
+// https://stackoverflow.com/a/50074067/3355656
+class OnePage extends StatefulWidget {
+  final Color color;
+
+  const OnePage({Key key, this.color}) : super(key: key);
+
+  @override
+  _OnePageState createState() => new _OnePageState();
+}
+
+class _OnePageState extends State<OnePage> with AutomaticKeepAliveClientMixin<OnePage> {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return new SizedBox.expand(
+      child: new ListView.builder(
+        itemCount: 100,
+        itemBuilder: (context, index) {
+          return new Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: new Text(
+              '$index',
+              style: new TextStyle(color: widget.color),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }
