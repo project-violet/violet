@@ -41,10 +41,11 @@ class SearchPage extends StatefulWidget {
   _SearchPageState createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMixin<SearchPage> {
+class _SearchPageState extends State<SearchPage>
+    with AutomaticKeepAliveClientMixin<SearchPage> {
   @override
   bool get wantKeepAlive => true;
-  
+
   Color color = Colors.green;
   //double radius = 0;
   bool into = false;
@@ -53,6 +54,7 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
   //FocusNode _focus = new FocusNode();
   final FlareControls heroFlareControls = FlareControls();
   FlutterActorArtboard artboard;
+  bool isinner = false;
 
   @override
   void initState() {
@@ -258,9 +260,12 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
                   tag: "searchtype",
                   child: Card(
                     // color: Colors.grey.shade200,
+                    // color: Settings.themeWhat
+                    //     ? Colors.grey.shade800.withOpacity(0.4)
+                    //     : Colors.grey.shadre100.withOpacity(0.9),
                     color: Settings.themeWhat
-                        ? Colors.grey.shade800.withOpacity(0.4)
-                        : Colors.grey.shade100.withOpacity(0.9),
+                        ? Color(0xFF353535)
+                        : Colors.grey.shade100,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
                         Radius.circular(8.0),
@@ -272,17 +277,42 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
                       child: SizedBox(
                         height: 64,
                         width: 64,
-                        child: Icon(
-                          MdiIcons.formatListText,
-                          color: Colors.grey,
-                        ),
+                        child: isinner
+                            ? Container()
+                            : Stack(
+                                alignment: Alignment.center,
+                                children: <Widget>[
+                                  Icon(
+                                    MdiIcons.formatListText,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ),
                       ),
                       onTap: () async {
-                        Navigator.of(context).push(PageRouteBuilder(
+                        setState(() {
+                          isinner = true;
+                        });
+                        Navigator.of(context)
+                            .push(PageRouteBuilder(
                           opaque: false,
                           transitionDuration: Duration(milliseconds: 500),
+                          transitionsBuilder: (BuildContext context,
+                              Animation<double> animation,
+                              Animation<double> secondaryAnimation,
+                              Widget wi) {
+                            return new FadeTransition(
+                                opacity: animation, child: wi);
+                          },
                           pageBuilder: (_, __, ___) => SearchType(),
-                        ));
+                        ))
+                            .then((value) async {
+                          await Future.delayed(Duration(milliseconds: 50), () {
+                            setState(() {
+                              isinner = false;
+                            });
+                          });
+                        });
                       },
                     ),
                   ),
@@ -335,32 +365,6 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
   Widget makeResult() {
     switch (Settings.searchResultType) {
       case 0:
-        return ListView.builder(
-          physics: const BouncingScrollPhysics(), // new
-          itemCount: queryResult.length,
-          itemBuilder: (context, index) {
-            return Align(
-                alignment: Alignment.center,
-                child: ArticleListItemVerySimpleWidget(
-                    addBottomPadding: true, queryResult: queryResult[index])
-                //FadeInImage(placeholder: Text('loading'), image: ,)
-                // Text(
-                //   queryResult[index].title(),
-                // ),
-
-                // Card(
-                //   elevation: 10,
-                //   child: Container(
-                //     width: width - 100,
-                //     height: 200,
-                //     child: Text(
-                //       queryResult[index].title(),
-                //     ),
-                //   ),
-                // ),
-                );
-          },
-        );
       case 1:
         return LiveGrid(
           physics: const BouncingScrollPhysics(),
@@ -371,7 +375,7 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
           itemCount: queryResult.length,
           shrinkWrap: false,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
+            crossAxisCount: Settings.searchResultType == 0 ? 3 : 2,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
             childAspectRatio: 3 / 4,
@@ -429,6 +433,33 @@ class _SearchPageState extends State<SearchPage> with AutomaticKeepAliveClientMi
           },
         );
 
+      case 2:
+        return ListView.builder(
+          physics: const BouncingScrollPhysics(), // new
+          itemCount: queryResult.length,
+          itemBuilder: (context, index) {
+            return Align(
+                alignment: Alignment.center,
+                child: ArticleListItemVerySimpleWidget(
+                    addBottomPadding: true, queryResult: queryResult[index])
+                //FadeInImage(placeholder: Text('loading'), image: ,)
+                // Text(
+                //   queryResult[index].title(),
+                // ),
+
+                // Card(
+                //   elevation: 10,
+                //   child: Container(
+                //     width: width - 100,
+                //     height: 200,
+                //     child: Text(
+                //       queryResult[index].title(),
+                //     ),
+                //   ),
+                // ),
+                );
+          },
+        );
       default:
         return Container(
           child: Center(
@@ -878,20 +909,94 @@ class _SearchTypeState extends State<SearchType> {
             tag: "searchtype",
             child: Card(
               // color: Colors.grey.shade200,
-              color: Settings.themeWhat
-                  ? Colors.grey.shade800.withOpacity(0.8)
-                  : Colors.grey.shade100.withOpacity(0.9),
-              child:  SizedBox(
-              child: Container(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: Column(
-                  children: <Widget>[
-                  ],
+              // color: Settings.themeWhat
+              //     ? Colors.grey.shade800.withOpacity(0.8)
+              //     : Colors.grey.shade100.withOpacity(0.9),
+              color:
+                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+
+              child: SizedBox(
+                child: SizedBox(
+                  width: 280,
+                  height: 240,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.grid_on,
+                              color: Settings.searchResultType == 0
+                                  ? Colors.grey.shade200
+                                  : Colors.grey.shade400),
+                          title: Text('3 Line Grid View',
+                              style: TextStyle(
+                                  color: Settings.searchResultType == 0
+                                      ? Colors.grey.shade200
+                                      : Colors.grey.shade400)),
+                          onTap: () async {
+                            Settings.setSearchResultType(0);
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(MdiIcons.gridLarge,
+                              color: Settings.searchResultType == 1 ? Colors.grey.shade200 : Colors.grey.shade400),
+                          title: Text(
+                            '2 Line Grid View',
+                            style: TextStyle(color: Settings.searchResultType == 1 ? Colors.grey.shade200 : Colors.grey.shade400)
+                          ),
+                          onTap: () async {
+                            Settings.setSearchResultType(1);
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(MdiIcons.viewAgendaOutline,
+                              color: Settings.searchResultType == 2 ? Colors.grey.shade200 : Colors.grey.shade400),
+                          title: Text(
+                            'Lined view',
+                            style: TextStyle(color: Settings.searchResultType == 2 ? Colors.grey.shade200 : Colors.grey.shade400),
+                          ),
+                          onTap: () async {
+                            Settings.setSearchResultType(2);
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(MdiIcons.formatListText,
+                              color: Settings.searchResultType == 3 ? Colors.grey.shade200 : Colors.grey.shade400),
+                          title: Text(
+                            'Detail View',
+                            style: TextStyle(color: Settings.searchResultType == 3 ? Colors.grey.shade200 : Colors.grey.shade400),
+                          ),
+                          onTap: () async {
+                            Settings.setSearchResultType(3);
+                          },
+                        ),
+                        Expanded(
+                          child: Container(),
+                        )
+                      ],
+                    ),
+                  ),
                 ),
-                width: 250,
-                height: 300,
+
+                // Container(
+                //   padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                //   child: Column(
+                //     children: <Widget>[
+                //       SizedBox(
+                //         height: 64,
+                //         width: 64,
+                //         child: Icon(
+                //           MdiIcons.formatListText,
+                //           color: Colors.grey,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                //   width: 250,
+                //   height: 300,
+                // ),
               ),
-            ),
             ),
           ),
         ],
@@ -902,7 +1007,7 @@ class _SearchTypeState extends State<SearchType> {
         boxShadow: [
           BoxShadow(
             color: Settings.themeWhat
-                ? Colors.black.withOpacity(0.2)
+                ? Colors.black.withOpacity(0.4)
                 : Colors.grey.withOpacity(0.2),
             spreadRadius: 1,
             blurRadius: 1,

@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
@@ -112,221 +114,244 @@ class _ArticleListItemVerySimpleWidgetState
       "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
     };
 
-    return GestureDetector(
-      // child: Transform.scale(
-      //   scale: scale,
-      //   child: SizedBox(
-      //     width: windowWidth - 100,
-      //     height: 500,
-      child: AnimatedContainer(
-        curve: Curves.easeInOut,
-        duration: Duration(milliseconds: 300),
-        padding: EdgeInsets.all(pad),
-        child: Container(
-          margin: widget.addBottomPadding
-              ? EdgeInsets.only(bottom: 50)
-              : EdgeInsets.zero,
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.2),
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                spreadRadius: 5,
-                blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
-              ),
-            ],
-          ),
-          child: Container(
-            child: thumbnail != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: Stack(
-                      children: <Widget>[
-                        Hero(
-                          tag: 'thumbnail' + widget.queryResult.id().toString(),
-                          child: CachedNetworkImage(
-                            imageUrl: thumbnail,
-                            fit: BoxFit.cover,
-                            httpHeaders: headers,
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: imageProvider, fit: BoxFit.cover),
-                              ),
-                              child: isBlurred
-                                  ? new BackdropFilter(
-                                      filter: new ImageFilter.blur(
-                                          sigmaX: 5.0, sigmaY: 5.0),
-                                      child: new Container(
-                                        decoration: new BoxDecoration(
-                                            color:
-                                                Colors.white.withOpacity(0.0)),
-                                      ),
-                                    )
-                                  : Container(),
-                            ),
-                            placeholder: (b, c) {
-                              return FlareActor(
-                                "assets/flare/Loading2.flr",
-                                alignment: Alignment.center,
-                                fit: BoxFit.fitHeight,
-                                animation: "Alarm",
-                              );
-                            },
-                          ),
-                        ),
-                        Align(
-                          alignment: FractionalOffset.topLeft,
-                          child: Transform(
-                            transform: new Matrix4.identity()..scale(0.9),
-                            child: SizedBox(
-                              width: 35,
-                              height: 35,
-                              child: FlareActor(
-                                'assets/flare/likeUtsua.flr',
-                                animation: isBookmarked ? "Like" : "IdleUnlike",
-                                controller: _flareController,
-                                // color: Colors.orange,
-                                // snapToEnd: true,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: FractionalOffset.bottomRight,
-                          child: Transform(
-                            transform: new Matrix4.identity()..scale(0.9),
-                            child: Theme(
-                              data: ThemeData(canvasColor: Colors.transparent),
-                              child: RawChip(
-                                labelPadding: EdgeInsets.all(0.0),
-                                // avatar: CircleAvatar(
-                                //   backgroundColor: Colors.grey.shade600,
-                                //   child: Text('P'),
-                                // ),
-                                label: Text(
-                                  '' + imageCount.toString() + ' Page',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-
-                                // backgroundColor: Colors.pink,
-                                elevation: 6.0,
-                                shadowColor: Colors.grey[60],
-                                padding: EdgeInsets.all(6.0),
-                              ),
-                            ),
-                          ),
+    return PimpedButton(
+        particle: Rectangle2DemoParticle(),
+        pimpedWidgetBuilder: (context, controller) {
+          return GestureDetector(
+            child: Transform.scale(
+              scale: scale,
+              child: SizedBox(
+                width: windowWidth - 100,
+                height: 500,
+                child: AnimatedContainer(
+                  curve: Curves.easeInOut,
+                  duration: Duration(milliseconds: 300),
+                  padding: EdgeInsets.all(pad),
+                  child: Container(
+                    margin: widget.addBottomPadding
+                        ? EdgeInsets.only(bottom: 50)
+                        : EdgeInsets.zero,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.3),
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Settings.themeWhat
+                              ? Colors.grey.withOpacity(0.08)
+                              : Colors.grey.withOpacity(0.4),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
                         ),
                       ],
                     ),
-                  )
-                : FlareActor(
-                    "assets/flare/Loading2.flr",
-                    alignment: Alignment.center,
-                    fit: BoxFit.fitHeight,
-                    animation: "Alarm",
+                    child: Container(
+                      child: thumbnail != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: Stack(
+                                children: <Widget>[
+                                  Hero(
+                                    tag: 'thumbnail' +
+                                        widget.queryResult.id().toString(),
+                                    child: CachedNetworkImage(
+                                      imageUrl: thumbnail,
+                                      fit: BoxFit.cover,
+                                      httpHeaders: headers,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover),
+                                        ),
+                                        child: isBlurred
+                                            ? new BackdropFilter(
+                                                filter: new ImageFilter.blur(
+                                                    sigmaX: 5.0, sigmaY: 5.0),
+                                                child: new Container(
+                                                  decoration: new BoxDecoration(
+                                                      color: Colors.white
+                                                          .withOpacity(0.0)),
+                                                ),
+                                              )
+                                            : Container(),
+                                      ),
+                                      placeholder: (b, c) {
+                                        return FlareActor(
+                                          "assets/flare/Loading2.flr",
+                                          alignment: Alignment.center,
+                                          fit: BoxFit.fitHeight,
+                                          animation: "Alarm",
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: FractionalOffset.topLeft,
+                                    child: Transform(
+                                      transform: new Matrix4.identity()
+                                        ..scale(0.9),
+                                      child: SizedBox(
+                                        width: 35,
+                                        height: 35,
+                                        child: FlareActor(
+                                          'assets/flare/likeUtsua.flr',
+                                          animation: isBookmarked
+                                              ? "Like"
+                                              : "IdleUnlike",
+                                          controller: _flareController,
+                                          // color: Colors.orange,
+                                          // snapToEnd: true,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: FractionalOffset.bottomRight,
+                                    child: Transform(
+                                      transform: new Matrix4.identity()
+                                        ..scale(0.9),
+                                      child: Theme(
+                                        data: ThemeData(
+                                            canvasColor: Colors.transparent),
+                                        child: RawChip(
+                                          labelPadding: EdgeInsets.all(0.0),
+                                          // avatar: CircleAvatar(
+                                          //   backgroundColor: Colors.grey.shade600,
+                                          //   child: Text('P'),
+                                          // ),
+                                          label: Text(
+                                            '' +
+                                                imageCount.toString() +
+                                                ' Page',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+
+                                          // backgroundColor: Colors.pink,
+                                          elevation: 6.0,
+                                          shadowColor: Colors.grey[60],
+                                          padding: EdgeInsets.all(6.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : FlareActor(
+                              "assets/flare/Loading2.flr",
+                              alignment: Alignment.center,
+                              fit: BoxFit.fitHeight,
+                              animation: "Alarm",
+                            ),
+                    ),
+                    //     ),
+                    // ),
                   ),
-          ),
-          //     ),
-          // ),
-        ),
-      ),
-      // onScaleStart: (detail) {
-      //   onScaling = true;
-      //   setState(() {
-      //     pad = 0;
-      //   });
-      // },
-      // onScaleUpdate: (detail) async {
-      //   if (detail.scale > 1.1 &&
-      //       !scaleAnimationController.isAnimating &&
-      //       !scaleAnimationController.isCompleted) {
-      //     scaleAnimationController.forward(from: 1.0);
-      //   }
-      //   if (detail.scale > 1.1 && !scaleAnimationController.isCompleted) {
-      //     var sz = await _calculateImageDimension(thumbnail);
-      //     Navigator.of(context).push(PageRouteBuilder(
-      //       opaque: false,
-      //       transitionDuration: Duration(milliseconds: 500),
-      //       pageBuilder: (_, __, ___) => ThumbnailViewPage(
-      //         size: sz,
-      //         thumbnail: thumbnail,
-      //         headers: headers,
-      //       ),
-      //     ));
-      //   }
-      // },
-      // onScaleEnd: (detail) {
-      //   onScaling = false;
-      //   scaleAnimationController.reverse();
-      // },
-      onTapDown: (detail) {
-        if (onScaling) return;
-        setState(() {
-          pad = 10.0;
-        });
-      },
-      onTapUp: (detail) {
-        if (onScaling) return;
-        setState(() {
-          pad = 0;
-        });
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            fullscreenDialog: true,
-            builder: (context) {
-              return ViewerPage(
-                id: widget.queryResult.id().toString(),
-                images: ThumbnailManager.get(widget.queryResult.id()).item1,
-                headers: headers,
+                ),
+              ),
+            ),
+            // onScaleStart: (detail) {
+            //   onScaling = true;
+            //   setState(() {
+            //     pad = 0;
+            //   });
+            // },
+            // onScaleUpdate: (detail) async {
+            //   if (detail.scale > 1.1 &&
+            //       !scaleAnimationController.isAnimating &&
+            //       !scaleAnimationController.isCompleted) {
+            //     scaleAnimationController.forward(from: 1.0);
+            //   }
+            //   if (detail.scale > 1.1 && !scaleAnimationController.isCompleted) {
+            //     var sz = await _calculateImageDimension(thumbnail);
+            //     Navigator.of(context).push(PageRouteBuilder(
+            //       opaque: false,
+            //       transitionDuration: Duration(milliseconds: 500),
+            //       pageBuilder: (_, __, ___) => ThumbnailViewPage(
+            //         size: sz,
+            //         thumbnail: thumbnail,
+            //         headers: headers,
+            //       ),
+            //     ));
+            //   }
+            // },
+            // onScaleEnd: (detail) {
+            //   onScaling = false;
+            //   scaleAnimationController.reverse();
+            // },
+            onTapDown: (detail) {
+              if (onScaling) return;
+              setState(() {
+                pad = 10.0;
+              });
+            },
+            onTapUp: (detail) {
+              if (onScaling) return;
+              setState(() {
+                pad = 0;
+              });
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (context) {
+                    return ViewerPage(
+                      id: widget.queryResult.id().toString(),
+                      images:
+                          ThumbnailManager.get(widget.queryResult.id()).item1,
+                      headers: headers,
+                    );
+                  },
+                ),
               );
             },
-          ),
-        );
-      },
-      onLongPress: () async {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          duration: Duration(seconds: 2),
-          content: new Text(
-            isBookmarked ? '${widget.queryResult.id()}가 북마크에서 삭제되었습니다.' : '${widget.queryResult.id()}가 북마크에 추가되었습니다.',
-            style: TextStyle(color: Colors.white),
-          ),
-          backgroundColor: Colors.grey.shade800,
-        ));
-        isBookmarked = !isBookmarked;
-        if (!isBookmarked)
-          _flareController.play('Unlike');
-        else
-          _flareController.play('Like');
-        await HapticFeedback.vibrate();
-        setState(() {
-          pad = 0;
+            onLongPress: () async {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 2),
+                content: new Text(
+                  isBookmarked
+                      ? '${widget.queryResult.id()}가 북마크에서 삭제되었습니다.'
+                      : '${widget.queryResult.id()}가 북마크에 추가되었습니다.',
+                  style: TextStyle(color: Colors.white),
+                ),
+                backgroundColor: Colors.grey.shade800,
+              ));
+              isBookmarked = !isBookmarked;
+              if (!isBookmarked)
+                _flareController.play('Unlike');
+              else {
+                controller.forward(from: 0.0);
+                _flareController.play('Like');
+              }
+              await HapticFeedback.vibrate();
+              setState(() {
+                pad = 0;
+              });
+            },
+            onLongPressEnd: (detail) {
+              setState(() {
+                pad = 0;
+              });
+            },
+            onDoubleTap: () async {
+              var sz = await _calculateImageDimension(thumbnail);
+              Navigator.of(context).push(PageRouteBuilder(
+                opaque: false,
+                transitionDuration: Duration(milliseconds: 500),
+                pageBuilder: (_, __, ___) => ThumbnailViewPage(
+                  size: sz,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'thumbnail' + widget.queryResult.id().toString(),
+                ),
+              ));
+            },
+          );
         });
-      },
-      onLongPressEnd: (detail) {
-        setState(() {
-          pad = 0;
-        });
-      },
-      onDoubleTap: () async {
-        var sz = await _calculateImageDimension(thumbnail);
-        Navigator.of(context).push(PageRouteBuilder(
-          opaque: false,
-          transitionDuration: Duration(milliseconds: 500),
-          pageBuilder: (_, __, ___) => ThumbnailViewPage(
-            size: sz,
-            thumbnail: thumbnail,
-            headers: headers,
-            heroKey: 'thumbnail' + widget.queryResult.id().toString(),
-          ),
-        ));
-      },
-    );
   }
 
   Future<Size> _calculateImageDimension(String url) {
