@@ -384,19 +384,6 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
   }
 }
 
-class ArticleListItemSmallWidget extends StatefulWidget {
-  @override
-  _ArticleListItemSmallWidgetState createState() =>
-      _ArticleListItemSmallWidgetState();
-}
-
-class _ArticleListItemSmallWidgetState
-    extends State<ArticleListItemSmallWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
 
 class ArticleListItemDetailWidget extends StatefulWidget {
   @override
