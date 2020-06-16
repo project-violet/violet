@@ -18,7 +18,7 @@ class SettingsPage extends StatefulWidget {
   _SettingsPageState createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _SettingsPageState extends State<SettingsPage>  with AutomaticKeepAliveClientMixin<SettingsPage> {
   FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
 
@@ -570,6 +570,9 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class SettingsGroup extends StatelessWidget {
