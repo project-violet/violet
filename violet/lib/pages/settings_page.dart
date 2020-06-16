@@ -7,6 +7,7 @@ import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/test_page.dart';
@@ -18,7 +19,8 @@ class SettingsPage extends StatefulWidget {
   _SettingsPageState createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage>  with AutomaticKeepAliveClientMixin<SettingsPage> {
+class _SettingsPageState extends State<SettingsPage>
+    with AutomaticKeepAliveClientMixin<SettingsPage> {
   FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
 
@@ -37,488 +39,499 @@ class _SettingsPageState extends State<SettingsPage>  with AutomaticKeepAliveCli
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              _buildGroup(Translations.of(context).trans('theme')),
-              _buildItems([
-                ListTile(
-                  leading: ShaderMask(
-                    shaderCallback: (bounds) => RadialGradient(
-                      center: Alignment.topLeft,
-                      radius: 1.0,
-                      colors: [Colors.black, Colors.white],
-                      tileMode: TileMode.clamp,
-                    ).createShader(bounds),
-                    child: Icon(MdiIcons.themeLightDark, color: Colors.white),
-                  ),
-                  title: Text(Translations.of(context).trans('darkmode')),
-                  trailing: SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: FlareActor(
-                      'assets/flare/switch_daytime.flr',
-                      animation: _themeSwitch ? "night_idle" : "day_idle",
-                      controller: _flareController,
-                      snapToEnd: true,
+            children: AnimationConfiguration.toStaggeredList(
+              duration: const Duration(milliseconds: 375),
+              childAnimationBuilder: (widget) => SlideAnimation(
+                horizontalOffset: 50.0,
+                child: FadeInAnimation(
+                  child: widget,
+                ),
+              ),
+              children: <Widget>[
+                _buildGroup(Translations.of(context).trans('theme')),
+                _buildItems([
+                  ListTile(
+                    leading: ShaderMask(
+                      shaderCallback: (bounds) => RadialGradient(
+                        center: Alignment.topLeft,
+                        radius: 1.0,
+                        colors: [Colors.black, Colors.white],
+                        tileMode: TileMode.clamp,
+                      ).createShader(bounds),
+                      child: Icon(MdiIcons.themeLightDark, color: Colors.white),
                     ),
-                  ),
-                  onTap: () async {
-                    if (!_themeSwitch)
-                      _flareController.play('switch_night');
-                    else
-                      _flareController.play('switch_day');
-                    _themeSwitch = !_themeSwitch;
-                    Settings.setThemeWhat(_themeSwitch);
-                    DynamicTheme.of(context).setBrightness(
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Brightness.light
-                            : Brightness.dark);
-                    setState(() {});
-                  },
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: ShaderMask(
-                    shaderCallback: (bounds) => RadialGradient(
-                      center: Alignment.bottomLeft,
-                      radius: 1.2,
-                      colors: [Colors.orange, Colors.pink],
-                      tileMode: TileMode.clamp,
-                    ).createShader(bounds),
-                    child: Icon(MdiIcons.formatColorFill, color: Colors.white),
-                  ),
-                  title: Text(Translations.of(context).trans('colorsetting')),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-              ]),
-              _buildGroup(Translations.of(context).trans('search')),
-              _buildItems([
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.tagHeartOutline,
-                    color: Settings.majorColor,
-                  ),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(Translations.of(context).trans('defaulttag')),
-                      Text(Translations.of(context).trans('currenttag')),
-                    ],
-                  ),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.tagOff,
-                    color: Settings.majorColor,
-                  ),
-                  title: Text(Translations.of(context).trans('excludetag')),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.blur,
-                    color: Settings.majorColor,
-                  ),
-                  title: Text(Translations.of(context).trans('blurredtag')),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                // _buildDivider(),
-                // ListTile(
-                //   leading: Icon(
-                //     MdiIcons.imageMultipleOutline,
-                //     color: Settings.majorColor,
-                //   ),
-                //   title: Text(Translations.of(context).trans('howtoshowsearchresult')),
-                //   trailing: Icon(
-                //       // Icons.message,
-                //       Icons.keyboard_arrow_right),
-                //   onTap: () {},
-                // ),
-              ]),
-              _buildGroup(Translations.of(context).trans('system')),
-              _buildItems([
-                // ListTile(
-                //   leading: Icon(Icons.folder_open, color: Settings.majorColor),
-                //   title: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.start,
-                //     children: [
-                //       Text(Translations.of(context).trans('savedir')),
-                //       Text(Translations.of(context).trans('curdir') + ": /android/Pictures"),
-                //     ],
-                //   ),
-                //   trailing: Icon(Icons.keyboard_arrow_right),
-                //   onTap: () {},
-                // ),
-                // _buildDivider(),
-                ListTile(
-                  leading: Icon(Icons.receipt, color: Settings.majorColor),
-                  title: Text(Translations.of(context).trans('logrecord')),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(Icons.language, color: Settings.majorColor),
-                  title: Text(Translations.of(context).trans('language')),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(Icons.info_outline, color: Settings.majorColor),
-                  title: Text(Translations.of(context).trans('info')),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        opaque: false,
-                        pageBuilder: (_, __, ___) {
-                          return VersionViewPage();
-                        },
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          var begin = Offset(0.0, 1.0);
-                          var end = Offset.zero;
-                          var curve = Curves.ease;
-
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
-
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
+                    title: Text(Translations.of(context).trans('darkmode')),
+                    trailing: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: FlareActor(
+                        'assets/flare/switch_daytime.flr',
+                        animation: _themeSwitch ? "night_idle" : "day_idle",
+                        controller: _flareController,
+                        snapToEnd: true,
                       ),
-                    );
-                  },
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(Icons.developer_mode, color: Colors.orange),
-                  title: Text(Translations.of(context).trans('devtool')),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => TestPage(),
-                      ),
-                    );
-                  },
-                ),
-              ]),
-              // _buildGroup(Translations.of(context).trans('viewer')),
-              // _buildItems([
-              //   ListTile(
-              //     leading: Icon(Icons.view_array, color: Settings.majorColor),
-              //     title: Column(
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: [
-              //         Text(Translations.of(context).trans('viewertype')),
-              //         Text(Translations.of(context).trans('currenttype') + ": " + Translations.of(context).trans('scrollview')),
-              //       ],
-              //     ),
-              //     trailing: Icon(Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              //   _buildDivider(),
-              //   ListTile(
-              //     leading: Icon(
-              //       Icons.blur_linear,
-              //       color: Settings.majorColor,
-              //     ),
-              //     title: Text(Translations.of(context).trans('imgquality')),
-              //     trailing: Icon(
-              //         // Icons.message,
-              //         Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              // ]),
-              // _buildGroup(Translations.of(context).trans('downloader')),
-              // _buildItems([
-              //   ListTile(
-              //     leading: ShaderMask(
-              //       shaderCallback: (bounds) => RadialGradient(
-              //         center: Alignment.bottomLeft,
-              //         radius: 1.3,
-              //         colors: [Colors.yellow, Colors.red, Colors.purple],
-              //         tileMode: TileMode.clamp,
-              //       ).createShader(bounds),
-              //       child: Icon(MdiIcons.instagram, color: Colors.white),
-              //     ),
-              //     title: Text(Translations.of(context).trans('instagram')),
-              //     trailing: Icon(Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              //   _buildDivider(),
-              //   ListTile(
-              //     leading: Icon(MdiIcons.twitter, color: Colors.blue),
-              //     title: Text(Translations.of(context).trans('twitter')),
-              //     trailing: Icon(Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              //   _buildDivider(),
-              //   ListTile(
-              //     leading: Image.asset('assets/icons/pixiv.ico', width: 25),
-              //     title: Text(Translations.of(context).trans('pixiv')),
-              //     trailing: Icon(Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              // ]),
-              // _buildGroup(Translations.of(context).trans('cache')),
-              // _buildItems([
-              //   ListTile(
-              //     leading: Icon(Icons.lock_outline, color: Settings.majorColor),
-              //     title: Text("Enable Locking"),
-              //     trailing: AbsorbPointer(
-              //       child: Switch(
-              //         value: true,
-              //         onChanged: (value) {
-              //           //setState(() {
-              //           //  isSwitched = value;
-              //           //  print(isSwitched);
-              //           //});
-              //         },
-              //         activeTrackColor: Settings.majorColor,
-              //         activeColor: Settings.majorAccentColor,
-              //       ),
-              //     ),
-              //     //Icon(Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              // ]),
-              // _buildGroup('잠금'),
-              // _buildItems([
-              //   ListTile(
-              //     leading: Icon(Icons.lock_outline, color: Settings.majorColor),
-              //     title: Text("잠금 기능 켜기"),
-              //     trailing: AbsorbPointer(
-              //       child: Switch(
-              //         value: true,
-              //         onChanged: (value) {
-              //           //setState(() {
-              //           //  isSwitched = value;
-              //           //  print(isSwitched);
-              //           //});
-              //         },
-              //         activeTrackColor: Settings.majorColor,
-              //         activeColor: Settings.majorAccentColor,
-              //       ),
-              //     ),
-              //     //Icon(Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              //   _buildDivider(),
-              //   ListTile(
-              //     leading: Icon(
-              //       Icons.security,
-              //       color: Settings.majorColor,
-              //     ),
-              //     title: Text("보호 설정"), // blurring
-              //     trailing: Icon(
-              //         // Icons.message,
-              //         Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              // ]),
-              // _buildGroup('네트워크'),
-              // _buildItems([
-              //   ListTile(
-              //     leading: Icon(
-              //       Icons.router,
-              //       color: Settings.majorColor,
-              //     ),
-              //     title: Text("라우팅 규칙"),
-              //     trailing: Icon(
-              //         // Icons.message,
-              //         Icons.keyboard_arrow_right),
-              //     onTap: () {},
-              //   ),
-              // ]),
-              _buildGroup(Translations.of(context).trans('update')),
-              _buildItems([
-                ListTile(
-                  leading: Icon(
-                    Icons.update,
-                    color: Settings.majorColor,
+                    ),
+                    onTap: () async {
+                      if (!_themeSwitch)
+                        _flareController.play('switch_night');
+                      else
+                        _flareController.play('switch_day');
+                      _themeSwitch = !_themeSwitch;
+                      Settings.setThemeWhat(_themeSwitch);
+                      DynamicTheme.of(context).setBrightness(
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Brightness.light
+                              : Brightness.dark);
+                      setState(() {});
+                    },
                   ),
-                  title: Text(Translations.of(context).trans('checkupdate')),
-                  trailing: Icon(
-                      // Icons.message,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {},
-                ),
-              ]),
-              _buildGroup(Translations.of(context).trans('etc')),
-              _buildItems([
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.discord,
-                    color: Color(0xFF7189da),
+                  _buildDivider(),
+                  ListTile(
+                    leading: ShaderMask(
+                      shaderCallback: (bounds) => RadialGradient(
+                        center: Alignment.bottomLeft,
+                        radius: 1.2,
+                        colors: [Colors.orange, Colors.pink],
+                        tileMode: TileMode.clamp,
+                      ).createShader(bounds),
+                      child:
+                          Icon(MdiIcons.formatColorFill, color: Colors.white),
+                    ),
+                    title: Text(Translations.of(context).trans('colorsetting')),
+                    trailing: Icon(
+                        // Icons.message,
+                        Icons.keyboard_arrow_right),
+                    onTap: () {},
                   ),
-                  title: Text(Translations.of(context).trans('discord')),
-                  trailing: Icon(Icons.open_in_new),
-                  onTap: () async {
-                    const url = 'https://discord.gg/K8qny6E';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    }
-                  },
-                ),
-                // _buildDivider(),
-                // ListTile(
-                //   leading: Icon(
-                //     MdiIcons.github,
-                //     color: Colors.black,
+                ]),
+                _buildGroup(Translations.of(context).trans('search')),
+                _buildItems([
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.tagHeartOutline,
+                      color: Settings.majorColor,
+                    ),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(Translations.of(context).trans('defaulttag')),
+                        Text(Translations.of(context).trans('currenttag')),
+                      ],
+                    ),
+                    trailing: Icon(
+                        // Icons.message,
+                        Icons.keyboard_arrow_right),
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.tagOff,
+                      color: Settings.majorColor,
+                    ),
+                    title: Text(Translations.of(context).trans('excludetag')),
+                    trailing: Icon(
+                        // Icons.message,
+                        Icons.keyboard_arrow_right),
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.blur,
+                      color: Settings.majorColor,
+                    ),
+                    title: Text(Translations.of(context).trans('blurredtag')),
+                    trailing: Icon(
+                        // Icons.message,
+                        Icons.keyboard_arrow_right),
+                    onTap: () {},
+                  ),
+                  // _buildDivider(),
+                  // ListTile(
+                  //   leading: Icon(
+                  //     MdiIcons.imageMultipleOutline,
+                  //     color: Settings.majorColor,
+                  //   ),
+                  //   title: Text(Translations.of(context).trans('howtoshowsearchresult')),
+                  //   trailing: Icon(
+                  //       // Icons.message,
+                  //       Icons.keyboard_arrow_right),
+                  //   onTap: () {},
+                  // ),
+                ]),
+                _buildGroup(Translations.of(context).trans('system')),
+                _buildItems([
+                  // ListTile(
+                  //   leading: Icon(Icons.folder_open, color: Settings.majorColor),
+                  //   title: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Text(Translations.of(context).trans('savedir')),
+                  //       Text(Translations.of(context).trans('curdir') + ": /android/Pictures"),
+                  //     ],
+                  //   ),
+                  //   trailing: Icon(Icons.keyboard_arrow_right),
+                  //   onTap: () {},
+                  // ),
+                  // _buildDivider(),
+                  ListTile(
+                    leading: Icon(Icons.receipt, color: Settings.majorColor),
+                    title: Text(Translations.of(context).trans('logrecord')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(Icons.language, color: Settings.majorColor),
+                    title: Text(Translations.of(context).trans('language')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  ListTile(
+                    leading:
+                        Icon(Icons.info_outline, color: Settings.majorColor),
+                    title: Text(Translations.of(context).trans('info')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          opaque: false,
+                          pageBuilder: (_, __, ___) {
+                            return VersionViewPage();
+                          },
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            var begin = Offset(0.0, 1.0);
+                            var end = Offset.zero;
+                            var curve = Curves.ease;
+
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(Icons.developer_mode, color: Colors.orange),
+                    title: Text(Translations.of(context).trans('devtool')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => TestPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ]),
+                // _buildGroup(Translations.of(context).trans('viewer')),
+                // _buildItems([
+                //   ListTile(
+                //     leading: Icon(Icons.view_array, color: Settings.majorColor),
+                //     title: Column(
+                //       crossAxisAlignment: CrossAxisAlignment.start,
+                //       children: [
+                //         Text(Translations.of(context).trans('viewertype')),
+                //         Text(Translations.of(context).trans('currenttype') + ": " + Translations.of(context).trans('scrollview')),
+                //       ],
+                //     ),
+                //     trailing: Icon(Icons.keyboard_arrow_right),
+                //     onTap: () {},
                 //   ),
-                //   title: Text("Github " + Translations.of(context).trans('project')),
-                //   trailing: Icon(Icons.open_in_new),
-                //   onTap: () async {
-                //     const url = 'https://github.com/project-violet/';
-                //     if (await canLaunch(url)) {
-                //       await launch(url);
-                //     }
-                //   },
-                // ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.gmail,
-                    color: Colors.redAccent,
-                  ),
-                  title: Text(Translations.of(context).trans('contact')),
-                  trailing: Icon(
-                      // Icons.email,
-                      Icons.keyboard_arrow_right),
-                  onTap: () async {
-                    const url =
-                        'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    }
-                  },
-                ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.heart,
-                    color: Colors.orange,
-                  ),
-                  title: Text(Translations.of(context).trans('donate')),
-                  trailing: Icon(
-                      // Icons.email,
-                      Icons.open_in_new),
-                  onTap: () async {
-                    const url = 'https://www.patreon.com/projectviolet';
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    }
-                  },
-                ),
-                // _buildDivider(),
-                // ListTile(
-                //   leading: Icon(
-                //     Icons.open_in_new,
-                //     color: Settings.majorColor,
+                //   _buildDivider(),
+                //   ListTile(
+                //     leading: Icon(
+                //       Icons.blur_linear,
+                //       color: Settings.majorColor,
+                //     ),
+                //     title: Text(Translations.of(context).trans('imgquality')),
+                //     trailing: Icon(
+                //         // Icons.message,
+                //         Icons.keyboard_arrow_right),
+                //     onTap: () {},
                 //   ),
-                //   title: Text(Translations.of(context).trans('externallink')),
-                //   trailing: Icon(
-                //       // Icons.email,
-                //       Icons.keyboard_arrow_right),
-                //   onTap: () {},
-                // ),
-                _buildDivider(),
-                ListTile(
-                  leading: Icon(
-                    MdiIcons.library,
-                    color: Settings.majorColor,
+                // ]),
+                // _buildGroup(Translations.of(context).trans('downloader')),
+                // _buildItems([
+                //   ListTile(
+                //     leading: ShaderMask(
+                //       shaderCallback: (bounds) => RadialGradient(
+                //         center: Alignment.bottomLeft,
+                //         radius: 1.3,
+                //         colors: [Colors.yellow, Colors.red, Colors.purple],
+                //         tileMode: TileMode.clamp,
+                //       ).createShader(bounds),
+                //       child: Icon(MdiIcons.instagram, color: Colors.white),
+                //     ),
+                //     title: Text(Translations.of(context).trans('instagram')),
+                //     trailing: Icon(Icons.keyboard_arrow_right),
+                //     onTap: () {},
+                //   ),
+                //   _buildDivider(),
+                //   ListTile(
+                //     leading: Icon(MdiIcons.twitter, color: Colors.blue),
+                //     title: Text(Translations.of(context).trans('twitter')),
+                //     trailing: Icon(Icons.keyboard_arrow_right),
+                //     onTap: () {},
+                //   ),
+                //   _buildDivider(),
+                //   ListTile(
+                //     leading: Image.asset('assets/icons/pixiv.ico', width: 25),
+                //     title: Text(Translations.of(context).trans('pixiv')),
+                //     trailing: Icon(Icons.keyboard_arrow_right),
+                //     onTap: () {},
+                //   ),
+                // ]),
+                // _buildGroup(Translations.of(context).trans('cache')),
+                // _buildItems([
+                //   ListTile(
+                //     leading: Icon(Icons.lock_outline, color: Settings.majorColor),
+                //     title: Text("Enable Locking"),
+                //     trailing: AbsorbPointer(
+                //       child: Switch(
+                //         value: true,
+                //         onChanged: (value) {
+                //           //setState(() {
+                //           //  isSwitched = value;
+                //           //  print(isSwitched);
+                //           //});
+                //         },
+                //         activeTrackColor: Settings.majorColor,
+                //         activeColor: Settings.majorAccentColor,
+                //       ),
+                //     ),
+                //     //Icon(Icons.keyboard_arrow_right),
+                //     onTap: () {},
+                //   ),
+                // ]),
+                // _buildGroup('잠금'),
+                // _buildItems([
+                //   ListTile(
+                //     leading: Icon(Icons.lock_outline, color: Settings.majorColor),
+                //     title: Text("잠금 기능 켜기"),
+                //     trailing: AbsorbPointer(
+                //       child: Switch(
+                //         value: true,
+                //         onChanged: (value) {
+                //           //setState(() {
+                //           //  isSwitched = value;
+                //           //  print(isSwitched);
+                //           //});
+                //         },
+                //         activeTrackColor: Settings.majorColor,
+                //         activeColor: Settings.majorAccentColor,
+                //       ),
+                //     ),
+                //     //Icon(Icons.keyboard_arrow_right),
+                //     onTap: () {},
+                //   ),
+                //   _buildDivider(),
+                //   ListTile(
+                //     leading: Icon(
+                //       Icons.security,
+                //       color: Settings.majorColor,
+                //     ),
+                //     title: Text("보호 설정"), // blurring
+                //     trailing: Icon(
+                //         // Icons.message,
+                //         Icons.keyboard_arrow_right),
+                //     onTap: () {},
+                //   ),
+                // ]),
+                // _buildGroup('네트워크'),
+                // _buildItems([
+                //   ListTile(
+                //     leading: Icon(
+                //       Icons.router,
+                //       color: Settings.majorColor,
+                //     ),
+                //     title: Text("라우팅 규칙"),
+                //     trailing: Icon(
+                //         // Icons.message,
+                //         Icons.keyboard_arrow_right),
+                //     onTap: () {},
+                //   ),
+                // ]),
+                _buildGroup(Translations.of(context).trans('update')),
+                _buildItems([
+                  ListTile(
+                    leading: Icon(
+                      Icons.update,
+                      color: Settings.majorColor,
+                    ),
+                    title: Text(Translations.of(context).trans('checkupdate')),
+                    trailing: Icon(
+                        // Icons.message,
+                        Icons.keyboard_arrow_right),
+                    onTap: () {},
                   ),
-                  title: Text(Translations.of(context).trans('license')),
-                  trailing: Icon(
-                      // Icons.email,
-                      Icons.keyboard_arrow_right),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                        builder: (context) => LicensePage(
-                          applicationName: 'Project Violet\n',
-                          applicationIcon: Image.asset(
+                ]),
+                _buildGroup(Translations.of(context).trans('etc')),
+                _buildItems([
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.discord,
+                      color: Color(0xFF7189da),
+                    ),
+                    title: Text(Translations.of(context).trans('discord')),
+                    trailing: Icon(Icons.open_in_new),
+                    onTap: () async {
+                      const url = 'https://discord.gg/K8qny6E';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      }
+                    },
+                  ),
+                  // _buildDivider(),
+                  // ListTile(
+                  //   leading: Icon(
+                  //     MdiIcons.github,
+                  //     color: Colors.black,
+                  //   ),
+                  //   title: Text("Github " + Translations.of(context).trans('project')),
+                  //   trailing: Icon(Icons.open_in_new),
+                  //   onTap: () async {
+                  //     const url = 'https://github.com/project-violet/';
+                  //     if (await canLaunch(url)) {
+                  //       await launch(url);
+                  //     }
+                  //   },
+                  // ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.gmail,
+                      color: Colors.redAccent,
+                    ),
+                    title: Text(Translations.of(context).trans('contact')),
+                    trailing: Icon(
+                        // Icons.email,
+                        Icons.keyboard_arrow_right),
+                    onTap: () async {
+                      const url =
+                          'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      }
+                    },
+                  ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.heart,
+                      color: Colors.orange,
+                    ),
+                    title: Text(Translations.of(context).trans('donate')),
+                    trailing: Icon(
+                        // Icons.email,
+                        Icons.open_in_new),
+                    onTap: () async {
+                      const url = 'https://www.patreon.com/projectviolet';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      }
+                    },
+                  ),
+                  // _buildDivider(),
+                  // ListTile(
+                  //   leading: Icon(
+                  //     Icons.open_in_new,
+                  //     color: Settings.majorColor,
+                  //   ),
+                  //   title: Text(Translations.of(context).trans('externallink')),
+                  //   trailing: Icon(
+                  //       // Icons.email,
+                  //       Icons.keyboard_arrow_right),
+                  //   onTap: () {},
+                  // ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.library,
+                      color: Settings.majorColor,
+                    ),
+                    title: Text(Translations.of(context).trans('license')),
+                    trailing: Icon(
+                        // Icons.email,
+                        Icons.keyboard_arrow_right),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => LicensePage(
+                            applicationName: 'Project Violet\n',
+                            applicationIcon: Image.asset(
+                              'assets/images/logo.png',
+                              width: 100,
+                              height: 100,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ]),
+                Container(
+                  margin: EdgeInsets.all(40),
+                  child: Center(
+                    child: Column(
+                      children: <Widget>[
+                        // Card(
+                        //   elevation: 5,
+                        //   shape: RoundedRectangleBorder(
+                        //     borderRadius: BorderRadius.circular(10.0),
+                        //   ),
+                        //   child:
+                        InkWell(
+                          child: Image.asset(
                             'assets/images/logo.png',
                             width: 100,
                             height: 100,
                           ),
+                          //onTap: () {},
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ]),
-              Container(
-                margin: EdgeInsets.all(40),
-                child: Center(
-                  child: Column(
-                    children: <Widget>[
-                      // Card(
-                      //   elevation: 5,
-                      //   shape: RoundedRectangleBorder(
-                      //     borderRadius: BorderRadius.circular(10.0),
-                      //   ),
-                      //   child:
-                      InkWell(
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          width: 100,
-                          height: 100,
+                        // ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 12),
                         ),
-                        //onTap: () {},
-                      ),
-                      // ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 12),
-                      ),
-                      Text(
-                        'Project Violet',
-                        style: TextStyle(
-                          color: Settings.themeWhat
-                              ? Colors.white
-                              : Colors.black87,
-                          fontSize: 16.0,
-                          fontFamily: "Calibre-Semibold",
-                          letterSpacing: 1.0,
+                        Text(
+                          'Project Violet',
+                          style: TextStyle(
+                            color: Settings.themeWhat
+                                ? Colors.white
+                                : Colors.black87,
+                            fontSize: 16.0,
+                            fontFamily: "Calibre-Semibold",
+                            letterSpacing: 1.0,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Copyright (C) 2020 by Violet-Developer',
-                        style: TextStyle(
-                          color: Settings.themeWhat
-                              ? Colors.white
-                              : Colors.black87,
-                          fontSize: 12.0,
-                          fontFamily: "Calibre-Semibold",
-                          letterSpacing: 1.0,
+                        Text(
+                          'Copyright (C) 2020 by Violet-Developer',
+                          style: TextStyle(
+                            color: Settings.themeWhat
+                                ? Colors.white
+                                : Colors.black87,
+                            fontSize: 12.0,
+                            fontFamily: "Calibre-Semibold",
+                            letterSpacing: 1.0,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -628,7 +641,9 @@ class VersionViewPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Card(
-            color: Settings.themeWhat ? Colors.black.withOpacity(0.9) : Colors.white.withOpacity(0.9),
+            color: Settings.themeWhat
+                ? Colors.black.withOpacity(0.9)
+                : Colors.white.withOpacity(0.9),
             elevation: 10,
             child: SizedBox(
               child: Container(

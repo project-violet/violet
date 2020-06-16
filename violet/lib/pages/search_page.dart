@@ -40,7 +40,6 @@ class _SearchPageState extends State<SearchPage>
   TextEditingController _controller = new TextEditingController();
   final FlareControls heroFlareControls = FlareControls();
   FlutterActorArtboard artboard;
-  bool isinner = false;
 
   @override
   void initState() {
@@ -191,22 +190,17 @@ class _SearchPageState extends State<SearchPage>
                       child: SizedBox(
                         height: 64,
                         width: 64,
-                        child: isinner
-                            ? Container()
-                            : Stack(
-                                alignment: Alignment.center,
-                                children: <Widget>[
-                                  Icon(
-                                    MdiIcons.formatListText,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: <Widget>[
+                            Icon(
+                              MdiIcons.formatListText,
+                              color: Colors.grey,
+                            ),
+                          ],
+                        ),
                       ),
                       onTap: () async {
-                        setState(() {
-                          isinner = true;
-                        });
                         Navigator.of(context)
                             .push(PageRouteBuilder(
                           opaque: false,
@@ -222,9 +216,7 @@ class _SearchPageState extends State<SearchPage>
                         ))
                             .then((value) async {
                           await Future.delayed(Duration(milliseconds: 50), () {
-                            setState(() {
-                              isinner = false;
-                            });
+                            setState(() {});
                           });
                         });
                       },
@@ -748,6 +740,16 @@ class SearchType extends StatefulWidget {
 }
 
 class _SearchTypeState extends State<SearchType> {
+  Color getColor(int i) {
+    return Settings.themeWhat
+        ? Settings.searchResultType == i
+            ? Colors.grey.shade200
+            : Colors.grey.shade400
+        : Settings.searchResultType == i
+            ? Colors.grey.shade900
+            : Colors.grey.shade400;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -770,30 +772,18 @@ class _SearchTypeState extends State<SearchType> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         ListTile(
-                          leading: Icon(Icons.grid_on,
-                              color: Settings.searchResultType == 0
-                                  ? Colors.grey.shade200
-                                  : Colors.grey.shade400),
-                          title: Text('3 Line Grid View',
-                              style: TextStyle(
-                                  color: Settings.searchResultType == 0
-                                      ? Colors.grey.shade200
-                                      : Colors.grey.shade400)),
+                          leading: Icon(Icons.grid_on, color: getColor(0)),
+                          title: Text(Translations.of(context).trans('srt0'),
+                              style: TextStyle(color: getColor(0))),
                           onTap: () async {
                             Settings.setSearchResultType(0);
                             Navigator.pop(context);
                           },
                         ),
                         ListTile(
-                          leading: Icon(MdiIcons.gridLarge,
-                              color: Settings.searchResultType == 1
-                                  ? Colors.grey.shade200
-                                  : Colors.grey.shade400),
-                          title: Text('2 Line Grid View',
-                              style: TextStyle(
-                                  color: Settings.searchResultType == 1
-                                      ? Colors.grey.shade200
-                                      : Colors.grey.shade400)),
+                          leading: Icon(MdiIcons.gridLarge, color: getColor(1)),
+                          title: Text(Translations.of(context).trans('srt1'),
+                              style: TextStyle(color: getColor(1))),
                           onTap: () async {
                             Settings.setSearchResultType(1);
                             Navigator.pop(context);
@@ -801,15 +791,10 @@ class _SearchTypeState extends State<SearchType> {
                         ),
                         ListTile(
                           leading: Icon(MdiIcons.viewAgendaOutline,
-                              color: Settings.searchResultType == 2
-                                  ? Colors.grey.shade200
-                                  : Colors.grey.shade400),
+                              color: getColor(2)),
                           title: Text(
-                            'Lined view',
-                            style: TextStyle(
-                                color: Settings.searchResultType == 2
-                                    ? Colors.grey.shade200
-                                    : Colors.grey.shade400),
+                            Translations.of(context).trans('srt2'),
+                            style: TextStyle(color: getColor(2)),
                           ),
                           onTap: () async {
                             Settings.setSearchResultType(2);
@@ -817,16 +802,11 @@ class _SearchTypeState extends State<SearchType> {
                           },
                         ),
                         ListTile(
-                          leading: Icon(MdiIcons.formatListText,
-                              color: Settings.searchResultType == 3
-                                  ? Colors.grey.shade200
-                                  : Colors.grey.shade400),
+                          leading:
+                              Icon(MdiIcons.formatListText, color: getColor(3)),
                           title: Text(
-                            'Detail View',
-                            style: TextStyle(
-                                color: Settings.searchResultType == 3
-                                    ? Colors.grey.shade200
-                                    : Colors.grey.shade400),
+                            Translations.of(context).trans('srt3'),
+                            style: TextStyle(color: getColor(3)),
                           ),
                           onTap: () async {
                             Settings.setSearchResultType(3);
