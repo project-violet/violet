@@ -342,6 +342,12 @@ class _ArticleListItemVerySimpleWidgetState
               Navigator.of(context).push(PageRouteBuilder(
                 opaque: false,
                 transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder: (BuildContext context,
+                    Animation<double> animation,
+                    Animation<double> secondaryAnimation,
+                    Widget wi) {
+                  return new FadeTransition(opacity: animation, child: wi);
+                },
                 pageBuilder: (_, __, ___) => ThumbnailViewPage(
                   size: sz,
                   thumbnail: thumbnail,
