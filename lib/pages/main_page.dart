@@ -65,7 +65,7 @@ class _MainPageState extends State<MainPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(50),
+                padding: EdgeInsets.all(80),
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -84,9 +84,9 @@ class _MainPageState extends State<MainPage> {
               Padding(
                 padding: EdgeInsets.all(12),
               ),
-              Text(
-                Translations.of(context).trans('notice1'),
-              ),
+              // Text(
+              //   Translations.of(context).trans('notice1'),
+              // ),
               RichText(
                 text: TextSpan(
                   children: [
@@ -123,20 +123,20 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
               ),
-              Text(Translations.of(context).trans('notice3')),
+              // Text(Translations.of(context).trans('notice3')),
               Text(''),
               Text(Translations.of(context).trans('notice4')),
               Text(Translations.of(context).trans('notice5')),
               Text(''),
-              Text('Copyright (C) 2020. dc-koromo. All rights reserved.'),
-              Padding(
-                padding: EdgeInsets.all(10),
-              ),
-              Text('Violet 0.3'),
-              Text(
-                'Thanks to Flutter developers.',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
+              // Text('Copyright (C) 2020. dc-koromo. All rights reserved.'),
+              // Padding(
+              //   padding: EdgeInsets.all(10),
+              // ),
+              // Text('Violet 0.3'),
+              // Text(
+              //   'Thanks to Flutter developers.',
+              //   style: TextStyle(fontStyle: FontStyle.italic),
+              // ),
               // Padding(
               //   padding: EdgeInsets.all(100),
               // ),

@@ -46,8 +46,8 @@
     "license":"License",
     "srt0": "3 Line Grid View",
     "srt1": "2 Line Grid View",
-    "str2": "Lined View",
-    "str3": "Detail View",
+    "srt2": "Lined View",
+    "srt3": "Detail View",
 
     "nosearchresult": "No search results found :(",
     "inputsearchtoken": "Please enter a search term!",
@@ -55,7 +55,7 @@
     
     "notice1": "Thank you for downloading my app.",
     "notice21": "Please send your inquiries to ",
-    "notice22": "!",
+    "notice22": ".",
     "notice3": "Any inquiries are welcome!",
     "notice4": "This app has nothing to do with",
     "notice5": "hitomi.la, e-hentai.org, exhentai.org."
