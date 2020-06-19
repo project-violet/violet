@@ -72,6 +72,8 @@ dependencies:
   vibration: ^1.4.0
   pimp_my_button: ^1.0.0
   flutter_staggered_animations: "^0.1.2"
+  animations:
+  hive:
 
 dev_dependencies:
   flutter_test:

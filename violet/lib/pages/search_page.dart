@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:infinite_listview/infinite_listview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
+import 'package:vibration/vibration.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/locale.dart';
@@ -234,12 +235,22 @@ class _SearchPageState extends State<SearchPage>
               onScaleStart: (detail) {
                 scaleOnce = false;
               },
-              onScaleUpdate: (detail) {
-                if ((detail.scale > 1.2 || detail.scale < 0.8) && scaleOnce == false) {
+              onScaleUpdate: (detail) async {
+                if ((detail.scale > 1.2 || detail.scale < 0.8) &&
+                    scaleOnce == false) {
                   scaleOnce = true;
                   setState(() {
                     searchPageBlur = !searchPageBlur;
                   });
+                  await Vibration.vibrate(duration: 50, amplitude: 50);
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    duration: Duration(milliseconds: 600),
+                    content: new Text(
+                      searchPageBlur ? '화면 블러가 적용되었습니다.' : '화면 블러가 해제되었습니다.',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.grey.shade800,
+                  ));
                 }
               },
             ),

@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -15,10 +16,17 @@ class DataBaseManager {
     return new DataBaseManager(dbPath: dbPath);
   }
 
+  @protected
+  @mustCallSuper
+  void dispose() async {
+    await _close();
+  }
+
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
       _instance =
           create((await SharedPreferences.getInstance()).getString('db_path'));
+      await _instance._open();
     }
     return _instance;
   }
@@ -32,10 +40,24 @@ class DataBaseManager {
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {
-    await _open();
+    // await _open();
     var rr = await db.rawQuery(str);
-    await _close();
+    // await _close();
     return rr;
+  }
+
+  Future<void> execute(String str) async {
+    // await _open();
+    await db.execute(str);
+    // await _close();
+  }
+
+  Future<void> insert(String name, Map<String, dynamic> wh) async {
+    await db.insert(name, wh);
+  }
+
+  Future<void> update(String name, Map<String, dynamic> wh) async {
+    await db.update(name, wh);
   }
 
   Future<bool> test() async {
