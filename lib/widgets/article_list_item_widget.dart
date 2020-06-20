@@ -22,6 +22,7 @@ import 'package:violet/locale.dart';
 import 'package:violet/pages/search_page.dart';
 import 'package:violet/pages/viewer_page.dart';
 import 'package:violet/settings.dart';
+import 'package:violet/user.dart';
 
 class ThumbnailManager {
   static HashMap<int, Tuple3<List<String>, List<String>, List<String>>> _ids =
@@ -103,6 +104,10 @@ class _ArticleListItemVerySimpleWidgetState
           animating = false;
         }
       });
+    Bookmark.getInstance().then((value) async {
+      isBookmarked = await value.isBookmark(widget.queryResult.id());
+      if (isBookmarked) setState(() {});
+    });
   }
 
   @override
@@ -200,8 +205,12 @@ class _ArticleListItemVerySimpleWidgetState
                                                 animating
                                             ? BackdropFilter(
                                                 filter: new ImageFilter.blur(
-                                                    sigmaX: isBlurred ? 5.0 : _animation.value,
-                                                    sigmaY: isBlurred ? 5.0 : _animation.value),
+                                                    sigmaX: isBlurred
+                                                        ? 5.0
+                                                        : _animation.value,
+                                                    sigmaY: isBlurred
+                                                        ? 5.0
+                                                        : _animation.value),
                                                 child: new Container(
                                                   decoration: new BoxDecoration(
                                                       color: Colors.white
@@ -354,6 +363,12 @@ class _ArticleListItemVerySimpleWidgetState
                 backgroundColor: Colors.grey.shade800,
               ));
               isBookmarked = !isBookmarked;
+              if (isBookmarked)
+                await (await Bookmark.getInstance())
+                    .bookmark(widget.queryResult.id());
+              else
+                await (await Bookmark.getInstance())
+                    .unbookmark(widget.queryResult.id());
               if (!isBookmarked)
                 _flareController.play('Unlike');
               else {

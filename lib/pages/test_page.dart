@@ -25,6 +25,7 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database.dart';
+import 'package:violet/files.dart';
 import 'package:violet/main.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
@@ -152,9 +153,9 @@ class TestPage extends StatelessWidget {
                 },
               ),
               RaisedButton(
-                child: Text('Settings Test'),
+                child: Text('File Test'),
                 onPressed: () {
-                  print(Colors.black.toString());
+                  Files.enumerate();
                 },
               ),
               // RaisedButton(

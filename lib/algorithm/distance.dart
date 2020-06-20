@@ -37,8 +37,9 @@ class Distance {
 
     return v0[y + y + 1];
   }
-  
-  static int levenshteinDistanceComparable<T extends Comparable<T>>(List<T> l1, List<T> l2) {
+
+  static int levenshteinDistanceComparable<T extends Comparable<T>>(
+      List<T> l1, List<T> l2) {
     int x = l1.length;
     int y = l2.length;
     int i, j;
@@ -57,5 +58,28 @@ class Distance {
     }
 
     return v0[y + y + 1];
+  }
+
+  static double cosineDistance<T extends num>(
+      Map<String, T> l1, Map<String, T> l2) {
+    double xx = 0;
+    double yy = 0;
+
+    l1.forEach((x, y) => xx += y * y);
+    l2.forEach((x, y) => yy += y * y);
+
+    if (xx == 0 || yy  == 0)
+      return 0;
+
+    xx = sqrt(xx);
+    yy = sqrt(yy);
+
+    double dist = 0.0;
+
+    l1.forEach((key, value) {
+      if (l2.containsKey(key)) dist += value * l2[key];
+    });
+
+    return dist / (xx * yy) * 100;
   }
 }
