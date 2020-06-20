@@ -4,10 +4,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:synchronized/synchronized.dart';
+
 
 class DataBaseManager {
   String dbPath;
   Database db;
+  Lock lock = Lock();
   static DataBaseManager _instance;
 
   DataBaseManager({this.dbPath});
@@ -19,14 +22,13 @@ class DataBaseManager {
   @protected
   @mustCallSuper
   void dispose() async {
-    await _close();
+    // await close();
   }
 
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
       _instance =
           create((await SharedPreferences.getInstance()).getString('db_path'));
-      await _instance._open();
     }
     return _instance;
   }
@@ -40,24 +42,45 @@ class DataBaseManager {
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {
-    // await _open();
-    var rr = await db.rawQuery(str);
-    // await _close();
-    return rr;
+    List<Map<String, dynamic>> result;
+    await lock.synchronized(() async {
+      await _open();
+      result = await db.rawQuery(str);
+      await _close();
+    });
+    return result;
   }
 
   Future<void> execute(String str) async {
-    // await _open();
-    await db.execute(str);
-    // await _close();
+    await lock.synchronized(() async {
+      await _open();
+      await db.execute(str);
+      await _close();
+    });
   }
 
   Future<void> insert(String name, Map<String, dynamic> wh) async {
-    await db.insert(name, wh);
+    await lock.synchronized(() async {
+      await _open();
+      await db.insert(name, wh);
+      await _close();
+    });
   }
 
   Future<void> update(String name, Map<String, dynamic> wh) async {
-    await db.update(name, wh);
+    await lock.synchronized(() async {
+      await _open();
+      await db.update(name, wh);
+      await _close();
+    });
+  }
+
+  Future<void> delete(String name, String where, List<dynamic> args) async {
+    await lock.synchronized(() async {
+      await _open();
+      await db.delete(name, where: where, whereArgs: args);
+      await _close();
+    });
   }
 
   Future<bool> test() async {

@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:violet/settings.dart';
+import 'package:violet/user.dart';
 import 'locale.dart';
 import 'package:violet/pages/database_download_page.dart';
 import 'package:violet/pages/splash_page.dart';
@@ -31,6 +32,10 @@ Future<void> warmupFlare() async {
   }
 }
 
+Future<void> initDB() async {
+  await Bookmark.getInstance();
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FlareCache.doesPrune = false;
@@ -45,6 +50,7 @@ void main() async {
   await analytics.setUserId('some-user');
 
   await Settings.init();
+  await initDB();
 
   warmupFlare().then((_) {
     runApp(

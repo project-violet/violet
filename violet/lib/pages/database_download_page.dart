@@ -207,6 +207,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     var characters = Map<String, int>();
     var classes = Map<String, int>();
 
+    var tagIndex = Map<String, int>();
+    var tagArtist = Map<String, Map<String, int>>();
+    var tagGroup = Map<String, Map<String, int>>();
+
     int i = 0;
     while (true) {
       setState(() {
@@ -224,6 +228,42 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         insertSingle(types, item.type());
         insertSingle(uploaders, item.uploader());
         insertSingle(classes, item.classname());
+
+        if (item.tags() == null) continue;
+
+        if (item.artists() != null) {
+          for (var artist in item.artists().split('|'))
+            if (!tagArtist.containsKey(artist))
+              tagArtist[artist] = Map<String, int>();
+          for (var tag in item.tags().split('|')) {
+            if (tag == null || tag == '') continue;
+            if (!tagIndex.containsKey(tag))
+              tagIndex[tag] = tagIndex.length;
+            var index = tagIndex[tag].toString();
+            for (var artist in item.artists().split('|')) {
+              if (!tagArtist[artist].containsKey(index))
+                tagArtist[artist][index] = 0;
+              tagArtist[artist][index] += 1;
+            }
+          }
+        }
+
+        if (item.groups() != null) {
+          for (var artist in item.groups().split('|'))
+            if (!tagGroup.containsKey(artist))
+              tagGroup[artist] = Map<String, int>();
+          for (var tag in item.tags().split('|')) {
+            if (tag == null || tag == '') continue;
+            if (!tagIndex.containsKey(tag))
+              tagIndex[tag] = tagIndex.length;
+            var index = tagIndex[tag].toString();
+            for (var artist in item.groups().split('|')) {
+              if (!tagGroup[artist].containsKey(index))
+                tagGroup[artist][index] = 0;
+              tagGroup[artist][index] += 1;
+            }
+          }
+        }
       }
 
       if (ll.length == 0) {
@@ -239,9 +279,16 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           "class": classes,
         };
 
-        final directory = await getExternalStorageDirectory();
-        final path = File('${directory.path}/index.json');
-        path.writeAsString(jsonEncode(index));
+        final directory = await getApplicationDocumentsDirectory();
+        final path1 = File('${directory.path}/index.json');
+        path1.writeAsString(jsonEncode(index));
+        
+        final path2 = File('${directory.path}/tag_artist.json');
+        path2.writeAsString(jsonEncode(tagArtist));
+        final path3 = File('${directory.path}/tag_group.json');
+        path3.writeAsString(jsonEncode(tagGroup));
+        final path4 = File('${directory.path}/tag_index.json');
+        path4.writeAsString(jsonEncode(tagIndex));
 
         setState(() {
           baseString = '완료!\n앱을 재실행해 주세요!'; //\n' + jsonEncode(index);
