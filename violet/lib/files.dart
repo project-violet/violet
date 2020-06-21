@@ -30,7 +30,7 @@ class Files {
   static Future<List<String>> enumerate() async {
     var dir = await getApplicationDocumentsDirectory();
     print(dir.path);
-    enumeratePath(dir.parent.path);
+    enumeratePath(dir.path);
     // print(await dir.path.list(recursive: true, followLinks: true).toList());
     return null;
   }

@@ -15,7 +15,7 @@ class CommonUserDatabase extends DataBaseManager {
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
       var dir = await getApplicationDocumentsDirectory();
-      _instance = DataBaseManager.create('$dir/user.db');
+      _instance = DataBaseManager.create('${dir.path}/user.db');
     }
     return _instance;
   }

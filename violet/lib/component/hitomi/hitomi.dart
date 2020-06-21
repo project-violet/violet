@@ -52,7 +52,7 @@ class HitomiManager {
   static Future<List<Tuple3<String, String, int>>> queryAutoComplete(
       String prefix) async {
     if (tagmap == null) {
-      final directory = await getExternalStorageDirectory();
+      final directory = await getApplicationDocumentsDirectory();
       final path = File('${directory.path}/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);

@@ -356,8 +356,8 @@ class _ArticleListItemVerySimpleWidgetState
                 duration: Duration(seconds: 2),
                 content: new Text(
                   isBookmarked
-                      ? '${widget.queryResult.id()}가 북마크에서 삭제되었습니다.'
-                      : '${widget.queryResult.id()}가 북마크에 추가되었습니다.',
+                      ? '${widget.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
+                      : '${widget.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
                   style: TextStyle(color: Colors.white),
                 ),
                 backgroundColor: Colors.grey.shade800,

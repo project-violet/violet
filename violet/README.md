@@ -1,6 +1,6 @@
 # Violet 
 
-![](1.gif) ![](2.gif)
+![](logopic.PNG)
 
 Project Violet Source Code
 

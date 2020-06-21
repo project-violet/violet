@@ -1,12 +1,15 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'package:country_pickers/country.dart';
+import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/locale.dart';
@@ -101,7 +104,73 @@ class _SettingsPageState extends State<SettingsPage>
                     trailing: Icon(
                         // Icons.message,
                         Icons.keyboard_arrow_right),
-                    onTap: () {},
+                    onTap: () {
+                      // showDialog(
+                      //   context: context,
+                      //   builder: (BuildContext context) {
+                      //     return AlertDialog(
+                      //       titlePadding: const EdgeInsets.all(0.0),
+                      //       contentPadding: const EdgeInsets.all(0.0),
+                      //       content: SingleChildScrollView(
+                      //         child: ColorPicker(
+                      //           pickerColor: Settings.majorColor,
+                      //           onColorChanged: (color) async {
+                      //             await Settings.setMajorColor(color);
+                      //             setState(() {});
+                      //           },
+                      //           colorPickerWidth: 300.0,
+                      //           pickerAreaHeightPercent: 0.7,
+                      //           enableAlpha: true,
+                      //           displayThumbColor: true,
+                      //           showLabel: true,
+                      //           paletteType: PaletteType.hsv,
+                      //           pickerAreaBorderRadius: const BorderRadius.only(
+                      //             topLeft: const Radius.circular(2.0),
+                      //             topRight: const Radius.circular(2.0),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(
+                                Translations.of(context).trans('selectcolor')),
+                            content: SingleChildScrollView(
+                              child: BlockPicker(
+                                pickerColor: Settings.majorColor,
+                                onColorChanged: (color) async {
+                                  await Settings.setMajorColor(color);
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                      // showDialog(
+                      //   context: context,
+                      //   builder: (BuildContext context) {
+                      //     return AlertDialog(
+                      //       titlePadding: const EdgeInsets.all(0.0),
+                      //       contentPadding: const EdgeInsets.all(0.0),
+                      //       content: SingleChildScrollView(
+                      //         child: MaterialPicker(
+                      //           pickerColor: Settings.majorColor,
+                      //           onColorChanged: (color) async {
+                      //             await Settings.setMajorColor(color);
+                      //             setState(() {});
+                      //           },
+                      //           enableLabel: true,
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // );
+                    },
                   ),
                 ]),
                 _buildGroup(Translations.of(context).trans('search')),
@@ -186,7 +255,61 @@ class _SettingsPageState extends State<SettingsPage>
                     leading: Icon(Icons.language, color: Settings.majorColor),
                     title: Text(Translations.of(context).trans('language')),
                     trailing: Icon(Icons.keyboard_arrow_right),
-                    onTap: () {},
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => Theme(
+                            data: Theme.of(context)
+                                .copyWith(primaryColor: Colors.pink),
+                            child: CountryPickerDialog(
+                                titlePadding: EdgeInsets.all(8.0),
+                                // searchCursorColor: Colors.pinkAccent,
+                                // searchInputDecoration:
+                                //     InputDecoration(hintText: 'Search...'),
+                                // isSearchable: true,
+                                title: Text('Select Language'),
+                                onValuePicked: (Country country) async {
+                                  final dict = {
+                                    'KR': 'ko',
+                                    'US': 'en',
+                                    'JP': 'ja',
+                                    'CN': 'zh',
+                                    'RU': 'ru'
+                                  };
+                                  await Translations.of(context).load(dict[country.isoCode]);
+                                  setState(() {});
+                                },
+                                itemFilter: (c) => [].contains(c.isoCode),
+                                priorityList: [
+                                  CountryPickerUtils.getCountryByIsoCode('US'),
+                                  CountryPickerUtils.getCountryByIsoCode('KR'),
+                                  CountryPickerUtils.getCountryByIsoCode('JP'),
+                                  // CountryPickerUtils.getCountryByIsoCode('CN'),
+                                  // CountryPickerUtils.getCountryByIsoCode('RU'),
+                                ],
+                                itemBuilder: (Country country) {
+                                  final dict = {
+                                    'KR': '한국어',
+                                    'US': 'English',
+                                    'JP': '日本語',
+                                    'CN': '中文',
+                                    'RU': 'Русский'
+                                  };
+                                  return Container(
+                                    child: Row(
+                                      children: <Widget>[
+                                        CountryPickerUtils.getDefaultFlagImage(
+                                            country),
+                                        SizedBox(
+                                          width: 8.0,
+                                        ),
+                                        Text("${dict[country.isoCode]}"),
+                                      ],
+                                    ),
+                                  );
+                                })),
+                      );
+                    },
                   ),
                   _buildDivider(),
                   ListTile(
@@ -516,7 +639,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ),
                         Text(
-                          'Copyright (C) 2020 by Violet-Developer',
+                          'Copyright (C) 2020 by dc-koromo',
                           style: TextStyle(
                             color: Settings.themeWhat
                                 ? Colors.white

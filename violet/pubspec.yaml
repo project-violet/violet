@@ -76,6 +76,8 @@ dependencies:
   hive:
   synchronized:
   json_annotation: ^3.0.0
+  flutter_colorpicker:
+  country_pickers:
 
 dev_dependencies:
   flutter_test:
