@@ -515,21 +515,21 @@ class _SettingsPageState extends State<SettingsPage>
                       }
                     },
                   ),
-                  // _buildDivider(),
-                  // ListTile(
-                  //   leading: Icon(
-                  //     MdiIcons.github,
-                  //     color: Colors.black,
-                  //   ),
-                  //   title: Text("Github " + Translations.of(context).trans('project')),
-                  //   trailing: Icon(Icons.open_in_new),
-                  //   onTap: () async {
-                  //     const url = 'https://github.com/project-violet/';
-                  //     if (await canLaunch(url)) {
-                  //       await launch(url);
-                  //     }
-                  //   },
-                  // ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.github,
+                      color: Colors.black,
+                    ),
+                    title: Text("Github " + Translations.of(context).trans('project')),
+                    trailing: Icon(Icons.open_in_new),
+                    onTap: () async {
+                      const url = 'https://github.com/project-violet/';
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      }
+                    },
+                  ),
                   _buildDivider(),
                   ListTile(
                     leading: Icon(
