@@ -146,8 +146,8 @@ class Bookmark {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
     await db.insert('BookmarkGroup', {
-      'Name': 'violet_default',
-      'Description': 'Unclassified bookmarks.',
+      'Name': name,
+      'Description': description,
       'DateTime': DateTime.now().toString(),
       'Color': color.value
     });
