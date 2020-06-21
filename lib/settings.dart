@@ -38,11 +38,12 @@ class Settings {
     else
       themeColor = Colors.black;
 
-    searchResultType = (await SharedPreferences.getInstance()).getInt('searchResultType');
+    searchResultType =
+        (await SharedPreferences.getInstance()).getInt('searchResultType');
     if (searchResultType == null) {
       (await SharedPreferences.getInstance())
           .setInt('searchResultType', searchResultType);
-      searchResultType = 0; 
+      searchResultType = 0;
     }
     // majorColor = Color(0xFF5656E7);
   }
@@ -56,8 +57,37 @@ class Settings {
     (await SharedPreferences.getInstance()).setBool('themeColor', themeWhat);
   }
 
+  static Future<void> setMajorColor(Color color) async {
+    if (majorColor == color) return;
+
+    (await SharedPreferences.getInstance()).setInt('majorColor', color.value);
+    majorColor = color;
+
+    Color accent;
+    for (int i = 0; i < Colors.primaries.length - 2; i++)
+      if (color.value == Colors.primaries[i].value) {
+        accent = Colors.accents[i];
+        break;
+      }
+
+    if (accent == null) {
+      if (color == Colors.grey)
+        accent = Colors.grey.shade700;
+      else if (color == Colors.brown)
+        accent = Colors.brown.shade700;
+      else if (color == Colors.blueGrey)
+        accent = Colors.blueGrey.shade700;
+      else if (color == Colors.black)
+        accent = Colors.black;
+    }
+
+    (await SharedPreferences.getInstance()).setInt('majorAccentColor', accent.value);
+    majorAccentColor = accent;
+  }
+
   static Future<void> setSearchResultType(int wh) async {
     searchResultType = wh;
-    (await SharedPreferences.getInstance()).setInt('searchResultType', searchResultType); 
+    (await SharedPreferences.getInstance())
+        .setInt('searchResultType', searchResultType);
   }
 }

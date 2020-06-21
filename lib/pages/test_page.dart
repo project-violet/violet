@@ -45,8 +45,12 @@ class TestPage extends StatelessWidget {
           title: Text('개발 도구 모음'),
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Wrap(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runAlignment: WrapAlignment.center,
             children: <Widget>[
               RaisedButton(
                 child: Text('데이터베이스 SQL Test'),
