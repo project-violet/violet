@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:violet/settings.dart';
+import 'package:violet/syncfusion.dart';
 import 'package:violet/user.dart';
 import 'locale.dart';
 import 'package:violet/pages/database_download_page.dart';
@@ -51,6 +52,8 @@ void main() async {
 
   await Settings.init();
   await initDB();
+
+  registerLicense();
 
   warmupFlare().then((_) {
     runApp(

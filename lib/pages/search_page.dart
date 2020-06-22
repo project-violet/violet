@@ -16,6 +16,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:infinite_listview/infinite_listview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:tuple/tuple.dart';
 import 'package:vibration/vibration.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -23,6 +24,7 @@ import 'package:violet/database.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/settings.dart';
+import 'package:violet/syncfusion/slider.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
 
 bool searchPageBlur = false;
@@ -588,6 +590,37 @@ class _SearchBarState extends State<SearchBar>
                                               Settings.majorAccentColor,
                                         ),
                                       ),
+                                      Container(
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 8.0,
+                                        ),
+                                        width: double.infinity,
+                                        height: 1.0,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      ListTile(
+                                        leading: Icon(
+                                            MdiIcons.viewGridPlusOutline,
+                                            color: Settings.majorColor),
+                                        title: Slider(
+                                          min: 60.0,
+                                          max: 2000.0,
+                                          divisions: (2000 - 60) ~/ 10,
+                                          label:
+                                              '$_searchResultMaximum${Translations.of(context).trans('tagdisplay')}',
+                                          onChanged: (double value) {
+                                            print(value);
+                                            setState(() {
+                                              _searchResultMaximum =
+                                                  value.toInt();
+                                            });
+                                          },
+                                          value:
+                                              _searchResultMaximum.toDouble(),
+                                        ),
+                                      ),
+
+                                      // GradientRangeSlider(),
                                       Expanded(
                                         child: Align(
                                           alignment: Alignment.bottomLeft,
@@ -723,12 +756,14 @@ class _SearchBarState extends State<SearchBar>
     );
     await searchProcess(_searchController.text, _searchController.selection);
   }
-  
+
   Future<void> spaceProcess() async {
     var text = _searchController.text;
     var selection = _searchController.selection;
 
-    _searchController.text = text.substring(0, selection.base.offset) + ' ' + text.substring(selection.base.offset+1);
+    _searchController.text = text.substring(0, selection.base.offset) +
+        ' ' +
+        text.substring(selection.base.offset + 1);
     _searchController.selection = TextSelection(
       baseOffset: selection.baseOffset + 1,
       extentOffset: selection.baseOffset + 1,

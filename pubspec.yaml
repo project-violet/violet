@@ -78,6 +78,9 @@ dependencies:
   json_annotation: ^3.0.0
   flutter_colorpicker:
   country_pickers:
+  syncfusion_flutter_core:
+  syncfusion_flutter_sliders:
+      
 
 dev_dependencies:
   flutter_test:
