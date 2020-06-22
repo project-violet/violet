@@ -276,8 +276,10 @@ class _SettingsPageState extends State<SettingsPage>
                                     'CN': 'zh',
                                     'RU': 'ru'
                                   };
-                                  await Translations.of(context).load(dict[country.isoCode]);
-                                  await Settings.setLanguage(dict[country.isoCode]);
+                                  await Translations.of(context)
+                                      .load(dict[country.isoCode]);
+                                  await Settings.setLanguage(
+                                      dict[country.isoCode]);
                                   setState(() {});
                                 },
                                 itemFilter: (c) => [].contains(c.isoCode),
@@ -523,7 +525,8 @@ class _SettingsPageState extends State<SettingsPage>
                       MdiIcons.github,
                       color: Colors.black,
                     ),
-                    title: Text("Github " + Translations.of(context).trans('project')),
+                    title: Text(
+                        "Github " + Translations.of(context).trans('project')),
                     trailing: Icon(Icons.open_in_new),
                     onTap: () async {
                       const url = 'https://github.com/project-violet/';

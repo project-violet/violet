@@ -603,13 +603,14 @@ class _SearchBarState extends State<SearchBar>
                                             MdiIcons.viewGridPlusOutline,
                                             color: Settings.majorColor),
                                         title: Slider(
+                                          activeColor: Settings.majorColor,
+                                          inactiveColor: Settings.majorColor.withOpacity(0.2),
                                           min: 60.0,
                                           max: 2000.0,
-                                          divisions: (2000 - 60) ~/ 10,
+                                          divisions: (2000 - 60) ~/ 30,
                                           label:
                                               '$_searchResultMaximum${Translations.of(context).trans('tagdisplay')}',
                                           onChanged: (double value) {
-                                            print(value);
                                             setState(() {
                                               _searchResultMaximum =
                                                   value.toInt();
