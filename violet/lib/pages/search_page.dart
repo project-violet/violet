@@ -598,14 +598,38 @@ class _SearchBarState extends State<SearchBar>
                                             ),
                                             width: double.infinity,
                                             height: 60,
-                                            child: RaisedButton(
-                                              color: Settings.themeWhat
-                                                  ? Colors.grey.shade800
-                                                  : Colors.grey,
-                                              child: Icon(MdiIcons.autoFix),
-                                              onPressed: () {
-                                                magicProcess();
-                                              },
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: <Widget>[
+                                                Expanded(
+                                                  child: RaisedButton(
+                                                    color: Settings.themeWhat
+                                                        ? Colors.grey.shade800
+                                                        : Colors.grey,
+                                                    child: Icon(MdiIcons
+                                                        .keyboardBackspace),
+                                                    onPressed: () {
+                                                      deleteProcess();
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                  width: 8,
+                                                ),
+                                                Expanded(
+                                                  child: RaisedButton(
+                                                    color: Settings.themeWhat
+                                                        ? Colors.grey.shade800
+                                                        : Colors.grey,
+                                                    child: Icon(
+                                                        MdiIcons.keyboardSpace),
+                                                    onPressed: () {
+                                                      spaceProcess();
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -671,15 +695,45 @@ class _SearchBarState extends State<SearchBar>
     });
   }
 
-  void magicProcess() {
+  Future<void> deleteProcess() async {
     var text = _searchController.text;
     var selection = _searchController.selection;
 
-    if (_nothing) {
-      if (text == null || text.trim() == '') return;
+    if (text == null || text.trim() == '') return;
 
-      // DateTime()
-    }
+    // Delete one token
+    int fpos = selection.base.offset - 1;
+    for (; fpos < text.length; fpos++)
+      if (text[fpos] == ' ') {
+        break;
+      }
+
+    int pos = fpos - 1;
+    for (; pos > 0; pos--)
+      if (text[pos] == ' ') {
+        pos++;
+        break;
+      }
+
+    text = text.substring(0, pos) + text.substring(fpos);
+    _searchController.text = text;
+    _searchController.selection = TextSelection(
+      baseOffset: pos,
+      extentOffset: pos,
+    );
+    await searchProcess(_searchController.text, _searchController.selection);
+  }
+  
+  Future<void> spaceProcess() async {
+    var text = _searchController.text;
+    var selection = _searchController.selection;
+
+    _searchController.text = text.substring(0, selection.base.offset) + ' ' + text.substring(selection.base.offset+1);
+    _searchController.selection = TextSelection(
+      baseOffset: selection.baseOffset + 1,
+      extentOffset: selection.baseOffset + 1,
+    );
+    await searchProcess(_searchController.text, _searchController.selection);
   }
 
   // Create tag-chip

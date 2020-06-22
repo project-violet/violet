@@ -106,8 +106,14 @@ void main() async {
             ],
             localeResolutionCallback:
                 (Locale locale, Iterable<Locale> supportedLocales) {
+              if (Settings.language != null) {
+                return Locale(Settings.language);
+              }
+
               if (locale == null) {
                 debugPrint("*language locale is null!!!");
+                if (Settings.language == null)
+                  Settings.setLanguage(supportedLocales.first.languageCode);
                 return supportedLocales.first;
               }
 
@@ -115,11 +121,15 @@ void main() async {
                 if (supportedLocale.languageCode == locale.languageCode ||
                     supportedLocale.countryCode == locale.countryCode) {
                   debugPrint("*language ok $supportedLocale");
+                  if (Settings.language == null)
+                    Settings.setLanguage(supportedLocale.languageCode);
                   return supportedLocale;
                 }
               }
 
               debugPrint("*language to fallback ${supportedLocales.first}");
+              if (Settings.language == null)
+                Settings.setLanguage(supportedLocales.first.languageCode);
               return supportedLocales.first;
             },
           );

@@ -10,6 +10,10 @@ class Settings {
   static Color majorColor; // default purple
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
+  static List<String> includeTags;
+  static List<String> excludeTags;
+  static List<String> blurredTags;
+  static String language; // System Language
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
@@ -45,6 +49,8 @@ class Settings {
           .setInt('searchResultType', searchResultType);
       searchResultType = 0;
     }
+
+    language = (await SharedPreferences.getInstance()).getString('language');
     // majorColor = Color(0xFF5656E7);
   }
 
@@ -77,11 +83,11 @@ class Settings {
         accent = Colors.brown.shade700;
       else if (color == Colors.blueGrey)
         accent = Colors.blueGrey.shade700;
-      else if (color == Colors.black)
-        accent = Colors.black;
+      else if (color == Colors.black) accent = Colors.black;
     }
 
-    (await SharedPreferences.getInstance()).setInt('majorAccentColor', accent.value);
+    (await SharedPreferences.getInstance())
+        .setInt('majorAccentColor', accent.value);
     majorAccentColor = accent;
   }
 
@@ -89,5 +95,11 @@ class Settings {
     searchResultType = wh;
     (await SharedPreferences.getInstance())
         .setInt('searchResultType', searchResultType);
+  }
+
+  static Future<void> setLanguage(String lang) async {
+    language = lang;
+    (await SharedPreferences.getInstance())
+        .setString('language', lang); 
   }
 }

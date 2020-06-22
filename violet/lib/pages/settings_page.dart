@@ -277,6 +277,7 @@ class _SettingsPageState extends State<SettingsPage>
                                     'RU': 'ru'
                                   };
                                   await Translations.of(context).load(dict[country.isoCode]);
+                                  await Settings.setLanguage(dict[country.isoCode]);
                                   setState(() {});
                                 },
                                 itemFilter: (c) => [].contains(c.isoCode),
@@ -302,6 +303,7 @@ class _SettingsPageState extends State<SettingsPage>
                                             country),
                                         SizedBox(
                                           width: 8.0,
+                                          height: 20,
                                         ),
                                         Text("${dict[country.isoCode]}"),
                                       ],
