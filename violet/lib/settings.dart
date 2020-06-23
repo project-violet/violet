@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,6 +54,30 @@ class Settings {
 
     language = (await SharedPreferences.getInstance()).getString('language');
     // majorColor = Color(0xFF5656E7);
+
+    var includetags =
+        (await SharedPreferences.getInstance()).getString('includetags');
+    var excludetags =
+        (await SharedPreferences.getInstance()).getString('excludetags');
+    var blurredtags =
+        (await SharedPreferences.getInstance()).getString('blurredtags');
+    if (includetags == null) {
+      var language = 'lang:english';
+      var langcode = Platform.localeName.split('_')[0];
+      if (langcode == 'ko')
+        language = 'lang:korean';
+      else if (langcode == 'ja')
+        language = 'lang:japanese';
+      else if (langcode == 'zh') language = 'lang:chinese';
+      includetags = '($language or lang:n/a)';
+      (await SharedPreferences.getInstance())
+          .setString('includetags', includetags);
+    }
+    includeTags = includetags.split('|').toList();
+    excludeTags =
+        excludetags != null ? excludetags.split(' ').toList() : List<String>();
+    blurredTags =
+        blurredtags != null ? blurredtags.split(' ').toList() : List<String>();
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -99,7 +125,6 @@ class Settings {
 
   static Future<void> setLanguage(String lang) async {
     language = lang;
-    (await SharedPreferences.getInstance())
-        .setString('language', lang); 
+    (await SharedPreferences.getInstance()).setString('language', lang);
   }
 }
