@@ -80,6 +80,7 @@ dependencies:
   country_pickers:
   syncfusion_flutter_core:
   syncfusion_flutter_sliders:
+  web_socket_channel:
       
 
 dev_dependencies:

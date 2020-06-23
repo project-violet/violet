@@ -4,6 +4,7 @@
     "main": "메인",
     "search": "검색",
     "download": "다운로드",
+    "community": "커뮤니티",
     "bookmark": "북마크",
     "settings": "설정",
     "news": "업데이트",
@@ -49,7 +50,8 @@
     "srt2": "일자 뷰",
     "srt3": "디테일 뷰",
     "tagdisplay": "개 태그 표시",
-
+    "numcunuser": "동시접속자 수: ",
+    "termsofuse": "이용약관",
 
     "nosearchresult": "검색 결과가 없습니다 :(",
     "inputsearchtoken": "검색어를 입력해주세요!",
@@ -57,6 +59,7 @@
     "selectcolor": "색상을 선택해주세요",
     "addtobookmark": "가 북마크에 추가되었습니다.",
     "removetobookmark": "가 북마크에 삭제되었습니다.",
+    "infomessage": "본 개발자는 사용자의 어떠한 정보도 수집하지 않습니다. 모든 이미지와 세부 정보들은 모두 hitomi.la 또는 e-hentai.org, exhentai.org를 포워딩해서 제공합니다.",
 
     "notice1": "제 어플을 다운로드해 주셔서 감사합니다.",
     "notice21": "문의는 ",

@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -89,15 +90,15 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //         .copyWith(caption: new TextStyle(color: Colors.yellow))),
           //child:
           BottomNavigationBar(
-            elevation: 9,
-        showSelectedLabels: false,
+        elevation: 9,
+        // showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.shifting,
         //  backgroundColor: Colors.black,
         fixedColor: Settings.majorColor,
         unselectedItemColor:
             Settings.themeWhat ? Colors.white : Colors.black, //Colors.black,
-            // backgroundColor: Colors.transparent,
+        // backgroundColor: Colors.transparent,
         //backgroundColor: Color(0x4FB200ED),
         //backgroundColor: Color(0x4FB200ED),
         // selectedItemColor: Colors.black,
@@ -110,22 +111,33 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         },
         items: <BottomNavigationBarItem>[
           new BottomNavigationBarItem(
-             backgroundColor: Settings.themeWhat ? Colors.grey.shade900.withOpacity(0.90) : Colors.grey.shade50,
+              backgroundColor: Settings.themeWhat
+                  ? Colors.grey.shade900.withOpacity(0.90)
+                  : Colors.grey.shade50,
               icon: new Icon(MdiIcons.home),
               title: new Text(Translations.of(context).trans('main'))),
           new BottomNavigationBarItem(
-             backgroundColor: Settings.themeWhat ? Colors.grey.shade900.withOpacity(0.90) : Colors.grey.shade50,
+              backgroundColor: Settings.themeWhat
+                  ? Colors.grey.shade900.withOpacity(0.90)
+                  : Colors.grey.shade50,
               icon: new Icon(Icons.search),
               title: new Text(Translations.of(context).trans('search'))),
+          new BottomNavigationBarItem(
+              icon: new Icon(MdiIcons.accountGroup),
+              title: new Text(Translations.of(context).trans('community'))),
           // new BottomNavigationBarItem(
           //     icon: new Icon(Icons.file_download),
           //     title: new Text(Translations.of(context).trans('download'))),
           new BottomNavigationBarItem(
-             backgroundColor: Settings.themeWhat ? Colors.grey.shade900.withOpacity(0.90) : Colors.grey.shade50,
+              backgroundColor: Settings.themeWhat
+                  ? Colors.grey.shade900.withOpacity(0.90)
+                  : Colors.grey.shade50,
               icon: new Icon(Icons.bookmark),
               title: new Text(Translations.of(context).trans('bookmark'))),
           new BottomNavigationBarItem(
-             backgroundColor: Settings.themeWhat ? Colors.grey.shade900.withOpacity(0.90) : Colors.grey.shade50,
+              backgroundColor: Settings.themeWhat
+                  ? Colors.grey.shade900.withOpacity(0.90)
+                  : Colors.grey.shade50,
               icon: new Icon(Icons.settings),
               title: new Text(Translations.of(context).trans('settings'))),
         ],
@@ -199,6 +211,22 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //     children: <Widget>[new Icon(Icons.mail), new Text("Inbox")],
           //   ),
           // ),
+          new Center(
+            child: Padding(
+              padding: EdgeInsets.all(64),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  CachedNetworkImage(
+                    imageUrl:
+                        "https://www.amazing-animations.com/animations/construction5.gif",
+                  ),
+                  Container(padding: EdgeInsets.all(4),),
+                  Text('공사중!'),
+                ],
+              ),
+            ),
+          ),
           new Center(
             child: Padding(
               padding: EdgeInsets.all(64),
