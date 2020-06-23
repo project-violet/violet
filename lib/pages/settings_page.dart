@@ -4,6 +4,7 @@
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
@@ -12,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:tuple/tuple.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -184,13 +187,26 @@ class _SettingsPageState extends State<SettingsPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(Translations.of(context).trans('defaulttag')),
-                        Text(Translations.of(context).trans('currenttag')),
+                        Text(
+                          Translations.of(context).trans('currenttag') +
+                              Settings.includeTags.join('|'),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ],
                     ),
                     trailing: Icon(
                         // Icons.message,
                         Icons.keyboard_arrow_right),
-                    onTap: () {},
+                    onTap: () async {
+                      final vv = await showDialog(
+                        context: context,
+                        // edgeInsets: EdgeInsets.symmetric(horizontal: 8),
+                        builder: (_) => TagSelectorDialog(),
+                        // barrierDismissible: false
+                      );
+
+                      if (vv == 1) setState(() {});
+                    },
                   ),
                   _buildDivider(),
                   ListTile(
@@ -262,7 +278,8 @@ class _SettingsPageState extends State<SettingsPage>
                             data: Theme.of(context)
                                 .copyWith(primaryColor: Colors.pink),
                             child: CountryPickerDialog(
-                                titlePadding: EdgeInsets.all(8.0),
+                                titlePadding:
+                                    EdgeInsets.symmetric(vertical: 16),
                                 // searchCursorColor: Colors.pinkAccent,
                                 // searchInputDecoration:
                                 //     InputDecoration(hintText: 'Search...'),
@@ -581,7 +598,7 @@ class _SettingsPageState extends State<SettingsPage>
                   //       // Icons.email,
                   //       Icons.keyboard_arrow_right),
                   //   onTap: () async {
-                      
+
                   //   },
                   // ),
                   // _buildDivider(),
@@ -798,14 +815,16 @@ class VersionViewPage extends StatelessWidget {
                       style: TextStyle(fontSize: 30),
                     ),
                     Text(
-                      '0.1.0',
+                      '0.4.0',
                       style: TextStyle(fontSize: 20),
                     ),
                     Text(''),
                     Text('Project-Violet Android App'),
-                    Text(Translations.of(context).trans('infomessage'),
+                    Text(
+                      Translations.of(context).trans('infomessage'),
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 10),),
+                      style: TextStyle(fontSize: 10),
+                    ),
                   ],
                 ),
                 width: 250,
@@ -830,14 +849,301 @@ class VersionViewPage extends StatelessWidget {
   }
 }
 
-class ColorSettingsPage extends StatefulWidget {
+class TagSelectorDialog extends StatefulWidget {
   @override
-  _ColorSettingsPageState createState() => _ColorSettingsPageState();
+  _TagSelectorDialogState createState() => _TagSelectorDialogState();
 }
 
-class _ColorSettingsPageState extends State<ColorSettingsPage> {
+class _TagSelectorDialogState extends State<TagSelectorDialog> {
+  @override
+  void initState() {
+    super.initState();
+    _searchController =
+        TextEditingController(text: Settings.includeTags.join('|'));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final width = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).viewInsets.bottom;
+
+    if (MediaQuery.of(context).viewInsets.bottom < 1)
+      height = 400;
+    
+    if (_searchLists.length == 0 && !_nothing) {
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'female', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'male', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'tag', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'lang', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'series', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'artist', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'group', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'uploader', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'character', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'type', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'class', 0));
+    }
+
+    return AlertDialog(
+      insetPadding: EdgeInsets.all(16),
+      contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+      content: Stack(
+        overflow: Overflow.visible,
+        alignment: Alignment.center,
+        children: <Widget>[
+          SizedBox(
+            height: height,
+            width: width,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              // mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                ListTile(
+                  contentPadding: EdgeInsets.all(0),
+                  leading: Text('태그:'),
+                  title: TextField(
+                    controller: _searchController,
+                    onChanged: (String str) async {
+                      await searchProcess(str, _searchController.selection);
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: _searchLists.length == 0 || _nothing
+                      ? Center(
+                          child: Text(_nothing
+                              ? Translations.of(context).trans('nosearchresult')
+                              : Translations.of(context)
+                                  .trans('inputsearchtoken')))
+                      : Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          child: FadingEdgeScrollView.fromSingleChildScrollView(
+                            child: SingleChildScrollView(
+                              controller: ScrollController(),
+                              child: Wrap(
+                                spacing: 4.0,
+                                runSpacing: -10.0,
+                                children: _searchLists
+                                    .map((item) => chip(item))
+                                    .toList(),
+                              ),
+                            ),
+                            gradientFractionOnEnd: 0.1,
+                            gradientFractionOnStart: 0.1,
+                          ),
+                        ),
+                ),
+                Text('이 설정은 검색어 설정입니다.', style: TextStyle(fontSize: 14.0))
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          child: new Text('확인'),
+          onPressed: () {
+            Navigator.pop(context, 1);
+          },
+        ),
+        new FlatButton(
+          child: new Text('취소'),
+          onPressed: () {
+            Navigator.pop(context, 0);
+          },
+        ),
+      ],
+    );
   }
+
+  List<Tuple3<String, String, int>> _searchLists =
+      List<Tuple3<String, String, int>>();
+
+  TextEditingController _searchController;
+  int _insertPos, _insertLength;
+  String _searchText;
+  bool _nothing = false;
+  bool _onChip = false;
+  bool _tagTranslation = false;
+  bool _showCount = true;
+  int _searchResultMaximum = 60;
+
+  Future<void> searchProcess(String target, TextSelection selection) async {
+    _nothing = false;
+    _onChip = false;
+    if (target.trim() == '') {
+      setState(() {
+        _searchLists.clear();
+      });
+      return;
+    }
+
+    int pos = selection.base.offset - 1;
+    for (; pos > 0; pos--)
+      if (target[pos] == ' ') {
+        pos++;
+        break;
+      }
+
+    var last = target.indexOf(' ', pos);
+    var token =
+        target.substring(pos, last == -1 ? target.length : last + 1).trim();
+
+    if (pos != target.length && (target[pos] == '-' || target[pos] == '(')) {
+      token = token.substring(1);
+      pos++;
+    }
+    if (token == '') {
+      setState(() {
+        _searchLists.clear();
+      });
+      return;
+    }
+
+    _insertPos = pos;
+    _insertLength = token.length;
+    _searchText = target;
+    final result = (await HitomiManager.queryAutoComplete(token))
+        .take(_searchResultMaximum)
+        .toList();
+    if (result.length == 0) _nothing = true;
+    setState(() {
+      _searchLists = result;
+    });
+  }
+
+  // Create tag-chip
+  // group, name, counts
+  Widget chip(Tuple3<String, String, int> info) {
+    var tagRaw = info.item2;
+    var count = '';
+    var color = Colors.grey;
+
+    if (_tagTranslation) // Korean
+      tagRaw =
+          HitomiManager.mapSeries2Kor(HitomiManager.mapTag2Kor(info.item2));
+
+    if (info.item3 > 0 && _showCount) count = ' (${info.item3})';
+
+    if (info.item1 == 'female')
+      color = Colors.pink;
+    else if (info.item1 == 'male')
+      color = Colors.blue;
+    else if (info.item1 == 'prefix') color = Colors.orange;
+
+    var fc = RawChip(
+      labelPadding: EdgeInsets.all(0.0),
+      avatar: CircleAvatar(
+        backgroundColor: Colors.grey.shade600,
+        child: Text(info.item1[0].toUpperCase()),
+      ),
+      label: Text(
+        ' ' + tagRaw + count,
+        style: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      backgroundColor: color,
+      elevation: 6.0,
+      shadowColor: Colors.grey[60],
+      padding: EdgeInsets.all(6.0),
+      onPressed: () async {
+        // Insert text to cursor.
+        if (info.item1 != 'prefix') {
+          var insert = info.item2.replaceAll(' ', '_');
+          if (info.item1 != 'female' && info.item1 != 'male')
+            insert = info.item1 + ':' + insert;
+
+          _searchController.text = _searchText.substring(0, _insertPos) +
+              insert +
+              _searchText.substring(
+                  _insertPos + _insertLength, _searchText.length);
+          _searchController.selection = TextSelection(
+            baseOffset: _insertPos + insert.length,
+            extentOffset: _insertPos + insert.length,
+          );
+        } else {
+          var offset = _searchController.selection.baseOffset;
+          if (offset != -1) {
+            _searchController.text = _searchController.text
+                    .substring(0, _searchController.selection.base.offset) +
+                info.item2 +
+                ': ' +
+                _searchController.text
+                    .substring(_searchController.selection.base.offset);
+            _searchController.selection = TextSelection(
+              baseOffset: offset + info.item2.length + 1,
+              extentOffset: offset + info.item2.length + 1,
+            );
+          } else {
+            _searchController.text = info.item2 + ': ';
+            _searchController.selection = TextSelection(
+              baseOffset: info.item2.length + 1,
+              extentOffset: info.item2.length + 1,
+            );
+          }
+          _onChip = true;
+          await searchProcess(
+              _searchController.text, _searchController.selection);
+        }
+      },
+    );
+    return fc;
+  }
+}
+
+// https://stackoverflow.com/a/57496479/3355656
+/// A widget to defeat the hard coded insets of the [Dialog] class which
+/// are [EdgeInsets.symmetric(horizontal: 40.0, vertical: 24.0)].
+///
+/// See also:
+///
+///  * [Dialog], for dialogs that have a message and some buttons.
+///  * [showDialog], which actually displays the dialog and returns its result.
+///  * <https://material.io/design/components/dialogs.html>
+///  * <https://stackoverflow.com/questions/53913192/flutter-change-the-width-of-an-alertdialog>
+class DialogInsetDefeat extends StatelessWidget {
+  final BuildContext context;
+  final Widget child;
+  final deInset = EdgeInsets.symmetric(horizontal: -40, vertical: -24);
+  final EdgeInsets edgeInsets;
+
+  DialogInsetDefeat(
+      {@required this.context, @required this.child, this.edgeInsets});
+
+  @override
+  Widget build(BuildContext context) {
+    var netEdgeInsets = deInset + (edgeInsets ?? EdgeInsets.zero);
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(viewInsets: netEdgeInsets),
+      child: child,
+    );
+  }
+}
+
+/// Displays a Material dialog using the above DialogInsetDefeat class.
+/// Meant to be a drop-in replacement for showDialog().
+///
+/// See also:
+///
+///  * [Dialog], on which [SimpleDialog] and [AlertDialog] are based.
+///  * [showDialog], which allows for customization of the dialog popup.
+///  * <https://material.io/design/components/dialogs.html>
+Future<T> showDialogWithInsets<T>({
+  @required BuildContext context,
+  bool barrierDismissible = true,
+  @required WidgetBuilder builder,
+  EdgeInsets edgeInsets,
+}) {
+  return showDialog(
+    context: context,
+    builder: (_) => DialogInsetDefeat(
+      context: context,
+      edgeInsets: edgeInsets,
+      child: Builder(builder: builder),
+    ),
+    // Edited! barrierDismissible: barrierDismissible = true,
+    barrierDismissible: barrierDismissible,
+  );
 }
