@@ -11,7 +11,7 @@
     "theme": "Theme",
     "darkmode": "Dark Mode",
     "colorsetting":"Color Setting",
-    "defaulttag":"Default Tag (Language Setting)",
+    "defaulttag":"Default Tag",
     "currenttag":"Current Tag: ",
     "excludetag":"Exclusive Tags",
     "blurredtag":"Blurred Tags",
@@ -52,6 +52,9 @@
     "tagdisplay": " Tag Display",
     "numcunuser": "Number of concurrent users: ",
     "termsofuse": "Terms of Use",
+    "tag": "Tag",
+    "ok": "OK",
+    "cancel": "Cancel",
 
     "nosearchresult": "No search results found :(",
     "inputsearchtoken": "Please enter a search term!",
@@ -60,7 +63,8 @@
     "addtobookmark": " has been added to bookmarks.",
     "removetobookmark": " has been removed from the bookmark.",
     "infomessage": "The developer does not collect any information from users. All images and details are provided by hitomi.la, e-hentai.org or exhentai.org.",
-    
+    "tagmsgdefault": "This setting is a search term setting.",
+
     "notice1": "Thank you for downloading my app.",
     "notice21": "Please send your inquiries to ",
     "notice22": ".",

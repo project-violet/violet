@@ -647,6 +647,7 @@ class _ImageTestPageState extends State<ImageTestPage> {
           backgroundColor: Colors.orange,
         ),
         body: ViewerWidget(
+          id: "",
           urls: imgs,
           headers: {"Referer": "https://hitomi.la/reader/16440821.html/"},
         ),
