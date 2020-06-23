@@ -443,16 +443,33 @@ class _SearchBarState extends State<SearchBar>
                                   Translations.of(context).trans('search'),
                             ),
                           ),
-                          leading: SizedBox(
-                            width: 25,
-                            height: 25,
-                            child: RawMaterialButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                shape: CircleBorder(),
-                                child: FlareArtboard(widget.artboard,
-                                    controller: widget.heroController)),
+                          // leading: SizedBox(
+                          //   width: 25,
+                          //   height: 25,
+                          //   child: RawMaterialButton(
+                          //       onPressed: () {
+                          //         Navigator.pop(context);
+                          //       },
+                          //       shape: CircleBorder(),
+                          //         child: FlareArtboard(widget.artboard,
+                          //             controller: widget.heroController),
+                          // ),
+                          leading: Container(
+                            transform: Matrix4.translationValues(-4, 0, 0),
+                            child: SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: RawMaterialButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  shape: CircleBorder(),
+                                  child: Transform.scale(
+                                    scale: 0.65,
+                                    child: FlareArtboard(widget.artboard,
+                                        controller: widget.heroController),
+                                  )),
+                            ),
                           ),
                         ),
                       ),
@@ -604,7 +621,8 @@ class _SearchBarState extends State<SearchBar>
                                             color: Settings.majorColor),
                                         title: Slider(
                                           activeColor: Settings.majorColor,
-                                          inactiveColor: Settings.majorColor.withOpacity(0.2),
+                                          inactiveColor: Settings.majorColor
+                                              .withOpacity(0.2),
                                           min: 60.0,
                                           max: 2000.0,
                                           divisions: (2000 - 60) ~/ 30,
