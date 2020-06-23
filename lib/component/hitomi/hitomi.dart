@@ -42,10 +42,10 @@ class HitomiManager {
       btresult.add(
           'https://tn.hitomi.la/bigtn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
       stresult.add(
-        'https://${subdomain}tn.hitomi.la/smalltn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg'
-      );
+          'https://${subdomain}tn.hitomi.la/smalltn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
     }
-    return Tuple3<List<String>, List<String>, List<String>>(result, btresult, stresult);
+    return Tuple3<List<String>, List<String>, List<String>>(
+        result, btresult, stresult);
   }
 
   static Map<String, dynamic> tagmap;
@@ -140,6 +140,31 @@ class HitomiManager {
     }
   }
 
+  static List<String> splitTokens(String tokens) {
+    var result = List<String>();
+    var builder = StringBuffer();
+    for (int i = 0; i < tokens.length; i++) {
+      if (tokens[i] == ' ') {
+        result.add(builder.toString());
+        builder.clear();
+        continue;
+      } else if (tokens[i] == '(' ||
+          tokens[i] == ')' ||
+          tokens[i] == '>' ||
+          tokens[i] == '<') {
+        result.add(builder.toString());
+        builder.clear();
+        result.add(tokens[i]);
+        continue;
+      }
+
+      builder.write(tokens[i]);
+    }
+
+    result.add(builder.toString());
+    return result;
+  }
+
   static String translate2query(String tokens) {
     tokens = tokens.trim();
     final nn = int.tryParse(tokens);
@@ -148,8 +173,9 @@ class HitomiManager {
     }
 
     final split =
-        tokens.split(' ').map((x) => x.trim()).where((x) => x != '').toList();
+        splitTokens(tokens).map((x) => x.trim()).where((x) => x != '').toList();
     var where = '';
+    print(split);
 
     for (int i = 0; i < split.length; i++) {
       var negative = false;
@@ -216,6 +242,8 @@ class HitomiManager {
           where += "$prefix LIKE '%$postfix%'";
 
         if (prefix == 'Uploader') where += ' COLLATE NOCASE';
+      } else if ('=<>()'.contains(split[i])) {
+        where += split[i];
       } else {
         if (negative)
           where += "Title NOT LIKE '%$val%'";
@@ -223,7 +251,13 @@ class HitomiManager {
           where += "Title LIKE '%$val%'";
       }
 
-      if (i != split.length - 1) where += ' AND ';
+      if (i != split.length - 1) {
+        if (split[i + 1].toLowerCase() == 'or') {
+          where += ' OR ';
+          i++;
+        } else
+          where += ' AND ';
+      }
     }
 
     return 'SELECT * FROM HitomiColumnModel WHERE $where';

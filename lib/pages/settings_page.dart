@@ -305,7 +305,7 @@ class _SettingsPageState extends State<SettingsPage>
                                             country),
                                         SizedBox(
                                           width: 8.0,
-                                          height: 20,
+                                          height: 30,
                                         ),
                                         Text("${dict[country.isoCode]}"),
                                       ],
@@ -573,6 +573,20 @@ class _SettingsPageState extends State<SettingsPage>
                   // _buildDivider(),
                   // ListTile(
                   //   leading: Icon(
+                  //     MdiIcons.script,
+                  //     color: Settings.majorColor,
+                  //   ),
+                  //   title: Text(Translations.of(context).trans('termsofuse')),
+                  //   trailing: Icon(
+                  //       // Icons.email,
+                  //       Icons.keyboard_arrow_right),
+                  //   onTap: () async {
+                      
+                  //   },
+                  // ),
+                  // _buildDivider(),
+                  // ListTile(
+                  //   leading: Icon(
                   //     Icons.open_in_new,
                   //     color: Settings.majorColor,
                   //   ),
@@ -789,10 +803,13 @@ class VersionViewPage extends StatelessWidget {
                     ),
                     Text(''),
                     Text('Project-Violet Android App'),
+                    Text(Translations.of(context).trans('infomessage'),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 10),),
                   ],
                 ),
                 width: 250,
-                height: 130,
+                height: 190,
               ),
             ),
           ),

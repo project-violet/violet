@@ -44,3 +44,4 @@ real_key.jks
 assets/test/*
 android/app/google-services.json
 syncfusion.dart
+ws.dart

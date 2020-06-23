@@ -4,9 +4,13 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:violet/main.dart';
+import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/locale.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -14,6 +18,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  @override
+  bool get wantKeepAlive => true;
   var currentPage = images.length - 1.0;
   var currentPage2 = images.length - 1.0;
 
@@ -187,6 +193,23 @@ class _MainPageState extends State<MainPage> {
               //     )
               //   ],
               // ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(vertical: 24.0),
+              //   child: Text(
+              //       '${Translations.of(context).trans('numcunuser')}$userConnectionCount'),
+              // )
+              // StreamBuilder(
+              //   stream: channel.stream,
+              //   builder: (context, snapshot) {
+              //     print(snapshot.data.toString().split(' ')[1]);
+              //     return Padding(
+              //       padding: const EdgeInsets.symmetric(vertical: 24.0),
+              //       child: Text(snapshot.hasData
+              //           ? '${Translations.of(context).trans('numcunuser')}${snapshot.data.toString().split(' ')[1]}'
+              //           : ''),
+              //     );
+              //   },
+              // )
             ],
           ),
         ),

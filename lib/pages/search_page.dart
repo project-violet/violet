@@ -706,7 +706,7 @@ class _SearchBarState extends State<SearchBar>
     var token =
         target.substring(pos, last == -1 ? target.length : last + 1).trim();
 
-    if (pos != target.length && target[pos] == '-') {
+    if (pos != target.length && (target[pos] == '-' || target[pos] == '(')) {
       token = token.substring(1);
       pos++;
     }

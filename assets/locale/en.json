@@ -5,6 +5,7 @@
     "search": "Search",
     "download": "Download",
     "bookmark": "Bookmark",
+    "community": "Community",
     "settings": "Settings",
     "news": "Update",
     "theme": "Theme",
@@ -49,6 +50,8 @@
     "srt2": "Lined View",
     "srt3": "Detail View",
     "tagdisplay": " Tag Display",
+    "numcunuser": "Number of concurrent users: ",
+    "termsofuse": "Terms of Use",
 
     "nosearchresult": "No search results found :(",
     "inputsearchtoken": "Please enter a search term!",
@@ -56,6 +59,7 @@
     "selectcolor": "Select a color",
     "addtobookmark": " has been added to bookmarks.",
     "removetobookmark": " has been removed from the bookmark.",
+    "infomessage": "The developer does not collect any information from users. All images and details are provided by hitomi.la, e-hentai.org or exhentai.org.",
     
     "notice1": "Thank you for downloading my app.",
     "notice21": "Please send your inquiries to ",

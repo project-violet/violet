@@ -11,9 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/syncfusion.dart';
 import 'package:violet/user.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'locale.dart';
 import 'package:violet/pages/database_download_page.dart';
 import 'package:violet/pages/splash_page.dart';
@@ -37,6 +40,9 @@ Future<void> initDB() async {
   await Bookmark.getInstance();
 }
 
+// WebSocketChannel channel = IOWebSocketChannel.connect(wss_url, pingInterval: Duration(milliseconds: 2000));
+// String userConnectionCount = '0';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FlareCache.doesPrune = false;
@@ -53,7 +59,24 @@ void main() async {
   await Settings.init();
   await initDB();
 
+  // channel.stream.listen((event) {
+  //   userConnectionCount = event.toString().split(' ')[1];
+  // });
+
   registerLicense();
+
+  // StreamBuilder(
+  //   stream: channel.stream,
+  //   builder: (context, snapshot) {
+  //     print(snapshot.data.toString().split(' ')[1]);
+  //     return Padding(
+  //       padding: const EdgeInsets.symmetric(vertical: 24.0),
+  //       child: Text(snapshot.hasData
+  //           ? '${Translations.of(context).trans('numcunuser')}${snapshot.data.toString().split(' ')[1]}'
+  //           : ''),
+  //     );
+  //   },
+  // );
 
   warmupFlare().then((_) {
     runApp(
