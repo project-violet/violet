@@ -56,25 +56,32 @@ class _SettingsPageState extends State<SettingsPage>
               children: <Widget>[
                 _buildGroup(Translations.of(context).trans('theme')),
                 _buildItems([
-                  ListTile(
-                    leading: ShaderMask(
-                      shaderCallback: (bounds) => RadialGradient(
-                        center: Alignment.topLeft,
-                        radius: 1.0,
-                        colors: [Colors.black, Colors.white],
-                        tileMode: TileMode.clamp,
-                      ).createShader(bounds),
-                      child: Icon(MdiIcons.themeLightDark, color: Colors.white),
-                    ),
-                    title: Text(Translations.of(context).trans('darkmode')),
-                    trailing: SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: FlareActor(
-                        'assets/flare/switch_daytime.flr',
-                        animation: _themeSwitch ? "night_idle" : "day_idle",
-                        controller: _flareController,
-                        snapToEnd: true,
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: ShaderMask(
+                        shaderCallback: (bounds) => RadialGradient(
+                          center: Alignment.topLeft,
+                          radius: 1.0,
+                          colors: [Colors.black, Colors.white],
+                          tileMode: TileMode.clamp,
+                        ).createShader(bounds),
+                        child:
+                            Icon(MdiIcons.themeLightDark, color: Colors.white),
+                      ),
+                      title: Text(Translations.of(context).trans('darkmode')),
+                      trailing: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: FlareActor(
+                          'assets/flare/switch_daytime.flr',
+                          animation: _themeSwitch ? "night_idle" : "day_idle",
+                          controller: _flareController,
+                          snapToEnd: true,
+                        ),
                       ),
                     ),
                     onTap: () async {
@@ -92,21 +99,28 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                   _buildDivider(),
-                  ListTile(
-                    leading: ShaderMask(
-                      shaderCallback: (bounds) => RadialGradient(
-                        center: Alignment.bottomLeft,
-                        radius: 1.2,
-                        colors: [Colors.orange, Colors.pink],
-                        tileMode: TileMode.clamp,
-                      ).createShader(bounds),
-                      child:
-                          Icon(MdiIcons.formatColorFill, color: Colors.white),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: ShaderMask(
+                        shaderCallback: (bounds) => RadialGradient(
+                          center: Alignment.bottomLeft,
+                          radius: 1.2,
+                          colors: [Colors.orange, Colors.pink],
+                          tileMode: TileMode.clamp,
+                        ).createShader(bounds),
+                        child:
+                            Icon(MdiIcons.formatColorFill, color: Colors.white),
+                      ),
+                      title:
+                          Text(Translations.of(context).trans('colorsetting')),
+                      trailing: Icon(
+                          // Icons.message,
+                          Icons.keyboard_arrow_right),
                     ),
-                    title: Text(Translations.of(context).trans('colorsetting')),
-                    trailing: Icon(
-                        // Icons.message,
-                        Icons.keyboard_arrow_right),
                     onTap: () {
                       // showDialog(
                       //   context: context,
@@ -178,23 +192,29 @@ class _SettingsPageState extends State<SettingsPage>
                 ]),
                 _buildGroup(Translations.of(context).trans('search')),
                 _buildItems([
-                  ListTile(
-                    leading: Icon(
-                      MdiIcons.tagHeartOutline,
-                      color: Settings.majorColor,
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.tagHeartOutline,
+                        color: Settings.majorColor,
+                      ),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(Translations.of(context).trans('defaulttag')),
+                          Text(
+                            Translations.of(context).trans('currenttag') +
+                                Settings.includeTags.join('|'),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(Translations.of(context).trans('defaulttag')),
-                        Text(
-                          Translations.of(context).trans('currenttag') +
-                              Settings.includeTags.join('|'),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                    trailing: Icon(Icons.keyboard_arrow_right),
                     onTap: () async {
                       final vv = await showDialog(
                         context: context,
@@ -222,13 +242,19 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                   _buildDivider(),
-                  ListTile(
-                    leading: Icon(
-                      MdiIcons.blur,
-                      color: Settings.majorColor,
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.blur,
+                        color: Settings.majorColor,
+                      ),
+                      title: Text(Translations.of(context).trans('blurredtag')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    title: Text(Translations.of(context).trans('blurredtag')),
-                    trailing: Icon(Icons.keyboard_arrow_right),
                     onTap: () async {
                       final vv = await showDialog(
                         context: context,
@@ -266,10 +292,16 @@ class _SettingsPageState extends State<SettingsPage>
                   //   onTap: () {},
                   // ),
                   // _buildDivider(),
-                  ListTile(
-                    leading: Icon(Icons.receipt, color: Settings.majorColor),
-                    title: Text(Translations.of(context).trans('logrecord')),
-                    trailing: Icon(Icons.keyboard_arrow_right),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(Icons.receipt, color: Settings.majorColor),
+                      title: Text(Translations.of(context).trans('logrecord')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
                     onTap: () {},
                   ),
                   _buildDivider(),
@@ -370,10 +402,16 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                   _buildDivider(),
-                  ListTile(
-                    leading: Icon(Icons.developer_mode, color: Colors.orange),
-                    title: Text(Translations.of(context).trans('devtool')),
-                    trailing: Icon(Icons.keyboard_arrow_right),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(Icons.developer_mode, color: Colors.orange),
+                      title: Text(Translations.of(context).trans('devtool')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -514,27 +552,40 @@ class _SettingsPageState extends State<SettingsPage>
                 // ]),
                 _buildGroup(Translations.of(context).trans('update')),
                 _buildItems([
-                  ListTile(
-                    leading: Icon(
-                      Icons.update,
-                      color: Settings.majorColor,
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    title: Text(Translations.of(context).trans('checkupdate')),
-                    trailing: Icon(
-                        // Icons.message,
-                        Icons.keyboard_arrow_right),
+                    child: ListTile(
+                      // borderRadius: BorderRadius.circular(10.0),
+                      leading: Icon(
+                        Icons.update,
+                        color: Settings.majorColor,
+                      ),
+                      title:
+                          Text(Translations.of(context).trans('checkupdate')),
+                      trailing: Icon(
+                          // Icons.message,
+                          Icons.keyboard_arrow_right),
+                    ),
                     onTap: () {},
                   ),
                 ]),
                 _buildGroup(Translations.of(context).trans('etc')),
                 _buildItems([
-                  ListTile(
-                    leading: Icon(
-                      MdiIcons.discord,
-                      color: Color(0xFF7189da),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.discord,
+                        color: Color(0xFF7189da),
+                      ),
+                      title: Text(Translations.of(context).trans('discord')),
+                      trailing: Icon(Icons.open_in_new),
                     ),
-                    title: Text(Translations.of(context).trans('discord')),
-                    trailing: Icon(Icons.open_in_new),
                     onTap: () async {
                       const url = 'https://discord.gg/K8qny6E';
                       if (await canLaunch(url)) {
@@ -620,15 +671,21 @@ class _SettingsPageState extends State<SettingsPage>
                   //   onTap: () {},
                   // ),
                   _buildDivider(),
-                  ListTile(
-                    leading: Icon(
-                      MdiIcons.library,
-                      color: Settings.majorColor,
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.library,
+                        color: Settings.majorColor,
+                      ),
+                      title: Text(Translations.of(context).trans('license')),
+                      trailing: Icon(
+                          // Icons.email,
+                          Icons.keyboard_arrow_right),
                     ),
-                    title: Text(Translations.of(context).trans('license')),
-                    trailing: Icon(
-                        // Icons.email,
-                        Icons.keyboard_arrow_right),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -952,7 +1009,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                         ),
                 ),
                 widget.what == 'include'
-                    ? Text(Translations.of(context).trans('tagmsgdefault'), style: TextStyle(fontSize: 14.0))
+                    ? Text(Translations.of(context).trans('tagmsgdefault'),
+                        style: TextStyle(fontSize: 14.0))
                     : Container()
               ],
             ),
