@@ -194,15 +194,11 @@ class _SettingsPageState extends State<SettingsPage>
                         ),
                       ],
                     ),
-                    trailing: Icon(
-                        // Icons.message,
-                        Icons.keyboard_arrow_right),
+                    trailing: Icon(Icons.keyboard_arrow_right),
                     onTap: () async {
                       final vv = await showDialog(
                         context: context,
-                        // edgeInsets: EdgeInsets.symmetric(horizontal: 8),
-                        builder: (_) => TagSelectorDialog(),
-                        // barrierDismissible: false
+                        child: TagSelectorDialog(what: 'include'),
                       );
 
                       if (vv == 1) setState(() {});
@@ -215,10 +211,15 @@ class _SettingsPageState extends State<SettingsPage>
                       color: Settings.majorColor,
                     ),
                     title: Text(Translations.of(context).trans('excludetag')),
-                    trailing: Icon(
-                        // Icons.message,
-                        Icons.keyboard_arrow_right),
-                    onTap: () {},
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () async {
+                      final vv = await showDialog(
+                        context: context,
+                        child: TagSelectorDialog(what: 'exclude'),
+                      );
+
+                      if (vv == 1) setState(() {});
+                    },
                   ),
                   _buildDivider(),
                   ListTile(
@@ -227,10 +228,15 @@ class _SettingsPageState extends State<SettingsPage>
                       color: Settings.majorColor,
                     ),
                     title: Text(Translations.of(context).trans('blurredtag')),
-                    trailing: Icon(
-                        // Icons.message,
-                        Icons.keyboard_arrow_right),
-                    onTap: () {},
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () async {
+                      final vv = await showDialog(
+                        context: context,
+                        child: TagSelectorDialog(what: 'blurred'),
+                      );
+
+                      if (vv == 1) setState(() {});
+                    },
                   ),
                   // _buildDivider(),
                   // ListTile(
@@ -850,6 +856,10 @@ class VersionViewPage extends StatelessWidget {
 }
 
 class TagSelectorDialog extends StatefulWidget {
+  final String what;
+
+  TagSelectorDialog({this.what});
+
   @override
   _TagSelectorDialogState createState() => _TagSelectorDialogState();
 }
@@ -858,19 +868,26 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   @override
   void initState() {
     super.initState();
-    _searchController =
-        TextEditingController(text: Settings.includeTags.join('|'));
+    if (widget.what == 'include')
+      _searchController =
+          TextEditingController(text: Settings.includeTags.join('|'));
+    else if (widget.what == 'exclude')
+      _searchController =
+          TextEditingController(text: Settings.excludeTags.join('|'));
+    else if (widget.what == 'blurred')
+      _searchController =
+          TextEditingController(text: Settings.blurredTags.join('|'));
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top -
+    var height = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
         MediaQuery.of(context).viewInsets.bottom;
 
-    if (MediaQuery.of(context).viewInsets.bottom < 1)
-      height = 400;
-    
+    if (MediaQuery.of(context).viewInsets.bottom < 1) height = 400;
+
     if (_searchLists.length == 0 && !_nothing) {
       _searchLists.add(Tuple3<String, String, int>('prefix', 'female', 0));
       _searchLists.add(Tuple3<String, String, int>('prefix', 'male', 0));
@@ -901,7 +918,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
               children: <Widget>[
                 ListTile(
                   contentPadding: EdgeInsets.all(0),
-                  leading: Text('태그:'),
+                  leading: Text('${Translations.of(context).trans('tag')}:'),
                   title: TextField(
                     controller: _searchController,
                     onChanged: (String str) async {
@@ -934,21 +951,25 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                           ),
                         ),
                 ),
-                Text('이 설정은 검색어 설정입니다.', style: TextStyle(fontSize: 14.0))
+                widget.what == 'include'
+                    ? Text(Translations.of(context).trans('tagmsgdefault'), style: TextStyle(fontSize: 14.0))
+                    : Container()
               ],
             ),
           ),
         ],
       ),
       actions: <Widget>[
-        new FlatButton(
-          child: new Text('확인'),
+        new RaisedButton(
+          color: Settings.majorColor,
+          child: new Text(Translations.of(context).trans('ok')),
           onPressed: () {
             Navigator.pop(context, 1);
           },
         ),
-        new FlatButton(
-          child: new Text('취소'),
+        new RaisedButton(
+          color: Settings.majorColor,
+          child: new Text(Translations.of(context).trans('cancel')),
           onPressed: () {
             Navigator.pop(context, 0);
           },
@@ -964,14 +985,12 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   int _insertPos, _insertLength;
   String _searchText;
   bool _nothing = false;
-  bool _onChip = false;
   bool _tagTranslation = false;
   bool _showCount = true;
   int _searchResultMaximum = 60;
 
   Future<void> searchProcess(String target, TextSelection selection) async {
     _nothing = false;
-    _onChip = false;
     if (target.trim() == '') {
       setState(() {
         _searchLists.clear();
@@ -1083,7 +1102,6 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
               extentOffset: info.item2.length + 1,
             );
           }
-          _onChip = true;
           await searchProcess(
               _searchController.text, _searchController.selection);
         }
