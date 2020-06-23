@@ -244,6 +244,8 @@ class HitomiManager {
         if (prefix == 'Uploader') where += ' COLLATE NOCASE';
       } else if ('=<>()'.contains(split[i])) {
         where += split[i];
+        if (split[i] == '(')
+          continue;
       } else {
         if (negative)
           where += "Title NOT LIKE '%$val%'";
@@ -255,7 +257,7 @@ class HitomiManager {
         if (split[i + 1].toLowerCase() == 'or') {
           where += ' OR ';
           i++;
-        } else
+        } else if (split[i + 1] != ')')
           where += ' AND ';
       }
     }
