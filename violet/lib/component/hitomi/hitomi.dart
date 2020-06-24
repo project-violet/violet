@@ -172,10 +172,12 @@ class HitomiManager {
       return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
     }
 
+    if (tokens == null || tokens.trim() == "")
+      return 'SELECT * FROM HitomiColumnModel';
+
     final split =
         splitTokens(tokens).map((x) => x.trim()).where((x) => x != '').toList();
     var where = '';
-    print(split);
 
     for (int i = 0; i < split.length; i++) {
       var negative = false;

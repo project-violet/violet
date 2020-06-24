@@ -34,7 +34,7 @@ class DataBaseDownloadPage extends StatefulWidget {
 
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   final imgUrl =
-      "https://github.com/violet-dev/db/releases/download/2020.06.20/hitomidata.db";
+      "https://github.com/violet-dev/db/releases/download/2020.06.23/hitomidata.db";
   bool downloading = false;
   var baseString = "요청을 기다리는 중...";
   var progressString = "";
