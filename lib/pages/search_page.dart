@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:auto_animated/auto_animated.dart';
@@ -12,6 +13,7 @@ import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:infinite_listview/infinite_listview.dart';
@@ -45,6 +47,13 @@ class _SearchPageState extends State<SearchPage>
   TextEditingController _controller = new TextEditingController();
   final FlareControls heroFlareControls = FlareControls();
   FlutterActorArtboard artboard;
+  ScrollController _scrollController = ScrollController();
+
+  bool searchbarVisible = true;
+  double upperPixel = 0;
+  double latestOffset = 0.0;
+  int eventCalled = 0;
+  bool whenTopScroll = false;
 
   @override
   void initState() {
@@ -62,10 +71,22 @@ class _SearchPageState extends State<SearchPage>
         () => heroFlareControls.play('close2search'));
     WidgetsBinding.instance
         .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
+    Future.delayed(Duration(milliseconds: 500), () async {
+      final query = HitomiManager.translate2query(
+          Settings.includeTags.join(' ') +
+              ' ' +
+              Settings.excludeTags.map((e) => '-$e').join(' '));
+      final result = QueryManager.queryPagination(query);
+
+      latestQuery = Tuple2<QueryManager, String>(result, '');
+      queryResult = List<QueryResult>();
+      await loadNextQuery();
+    });
   }
 
   Tuple2<QueryManager, String> latestQuery;
 
+  // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
   Widget build(BuildContext context) {
     final InfiniteScrollController _infiniteController =
@@ -76,188 +97,207 @@ class _SearchPageState extends State<SearchPage>
     double width = MediaQuery.of(context).size.width;
 
     return Container(
-      child: Column(
-        children: <Widget>[
-          Stack(children: <Widget>[
-            Container(
-              padding: EdgeInsets.fromLTRB(8, statusBarHeight + 8, 72, 0),
-              child: SizedBox(
-                  height: 64,
-                  child: Hero(
-                    tag: "searchbar",
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(8.0),
-                        ),
-                      ),
-                      elevation: 100,
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: Stack(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              Material(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade900.withOpacity(0.4)
-                                    : Colors.grey.shade100.withOpacity(0.4),
-                                child: ListTile(
-                                  title: TextFormField(
-                                    cursorColor: Colors.black,
-                                    decoration: new InputDecoration(
-                                        border: InputBorder.none,
-                                        focusedBorder: InputBorder.none,
-                                        enabledBorder: InputBorder.none,
-                                        errorBorder: InputBorder.none,
-                                        disabledBorder: InputBorder.none,
-                                        contentPadding: EdgeInsets.only(
-                                            left: 15,
-                                            bottom: 11,
-                                            top: 11,
-                                            right: 15),
-                                        hintText: latestQuery != null &&
-                                                latestQuery.item2.trim() != ''
-                                            ? latestQuery.item2
-                                            : Translations.of(context)
-                                                .trans('search')),
-                                  ),
-                                  leading: SizedBox(
-                                    width: 25,
-                                    height: 25,
-                                    child: FlareArtboard(artboard,
-                                        controller: heroFlareControls),
-                                  ),
+      padding: EdgeInsets.only(top: statusBarHeight),
+      child: GestureDetector(
+        onScaleStart: (detail) {
+          scaleOnce = false;
+        },
+        onScaleUpdate: (detail) async {
+          if ((detail.scale > 1.2 || detail.scale < 0.8) &&
+              scaleOnce == false) {
+            scaleOnce = true;
+            setState(() {
+              searchPageBlur = !searchPageBlur;
+            });
+            await Vibration.vibrate(duration: 50, amplitude: 50);
+            Scaffold.of(context).showSnackBar(SnackBar(
+              duration: Duration(milliseconds: 600),
+              content: new Text(
+                searchPageBlur ? '화면 블러가 적용되었습니다.' : '화면 블러가 해제되었습니다.',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.grey.shade800,
+            ));
+          }
+        },
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: <Widget>[
+            SliverPersistentHeader(
+              // pinned: true,
+              floating: true,
+              delegate: SearchBar(
+                minExtent: 64 + 12.0,
+                maxExtent: 64.0 + 12,
+                searchBar: Stack(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.fromLTRB(8, 8, 72, 0),
+                      child: SizedBox(
+                          height: 64,
+                          child: Hero(
+                            tag: "searchbar",
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8.0),
                                 ),
-                              )
-                            ],
-                          ),
-                          Positioned(
-                            left: 0.0,
-                            top: 0.0,
-                            bottom: 0.0,
-                            right: 0.0,
-                            child: Material(
-                              type: MaterialType.transparency,
-                              child: InkWell(
-                                onTap: () async {
-                                  await Future.delayed(
-                                      Duration(milliseconds: 200));
-                                  heroFlareControls.play('search2close');
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return new SearchBar(
-                                          artboard: artboard,
-                                          heroController: heroFlareControls,
-                                        );
-                                      },
-                                      fullscreenDialog: true,
+                              ),
+                              elevation: 100,
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              child: Stack(
+                                children: <Widget>[
+                                  Column(
+                                    children: <Widget>[
+                                      Material(
+                                        color: Settings.themeWhat
+                                            ? Colors.grey.shade900
+                                                .withOpacity(0.4)
+                                            : Colors.grey.shade100
+                                                .withOpacity(0.4),
+                                        child: ListTile(
+                                          title: TextFormField(
+                                            cursorColor: Colors.black,
+                                            decoration: new InputDecoration(
+                                                border: InputBorder.none,
+                                                focusedBorder: InputBorder.none,
+                                                enabledBorder: InputBorder.none,
+                                                errorBorder: InputBorder.none,
+                                                disabledBorder:
+                                                    InputBorder.none,
+                                                contentPadding: EdgeInsets.only(
+                                                    left: 15,
+                                                    bottom: 11,
+                                                    top: 11,
+                                                    right: 15),
+                                                hintText: latestQuery != null &&
+                                                        latestQuery.item2
+                                                                .trim() !=
+                                                            ''
+                                                    ? latestQuery.item2
+                                                    : Translations.of(context)
+                                                        .trans('search')),
+                                          ),
+                                          leading: SizedBox(
+                                            width: 25,
+                                            height: 25,
+                                            child: FlareArtboard(artboard,
+                                                controller: heroFlareControls),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Positioned(
+                                    left: 0.0,
+                                    top: 0.0,
+                                    bottom: 0.0,
+                                    right: 0.0,
+                                    child: Material(
+                                      type: MaterialType.transparency,
+                                      child: InkWell(
+                                        onTap: () async {
+                                          await Future.delayed(
+                                              Duration(milliseconds: 200));
+                                          heroFlareControls
+                                              .play('search2close');
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return new SearchBarPage(
+                                                  artboard: artboard,
+                                                  heroController:
+                                                      heroFlareControls,
+                                                );
+                                              },
+                                              fullscreenDialog: true,
+                                            ),
+                                          ).then((value) async {
+                                            setState(() {
+                                              heroFlareControls
+                                                  .play('close2search');
+                                            });
+                                            if (value == null) return;
+                                            latestQuery = value;
+                                            queryResult = List<QueryResult>();
+                                            await loadNextQuery();
+                                          });
+                                          // print(latestQuery);
+                                        },
+                                      ),
                                     ),
-                                  ).then((value) async {
-                                    setState(() {
-                                      heroFlareControls.play('close2search');
-                                    });
-                                    if (value == null) return;
-                                    latestQuery = value;
-                                    queryResult = List<QueryResult>();
-                                    await loadNextQuery();
-                                  });
-                                  // print(latestQuery);
-                                },
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                          )),
                     ),
-                  )),
-            ),
-            Container(
-              padding: EdgeInsets.fromLTRB(
-                  width - 8 - 64, statusBarHeight + 8, 8, 0),
-              child: SizedBox(
-                height: 64,
-                child: Hero(
-                  tag: "searchtype",
-                  child: Card(
-                    color: Settings.themeWhat
-                        ? Color(0xFF353535)
-                        : Colors.grey.shade100,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(8.0),
-                      ),
-                    ),
-                    elevation: 100,
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    child: InkWell(
+                    Container(
+                      padding: EdgeInsets.fromLTRB(width - 8 - 64, 8, 8, 0),
                       child: SizedBox(
                         height: 64,
-                        width: 64,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: <Widget>[
-                            Icon(
-                              MdiIcons.formatListText,
-                              color: Colors.grey,
+                        child: Hero(
+                          tag: "searchtype",
+                          child: Card(
+                            color: Settings.themeWhat
+                                ? Color(0xFF353535)
+                                : Colors.grey.shade100,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(8.0),
+                              ),
                             ),
-                          ],
+                            elevation: 100,
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            child: InkWell(
+                              child: SizedBox(
+                                height: 64,
+                                width: 64,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: <Widget>[
+                                    Icon(
+                                      MdiIcons.formatListText,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onTap: () async {
+                                Navigator.of(context)
+                                    .push(PageRouteBuilder(
+                                  opaque: false,
+                                  transitionDuration:
+                                      Duration(milliseconds: 500),
+                                  transitionsBuilder: (BuildContext context,
+                                      Animation<double> animation,
+                                      Animation<double> secondaryAnimation,
+                                      Widget wi) {
+                                    return new FadeTransition(
+                                        opacity: animation, child: wi);
+                                  },
+                                  pageBuilder: (_, __, ___) => SearchType(),
+                                ))
+                                    .then((value) async {
+                                  await Future.delayed(
+                                      Duration(milliseconds: 50), () {
+                                    setState(() {});
+                                  });
+                                });
+                              },
+                            ),
+                          ),
                         ),
                       ),
-                      onTap: () async {
-                        Navigator.of(context)
-                            .push(PageRouteBuilder(
-                          opaque: false,
-                          transitionDuration: Duration(milliseconds: 500),
-                          transitionsBuilder: (BuildContext context,
-                              Animation<double> animation,
-                              Animation<double> secondaryAnimation,
-                              Widget wi) {
-                            return new FadeTransition(
-                                opacity: animation, child: wi);
-                          },
-                          pageBuilder: (_, __, ___) => SearchType(),
-                        ))
-                            .then((value) async {
-                          await Future.delayed(Duration(milliseconds: 50), () {
-                            setState(() {});
-                          });
-                        });
-                      },
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-          ]),
-          Expanded(
-            child: GestureDetector(
-              child: makeResult(),
-              onScaleStart: (detail) {
-                scaleOnce = false;
-              },
-              onScaleUpdate: (detail) async {
-                if ((detail.scale > 1.2 || detail.scale < 0.8) &&
-                    scaleOnce == false) {
-                  scaleOnce = true;
-                  setState(() {
-                    searchPageBlur = !searchPageBlur;
-                  });
-                  await Vibration.vibrate(duration: 50, amplitude: 50);
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    duration: Duration(milliseconds: 600),
-                    content: new Text(
-                      searchPageBlur ? '화면 블러가 적용되었습니다.' : '화면 블러가 해제되었습니다.',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.grey.shade800,
-                  ));
-                }
-              },
-            ),
-          ),
-        ],
+            makeResult(),
+          ],
+        ),
       ),
     );
   }
@@ -267,62 +307,63 @@ class _SearchPageState extends State<SearchPage>
 
   Future<void> loadNextQuery() async {
     var nn = await latestQuery.item1.next();
+    if (nn.length == 0) return;
     setState(() {
       queryResult.addAll(nn);
     });
   }
 
   Widget makeResult() {
+    var mm = Settings.searchResultType == 0 ? 3 : 2;
     switch (Settings.searchResultType) {
       case 0:
       case 1:
-        return LiveGrid(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.all(16),
-          showItemInterval: Duration(milliseconds: 50),
-          showItemDuration: Duration(milliseconds: 150),
-          visibleFraction: 0.001,
-          itemCount: queryResult.length,
-          shrinkWrap: false,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: Settings.searchResultType == 0 ? 3 : 2,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 3 / 4,
-          ),
-          itemBuilder: (context, index, animation) {
-            return FadeTransition(
-              opacity: Tween<double>(
-                begin: 0,
-                end: 1,
-              ).animate(animation),
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: Offset(0, -0.1),
-                  end: Offset.zero,
-                ).animate(animation),
-                child: Padding(
-                  padding: EdgeInsets.zero,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SizedBox(
-                      child: ArticleListItemVerySimpleWidget(
-                        queryResult: queryResult[index],
-                        addBottomPadding: false,
+        return SliverPadding(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            sliver: LiveSliverGrid(
+              controller: _scrollController,
+              showItemInterval: Duration(milliseconds: 50),
+              showItemDuration: Duration(milliseconds: 150),
+              visibleFraction: 0.001,
+              itemCount: queryResult.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: mm,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: 3 / 4,
+              ),
+              itemBuilder: (context, index, animation) {
+                return FadeTransition(
+                  opacity: Tween<double>(
+                    begin: 0,
+                    end: 1,
+                  ).animate(animation),
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: Offset(0, -0.1),
+                      end: Offset.zero,
+                    ).animate(animation),
+                    child: Padding(
+                      padding: EdgeInsets.zero,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SizedBox(
+                          child: ArticleListItemVerySimpleWidget(
+                            queryResult: queryResult[index],
+                            addBottomPadding: false,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            );
-          },
-        );
+                );
+              },
+            ));
 
       case 2:
-        return ListView.builder(
-          physics: const BouncingScrollPhysics(), // new
+        return LiveSliverList(
           itemCount: queryResult.length,
-          itemBuilder: (context, index) {
+          itemBuilder: (context, index, animation) {
             return Align(
               alignment: Alignment.center,
               child: ArticleListItemVerySimpleWidget(
@@ -343,17 +384,50 @@ class _SearchPageState extends State<SearchPage>
   }
 }
 
-class SearchBar extends StatefulWidget {
+class SearchBar implements SliverPersistentHeaderDelegate {
+  SearchBar({this.minExtent, @required this.maxExtent, this.searchBar});
+  final double minExtent;
+  final double maxExtent;
+
+  Widget searchBar;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Opacity(
+          child: searchBar,
+          opacity: 1.0 - max(0.0, shrinkOffset - 20) / (maxExtent - 20),
+        )
+      ],
+    );
+  }
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
+    return true;
+  }
+
+  @override
+  FloatingHeaderSnapConfiguration get snapConfiguration => null;
+
+  @override
+  OverScrollHeaderStretchConfiguration get stretchConfiguration => null;
+}
+
+class SearchBarPage extends StatefulWidget {
   final FlareControls heroController;
   final FlutterActorArtboard artboard;
-  const SearchBar({Key key, this.artboard, this.heroController})
+  const SearchBarPage({Key key, this.artboard, this.heroController})
       : super(key: key);
 
   @override
-  _SearchBarState createState() => _SearchBarState();
+  _SearchBarPageState createState() => _SearchBarPageState();
 }
 
-class _SearchBarState extends State<SearchBar>
+class _SearchBarPageState extends State<SearchBarPage>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   List<Tuple3<String, String, int>> _searchLists =
@@ -494,7 +568,13 @@ class _SearchBarState extends State<SearchBar>
                                   Translations.of(context).trans('search')),
                               onPressed: () async {
                                 final query = HitomiManager.translate2query(
-                                    _searchController.text);
+                                    _searchController.text +
+                                        ' ' +
+                                        Settings.includeTags.join(' ') +
+                                        ' ' +
+                                        Settings.excludeTags
+                                            .map((e) => '-$e')
+                                            .join(' '));
                                 final result =
                                     QueryManager.queryPagination(query);
                                 Navigator.pop(

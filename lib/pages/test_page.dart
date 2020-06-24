@@ -4,6 +4,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
@@ -144,6 +145,17 @@ class TestPage extends StatelessWidget {
                 },
               ),
               RaisedButton(
+                child: Text('Silver Test'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => SilverTestPage(),
+                    ),
+                  );
+                },
+              ),
+              RaisedButton(
                 child: Text('Clustering Test'),
                 onPressed: () async {
                   var qq = await (await DataBaseManager.getInstance()).query(
@@ -178,9 +190,14 @@ class TestPage extends StatelessWidget {
                   // var res = await http.get('https://e-hentai.org/g/1201400/48f9b8e20a/');
                   //  print(EHParser.getPagesUrl(res.body).length);
                   // print(EHParser.parseArticleData(res.body).comment);
-                  var res = await http.get('https://e-hentai.org/', headers: {'Cookie':'sl=dm_2'});
-                  print(EHParser.parseReulstPageExtendedListView(res.body).length);
-                  EHParser.parseReulstPageExtendedListView(res.body).forEach((element) {print(element.thumbnail);});
+                  var res = await http.get('https://e-hentai.org/',
+                      headers: {'Cookie': 'sl=dm_2'});
+                  print(EHParser.parseReulstPageExtendedListView(res.body)
+                      .length);
+                  EHParser.parseReulstPageExtendedListView(res.body)
+                      .forEach((element) {
+                    print(element.thumbnail);
+                  });
                 },
               ),
               Container(
@@ -533,6 +550,7 @@ class _ImageTestPageState extends State<ImageTestPage> {
       //'https://ba.hitomi.la/webp/e/7f/ec2c31db322578533e8d71d02a3364d9ca8bc75fb77230db3165d8f4731db7fe.webp',
       //'https://aa.hitomi.la/webp/d/b7/efd83a507953f7252931098791c9a85a315c327e593d83174e10c3a3c300bb7d.webp',
       //'https://ca.hitomi.la/webp/c/f5/70304459b4890da62c0b8a2b92dbf8a619a81015a1fcc192b33f0fda1a798f5c.webp',
+      'https://i.imgur.com/V4W5OYF.jpg',
       'https://cdn.mos.cms.futurecdn.net/42E9as7NaTaAi4A6JcuFwG-650-80.jpg',
       'https://images.indianexpress.com/2019/12/banana_759-1.jpg',
       'https://media.nationalgeographic.org/assets/photos/218/954/a4b922dc-def3-4a5d-a6e0-ab5dce621fc2.jpg',
@@ -1330,9 +1348,9 @@ class ScrollTestPage extends StatefulWidget {
 
   @override
   _ScrollTestPageState createState() => new _ScrollTestPageState();
- }
+}
 
- class _ScrollTestPageState extends State<ScrollTestPage> {
+class _ScrollTestPageState extends State<ScrollTestPage> {
   int _counter = 0;
   ScrollController _hideButtonController;
   void _incrementCounter() {
@@ -1340,37 +1358,42 @@ class ScrollTestPage extends StatefulWidget {
       _counter++;
     });
   }
+
   var _isVisible;
   @override
-  initState(){
+  initState() {
     super.initState();
     _isVisible = true;
     _hideButtonController = new ScrollController();
-    _hideButtonController.addListener((){
-      if(_hideButtonController.position.userScrollDirection == ScrollDirection.reverse){
-        if(_isVisible == true) {
-            /* only set when the previous state is false
+    _hideButtonController.addListener(() {
+      if (_hideButtonController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_isVisible == true) {
+          /* only set when the previous state is false
              * Less widget rebuilds 
              */
-            print("**** ${_isVisible} up"); //Move IO away from setState
-            setState((){
-              _isVisible = false;
-            });
+          print("**** ${_isVisible} up"); //Move IO away from setState
+          setState(() {
+            _isVisible = false;
+          });
         }
       } else {
-        if(_hideButtonController.position.userScrollDirection == ScrollDirection.forward){
-          if(_isVisible == false) {
-              /* only set when the previous state is false
+        if (_hideButtonController.position.userScrollDirection ==
+            ScrollDirection.forward) {
+          if (_isVisible == false) {
+            /* only set when the previous state is false
                * Less widget rebuilds 
                */
-               print("**** ${_isVisible} down"); //Move IO away from setState
-               setState((){
-                 _isVisible = true;
-               });
-           }
+            print("**** ${_isVisible} down"); //Move IO away from setState
+            setState(() {
+              _isVisible = true;
+            });
+          }
         }
-    }});
+      }
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -1378,69 +1401,165 @@ class ScrollTestPage extends StatefulWidget {
         title: new Text('asdf'),
       ),
       body: new Center(
-        child: new CustomScrollView(
-          controller: _hideButtonController,
-          shrinkWrap: true,
-          slivers: <Widget>[
-            new SliverPadding(
-              padding: const EdgeInsets.all(20.0),
-              sliver: new SliverList(
-                delegate: new SliverChildListDelegate(
-                  <Widget>[
-                    const Text('I\'m dedicating every day to you'),
-                    const Text('Domestic life was never quite my style'),
-                    const Text('When you smile, you knock me out, I fall apart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('And I thought I was so smart'),
-                    const Text('I realize I am crazy'),   
-                  ],
-                ),
+          child: new CustomScrollView(
+        controller: _hideButtonController,
+        shrinkWrap: true,
+        slivers: <Widget>[
+          new SliverPadding(
+            padding: const EdgeInsets.all(20.0),
+            sliver: new SliverList(
+              delegate: new SliverChildListDelegate(
+                <Widget>[
+                  const Text('I\'m dedicating every day to you'),
+                  const Text('Domestic life was never quite my style'),
+                  const Text('When you smile, you knock me out, I fall apart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('And I thought I was so smart'),
+                  const Text('I realize I am crazy'),
+                ],
               ),
             ),
-          ],
-        )
-      ),
-      floatingActionButton: new Visibility( 
+          ),
+        ],
+      )),
+      floatingActionButton: new Visibility(
         visible: _isVisible,
         child: new FloatingActionButton(
           onPressed: _incrementCounter,
           tooltip: 'Increment',
           child: new Icon(Icons.add),
-        ),     
+        ),
       ),
     );
   }
+}
+
+class SilverTestPage extends StatefulWidget {
+  @override
+  _SilverTestPageState createState() => _SilverTestPageState();
+}
+
+class _SilverTestPageState extends State<SilverTestPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: 
+      // CustomScrollView(
+      //     // CustomScrollView는 children이 아닌 slivers를 사용하며, slivers에는 스크롤이 가능한 위젯이나 리스트가 등록가능함
+      //     slivers: <Widget>[
+      //       // 앱바 추가
+      //       SliverAppBar(
+      //         title: Text('asdfasdf'),
+      //         // floating 설정. SliverAppBar는 스크롤 다운되면 화면 위로 사라짐.
+      //         // true: 스크롤 업 하면 앱바가 바로 나타남. false: 리스트 최 상단에서 스크롤 업 할 때에만 앱바가 나타남
+      //         floating: true,
+      //         // flexibleSpace에 플레이스홀더를 추가
+      //         flexibleSpace: Placeholder(),
+      //         // 최대 높이
+      //         expandedHeight: 200,
+      //       ),
+      //       // 리스트 추가
+      //       SliverList(
+      //         // 아이템을 빌드하기 위해서 delegate 항목을 구성함
+      //         // SliverChildBuilderDelegate는 ListView.builder 처럼 리스트의 아이템을 생성해줌
+      //         delegate: SliverChildBuilderDelegate(
+      //             (context, index) => ListTile(title: Text('Item #$index')),
+      //             childCount: 150),
+      //       ),
+      //     ],
+      //   ),
+      LayoutBuilder(
+        builder: (context, constraints) {
+          return CustomScrollView(
+            controller: ScrollController(
+                initialScrollOffset: constraints.maxHeight * 0.6),
+            slivers: <Widget>[
+              SliverPersistentHeader(
+                pinned: true,
+                floating: true,
+                delegate: Delegate(constraints.maxHeight),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (ctx, i) => Container(
+                      height: 100,
+                      color: i.isOdd ? Colors.green : Colors.green[700]),
+                  childCount: 12,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class Delegate extends SliverPersistentHeaderDelegate {
+  final double _maxExtent;
+
+  Delegate(this._maxExtent);
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    var t = shrinkOffset / maxExtent;
+    return Material(
+      elevation: 4,
+      child: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Image.asset('assets/images/logo.png', fit: BoxFit.cover,),
+          Opacity(
+            opacity: t,
+            child: Container(
+              color: Colors.deepPurple,
+              alignment: Alignment.bottomCenter,
+              child: Transform.scale(
+                scale: lerpDouble(16, 1, t),
+                child: Text('scroll me down', 
+                  style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override double get maxExtent => _maxExtent;
+  @override double get minExtent => 64;
+  @override bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }
