@@ -315,11 +315,12 @@ class _SearchPageState extends State<SearchPage>
 
   Widget makeResult() {
     var mm = Settings.searchResultType == 0 ? 3 : 2;
+    var windowWidth = MediaQuery.of(context).size.width;
     switch (Settings.searchResultType) {
       case 0:
       case 1:
         return SliverPadding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
             sliver: LiveSliverGrid(
               controller: _scrollController,
               showItemInterval: Duration(milliseconds: 50),
@@ -350,7 +351,9 @@ class _SearchPageState extends State<SearchPage>
                         child: SizedBox(
                           child: ArticleListItemVerySimpleWidget(
                             queryResult: queryResult[index],
+                            showDetail: false,
                             addBottomPadding: false,
+                            width: (windowWidth - 4.0) / mm,
                           ),
                         ),
                       ),
@@ -361,6 +364,7 @@ class _SearchPageState extends State<SearchPage>
             ));
 
       case 2:
+      case 3:
         return LiveSliverList(
           itemCount: queryResult.length,
           itemBuilder: (context, index, animation) {
@@ -368,7 +372,9 @@ class _SearchPageState extends State<SearchPage>
               alignment: Alignment.center,
               child: ArticleListItemVerySimpleWidget(
                 addBottomPadding: true,
+                showDetail: Settings.searchResultType == 3,
                 queryResult: queryResult[index],
+                width: windowWidth - 4.0,
               ),
             );
           },

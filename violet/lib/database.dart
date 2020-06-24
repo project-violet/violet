@@ -120,8 +120,8 @@ class QueryResult {
     const ticksPerMillisecond = 10000;
 
     var ticksSinceEpoch = (published() as int) - epochTicks;
-    var ms = ticksSinceEpoch / ticksPerMillisecond;
-    return DateTime.fromMillisecondsSinceEpoch(ms as int);
+    var ms = ticksSinceEpoch ~/ ticksPerMillisecond;
+    return DateTime.fromMillisecondsSinceEpoch(ms);
   }
 }
 
