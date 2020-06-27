@@ -8,6 +8,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:archive/archive.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +35,7 @@ class DataBaseDownloadPage extends StatefulWidget {
 
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   final imgUrl =
-      "https://github.com/violet-dev/db/releases/download/2020.06.23/hitomidata.db";
+      "https://github.com/violet-dev/db/releases/download/2020.06.27/hitomidata.db";
   bool downloading = false;
   var baseString = "요청을 기다리는 중...";
   var progressString = "";
@@ -100,7 +101,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     }
 
     if (await Dialogs.yesnoDialog(
-            context, '데이터베이스 약 314MB를 다운로드해야 합니다. 다운로드할까요?') ==
+            context, '데이터베이스 약 313MB를 다운로드해야 합니다. 다운로드할까요?') ==
         true) {
       //var connectivityResult = await (Connectivity().checkConnectivity());
 
@@ -153,7 +154,21 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       setState(() {
         downloading = false;
+        // baseString = "압축푸는 중..";
       });
+
+      // await Future.delayed(Duration(seconds: 1));
+
+      // var bytes = new File("${dir.path}/db.sql.zip").readAsBytesSync();
+      // var archive = new ZipDecoder().decodeBytes(bytes);
+      // for (ArchiveFile file in archive) {
+      //   List<int> data = file.content;
+      //   var ff = new File("${dir.path}/db.sql");
+      //   await ff.create(recursive:  true);
+      //   await ff.writeAsBytes(data);
+      // }
+
+      // await File("${dir.path}/db.sql.zip").delete();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
@@ -237,8 +252,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               tagArtist[artist] = Map<String, int>();
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag))
-              tagIndex[tag] = tagIndex.length;
+            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.artists().split('|')) {
               if (!tagArtist[artist].containsKey(index))
@@ -254,8 +268,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               tagGroup[artist] = Map<String, int>();
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag))
-              tagIndex[tag] = tagIndex.length;
+            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.groups().split('|')) {
               if (!tagGroup[artist].containsKey(index))
@@ -282,7 +295,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         final directory = await getApplicationDocumentsDirectory();
         final path1 = File('${directory.path}/index.json');
         path1.writeAsString(jsonEncode(index));
-        
+
         final path2 = File('${directory.path}/tag_artist.json');
         path2.writeAsString(jsonEncode(tagArtist));
         final path3 = File('${directory.path}/tag_group.json');

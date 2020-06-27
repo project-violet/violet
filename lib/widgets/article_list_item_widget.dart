@@ -155,7 +155,7 @@ class _ArticleListItemVerySimpleWidgetState
         ? widget.width - 22
         : widget.width - (widget.addBottomPadding ? 100 : 0);
     var hh =
-        widget.showDetail ? 130.0 : widget.addBottomPadding ? 500.0 : 153.0;
+        widget.showDetail ? 130.0 : widget.addBottomPadding ? 500.0 : widget.width *  4/3;
 
     var headers = {
       "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
@@ -487,27 +487,26 @@ class _ArticleListItemVerySimpleWidgetState
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Row(children: <Widget>[
+                  Row(children: <Widget>[
                         Icon(Icons.photo),
                         Text(' ' + imageCount.toString() + ' Page',
                             style: TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.w500)),
                       ]),
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(padding: EdgeInsets.fromLTRB(0, 0, 4, 2) ,child: Text(widget.queryResult.getDateTime() != null
+                    // ),
+                  // ),
+                  // Expanded(
+                  //   child: Align(
+                  //     alignment: Alignment.bottomRight,
+                  //     child: 
+                      Padding(padding: EdgeInsets.fromLTRB(0, 0, 4, 0) ,child: Text(widget.queryResult.getDateTime() != null
                           ? DateFormat('yyyy/MM/dd HH:mm').format(widget.queryResult.getDateTime())
                           : '')),
-                    ),
-                  )
+                  //   ),
+                  // )
                 ],
               ),
             ),

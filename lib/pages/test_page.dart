@@ -24,6 +24,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/statistics.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database.dart';
 import 'package:violet/files.dart';
@@ -198,6 +199,12 @@ class TestPage extends StatelessWidget {
                       .forEach((element) {
                     print(element.thumbnail);
                   });
+                },
+              ),
+              RaisedButton(
+                child: Text('DateTime Estimate Test'),
+                onPressed: () async {
+                  print(HitomiStatistics.estimateDateTime(1666884));
                 },
               ),
               Container(
