@@ -17,8 +17,8 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  Alignment align = Alignment.center;
-  EdgeInsetsGeometry pp = EdgeInsets.only(top: 0.0);
+  // Alignment align = Alignment.center;
+  // EdgeInsetsGeometry pp = EdgeInsets.only(top: 0.0);
   bool showFirst = false;
   bool animateBox = false;
   bool languageBox = false;
@@ -34,17 +34,21 @@ class _SplashPageState extends State<SplashPage> {
     else {
       await Future.delayed(Duration(milliseconds: 1400));
       setState(() {
-        align = Alignment.topCenter;
-        pp = EdgeInsets.only(top: 130.0);
+        // align = Alignment.topCenter;
+        // pp = EdgeInsets.only(top: 130.0);
         showFirst = true;
       });
       await Future.delayed(Duration(milliseconds: 600));
       setState(() {
         animateBox = true;
       });
-      await Future.delayed(Duration(milliseconds: 400));
+      await Future.delayed(Duration(milliseconds: 200));
       setState(() {
         languageBox = true;
+      });
+      await Future.delayed(Duration(milliseconds: 500));
+      setState(() {
+        scale1 = 1.03;
       });
       // Navigator.of(context).pushReplacementNamed('/DatabaseDownload');
     }
@@ -87,17 +91,23 @@ class _SplashPageState extends State<SplashPage> {
 
   bool userlangCheck = true;
   bool globalCheck = false;
+  double scale1 = 1.0;
+  double scale2 = 1.0;
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     return new Scaffold(
       body: Stack(
         children: <Widget>[
-          AnimatedContainer(
+          AnimatedPositioned(
             duration: Duration(milliseconds: 600),
             curve: Curves.easeOutCubic,
-            alignment: align,
-            padding: pp,
+            // alignment: align,
+            // padding: pp,
+            top: showFirst ? 130 : height / 2 - 50,
+            left: width / 2-50,
             child: new Image.asset(
               'assets/images/logo.png',
               width: 100,
@@ -155,100 +165,144 @@ class _SplashPageState extends State<SplashPage> {
                           Container(
                             padding: EdgeInsets.symmetric(vertical: 4.0),
                           ),
-                          Card(
-                            elevation: 4,
-                            child: InkWell(
-                              customBorder: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(3.0))),
-                              child: ListTile(
-                                leading: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    minWidth: 44,
-                                    minHeight: 44,
-                                    maxWidth: 44,
-                                    maxHeight: 44,
+                          AnimatedContainer(
+                            transform: Matrix4.identity()
+                              ..translate(300 / 2, 50 / 2)
+                              ..scale(scale1)
+                              ..translate(-300 / 2, -50 / 2),
+                            duration: Duration(milliseconds: 300),
+                            child: Card(
+                              elevation: 4,
+                              child: InkWell(
+                                customBorder: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(3.0))),
+                                child: ListTile(
+                                  leading: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: 44,
+                                      minHeight: 44,
+                                      maxWidth: 44,
+                                      maxHeight: 44,
+                                    ),
+                                    child: CircularCheckBox(
+                                      value: userlangCheck,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.padded,
+                                      onChanged: (bool value) {
+                                        setState(() {
+                                          scale1 = 1.03;
+                                          scale2 = 1.0;
+                                          if (userlangCheck) return;
+                                          userlangCheck = !userlangCheck;
+                                          globalCheck = false;
+                                        });
+                                      },
+                                    ),
                                   ),
-                                  child: CircularCheckBox(
-                                    value: userlangCheck,
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.padded,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        if (userlangCheck) return;
-                                        userlangCheck = !userlangCheck;
-                                        globalCheck = false;
-                                      });
-                                    },
-                                  ),
+                                  dense: true,
+                                  title: Text("한국어 데이터 베이스",
+                                      style: TextStyle(fontSize: 14)),
+                                  subtitle: Text('79MB의 추가 저장공간 필요',
+                                      style: TextStyle(fontSize: 12)),
                                 ),
-                                dense: true,
-                                title: Text("한국어 데이터 베이스",
-                                    style: TextStyle(fontSize: 14)),
-                                subtitle: Text('79MB의 추가 저장공간 필요',
-                                    style: TextStyle(fontSize: 12)),
+                                onTapDown: (detail) {
+                                  setState(() {
+                                    scale1 = 0.95;
+                                  });
+                                },
+                                onTap: () {
+                                  setState(() {
+                                    scale1 = 1.03;
+                                    scale2 = 1.0;
+                                    if (userlangCheck) return;
+                                    userlangCheck = !userlangCheck;
+                                    globalCheck = false;
+                                  });
+                                },
+                                onLongPress: () async {
+                                  setState(() {
+                                    if (userlangCheck)
+                                      scale1 = 1.03;
+                                    else
+                                      scale1 = 1.0;
+                                  });
+                                  await Dialogs.okDialog(
+                                      context,
+                                      '사용자 언어와 n/a가 포함된 데이터베이스팩입니다. 이 데이터베이스는 현재 최신 데이터가 들어있지만, ' +
+                                          '데이터베이스를 최신상태로 유지하려면 안내에 따라 데이터를 동기화해야합니다.');
+                                },
                               ),
-                              onTap: () {
-                                setState(() {
-                                  if (userlangCheck) return;
-                                  userlangCheck = !userlangCheck;
-                                  globalCheck = false;
-                                });
-                              },
-                              onLongPress: () async {
-                                await Dialogs.okDialog(
-                                    context,
-                                    '사용자 언어와 n/a가 포함된 데이터베이스팩입니다. 이 데이터베이스는 현재 최신 데이터가 들어있지만, ' +
-                                        '데이터베이스를 최신상태로 유지하려면 안내에 따라 데이터를 동기화해야합니다.');
-                              },
                             ),
                           ),
-                          Card(
-                            elevation: 4,
-                            child: InkWell(
-                              customBorder: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(3.0))),
-                              child: ListTile(
-                                leading: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    minWidth: 44,
-                                    minHeight: 44,
-                                    maxWidth: 44,
-                                    maxHeight: 44,
+                          AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            transform: Matrix4.identity()
+                              ..translate(300 / 2, 50 / 2)
+                              ..scale(scale2)
+                              ..translate(-300 / 2, -50 / 2),
+                            child: Card(
+                              elevation: 4,
+                              child: InkWell(
+                                customBorder: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(3.0))),
+                                child: ListTile(
+                                  leading: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: 44,
+                                      minHeight: 44,
+                                      maxWidth: 44,
+                                      maxHeight: 44,
+                                    ),
+                                    child: CircularCheckBox(
+                                      value: globalCheck,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.padded,
+                                      onChanged: (bool value) {
+                                        setState(() {
+                                          scale2 = 1.03;
+                                          scale1 = 1.0;
+                                          if (globalCheck) return;
+                                          globalCheck = !globalCheck;
+                                          userlangCheck = false;
+                                        });
+                                      },
+                                    ),
                                   ),
-                                  child: CircularCheckBox(
-                                    value: globalCheck,
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.padded,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        if (globalCheck) return;
-                                        globalCheck = !globalCheck;
-                                        userlangCheck = false;
-                                      });
-                                    },
-                                  ),
+                                  dense: true,
+                                  title: Text("모든 언어 데이터 베이스",
+                                      style: TextStyle(fontSize: 14)),
+                                  subtitle: Text('314MB의 추가 저장공간 필요',
+                                      style: TextStyle(fontSize: 12)),
                                 ),
-                                dense: true,
-                                title: Text("모든 언어 데이터 베이스",
-                                    style: TextStyle(fontSize: 14)),
-                                subtitle: Text('314MB의 추가 저장공간 필요',
-                                    style: TextStyle(fontSize: 12)),
+                                onTapDown: (detail) {
+                                  setState(() {
+                                    scale2 = 0.95;
+                                  });
+                                },
+                                onTap: () {
+                                  setState(() {
+                                    scale2 = 1.03;
+                                    scale1 = 1.0;
+                                    if (globalCheck) return;
+                                    globalCheck = !globalCheck;
+                                    userlangCheck = false;
+                                  });
+                                },
+                                onLongPress: () async {
+                                  setState(() {
+                                    if (globalCheck)
+                                      scale2 = 1.03;
+                                    else
+                                      scale2 = 1.0;
+                                  });
+                                  await Dialogs.okDialog(
+                                      context,
+                                      '모든 언어가 포함된 데이터베이스팩입니다. 이 데이터베이스는 현재 최신 데이터가 들어있지만, ' +
+                                          '데이터베이스를 최신상태로 유지하려면 안내에 따라 데이터를 동기화해야합니다.');
+                                },
                               ),
-                              onTap: () {
-                                setState(() {
-                                  if (globalCheck) return;
-                                  globalCheck = !globalCheck;
-                                  userlangCheck = false;
-                                });
-                              },
-                              onLongPress: () async {
-                                await Dialogs.okDialog(
-                                    context,
-                                    '모든 언어가 포함된 데이터베이스팩입니다. 이 데이터베이스는 현재 최신 데이터가 들어있지만, ' +
-                                        '데이터베이스를 최신상태로 유지하려면 안내에 따라 데이터를 동기화해야합니다.');
-                              },
                             ),
                           ),
                           Expanded(child: Container()),
@@ -257,20 +311,21 @@ class _SplashPageState extends State<SplashPage> {
                             child: Padding(
                               padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
                               child: RaisedButton(
+                                textColor: Colors.white,
                                 child: SizedBox(
-                                  width: 60,
+                                  width: 90,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
-                                      Text('다음'),
+                                      Text('다운로드'),
                                       Icon(Icons.keyboard_arrow_right),
                                     ],
                                   ),
                                 ),
                                 onPressed: () {},
-                                color: Colors.purple.shade200,
+                                color: Colors.purple.shade400,
                               ),
                             ),
                           ),
