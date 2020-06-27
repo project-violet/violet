@@ -8,7 +8,12 @@ class Dialogs {
   static Future okDialog(BuildContext context, String message, [String title]) async {
     title ??= 'Project Violet';
     Widget okButton = FlatButton(
-      child: Text("확인"),
+      child: Text("확인", style: TextStyle(color: Colors.purple)),
+      // color: Colors.purple,
+      // highlightColor: Colors.purple,
+      // hoverColor: Colors.purple,
+      focusColor: Colors.purple,
+      splashColor: Colors.purple.withOpacity(0.3),
       onPressed: () {
         Navigator.pop(context, "OK");
       },

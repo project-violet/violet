@@ -956,12 +956,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 }
 
-class SearchType extends StatefulWidget {
-  @override
-  _SearchTypeState createState() => _SearchTypeState();
-}
-
-class _SearchTypeState extends State<SearchType> {
+class SearchType extends StatelessWidget {
   Color getColor(int i) {
     return Settings.themeWhat
         ? Settings.searchResultType == i
@@ -1061,5 +1056,17 @@ class _SearchTypeState extends State<SearchType> {
         ],
       ),
     );
+  }
+}
+
+class SearchResultSelector extends StatefulWidget {
+  @override
+  _SearchResultSelectorState createState() => _SearchResultSelectorState();
+}
+
+class _SearchResultSelectorState extends State<SearchResultSelector> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

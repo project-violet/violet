@@ -81,7 +81,9 @@ dependencies:
   syncfusion_flutter_core:
   syncfusion_flutter_sliders:
   web_socket_channel:
-      
+  # archive:
+  # lzma:
+  circular_check_box: ^1.0.1
 
 dev_dependencies:
   flutter_test:
