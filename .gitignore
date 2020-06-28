@@ -50,4 +50,4 @@ ws.dart
 *.o
 *.d
 *.so
-p7zip/CPP/ANDROID/7zr/obj/*
+# p7zip/CPP/ANDROID/7zr/obj/*
