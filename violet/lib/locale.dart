@@ -11,6 +11,9 @@ class Translations {
   Translations(this.locale);
 
   final Locale locale;
+  
+  // Latest instance
+  static Translations instance;
 
   static Translations of(BuildContext context) {
     return Localizations.of<Translations>(context, Translations);
@@ -20,6 +23,7 @@ class Translations {
 
   Future<bool> load([String code]) async {
     code ??= this.locale.languageCode;
+    instance = this;
 
     String data = await rootBundle
         .loadString('assets/locale/$code.json');
@@ -29,6 +33,7 @@ class Translations {
     _result.forEach((String key, dynamic value) {
       this._sentences[key] = value.toString();
     });
+
 
     return true;
   }

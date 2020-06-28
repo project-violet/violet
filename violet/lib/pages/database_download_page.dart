@@ -30,11 +30,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:ffi/ffi.dart';
 import 'package:violet/files.dart';
+import 'package:violet/locale.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
   final bool isExistsDataBase;
   final String dbPath;
-  final int dbType;
+  final String dbType;
 
   DataBaseDownloadPage({this.isExistsDataBase, this.dbPath, this.dbType});
 
@@ -45,18 +46,18 @@ class DataBaseDownloadPage extends StatefulWidget {
 }
 
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
-  final imgUrls = [
+  final imgUrls = {
     // Global
-    "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata.7z",
+    'global': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata.7z",
     // Korean
-    "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-korean.7z",
+    'ko': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-korean.7z",
     // English
-    "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-english.7z",
+    'en': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-english.7z",
     // Japanese
-    "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-japanese.7z",
+    'jp': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-japanese.7z",
     // Chinese
-    "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-chinese.7z",
-  ];
+    'zh': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-chinese.7z",
+  };
 
   final imgSize = {
     'global': '32MB',
@@ -67,7 +68,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   };
 
   bool downloading = false;
-  var baseString = "요청을 기다리는 중...";
+  var baseString = "";
   var progressString = "";
   var downString = "";
   var speedString = "";
@@ -75,10 +76,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   @override
   void initState() {
     super.initState();
-
     SchedulerBinding.instance
         .addPostFrameCallback((_) async => checkDownload());
-    //downloadFile();
   }
 
   Future checkDownload() async {
@@ -86,7 +85,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
         setState(() {
           downloading = false;
-          baseString = "오류! 개발자에게 문의하세요";
+          baseString = Translations.instance.trans('dbderror');
         });
         return;
       }
@@ -95,12 +94,12 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     if (widget.isExistsDataBase) {
       setState(() {
         downloading = false;
-        baseString = "데이터베이스 확인중...";
+        baseString = Translations.instance.trans('dbdcheck');
       });
 
       if (await DataBaseManager.create(widget.dbPath).test() == false) {
         await Dialogs.okDialog(
-            context, '데이터베이스 파일이 아니거나 파일이 손상되었습니다!\n다시시도 해주세요!');
+            context, Translations.instance.trans('dbdcheckerr'));
         await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         return;
       }
@@ -111,25 +110,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       await indexing();
 
-      //setState(() {
-      //  downloading = false;
-      //  baseString = "완료!\n앱을 재실행 해주세요!";
-      //});
       return;
     }
-
-    // if (await Dialogs.yesnoDialog(
-    //         context, '데이터베이스 약 ${imgSize[widget.dbType]}를 다운로드해야 합니다. 다운로드할까요?') ==
-    //     true) {
-    //   //var connectivityResult = await (Connectivity().checkConnectivity());
-
-    //   //if (connectivityResult == ConnectivityResult.mobile) {}
-
     downloadFile();
-    // } else {
-    //   await Dialogs.okDialog(context, '데이터베이스가 없으면 계속할 수 없습니다.');
-    //   SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-    // }
   }
 
   Future<void> downloadFile() async {
@@ -151,8 +134,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               }));
       await dio.download(imgUrls[widget.dbType], "${dir.path}/db.sql.7z",
           onReceiveProgress: (rec, total) {
-        //print("Rec: $rec , Total: $total, Nu: $_nu");
-
         _nu += rec - latest;
         _tnu += rec - latest;
         latest = rec;
@@ -172,28 +153,17 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       setState(() {
         downloading = false;
-        baseString = "압축푸는 중..";
+        baseString = Translations.instance.trans('dbdunzip');
       });
 
       var pp = new P7zip();
       await pp.compress(["${dir.path}/db.sql.7z"], path: "${dir.path}");
 
-      // await Future.delayed(Duration(seconds: 1));
-
-      // var bytes = new File("${dir.path}/db.sql.zip").readAsBytesSync();
-      // var archive = new ZipDecoder().decodeBytes(bytes);
-      // for (ArchiveFile file in archive) {
-      //   List<int> data = file.content;
-      //   var ff = new File("${dir.path}/db.sql");
-      //   await ff.create(recursive:  true);
-      //   await ff.writeAsBytes(data);
-      // }
-
       await File("${dir.path}/db.sql.7z").delete();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance())
-          .setString('db_path', "${dir.path}/${imgUrls[widget.dbType].split('/').last.split('.')[0] + '.db'}");
+      await (await SharedPreferences.getInstance()).setString('db_path',
+          "${dir.path}/${imgUrls[widget.dbType].split('/').last.split('.')[0] + '.db'}");
 
       await indexing();
 
@@ -204,7 +174,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     setState(() {
       downloading = false;
-      baseString = "인터넷 연결을 확인하고 재시도해주세요!";
+      baseString = Translations.instance.trans('dbretry');
     });
   }
 
@@ -250,7 +220,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     int i = 0;
     while (true) {
       setState(() {
-        baseString = '인덱싱 작업중... 작업수 [$i/13]';
+        baseString = Translations.instance.trans('dbdindexing') + '[$i/13]';
       });
 
       var ll = await qm.next();
@@ -325,7 +295,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         path4.writeAsString(jsonEncode(tagIndex));
 
         setState(() {
-          baseString = '완료!\n앱을 재실행해 주세요!'; //\n' + jsonEncode(index);
+          baseString = Translations.instance.trans('dbdcomplete'); //\n' + jsonEncode(index);
         });
         break;
       }
@@ -354,10 +324,12 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   @override
   Widget build(BuildContext context) {
-      // Files.enumerate();
+    // Files.enumerate();
+    if (baseString == '')
+      baseString = Translations.of(context).trans('dbdwaitforrequest');
     return Scaffold(
       appBar: AppBar(
-        title: Text("데이터베이스 다운로더"),
+        title: Text(Translations.of(context).trans('dbdname')),
         backgroundColor: Colors.purple,
       ),
       body: Center(
@@ -375,7 +347,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                         height: 20.0,
                       ),
                       Text(
-                        "다운로드 중... $progressString",
+                        "${Translations.of(context).trans('dbddownloading')} $progressString",
                         style: TextStyle(
                           color: Colors.white,
                         ),
@@ -416,13 +388,10 @@ void _shell(List argv) async {
   final _DartP7zipShell p7zipShell = p7zip
       .lookup<NativeFunction<_NativeP7zipShell>>("p7zipShell")
       .asFunction();
-  // print('asdf');
   if (p7zipShell == null) {
     return null;
   }
-  // print('asdf1');
   final cstr = intListToArray(cmd);
-  // Pointer<Int8> str = allocate
   final result = p7zipShell.call(cstr);
   sendPort.send(result);
 }
@@ -450,8 +419,7 @@ class P7zip {
 
     final receivePort = ReceivePort();
     await Isolate.spawn(
-    _shell, [receivePort.sendPort, soPath, "7zr e $filesStr -o$path"]);
-    // _shell([receivePort.sendPort, soPath, "7zr x $filesStr"]); // $path
+        _shell, [receivePort.sendPort, soPath, "7zr e $filesStr -o$path"]);
     final result = await receivePort.first;
     print("[p7zip] compress: after first result = $result");
     return result == 0 ? path : null;
@@ -463,10 +431,6 @@ class P7zip {
       return null;
     }
     final libFile = File(dir.path + "/lib7zr.so");
-    // final exist = await libFile.exists();
-    // if (exist) {
-    //   return libFile.path;
-    // }
     if (Platform.isAndroid) {
       final devicePlugin = DeviceInfoPlugin();
       final deviceInfo = await devicePlugin.androidInfo;

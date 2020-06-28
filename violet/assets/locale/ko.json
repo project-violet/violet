@@ -67,6 +67,17 @@
     "dbalready": "이미 다운로드한 데이터베이스가 있나요?",
     "dbalreadyerr": "오류! 선택된 파일이 없습니다!\n재시도해주세요.",
 
+    "dbdwaitforrequest": "요청을 기다리는 중...",
+    "dbderror": "오류! 개발자에게 문의하세요",
+    "dbdcheck": "데이터베이스 확인중...",
+    "dbdcheckerr": "데이터베이스 파일이 아니거나 파일이 손상되었습니다!\n다시시도 해주세요!",
+    "dbdunzip": "압축푸는 중...",
+    "dbdretry": "오류가 발생했습니다!\n인터넷 연결을 확인하고 재시도해주세요!",
+    "dbdindexing": "인덱싱 작업중... 작업수 ",
+    "dbdcomplete": "완료!\n앱을 재실행 해주세요!",
+    "dbdname": "데이터베이스 다운로더",
+    "dbddownloading": "다운로드 중...",
+
     "nosearchresult": "검색 결과가 없습니다 :(",
     "inputsearchtoken": "검색어를 입력해주세요!",
     "closedoubletap": "한 번 더 누르면 종료합니다.",
