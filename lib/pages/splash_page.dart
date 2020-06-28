@@ -22,8 +22,6 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
-  // Alignment align = Alignment.center;
-  // EdgeInsetsGeometry pp = EdgeInsets.only(top: 0.0);
   bool showFirst = false;
   bool animateBox = false;
   bool languageBox = false;
@@ -55,8 +53,6 @@ class _SplashPageState extends State<SplashPage> {
     else {
       await Future.delayed(Duration(milliseconds: 1400));
       setState(() {
-        // align = Alignment.topCenter;
-        // pp = EdgeInsets.only(top: 130.0);
         showFirst = true;
       });
       await Future.delayed(Duration(milliseconds: 400));
@@ -85,8 +81,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    // SchedulerBinding.instance.addPostFrameCallback(
-    //     (_) async => checkAuth().whenComplete(() => startTime()));
     startTime();
   }
 
@@ -98,8 +92,6 @@ class _SplashPageState extends State<SplashPage> {
         var begin = Offset(0.0, 1.0);
         var end = Offset.zero;
         var curve = Curves.ease;
-        // var tween = Tween(begin: begin, end: end);
-        // var offsetAnimation = animation.drive(tween);
         var tween =
             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
         return SlideTransition(
@@ -125,8 +117,6 @@ class _SplashPageState extends State<SplashPage> {
           AnimatedPositioned(
             duration: Duration(milliseconds: 1000),
             curve: Curves.ease,
-            // alignment: align,
-            // padding: pp,
             top: showFirst ? 130 : height / 2 - 50,
             left: width / 2 - 50,
             child: new Image.asset(
@@ -183,14 +173,6 @@ class _SplashPageState extends State<SplashPage> {
                                 )),
                               ],
                             ),
-                            // CircularCheckBox(
-                            //     value: testCheck,
-                            //     materialTapTargetSize: MaterialTapTargetSize.padded,
-                            //     onChanged: (bool x) {
-                            //       setState(() {
-                            //         testCheck = !testCheck;
-                            //       });
-                            //     }),
                             Container(
                               padding: EdgeInsets.symmetric(vertical: 4.0),
                             ),
@@ -347,7 +329,6 @@ class _SplashPageState extends State<SplashPage> {
                                 ),
                               ),
                             ),
-                            // Expanded(child: Container()),
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Padding(
@@ -367,8 +348,6 @@ class _SplashPageState extends State<SplashPage> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    // Navigator.of(context).pushReplacementNamed(
-                                    //     '/DatabaseDownload');
                                     if (globalCheck) {
                                       if (!await Dialogs.yesnoDialog(
                                           context,
@@ -378,13 +357,12 @@ class _SplashPageState extends State<SplashPage> {
                                               .trans('warning'))) {
                                         return;
                                       }
-                                      // showDialog(context: context, child: DyesnoDialog)
                                     }
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 DataBaseDownloadPage(
-                                                  dbType: globalCheck ? 0 : 1,
+                                                  dbType: globalCheck ? 'global' : Translations.of(context).locale.languageCode,
                                                   isExistsDataBase: false,
                                                 )));
                                   },
@@ -409,12 +387,7 @@ class _SplashPageState extends State<SplashPage> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 100),
                 child: GestureDetector(
-                  // customBorder: RoundedRectangleBorder(
-                  //     borderRadius:
-                  //         BorderRadius.all(Radius.circular(8.0))),
                   child: SizedBox(
-                    // width: 150,
-                    // height: 50,
                     child: Text(Translations.of(context).trans('dbalready'),
                         style: TextStyle(
                             color: Colors.purpleAccent.shade100,
@@ -426,7 +399,7 @@ class _SplashPageState extends State<SplashPage> {
                     if (path == '') return;
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => DataBaseDownloadPage(
-                              dbType: globalCheck ? 0 : 1,
+                              dbType: globalCheck ? 'global' : Translations.of(context).locale.languageCode,
                               isExistsDataBase: true,
                               dbPath: path,
                             )));
@@ -457,10 +430,6 @@ class _SplashPageState extends State<SplashPage> {
                           size: 35,
                           color: Colors.white70,
                         ),
-                        // Container(
-                        //   padding: EdgeInsets.symmetric(vertical: 4),
-                        // ),
-                        // Container(width: 4,),
                         Text('  Language',
                             style: TextStyle(
                                 color: Colors.white70,
@@ -484,13 +453,11 @@ class _SplashPageState extends State<SplashPage> {
     File file;
     file = await FilePicker.getFile(
       type: FileType.any,
-      // allowedExtensions: ['db'],
     );
 
     if (file == null) {
       await Dialogs.okDialog(
           context, Translations.of(context).trans('dbalreadyerr'));
-      // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       return '';
     }
 

@@ -67,6 +67,17 @@
     "dbalready": "Have you already downloaded the database?",
     "dbalreadyerr": "Error! No file selected!\nPlease try again.",
 
+    "dbdwaitforrequest": "Waiting for a request...",
+    "dbderror": "Error! Contact the developer.",
+    "dbdcheck": "Checking database...",
+    "dbdcheckerr": "This is not a database file or the file is corrupted!\nPlease try again!",
+    "dbdunzip": "Unpacking...",
+    "dbdretry": "An error has occurred!\nPlease check your internet connection and try again!",
+    "dbdindexing": "Indexing... ",
+    "dbdcomplete": "Done!\nPlease restart app!",
+    "dbdname": "Database Downloader",
+    "dbddownloading": "Downloading...",
+
     "nosearchresult": "No search results found :(",
     "inputsearchtoken": "Please enter a search term!",
     "closedoubletap": "Press again to exit.",

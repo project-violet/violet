@@ -86,7 +86,7 @@ class DataBaseManager {
   Future<bool> test() async {
     try {
       final x = await query('SELECT count(*) FROM HitomiColumnModel');
-      if ((x[0]['count(*)'] as int) < 500000) return false;
+      if ((x[0]['count(*)'] as int) < 5000) return false;
       return true;
     } catch (e) {
       return false;
