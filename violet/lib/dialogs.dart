@@ -36,13 +36,17 @@ class Dialogs {
   static Future<bool> yesnoDialog(BuildContext context, String message, [String title]) async {
     title ??= 'Project Violet';
     Widget yesButton = FlatButton(
-      child: Text("예"),
+      child: Text("예", style: TextStyle(color: Colors.purple)),
+      focusColor: Colors.purple,
+      splashColor: Colors.purple.withOpacity(0.3),
       onPressed: () {
         Navigator.pop(context, true);
       },
     );
     Widget noButton = FlatButton(
-      child: Text("아니오"),
+      child: Text("아니오", style: TextStyle(color: Colors.purple)),
+      focusColor: Colors.purple,
+      splashColor: Colors.purple.withOpacity(0.3),
       onPressed: () {
         Navigator.pop(context, false);
       },

@@ -56,6 +56,17 @@
     "ok": "OK",
     "cancel": "Cancel",
 
+    "welcome": "Welcome to Violet. You must download the database before using this app.",
+    "dbuser": "English Database",
+    "dbdownloadsize": " Download Size",
+    "dbusermsg": "Database pack containing user language and n/a. The storage requires %s of additional storage space. This database currently contains the latest data, but in order to keep the database up-to-date, you must follow the instructions to synchronize the data.",
+    "dballname": "All Language Database",
+    "dballmsg": "This is a database pack containing all languages. The storage requires %s of additional storage space. This database currently contains the latest data, but in order to keep the database up-to-date, you must follow the instructions to synchronize the data. Do not use this database unless it is a special case.",
+    "dbwarn": "This database is very large and may contain unnecessary data for the user. The size of the database is directly proportional to the performance of data reads/writes, so this database can cause a very large performance hit. Would you like to download it anyway?",
+    "warning": "Warning",
+    "dbalready": "Have you already downloaded the database?",
+    "dbalreadyerr": "Error! No file selected!\nPlease try again.",
+
     "nosearchresult": "No search results found :(",
     "inputsearchtoken": "Please enter a search term!",
     "closedoubletap": "Press again to exit.",

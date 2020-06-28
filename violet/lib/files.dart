@@ -21,7 +21,7 @@ class Files {
   static Future<void> enumeratePath(String path) async {
     (await Directory(path).list(recursive: true, followLinks: true).toList())
         .forEach((element) async {
-      print(element.path);
+      print(element.path + '     ' + (await File(element.path).length()).toString());
       // if (await FileSystemEntity.isDirectory(element.path))
       //   await enumeratePath(element.path);
     });
