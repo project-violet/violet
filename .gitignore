@@ -45,3 +45,9 @@ assets/test/*
 android/app/google-services.json
 syncfusion.dart
 ws.dart
+
+
+*.o
+*.d
+*.so
+p7zip/CPP/ANDROID/7zr/obj/*

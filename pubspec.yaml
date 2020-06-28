@@ -84,12 +84,14 @@ dependencies:
   # archive:
   # lzma:
   circular_check_box: ^1.0.1
+  device_info:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
+  ffi:
 
 
 # For information on the generic Dart part of this file, see the
@@ -136,7 +138,13 @@ flutter:
     - assets/flare/switch_daytime.flr
     - assets/flare/likeUtsua.flr
 
-    - assets/icons/pixiv.ico
+    # - assets/icons/pixiv.ico
+    
+    - p7zip/CPP/ANDROID/7zr/libs/arm64-v8a/lib7zr.so
+    - p7zip/CPP/ANDROID/7zr/libs/armeabi-v7a/lib7zr.so
+    - p7zip/CPP/ANDROID/7zr/libs/x86/lib7zr.so
+    - p7zip/CPP/ANDROID/7zr/libs/x86_64/lib7zr.so
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

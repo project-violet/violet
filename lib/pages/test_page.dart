@@ -3,11 +3,16 @@
 
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_info/device_info.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flare_dart/math/aabb.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare.dart';
@@ -16,9 +21,11 @@ import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tuple/tuple.dart';
@@ -36,6 +43,7 @@ import 'package:flutter_sidekick/flutter_sidekick.dart';
 import 'package:flare_flutter/flare_render_box.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
+import 'package:ffi/ffi.dart';
 
 class TestPage extends StatelessWidget {
   @override
@@ -207,6 +215,23 @@ class TestPage extends StatelessWidget {
                   print(HitomiStatistics.estimateDateTime(1666884));
                 },
               ),
+
+              // RaisedButton(
+              //   child: Text('Unzip Test'),
+              //   onPressed: () async {
+              //     try {
+              //       File file;
+              //       file = await FilePicker.getFile(
+              //         type: FileType.any,
+              //         // allowedExtensions: ['db'],
+              //       // );
+              //       // var pp = new P7zip();
+              //       // await pp.compress([file.path], path: file.parent.path);
+              //     } catch (e) {
+              //       print(e);
+              //     }
+              //   },
+              // ),
               Container(
                 height: 10,
               ),
@@ -1483,32 +1508,32 @@ class _SilverTestPageState extends State<SilverTestPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: 
-      // CustomScrollView(
-      //     // CustomScrollView는 children이 아닌 slivers를 사용하며, slivers에는 스크롤이 가능한 위젯이나 리스트가 등록가능함
-      //     slivers: <Widget>[
-      //       // 앱바 추가
-      //       SliverAppBar(
-      //         title: Text('asdfasdf'),
-      //         // floating 설정. SliverAppBar는 스크롤 다운되면 화면 위로 사라짐.
-      //         // true: 스크롤 업 하면 앱바가 바로 나타남. false: 리스트 최 상단에서 스크롤 업 할 때에만 앱바가 나타남
-      //         floating: true,
-      //         // flexibleSpace에 플레이스홀더를 추가
-      //         flexibleSpace: Placeholder(),
-      //         // 최대 높이
-      //         expandedHeight: 200,
-      //       ),
-      //       // 리스트 추가
-      //       SliverList(
-      //         // 아이템을 빌드하기 위해서 delegate 항목을 구성함
-      //         // SliverChildBuilderDelegate는 ListView.builder 처럼 리스트의 아이템을 생성해줌
-      //         delegate: SliverChildBuilderDelegate(
-      //             (context, index) => ListTile(title: Text('Item #$index')),
-      //             childCount: 150),
-      //       ),
-      //     ],
-      //   ),
-      LayoutBuilder(
+      child:
+          // CustomScrollView(
+          //     // CustomScrollView는 children이 아닌 slivers를 사용하며, slivers에는 스크롤이 가능한 위젯이나 리스트가 등록가능함
+          //     slivers: <Widget>[
+          //       // 앱바 추가
+          //       SliverAppBar(
+          //         title: Text('asdfasdf'),
+          //         // floating 설정. SliverAppBar는 스크롤 다운되면 화면 위로 사라짐.
+          //         // true: 스크롤 업 하면 앱바가 바로 나타남. false: 리스트 최 상단에서 스크롤 업 할 때에만 앱바가 나타남
+          //         floating: true,
+          //         // flexibleSpace에 플레이스홀더를 추가
+          //         flexibleSpace: Placeholder(),
+          //         // 최대 높이
+          //         expandedHeight: 200,
+          //       ),
+          //       // 리스트 추가
+          //       SliverList(
+          //         // 아이템을 빌드하기 위해서 delegate 항목을 구성함
+          //         // SliverChildBuilderDelegate는 ListView.builder 처럼 리스트의 아이템을 생성해줌
+          //         delegate: SliverChildBuilderDelegate(
+          //             (context, index) => ListTile(title: Text('Item #$index')),
+          //             childCount: 150),
+          //       ),
+          //     ],
+          //   ),
+          LayoutBuilder(
         builder: (context, constraints) {
           return CustomScrollView(
             controller: ScrollController(
@@ -1541,14 +1566,18 @@ class Delegate extends SliverPersistentHeaderDelegate {
   Delegate(this._maxExtent);
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     var t = shrinkOffset / maxExtent;
     return Material(
       elevation: 4,
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Image.asset('assets/images/logo.png', fit: BoxFit.cover,),
+          Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.cover,
+          ),
           Opacity(
             opacity: t,
             child: Container(
@@ -1556,8 +1585,11 @@ class Delegate extends SliverPersistentHeaderDelegate {
               alignment: Alignment.bottomCenter,
               child: Transform.scale(
                 scale: lerpDouble(16, 1, t),
-                child: Text('scroll me down', 
-                  style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white)),
+                child: Text('scroll me down',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline5
+                        .copyWith(color: Colors.white)),
               ),
             ),
           ),
@@ -1566,7 +1598,10 @@ class Delegate extends SliverPersistentHeaderDelegate {
     );
   }
 
-  @override double get maxExtent => _maxExtent;
-  @override double get minExtent => 64;
-  @override bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
+  @override
+  double get maxExtent => _maxExtent;
+  @override
+  double get minExtent => 64;
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }

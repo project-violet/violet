@@ -2,14 +2,19 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:async';
+import 'dart:io';
 import 'package:circular_check_box/circular_check_box.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/locale.dart';
 import 'package:violet/pages/afterloading_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:violet/dialogs.dart';
+import 'package:violet/pages/database_download_page.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -22,6 +27,22 @@ class _SplashPageState extends State<SplashPage> {
   bool showFirst = false;
   bool animateBox = false;
   bool languageBox = false;
+
+  final imgSize = {
+    'global': '320MB',
+    'ko': '76MB',
+    'en': '100MB',
+    'jp': '165MB',
+    'zh': '85MB',
+  };
+
+  final imgZipSize = {
+    'global': '32MB',
+    'ko': '9MB',
+    'en': '10MB',
+    'jp': '18MB',
+    'zh': '9MB',
+  };
 
   startTime() async {
     var _duration = new Duration(milliseconds: 600);
@@ -38,7 +59,7 @@ class _SplashPageState extends State<SplashPage> {
         // pp = EdgeInsets.only(top: 130.0);
         showFirst = true;
       });
-      await Future.delayed(Duration(milliseconds: 600));
+      await Future.delayed(Duration(milliseconds: 400));
       setState(() {
         animateBox = true;
       });
@@ -50,7 +71,6 @@ class _SplashPageState extends State<SplashPage> {
       setState(() {
         scale1 = 1.03;
       });
-      // Navigator.of(context).pushReplacementNamed('/DatabaseDownload');
     }
   }
 
@@ -65,8 +85,9 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback(
-        (_) async => checkAuth().whenComplete(() => startTime()));
+    // SchedulerBinding.instance.addPostFrameCallback(
+    //     (_) async => checkAuth().whenComplete(() => startTime()));
+    startTime();
   }
 
   Route _createRoute() {
@@ -102,12 +123,12 @@ class _SplashPageState extends State<SplashPage> {
       body: Stack(
         children: <Widget>[
           AnimatedPositioned(
-            duration: Duration(milliseconds: 600),
-            curve: Curves.easeOutCubic,
+            duration: Duration(milliseconds: 1000),
+            curve: Curves.ease,
             // alignment: align,
             // padding: pp,
             top: showFirst ? 130 : height / 2 - 50,
-            left: width / 2-50,
+            left: width / 2 - 50,
             child: new Image.asset(
               'assets/images/logo.png',
               width: 100,
@@ -133,206 +154,283 @@ class _SplashPageState extends State<SplashPage> {
                       height: animateBox ? 300 : 0,
                       padding: EdgeInsets.all(16),
                       child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(
-                                MdiIcons.database,
-                                size: 50,
-                                color: Colors.grey,
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(4),
-                              ),
-                              Expanded(
-                                  child: Text(
-                                'Violet 사용을 환영합니다. 이 앱을 사용하기 전에 먼저 데이터베이스를 다운로드해야 합니다.',
-                                maxLines: 4,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
+                        children: AnimationConfiguration.toStaggeredList(
+                          duration: const Duration(milliseconds: 900),
+                          childAnimationBuilder: (widget) => SlideAnimation(
+                            horizontalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: widget,
+                            ),
+                          ),
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Icon(
+                                  MdiIcons.database,
+                                  size: 50,
+                                  color: Colors.grey,
                                 ),
-                              )),
-                            ],
-                          ),
-                          // CircularCheckBox(
-                          //     value: testCheck,
-                          //     materialTapTargetSize: MaterialTapTargetSize.padded,
-                          //     onChanged: (bool x) {
-                          //       setState(() {
-                          //         testCheck = !testCheck;
-                          //       });
-                          //     }),
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 4.0),
-                          ),
-                          AnimatedContainer(
-                            transform: Matrix4.identity()
-                              ..translate(300 / 2, 50 / 2)
-                              ..scale(scale1)
-                              ..translate(-300 / 2, -50 / 2),
-                            duration: Duration(milliseconds: 300),
-                            child: Card(
-                              elevation: 4,
-                              child: InkWell(
-                                customBorder: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0))),
-                                child: ListTile(
-                                  leading: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minWidth: 44,
-                                      minHeight: 44,
-                                      maxWidth: 44,
-                                      maxHeight: 44,
-                                    ),
-                                    child: CircularCheckBox(
-                                      value: userlangCheck,
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.padded,
-                                      onChanged: (bool value) {
-                                        setState(() {
-                                          scale1 = 1.03;
-                                          scale2 = 1.0;
-                                          if (userlangCheck) return;
-                                          userlangCheck = !userlangCheck;
-                                          globalCheck = false;
-                                        });
-                                      },
-                                    ),
+                                Container(
+                                  padding: EdgeInsets.all(4),
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  Translations.of(context).trans('welcome'),
+                                  maxLines: 4,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  dense: true,
-                                  title: Text("한국어 데이터 베이스",
-                                      style: TextStyle(fontSize: 14)),
-                                  subtitle: Text('79MB의 추가 저장공간 필요',
-                                      style: TextStyle(fontSize: 12)),
-                                ),
-                                onTapDown: (detail) {
-                                  setState(() {
-                                    scale1 = 0.95;
-                                  });
-                                },
-                                onTap: () {
-                                  setState(() {
-                                    scale1 = 1.03;
-                                    scale2 = 1.0;
-                                    if (userlangCheck) return;
-                                    userlangCheck = !userlangCheck;
-                                    globalCheck = false;
-                                  });
-                                },
-                                onLongPress: () async {
-                                  setState(() {
-                                    if (userlangCheck)
+                                )),
+                              ],
+                            ),
+                            // CircularCheckBox(
+                            //     value: testCheck,
+                            //     materialTapTargetSize: MaterialTapTargetSize.padded,
+                            //     onChanged: (bool x) {
+                            //       setState(() {
+                            //         testCheck = !testCheck;
+                            //       });
+                            //     }),
+                            Container(
+                              padding: EdgeInsets.symmetric(vertical: 4.0),
+                            ),
+                            AnimatedContainer(
+                              transform: Matrix4.identity()
+                                ..translate(300 / 2, 50 / 2)
+                                ..scale(scale1)
+                                ..translate(-300 / 2, -50 / 2),
+                              duration: Duration(milliseconds: 300),
+                              child: Card(
+                                elevation: 4,
+                                child: InkWell(
+                                  customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(3.0))),
+                                  child: ListTile(
+                                    leading: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        minWidth: 44,
+                                        minHeight: 44,
+                                        maxWidth: 44,
+                                        maxHeight: 44,
+                                      ),
+                                      child: CircularCheckBox(
+                                        value: userlangCheck,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.padded,
+                                        onChanged: (bool value) {
+                                          setState(() {
+                                            scale1 = 1.03;
+                                            scale2 = 1.0;
+                                            if (userlangCheck) return;
+                                            userlangCheck = !userlangCheck;
+                                            globalCheck = false;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    dense: true,
+                                    title: Text(
+                                        Translations.of(context)
+                                            .trans('dbuser'),
+                                        style: TextStyle(fontSize: 14)),
+                                    subtitle: Text(
+                                        '${imgZipSize['ko']}${Translations.of(context).trans('dbdownloadsize')}',
+                                        style: TextStyle(fontSize: 12)),
+                                  ),
+                                  onTapDown: (detail) {
+                                    setState(() {
+                                      scale1 = 0.95;
+                                    });
+                                  },
+                                  onTap: () {
+                                    setState(() {
                                       scale1 = 1.03;
-                                    else
-                                      scale1 = 1.0;
-                                  });
-                                  await Dialogs.okDialog(
-                                      context,
-                                      '사용자 언어와 n/a가 포함된 데이터베이스팩입니다. 이 데이터베이스는 현재 최신 데이터가 들어있지만, ' +
-                                          '데이터베이스를 최신상태로 유지하려면 안내에 따라 데이터를 동기화해야합니다.');
-                                },
-                              ),
-                            ),
-                          ),
-                          AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
-                            transform: Matrix4.identity()
-                              ..translate(300 / 2, 50 / 2)
-                              ..scale(scale2)
-                              ..translate(-300 / 2, -50 / 2),
-                            child: Card(
-                              elevation: 4,
-                              child: InkWell(
-                                customBorder: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(3.0))),
-                                child: ListTile(
-                                  leading: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minWidth: 44,
-                                      minHeight: 44,
-                                      maxWidth: 44,
-                                      maxHeight: 44,
-                                    ),
-                                    child: CircularCheckBox(
-                                      value: globalCheck,
-                                      materialTapTargetSize:
-                                          MaterialTapTargetSize.padded,
-                                      onChanged: (bool value) {
-                                        setState(() {
-                                          scale2 = 1.03;
-                                          scale1 = 1.0;
-                                          if (globalCheck) return;
-                                          globalCheck = !globalCheck;
-                                          userlangCheck = false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  dense: true,
-                                  title: Text("모든 언어 데이터 베이스",
-                                      style: TextStyle(fontSize: 14)),
-                                  subtitle: Text('314MB의 추가 저장공간 필요',
-                                      style: TextStyle(fontSize: 12)),
-                                ),
-                                onTapDown: (detail) {
-                                  setState(() {
-                                    scale2 = 0.95;
-                                  });
-                                },
-                                onTap: () {
-                                  setState(() {
-                                    scale2 = 1.03;
-                                    scale1 = 1.0;
-                                    if (globalCheck) return;
-                                    globalCheck = !globalCheck;
-                                    userlangCheck = false;
-                                  });
-                                },
-                                onLongPress: () async {
-                                  setState(() {
-                                    if (globalCheck)
-                                      scale2 = 1.03;
-                                    else
                                       scale2 = 1.0;
-                                  });
-                                  await Dialogs.okDialog(
-                                      context,
-                                      '모든 언어가 포함된 데이터베이스팩입니다. 이 데이터베이스는 현재 최신 데이터가 들어있지만, ' +
-                                          '데이터베이스를 최신상태로 유지하려면 안내에 따라 데이터를 동기화해야합니다.');
-                                },
-                              ),
-                            ),
-                          ),
-                          Expanded(child: Container()),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
-                              child: RaisedButton(
-                                textColor: Colors.white,
-                                child: SizedBox(
-                                  width: 90,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text('다운로드'),
-                                      Icon(Icons.keyboard_arrow_right),
-                                    ],
-                                  ),
+                                      if (userlangCheck) return;
+                                      userlangCheck = !userlangCheck;
+                                      globalCheck = false;
+                                    });
+                                  },
+                                  onLongPress: () async {
+                                    setState(() {
+                                      if (userlangCheck)
+                                        scale1 = 1.03;
+                                      else
+                                        scale1 = 1.0;
+                                    });
+                                    await Dialogs.okDialog(
+                                        context,
+                                        Translations.of(context)
+                                            .trans('dbusermsg')
+                                            .replaceFirst(
+                                                '%s',
+                                                imgSize[Translations.of(context)
+                                                    .locale
+                                                    .languageCode]));
+                                  },
                                 ),
-                                onPressed: () {},
-                                color: Colors.purple.shade400,
                               ),
                             ),
-                          ),
-                        ],
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              transform: Matrix4.identity()
+                                ..translate(300 / 2, 50 / 2)
+                                ..scale(scale2)
+                                ..translate(-300 / 2, -50 / 2),
+                              child: Card(
+                                elevation: 4,
+                                child: InkWell(
+                                  customBorder: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(3.0))),
+                                  child: ListTile(
+                                    leading: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        minWidth: 44,
+                                        minHeight: 44,
+                                        maxWidth: 44,
+                                        maxHeight: 44,
+                                      ),
+                                      child: CircularCheckBox(
+                                        value: globalCheck,
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.padded,
+                                        onChanged: (bool value) {
+                                          setState(() {
+                                            scale2 = 1.03;
+                                            scale1 = 1.0;
+                                            if (globalCheck) return;
+                                            globalCheck = !globalCheck;
+                                            userlangCheck = false;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    dense: true,
+                                    title: Text(
+                                        Translations.of(context)
+                                            .trans('dballname'),
+                                        style: TextStyle(fontSize: 14)),
+                                    subtitle: Text(
+                                        '${imgZipSize['global']}${Translations.of(context).trans('dbdownloadsize')}',
+                                        style: TextStyle(fontSize: 12)),
+                                  ),
+                                  onTapDown: (detail) {
+                                    setState(() {
+                                      scale2 = 0.95;
+                                    });
+                                  },
+                                  onTap: () {
+                                    setState(() {
+                                      scale2 = 1.03;
+                                      scale1 = 1.0;
+                                      if (globalCheck) return;
+                                      globalCheck = !globalCheck;
+                                      userlangCheck = false;
+                                    });
+                                  },
+                                  onLongPress: () async {
+                                    setState(() {
+                                      if (globalCheck)
+                                        scale2 = 1.03;
+                                      else
+                                        scale2 = 1.0;
+                                    });
+                                    await Dialogs.okDialog(
+                                        context,
+                                        Translations.of(context)
+                                            .trans('dballmsg')
+                                            .replaceFirst(
+                                                '%s', imgSize['global']));
+                                  },
+                                ),
+                              ),
+                            ),
+                            // Expanded(child: Container()),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
+                                child: RaisedButton(
+                                  textColor: Colors.white,
+                                  child: SizedBox(
+                                    width: 90,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text('다운로드'),
+                                        Icon(Icons.keyboard_arrow_right),
+                                      ],
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    // Navigator.of(context).pushReplacementNamed(
+                                    //     '/DatabaseDownload');
+                                    if (globalCheck) {
+                                      if (!await Dialogs.yesnoDialog(
+                                          context,
+                                          Translations.of(context)
+                                              .trans('dbwarn'),
+                                          Translations.of(context)
+                                              .trans('warning'))) {
+                                        return;
+                                      }
+                                      // showDialog(context: context, child: DyesnoDialog)
+                                    }
+                                    Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                DataBaseDownloadPage(
+                                                  dbType: globalCheck ? 0 : 1,
+                                                  isExistsDataBase: false,
+                                                )));
+                                  },
+                                  color: Colors.purple.shade400,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
+          ),
+          AnimatedOpacity(
+            opacity: languageBox ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 700),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 100),
+                child: GestureDetector(
+                  // customBorder: RoundedRectangleBorder(
+                  //     borderRadius:
+                  //         BorderRadius.all(Radius.circular(8.0))),
+                  child: SizedBox(
+                    // width: 150,
+                    // height: 50,
+                    child: Text(Translations.of(context).trans('dbalready'),
+                        style: TextStyle(
+                            color: Colors.purpleAccent.shade100,
+                            fontSize: 12.0)),
+                  ),
+                  onTap: () async {
+                    var path = await getFile();
+
+                    if (path == '') return;
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DataBaseDownloadPage(
+                              dbType: globalCheck ? 0 : 1,
+                              isExistsDataBase: true,
+                              dbPath: path,
+                            )));
+                  },
                 ),
               ),
             ),
@@ -380,5 +478,22 @@ class _SplashPageState extends State<SplashPage> {
       ),
       backgroundColor: Color(0x7FB200ED),
     );
+  }
+
+  Future<String> getFile() async {
+    File file;
+    file = await FilePicker.getFile(
+      type: FileType.any,
+      // allowedExtensions: ['db'],
+    );
+
+    if (file == null) {
+      await Dialogs.okDialog(
+          context, Translations.of(context).trans('dbalreadyerr'));
+      // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+      return '';
+    }
+
+    return file.path;
   }
 }
