@@ -77,13 +77,10 @@ class _ArticleListItemVerySimpleWidgetState
   bool isBookmarked = false;
   bool checkSearchPageBlur = false;
   bool animating = false;
-  bool doContainerHero = false;
-  bool containerOuted = true;
   FlareControls _flareController = FlareControls();
   Animation<double> _animation;
   Tween<double> _tween;
   AnimationController _animationController;
-  RouteSettings articleRoute = RouteSettings(name: 'articleroute');
 
   @override
   void initState() {
@@ -176,20 +173,55 @@ class _ArticleListItemVerySimpleWidgetState
                 width: ww,
                 height: hh,
                 child: AnimatedContainer(
-                    // alignment: FractionalOffset.center,
-                    curve: Curves.easeInOut,
-                    duration: Duration(milliseconds: 300),
-                    // padding: EdgeInsets.all(pad),
-                    transform: Matrix4.identity()
-                      ..translate(ww / 2, hh / 2)
-                      ..scale(scale)
-                      ..translate(-ww / 2, -hh / 2),
-                    child: doContainerHero
-                        ? Hero(
-                            tag: "articlecontainer" +
-                                widget.queryResult.id().toString(),
-                            child: buildBody())
-                        : buildBody()),
+                  // alignment: FractionalOffset.center,
+                  curve: Curves.easeInOut,
+                  duration: Duration(milliseconds: 300),
+                  // padding: EdgeInsets.all(pad),
+                  transform: Matrix4.identity()
+                    ..translate(ww / 2, hh / 2)
+                    ..scale(scale)
+                    ..translate(-ww / 2, -hh / 2),
+                  child: Container(
+                      margin: widget.addBottomPadding
+                          ? widget.showDetail
+                              ? EdgeInsets.only(bottom: 6)
+                              : EdgeInsets.only(bottom: 50)
+                          : EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        color: widget.showDetail
+                            ? Settings.themeWhat
+                                ? Colors.grey.shade800
+                                : Colors.white70
+                            : Colors.grey.withOpacity(0.3),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Settings.themeWhat
+                                ? Colors.grey.withOpacity(0.08)
+                                : Colors.grey.withOpacity(0.4),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      child: widget.showDetail
+                          ? Row(
+                              children: <Widget>[
+                                // Expanded(
+                                //   flex: 4,
+                                //   child: buildThumbnail(),
+                                // ),
+                                buildThumbnail(),
+                                // Expanded(flex: 8, child: Text('asdf'),)
+                                Expanded(child: buildDetail())
+                              ],
+                            )
+                          : buildThumbnail()
+                      //     ),
+                      // ),
+                      ),
+                ),
               ),
             ),
             // onScaleStart: (detail) {
@@ -250,37 +282,23 @@ class _ArticleListItemVerySimpleWidgetState
                   ),
                 );
               } else {
-                doContainerHero = true;
-                containerOuted = false;
-                Navigator.of(context)
-                    .push(PageRouteBuilder(
+                Navigator.of(context).push(PageRouteBuilder(
                   opaque: false,
                   transitionDuration: Duration(milliseconds: 500),
                   transitionsBuilder: (BuildContext context,
                       Animation<double> animation,
                       Animation<double> secondaryAnimation,
                       Widget wi) {
-                    // print(articleRoute.name);
-                    // return Container(child: Text('asdf'));
+                    // return wi;
                     return new FadeTransition(opacity: animation, child: wi);
                   },
-                  settings: articleRoute,
                   pageBuilder: (_, __, ___) => ArticleInfoPage(
                     queryResult: widget.queryResult,
                     thumbnail: thumbnail,
                     headers: headers,
                     heroKey: 'thumbnail' + widget.queryResult.id().toString(),
                   ),
-                ))
-                    .then((value) async {
-                  // setState(() {
-                  //   doContainerHero=false;
-                  // });
-                  Future.delayed(Duration(milliseconds: 500))
-                      .then((value) => setState(() => doContainerHero = false));
-                  Future.delayed(Duration(milliseconds: 550)).then((value) => setState(() => containerOuted = true));
-                  // doContainerHero = false;
-                });
+                ));
               }
             },
             onLongPress: () async {
@@ -353,54 +371,14 @@ class _ArticleListItemVerySimpleWidgetState
         });
   }
 
-  Widget buildBody() {
-    return Container(
-        margin: widget.addBottomPadding
-            ? widget.showDetail
-                ? EdgeInsets.only(bottom: 6)
-                : EdgeInsets.only(bottom: 50)
-            : EdgeInsets.zero,
-        decoration: BoxDecoration(
-          color: widget.showDetail
-              ? Settings.themeWhat ? Colors.grey.shade800 : Colors.white70
-              : Colors.grey.withOpacity(0.3),
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.grey.withOpacity(0.08)
-                  : Colors.grey.withOpacity(0.4),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: widget.showDetail
-            ? Row(
-                children: <Widget>[
-                  // Expanded(
-                  //   flex: 4,
-                  //   child: buildThumbnail(),
-                  // ),
-                  buildThumbnail(),
-                  // Expanded(flex: 8, child: Text('asdf'),)
-                  Expanded(child: buildDetail())
-                ],
-              )
-            : buildThumbnail()
-        //     ),
-        // ),
-        );
-  }
-
   Widget buildThumbnail() {
-    final width = MediaQuery.of(context).size.width;
-    return AnimatedContainer(
-      curve: Curves.easeInOut,
-      duration: Duration(milliseconds: 200),
-      width:
-          widget.showDetail ? !containerOuted ? width - 32 + 8 : 100 - pad / 6 * 5 : null,
+    var headers = {
+      "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
+    };
+    return Container(
+      // curve: Curves.easeInOut,
+      // duration: Duration(milliseconds: 300),
+      width: widget.showDetail ? 100 - pad / 6 * 5 : null,
       child: thumbnail != null
           ? ClipRRect(
               borderRadius: widget.showDetail
@@ -408,12 +386,39 @@ class _ArticleListItemVerySimpleWidgetState
                   : BorderRadius.circular(5.0),
               child: Stack(
                 children: <Widget>[
-                  doContainerHero
-                      ? buildThumbnailImage()
-                      : Hero(
-                          tag: 'thumbnail' + widget.queryResult.id().toString(),
-                          child: buildThumbnailImage(),
+                  Hero(
+                    tag: 'thumbnail' + widget.queryResult.id().toString(),
+                    child: CachedNetworkImage(
+                      imageUrl: thumbnail,
+                      fit: BoxFit.cover,
+                      httpHeaders: headers,
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: imageProvider, fit: BoxFit.cover),
                         ),
+                        child: isBlurred || checkSearchPageBlur || animating
+                            ? BackdropFilter(
+                                filter: new ImageFilter.blur(
+                                    sigmaX: isBlurred ? 5.0 : _animation.value,
+                                    sigmaY: isBlurred ? 5.0 : _animation.value),
+                                child: new Container(
+                                  decoration: new BoxDecoration(
+                                      color: Colors.white.withOpacity(0.0)),
+                                ),
+                              )
+                            : Container(),
+                      ),
+                      placeholder: (b, c) {
+                        return FlareActor(
+                          "assets/flare/Loading2.flr",
+                          alignment: Alignment.center,
+                          fit: BoxFit.fitHeight,
+                          animation: "Alarm",
+                        );
+                      },
+                    ),
+                  ),
                   Align(
                     alignment: FractionalOffset.topLeft,
                     child: Transform(
@@ -473,48 +478,11 @@ class _ArticleListItemVerySimpleWidgetState
     );
   }
 
-  Widget buildThumbnailImage() {
-    var headers = {
-      "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
-    };
-    return CachedNetworkImage(
-      imageUrl: thumbnail,
-      fit: BoxFit.cover,
-      httpHeaders: headers,
-      imageBuilder: (context, imageProvider) => Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-              image: imageProvider,
-              fit: BoxFit.cover),
-        ),
-        child: isBlurred || checkSearchPageBlur || animating
-            ? BackdropFilter(
-                filter: new ImageFilter.blur(
-                    sigmaX: isBlurred ? 5.0 : _animation.value,
-                    sigmaY: isBlurred ? 5.0 : _animation.value),
-                child: new Container(
-                  decoration:
-                      new BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                ),
-              )
-            : Container(),
-      ),
-      placeholder: (b, c) {
-        return FlareActor(
-          "assets/flare/Loading2.flr",
-          alignment: Alignment.center,
-          fit: BoxFit.fitHeight,
-          animation: "Alarm",
-        );
-      },
-    );
-  }
-
   Widget buildDetail() {
     var unescape = new HtmlUnescape();
     var artist = (widget.queryResult.artists() as String)
         .split('|')
-        .map((x) => x.length != 0)
+        .where((x) => x.length != 0)
         .join(',');
 
     if (artist == 'N/A') {
@@ -522,7 +490,6 @@ class _ArticleListItemVerySimpleWidgetState
           ? widget.queryResult.groups().split('|')[1]
           : '';
       if (group != '') artist = group;
-      print(group);
     }
 
     return AnimatedContainer(
@@ -536,7 +503,7 @@ class _ArticleListItemVerySimpleWidgetState
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-          Text(widget.queryResult.artists().split('|')[1]),
+          Text(artist),
           Expanded(
             child: Align(
               alignment: Alignment.bottomLeft,
@@ -771,18 +738,5 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
 //   @override
 //   Widget build(BuildContext context) {
 //     return Container();
-//   }
-// }
-
-// class CustomNavRoute<T> extends MaterialPageRoute<T> {
-//   CustomNavRoute({WidgetBuilder builder, RouteSettings settings})
-//       : super(builder: builder, settings: settings);
-
-//   @override
-//   Widget buildTransitions(BuildContext context, Animation<double> animation,
-//       Animation<double> secondaryAnimation, Widget child) {
-//     if (settings.isInitialRoute) return child;
-
-//     return new FadeTransition(opacity: animation, child: child);
 //   }
 // }
