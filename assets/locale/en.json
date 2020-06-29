@@ -55,7 +55,10 @@
     "tag": "Tag",
     "ok": "OK",
     "cancel": "Cancel",
+    "switching": "Switching",
+    "syncmanual": "Sync Manually",
 
+    "database": "Database",
     "welcome": "Welcome to Violet. You must download the database before using this app.",
     "dbuser": "English Database",
     "dbdownloadsize": " Download Size",

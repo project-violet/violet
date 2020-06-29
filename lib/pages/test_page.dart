@@ -215,6 +215,13 @@ class TestPage extends StatelessWidget {
                   print(HitomiStatistics.estimateDateTime(1666884));
                 },
               ),
+              RaisedButton(
+                child: Text('DPI Bypass Test'),
+                onPressed: () async {
+                  await VpnTest.asdf();
+                },
+              ),
+
 
               // RaisedButton(
               //   child: Text('Unzip Test'),
@@ -1604,4 +1611,27 @@ class Delegate extends SliverPersistentHeaderDelegate {
   double get minExtent => 64;
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
+}
+
+
+
+
+class VpnTest {
+
+  static const platform = const MethodChannel("xyz.project.violet/dpitunnel");
+
+  
+  static Future<void> asdf() async {
+    try {
+      var x= await platform.invokeMethod('');
+      print(x);
+    } on PlatformException catch (e) {
+      print(e.message);
+    } catch (e) {
+      print(e);
+    }
+      print('asdf');
+  }
+
+
 }

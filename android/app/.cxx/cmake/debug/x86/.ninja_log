@@ -1,0 +1,19 @@
+# ninja log v5
+1	1064	0	CMakeFiles/dpi-bypass.dir/socket.cpp.o	530468aaf317e461
+171	1069	0	CMakeFiles/dpi-bypass.dir/dpi-bypass.cpp.o	b708bfe437d2da47
+153	1074	0	CMakeFiles/dpi-bypass.dir/dns.cpp.o	1e0488c5104a1e36
+144	1119	0	CMakeFiles/dpi-bypass.dir/hostlist.cpp.o	293421a923eaa7eb
+163	1748	0	CMakeFiles/dpi-bypass.dir/packet.cpp.o	84af852f24d4f2cc
+1748	1899	0	F:/Dev/violet/build/app/intermediates/cmake/debug/obj/x86/libdpi-bypass.so	1bdcf83d6234b3d9
+1	347	0	CMakeFiles/tun2http.dir/tun2http/dns.c.o	a881a30eaaf714
+214	373	0	CMakeFiles/tun2http.dir/tun2http/tls.c.o	8030415b71e5bf6b
+153	376	0	CMakeFiles/tun2http.dir/tun2http/tun2http.c.o	294f917b4fe1e321
+171	394	0	CMakeFiles/tun2http.dir/tun2http/util.c.o	c7f328f2fab71539
+162	410	0	CMakeFiles/tun2http.dir/tun2http/udp.c.o	f6ee57d4bfc36b48
+180	411	0	CMakeFiles/tun2http.dir/tun2http/session.c.o	1de50db5be114da5
+144	423	0	CMakeFiles/tun2http.dir/tun2http/tcp.c.o	5b1eeaa0d16ed19d
+192	423	0	CMakeFiles/tun2http.dir/tun2http/ip.c.o	ba40e8a2b0adce13
+202	434	0	CMakeFiles/tun2http.dir/tun2http/icmp.c.o	28e12dee0415100f
+226	440	0	CMakeFiles/tun2http.dir/tun2http/http.c.o	5e3515ec4245f1b5
+239	446	0	CMakeFiles/tun2http.dir/tun2http/dhcp.c.o	821f719feb1906b2
+446	537	0	F:/Dev/violet/build/app/intermediates/cmake/debug/obj/x86/libtun2http.so	2afd9478e615aebb
