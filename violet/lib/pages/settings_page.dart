@@ -10,6 +10,7 @@ import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -410,6 +411,41 @@ class _SettingsPageState extends State<SettingsPage>
                     child: ListTile(
                       leading: Icon(Icons.developer_mode, color: Colors.orange),
                       title: Text(Translations.of(context).trans('devtool')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => TestPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ]),
+                _buildGroup(Translations.of(context).trans('database')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
+                      title: Text(Translations.of(context).trans('switching')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
+                      title: Text(Translations.of(context).trans('syncmanual')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () {

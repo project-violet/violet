@@ -1,0 +1,22 @@
+{
+  "buildFiles": [
+    "F:\\Dev\\violet\\android\\app\\src\\main\\cpp\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a --target clean"
+  ],
+  "libraries": {
+    "dpi-bypass-Debug-armeabi-v7a": {
+      "artifactName": "dpi-bypass",
+      "buildCommand": "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a --target dpi-bypass",
+      "abi": "armeabi-v7a",
+      "output": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libdpi-bypass.so"
+    },
+    "tun2http-Debug-armeabi-v7a": {
+      "artifactName": "tun2http",
+      "buildCommand": "F:\\android-sdk\\cmake\\3.6.4111459\\bin\\cmake.exe --build F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a --target tun2http",
+      "abi": "armeabi-v7a",
+      "output": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj\\armeabi-v7a\\libtun2http.so"
+    }
+  }
+}

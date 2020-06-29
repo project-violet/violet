@@ -52,7 +52,10 @@
   "tag": "タグ",
   "ok": "OK",
   "cancel": "Cancel",
-
+  "switching": "切り替え",
+  "syncmanual": "手動で同期",
+  
+  "database": "データベース",
   "welcome": "バイオレットへようこそ。このアプリを使用する前にデータベースをダウンロードする必要があります。",
   "dbuser": "日本語データベース",
   "dbdownloadsize": " ダウンロードサイズ",

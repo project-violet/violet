@@ -342,7 +342,7 @@ class _SplashPageState extends State<SplashPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Text('다운로드'),
+                                        Text(Translations.of(context).trans('download')),
                                         Icon(Icons.keyboard_arrow_right),
                                       ],
                                     ),
