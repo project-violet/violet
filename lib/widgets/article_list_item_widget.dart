@@ -503,7 +503,11 @@ class _ArticleListItemVerySimpleWidgetState
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
-          Text(artist),
+          Text(
+            artist,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           Expanded(
             child: Align(
               alignment: Alignment.bottomLeft,

@@ -20,7 +20,7 @@ class Dialogs {
     );
     AlertDialog alert = AlertDialog(
       title: Text(title),
-      content: Text(message),
+      content: SelectableText(message),
       actions: [
         okButton,
       ],
