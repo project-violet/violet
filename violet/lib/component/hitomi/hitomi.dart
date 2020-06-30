@@ -167,7 +167,7 @@ class HitomiManager {
 
   static String translate2query(String tokens) {
     tokens = tokens.trim();
-    final nn = int.tryParse(tokens);
+    final nn = int.tryParse(tokens.split(' ')[0]);
     if (nn != null) {
       return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
     }
