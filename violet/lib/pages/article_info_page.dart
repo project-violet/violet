@@ -113,8 +113,6 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
         children: <Widget>[
           Card(
             elevation: 5,
-            // color:
-            //     Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
             color: Colors.transparent,
             child: SizedBox(
               width: width - 32,
@@ -122,33 +120,13 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
               child: Stack(
                 children: [
                   Container(
-                                width: width,
-                                height: height,
-                                // child: BackdropFilter(
-                                //   filter: ImageFilter.blur(
-                                //       sigmaX: animation.value,
-                                //       sigmaY: animation.value),
-                                // child: Container(
-                                color: Settings.themeWhat
-                                    ? Colors.black.withOpacity(0.9)
-                                    : Colors.white.withOpacity(0.9),
-                                // ),
-                                // ),
-                              ),
+                    width: width,
+                    height: height,
+                    color: Settings.themeWhat
+                        ? Colors.black.withOpacity(0.8)
+                        : Colors.white.withOpacity(0.9),
+                  ),
                   Container(
-                    // decoration: BoxDecoration(
-                    //   borderRadius: BorderRadius.all(Radius.circular(1)),
-                    //   boxShadow: [
-                    //     BoxShadow(
-                    //       color: Settings.themeWhat
-                    //           ? Colors.black.withOpacity(0.6)
-                    //           : Colors.grey.withOpacity(0.2),
-                    //       spreadRadius: 1,
-                    //       blurRadius: 1,
-                    //       offset: Offset(0, 3), // changes position of shadow
-                    //     ),
-                    //   ],
-                    // ),
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -159,24 +137,13 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                               Container(
                                 width: width,
                                 height: 4 * 50.0 + 16,
-                                // child: BackdropFilter(
-                                //   filter: ImageFilter.blur(
-                                //       sigmaX: animation.value,
-                                //       sigmaY: animation.value),
-                                // child: Container(
                                 color: Settings.themeWhat
-                                    ? Colors.black.withOpacity(0.9)
-                                    : Colors.white.withOpacity(0.9),
-                                // ),
-                                // ),
+                                    ? Colors.grey.shade900.withOpacity(0.6)
+                                    : Colors.white.withOpacity(0.6),
                               ),
                               Container(
                                 padding: EdgeInsets.only(top: 4 * 50.0 + 16),
-                                // color: Settings.themeWhat
-                                //     ? Colors.black.withOpacity(0.5)
-                                //     : Colors.white.withOpacity(0.9),
                                 child: Column(
-                                  // mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children:
                                       AnimationConfiguration.toStaggeredList(
@@ -545,56 +512,6 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                                           fontWeight:
                                                               FontWeight.bold)),
                                                   Text(artist),
-                                                  // Text(queryResult.type() as String),
-                                                  // Container(
-                                                  //   padding: EdgeInsets.all(3),
-                                                  // ),
-                                                  // Row(
-                                                  //   children: <Widget>[
-                                                  //     Icon(
-                                                  //       Icons.date_range,
-                                                  //       size: 20,
-                                                  //     ),
-                                                  //     Text(
-                                                  //         queryResult.getDateTime() !=
-                                                  //                 null
-                                                  //             ? DateFormat(
-                                                  //                     ' yyyy/MM/dd HH:mm')
-                                                  //                 .format(queryResult
-                                                  //                     .getDateTime())
-                                                  //             : '',
-                                                  //         style: TextStyle(fontSize: 15)),
-                                                  //   ],
-                                                  // ),
-                                                  // Expanded(
-                                                  //   child: Align(
-                                                  //     alignment: Alignment.bottomCenter,
-                                                  //     child: Padding(
-                                                  //             padding:
-                                                  //                 EdgeInsets.fromLTRB(
-                                                  //                     0, 0, 4, 0),
-                                                  //             child: Text(
-                                                  //                 queryResult.getDateTime() !=
-                                                  //                         null
-                                                  //                     ? DateFormat(
-                                                  //                             'yyyy/MM/dd HH:mm')
-                                                  //                         .format(queryResult
-                                                  //                             .getDateTime())
-                                                  //                     : '',
-                                                  //                 style: TextStyle(
-                                                  //                     fontSize: 13))),
-                                                  // Row(
-                                                  //   mainAxisAlignment:
-                                                  //       MainAxisAlignment
-                                                  //           .spaceBetween,
-                                                  //   crossAxisAlignment:
-                                                  //       CrossAxisAlignment.center,
-                                                  //   children: [
-
-                                                  // ),
-                                                  // Text('asdf'),
-                                                  // Text('asdf'),
-                                                  // Text('asdf')
                                                 ]),
                                           ),
                                           Padding(
@@ -677,14 +594,6 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                               ),
                             ],
                           ),
-                          // Expanded(child: Container(color: Colors.white,),)
-                          // Expanded(
-                          //   child: Container(
-                          //     color: Settings.themeWhat
-                          //         ? Color(0xFF353535)
-                          //         : Colors.grey.shade100,
-                          //   ),
-                          // )
                         ],
                       ),
                     ),
@@ -913,19 +822,6 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
         ));
     return fc;
   }
-
-  // https://stackoverflow.com/a/58361777/3355656
-  // WidgetSpan buildLinkComponent(String text, String linkToOpen) => WidgetSpan(
-  //         child: InkWell(
-  //       child: Text(
-  //         text,
-  //         style: TextStyle(
-  //           color: Colors.blueAccent,
-  //           decoration: TextDecoration.underline,
-  //         ),
-  //       ),
-  //       onTap: () => openUrl(linkToOpen),
-  //     ));
 
   TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
         text: text,
