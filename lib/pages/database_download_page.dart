@@ -49,19 +49,19 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   final imgUrls = {
     // Global
     'global':
-        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata.7z",
+        "https://github.com/violet-dev/db/releases/download/2020.07.02/hitomidata.7z",
     // Korean
     'ko':
-        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-korean.7z",
+        "https://github.com/violet-dev/db/releases/download/2020.07.02/hitomidata-korean.7z",
     // English
     'en':
-        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-english.7z",
+        "https://github.com/violet-dev/db/releases/download/2020.07.02/hitomidata-english.7z",
     // Japanese
     'jp':
-        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-japanese.7z",
+        "https://github.com/violet-dev/db/releases/download/2020.07.02/hitomidata-japanese.7z",
     // Chinese
     'zh':
-        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-chinese.7z",
+        "https://github.com/violet-dev/db/releases/download/2020.07.02/hitomidata-chinese.7z",
   };
 
   final imgSize = {

@@ -13,7 +13,7 @@ class Settings {
   static Color majorColor; // default purple
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
-  static List<String> includeTags;
+  static String includeTags;
   static List<String> excludeTags;
   static List<String> blurredTags;
   static String language; // System Language
@@ -79,7 +79,7 @@ class Settings {
       (await SharedPreferences.getInstance())
           .setString('excludetags', excludetags);
     }
-    includeTags = includetags.split('|').toList();
+    includeTags = includetags;
     excludeTags = excludetags.split('|').toList();
     blurredTags =
         blurredtags != null ? blurredtags.split(' ').toList() : List<String>();
@@ -131,5 +131,23 @@ class Settings {
   static Future<void> setLanguage(String lang) async {
     language = lang;
     (await SharedPreferences.getInstance()).setString('language', lang);
+  }
+
+  static Future<void> setIncludeTags(String nn) async {
+    includeTags = nn;
+    (await SharedPreferences.getInstance())
+        .setString('includetags', includeTags);
+  }
+
+  static Future<void> setExcludeTags(String nn) async {
+    excludeTags = nn.split(' ').toList();
+    (await SharedPreferences.getInstance())
+        .setString('excludetags', excludeTags.join('|'));
+  }
+
+  static Future<void> setBlurredTags(String nn) async {
+    blurredTags = nn.split(' ').toList();
+    (await SharedPreferences.getInstance())
+        .setString('blurredtags', blurredTags.join('|'));
   }
 }

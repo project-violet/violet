@@ -210,7 +210,7 @@ class _SettingsPageState extends State<SettingsPage>
                           Text(Translations.of(context).trans('defaulttag')),
                           Text(
                             Translations.of(context).trans('currenttag') +
-                                Settings.includeTags.join('|'),
+                                Settings.includeTags,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
@@ -223,7 +223,10 @@ class _SettingsPageState extends State<SettingsPage>
                         child: TagSelectorDialog(what: 'include'),
                       );
 
-                      if (vv == 1) setState(() {});
+                      if (vv.item1 == 1) {
+                        Settings.setIncludeTags(vv.item2);
+                        setState(() {});
+                      }
                     },
                   ),
                   _buildDivider(),
@@ -240,7 +243,10 @@ class _SettingsPageState extends State<SettingsPage>
                         child: TagSelectorDialog(what: 'exclude'),
                       );
 
-                      if (vv == 1) setState(() {});
+                      if (vv.item1 == 1) {
+                        Settings.setExcludeTags(vv.item2);
+                        setState(() {});
+                      }
                     },
                   ),
                   _buildDivider(),
@@ -259,7 +265,10 @@ class _SettingsPageState extends State<SettingsPage>
                         child: TagSelectorDialog(what: 'blurred'),
                       );
 
-                      if (vv == 1) setState(() {});
+                      if (vv.item1 == 1) {
+                        Settings.setBlurredTags(vv.item2);
+                        setState(() {});
+                      }
                     },
                   ),
                   _buildDivider(),
@@ -281,8 +290,8 @@ class _SettingsPageState extends State<SettingsPage>
                           context,
                           Translations.of(context).trans('tagrebuildmsg'),
                           Translations.of(context).trans('tagrebuild'))) {
-                            await Dialogs.okDialog(context, 'TODO: Implementation');
-                          }
+                        await Dialogs.okDialog(context, 'TODO: Implementation');
+                      }
                     },
                   ),
                   // _buildDivider(),
@@ -985,7 +994,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     super.initState();
     if (widget.what == 'include')
       _searchController =
-          TextEditingController(text: Settings.includeTags.join('|'));
+          TextEditingController(text: Settings.includeTags);
     else if (widget.what == 'exclude')
       _searchController =
           TextEditingController(text: Settings.excludeTags.join(' '));
@@ -1080,14 +1089,16 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           color: Settings.majorColor,
           child: new Text(Translations.of(context).trans('ok')),
           onPressed: () {
-            Navigator.pop(context, 1);
+            Navigator.pop(
+                context, Tuple2<int, String>(1, _searchController.text));
           },
         ),
         new RaisedButton(
           color: Settings.majorColor,
           child: new Text(Translations.of(context).trans('cancel')),
           onPressed: () {
-            Navigator.pop(context, 0);
+            Navigator.pop(
+                context, Tuple2<int, String>(0, _searchController.text));
           },
         ),
       ],
