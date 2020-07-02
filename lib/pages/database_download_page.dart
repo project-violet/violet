@@ -48,15 +48,20 @@ class DataBaseDownloadPage extends StatefulWidget {
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   final imgUrls = {
     // Global
-    'global': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata.7z",
+    'global':
+        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata.7z",
     // Korean
-    'ko': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-korean.7z",
+    'ko':
+        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-korean.7z",
     // English
-    'en': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-english.7z",
+    'en':
+        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-english.7z",
     // Japanese
-    'jp': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-japanese.7z",
+    'jp':
+        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-japanese.7z",
     // Chinese
-    'zh': "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-chinese.7z",
+    'zh':
+        "https://github.com/violet-dev/db/releases/download/2020.06.28/hitomidata-chinese.7z",
   };
 
   final imgSize = {
@@ -216,6 +221,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     var tagIndex = Map<String, int>();
     var tagArtist = Map<String, Map<String, int>>();
     var tagGroup = Map<String, Map<String, int>>();
+    var tagUploader = Map<String, Map<String, int>>();
 
     int i = 0;
     while (true) {
@@ -268,6 +274,19 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             }
           }
         }
+
+        if (item.uploader() != null) {
+          if (!tagUploader.containsKey(item.uploader()))
+            tagUploader[item.uploader()] = Map<String, int>();
+          for (var tag in item.tags().split('|')) {
+            if (tag == null || tag == '') continue;
+            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
+            var index = tagIndex[tag].toString();
+            if (!tagUploader[item.uploader()].containsKey(index))
+              tagUploader[item.uploader()][index] = 0;
+            tagUploader[item.uploader()][index] += 1;
+          }
+        }
       }
 
       if (ll.length == 0) {
@@ -293,9 +312,12 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         path3.writeAsString(jsonEncode(tagGroup));
         final path4 = File('${directory.path}/tag_index.json');
         path4.writeAsString(jsonEncode(tagIndex));
+        final path5 = File('${directory.path}/tag_uploader.json');
+        path5.writeAsString(jsonEncode(tagUploader));
 
         setState(() {
-          baseString = Translations.instance.trans('dbdcomplete'); //\n' + jsonEncode(index);
+          baseString = Translations.instance
+              .trans('dbdcomplete'); //\n' + jsonEncode(index);
         });
         break;
       }

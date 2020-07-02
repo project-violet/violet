@@ -11,10 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/syncfusion.dart';
 import 'package:violet/user.dart';
+import 'package:violet/variables.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'locale.dart';
@@ -58,6 +60,8 @@ void main() async {
 
   await Settings.init();
   await initDB();
+  await Variables.init();
+  await HitomiIndexs.init();
 
   // channel.stream.listen((event) {
   //   userConnectionCount = event.toString().split(' ')[1];

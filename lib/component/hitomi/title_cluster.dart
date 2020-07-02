@@ -98,12 +98,12 @@ class HitomiTitleCluster {
 
     var result = join.values.toList();
 
-    result.forEach((element) { 
-      print('------------');
-      element.forEach((element) {
-        print(titles[element]);
-      });
-    });
+    // result.forEach((element) { 
+    //   print('------------');
+    //   element.forEach((element) {
+    //     print(titles[element]);
+    //   });
+    // });
 
     return result;
   }

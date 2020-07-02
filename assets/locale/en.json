@@ -57,6 +57,7 @@
     "cancel": "Cancel",
     "switching": "Switching",
     "syncmanual": "Sync Manually",
+    "tagrebuild": "Tag Rebuild",
 
     "database": "Database",
     "welcome": "Welcome to Violet. You must download the database before using this app.",
@@ -89,6 +90,7 @@
     "removetobookmark": " has been removed from the bookmark.",
     "infomessage": "The developer does not collect any information from users. All images and details are provided by hitomi.la, e-hentai.org or exhentai.org.",
     "tagmsgdefault": "This setting is a search term setting.",
+    "tagrebuildmsg": "Tag rebuilding is the process of resetting autocomplete tags according to the settings given above. To rebuild the database, see the database group below. Will you continue?",
 
     "notice1": "Thank you for downloading my app.",
     "notice21": "Please send your inquiries to ",

@@ -302,16 +302,18 @@ class _ArticleListItemVerySimpleWidgetState
               }
             },
             onLongPress: () async {
-              Scaffold.of(context).showSnackBar(SnackBar(
-                duration: Duration(seconds: 2),
-                content: new Text(
-                  isBookmarked
-                      ? '${widget.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
-                      : '${widget.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
-                  style: TextStyle(color: Colors.white),
-                ),
-                backgroundColor: Colors.grey.shade800,
-              ));
+              try {
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  duration: Duration(seconds: 2),
+                  content: new Text(
+                    isBookmarked
+                        ? '${widget.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
+                        : '${widget.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  backgroundColor: Colors.grey.shade800,
+                ));
+              } catch (e) {}
               isBookmarked = !isBookmarked;
               if (isBookmarked)
                 await (await Bookmark.getInstance())

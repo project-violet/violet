@@ -54,6 +54,7 @@
   "cancel": "Cancel",
   "switching": "切り替え",
   "syncmanual": "手動で同期",
+  "tagrebuild": "タグリビルディン",
   
   "database": "データベース",
   "welcome": "バイオレットへようこそ。このアプリを使用する前にデータベースをダウンロードする必要があります。",
@@ -86,6 +87,7 @@
   "removetobookmark": "がブックマークから削除されました。",
   "infomessage": "本開発者は、ユーザーの任意の情報を収集しません。すべての画像と詳細情報は、すべてhitomi.laまたはe-hentai.org、exhentai.orgを転送しています。",
   "tagmsgdefault": "この設定は、検索の設定です。",
+  "tagrebuildmsg": "タグリビルディンは上記の設定に応じてオートコンプリートタグをリセットするプロセスです。データベースリビルディンをするには、下のデータベースのグループを参照してください。続行しますか？",
 
   "notice1": "Thank you for downloading my app.",
   "notice21": "お問い合わせは",

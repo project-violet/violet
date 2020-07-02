@@ -26,6 +26,7 @@ import 'package:violet/pages/viewer_page.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/user.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
+import 'package:violet/pages/artist_info_page.dart';
 
 class ArticleInfoPage extends StatefulWidget {
   final QueryResult queryResult;
@@ -147,7 +148,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children:
                                       AnimationConfiguration.toStaggeredList(
-                                    duration: const Duration(milliseconds: 900),
+                                    duration: const Duration(milliseconds: 400),
                                     childAnimationBuilder: (widget) =>
                                         SlideAnimation(
                                       horizontalOffset: 50.0,
@@ -818,7 +819,40 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
           elevation: 6.0,
           // shadowColor: Colors.grey[60],
           padding: EdgeInsets.all(6.0),
-          onPressed: () async {},
+          onPressed: () async {
+            if ((group == 'groups' || group == 'artists' || group == 'uploader') && name.toLowerCase() != 'n/a') {
+              Navigator.of(context).push(PageRouteBuilder(
+                opaque: false,
+                transitionDuration: Duration(milliseconds: 500),
+                // transitionsBuilder: (BuildContext context,
+                //     Animation<double> animation,
+                //     Animation<double> secondaryAnimation,
+                //     Widget wi) {
+                //   // return wi;
+                //   return new FadeTransition(opacity: animation, child: wi);
+                // },
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+                pageBuilder: (_, __, ___) => ArtistInfoPage(
+                  isGroup: group == 'groups',
+                  isUploader: group == 'uploader',
+                  artist: name,
+                ),
+              ));
+            }
+          },
         ));
     return fc;
   }

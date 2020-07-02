@@ -60,8 +60,9 @@ class Distance {
     return v0[y + y + 1];
   }
 
-  static double cosineDistance<T extends num>(
-      Map<String, T> l1, Map<String, T> l2) {
+  // dynamic must be double, int
+  static double cosineDistance(
+      Map<String, dynamic> l1, Map<String, dynamic> l2) {
     double xx = 0;
     double yy = 0;
 
