@@ -54,9 +54,10 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   final bool showDetail;
   final QueryResult queryResult;
   final double width;
+  final String thumbnailTag;
 
   ArticleListItemVerySimpleWidget(
-      {this.queryResult, this.addBottomPadding, this.showDetail, this.width});
+      {this.queryResult, this.addBottomPadding, this.showDetail, this.width, this.thumbnailTag});
 
   @override
   _ArticleListItemVerySimpleWidgetState createState() =>
@@ -296,7 +297,7 @@ class _ArticleListItemVerySimpleWidgetState
                     queryResult: widget.queryResult,
                     thumbnail: thumbnail,
                     headers: headers,
-                    heroKey: 'thumbnail' + widget.queryResult.id().toString(),
+                    heroKey: widget.thumbnailTag,
                   ),
                 ));
               }
@@ -362,7 +363,7 @@ class _ArticleListItemVerySimpleWidgetState
                   size: sz,
                   thumbnail: thumbnail,
                   headers: headers,
-                  heroKey: 'thumbnail' + widget.queryResult.id().toString(),
+                 heroKey: widget.thumbnailTag,
                 ),
               ));
               setState(() {
@@ -389,7 +390,7 @@ class _ArticleListItemVerySimpleWidgetState
               child: Stack(
                 children: <Widget>[
                   Hero(
-                    tag: 'thumbnail' + widget.queryResult.id().toString(),
+                    tag: widget.thumbnailTag,
                     child: CachedNetworkImage(
                       imageUrl: thumbnail,
                       fit: BoxFit.cover,

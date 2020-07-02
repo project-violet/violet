@@ -6,13 +6,16 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:html_unescape/html_unescape_small.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tuple/tuple.dart';
+import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database.dart';
+import 'package:violet/locale.dart';
 import 'package:violet/settings.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:violet/widgets/article_list_item_widget.dart';
@@ -33,10 +36,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   int femaleTags = 0;
   int maleTags = 0;
   int tags = 0;
+  String prefix;
   List<QueryResult> cc;
   List<Tuple2<String, int>> lff = List<Tuple2<String, int>>();
   List<Tuple2<String, int>> lffOrigin;
   List<Tuple2<String, double>> similars;
+  List<Tuple2<String, double>> similarsAll;
   List<List<QueryResult>> qrs = List<List<QueryResult>>();
 
   @override
@@ -92,13 +97,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       else
         similars = HitomiIndexs.calculateSimilarArtists(widget.artist);
 
+      similarsAll = similars;
       similars = similars.take(6).toList();
 
-      var prefix = 'artist:';
+      prefix = 'artist:';
       if (widget.isGroup)
         prefix = 'group:';
       else if (widget.isUploader) prefix = 'uploader:';
 
+      var unescape = new HtmlUnescape();
       for (int i = 0; i < similars.length; i++) {
         var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
         if (widget.isUploader) postfix = similars[i].item1;
@@ -114,19 +121,20 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         var x = await qm.next();
         var y = [x[0]];
 
-        var titles = [x[0].title() as String];
+        var titles = [unescape.convert((x[0].title() as String).trim())];
+        if (titles[0].contains('Ch.'))
+          titles[0] = titles[0].split('Ch.')[0];
+        else if (titles[0].contains('ch.'))
+          titles[0] = titles[0].split('ch.')[0];
 
         for (int i = 1; i < x.length; i++) {
           var skip = false;
-          var ff = x[i].title() as String;
+          var ff = unescape.convert((x[i].title() as String).trim());
           if (ff.contains('Ch.'))
             ff = ff.split('Ch.')[0];
           else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
           for (int j = 0; j < titles.length; j++) {
             var tt = titles[j];
-            if (tt.contains('Ch.'))
-              tt = tt.split('Ch.')[0];
-            else if (tt.contains('ch.')) tt = tt.split('ch.')[0];
             if (Distance.levenshteinDistanceComparable(
                     tt.runes.map((e) => e.toString()).toList(),
                     ff.runes.map((e) => e.toString()).toList()) <
@@ -137,7 +145,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           }
           if (skip) continue;
           y.add(x[i]);
-          titles.add(ff);
+          titles.add(ff.trim());
         }
 
         qrs.add(y);
@@ -369,7 +377,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
                     padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text('Articles (${cc.length})'),
+                    child: Text(
+                        '${Translations.of(context).trans('articles')} (${cc.length})'),
                   ),
                   expanded: Container(child: Text('asdf')),
                 ),
@@ -387,7 +396,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
                     padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text('Similar'),
+                    child: Text(Translations.of(context).trans('similar') +
+                        ' ' +
+                        (widget.isGroup
+                            ? Translations.of(context).trans('igroups')
+                            : widget.isUploader
+                                ? Translations.of(context).trans('iuploader')
+                                : Translations.of(context).trans('iartists'))),
                   ),
                   expanded: similarArea(),
                 ),
@@ -405,8 +420,44 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         padding: EdgeInsets.all(0),
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
-        itemCount: similars.length,
+        itemCount: similars.length + 1,
         itemBuilder: (BuildContext ctxt, int index) {
+          if (index == similars.length) {
+            return SizedBox(
+                height: 60,
+                child: InkWell(
+                    onTap: () async {
+                      Navigator.of(context).push(PageRouteBuilder(
+                        opaque: false,
+                        transitionDuration: Duration(milliseconds: 500),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          var begin = Offset(0.0, 1.0);
+                          var end = Offset.zero;
+                          var curve = Curves.ease;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (_, __, ___) => SimilarListPage(
+                          prefix: prefix,
+                          similarsAll: similarsAll,
+                          isGroup: widget.isGroup,
+                          isUploader: widget.isUploader,
+                        ),
+                      ));
+                    },
+                    child: Row(
+                      children: [Text(Translations.of(context).trans('more'))],
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                    )));
+          }
           var e = similars[index];
           var qq = qrs[index];
           return InkWell(
@@ -436,7 +487,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               ));
             },
             child: SizedBox(
-              height: 192,
+              height: 195,
               child: Padding(
                   padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
                   child: Column(
@@ -449,7 +500,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                           Text(
                               // (index + 1).toString() +
                               //     '. ' +
-                              ' ' + e.item1 +
+                              ' ' +
+                                  e.item1 +
                                   ' (' +
                                   HitomiManager.getArticleCount(
                                           widget.isGroup
@@ -461,8 +513,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                       .toString() +
                                   ')',
                               style: TextStyle(fontSize: 17)),
-                          Text('Score: ' + e.item2.toStringAsFixed(1) + ' ',
-                              style: TextStyle(color: Colors.grey.shade300)),
+                          Text(
+                              '${Translations.of(context).trans('score')}: ' +
+                                  e.item2.toStringAsFixed(1) +
+                                  ' ',
+                              style: TextStyle(
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade300
+                                    : Colors.grey.shade700,
+                              )),
                         ],
                       ),
                       SizedBox(
@@ -482,6 +541,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                           width:
                                               (windowWidth - 16 - 4.0 - 1.0) /
                                                   3,
+                                          thumbnailTag: Uuid().v4(),
                                         ))
                                     : Container()),
                             Expanded(
@@ -496,6 +556,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                           width:
                                               (windowWidth - 16 - 4.0 - 16.0) /
                                                   3,
+                                          thumbnailTag: Uuid().v4(),
                                         ))
                                     : Container()),
                             Expanded(
@@ -510,6 +571,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                           width:
                                               (windowWidth - 16 - 4.0 - 16.0) /
                                                   3,
+                                          thumbnailTag: Uuid().v4(),
                                         ))
                                     : Container()),
                           ],
@@ -585,6 +647,267 @@ class ChartSampleData {
   final String text;
   final num open;
   final num close;
+}
+
+class SimilarListPage extends StatelessWidget {
+  final String prefix;
+  final bool isGroup;
+  final bool isUploader;
+  List<Tuple2<String, double>> similarsAll;
+  SimilarListPage(
+      {this.prefix, this.similarsAll, this.isGroup, this.isUploader}) {
+    similarsAll = similarsAll;
+  }
+
+  Future<List<QueryResult>> _future(String e) async {
+    var unescape = new HtmlUnescape();
+    var postfix = e.toLowerCase().replaceAll(' ', '_');
+    if (isUploader) postfix = e;
+    var queryString = HitomiManager.translate2query(prefix +
+        postfix +
+        ' ' +
+        Settings.includeTags.join(' ') +
+        ' ' +
+        Settings.excludeTags.map((e) => '-$e').join(' '));
+    final qm = QueryManager.queryPagination(queryString);
+    qm.itemsPerPage = 10;
+
+    var x = await qm.next();
+    var y = [x[0]];
+
+    var titles = [unescape.convert((x[0].title() as String).trim())];
+    if (titles[0].contains('Ch.'))
+      titles[0] = titles[0].split('Ch.')[0];
+    else if (titles[0].contains('ch.')) titles[0] = titles[0].split('ch.')[0];
+
+    for (int i = 1; i < x.length; i++) {
+      var skip = false;
+      var ff = unescape.convert((x[i].title() as String).trim());
+      if (ff.contains('Ch.'))
+        ff = ff.split('Ch.')[0];
+      else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
+      for (int j = 0; j < titles.length; j++) {
+        var tt = titles[j];
+        if (Distance.levenshteinDistanceComparable(
+                tt.runes.map((e) => e.toString()).toList(),
+                ff.runes.map((e) => e.toString()).toList()) <
+            3) {
+          skip = true;
+          break;
+        }
+      }
+      if (skip) continue;
+      y.add(x[i]);
+      titles.add(ff.trim());
+    }
+
+    return y;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var windowWidth = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
+    final height =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    // if (similarsAll == null) return Text('asdf');
+    return Padding(
+      // padding: EdgeInsets.all(0),
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Card(
+              elevation: 5,
+              color:
+                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              child: SizedBox(
+                width: width - 16,
+                height: height - 16,
+                child: Container(
+                    child: ListView.builder(
+                        padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                        physics: ClampingScrollPhysics(),
+                        itemCount: similarsAll.length,
+                        itemBuilder: (BuildContext ctxt, int index) {
+                          var e = similarsAll[index];
+                          return FutureBuilder<List<QueryResult>>(
+                              future: _future(e.item1),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<List<QueryResult>> snapshot) {
+                                var qq = snapshot.data;
+                                if (!snapshot.hasData)
+                                  return Container(
+                                    height: 195,
+                                  );
+                                return InkWell(
+                                  onTap: () async {
+                                    Navigator.of(context).push(PageRouteBuilder(
+                                      opaque: false,
+                                      transitionDuration:
+                                          Duration(milliseconds: 500),
+                                      transitionsBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        var begin = Offset(0.0, 1.0);
+                                        var end = Offset.zero;
+                                        var curve = Curves.ease;
+
+                                        var tween = Tween(
+                                                begin: begin, end: end)
+                                            .chain(CurveTween(curve: curve));
+
+                                        return SlideTransition(
+                                          position: animation.drive(tween),
+                                          child: child,
+                                        );
+                                      },
+                                      pageBuilder: (_, __, ___) =>
+                                          ArtistInfoPage(
+                                        isGroup: isGroup,
+                                        isUploader: isUploader,
+                                        artist: e.item1,
+                                      ),
+                                    ));
+                                  },
+                                  child: SizedBox(
+                                    height: 195,
+                                    child: Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(12, 8, 12, 0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          children: <Widget>[
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              // crossAxisAlignment: CrossAxisAlignment,
+                                              children: <Widget>[
+                                                Text(
+                                                    // (index + 1).toString() +
+                                                    //     '. ' +
+                                                    ' ' +
+                                                        e.item1 +
+                                                        ' (' +
+                                                        HitomiManager.getArticleCount(
+                                                                isGroup
+                                                                    ? 'group'
+                                                                    : isUploader
+                                                                        ? 'uploader'
+                                                                        : 'artist',
+                                                                e.item1)
+                                                            .toString() +
+                                                        ')',
+                                                    style: TextStyle(
+                                                        fontSize: 17)),
+                                                Text(
+                                                    '${Translations.of(context).trans('score')}: ' +
+                                                        e.item2.toStringAsFixed(
+                                                            1) +
+                                                        ' ',
+                                                    style: TextStyle(
+                                                      color: Settings.themeWhat
+                                                          ? Colors.grey.shade300
+                                                          : Colors
+                                                              .grey.shade700,
+                                                    )),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 162,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                      flex: 1,
+                                                      child: qq.length > 0
+                                                          ? Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(4),
+                                                              child:
+                                                                  ArticleListItemVerySimpleWidget(
+                                                                queryResult:
+                                                                    qq[0],
+                                                                showDetail:
+                                                                    false,
+                                                                addBottomPadding:
+                                                                    false,
+                                                                width: (windowWidth -
+                                                                        16 -
+                                                                        4.0 -
+                                                                        1.0) /
+                                                                    3,
+                                                                thumbnailTag:
+                                                                    Uuid().v4(),
+                                                              ))
+                                                          : Container()),
+                                                  Expanded(
+                                                      flex: 1,
+                                                      child: qq.length > 1
+                                                          ? Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(4),
+                                                              child:
+                                                                  ArticleListItemVerySimpleWidget(
+                                                                queryResult:
+                                                                    qq[1],
+                                                                showDetail:
+                                                                    false,
+                                                                addBottomPadding:
+                                                                    false,
+                                                                width: (windowWidth -
+                                                                        16 -
+                                                                        4.0 -
+                                                                        16.0) /
+                                                                    3,
+                                                                thumbnailTag:
+                                                                    Uuid().v4(),
+                                                              ))
+                                                          : Container()),
+                                                  Expanded(
+                                                      flex: 1,
+                                                      child: qq.length > 2
+                                                          ? Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(4),
+                                                              child:
+                                                                  ArticleListItemVerySimpleWidget(
+                                                                queryResult:
+                                                                    qq[2],
+                                                                showDetail:
+                                                                    false,
+                                                                addBottomPadding:
+                                                                    false,
+                                                                width: (windowWidth -
+                                                                        16 -
+                                                                        4.0 -
+                                                                        16.0) /
+                                                                    3,
+                                                                thumbnailTag:
+                                                                    Uuid().v4(),
+                                                              ))
+                                                          : Container()),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        )),
+                                  ),
+                                );
+                              });
+                        })),
+              ),
+            ),
+          ]),
+    );
+  }
 }
 
 SfCircularChart getSmartLabelPieChart(List<Tuple2<String, int>> ff) {

@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/component/hitomi/shielder.dart';
 
 class Settings {
   static Color themeColor; // default light
@@ -73,9 +74,13 @@ class Settings {
       (await SharedPreferences.getInstance())
           .setString('includetags', includetags);
     }
+    if (excludetags == null) {
+      excludetags = MinorShielderFilter.tags.join('|');
+      (await SharedPreferences.getInstance())
+          .setString('excludetags', excludetags);
+    }
     includeTags = includetags.split('|').toList();
-    excludeTags =
-        excludetags != null ? excludetags.split(' ').toList() : List<String>();
+    excludeTags = excludetags.split('|').toList();
     blurredTags =
         blurredtags != null ? blurredtags.split(' ').toList() : List<String>();
   }

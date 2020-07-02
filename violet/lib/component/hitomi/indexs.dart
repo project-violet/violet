@@ -34,7 +34,6 @@ class HitomiIndexs {
     final path5 = File('${directory.path}/tag_uploader.json');
     tagUploader = jsonDecode(await path5.readAsString());
   }
-
   
   static List<Tuple2<String, double>> _calculateSimilars(Map<String, dynamic> map, String artist) {
     var rr = map[artist];
@@ -42,6 +41,7 @@ class HitomiIndexs {
 
     map.forEach((key, value) {
       if (artist == key) return;
+      if (key.toUpperCase() == 'n/a') return;
 
       var dist = Distance.cosineDistance(rr, value);
       result.add(Tuple2<String, double>(key, dist));
