@@ -1,12 +1,15 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'dart:math';
+
 import 'package:auto_animated/auto_animated.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:html_unescape/html_unescape_small.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
@@ -16,6 +19,7 @@ import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database.dart';
 import 'package:violet/locale.dart';
+import 'package:violet/pages/search_page.dart';
 import 'package:violet/settings.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:violet/widgets/article_list_item_widget.dart';
@@ -112,13 +116,20 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         var queryString = HitomiManager.translate2query(prefix +
             postfix +
             ' ' +
-            Settings.includeTags.join(' ') +
+            Settings.includeTags +
             ' ' +
-            Settings.excludeTags.map((e) => '-$e').join(' '));
+            Settings.excludeTags
+                .where((e) => e.trim() != '')
+                .map((e) => '-$e')
+                .join(' '));
         final qm = QueryManager.queryPagination(queryString);
         qm.itemsPerPage = 10;
 
         var x = await qm.next();
+        if (x == null || x.length == 0) {
+          qrs.add(List<QueryResult>());
+          continue;
+        }
         var y = [x[0]];
 
         var titles = [unescape.convert((x[0].title() as String).trim())];
@@ -154,6 +165,10 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       setState(() {
         qureyLoaded = true;
       });
+
+      Future.delayed(Duration(milliseconds: 300)).then((value) {
+        ec.expanded = true;
+      });
     });
   }
 
@@ -165,9 +180,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var query = HitomiManager.translate2query(
         (isGroup ? 'group:' : isUploader ? 'uploader:' : 'artist:') +
             '${artist.replaceAll(' ', '_')}' +
-            Settings.includeTags.join(' ') +
+            Settings.includeTags +
             ' ' +
-            Settings.excludeTags.map((e) => '-$e').join(' '));
+            Settings.excludeTags
+                .where((e) => e.trim() != '')
+                .map((e) => '-$e')
+                .join(' '));
 
     // DateTime dt = DateTime.now();
     QueryManager qm = await QueryManager.query(query);
@@ -367,6 +385,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             },
           ),
           ExpandableNotifier(
+            controller: ec,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 4.0),
               child: ScrollOnExpand(
@@ -380,7 +399,19 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     child: Text(
                         '${Translations.of(context).trans('articles')} (${cc.length})'),
                   ),
-                  expanded: Container(child: Text('asdf')),
+                  expanded: Column(children: <Widget>[
+                    articleArea(),
+                    Visibility(
+                        visible: cc.length > 6,
+                        child: more(ArticleListPage(
+                            cc: cc,
+                            name: (widget.isGroup
+                                    ? 'Groups: '
+                                    : widget.isUploader
+                                        ? 'Uploader: '
+                                        : 'Artist: ') +
+                                widget.artist)))
+                  ]),
                 ),
               ),
             ),
@@ -414,6 +445,88 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     );
   }
 
+  ExpandableController ec = ExpandableController();
+
+  Widget more(Widget what) {
+    return SizedBox(
+        height: 60,
+        child: InkWell(
+            onTap: () async {
+              Navigator.of(context).push(PageRouteBuilder(
+                opaque: false,
+                transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+                pageBuilder: (_, __, ___) => what,
+              ));
+            },
+            child: Row(
+              children: [Text(Translations.of(context).trans('more'))],
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+            )));
+  }
+
+  Widget articleArea() {
+    var windowWidth = MediaQuery.of(context).size.width;
+    return LiveGrid(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+      showItemInterval: Duration(milliseconds: 50),
+      showItemDuration: Duration(milliseconds: 150),
+      visibleFraction: 0.001,
+      itemCount: min(cc.length, 6),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 3 / 4,
+      ),
+      itemBuilder: (context, index, animation) {
+        return FadeTransition(
+          opacity: Tween<double>(
+            begin: 0,
+            end: 1,
+          ).animate(animation),
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(0, -0.1),
+              end: Offset.zero,
+            ).animate(animation),
+            child: Padding(
+              padding: EdgeInsets.zero,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  child: ArticleListItemVerySimpleWidget(
+                    queryResult: cc[index],
+                    showDetail: false,
+                    addBottomPadding: false,
+                    width: (windowWidth - 4.0) / 3,
+                    thumbnailTag: Uuid().v4(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget similarArea() {
     var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
@@ -423,40 +536,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         itemCount: similars.length + 1,
         itemBuilder: (BuildContext ctxt, int index) {
           if (index == similars.length) {
-            return SizedBox(
-                height: 60,
-                child: InkWell(
-                    onTap: () async {
-                      Navigator.of(context).push(PageRouteBuilder(
-                        opaque: false,
-                        transitionDuration: Duration(milliseconds: 500),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          var begin = Offset(0.0, 1.0);
-                          var end = Offset.zero;
-                          var curve = Curves.ease;
-
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
-
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                        pageBuilder: (_, __, ___) => SimilarListPage(
-                          prefix: prefix,
-                          similarsAll: similarsAll,
-                          isGroup: widget.isGroup,
-                          isUploader: widget.isUploader,
-                        ),
-                      ));
-                    },
-                    child: Row(
-                      children: [Text(Translations.of(context).trans('more'))],
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                    )));
+            return more(SimilarListPage(
+              prefix: prefix,
+              similarsAll: similarsAll,
+              isGroup: widget.isGroup,
+              isUploader: widget.isUploader,
+            ));
           }
           var e = similars[index];
           var qq = qrs[index];
@@ -649,6 +734,258 @@ class ChartSampleData {
   final num close;
 }
 
+class ArticleListPage extends StatefulWidget {
+  final List<QueryResult> cc;
+  final String name;
+  String heroKey;
+
+  ArticleListPage({this.name, this.cc}) {
+    heroKey = Uuid().v4.toString();
+  }
+
+  @override
+  _ArticleListPageState createState() => _ArticleListPageState();
+}
+
+class _ArticleListPageState extends State<ArticleListPage> {
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    // if (similarsAll == null) return Text('asdf');
+    return Padding(
+      // padding: EdgeInsets.all(0),
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Card(
+            elevation: 5,
+            color:
+                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+            child: SizedBox(
+              width: width - 16,
+              height: height - 16,
+              child: Container(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverPersistentHeader(
+                        floating: true,
+                        delegate: SearchBar(
+                          minExtent: 64 + 12.0,
+                          maxExtent: 64.0 + 12,
+                          searchBar: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Stack(children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Hero(
+                                tag: "searchtype2",
+                                child: Card(
+                                  color: Settings.themeWhat
+                                      ? Color(0xFF353535)
+                                      : Colors.grey.shade100,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8.0),
+                                    ),
+                                  ),
+                                  elevation: 100,
+                                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                                  child: InkWell(
+                                    child: SizedBox(
+                                      height: 48,
+                                      width: 48,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: <Widget>[
+                                          Icon(
+                                            MdiIcons.formatListText,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    onTap: () async {
+                                      Navigator.of(context)
+                                          .push(PageRouteBuilder(
+                                        opaque: false,
+                                        transitionDuration:
+                                            Duration(milliseconds: 500),
+                                        transitionsBuilder:
+                                            (BuildContext context,
+                                                Animation<double> animation,
+                                                Animation<double>
+                                                    secondaryAnimation,
+                                                Widget wi) {
+                                          return new FadeTransition(
+                                              opacity: animation, child: wi);
+                                        },
+                                        pageBuilder: (_, __, ___) =>
+                                            SearchType2(
+                                          nowType: nowType,
+                                        ),
+                                      ))
+                                          .then((value) async {
+                                        nowType = value;
+                                        await Future.delayed(
+                                            Duration(milliseconds: 50), () {
+                                          setState(() {});
+                                        });
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 24),
+                              child: Text(widget.name,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ])),
+                        ),
+                      ),
+                      buildList()
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  int nowType = 0;
+
+  Widget buildList() {
+    var mm = nowType == 0 ? 3 : 2;
+    var windowWidth = MediaQuery.of(context).size.width;
+    switch (nowType) {
+      case 0:
+      case 1:
+        return LiveSliverGrid(
+          showItemInterval: Duration(milliseconds: 50),
+          showItemDuration: Duration(milliseconds: 150),
+          visibleFraction: 0.001,
+          itemCount: widget.cc.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: mm,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 3 / 4,
+          ),
+          itemBuilder: (context, index, animation) {
+            return FadeTransition(
+              opacity: Tween<double>(
+                begin: 0,
+                end: 1,
+              ).animate(animation),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: Offset(0, -0.1),
+                  end: Offset.zero,
+                ).animate(animation),
+                child: Padding(
+                  padding: EdgeInsets.zero,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      child: ArticleListItemVerySimpleWidget(
+                        queryResult: widget.cc[index],
+                        showDetail: false,
+                        addBottomPadding: false,
+                        width: (windowWidth - 4.0) / mm,
+                        thumbnailTag: Uuid().v4(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+
+      case 2:
+      case 3:
+        return LiveSliverList(
+          itemCount: widget.cc.length,
+          itemBuilder: (context, index, animation) {
+            return Align(
+              alignment: Alignment.center,
+              child: ArticleListItemVerySimpleWidget(
+                addBottomPadding: true,
+                showDetail: nowType == 3,
+                queryResult: widget.cc[index],
+                width: windowWidth - 4.0,
+                thumbnailTag: Uuid().v4(),
+              ),
+            );
+          },
+        );
+
+      default:
+        return Container(
+          child: Center(
+            child: Text('Error :('),
+          ),
+        );
+
+      // return LiveSliverGrid(
+      //   showItemInterval: Duration(milliseconds: 50),
+      //   showItemDuration: Duration(milliseconds: 150),
+      //   visibleFraction: 0.001,
+      //   itemCount: widget.cc.length,
+      //   // physics: const BouncingScrollPhysics(),
+      //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //     crossAxisCount: 3,
+      //     crossAxisSpacing: 8,
+      //     mainAxisSpacing: 8,
+      //     childAspectRatio: 3 / 4,
+      //   ),
+      //   itemBuilder: (context, index, animation) {
+      //     return FadeTransition(
+      //       opacity: Tween<double>(
+      //         begin: 0,
+      //         end: 1,
+      //       ).animate(animation),
+      //       child: SlideTransition(
+      //         position: Tween<Offset>(
+      //           begin: Offset(0, -0.1),
+      //           end: Offset.zero,
+      //         ).animate(animation),
+      //         child: Padding(
+      //           padding: EdgeInsets.zero,
+      //           child: Align(
+      //             alignment: Alignment.bottomCenter,
+      //             child: SizedBox(
+      //               child: ArticleListItemVerySimpleWidget(
+      //                 queryResult: widget.cc[index],
+      //                 showDetail: false,
+      //                 addBottomPadding: false,
+      //                 width: (windowWidth - 4.0) / 3,
+      //                 thumbnailTag: Uuid().v4(),
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // );
+    }
+  }
+}
+
 class SimilarListPage extends StatelessWidget {
   final String prefix;
   final bool isGroup;
@@ -666,9 +1003,12 @@ class SimilarListPage extends StatelessWidget {
     var queryString = HitomiManager.translate2query(prefix +
         postfix +
         ' ' +
-        Settings.includeTags.join(' ') +
+        Settings.includeTags +
         ' ' +
-        Settings.excludeTags.map((e) => '-$e').join(' '));
+        Settings.excludeTags
+            .where((e) => e.trim() != '')
+            .map((e) => '-$e')
+            .join(' '));
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 10;
 
@@ -958,4 +1298,102 @@ List<PieSeries<ChartSampleData, String>> gettSmartLabelPieSeries(
             connectorLineSettings:
                 ConnectorLineSettings(type: ConnectorType.curve)))
   ];
+}
+
+class SearchType2 extends StatelessWidget {
+  Color getColor(int i) {
+    return Settings.themeWhat
+        ? nowType == i ? Colors.grey.shade200 : Colors.grey.shade400
+        : nowType == i ? Colors.grey.shade900 : Colors.grey.shade400;
+  }
+
+  final int nowType;
+  SearchType2({this.nowType});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Hero(
+            tag: "searchtype2",
+            child: Card(
+              color:
+                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              child: SizedBox(
+                child: SizedBox(
+                  width: 280,
+                  height: 240,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        ListTile(
+                          leading: Icon(Icons.grid_on, color: getColor(0)),
+                          title: Text(Translations.of(context).trans('srt0'),
+                              style: TextStyle(color: getColor(0))),
+                          onTap: () async {
+                            Navigator.pop(context, 0);
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(MdiIcons.gridLarge, color: getColor(1)),
+                          title: Text(Translations.of(context).trans('srt1'),
+                              style: TextStyle(color: getColor(1))),
+                          onTap: () async {
+                            Navigator.pop(context, 1);
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(MdiIcons.viewAgendaOutline,
+                              color: getColor(2)),
+                          title: Text(
+                            Translations.of(context).trans('srt2'),
+                            style: TextStyle(color: getColor(2)),
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context, 2);
+                          },
+                        ),
+                        ListTile(
+                          leading:
+                              Icon(MdiIcons.formatListText, color: getColor(3)),
+                          title: Text(
+                            Translations.of(context).trans('srt3'),
+                            style: TextStyle(color: getColor(3)),
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context, 3);
+                          },
+                        ),
+                        Expanded(
+                          child: Container(),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(1)),
+        boxShadow: [
+          BoxShadow(
+            color: Settings.themeWhat
+                ? Colors.black.withOpacity(0.4)
+                : Colors.grey.withOpacity(0.2),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+    );
+  }
 }

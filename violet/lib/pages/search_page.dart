@@ -73,9 +73,9 @@ class _SearchPageState extends State<SearchPage>
         .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
     Future.delayed(Duration(milliseconds: 500), () async {
       final query = HitomiManager.translate2query(
-          Settings.includeTags.join(' ') +
+          Settings.includeTags +
               ' ' +
-              Settings.excludeTags.map((e) => '-$e').join(' '));
+              Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' '));
       final result = QueryManager.queryPagination(query);
 
       latestQuery = Tuple2<QueryManager, String>(result, '');
@@ -626,11 +626,11 @@ class _SearchBarPageState extends State<SearchBarPage>
                                 final query = HitomiManager.translate2query(
                                     _searchController.text +
                                         ' ' +
-                                        Settings.includeTags.join(' ') +
+                                        Settings.includeTags +
                                         ' ' +
-                                        Settings.excludeTags
+                                        Settings.excludeTags.where((e) => e.trim() != '')
                                             .map((e) => '-$e')
-                                            .join(' '));
+                                            .join(' ').trim());
                                 final result =
                                     QueryManager.queryPagination(query);
                                 Navigator.pop(
