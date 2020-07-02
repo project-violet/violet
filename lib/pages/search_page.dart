@@ -402,6 +402,7 @@ class _SearchPageState extends State<SearchPage>
                             showDetail: false,
                             addBottomPadding: false,
                             width: (windowWidth - 4.0) / mm,
+                            thumbnailTag: 'thumbnail' + queryResult[index].id().toString(),
                           ),
                         ),
                       ),
@@ -423,6 +424,7 @@ class _SearchPageState extends State<SearchPage>
                 showDetail: Settings.searchResultType == 3,
                 queryResult: queryResult[index],
                 width: windowWidth - 4.0,
+                thumbnailTag: 'thumbnail' + queryResult[index].id().toString(),
               ),
             );
           },

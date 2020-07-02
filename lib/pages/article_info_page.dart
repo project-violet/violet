@@ -174,7 +174,8 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                                       (width - 32 - 64 - 32) /
                                                           2,
                                                   child: Text(
-                                                    '다운로드',
+                                                    Translations.of(context)
+                                                        .trans('download'),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
@@ -194,7 +195,8 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                                       (width - 32 - 64 - 32) /
                                                           2,
                                                   child: Text(
-                                                    '읽기',
+                                                    Translations.of(context)
+                                                        .trans('read'),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
@@ -226,11 +228,18 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                           ),
                                         ],
                                       ),
-                                      singleChip(widget.queryResult.language(),
-                                          "Language"),
+                                      singleChip(
+                                        widget.queryResult.language(),
+                                        Translations.of(context)
+                                            .trans('language')
+                                            .split(' ')[0]
+                                            .trim(),
+                                        'language'
+                                      ),
                                       multipleChip(
                                           widget.queryResult.artists(),
-                                          'Aritsts',
+                                          
+                                                    Translations.of(context).trans('artists'),
                                           widget.queryResult.artists() != null
                                               ? (widget.queryResult.artists()
                                                       as String)
@@ -243,7 +252,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                               : []),
                                       multipleChip(
                                           widget.queryResult.groups(),
-                                          'Groups',
+                                                    Translations.of(context).trans('groups'),
                                           widget.queryResult.groups() != null
                                               ? (widget.queryResult.groups()
                                                       as String)
@@ -255,7 +264,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                               : []),
                                       multipleChip(
                                           widget.queryResult.tags(),
-                                          'Tags',
+                                          Translations.of(context).trans('tags'),
                                           widget.queryResult.tags() != null
                                               ? (widget.queryResult.tags()
                                                       as String)
@@ -273,7 +282,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                               : []),
                                       multipleChip(
                                           widget.queryResult.series(),
-                                          'Series',
+                                          Translations.of(context).trans('series'),
                                           widget.queryResult.series() != null
                                               ? (widget.queryResult.series()
                                                       as String)
@@ -285,7 +294,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                               : []),
                                       multipleChip(
                                           widget.queryResult.characters(),
-                                          'Character',
+                                          Translations.of(context).trans('character'),
                                           widget.queryResult.characters() !=
                                                   null
                                               ? (widget.queryResult.characters()
@@ -298,14 +307,14 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                                   .toList()
                                               : []),
                                       singleChip(
-                                          widget.queryResult.type(), "Type"),
+                                          widget.queryResult.type(), Translations.of(context).trans('type'), 'type'),
                                       singleChip(widget.queryResult.uploader(),
-                                          "Uploader"),
+                                          Translations.of(context).trans('uploader'), 'uploader'),
                                       singleChip(
                                           widget.queryResult.id().toString(),
-                                          "Id"),
+                                          Translations.of(context).trans('id'), 'id'),
                                       singleChip(widget.queryResult.classname(),
-                                          "Class"),
+                                          Translations.of(context).trans('class'), 'class'),
                                       Container(height: 10),
                                       _buildDivider(),
                                       // Comment Area
@@ -326,7 +335,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                                 padding: EdgeInsets.fromLTRB(
                                                     12, 12, 0, 0),
                                                 child: Text(
-                                                    'Comments (${comments.length})'),
+                                                    '${Translations.of(context).trans('comment')} (${comments.length})'),
                                               ),
                                               expanded: commentArea(),
                                             ),
@@ -353,7 +362,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                               header: Padding(
                                                 padding: EdgeInsets.fromLTRB(
                                                     12, 12, 0, 0),
-                                                child: Text('Preview'),
+                                                child: Text(Translations.of(context).trans('preview')),
                                               ),
                                               expanded: previewArea(),
                                             ),
@@ -369,8 +378,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                   Stack(
                                     children: <Widget>[
                                       Hero(
-                                        tag: "thumbnail" +
-                                            widget.queryResult.id().toString(),
+                                        tag: widget.heroKey,
                                         child: Padding(
                                           padding: EdgeInsets.all(8),
                                           child: ClipRRect(
@@ -401,10 +409,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                                       thumbnail:
                                                           widget.thumbnail,
                                                       headers: widget.headers,
-                                                      heroKey: 'thumbnail' +
-                                                          widget.queryResult
-                                                              .id()
-                                                              .toString(),
+                                                      heroKey: widget.heroKey,
                                                     ),
                                                   ));
                                                 },
@@ -734,7 +739,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
         ]);
   }
 
-  Widget singleChip(dynamic target, String name) {
+  Widget singleChip(dynamic target, String name, String raw) {
     if (target == null) return Container();
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
       Padding(
@@ -745,7 +750,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
         ),
       ),
       Wrap(
-        children: <Widget>[chip(name.toLowerCase(), target)],
+        children: <Widget>[chip(raw.toLowerCase(), target)],
       ),
     ]);
   }
@@ -820,7 +825,10 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
           // shadowColor: Colors.grey[60],
           padding: EdgeInsets.all(6.0),
           onPressed: () async {
-            if ((group == 'groups' || group == 'artists' || group == 'uploader') && name.toLowerCase() != 'n/a') {
+            if ((group == 'groups' ||
+                    group == 'artists' ||
+                    group == 'uploader') &&
+                name.toLowerCase() != 'n/a') {
               Navigator.of(context).push(PageRouteBuilder(
                 opaque: false,
                 transitionDuration: Duration(milliseconds: 500),

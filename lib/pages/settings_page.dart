@@ -988,10 +988,10 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           TextEditingController(text: Settings.includeTags.join('|'));
     else if (widget.what == 'exclude')
       _searchController =
-          TextEditingController(text: Settings.excludeTags.join('|'));
+          TextEditingController(text: Settings.excludeTags.join(' '));
     else if (widget.what == 'blurred')
       _searchController =
-          TextEditingController(text: Settings.blurredTags.join('|'));
+          TextEditingController(text: Settings.blurredTags.join(' '));
   }
 
   @override

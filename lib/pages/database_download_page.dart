@@ -245,13 +245,14 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
         if (item.artists() != null) {
           for (var artist in item.artists().split('|'))
-            if (!tagArtist.containsKey(artist))
+            if (artist != '') if (!tagArtist.containsKey(artist))
               tagArtist[artist] = Map<String, int>();
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.artists().split('|')) {
+              if (artist == '') continue;
               if (!tagArtist[artist].containsKey(index))
                 tagArtist[artist][index] = 0;
               tagArtist[artist][index] += 1;
@@ -261,13 +262,14 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
         if (item.groups() != null) {
           for (var artist in item.groups().split('|'))
-            if (!tagGroup.containsKey(artist))
+            if (artist != '') if (!tagGroup.containsKey(artist))
               tagGroup[artist] = Map<String, int>();
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.groups().split('|')) {
+              if (artist == '') continue;
               if (!tagGroup[artist].containsKey(index))
                 tagGroup[artist][index] = 0;
               tagGroup[artist][index] += 1;
