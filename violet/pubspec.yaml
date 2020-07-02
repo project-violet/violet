@@ -80,6 +80,7 @@ dependencies:
   country_pickers:
   syncfusion_flutter_core:
   syncfusion_flutter_sliders:
+  syncfusion_flutter_charts:
   web_socket_channel:
   # archive:
   # lzma:
@@ -88,6 +89,7 @@ dependencies:
   ffi:
   # flutter_linkify: ^3.1.3
   expandable:
+  charts_flutter:
 
 dev_dependencies:
   flutter_test:

@@ -16,6 +16,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -244,10 +245,6 @@ class _SettingsPageState extends State<SettingsPage>
                   ),
                   _buildDivider(),
                   InkWell(
-                    customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10.0),
-                            bottomRight: Radius.circular(10.0))),
                     child: ListTile(
                       leading: Icon(
                         MdiIcons.blur,
@@ -263,6 +260,29 @@ class _SettingsPageState extends State<SettingsPage>
                       );
 
                       if (vv == 1) setState(() {});
+                    },
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.tooltipEdit,
+                        color: Settings.majorColor,
+                      ),
+                      title: Text(Translations.of(context).trans('tagrebuild')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () async {
+                      if (await Dialogs.yesnoDialog(
+                          context,
+                          Translations.of(context).trans('tagrebuildmsg'),
+                          Translations.of(context).trans('tagrebuild'))) {
+                            await Dialogs.okDialog(context, 'TODO: Implementation');
+                          }
                     },
                   ),
                   // _buildDivider(),
@@ -431,7 +451,8 @@ class _SettingsPageState extends State<SettingsPage>
                             topLeft: Radius.circular(10.0),
                             topRight: Radius.circular(10.0))),
                     child: ListTile(
-                      leading: Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
+                      leading: Icon(MdiIcons.swapHorizontal,
+                          color: Settings.majorColor),
                       title: Text(Translations.of(context).trans('switching')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
@@ -444,7 +465,8 @@ class _SettingsPageState extends State<SettingsPage>
                             bottomLeft: Radius.circular(10.0),
                             bottomRight: Radius.circular(10.0))),
                     child: ListTile(
-                      leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
+                      leading: Icon(MdiIcons.databaseSync,
+                          color: Settings.majorColor),
                       title: Text(Translations.of(context).trans('syncmanual')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),

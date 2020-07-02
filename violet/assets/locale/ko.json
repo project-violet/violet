@@ -57,6 +57,7 @@
     "cancel": "취소",
     "switching": "스위칭",
     "syncmanual": "수동 동기화",
+    "tagrebuild": "태그 리빌딩",
 
     "database": "데이터베이스",
     "welcome": "Violet 사용을 환영합니다. 이 앱을 사용하기 전에 먼저 데이터베이스를 다운로드해야 합니다.",
@@ -89,6 +90,7 @@
     "removetobookmark": "가 북마크에 삭제되었습니다.",
     "infomessage": "본 개발자는 사용자의 어떠한 정보도 수집하지 않습니다. 모든 이미지와 세부 정보들은 모두 hitomi.la 또는 e-hentai.org, exhentai.org를 포워딩해서 제공합니다.",
     "tagmsgdefault": "이 설정은 검색어 설정입니다.",
+    "tagrebuildmsg": "태그 리빌딩은 위에 주어진 설정에 따라 자동완성 태그들을 재설정하는 과정입니다. 데이터베이스 리빌딩을 하려면 하단 데이터베이스 그룹을 참고하세요. 계속할까요?",
 
     "notice1": "제 어플을 다운로드해 주셔서 감사합니다.",
     "notice21": "문의는 ",

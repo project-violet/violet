@@ -136,7 +136,7 @@ class QueryManager {
     QueryManager qm = new QueryManager();
     qm.queryString = rawQuery;
     qm.results = (await (await DataBaseManager.getInstance()).query(rawQuery))
-        .map((e) => QueryResult(result: e));
+        .map((e) => QueryResult(result: e)).toList();
     return qm;
   }
 

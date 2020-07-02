@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/variables.dart';
 
 class HitomiManager {
   // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
@@ -46,6 +47,17 @@ class HitomiManager {
     }
     return Tuple3<List<String>, List<String>, List<String>>(
         result, btresult, stresult);
+  }
+
+  static int getArticleCount(String classification, String name) {
+    if (tagmap == null) {
+      final path =
+          File('${Variables.applicationDocumentsDirectory}/index.json');
+      final text = path.readAsStringSync();
+      tagmap = jsonDecode(text);
+    }
+
+    return tagmap[classification][name];
   }
 
   static Map<String, dynamic> tagmap;
@@ -194,12 +206,12 @@ class HitomiManager {
         switch (ss[0]) {
           case 'male':
           case 'female':
-            postfix = val.replaceAll('_', ' ') + '|';
+            postfix = '|' + val.replaceAll('_', ' ') + '|';
             prefix = 'Tags';
             break;
 
           case 'tag':
-            postfix = ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
             prefix = 'Tags';
             break;
 
@@ -207,15 +219,15 @@ class HitomiManager {
             prefix = 'Language';
             break;
           case 'series':
-            postfix = ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
             prefix = 'Series';
             break;
           case 'artist':
-            postfix = ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
             prefix = 'Artists';
             break;
           case 'group':
-            postfix = ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
             prefix = 'Groups';
             break;
           case 'uploader':
@@ -223,7 +235,7 @@ class HitomiManager {
             postfix = ss[1];
             break;
           case 'character':
-            postfix = ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
             prefix = 'Characters';
             break;
           case 'type':
@@ -246,8 +258,7 @@ class HitomiManager {
         if (prefix == 'Uploader') where += ' COLLATE NOCASE';
       } else if ('=<>()'.contains(split[i])) {
         where += split[i];
-        if (split[i] == '(')
-          continue;
+        if (split[i] == '(') continue;
       } else {
         if (negative)
           where += "Title NOT LIKE '%$val%'";
@@ -259,8 +270,7 @@ class HitomiManager {
         if (split[i + 1].toLowerCase() == 'or') {
           where += ' OR ';
           i++;
-        } else if (split[i + 1] != ')')
-          where += ' AND ';
+        } else if (split[i + 1] != ')') where += ' AND ';
       }
     }
 
