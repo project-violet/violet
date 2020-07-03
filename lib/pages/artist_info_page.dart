@@ -416,17 +416,19 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         '${Translations.of(context).trans('articles')} (${cc.length})'),
                   ),
                   expanded: Column(children: <Widget>[
-                    articleArea(),
+                    _ArticlesAreaWidget(cc: cc),
                     Visibility(
                         visible: cc.length > 6,
-                        child: more(ArticleListPage(
-                            cc: cc,
-                            name: (widget.isGroup
-                                    ? 'Groups: '
-                                    : widget.isUploader
-                                        ? 'Uploader: '
-                                        : 'Artist: ') +
-                                widget.artist)))
+                        child: _more(
+                            context,
+                            ArticleListPage(
+                                cc: cc,
+                                name: (widget.isGroup
+                                        ? 'Groups: '
+                                        : widget.isUploader
+                                            ? 'Uploader: '
+                                            : 'Artist: ') +
+                                    widget.artist)))
                   ]),
                 ),
               ),
@@ -451,7 +453,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                 ? Translations.of(context).trans('iuploader')
                                 : Translations.of(context).trans('iartists'))),
                   ),
-                  expanded: similarArea(),
+                  expanded: _SimilarAreaWidget(
+                    prefix: prefix,
+                    isGroup: widget.isGroup,
+                    isUploader: widget.isUploader,
+                    similarsAll: similarsAll,
+                    qrs: qrs,
+                  ),
                 ),
               ),
             ),
@@ -470,7 +478,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     child: Text(Translations.of(context).trans('series') +
                         ' (${series.length})'),
                   ),
-                  expanded: seriesArea(),
+                  expanded: _SeriesAreaWidget(
+                    prefix: prefix,
+                    cc: cc,
+                    series: series,
+                  ),
                 ),
               ),
             ),
@@ -481,40 +493,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   ExpandableController ec = ExpandableController();
+}
 
-  Widget more(Widget what) {
-    return SizedBox(
-        height: 60,
-        child: InkWell(
-            onTap: () async {
-              Navigator.of(context).push(PageRouteBuilder(
-                opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  var begin = Offset(0.0, 1.0);
-                  var end = Offset.zero;
-                  var curve = Curves.ease;
+class _ArticlesAreaWidget extends StatelessWidget {
+  final List<QueryResult> cc;
 
-                  var tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: curve));
+  _ArticlesAreaWidget({this.cc});
 
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-                pageBuilder: (_, __, ___) => what,
-              ));
-            },
-            child: Row(
-              children: [Text(Translations.of(context).trans('more'))],
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-            )));
-  }
-
-  Widget articleArea() {
+  @override
+  Widget build(BuildContext context) {
     var windowWidth = MediaQuery.of(context).size.width;
     return LiveGrid(
       shrinkWrap: true,
@@ -561,170 +548,178 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       },
     );
   }
+}
 
-  Widget similarArea() {
+class _SimilarAreaWidget extends StatelessWidget {
+  final String prefix;
+  final bool isGroup;
+  final bool isUploader;
+  final List<Tuple2<String, double>> similarsAll;
+  final List<List<QueryResult>> qrs;
+
+  _SimilarAreaWidget({
+    this.prefix,
+    this.isGroup,
+    this.isUploader,
+    this.similarsAll,
+    this.qrs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
-        padding: EdgeInsets.all(0),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: similars.length + 1,
-        itemBuilder: (BuildContext ctxt, int index) {
-          if (index == similars.length) {
-            return more(SimilarListPage(
-              prefix: prefix,
-              similarsAll: similarsAll,
-              isGroup: widget.isGroup,
-              isUploader: widget.isUploader,
-            ));
-          }
-          var e = similars[index];
-          var qq = qrs[index];
-          return InkWell(
-            onTap: () async {
-              Navigator.of(context).push(PageRouteBuilder(
-                // opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  var begin = Offset(0.0, 1.0);
-                  var end = Offset.zero;
-                  var curve = Curves.ease;
-
-                  var tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: curve));
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-                pageBuilder: (_, __, ___) => ArtistInfoPage(
-                  isGroup: widget.isGroup,
-                  isUploader: widget.isUploader,
-                  artist: e.item1,
-                ),
+      padding: EdgeInsets.all(0),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: max(similarsAll.length, 6) + (similarsAll.length > 6 ? 1 : 0),
+      itemBuilder: (BuildContext ctxt, int index) {
+        if (index == 6) {
+          return _more(
+              context,
+              SimilarListPage(
+                prefix: prefix,
+                similarsAll: similarsAll,
+                isGroup: isGroup,
+                isUploader: isUploader,
               ));
-            },
-            child: SizedBox(
-              height: 195,
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // crossAxisAlignment: CrossAxisAlignment,
-                        children: <Widget>[
-                          Text(
-                              // (index + 1).toString() +
-                              //     '. ' +
-                              ' ' +
-                                  e.item1 +
-                                  ' (' +
-                                  HitomiManager.getArticleCount(
-                                          widget.isGroup
-                                              ? 'group'
-                                              : widget.isUploader
-                                                  ? 'uploader'
-                                                  : 'artist',
-                                          e.item1)
-                                      .toString() +
-                                  ')',
-                              style: TextStyle(fontSize: 17)),
-                          Text(
-                              '${Translations.of(context).trans('score')}: ' +
-                                  e.item2.toStringAsFixed(1) +
-                                  ' ',
-                              style: TextStyle(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade300
-                                    : Colors.grey.shade700,
-                              )),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 162,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 0
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: qq[0],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 1.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 1
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: qq[1],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 16.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 2
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: qq[2],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 16.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
-                                    : Container()),
-                          ],
-                        ),
-                      ),
-                      // Container(
-                      //   padding: EdgeInsets.all(2),
-                      // ),
-                      // Text('Score: ' + e.item2.toStringAsFixed(1),
-                      //     style: TextStyle(color: Colors.grey.shade300)),
-                    ],
-                  )),
-            ),
-          );
-        });
-    // Column(
-    //   // mainAxisAlignment: MainAxisAlignment.start,
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: AnimationConfiguration.toStaggeredList(
-    //       duration: const Duration(milliseconds: 900),
-    //       childAnimationBuilder: (widget) => SlideAnimation(
-    //             horizontalOffset: 50.0,
-    //             child: FadeInAnimation(
-    //               child: widget,
-    //             ),
-    //           ),
-    //       children: children
-    //       ),
-    // ),
-    // );
-  }
+        }
+        var e = similarsAll[index];
+        var qq = qrs[index];
+        return InkWell(
+          onTap: () async {
+            Navigator.of(context).push(PageRouteBuilder(
+              // opaque: false,
+              transitionDuration: Duration(milliseconds: 500),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = Offset(0.0, 1.0);
+                var end = Offset.zero;
+                var curve = Curves.ease;
 
-  Widget seriesArea() {
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+              pageBuilder: (_, __, ___) => ArtistInfoPage(
+                isGroup: isGroup,
+                isUploader: isUploader,
+                artist: e.item1,
+              ),
+            ));
+          },
+          child: SizedBox(
+            height: 195,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // crossAxisAlignment: CrossAxisAlignment,
+                    children: <Widget>[
+                      Text(
+                          // (index + 1).toString() +
+                          //     '. ' +
+                          ' ' +
+                              e.item1 +
+                              ' (' +
+                              HitomiManager.getArticleCount(
+                                      isGroup
+                                          ? 'group'
+                                          : isUploader ? 'uploader' : 'artist',
+                                      e.item1)
+                                  .toString() +
+                              ')',
+                          style: TextStyle(fontSize: 17)),
+                      Text(
+                          '${Translations.of(context).trans('score')}: ' +
+                              e.item2.toStringAsFixed(1) +
+                              ' ',
+                          style: TextStyle(
+                            color: Settings.themeWhat
+                                ? Colors.grey.shade300
+                                : Colors.grey.shade700,
+                          )),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 162,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Expanded(
+                            flex: 1,
+                            child: qq.length > 0
+                                ? Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: ArticleListItemVerySimpleWidget(
+                                      queryResult: qq[0],
+                                      showDetail: false,
+                                      addBottomPadding: false,
+                                      width: (windowWidth - 16 - 4.0 - 1.0) / 3,
+                                      thumbnailTag: Uuid().v4(),
+                                    ))
+                                : Container()),
+                        Expanded(
+                            flex: 1,
+                            child: qq.length > 1
+                                ? Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: ArticleListItemVerySimpleWidget(
+                                      queryResult: qq[1],
+                                      showDetail: false,
+                                      addBottomPadding: false,
+                                      width:
+                                          (windowWidth - 16 - 4.0 - 16.0) / 3,
+                                      thumbnailTag: Uuid().v4(),
+                                    ))
+                                : Container()),
+                        Expanded(
+                            flex: 1,
+                            child: qq.length > 2
+                                ? Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: ArticleListItemVerySimpleWidget(
+                                      queryResult: qq[2],
+                                      showDetail: false,
+                                      addBottomPadding: false,
+                                      width:
+                                          (windowWidth - 16 - 4.0 - 16.0) / 3,
+                                      thumbnailTag: Uuid().v4(),
+                                    ))
+                                : Container()),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SeriesAreaWidget extends StatelessWidget {
+  final String prefix;
+  final List<QueryResult> cc;
+  final List<List<int>> series;
+
+  _SeriesAreaWidget({
+    this.prefix,
+    this.cc,
+    this.series,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     var unescape = new HtmlUnescape();
     var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
@@ -734,11 +729,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         itemCount: min(series.length, 6) + (series.length > 6 ? 1 : 0),
         itemBuilder: (BuildContext ctxt, int index) {
           if (index == 6) {
-            return more(SeriesListPage(
-              cc: cc,
-              prefix: prefix,
-              series: series,
-            ));
+            return _more(
+                context,
+                SeriesListPage(
+                  cc: cc,
+                  prefix: prefix,
+                  series: series,
+                ));
           }
           var e = series[index];
           return InkWell(
@@ -856,6 +853,37 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 }
 
+Widget _more(BuildContext context, Widget what) {
+  return SizedBox(
+      height: 60,
+      child: InkWell(
+          onTap: () async {
+            Navigator.of(context).push(PageRouteBuilder(
+              opaque: false,
+              transitionDuration: Duration(milliseconds: 500),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = Offset(0.0, 1.0);
+                var end = Offset.zero;
+                var curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+              pageBuilder: (_, __, ___) => what,
+            ));
+          },
+          child: Row(
+            children: [Text(Translations.of(context).trans('more'))],
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+          )));
+}
 // class PieSmartLabels extends StatefulWidget {
 //   PieSmartLabels({this.sample, Key key}) : super(key: key);
 //   SubItem sample;
@@ -1164,11 +1192,9 @@ class SimilarListPage extends StatelessWidget {
   final String prefix;
   final bool isGroup;
   final bool isUploader;
-  List<Tuple2<String, double>> similarsAll;
+  final List<Tuple2<String, double>> similarsAll;
   SimilarListPage(
-      {this.prefix, this.similarsAll, this.isGroup, this.isUploader}) {
-    similarsAll = similarsAll;
-  }
+      {this.prefix, this.similarsAll, this.isGroup, this.isUploader});
 
   Future<List<QueryResult>> _future(String e) async {
     var unescape = new HtmlUnescape();

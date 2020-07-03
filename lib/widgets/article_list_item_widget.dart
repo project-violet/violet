@@ -252,6 +252,7 @@ class _ArticleListItemVerySimpleWidgetState
                     thumbnail: thumbnail,
                     headers: headers,
                     heroKey: widget.thumbnailTag,
+                    isBookmarked: isBookmarked,
                   ),
                 ));
               }

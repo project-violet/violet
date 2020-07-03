@@ -43,7 +43,6 @@ class _SearchPageState extends State<SearchPage>
   Color color = Colors.green;
   bool into = false;
 
-  TextEditingController _controller = new TextEditingController();
   final FlareControls heroFlareControls = FlareControls();
   FlutterActorArtboard artboard;
   ScrollController _scrollController = ScrollController();
@@ -1205,12 +1204,7 @@ class SearchType extends StatelessWidget {
   }
 }
 
-class SearchResultSelector extends StatefulWidget {
-  @override
-  _SearchResultSelectorState createState() => _SearchResultSelectorState();
-}
-
-class _SearchResultSelectorState extends State<SearchResultSelector> {
+class SearchResultSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -1268,12 +1262,7 @@ class _SearchResultSelectorState extends State<SearchResultSelector> {
   }
 }
 
-class SearchSort extends StatefulWidget {
-  @override
-  _SearchSortState createState() => _SearchSortState();
-}
-
-class _SearchSortState extends State<SearchSort> {
+class SearchSort extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
