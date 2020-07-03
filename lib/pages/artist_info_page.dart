@@ -188,7 +188,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 .join(' '));
 
     // DateTime dt = DateTime.now();
-    QueryManager qm = await QueryManager.query(query);
+    QueryManager qm = await QueryManager.query(query + ' ORDER BY Id DESC');
     // print((DateTime.now().difference(dt)).inSeconds);
     return qm.results;
   }
@@ -770,7 +770,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
               height: height - 16,
               child: Container(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: <Widget>[
@@ -780,77 +780,79 @@ class _ArticleListPageState extends State<ArticleListPage> {
                           minExtent: 64 + 12.0,
                           maxExtent: 64.0 + 12,
                           searchBar: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(children: <Widget>[
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Hero(
-                                tag: "searchtype2",
-                                child: Card(
-                                  color: Settings.themeWhat
-                                      ? Color(0xFF353535)
-                                      : Colors.grey.shade100,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(8.0),
-                                    ),
-                                  ),
-                                  elevation: 100,
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  child: InkWell(
-                                    child: SizedBox(
-                                      height: 48,
-                                      width: 48,
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: <Widget>[
-                                          Icon(
-                                            MdiIcons.formatListText,
-                                            color: Colors.grey,
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Hero(
+                                    tag: "searchtype2",
+                                    child: Card(
+                                      color: Settings.themeWhat
+                                          ? Color(0xFF353535)
+                                          : Colors.grey.shade100,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(8.0),
+                                        ),
+                                      ),
+                                      elevation: 100,
+                                      clipBehavior: Clip.antiAliasWithSaveLayer,
+                                      child: InkWell(
+                                        child: SizedBox(
+                                          height: 48,
+                                          width: 48,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                MdiIcons.formatListText,
+                                                color: Colors.grey,
+                                              ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
+                                        onTap: () async {
+                                          Navigator.of(context)
+                                              .push(PageRouteBuilder(
+                                            opaque: false,
+                                            transitionDuration:
+                                                Duration(milliseconds: 500),
+                                            transitionsBuilder:
+                                                (BuildContext context,
+                                                    Animation<double> animation,
+                                                    Animation<double>
+                                                        secondaryAnimation,
+                                                    Widget wi) {
+                                              return new FadeTransition(
+                                                  opacity: animation,
+                                                  child: wi);
+                                            },
+                                            pageBuilder: (_, __, ___) =>
+                                                SearchType2(
+                                              nowType: nowType,
+                                            ),
+                                          ))
+                                              .then((value) async {
+                                            if (value == null) return;
+                                            nowType = value;
+                                            await Future.delayed(
+                                                Duration(milliseconds: 50), () {
+                                              setState(() {});
+                                            });
+                                          });
+                                        },
                                       ),
                                     ),
-                                    onTap: () async {
-                                      Navigator.of(context)
-                                          .push(PageRouteBuilder(
-                                        opaque: false,
-                                        transitionDuration:
-                                            Duration(milliseconds: 500),
-                                        transitionsBuilder:
-                                            (BuildContext context,
-                                                Animation<double> animation,
-                                                Animation<double>
-                                                    secondaryAnimation,
-                                                Widget wi) {
-                                          return new FadeTransition(
-                                              opacity: animation, child: wi);
-                                        },
-                                        pageBuilder: (_, __, ___) =>
-                                            SearchType2(
-                                          nowType: nowType,
-                                        ),
-                                      ))
-                                          .then((value) async {
-                                        nowType = value;
-                                        await Future.delayed(
-                                            Duration(milliseconds: 50), () {
-                                          setState(() {});
-                                        });
-                                      });
-                                    },
                                   ),
                                 ),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 24),
-                              child: Text(widget.name,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ])),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 24, left: 12),
+                                  child: Text(widget.name,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                              ])),
                         ),
                       ),
                       buildList()
@@ -873,51 +875,56 @@ class _ArticleListPageState extends State<ArticleListPage> {
     switch (nowType) {
       case 0:
       case 1:
-        return LiveSliverGrid(
-          showItemInterval: Duration(milliseconds: 50),
-          showItemDuration: Duration(milliseconds: 150),
-          visibleFraction: 0.001,
-          itemCount: widget.cc.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: mm,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: 3 / 4,
-          ),
-          itemBuilder: (context, index, animation) {
-            return FadeTransition(
-              opacity: Tween<double>(
-                begin: 0,
-                end: 1,
-              ).animate(animation),
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  begin: Offset(0, -0.1),
-                  end: Offset.zero,
+        return SliverPadding(
+          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          sliver: LiveSliverGrid(
+            showItemInterval: Duration(milliseconds: 50),
+            showItemDuration: Duration(milliseconds: 150),
+            visibleFraction: 0.001,
+            itemCount: widget.cc.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: mm,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 3 / 4,
+            ),
+            itemBuilder: (context, index, animation) {
+              return FadeTransition(
+                opacity: Tween<double>(
+                  begin: 0,
+                  end: 1,
                 ).animate(animation),
-                child: Padding(
-                  padding: EdgeInsets.zero,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SizedBox(
-                      child: ArticleListItemVerySimpleWidget(
-                        queryResult: widget.cc[index],
-                        showDetail: false,
-                        addBottomPadding: false,
-                        width: (windowWidth - 4.0) / mm,
-                        thumbnailTag: Uuid().v4(),
+                child: SlideTransition(
+                  position: Tween<Offset>(
+                    begin: Offset(0, -0.1),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: Padding(
+                    padding: EdgeInsets.zero,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        child: ArticleListItemVerySimpleWidget(
+                          queryResult: widget.cc[index],
+                          showDetail: false,
+                          addBottomPadding: false,
+                          width: (windowWidth - 4.0) / mm,
+                          thumbnailTag: Uuid().v4(),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
 
       case 2:
       case 3:
-        return LiveSliverList(
+        return SliverPadding(
+            padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+            sliver: LiveSliverList(
           itemCount: widget.cc.length,
           itemBuilder: (context, index, animation) {
             return Align(
@@ -931,7 +938,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
               ),
             );
           },
-        );
+        ),);
 
       default:
         return Container(
