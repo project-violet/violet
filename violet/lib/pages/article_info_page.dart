@@ -28,84 +28,41 @@ import 'package:violet/user.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
 import 'package:violet/pages/artist_info_page.dart';
 
-class ArticleInfoPage extends StatefulWidget {
+class ArticleInfoPage extends StatelessWidget {
   final QueryResult queryResult;
   final String thumbnail;
   final String heroKey;
   final Map<String, String> headers;
+  final bool isBookmarked;
+  String title;
+  String artist;
 
-  ArticleInfoPage(
-      {this.queryResult, this.heroKey, this.headers, this.thumbnail});
-
-  @override
-  _ArticleInfoPageState createState() => _ArticleInfoPageState();
-}
-
-class _ArticleInfoPageState extends State<ArticleInfoPage>
-    with SingleTickerProviderStateMixin {
-  Animation<double> animation;
-  AnimationController controller;
-  bool isBookmarked = false;
-  FlareControls _flareController = FlareControls();
-  bool firstListen = false;
-  List<Tuple3<DateTime, String, String>> comments =
-      List<Tuple3<DateTime, String, String>>();
-
-  @override
-  void initState() {
-    super.initState();
-    controller =
-        AnimationController(duration: const Duration(seconds: 1), vsync: this);
-    animation = Tween<double>(begin: 0, end: 0).animate(controller)
-      ..addListener(() {
-        setState(() {
-          // The state that has changed here is the animation object’s value.
-        });
-      });
-    Future.delayed(Duration(milliseconds: 500))
-        .then((value) => controller.forward());
-    Future.delayed(Duration(milliseconds: 500))
-        .then((value) => setState(() {}));
-    int i = 0;
-    Bookmark.getInstance().then((value) async {
-      isBookmarked = await value.isBookmark(widget.queryResult.id());
-      if (isBookmarked) setState(() {});
-    });
-    if (widget.queryResult.ehash() != null) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
-        var html = await EHSession.requestString(
-            'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/');
-        var article = EHParser.parseArticleData(html);
-        setState(() {
-          comments = article.comment;
-        });
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var unescape = new HtmlUnescape();
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
-    var artist = (widget.queryResult.artists() as String)
+  ArticleInfoPage({
+    this.queryResult,
+    this.heroKey,
+    this.headers,
+    this.thumbnail,
+    this.isBookmarked,
+  }) {
+    artist = (queryResult.artists() as String)
         .split('|')
         .where((x) => x.length != 0)
         .elementAt(0);
 
     if (artist == 'N/A') {
-      var group = widget.queryResult.groups() != null
-          ? widget.queryResult.groups().split('|')[1]
+      var group = queryResult.groups() != null
+          ? queryResult.groups().split('|')[1]
           : '';
       if (group != '') artist = group;
     }
 
+    title = HtmlUnescape().convert(queryResult.title());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Padding(
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: Column(
@@ -126,10 +83,6 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                     color: Settings.themeWhat
                         ? Colors.black.withOpacity(0.9)
                         : Colors.white.withOpacity(0.97),
-                    
-                    // color: Settings.themeWhat
-                    //     ? Colors.black
-                    //     : Colors.white,
                   ),
                   Container(
                     child: SingleChildScrollView(
@@ -146,462 +99,19 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                     ? Colors.grey.shade900.withOpacity(0.6)
                                     : Colors.white.withOpacity(0.6),
                               ),
-                              Container(
-                                padding: EdgeInsets.only(top: 4 * 50.0 + 16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children:
-                                      AnimationConfiguration.toStaggeredList(
-                                    duration: const Duration(milliseconds: 370),
-                                    childAnimationBuilder: (widget) =>
-                                        SlideAnimation(
-                                      horizontalOffset: 50.0,
-                                      child: FadeInAnimation(
-                                        child: widget,
-                                      ),
-                                    ),
-                                    children: <Widget>[
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 4),
-                                              child: RaisedButton(
-                                                child: Container(
-                                                  width:
-                                                      (width - 32 - 64 - 32) /
-                                                          2,
-                                                  child: Text(
-                                                    Translations.of(context)
-                                                        .trans('download'),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                                color: Settings.majorColor,
-                                                // onPressed: () {},
-                                              ),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: Padding(
-                                              padding:
-                                                  EdgeInsets.only(right: 0),
-                                              child: RaisedButton(
-                                                child: Container(
-                                                  width:
-                                                      (width - 32 - 64 - 32) /
-                                                          2,
-                                                  child: Text(
-                                                    Translations.of(context)
-                                                        .trans('read'),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                                color: Settings.majorColor,
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      fullscreenDialog: true,
-                                                      builder: (context) {
-                                                        return ViewerPage(
-                                                          id: widget.queryResult
-                                                              .id()
-                                                              .toString(),
-                                                          images: ThumbnailManager
-                                                                  .get(widget
-                                                                      .queryResult
-                                                                      .id())
-                                                              .item1,
-                                                          headers:
-                                                              widget.headers,
-                                                        );
-                                                      },
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      singleChip(
-                                        widget.queryResult.language(),
-                                        Translations.of(context)
-                                            .trans('language')
-                                            .split(' ')[0]
-                                            .trim(),
-                                        'language'
-                                      ),
-                                      multipleChip(
-                                          widget.queryResult.artists(),
-                                          
-                                                    Translations.of(context).trans('artists'),
-                                          widget.queryResult.artists() != null
-                                              ? (widget.queryResult.artists()
-                                                      as String)
-                                                  .split('|')
-                                                  .where((element) =>
-                                                      element != '')
-                                                  .map(
-                                                      (e) => chip('artists', e))
-                                                  .toList()
-                                              : []),
-                                      multipleChip(
-                                          widget.queryResult.groups(),
-                                                    Translations.of(context).trans('groups'),
-                                          widget.queryResult.groups() != null
-                                              ? (widget.queryResult.groups()
-                                                      as String)
-                                                  .split('|')
-                                                  .where((element) =>
-                                                      element != '')
-                                                  .map((e) => chip('groups', e))
-                                                  .toList()
-                                              : []),
-                                      multipleChip(
-                                          widget.queryResult.tags(),
-                                          Translations.of(context).trans('tags'),
-                                          widget.queryResult.tags() != null
-                                              ? (widget.queryResult.tags()
-                                                      as String)
-                                                  .split('|')
-                                                  .where((element) =>
-                                                      element != '')
-                                                  .map((e) => chip(
-                                                      e.contains(':')
-                                                          ? e.split(':')[0]
-                                                          : 'tags',
-                                                      e.contains(':')
-                                                          ? e.split(':')[1]
-                                                          : e))
-                                                  .toList()
-                                              : []),
-                                      multipleChip(
-                                          widget.queryResult.series(),
-                                          Translations.of(context).trans('series'),
-                                          widget.queryResult.series() != null
-                                              ? (widget.queryResult.series()
-                                                      as String)
-                                                  .split('|')
-                                                  .where((element) =>
-                                                      element != '')
-                                                  .map((e) => chip('series', e))
-                                                  .toList()
-                                              : []),
-                                      multipleChip(
-                                          widget.queryResult.characters(),
-                                          Translations.of(context).trans('character'),
-                                          widget.queryResult.characters() !=
-                                                  null
-                                              ? (widget.queryResult.characters()
-                                                      as String)
-                                                  .split('|')
-                                                  .where((element) =>
-                                                      element != '')
-                                                  .map((e) =>
-                                                      chip('character', e))
-                                                  .toList()
-                                              : []),
-                                      singleChip(
-                                          widget.queryResult.type(), Translations.of(context).trans('type'), 'type'),
-                                      singleChip(widget.queryResult.uploader(),
-                                          Translations.of(context).trans('uploader'), 'uploader'),
-                                      singleChip(
-                                          widget.queryResult.id().toString(),
-                                          Translations.of(context).trans('id'), 'id'),
-                                      singleChip(widget.queryResult.classname(),
-                                          Translations.of(context).trans('class'), 'class'),
-                                      Container(height: 10),
-                                      _buildDivider(),
-                                      // Comment Area
-                                      ExpandableNotifier(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 4.0),
-                                          child: ScrollOnExpand(
-                                            child: ExpandablePanel(
-                                              theme: ExpandableThemeData(
-                                                  iconColor: Settings.themeWhat
-                                                      ? Colors.white
-                                                      : Colors.grey,
-                                                  animationDuration:
-                                                      const Duration(
-                                                          milliseconds: 500)),
-                                              header: Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    12, 12, 0, 0),
-                                                child: Text(
-                                                    '${Translations.of(context).trans('comment')} (${comments.length})'),
-                                              ),
-                                              expanded: commentArea(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      _buildDivider(),
-                                      ExpandableNotifier(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 4.0),
-                                          child: ScrollOnExpand(
-                                            scrollOnExpand: true,
-                                            scrollOnCollapse: false,
-                                            child: ExpandablePanel(
-                                              theme: ExpandableThemeData(
-                                                  iconColor: Settings.themeWhat
-                                                      ? Colors.white
-                                                      : Colors.grey,
-                                                  animationDuration:
-                                                      const Duration(
-                                                          milliseconds: 500)),
-                                              header: Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    12, 12, 0, 0),
-                                                child: Text(Translations.of(context).trans('preview')),
-                                              ),
-                                              expanded: previewArea(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              _InfoAreaWithCommentWidget(
+                                headers: headers,
+                                queryResult: queryResult,
                               ),
-                              Row(
-                                children: [
-                                  Stack(
-                                    children: <Widget>[
-                                      Hero(
-                                        tag: widget.heroKey,
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(5.0),
-                                            child: GestureDetector(
-                                                onTap: () async {
-                                                  Navigator.of(context)
-                                                      .push(PageRouteBuilder(
-                                                    opaque: false,
-                                                    transitionDuration:
-                                                        Duration(
-                                                            milliseconds: 500),
-                                                    transitionsBuilder:
-                                                        (BuildContext context,
-                                                            Animation<double>
-                                                                animation,
-                                                            Animation<double>
-                                                                secondaryAnimation,
-                                                            Widget wi) {
-                                                      return new FadeTransition(
-                                                          opacity: animation,
-                                                          child: wi);
-                                                    },
-                                                    pageBuilder: (_, __, ___) =>
-                                                        ThumbnailViewPage(
-                                                      size: null,
-                                                      thumbnail:
-                                                          widget.thumbnail,
-                                                      headers: widget.headers,
-                                                      heroKey: widget.heroKey,
-                                                    ),
-                                                  ));
-                                                },
-                                                child: widget.thumbnail != null
-                                                    ? CachedNetworkImage(
-                                                        imageUrl:
-                                                            widget.thumbnail,
-                                                        fit: BoxFit.cover,
-                                                        httpHeaders:
-                                                            widget.headers,
-                                                        height: 4 * 50.0,
-                                                        width: 3 * 50.0,
-                                                      )
-                                                    : SizedBox(
-                                                        height: 4 * 50.0,
-                                                        width: 3 * 50.0,
-                                                        child: FlareActor(
-                                                          "assets/flare/Loading2.flr",
-                                                          alignment:
-                                                              Alignment.center,
-                                                          fit: BoxFit.fitHeight,
-                                                          animation: "Alarm",
-                                                        ),
-                                                      )),
-                                          ),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: GestureDetector(
-                                          child: Transform(
-                                            transform: new Matrix4.identity()
-                                              ..scale(1.0),
-                                            child: SizedBox(
-                                              width: 40,
-                                              height: 40,
-                                              child: FlareActor(
-                                                'assets/flare/likeUtsua.flr',
-                                                animation: isBookmarked
-                                                    ? "Like"
-                                                    : "IdleUnlike",
-                                                controller: _flareController,
-                                                // color: Colors.orange,
-                                                // snapToEnd: true,
-                                              ),
-                                            ),
-                                          ),
-                                          onTap: () async {
-                                            isBookmarked = !isBookmarked;
-                                            if (isBookmarked)
-                                              await (await Bookmark
-                                                      .getInstance())
-                                                  .bookmark(
-                                                      widget.queryResult.id());
-                                            else
-                                              await (await Bookmark
-                                                      .getInstance())
-                                                  .unbookmark(
-                                                      widget.queryResult.id());
-                                            if (!isBookmarked)
-                                              _flareController.play('Unlike');
-                                            else {
-                                              _flareController.play('Like');
-                                            }
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 4 * 50.0,
-                                      width: 3 * 50.0,
-                                      child: Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Stack(children: <Widget>[
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.stretch,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: AnimationConfiguration
-                                                .toStaggeredList(
-                                                    duration: const Duration(
-                                                        milliseconds: 900),
-                                                    childAnimationBuilder:
-                                                        (widget) =>
-                                                            SlideAnimation(
-                                                              horizontalOffset:
-                                                                  50.0,
-                                                              child:
-                                                                  FadeInAnimation(
-                                                                child: widget,
-                                                              ),
-                                                            ),
-                                                    children: <Widget>[
-                                                  Text(
-                                                      unescape.convert(widget
-                                                          .queryResult
-                                                          .title()),
-                                                      maxLines: 5,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                          fontSize: 20,
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                  Text(artist),
-                                                ]),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                0, 4 * 50.0 - 50, 0, 0),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.stretch,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: AnimationConfiguration
-                                                    .toStaggeredList(
-                                                        duration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    900),
-                                                        childAnimationBuilder:
-                                                            (widget) =>
-                                                                SlideAnimation(
-                                                                  horizontalOffset:
-                                                                      50.0,
-                                                                  child:
-                                                                      FadeInAnimation(
-                                                                    child:
-                                                                        widget,
-                                                                  ),
-                                                                ),
-                                                        children: <Widget>[
-                                                      Row(
-                                                        children: <Widget>[
-                                                          Icon(
-                                                            Icons.date_range,
-                                                            size: 20,
-                                                          ),
-                                                          Text(
-                                                              widget.queryResult
-                                                                          .getDateTime() !=
-                                                                      null
-                                                                  ? DateFormat(
-                                                                          ' yyyy/MM/dd HH:mm')
-                                                                      .format(widget
-                                                                          .queryResult
-                                                                          .getDateTime())
-                                                                  : '',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      15)),
-                                                        ],
-                                                      ),
-                                                      Row(
-                                                        children: <Widget>[
-                                                          Icon(
-                                                            Icons.photo,
-                                                            size: 20,
-                                                          ),
-                                                          Text(
-                                                              ' ' +
-                                                                  (widget.thumbnail !=
-                                                                          null
-                                                                      ? ThumbnailManager.get(widget.queryResult.id())
-                                                                              .item2
-                                                                              .length
-                                                                              .toString() +
-                                                                          ' Page'
-                                                                      : ''),
-                                                              style: TextStyle(
-                                                                  fontSize: 15,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500)),
-                                                        ],
-                                                      ),
-                                                    ])),
-                                          ),
-                                        ]),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              _SimpleInfoWidget(
+                                heroKey: heroKey,
+                                headers: headers,
+                                thumbnail: thumbnail,
+                                isBookmarked: isBookmarked,
+                                queryResult: queryResult,
+                                title: title,
+                                artist: artist,
+                              )
                             ],
                           ),
                         ],
@@ -613,6 +123,247 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+const String urlPattern = r'http';
+const String emailPattern = r'\S+@\S+';
+const String phonePattern = r'[\d-]{9,}';
+final RegExp linkRegExp = RegExp(
+    '($urlPattern)|($emailPattern)|($phonePattern)',
+    caseSensitive: false);
+
+class _InfoAreaWithCommentWidget extends StatefulWidget {
+  final QueryResult queryResult;
+  final Map<String, String> headers;
+
+  _InfoAreaWithCommentWidget({this.queryResult, this.headers});
+
+  @override
+  __InfoAreaWithCommentWidgetState createState() =>
+      __InfoAreaWithCommentWidgetState();
+}
+
+class __InfoAreaWithCommentWidgetState
+    extends State<_InfoAreaWithCommentWidget> {
+  List<Tuple3<DateTime, String, String>> comments =
+      List<Tuple3<DateTime, String, String>>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.queryResult.ehash() != null) {
+      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+        var html = await EHSession.requestString(
+            'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/');
+        var article = EHParser.parseArticleData(html);
+        setState(() {
+          comments = article.comment;
+        });
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _InfoAreaWidget(
+      queryResult: widget.queryResult,
+      headers: widget.headers,
+      comments: comments,
+    );
+  }
+}
+
+class _InfoAreaWidget extends StatelessWidget {
+  final QueryResult queryResult;
+  final Map<String, String> headers;
+  final List<Tuple3<DateTime, String, String>> comments;
+
+  _InfoAreaWidget({@required this.queryResult, this.headers, this.comments});
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    return Container(
+      padding: EdgeInsets.only(top: 4 * 50.0 + 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: AnimationConfiguration.toStaggeredList(
+          duration: const Duration(milliseconds: 370),
+          childAnimationBuilder: (widget) => SlideAnimation(
+            horizontalOffset: 50.0,
+            child: FadeInAnimation(
+              child: widget,
+            ),
+          ),
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: RaisedButton(
+                      child: Container(
+                        width: (width - 32 - 64 - 32) / 2,
+                        child: Text(
+                          Translations.of(context).trans('download'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      color: Settings.majorColor,
+                      // onPressed: () {},
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: EdgeInsets.only(right: 0),
+                    child: RaisedButton(
+                      child: Container(
+                        width: (width - 32 - 64 - 32) / 2,
+                        child: Text(
+                          Translations.of(context).trans('read'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      color: Settings.majorColor,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            fullscreenDialog: true,
+                            builder: (context) {
+                              return ViewerPage(
+                                id: queryResult.id().toString(),
+                                images: ThumbnailManager.get(queryResult.id())
+                                    .item1,
+                                headers: headers,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            singleChip(
+                queryResult.language(),
+                Translations.of(context).trans('language').split(' ')[0].trim(),
+                'language'),
+            multipleChip(
+                queryResult.artists(),
+                Translations.of(context).trans('artists'),
+                queryResult.artists() != null
+                    ? (queryResult.artists() as String)
+                        .split('|')
+                        .where((element) => element != '')
+                        .map((e) => _Chip(group: 'artists', name: e))
+                        .toList()
+                    : []),
+            multipleChip(
+                queryResult.groups(),
+                Translations.of(context).trans('groups'),
+                queryResult.groups() != null
+                    ? (queryResult.groups() as String)
+                        .split('|')
+                        .where((element) => element != '')
+                        .map((e) => _Chip(group: 'groups', name: e))
+                        .toList()
+                    : []),
+            multipleChip(
+                queryResult.tags(),
+                Translations.of(context).trans('tags'),
+                queryResult.tags() != null
+                    ? (queryResult.tags() as String)
+                        .split('|')
+                        .where((element) => element != '')
+                        .map((e) => _Chip(
+                            group: e.contains(':') ? e.split(':')[0] : 'tags',
+                            name: e.contains(':') ? e.split(':')[1] : e))
+                        .toList()
+                    : []),
+            multipleChip(
+                queryResult.series(),
+                Translations.of(context).trans('series'),
+                queryResult.series() != null
+                    ? (queryResult.series() as String)
+                        .split('|')
+                        .where((element) => element != '')
+                        .map((e) => _Chip(group: 'series', name: e))
+                        .toList()
+                    : []),
+            multipleChip(
+                queryResult.characters(),
+                Translations.of(context).trans('character'),
+                queryResult.characters() != null
+                    ? (queryResult.characters() as String)
+                        .split('|')
+                        .where((element) => element != '')
+                        .map((e) => _Chip(group: 'character', name: e))
+                        .toList()
+                    : []),
+            singleChip(queryResult.type(),
+                Translations.of(context).trans('type'), 'type'),
+            singleChip(queryResult.uploader(),
+                Translations.of(context).trans('uploader'), 'uploader'),
+            singleChip(queryResult.id().toString(),
+                Translations.of(context).trans('id'), 'id'),
+            singleChip(queryResult.classname(),
+                Translations.of(context).trans('class'), 'class'),
+            Container(height: 10),
+            _buildDivider(),
+            // Comment Area
+            ExpandableNotifier(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                child: ScrollOnExpand(
+                  child: ExpandablePanel(
+                    theme: ExpandableThemeData(
+                        iconColor:
+                            Settings.themeWhat ? Colors.white : Colors.grey,
+                        animationDuration: const Duration(milliseconds: 500)),
+                    header: Padding(
+                      padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                      child: Text(
+                          '${Translations.of(context).trans('comment')} (${comments.length})'),
+                    ),
+                    expanded: commentArea(context),
+                  ),
+                ),
+              ),
+            ),
+
+            _buildDivider(),
+            ExpandableNotifier(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.0),
+                child: ScrollOnExpand(
+                  scrollOnExpand: true,
+                  scrollOnCollapse: false,
+                  child: ExpandablePanel(
+                    theme: ExpandableThemeData(
+                        iconColor:
+                            Settings.themeWhat ? Colors.white : Colors.grey,
+                        animationDuration: const Duration(milliseconds: 500)),
+                    header: Padding(
+                      padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                      child: Text(Translations.of(context).trans('preview')),
+                    ),
+                    expanded: previewArea(),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -628,7 +379,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
     );
   }
 
-  Widget commentArea() {
+  Widget commentArea(BuildContext context) {
     if (comments.length == 0) {
       return Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -705,10 +456,60 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
     }
   }
 
+  TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
+        text: text,
+        style: TextStyle(
+          color: Colors.blueAccent,
+          decoration: TextDecoration.underline,
+        ),
+        recognizer: TapGestureRecognizer()
+          ..onTap = () {
+            openUrl(linkToOpen);
+          },
+      );
+
+  Future<void> openUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
+  }
+
+  List<InlineSpan> linkify(String text) {
+    final List<InlineSpan> list = <InlineSpan>[];
+    final RegExpMatch match =
+        RegExp(r'(https?://.*?)([\<"\n\r ]|$)').firstMatch(text);
+    if (match == null) {
+      list.add(TextSpan(text: text));
+      return list;
+    }
+
+    if (match.start > 0) {
+      list.add(TextSpan(text: text.substring(0, match.start)));
+    }
+
+    final String linkText = match.group(1);
+    if (linkText.contains(RegExp(urlPattern, caseSensitive: false))) {
+      list.add(buildLinkComponent(linkText, linkText));
+    } else if (linkText.contains(RegExp(emailPattern, caseSensitive: false))) {
+      list.add(buildLinkComponent(linkText, 'mailto:$linkText'));
+    } else if (linkText.contains(RegExp(phonePattern, caseSensitive: false))) {
+      list.add(buildLinkComponent(linkText, 'tel:$linkText'));
+    } else {
+      throw 'Unexpected match: $linkText';
+    }
+
+    list.addAll(linkify(text.substring(match.start + linkText.length)));
+
+    return list;
+  }
+
+  Text buildTextWithLinks(String textToLink) =>
+      Text.rich(TextSpan(children: linkify(textToLink)));
+
   Widget previewArea() {
-    if (ThumbnailManager.isExists(widget.queryResult.id())) {
+    if (ThumbnailManager.isExists(queryResult.id())) {
       var thumbnails =
-          ThumbnailManager.get(widget.queryResult.id()).item3.take(30).toList();
+          ThumbnailManager.get(queryResult.id()).item3.take(30).toList();
       return GridView.count(
         controller: null,
         physics: ScrollPhysics(),
@@ -754,7 +555,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
         ),
       ),
       Wrap(
-        children: <Widget>[chip(raw.toLowerCase(), target)],
+        children: <Widget>[_Chip(group: raw.toLowerCase(), name: target)],
       ),
     ]);
   }
@@ -781,10 +582,18 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
       ],
     );
   }
+}
 
-  // Create tag-chip
-  // group, name
-  Widget chip(String group, String name) {
+// Create tag-chip
+// group, name
+class _Chip extends StatelessWidget {
+  final String name;
+  final String group;
+
+  _Chip({this.name, this.group});
+
+  @override
+  Widget build(BuildContext context) {
     var tagRaw = name;
     var count = '';
     var color = Colors.grey;
@@ -868,61 +677,200 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
         ));
     return fc;
   }
-
-  TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
-        text: text,
-        style: TextStyle(
-          color: Colors.blueAccent,
-          decoration: TextDecoration.underline,
-        ),
-        recognizer: TapGestureRecognizer()
-          ..onTap = () {
-            openUrl(linkToOpen);
-          },
-      );
-
-  Future<void> openUrl(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    }
-  }
-
-  List<InlineSpan> linkify(String text) {
-    final List<InlineSpan> list = <InlineSpan>[];
-    final RegExpMatch match =
-        RegExp(r'(https?://.*?)([\<"\n\r ]|$)').firstMatch(text);
-    if (match == null) {
-      list.add(TextSpan(text: text));
-      return list;
-    }
-
-    if (match.start > 0) {
-      list.add(TextSpan(text: text.substring(0, match.start)));
-    }
-
-    final String linkText = match.group(1);
-    if (linkText.contains(RegExp(urlPattern, caseSensitive: false))) {
-      list.add(buildLinkComponent(linkText, linkText));
-    } else if (linkText.contains(RegExp(emailPattern, caseSensitive: false))) {
-      list.add(buildLinkComponent(linkText, 'mailto:$linkText'));
-    } else if (linkText.contains(RegExp(phonePattern, caseSensitive: false))) {
-      list.add(buildLinkComponent(linkText, 'tel:$linkText'));
-    } else {
-      throw 'Unexpected match: $linkText';
-    }
-
-    list.addAll(linkify(text.substring(match.start + linkText.length)));
-
-    return list;
-  }
-
-  Text buildTextWithLinks(String textToLink) =>
-      Text.rich(TextSpan(children: linkify(textToLink)));
 }
 
-const String urlPattern = r'http';
-const String emailPattern = r'\S+@\S+';
-const String phonePattern = r'[\d-]{9,}';
-final RegExp linkRegExp = RegExp(
-    '($urlPattern)|($emailPattern)|($phonePattern)',
-    caseSensitive: false);
+class _SimpleInfoWidget extends StatelessWidget {
+  final String heroKey;
+  final String thumbnail;
+  final Map<String, String> headers;
+  final FlareControls _flareController = FlareControls();
+  bool isBookmarked;
+  final QueryResult queryResult;
+  final String title;
+  final String artist;
+  static DateFormat _dateFormat = DateFormat(' yyyy/MM/dd HH:mm');
+
+  _SimpleInfoWidget({
+    this.heroKey,
+    this.thumbnail,
+    this.headers,
+    this.isBookmarked,
+    this.queryResult,
+    this.title,
+    this.artist,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Stack(
+          children: <Widget>[
+            Hero(
+              tag: heroKey,
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5.0),
+                  child: GestureDetector(
+                      onTap: () async {
+                        Navigator.of(context).push(PageRouteBuilder(
+                          opaque: false,
+                          transitionDuration: Duration(milliseconds: 500),
+                          transitionsBuilder: (BuildContext context,
+                              Animation<double> animation,
+                              Animation<double> secondaryAnimation,
+                              Widget wi) {
+                            return new FadeTransition(
+                                opacity: animation, child: wi);
+                          },
+                          pageBuilder: (_, __, ___) => ThumbnailViewPage(
+                            size: null,
+                            thumbnail: thumbnail,
+                            headers: headers,
+                            heroKey: heroKey,
+                          ),
+                        ));
+                      },
+                      child: thumbnail != null
+                          ? CachedNetworkImage(
+                              imageUrl: thumbnail,
+                              fit: BoxFit.cover,
+                              httpHeaders: headers,
+                              height: 4 * 50.0,
+                              width: 3 * 50.0,
+                            )
+                          : SizedBox(
+                              height: 4 * 50.0,
+                              width: 3 * 50.0,
+                              child: FlareActor(
+                                "assets/flare/Loading2.flr",
+                                alignment: Alignment.center,
+                                fit: BoxFit.fitHeight,
+                                animation: "Alarm",
+                              ),
+                            )),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: GestureDetector(
+                child: Transform(
+                  transform: new Matrix4.identity()..scale(1.0),
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: FlareActor(
+                      'assets/flare/likeUtsua.flr',
+                      animation: isBookmarked ? "Like" : "IdleUnlike",
+                      controller: _flareController,
+                      // color: Colors.orange,
+                      // snapToEnd: true,
+                    ),
+                  ),
+                ),
+                onTap: () async {
+                  isBookmarked = !isBookmarked;
+                  if (isBookmarked)
+                    await (await Bookmark.getInstance())
+                        .bookmark(queryResult.id());
+                  else
+                    await (await Bookmark.getInstance())
+                        .unbookmark(queryResult.id());
+                  if (!isBookmarked)
+                    _flareController.play('Unlike');
+                  else {
+                    _flareController.play('Like');
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 4 * 50.0,
+            width: 3 * 50.0,
+            child: Padding(
+              padding: EdgeInsets.all(4),
+              child: Stack(children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 900),
+                      childAnimationBuilder: (widget) => SlideAnimation(
+                            horizontalOffset: 50.0,
+                            child: FadeInAnimation(
+                              child: widget,
+                            ),
+                          ),
+                      children: <Widget>[
+                        Text(title,
+                            maxLines: 5,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text(artist),
+                      ]),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 4 * 50.0 - 50, 0, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: AnimationConfiguration.toStaggeredList(
+                      duration: const Duration(milliseconds: 900),
+                      childAnimationBuilder: (widget) => SlideAnimation(
+                        horizontalOffset: 50.0,
+                        child: FadeInAnimation(
+                          child: widget,
+                        ),
+                      ),
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.date_range,
+                              size: 20,
+                            ),
+                            Text(
+                                queryResult.getDateTime() != null
+                                    ? _dateFormat
+                                        .format(queryResult.getDateTime())
+                                    : '',
+                                style: TextStyle(fontSize: 15)),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.photo,
+                              size: 20,
+                            ),
+                            Text(
+                                ' ' +
+                                    (thumbnail != null
+                                        ? ThumbnailManager.get(queryResult.id())
+                                                .item2
+                                                .length
+                                                .toString() +
+                                            ' Page'
+                                        : ''),
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
