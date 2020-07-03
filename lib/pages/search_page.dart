@@ -457,9 +457,10 @@ class SearchBar implements SliverPersistentHeaderDelegate {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Opacity(
+        AnimatedOpacity(
           child: searchBar,
           opacity: 1.0 - max(0.0, shrinkOffset - 20) / (maxExtent - 20),
+          duration: Duration(milliseconds: 100),
         )
       ],
     );
@@ -758,10 +759,10 @@ class _SearchBarPageState extends State<SearchBarPage>
                                         color: Colors.grey.shade400,
                                       ),
                                       ListTile(
-                                        leading: Icon(
-                                            MdiIcons.chartBubble,
+                                        leading: Icon(MdiIcons.chartBubble,
                                             color: Settings.majorColor),
-                                        title: Text(Translations.of(context).trans('fuzzysearch')),
+                                        title: Text(Translations.of(context)
+                                            .trans('fuzzysearch')),
                                         trailing: Switch(
                                           value: useFuzzy,
                                           onChanged: (value) {
@@ -1045,8 +1046,10 @@ class _SearchBarPageState extends State<SearchBarPage>
       for (int i = 0; i < tagRaw.length; i++) {
         ts.add(TextSpan(
             style: new TextStyle(
-                color: route[i + 1] == 1 ? accColor : Colors.white,
-            fontWeight: route[i + 1] == 1  ? FontWeight.bold : FontWeight.normal,),
+              color: route[i + 1] == 1 ? accColor : Colors.white,
+              fontWeight:
+                  route[i + 1] == 1 ? FontWeight.bold : FontWeight.normal,
+            ),
             text: tagRaw[i]));
       }
     } else {
