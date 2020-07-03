@@ -30,8 +30,6 @@ import 'package:violet/settings.dart';
 import 'package:violet/syncfusion/slider.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
 
-bool searchPageBlur = false;
-
 class SearchPage extends StatefulWidget {
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -102,27 +100,6 @@ class _SearchPageState extends State<SearchPage>
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
       child: GestureDetector(
-        onScaleStart: (detail) {
-          scaleOnce = false;
-        },
-        onScaleUpdate: (detail) async {
-          if ((detail.scale > 1.2 || detail.scale < 0.8) &&
-              scaleOnce == false) {
-            scaleOnce = true;
-            setState(() {
-              searchPageBlur = !searchPageBlur;
-            });
-            await Vibration.vibrate(duration: 50, amplitude: 50);
-            Scaffold.of(context).showSnackBar(SnackBar(
-              duration: Duration(milliseconds: 600),
-              content: new Text(
-                searchPageBlur ? '화면 블러가 적용되었습니다.' : '화면 블러가 해제되었습니다.',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: Colors.grey.shade800,
-            ));
-          }
-        },
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[

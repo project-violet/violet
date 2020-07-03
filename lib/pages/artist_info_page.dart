@@ -37,23 +37,35 @@ class ArtistInfoPage extends StatefulWidget {
 
 class _ArtistInfoPageState extends State<ArtistInfoPage> {
   bool qureyLoaded = false;
+  // This is used for top color bar
   int femaleTags = 0;
   int maleTags = 0;
   int tags = 0;
+  // Artist? Group? Uploader?
   String prefix;
+  // Artist Articles
   List<QueryResult> cc;
+  // Chart component lists
   List<Tuple2<String, int>> lff = List<Tuple2<String, int>>();
   List<Tuple2<String, int>> lffOrigin;
+  // Similar Aritsts Info
   List<Tuple2<String, double>> similars;
   List<Tuple2<String, double>> similarsAll;
+  // Similar Item Lists
   List<List<QueryResult>> qrs = List<List<QueryResult>>();
+  // Title clustering
+  List<List<int>> series;
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       cc = await query([widget.artist, widget.isGroup, widget.isUploader]);
-      var clustering = HitomiTitleCluster.doClustering(
+
+      //
+      //  Title based article clustering
+      //
+      series = HitomiTitleCluster.doClustering(
               cc.map((e) => e.title() as String).toList())
           .toList();
 
@@ -199,8 +211,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     return Container(
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
       child: Padding(
         // padding: EdgeInsets.all(0),
         padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
@@ -441,6 +452,25 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                 : Translations.of(context).trans('iartists'))),
                   ),
                   expanded: similarArea(),
+                ),
+              ),
+            ),
+          ),
+          ExpandableNotifier(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: ScrollOnExpand(
+                child: ExpandablePanel(
+                  theme: ExpandableThemeData(
+                      iconColor:
+                          Settings.themeWhat ? Colors.white : Colors.grey,
+                      animationDuration: const Duration(milliseconds: 500)),
+                  header: Padding(
+                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    child: Text(Translations.of(context).trans('series') +
+                        ' (${series.length})'),
+                  ),
+                  expanded: seriesArea(),
                 ),
               ),
             ),
@@ -692,6 +722,137 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     //       ),
     // ),
     // );
+  }
+
+  Widget seriesArea() {
+    var unescape = new HtmlUnescape();
+    var windowWidth = MediaQuery.of(context).size.width;
+    return ListView.builder(
+        padding: EdgeInsets.all(0),
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: min(series.length, 6) + (series.length > 6 ? 1 : 0),
+        itemBuilder: (BuildContext ctxt, int index) {
+          if (index == 6) {
+            return more(SeriesListPage(
+              cc: cc,
+              prefix: prefix,
+              series: series,
+            ));
+          }
+          var e = series[index];
+          return InkWell(
+            onTap: () async {
+              // Navigator.of(context).push(PageRouteBuilder(
+              //   // opaque: false,
+              //   transitionDuration: Duration(milliseconds: 500),
+              //   transitionsBuilder:
+              //       (context, animation, secondaryAnimation, child) {
+              //     var begin = Offset(0.0, 1.0);
+              //     var end = Offset.zero;
+              //     var curve = Curves.ease;
+
+              //     var tween = Tween(begin: begin, end: end)
+              //         .chain(CurveTween(curve: curve));
+
+              //     return SlideTransition(
+              //       position: animation.drive(tween),
+              //       child: child,
+              //     );
+              //   },
+              //   pageBuilder: (_, __, ___) => ArtistInfoPage(
+              //     isGroup: widget.isGroup,
+              //     isUploader: widget.isUploader,
+              //     artist: e.item1,
+              //   ),
+              // ));
+            },
+            child: SizedBox(
+              height: 195,
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // crossAxisAlignment: CrossAxisAlignment,
+                        children: <Widget>[
+                          Flexible(
+                              child: Text(
+                                  // (index + 1).toString() +
+                                  //     '. ' +
+                                  ' ' + unescape.convert(cc[e[0]].title()),
+                                  style: TextStyle(fontSize: 17),
+                                  overflow: TextOverflow.ellipsis)),
+                          Text(e.length.toString() + ' ',
+                              style: TextStyle(
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade300
+                                    : Colors.grey.shade700,
+                              )),
+                        ],
+                      ),
+                      // Text(' ' + unescape.convert(cc[e[0]].title()),
+                      //         style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis,),
+                      SizedBox(
+                        height: 162,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Expanded(
+                                flex: 1,
+                                child: e.length > 0
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: ArticleListItemVerySimpleWidget(
+                                          queryResult: cc[e[0]],
+                                          showDetail: false,
+                                          addBottomPadding: false,
+                                          width:
+                                              (windowWidth - 16 - 4.0 - 1.0) /
+                                                  3,
+                                          thumbnailTag: Uuid().v4(),
+                                        ))
+                                    : Container()),
+                            Expanded(
+                                flex: 1,
+                                child: e.length > 1
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: ArticleListItemVerySimpleWidget(
+                                          queryResult: cc[e[1]],
+                                          showDetail: false,
+                                          addBottomPadding: false,
+                                          width:
+                                              (windowWidth - 16 - 4.0 - 16.0) /
+                                                  3,
+                                          thumbnailTag: Uuid().v4(),
+                                        ))
+                                    : Container()),
+                            Expanded(
+                                flex: 1,
+                                child: e.length > 2
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: ArticleListItemVerySimpleWidget(
+                                          queryResult: cc[e[2]],
+                                          showDetail: false,
+                                          addBottomPadding: false,
+                                          width:
+                                              (windowWidth - 16 - 4.0 - 16.0) /
+                                                  3,
+                                          thumbnailTag: Uuid().v4(),
+                                        ))
+                                    : Container()),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+          );
+        });
   }
 }
 
@@ -1256,6 +1417,177 @@ class SimilarListPage extends StatelessWidget {
                                 );
                               });
                         })),
+              ),
+            ),
+          ]),
+    );
+  }
+}
+
+class SeriesListPage extends StatelessWidget {
+  final String prefix;
+  final List<List<int>> series;
+  final List<QueryResult> cc;
+
+  SeriesListPage({this.prefix, this.series, this.cc}) {}
+
+  @override
+  Widget build(BuildContext context) {
+    var windowWidth = MediaQuery.of(context).size.width;
+    final width = MediaQuery.of(context).size.width;
+    final height =
+        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    var unescape = new HtmlUnescape();
+    // if (similarsAll == null) return Text('asdf');
+    return Padding(
+      // padding: EdgeInsets.all(0),
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Card(
+              elevation: 5,
+              color:
+                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              child: SizedBox(
+                width: width - 16,
+                height: height - 16,
+                child: Container(
+                  child: ListView.builder(
+                    padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                    physics: ClampingScrollPhysics(),
+                    itemCount: series.length,
+                    itemBuilder: (BuildContext ctxt, int index) {
+                      var e = series[index];
+                      return InkWell(
+                        onTap: () async {
+                          // Navigator.of(context).push(PageRouteBuilder(
+                          //   // opaque: false,
+                          //   transitionDuration: Duration(milliseconds: 500),
+                          //   transitionsBuilder: (context, animation,
+                          //       secondaryAnimation, child) {
+                          //     var begin = Offset(0.0, 1.0);
+                          //     var end = Offset.zero;
+                          //     var curve = Curves.ease;
+
+                          //     var tween = Tween(begin: begin, end: end)
+                          //         .chain(CurveTween(curve: curve));
+
+                          //     return SlideTransition(
+                          //       position: animation.drive(tween),
+                          //       child: child,
+                          //     );
+                          //   },
+                          //   pageBuilder: (_, __, ___) => ArtistInfoPage(
+                          //     isGroup: isGroup,
+                          //     isUploader: isUploader,
+                          //     artist: e.item1,
+                          //   ),
+                          // ));
+                        },
+                        child: SizedBox(
+                          height: 195,
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  // crossAxisAlignment: CrossAxisAlignment,
+                                  children: <Widget>[
+                                    Flexible(
+                                        child: Text(
+                                            // (index + 1).toString() +
+                                            //     '. ' +
+                                            ' ' +
+                                                unescape
+                                                    .convert(cc[e[0]].title()),
+                                            style: TextStyle(fontSize: 17),
+                                            overflow: TextOverflow.ellipsis)),
+                                    Text(e.length.toString() + ' ',
+                                        style: TextStyle(
+                                          color: Settings.themeWhat
+                                              ? Colors.grey.shade300
+                                              : Colors.grey.shade700,
+                                        )),
+                                  ],
+                                ),
+                                // Text(' ' + unescape.convert(cc[e[0]].title()),
+                                //         style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis,),
+                                SizedBox(
+                                  height: 162,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Expanded(
+                                          flex: 1,
+                                          child: e.length > 0
+                                              ? Padding(
+                                                  padding: EdgeInsets.all(4),
+                                                  child:
+                                                      ArticleListItemVerySimpleWidget(
+                                                    queryResult: cc[e[0]],
+                                                    showDetail: false,
+                                                    addBottomPadding: false,
+                                                    width: (windowWidth -
+                                                            16 -
+                                                            4.0 -
+                                                            1.0) /
+                                                        3,
+                                                    thumbnailTag: Uuid().v4(),
+                                                  ))
+                                              : Container()),
+                                      Expanded(
+                                          flex: 1,
+                                          child: e.length > 1
+                                              ? Padding(
+                                                  padding: EdgeInsets.all(4),
+                                                  child:
+                                                      ArticleListItemVerySimpleWidget(
+                                                    queryResult: cc[e[1]],
+                                                    showDetail: false,
+                                                    addBottomPadding: false,
+                                                    width: (windowWidth -
+                                                            16 -
+                                                            4.0 -
+                                                            16.0) /
+                                                        3,
+                                                    thumbnailTag: Uuid().v4(),
+                                                  ))
+                                              : Container()),
+                                      Expanded(
+                                          flex: 1,
+                                          child: e.length > 2
+                                              ? Padding(
+                                                  padding: EdgeInsets.all(4),
+                                                  child:
+                                                      ArticleListItemVerySimpleWidget(
+                                                    queryResult: cc[e[2]],
+                                                    showDetail: false,
+                                                    addBottomPadding: false,
+                                                    width: (windowWidth -
+                                                            16 -
+                                                            4.0 -
+                                                            16.0) /
+                                                        3,
+                                                    thumbnailTag: Uuid().v4(),
+                                                  ))
+                                              : Container()),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ]),
