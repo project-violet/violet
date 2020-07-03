@@ -36,6 +36,7 @@
     "cache": "Cache",
     "tagtranslation": "Tag Translation (to Korean)",
     "showcount": "Show Count",
+    "fuzzysearch": "Fuzzy Search",
     "update":"Update",
     "checkupdate": "Check Update",
     "etc":"Etc",

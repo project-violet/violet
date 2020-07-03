@@ -124,8 +124,12 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                     width: width,
                     height: height,
                     color: Settings.themeWhat
-                        ? Colors.black.withOpacity(0.8)
-                        : Colors.white.withOpacity(0.9),
+                        ? Colors.black.withOpacity(0.9)
+                        : Colors.white.withOpacity(0.97),
+                    
+                    // color: Settings.themeWhat
+                    //     ? Colors.black
+                    //     : Colors.white,
                   ),
                   Container(
                     child: SingleChildScrollView(
@@ -148,7 +152,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children:
                                       AnimationConfiguration.toStaggeredList(
-                                    duration: const Duration(milliseconds: 400),
+                                    duration: const Duration(milliseconds: 370),
                                     childAnimationBuilder: (widget) =>
                                         SlideAnimation(
                                       horizontalOffset: 50.0,
@@ -830,7 +834,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage>
                     group == 'uploader') &&
                 name.toLowerCase() != 'n/a') {
               Navigator.of(context).push(PageRouteBuilder(
-                opaque: false,
+                // opaque: false,
                 transitionDuration: Duration(milliseconds: 500),
                 // transitionsBuilder: (BuildContext context,
                 //     Animation<double> animation,

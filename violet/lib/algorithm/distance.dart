@@ -5,6 +5,8 @@
 
 import 'dart:math';
 
+import 'package:extended_image/extended_image.dart';
+
 class Distance {
   static int hammingDistance<T extends num>(List<T> l1, List<T> l2) {
     if (l1.length != l2.length) return -1;
@@ -60,6 +62,49 @@ class Distance {
     return v0[y + y + 1];
   }
 
+  static List<int> levenshteinDistanceRoute<T extends num>(
+      List<T> l1, List<T> l2) {
+    List<List<int>> dist = List.generate(
+        l1.length + 1, (i) => List(l2.length + 1),
+        growable: false);
+
+    for (int i = 0; i <= l1.length; i++) dist[i][0] = i;
+    for (int j = 0; j <= l2.length; j++) dist[0][j] = j;
+
+    for (int j = 1; j <= l2.length; j++) {
+      for (int i = 1; i <= l1.length; i++) {
+        if (l1[i - 1] == l2[j - 1])
+          dist[i][j] = dist[i - 1][j - 1];
+        else
+          dist[i][j] = min(dist[i - 1][j - 1] + 1,
+              min(dist[i][j - 1] + 1, dist[i - 1][j] + 1));
+      }
+    }
+
+    List<int> route = List<int>(l1.length + 1);
+    route.fillRange(0, route.length, 0);
+    int fz = dist[l1.length][l2.length];
+    for (int i = l1.length, j = l2.length; i >= 0 && j >= 0;) {
+      int lu = 987654321;
+      int u = 987654321;
+      int l = 987654321;
+      if (i - 1 >= 0 && j - 1 >= 0) lu = dist[i - 1][j - 1];
+      if (i - 1 >= 0) u = dist[i - 1][j];
+      if (j - 1 >= 0) l = dist[i][j - 1];
+      int mm = min(lu, min(l, u));
+      if (mm == fz) route[i] = 1;
+      if (mm == lu) {
+        i--;
+        j--;
+      } else if (mm == u)
+        i--;
+      else
+        j--;
+      fz = mm;
+    }
+    return route;
+  }
+
   // dynamic must be double, int
   static double cosineDistance(
       Map<String, dynamic> l1, Map<String, dynamic> l2) {
@@ -69,8 +114,7 @@ class Distance {
     l1.forEach((x, y) => xx += y * y);
     l2.forEach((x, y) => yy += y * y);
 
-    if (xx == 0 || yy  == 0)
-      return 0;
+    if (xx == 0 || yy == 0) return 0;
 
     xx = sqrt(xx);
     yy = sqrt(yy);
