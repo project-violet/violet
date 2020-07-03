@@ -198,24 +198,46 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    return Padding(
-      // padding: EdgeInsets.all(0),
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Card(
-            elevation: 5,
-            color:
-                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-            child: SizedBox(
-              width: width - 16,
-              height: height - 16,
-              child: Container(
-                child: qureyLoaded
-                    ? SingleChildScrollView(
-                        child: Column(
+    return Container(
+              color:
+                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+      child: Padding(
+        // padding: EdgeInsets.all(0),
+        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Card(
+              elevation: 5,
+              color:
+                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              child: SizedBox(
+                width: width - 16,
+                height: height - 16,
+                child: Container(
+                  child: qureyLoaded
+                      ? SingleChildScrollView(
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                height: 16,
+                              ),
+                              Text(
+                                  (widget.isGroup
+                                          ? 'Groups: '
+                                          : widget.isUploader
+                                              ? 'Uploader: '
+                                              : 'Artist: ') +
+                                      widget.artist,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                              queryResult()
+                            ],
+                          ),
+                        )
+                      : Column(
                           children: <Widget>[
                             Container(
                               height: 16,
@@ -229,66 +251,49 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                     widget.artist,
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
-                            queryResult()
-                          ],
-                        ),
-                      )
-                    : Column(
-                        children: <Widget>[
-                          Container(
-                            height: 16,
-                          ),
-                          Text(
-                              (widget.isGroup
-                                      ? 'Groups: '
-                                      : widget.isUploader
-                                          ? 'Uploader: '
-                                          : 'Artist: ') +
-                                  widget.artist,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: CircularProgressIndicator(),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                // child:  SingleChildScrollView(
-                //   child: Column(
-                //     children: <Widget>[
-                //       Container(
-                //         height: 16,
-                //       ),
-                //       Text(
-                //           (widget.isGroup ? 'Groups:' : 'Artist: ') +
-                //               widget.artist,
-                //           style: TextStyle(
-                //               fontSize: 20, fontWeight: FontWeight.bold)),
-                //       qureyLoaded
-                //           ? queryResult()
-                //           : Expanded(
-                //               child: Align(
-                //                 alignment: Alignment.center,
-                //                 child: SizedBox(
-                //                   width: 50,
-                //                   height: 50,
-                //                   child: CircularProgressIndicator(),
-                //                 ),
-                //               ),
-                //             ),
-                //     ],
-                //   ),
-                // ),
+                          ],
+                        ),
+                  // child:  SingleChildScrollView(
+                  //   child: Column(
+                  //     children: <Widget>[
+                  //       Container(
+                  //         height: 16,
+                  //       ),
+                  //       Text(
+                  //           (widget.isGroup ? 'Groups:' : 'Artist: ') +
+                  //               widget.artist,
+                  //           style: TextStyle(
+                  //               fontSize: 20, fontWeight: FontWeight.bold)),
+                  //       qureyLoaded
+                  //           ? queryResult()
+                  //           : Expanded(
+                  //               child: Align(
+                  //                 alignment: Alignment.center,
+                  //                 child: SizedBox(
+                  //                   width: 50,
+                  //                   height: 50,
+                  //                   child: CircularProgressIndicator(),
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //     ],
+                  //   ),
+                  // ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -548,7 +553,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           return InkWell(
             onTap: () async {
               Navigator.of(context).push(PageRouteBuilder(
-                opaque: false,
+                // opaque: false,
                 transitionDuration: Duration(milliseconds: 500),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
@@ -923,22 +928,23 @@ class _ArticleListPageState extends State<ArticleListPage> {
       case 2:
       case 3:
         return SliverPadding(
-            padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
-            sliver: LiveSliverList(
-          itemCount: widget.cc.length,
-          itemBuilder: (context, index, animation) {
-            return Align(
-              alignment: Alignment.center,
-              child: ArticleListItemVerySimpleWidget(
-                addBottomPadding: true,
-                showDetail: nowType == 3,
-                queryResult: widget.cc[index],
-                width: windowWidth - 4.0,
-                thumbnailTag: Uuid().v4(),
-              ),
-            );
-          },
-        ),);
+          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          sliver: LiveSliverList(
+            itemCount: widget.cc.length,
+            itemBuilder: (context, index, animation) {
+              return Align(
+                alignment: Alignment.center,
+                child: ArticleListItemVerySimpleWidget(
+                  addBottomPadding: true,
+                  showDetail: nowType == 3,
+                  queryResult: widget.cc[index],
+                  width: windowWidth - 4.0,
+                  thumbnailTag: Uuid().v4(),
+                ),
+              );
+            },
+          ),
+        );
 
       default:
         return Container(
@@ -1091,7 +1097,7 @@ class SimilarListPage extends StatelessWidget {
                                 return InkWell(
                                   onTap: () async {
                                     Navigator.of(context).push(PageRouteBuilder(
-                                      opaque: false,
+                                      // opaque: false,
                                       transitionDuration:
                                           Duration(milliseconds: 500),
                                       transitionsBuilder: (context, animation,

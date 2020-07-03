@@ -36,6 +36,7 @@
     "cache": "캐시",
     "tagtranslation": "태그 한글화",
     "showcount": "카운트 표시",
+    "fuzzysearch": "퍼지 검색",
     "update":"업데이트",
     "checkupdate": "업데이트 확인",
     "etc":"기타",

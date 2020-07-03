@@ -21,6 +21,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:tuple/tuple.dart';
 import 'package:vibration/vibration.dart';
+import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/locale.dart';
@@ -72,10 +73,12 @@ class _SearchPageState extends State<SearchPage>
     WidgetsBinding.instance
         .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
     Future.delayed(Duration(milliseconds: 500), () async {
-      final query = HitomiManager.translate2query(
-          Settings.includeTags +
-              ' ' +
-              Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' '));
+      final query = HitomiManager.translate2query(Settings.includeTags +
+          ' ' +
+          Settings.excludeTags
+              .where((e) => e.trim() != '')
+              .map((e) => '-$e')
+              .join(' '));
       final result = QueryManager.queryPagination(query);
 
       latestQuery = Tuple2<QueryManager, String>(result, '');
@@ -402,7 +405,8 @@ class _SearchPageState extends State<SearchPage>
                             showDetail: false,
                             addBottomPadding: false,
                             width: (windowWidth - 4.0) / mm,
-                            thumbnailTag: 'thumbnail' + queryResult[index].id().toString(),
+                            thumbnailTag: 'thumbnail' +
+                                queryResult[index].id().toString(),
                           ),
                         ),
                       ),
@@ -628,9 +632,11 @@ class _SearchBarPageState extends State<SearchBarPage>
                                         ' ' +
                                         Settings.includeTags +
                                         ' ' +
-                                        Settings.excludeTags.where((e) => e.trim() != '')
+                                        Settings.excludeTags
+                                            .where((e) => e.trim() != '')
                                             .map((e) => '-$e')
-                                            .join(' ').trim());
+                                            .join(' ')
+                                            .trim());
                                 final result =
                                     QueryManager.queryPagination(query);
                                 Navigator.pop(
@@ -753,27 +759,52 @@ class _SearchBarPageState extends State<SearchBarPage>
                                       ),
                                       ListTile(
                                         leading: Icon(
-                                            MdiIcons.viewGridPlusOutline,
+                                            MdiIcons.chartBubble,
                                             color: Settings.majorColor),
-                                        title: Slider(
-                                          activeColor: Settings.majorColor,
-                                          inactiveColor: Settings.majorColor
-                                              .withOpacity(0.2),
-                                          min: 60.0,
-                                          max: 2000.0,
-                                          divisions: (2000 - 60) ~/ 30,
-                                          label:
-                                              '$_searchResultMaximum${Translations.of(context).trans('tagdisplay')}',
-                                          onChanged: (double value) {
+                                        title: Text(Translations.of(context).trans('fuzzysearch')),
+                                        trailing: Switch(
+                                          value: useFuzzy,
+                                          onChanged: (value) {
                                             setState(() {
-                                              _searchResultMaximum =
-                                                  value.toInt();
+                                              useFuzzy = value;
                                             });
                                           },
-                                          value:
-                                              _searchResultMaximum.toDouble(),
+                                          activeTrackColor: Settings.majorColor,
+                                          activeColor:
+                                              Settings.majorAccentColor,
                                         ),
                                       ),
+                                      // Container(
+                                      //   margin: const EdgeInsets.symmetric(
+                                      //     horizontal: 8.0,
+                                      //   ),
+                                      //   width: double.infinity,
+                                      //   height: 1.0,
+                                      //   color: Colors.grey.shade400,
+                                      // ),
+                                      // ListTile(
+                                      //   leading: Icon(
+                                      //       MdiIcons.viewGridPlusOutline,
+                                      //       color: Settings.majorColor),
+                                      //   title: Slider(
+                                      //     activeColor: Settings.majorColor,
+                                      //     inactiveColor: Settings.majorColor
+                                      //         .withOpacity(0.2),
+                                      //     min: 60.0,
+                                      //     max: 2000.0,
+                                      //     divisions: (2000 - 60) ~/ 30,
+                                      //     label:
+                                      //         '$_searchResultMaximum${Translations.of(context).trans('tagdisplay')}',
+                                      //     onChanged: (double value) {
+                                      //       setState(() {
+                                      //         _searchResultMaximum =
+                                      //             value.toInt();
+                                      //       });
+                                      //     },
+                                      //     value:
+                                      //         _searchResultMaximum.toDouble(),
+                                      //   ),
+                                      // ),
 
                                       // GradientRangeSlider(),
                                       Expanded(
@@ -843,6 +874,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     _nothing = false;
     _onChip = false;
     if (target.trim() == '') {
+      latestToken = '';
       setState(() {
         _searchLists.clear();
       });
@@ -874,14 +906,28 @@ class _SearchBarPageState extends State<SearchBarPage>
     _insertPos = pos;
     _insertLength = token.length;
     _searchText = target;
-    final result = (await HitomiManager.queryAutoComplete(token))
-        .take(_searchResultMaximum)
-        .toList();
-    if (result.length == 0) _nothing = true;
-    setState(() {
-      _searchLists = result;
-    });
+    latestToken = token;
+    if (!useFuzzy) {
+      final result = (await HitomiManager.queryAutoComplete(token))
+          .take(_searchResultMaximum)
+          .toList();
+      if (result.length == 0) _nothing = true;
+      setState(() {
+        _searchLists = result;
+      });
+    } else {
+      final result = (await HitomiManager.queryAutoCompleteFuzzy(token))
+          .take(_searchResultMaximum)
+          .toList();
+      if (result.length == 0) _nothing = true;
+      setState(() {
+        _searchLists = result;
+      });
+    }
   }
+
+  String latestToken = '';
+  bool useFuzzy = false;
 
   Future<void> deleteProcess() async {
     var text = _searchController.text;
@@ -945,18 +991,88 @@ class _SearchBarPageState extends State<SearchBarPage>
       color = Colors.blue;
     else if (info.item1 == 'prefix') color = Colors.orange;
 
+    var ts = List<TextSpan>();
+    var accColor = Colors.pink;
+
+    if (color == Colors.pink) accColor = Colors.orange;
+
+    if (!useFuzzy && latestToken != '' && tagRaw.contains(latestToken)) {
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+          text: tagRaw.split(latestToken)[0]));
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: accColor,
+            fontWeight: FontWeight.bold,
+          ),
+          text: latestToken));
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+          text: tagRaw.split(latestToken)[1]));
+    } else if (!useFuzzy &&
+        latestToken.contains(':') &&
+        latestToken.split(':')[1] != '' &&
+        tagRaw.contains(latestToken.split(':')[1])) {
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+          text: tagRaw.split(latestToken.split(':')[1])[0]));
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: accColor,
+            fontWeight: FontWeight.bold,
+          ),
+          text: latestToken.split(':')[1]));
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+          text: tagRaw.split(latestToken.split(':')[1])[1]));
+    } else if (!useFuzzy) {
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+          text: tagRaw));
+    } else if (latestToken != '') {
+      var route = Distance.levenshteinDistanceRoute(
+          tagRaw.runes.toList(), latestToken.runes.toList());
+      for (int i = 0; i < tagRaw.length; i++) {
+        ts.add(TextSpan(
+            style: new TextStyle(
+                color: route[i + 1] == 1 ? accColor : Colors.white,
+            fontWeight: route[i + 1] == 1  ? FontWeight.bold : FontWeight.normal,),
+            text: tagRaw[i]));
+      }
+    } else {
+      ts.add(TextSpan(
+          style: new TextStyle(
+            color: Colors.white,
+          ),
+          text: tagRaw));
+    }
+
     var fc = RawChip(
       labelPadding: EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
         child: Text(info.item1[0].toUpperCase()),
       ),
-      label: Text(
-        ' ' + tagRaw + count,
-        style: TextStyle(
-          color: Colors.white,
-        ),
-      ),
+      label: RichText(
+          text: new TextSpan(
+              style: new TextStyle(
+                color: Colors.white,
+              ),
+              children: [
+            new TextSpan(text: ' '),
+            new TextSpan(children: ts),
+            new TextSpan(text: count),
+          ])),
       backgroundColor: color,
       elevation: 6.0,
       shadowColor: Colors.grey[60],
