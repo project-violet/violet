@@ -205,6 +205,7 @@ class _SearchPageState extends State<SearchPage>
                                             latestQuery = value;
                                             queryResult = List<QueryResult>();
                                             isFilterUsed = false;
+                                            isOr = false;
                                             tagStates = Map<String, bool>();
                                             groupStates = Map<String, bool>();
                                             await loadNextQuery();
@@ -317,6 +318,7 @@ class _SearchPageState extends State<SearchPage>
                                     queryResult: queryResult,
                                     tagStates: tagStates,
                                     groupStates: groupStates,
+                                    isOr: isOr,
                                   ),
                                 ))
                                     .then((value) async {
@@ -325,16 +327,16 @@ class _SearchPageState extends State<SearchPage>
                                   blurred = value[1];
                                   tagStates = value[2];
                                   groupStates = value[3];
+                                  isOr = value[4];
                                   var result = List<QueryResult>();
                                   queryResult.forEach((element) {
-                                    var succ = true;
+                                    var succ = !isOr;
                                     tagStates.forEach((key, value) {
                                       if (!value) return;
-                                      if (!succ) return;
+                                      if (succ == isOr) return;
                                       var split = key.split('|');
                                       var kk = prefix2Tag(split[0]);
                                       if (element.result[kk] == null) {
-                                        succ = false;
                                         return;
                                       }
                                       if (!isSingleTag(split[0])) {
@@ -342,11 +344,13 @@ class _SearchPageState extends State<SearchPage>
                                         if (split[0] == 'female' ||
                                             split[0] == 'male')
                                           tt = split[0] + ':' + split[1];
-                                        if (!(element.result[kk] as String)
-                                            .contains('|' + tt + '|'))
-                                          succ = false;
-                                      } else if (!(element.result[kk] as String)
-                                          .contains(split[1])) succ = false;
+                                        if ((element.result[kk] as String)
+                                                .contains('|' + tt + '|') ==
+                                            isOr) succ = isOr;
+                                      } else if ((element.result[kk]
+                                                  as String ==
+                                              split[1]) ==
+                                          isOr) succ = isOr;
                                     });
                                     if (succ) result.add(element);
                                   });
@@ -378,6 +382,7 @@ class _SearchPageState extends State<SearchPage>
 
   bool isFilterUsed = false;
   bool ignoreBookmark = false;
+  bool isOr = false;
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
 
@@ -1420,6 +1425,7 @@ class SearchResultSelector extends StatelessWidget {
 class SearchSort extends StatefulWidget {
   bool ignoreBookmark;
   bool blurred;
+  bool isOr;
   List<Tuple3<String, String, int>> tags = List<Tuple3<String, String, int>>();
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
@@ -1433,6 +1439,7 @@ class SearchSort extends StatefulWidget {
     this.queryResult,
     this.tagStates,
     this.groupStates,
+    this.isOr,
   });
 
   @override
@@ -1533,6 +1540,7 @@ class _SearchSortState extends State<SearchSort> {
           widget.blurred,
           widget.tagStates,
           widget.groupStates,
+          widget.isOr,
         ]);
         return new Future(() => false);
       },
@@ -1682,6 +1690,15 @@ class _SearchSortState extends State<SearchSort> {
                             spacing: 4.0,
                             runSpacing: -10.0,
                             children: <Widget>[
+                              FilterChip(
+                                label: Text("OR"),
+                                selected: widget.isOr,
+                                onSelected: (bool value) {
+                                  setState(() {
+                                    widget.isOr = value;
+                                  });
+                                },
+                              ),
                               FilterChip(
                                 label: Text("북마크 제외"),
                                 selected: widget.ignoreBookmark,
