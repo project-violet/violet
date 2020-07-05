@@ -336,7 +336,8 @@ class _SearchPageState extends State<SearchPage>
                                       if (succ == isOr) return;
                                       var split = key.split('|');
                                       var kk = prefix2Tag(split[0]);
-                                      if (element.result[kk] == null) {
+                                      if (element.result[kk] == null && !isOr) {
+                                        succ = false;
                                         return;
                                       }
                                       if (!isSingleTag(split[0])) {
