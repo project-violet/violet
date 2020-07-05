@@ -63,66 +63,71 @@ class ArticleInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    return Padding(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Card(
-            elevation: 5,
-            color: Colors.transparent,
-            child: SizedBox(
-              width: width - 32,
-              height: height - 64,
-              child: Stack(
-                children: [
-                  Container(
-                    width: width,
-                    height: height,
-                    color: Settings.themeWhat
-                        ? Colors.black.withOpacity(0.9)
-                        : Colors.white.withOpacity(0.97),
-                  ),
-                  Container(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Stack(
-                            children: [
-                              Container(
-                                width: width,
-                                height: 4 * 50.0 + 16,
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade900.withOpacity(0.6)
-                                    : Colors.white.withOpacity(0.6),
-                              ),
-                              _InfoAreaWithCommentWidget(
-                                headers: headers,
-                                queryResult: queryResult,
-                              ),
-                              _SimpleInfoWidget(
-                                heroKey: heroKey,
-                                headers: headers,
-                                thumbnail: thumbnail,
-                                isBookmarked: isBookmarked,
-                                queryResult: queryResult,
-                                title: title,
-                                artist: artist,
-                              )
-                            ],
-                          ),
-                        ],
+    return Container(
+      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
+      child: Padding(
+        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Card(
+              elevation: 5,
+              color:
+                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
+              // color: Colors.transparent,
+              child: SizedBox(
+                width: width - 32,
+                height: height - 64,
+                child: Stack(
+                  children: [
+                    Container(
+                      width: width,
+                      height: height,
+                      color: Settings.themeWhat
+                          ? Colors.black.withOpacity(0.9)
+                          : Colors.white.withOpacity(0.97),
+                    ),
+                    Container(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Stack(
+                              children: [
+                                Container(
+                                  width: width,
+                                  height: 4 * 50.0 + 16,
+                                  color: Settings.themeWhat
+                                      ? Colors.grey.shade900.withOpacity(0.6)
+                                      : Colors.white.withOpacity(0.2),
+                                ),
+                                _InfoAreaWithCommentWidget(
+                                  headers: headers,
+                                  queryResult: queryResult,
+                                ),
+                                _SimpleInfoWidget(
+                                  heroKey: heroKey,
+                                  headers: headers,
+                                  thumbnail: thumbnail,
+                                  isBookmarked: isBookmarked,
+                                  queryResult: queryResult,
+                                  title: title,
+                                  artist: artist,
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

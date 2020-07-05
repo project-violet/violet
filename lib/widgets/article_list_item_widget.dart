@@ -118,13 +118,6 @@ class _ArticleListItemVerySimpleWidgetState
         ? DateFormat('yyyy/MM/dd HH:mm')
             .format(widget.queryResult.getDateTime())
         : '';
-    ww = widget.showDetail
-        ? widget.width - 16
-        : widget.width - (widget.addBottomPadding ? 100 : 0);
-    hh = widget.showDetail
-        ? 130.0
-        : widget.addBottomPadding ? 500.0 : widget.width * 4 / 3;
-
     if (!ThumbnailManager.isExists(widget.queryResult.id())) {
       HitomiManager.getImageList(widget.queryResult.id().toString())
           .then((images) {
@@ -143,8 +136,6 @@ class _ArticleListItemVerySimpleWidgetState
   String artist;
   String title;
   String dateTime;
-  double ww;
-  double hh;
 
   @override
   void dispose() {
@@ -156,6 +147,13 @@ class _ArticleListItemVerySimpleWidgetState
   @override
   Widget build(BuildContext context) {
     if (disposed) return null;
+
+    double ww = widget.showDetail
+        ? widget.width - 16
+        : widget.width - (widget.addBottomPadding ? 100 : 0);
+    double hh = widget.showDetail
+        ? 130.0
+        : widget.addBottomPadding ? 500.0 : widget.width * 4 / 3;
 
     var headers = {
       "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
@@ -238,7 +236,7 @@ class _ArticleListItemVerySimpleWidgetState
                 );
               } else {
                 Navigator.of(context).push(PageRouteBuilder(
-                  opaque: false,
+                  // opaque: false,
                   transitionDuration: Duration(milliseconds: 500),
                   transitionsBuilder: (BuildContext context,
                       Animation<double> animation,
@@ -519,6 +517,7 @@ class _ThumbnailWidget extends StatelessWidget {
                 ],
               ),
             )
+          // : Container(),
           : FlareActor(
               "assets/flare/Loading2.flr",
               alignment: Alignment.center,

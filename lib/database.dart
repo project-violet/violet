@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
 
-
 class DataBaseManager {
   String dbPath;
   Database db;
@@ -136,7 +135,8 @@ class QueryManager {
     QueryManager qm = new QueryManager();
     qm.queryString = rawQuery;
     qm.results = (await (await DataBaseManager.getInstance()).query(rawQuery))
-        .map((e) => QueryResult(result: e)).toList();
+        .map((e) => QueryResult(result: e))
+        .toList();
     return qm;
   }
 
