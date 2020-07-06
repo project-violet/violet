@@ -163,21 +163,24 @@ class ViewerWidget extends StatelessWidget {
           Text labelText,
           BoxConstraints labelConstraints,
         }) {
+          if (labelText != null &&
+              labelText.data != null &&
+              labelText.data.trim() != '') latestLabel = labelText.data;
           return Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 ScrollLabel(
                   animation: labelAnimation,
-                  child: labelText,
+                  child: Text(latestLabel),
                   backgroundColor: backgroundColor,
                 ),
                 FadeTransition(
                   opacity: thumbAnimation,
                   child: Container(
                     height: height,
-                    width: 4.0,
-                    color: backgroundColor,
+                    width: 6.0,
+                    color: backgroundColor.withOpacity(0.6),
                   ),
                 )
               ]);
@@ -185,6 +188,8 @@ class ViewerWidget extends StatelessWidget {
       ),
     );
   }
+
+  String latestLabel = '';
 }
 
 class GalleryExampleItem {
