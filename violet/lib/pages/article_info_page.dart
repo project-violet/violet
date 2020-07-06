@@ -10,6 +10,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:html_unescape/html_unescape_small.dart';
@@ -195,180 +196,186 @@ class _InfoAreaWidget extends StatelessWidget {
       padding: EdgeInsets.only(top: 4 * 50.0 + 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: AnimationConfiguration.toStaggeredList(
-          duration: const Duration(milliseconds: 370),
-          childAnimationBuilder: (widget) => SlideAnimation(
-            horizontalOffset: 50.0,
-            child: FadeInAnimation(
-              child: widget,
+        // children: AnimationConfiguration.toStaggeredList(
+        //   duration: const Duration(milliseconds: 370),
+        //   childAnimationBuilder: (widget) => SlideAnimation(
+        //     horizontalOffset: 50.0,
+        //     child: FadeInAnimation(
+        //       child: widget,
+        //     ),
+        //   ),
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: RaisedButton(
+                    child: Container(
+                      width: (width - 32 - 64 - 32) / 2,
+                      child: Text(
+                        Translations.of(context).trans('download'),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    color: Settings.majorColor,
+                    // onPressed: () {},
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 0),
+                  child: RaisedButton(
+                    child: Container(
+                      width: (width - 32 - 64 - 32) / 2,
+                      child: Text(
+                        Translations.of(context).trans('read'),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    color: Settings.majorColor,
+                    onPressed: () {
+                      SystemChrome.setEnabledSystemUIOverlays([]);
+                      // SystemChrome.setEnabledSystemUIOverlays(
+                      //     SystemUiOverlay.values);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (context) {
+                            return ViewerPage(
+                              id: queryResult.id().toString(),
+                              images:
+                                  ThumbnailManager.get(queryResult.id()).item1,
+                              headers: headers,
+                            );
+                          },
+                        ),
+                      ).then((value) {
+                        SystemChrome.setEnabledSystemUIOverlays(
+                            SystemUiOverlay.values);
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          singleChip(
+              queryResult.language(),
+              Translations.of(context).trans('language').split(' ')[0].trim(),
+              'language'),
+          multipleChip(
+              queryResult.artists(),
+              Translations.of(context).trans('artists'),
+              queryResult.artists() != null
+                  ? (queryResult.artists() as String)
+                      .split('|')
+                      .where((element) => element != '')
+                      .map((e) => _Chip(group: 'artists', name: e))
+                      .toList()
+                  : []),
+          multipleChip(
+              queryResult.groups(),
+              Translations.of(context).trans('groups'),
+              queryResult.groups() != null
+                  ? (queryResult.groups() as String)
+                      .split('|')
+                      .where((element) => element != '')
+                      .map((e) => _Chip(group: 'groups', name: e))
+                      .toList()
+                  : []),
+          multipleChip(
+              queryResult.tags(),
+              Translations.of(context).trans('tags'),
+              queryResult.tags() != null
+                  ? (queryResult.tags() as String)
+                      .split('|')
+                      .where((element) => element != '')
+                      .map((e) => _Chip(
+                          group: e.contains(':') ? e.split(':')[0] : 'tags',
+                          name: e.contains(':') ? e.split(':')[1] : e))
+                      .toList()
+                  : []),
+          multipleChip(
+              queryResult.series(),
+              Translations.of(context).trans('series'),
+              queryResult.series() != null
+                  ? (queryResult.series() as String)
+                      .split('|')
+                      .where((element) => element != '')
+                      .map((e) => _Chip(group: 'series', name: e))
+                      .toList()
+                  : []),
+          multipleChip(
+              queryResult.characters(),
+              Translations.of(context).trans('character'),
+              queryResult.characters() != null
+                  ? (queryResult.characters() as String)
+                      .split('|')
+                      .where((element) => element != '')
+                      .map((e) => _Chip(group: 'character', name: e))
+                      .toList()
+                  : []),
+          singleChip(queryResult.type(), Translations.of(context).trans('type'),
+              'type'),
+          singleChip(queryResult.uploader(),
+              Translations.of(context).trans('uploader'), 'uploader'),
+          singleChip(queryResult.id().toString(),
+              Translations.of(context).trans('id'), 'id'),
+          singleChip(queryResult.classname(),
+              Translations.of(context).trans('class'), 'class'),
+          Container(height: 10),
+          _buildDivider(),
+          // Comment Area
+          ExpandableNotifier(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: ScrollOnExpand(
+                child: ExpandablePanel(
+                  theme: ExpandableThemeData(
+                      iconColor:
+                          Settings.themeWhat ? Colors.white : Colors.grey,
+                      animationDuration: const Duration(milliseconds: 500)),
+                  header: Padding(
+                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    child: Text(
+                        '${Translations.of(context).trans('comment')} (${comments.length})'),
+                  ),
+                  expanded: commentArea(context),
+                ),
+              ),
             ),
           ),
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 4),
-                    child: RaisedButton(
-                      child: Container(
-                        width: (width - 32 - 64 - 32) / 2,
-                        child: Text(
-                          Translations.of(context).trans('download'),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      color: Settings.majorColor,
-                      // onPressed: () {},
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 0),
-                    child: RaisedButton(
-                      child: Container(
-                        width: (width - 32 - 64 - 32) / 2,
-                        child: Text(
-                          Translations.of(context).trans('read'),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      color: Settings.majorColor,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            fullscreenDialog: true,
-                            builder: (context) {
-                              return ViewerPage(
-                                id: queryResult.id().toString(),
-                                images: ThumbnailManager.get(queryResult.id())
-                                    .item1,
-                                headers: headers,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            singleChip(
-                queryResult.language(),
-                Translations.of(context).trans('language').split(' ')[0].trim(),
-                'language'),
-            multipleChip(
-                queryResult.artists(),
-                Translations.of(context).trans('artists'),
-                queryResult.artists() != null
-                    ? (queryResult.artists() as String)
-                        .split('|')
-                        .where((element) => element != '')
-                        .map((e) => _Chip(group: 'artists', name: e))
-                        .toList()
-                    : []),
-            multipleChip(
-                queryResult.groups(),
-                Translations.of(context).trans('groups'),
-                queryResult.groups() != null
-                    ? (queryResult.groups() as String)
-                        .split('|')
-                        .where((element) => element != '')
-                        .map((e) => _Chip(group: 'groups', name: e))
-                        .toList()
-                    : []),
-            multipleChip(
-                queryResult.tags(),
-                Translations.of(context).trans('tags'),
-                queryResult.tags() != null
-                    ? (queryResult.tags() as String)
-                        .split('|')
-                        .where((element) => element != '')
-                        .map((e) => _Chip(
-                            group: e.contains(':') ? e.split(':')[0] : 'tags',
-                            name: e.contains(':') ? e.split(':')[1] : e))
-                        .toList()
-                    : []),
-            multipleChip(
-                queryResult.series(),
-                Translations.of(context).trans('series'),
-                queryResult.series() != null
-                    ? (queryResult.series() as String)
-                        .split('|')
-                        .where((element) => element != '')
-                        .map((e) => _Chip(group: 'series', name: e))
-                        .toList()
-                    : []),
-            multipleChip(
-                queryResult.characters(),
-                Translations.of(context).trans('character'),
-                queryResult.characters() != null
-                    ? (queryResult.characters() as String)
-                        .split('|')
-                        .where((element) => element != '')
-                        .map((e) => _Chip(group: 'character', name: e))
-                        .toList()
-                    : []),
-            singleChip(queryResult.type(),
-                Translations.of(context).trans('type'), 'type'),
-            singleChip(queryResult.uploader(),
-                Translations.of(context).trans('uploader'), 'uploader'),
-            singleChip(queryResult.id().toString(),
-                Translations.of(context).trans('id'), 'id'),
-            singleChip(queryResult.classname(),
-                Translations.of(context).trans('class'), 'class'),
-            Container(height: 10),
-            _buildDivider(),
-            // Comment Area
-            ExpandableNotifier(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 4.0),
-                child: ScrollOnExpand(
-                  child: ExpandablePanel(
-                    theme: ExpandableThemeData(
-                        iconColor:
-                            Settings.themeWhat ? Colors.white : Colors.grey,
-                        animationDuration: const Duration(milliseconds: 500)),
-                    header: Padding(
-                      padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                      child: Text(
-                          '${Translations.of(context).trans('comment')} (${comments.length})'),
-                    ),
-                    expanded: commentArea(context),
-                  ),
-                ),
-              ),
-            ),
 
-            _buildDivider(),
-            ExpandableNotifier(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 4.0),
-                child: ScrollOnExpand(
-                  scrollOnExpand: true,
-                  scrollOnCollapse: false,
-                  child: ExpandablePanel(
-                    theme: ExpandableThemeData(
-                        iconColor:
-                            Settings.themeWhat ? Colors.white : Colors.grey,
-                        animationDuration: const Duration(milliseconds: 500)),
-                    header: Padding(
-                      padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                      child: Text(Translations.of(context).trans('preview')),
-                    ),
-                    expanded: previewArea(),
+          _buildDivider(),
+          ExpandableNotifier(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: ScrollOnExpand(
+                scrollOnExpand: true,
+                scrollOnCollapse: false,
+                child: ExpandablePanel(
+                  theme: ExpandableThemeData(
+                      iconColor:
+                          Settings.themeWhat ? Colors.white : Colors.grey,
+                      animationDuration: const Duration(milliseconds: 500)),
+                  header: Padding(
+                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    child: Text(Translations.of(context).trans('preview')),
                   ),
+                  expanded: previewArea(),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+        // ),
       ),
     );
   }
@@ -445,18 +452,18 @@ class _InfoAreaWidget extends StatelessWidget {
       return Padding(
         padding: EdgeInsets.only(top: 8, bottom: 8),
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: AnimationConfiguration.toStaggeredList(
-              duration: const Duration(milliseconds: 900),
-              childAnimationBuilder: (widget) => SlideAnimation(
-                    horizontalOffset: 50.0,
-                    child: FadeInAnimation(
-                      child: widget,
-                    ),
-                  ),
-              children: children),
-        ),
+            // mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            // children: AnimationConfiguration.toStaggeredList(
+            //     duration: const Duration(milliseconds: 900),
+            //     childAnimationBuilder: (widget) => SlideAnimation(
+            //           horizontalOffset: 50.0,
+            //           child: FadeInAnimation(
+            //             child: widget,
+            //           ),
+            //         ),
+            children: children),
+        // ),
       );
     }
   }
