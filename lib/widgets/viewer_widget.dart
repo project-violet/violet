@@ -4,31 +4,44 @@
 // 네트워크 이미지들을 보기위한 위젯
 
 //import 'package:draggable_scrollbar/draggable_scrollbar.dart';
+import 'dart:async';
+import 'dart:ui' as ui;
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:violet/settings.dart';
 import 'package:violet/widgets/flutter_scrollable_positioned_list_with_draggable_scrollbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-class ViewerWidget extends StatefulWidget {
+class ViewerWidget extends StatelessWidget {
   final List<String> urls;
   final Map<String, String> headers;
   final String id;
 
-  ViewerWidget({this.urls, this.headers, this.id});
+  ViewerWidget({this.urls, this.headers, this.id}) {
+    galleryItems = new List<GalleryExampleItem>();
 
-  @override
-  _ViewerWidgetState createState() => _ViewerWidgetState();
-}
+    for (int i = 0; i < urls.length; i++) {
+      galleryItems.add(GalleryExampleItem(
+        id: i == 0 ? 'thumbnail' + id : urls[i],
+        url: urls[i],
+        headers: headers,
+        loaded: false,
+      ));
+    }
 
-class _ViewerWidgetState extends State<ViewerWidget> {
+    scroll.addListener(() {
+      currentPage = offset2Page(scroll.offset);
+    });
+  }
+
   List<GalleryExampleItem> galleryItems;
-  //List<GlobalKey> moveKey;
 
   void open(BuildContext context, final int index) async {
     var w = GalleryPhotoViewWrapper(
@@ -45,162 +58,153 @@ class _ViewerWidgetState extends State<ViewerWidget> {
       context,
       MaterialPageRoute(builder: (context) => w),
     );
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIOverlays([]);
     // 지금 인덱스랑 다르면 그쪽으로 이동시킴
     //if (w.currentIndex != index)
     //  Scrollable.ensureVisible(moveKey[w.currentIndex].currentContext,
     //      alignment: 0.5);
-    if (w.currentIndex != index)
-      isc.scrollTo(
-        index: w.currentIndex,
-        duration: Duration(microseconds: 500),
-        alignment: 0.1,
-      );
+    if (w.currentIndex != index) {
+      scroll.jumpTo(page2Offset(w.currentIndex));
+    }
+    // isc.scrollTo(
+    //   index: w.currentIndex,
+    //   duration: Duration(microseconds: 500),
+    //   alignment: 0.1,
+    // );
   }
 
-  ScrollController sc = ScrollController();
-  ScrollController sc1 = ScrollController();
-  ItemScrollController isc = ItemScrollController();
+  int offset2Page(double offset) {
+    double xx = 0.0;
+    for (int i = 0; i < galleryItems.length; i++) {
+      xx += galleryItems[i].loaded ? galleryItems[i].height : 300;
+      xx += 4;
+      if (offset < xx) {
+        return i + 1;
+      }
+    }
+    return galleryItems.length;
+  }
+
+  double page2Offset(int page) {
+    double xx = 0.0;
+    for (int i = 0; i < page; i++) {
+      xx += galleryItems[i].loaded ? galleryItems[i].height : 300;
+      xx += 4;
+    }
+    return xx;
+  }
+
+  int currentPage = 0;
+
+  ScrollController scroll = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    //List<Widget> ww = List<Widget>();
-    // List<GalleryExampleItem> galleryItems;
-    // List<GlobalKey> moveKey;
-    galleryItems = new List<GalleryExampleItem>();
-    //moveKey = new List<GlobalKey>();
-    // int i = 0;
-    // for (var link in widget.urls) {
-    //   galleryItems.add(
-    //       GalleryExampleItem(id: link, url: link, headers: widget.headers));
-    //   moveKey.add(new GlobalKey());
-    //   int j = i;
-    //   ww.add(
-    //     Container(
-    //       padding: EdgeInsets.all(2),
-    //       decoration: BoxDecoration(
-    //         color: const Color(0xff444444),
-    //       ),
-    //       child: GalleryExampleItemThumbnail(
-    //         galleryExampleItem: galleryItems[j],
-    //         onTap: () {
-    //           print(j);
-    //           open(context, j);
-    //         },
-    //         key: moveKey[j],
-    //       ),
-    //     ),
-    //   );
-    //   i++;
-    // }
-
-    //DraggableScrollbar.semicircle()
-
-    // return Container(
-    //   child: Scrollbar(
-    //       child: SingleChildScrollView(
-    //           child: Container(
-    //               child: Center(
-    //                   child: Column(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     children: ww,
-    //   ))))),
-    // );
-
-    for (int i = 0; i < widget.urls.length; i++) {
-      galleryItems.add(GalleryExampleItem(
-          id: i == 0 ? 'thumbnail' + widget.id : widget.urls[i],
-          url: widget.urls[i],
-          headers: widget.headers));
-      //moveKey.add(new GlobalKey());
-    }
-
-    print(galleryItems.length);
     return Container(
-      //child: SingleChildScrollView(
-      //  child: SingleChildScrollView(
-      //      child: Container(
-      //          child: Center(
-      //              child: Column(
-      //mainAxisAlignment: MainAxisAlignment.center,
-      //children: ww,
-      //rcontroller: null,
-      //child: DraggableScrollbar.semicircle(
-      //  labelTextBuilder: (double offset) => Text("${offset ~/ 100}"),
-      //  controller: isc,
       color: const Color(0xff444444),
-      child: Scrollbar(
-        child: ScrollablePositionedList.builder(
-          itemCount: widget.urls.length,
-          //itemExtent: 100.0,
-          minCacheExtent: 100,
-          //shrinkWrap: true,
-          // /,
-
-          //controller: sc,
-          itemScrollController: isc,
-
+      // child: Scrollbar(
+      //   controller: scroll,
+      //   child: ScrollablePositionedList.builder(
+      //     itemCount: urls.length,
+      //     minCacheExtent: 100,
+      //     itemScrollController: isc,
+      //     itemBuilder: (context, index) {
+      //       return Container(
+      //         padding: EdgeInsets.all(2),
+      //         child: GalleryExampleItemThumbnail(
+      //           galleryExampleItem: galleryItems[index],
+      //           onTap: () => open(context, index),
+      //         ),
+      //       );
+      //     },
+      //   ),
+      // ),
+      // child: DraggableScrollbar.arrows(
+      //   backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
+      //   controller: scroll,
+      //   labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
+      //   child: ListView.builder(
+      //     itemCount: urls.length,
+      //     controller: scroll,
+      //     itemBuilder: (context, index) {
+      //       return Container(
+      //         padding: EdgeInsets.all(2),
+      //         child: GalleryExampleItemThumbnail(
+      //           galleryExampleItem: galleryItems[index],
+      //           onTap: () => open(context, index),
+      //         ),
+      //       );
+      //     },
+      //   ),
+      // ),
+      child: DraggableScrollbar(
+        backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
+        controller: scroll,
+        labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
+        child: ListView.builder(
+          itemCount: urls.length,
+          controller: scroll,
           itemBuilder: (context, index) {
-            //return Container(child: Text('asdf'));
-
-            //galleryItems.add(GalleryExampleItem(
-            //    id: widget.urls[index],
-            //    url: widget.urls[index],
-            //    headers: widget.headers));
-            //moveKey.add(new GlobalKey());
-            //print('asdf');
-            //int j = i;
-            //ww.add(
             return Container(
               padding: EdgeInsets.all(2),
-              // decoration: BoxDecoration(
-              //   color: const Color(0xff444444),
-              // ),
               child: GalleryExampleItemThumbnail(
                 galleryExampleItem: galleryItems[index],
                 onTap: () => open(context, index),
-                //key: moveKey[index],
               ),
             );
           },
         ),
+        heightScrollThumb: 48.0,
+        scrollThumbBuilder: (
+          Color backgroundColor,
+          Animation<double> thumbAnimation,
+          Animation<double> labelAnimation,
+          double height, {
+          Text labelText,
+          BoxConstraints labelConstraints,
+        }) {
+          return Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                ScrollLabel(
+                  animation: labelAnimation,
+                  child: labelText,
+                  backgroundColor: backgroundColor,
+                ),
+                FadeTransition(
+                  opacity: thumbAnimation,
+                  child: Container(
+                    height: height,
+                    width: 4.0,
+                    color: backgroundColor,
+                  ),
+                )
+              ]);
+        },
       ),
-      //),
     );
-
-    // return Container(
-    //   //child: Scrollbar(
-    //     //child: SingleChildScrollView(
-    //       child: DraggableScrollbar.rrect(
-    //         controller: sc,
-    //         child: ListView.builder(
-    //             controller: sc1,
-    //             itemCount: 1,
-    //             itemBuilder: (context, index) {
-    //               return Column(
-    //                 mainAxisAlignment: MainAxisAlignment.center,
-    //                 children: ww,
-    //               );
-    //             }),
-    //       ),
-    //     //),
-    //   //),
-    // );
   }
 }
 
 class GalleryExampleItem {
-  GalleryExampleItem({this.id, this.url, this.headers, this.isSvg = false});
+  GalleryExampleItem(
+      {this.id,
+      this.url,
+      this.headers,
+      this.isSvg = false,
+      this.loaded = false});
 
   final String id;
   final String url;
   final Map<String, String> headers;
   final bool isSvg;
+  double height;
+  bool loaded;
 }
 
 class GalleryExampleItemThumbnail extends StatelessWidget {
-  const GalleryExampleItemThumbnail(
-      {Key key, this.galleryExampleItem, this.onTap})
+  GalleryExampleItemThumbnail({Key key, this.galleryExampleItem, this.onTap})
       : super(key: key);
 
   final GalleryExampleItem galleryExampleItem;
@@ -209,54 +213,69 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print(galleryExampleItem.url);
+    final width = MediaQuery.of(context).size.width - 4;
     return Container(
-      child: VisibilityDetector(
-        key: Key(galleryExampleItem.url),
-        onVisibilityChanged: (info) {
-          //print(info.toString());
-        },
-        child: ConstrainedBox(
-          constraints: new BoxConstraints(
-            minHeight: 100.0,
-            //maxHeight: 100.0,
-          ),
-          //padding: const EdgeInsets.symmetric(horizontal: 5.0),
-          child: GestureDetector(
-            onTap: onTap,
-            child: Hero(
-              tag: galleryExampleItem.id.toString(),
-              //child: Image.network(galleryExampleItem.url,
-              //    headers: galleryExampleItem.headers),
-              // child: FadeInImage(
-              //   image: NetworkImage(
-              //     galleryExampleItem.url,
-              //     headers: galleryExampleItem.headers,
-              //   ),
-              //   placeholder: AssetImage('assets/images/loading.gif'),
-              // )),
-              child: CachedNetworkImage(
+      child: FutureBuilder(
+        future: _calculateImageDimension(),
+        builder: (context, AsyncSnapshot<Size> snapshot) {
+          if (snapshot.hasData) {
+            galleryExampleItem.loaded = true;
+            galleryExampleItem.height = width / snapshot.data.aspectRatio;
+          }
+          return SizedBox(
+            height:
+                galleryExampleItem.loaded ? galleryExampleItem.height : 300.0,
+            child: GestureDetector(
+              onTap: onTap,
+              child: Hero(
+                tag: galleryExampleItem.id.toString(),
+                child: CachedNetworkImage(
                   imageUrl: galleryExampleItem.url,
                   httpHeaders: galleryExampleItem.headers,
-                  placeholder: (context, url) => Container(
-                        padding: EdgeInsets.fromLTRB(150, 150, 150, 150),
-                        child: CircularProgressIndicator(),
-                      ),
+                  placeholder: (context, url) => Center(
+                    child: SizedBox(
+                      child: CircularProgressIndicator(),
+                      width: 30,
+                      height: 30,
+                    ),
+                  ),
                   placeholderFadeInDuration: Duration(microseconds: 500),
                   fadeInDuration: Duration(microseconds: 500),
                   fadeInCurve: Curves.easeIn,
                   progressIndicatorBuilder: (context, string, progress) {
-                    //print(string);
-                    return CircularProgressIndicator();
-                  }
-                  //height: 100,
-                  //(context, url) => Image.file(File('assets/images/loading.gif')),
-                  ),
+                    return Center(
+                      child: SizedBox(
+                        child:
+                            CircularProgressIndicator(value: progress.progress),
+                        width: 30,
+                        height: 30,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
+  }
+
+  Future<Size> _calculateImageDimension() {
+    Completer<Size> completer = Completer();
+    Image image = new Image(
+        image: CachedNetworkImageProvider(
+            galleryExampleItem.url)); // I modified this line
+    image.image.resolve(ImageConfiguration()).addListener(
+      ImageStreamListener(
+        (ImageInfo image, bool synchronousCall) {
+          var myImage = image.image;
+          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+          completer.complete(size);
+        },
+      ),
+    );
+    return completer.future;
   }
 
   // Widget get(BuildContext context, String string, DownloadProgress progress) {

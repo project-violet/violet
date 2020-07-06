@@ -48,7 +48,7 @@ dependencies:
   extended_image:
   photo_view:
   cached_network_image:
-  #draggable_scrollbar:
+  draggable_scrollbar:
   scrollable_positioned_list:
   flutter_reorderable_list:
   visibility_detector:
@@ -91,6 +91,7 @@ dependencies:
   expandable:
   charts_flutter:
   uuid:
+  # pinch_zoom_image:
 
 dev_dependencies:
   flutter_test:

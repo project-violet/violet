@@ -26,10 +26,10 @@ class HitomiManager {
     var stresult = List<String>();
     var result = List<String>();
     for (var row in files) {
-      var rr = row.cast<String, String>();
+      var rr = row.cast<String, dynamic>();
       var hash = rr['hash'] as String;
       var postfix = hash.substring(hash.length - 3);
-      if (rr['hashwebp'] == 0 || rr['hashwebp'] == null) {
+      if (rr['haswebp'] == 0 || rr['haswebp'] == null) {
         result.add(
             'https://${subdomain}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
       } else if (hash == "")
@@ -185,7 +185,7 @@ class HitomiManager {
       else if (pp == 'classes') pp = 'class';
 
       var results = new List<Tuple4<String, String, int, int>>();
-    if (!tagmap.containsKey(pp)) return List<Tuple3<String, String, int>>();
+      if (!tagmap.containsKey(pp)) return List<Tuple3<String, String, int>>();
 
       final ch = tagmap[pp];
       if (opp == 'female' || opp == 'male') {
@@ -231,7 +231,9 @@ class HitomiManager {
         });
       }
       results.sort((a, b) => a.item3.compareTo(b.item3));
-      return results.map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4)).toList();
+      return results
+          .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
+          .toList();
     } else {
       var results = new List<Tuple4<String, String, int, int>>();
       tagmap.forEach((key1, value) {
@@ -273,7 +275,9 @@ class HitomiManager {
         }
       });
       results.sort((a, b) => a.item3.compareTo(b.item3));
-      return results.map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4)).toList();
+      return results
+          .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
+          .toList();
     }
   }
 
