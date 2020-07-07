@@ -1638,7 +1638,8 @@ class _SearchSortState extends State<SearchSort> {
                             runSpacing: -10.0,
                             children: <Widget>[
                               FilterChip(
-                                label: Text("모두 선택"),
+                                label: Text(Translations.of(context)
+                                    .trans('selectall')),
                                 // selected: widget.ignoreBookmark,
                                 onSelected: (bool value) {
                                   widget.tags
@@ -1653,7 +1654,8 @@ class _SearchSortState extends State<SearchSort> {
                                 },
                               ),
                               FilterChip(
-                                label: Text("모두 선택 해제"),
+                                label: Text(Translations.of(context)
+                                    .trans('deselectall')),
                                 // selected: widget.blurred,
                                 onSelected: (bool value) {
                                   widget.tags
@@ -1668,7 +1670,8 @@ class _SearchSortState extends State<SearchSort> {
                                 },
                               ),
                               FilterChip(
-                                label: Text("선택 반전"),
+                                label: Text(
+                                    Translations.of(context).trans('inverse')),
                                 // selected: widget.blurred,
                                 onSelected: (bool value) {
                                   widget.tags
@@ -1700,25 +1703,26 @@ class _SearchSortState extends State<SearchSort> {
                                   });
                                 },
                               ),
-                              FilterChip(
-                                label: Text("북마크 제외"),
-                                selected: widget.ignoreBookmark,
-                                onSelected: (bool value) {
-                                  setState(() {
-                                    widget.ignoreBookmark =
-                                        !widget.ignoreBookmark;
-                                  });
-                                },
-                              ),
-                              FilterChip(
-                                label: Text("블러 처리"),
-                                selected: widget.blurred,
-                                onSelected: (bool value) {
-                                  setState(() {
-                                    widget.blurred = !widget.blurred;
-                                  });
-                                },
-                              ),
+                              // TODO: 북마크 블러 체크 필터
+                              // FilterChip(
+                              //   label: Text("북마크 제외"),
+                              //   selected: widget.ignoreBookmark,
+                              //   onSelected: (bool value) {
+                              //     setState(() {
+                              //       widget.ignoreBookmark =
+                              //           !widget.ignoreBookmark;
+                              //     });
+                              //   },
+                              // ),
+                              // FilterChip(
+                              //   label: Text("블러 처리"),
+                              //   selected: widget.blurred,
+                              //   onSelected: (bool value) {
+                              //     setState(() {
+                              //       widget.blurred = !widget.blurred;
+                              //     });
+                              //   },
+                              // ),
                             ],
                           ),
                         ],

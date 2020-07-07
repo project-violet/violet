@@ -124,7 +124,29 @@
     "enable_locking": "잠금 기능 켜기",
     "network": "네트워크",
     "routing_rule": "라우팅 규칙",
-    "proxy": "프록시 설정"
+    "proxy": "프록시 설정록",
     
+    "selectall": "모두 선택",
+    "deselectall": "모두 선택 해제",
+    "inverse": "선택 반전",
+
+    "readrecord": "열람 기록",
+    "readrecorddesc": "한 번 이상 열람했던 작품/작가들이 기록됩니다.",
+    "unclassified": "미분류",
+    "unclassifieddesc": "분류가 없는 북마크",
+    "cannotmodifydefaultgroup": "기본 그룹은 수정할 수 없습니다.",
+    "filtering": "필터링",
+    "editorder": "순서 편집",
+    "newgroup": "새로운 그룹",
+    "modifygroupinfo": "그룹 정보 수정",
+    "name": "이름",
+    "desc": "설명",
+    "delete": "삭제",
+    "deletegroupmsg": "삭제된 그룹은 복구할 수 없습니다. 그룹 내의 모든 북마크도 같이 삭제됩니다. 정말로 이 그룹을 삭제할까요?",
+    "readpage": "Page까지 읽음",
+    "deletebookmarkmsg": "%s개 항목을 모두 삭제할까요? 이 동작은 되돌릴 수 없어요.",
+    "wheretomove": "어디로 옮길까요?",
+    "movetoto": "'%1'로 '%2'개의 항목을 옮길까요?",
+    "movebookmark": "북마크 이동"
 
 }

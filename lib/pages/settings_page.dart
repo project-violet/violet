@@ -249,28 +249,28 @@ class _SettingsPageState extends State<SettingsPage>
                       }
                     },
                   ),
-                  _buildDivider(),
-                  InkWell(
-                    child: ListTile(
-                      leading: Icon(
-                        MdiIcons.blur,
-                        color: Settings.majorColor,
-                      ),
-                      title: Text(Translations.of(context).trans('blurredtag')),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                    ),
-                    onTap: () async {
-                      final vv = await showDialog(
-                        context: context,
-                        child: TagSelectorDialog(what: 'blurred'),
-                      );
+                  // _buildDivider(),
+                  // InkWell(
+                  //   child: ListTile(
+                  //     leading: Icon(
+                  //       MdiIcons.blur,
+                  //       color: Settings.majorColor,
+                  //     ),
+                  //     title: Text(Translations.of(context).trans('blurredtag')),
+                  //     trailing: Icon(Icons.keyboard_arrow_right),
+                  //   ),
+                  //   onTap: () async {
+                  //     final vv = await showDialog(
+                  //       context: context,
+                  //       child: TagSelectorDialog(what: 'blurred'),
+                  //     );
 
-                      if (vv.item1 == 1) {
-                        Settings.setBlurredTags(vv.item2);
-                        setState(() {});
-                      }
-                    },
-                  ),
+                  //     if (vv.item1 == 1) {
+                  //       Settings.setBlurredTags(vv.item2);
+                  //       setState(() {});
+                  //     }
+                  //   },
+                  // ),
                   _buildDivider(),
                   InkWell(
                     customBorder: RoundedRectangleBorder(
@@ -452,43 +452,43 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                 ]),
-                _buildGroup(Translations.of(context).trans('database')),
-                _buildItems([
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10.0),
-                            topRight: Radius.circular(10.0))),
-                    child: ListTile(
-                      leading: Icon(MdiIcons.swapHorizontal,
-                          color: Settings.majorColor),
-                      title: Text(Translations.of(context).trans('switching')),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                    ),
-                    onTap: () {},
-                  ),
-                  _buildDivider(),
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10.0),
-                            bottomRight: Radius.circular(10.0))),
-                    child: ListTile(
-                      leading: Icon(MdiIcons.databaseSync,
-                          color: Settings.majorColor),
-                      title: Text(Translations.of(context).trans('syncmanual')),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => TestPage(),
-                        ),
-                      );
-                    },
-                  ),
-                ]),
+                // _buildGroup(Translations.of(context).trans('database')),
+                // _buildItems([
+                //   InkWell(
+                //     customBorder: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.only(
+                //             topLeft: Radius.circular(10.0),
+                //             topRight: Radius.circular(10.0))),
+                //     child: ListTile(
+                //       leading: Icon(MdiIcons.swapHorizontal,
+                //           color: Settings.majorColor),
+                //       title: Text(Translations.of(context).trans('switching')),
+                //       trailing: Icon(Icons.keyboard_arrow_right),
+                //     ),
+                //     onTap: () {},
+                //   ),
+                //   _buildDivider(),
+                //   InkWell(
+                //     customBorder: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.only(
+                //             bottomLeft: Radius.circular(10.0),
+                //             bottomRight: Radius.circular(10.0))),
+                //     child: ListTile(
+                //       leading: Icon(MdiIcons.databaseSync,
+                //           color: Settings.majorColor),
+                //       title: Text(Translations.of(context).trans('syncmanual')),
+                //       trailing: Icon(Icons.keyboard_arrow_right),
+                //     ),
+                //     onTap: () {
+                //       Navigator.push(
+                //         context,
+                //         CupertinoPageRoute(
+                //           builder: (context) => TestPage(),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ]),
                 // _buildGroup(Translations.of(context).trans('viewer')),
                 // _buildItems([
                 //   ListTile(
@@ -618,48 +618,48 @@ class _SettingsPageState extends State<SettingsPage>
                 //   ),
                 // ]),
 
-                _buildGroup(Translations.of(context).trans('network')),
-                _buildItems([
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: ListTile(
-                      // borderRadius: BorderRadius.circular(10.0),
-                      leading: Icon(
-                        Icons.router,
-                        color: Settings.majorColor,
-                      ),
-                      title:
-                          Text(Translations.of(context).trans('routing_rule')),
-                      trailing: Icon(
-                          // Icons.message,
-                          Icons.keyboard_arrow_right),
-                    ),
-                    onTap: () {},
-                  ),
-                ]),
-                _buildGroup(Translations.of(context).trans('update')),
-                _buildItems([
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: ListTile(
-                      // borderRadius: BorderRadius.circular(10.0),
-                      leading: Icon(
-                        Icons.update,
-                        color: Settings.majorColor,
-                      ),
-                      title:
-                          Text(Translations.of(context).trans('checkupdate')),
-                      trailing: Icon(
-                          // Icons.message,
-                          Icons.keyboard_arrow_right),
-                    ),
-                    onTap: () {},
-                  ),
-                ]),
+                // _buildGroup(Translations.of(context).trans('network')),
+                // _buildItems([
+                //   InkWell(
+                //     customBorder: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(10.0),
+                //     ),
+                //     child: ListTile(
+                //       // borderRadius: BorderRadius.circular(10.0),
+                //       leading: Icon(
+                //         Icons.router,
+                //         color: Settings.majorColor,
+                //       ),
+                //       title:
+                //           Text(Translations.of(context).trans('routing_rule')),
+                //       trailing: Icon(
+                //           // Icons.message,
+                //           Icons.keyboard_arrow_right),
+                //     ),
+                //     onTap: () {},
+                //   ),
+                // ]),
+                // _buildGroup(Translations.of(context).trans('update')),
+                // _buildItems([
+                //   InkWell(
+                //     customBorder: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(10.0),
+                //     ),
+                //     child: ListTile(
+                //       // borderRadius: BorderRadius.circular(10.0),
+                //       leading: Icon(
+                //         Icons.update,
+                //         color: Settings.majorColor,
+                //       ),
+                //       title:
+                //           Text(Translations.of(context).trans('checkupdate')),
+                //       trailing: Icon(
+                //           // Icons.message,
+                //           Icons.keyboard_arrow_right),
+                //     ),
+                //     onTap: () {},
+                //   ),
+                // ]),
                 _buildGroup(Translations.of(context).trans('etc')),
                 _buildItems([
                   InkWell(
@@ -727,10 +727,10 @@ class _SettingsPageState extends State<SettingsPage>
                         // Icons.email,
                         Icons.open_in_new),
                     onTap: () async {
-                      const url = 'https://www.patreon.com/projectviolet';
-                      if (await canLaunch(url)) {
-                        await launch(url);
-                      }
+                      // const url = 'https://www.patreon.com/projectviolet';
+                      // if (await canLaunch(url)) {
+                      //   await launch(url);
+                      // }
                     },
                   ),
                   // _buildDivider(),
@@ -862,7 +862,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   Padding _buildGroup(String name) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
