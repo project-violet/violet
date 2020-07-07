@@ -50,19 +50,33 @@ class ThumbnailManager {
   }
 }
 
+typedef void BookmarkCallback(int article);
+typedef void BookmarkCheckCallback(int article, bool check);
+
 class ArticleListItemVerySimpleWidget extends StatefulWidget {
   final bool addBottomPadding;
   final bool showDetail;
   final QueryResult queryResult;
   final double width;
   final String thumbnailTag;
+  final bool bookmarkMode;
+  final BookmarkCallback bookmarkCallback;
+  final BookmarkCheckCallback bookmarkCheckCallback;
+  bool isChecked;
+  final bool isCheckMode;
 
-  ArticleListItemVerySimpleWidget(
-      {this.queryResult,
-      this.addBottomPadding,
-      this.showDetail,
-      this.width,
-      this.thumbnailTag});
+  ArticleListItemVerySimpleWidget({
+    this.queryResult,
+    this.addBottomPadding,
+    this.showDetail,
+    this.width,
+    this.thumbnailTag,
+    this.bookmarkMode = false,
+    this.bookmarkCallback,
+    this.bookmarkCheckCallback,
+    this.isChecked = false,
+    this.isCheckMode = false,
+  });
 
   @override
   _ArticleListItemVerySimpleWidgetState createState() =>
@@ -145,9 +159,26 @@ class _ArticleListItemVerySimpleWidgetState
     scaleAnimationController.dispose();
   }
 
+  bool firstChecked = false;
+
   @override
   Widget build(BuildContext context) {
     if (disposed) return null;
+    if (widget.bookmarkMode &&
+        !widget.isCheckMode &&
+        !onScaling &&
+        scale != 1.0) {
+      setState(() {
+        scale = 1.0;
+      });
+    } else if (widget.bookmarkMode &&
+        widget.isCheckMode &&
+        widget.isChecked &&
+        scale != 0.95) {
+      setState(() {
+        scale = 0.95;
+      });
+    }
 
     double ww = widget.showDetail
         ? widget.width - 16
@@ -209,13 +240,28 @@ class _ArticleListItemVerySimpleWidgetState
             // },
             onTapDown: (detail) {
               if (onScaling) return;
+              onScaling = true;
               setState(() {
                 // pad = 10.0;
                 scale = 0.95;
               });
             },
             onTapUp: (detail) {
-              if (onScaling) return;
+              // if (onScaling) return;
+              onScaling = false;
+              if (widget.isCheckMode) {
+                widget.isChecked = !widget.isChecked;
+                widget.bookmarkCheckCallback(
+                    widget.queryResult.id(), widget.isChecked);
+                setState(() {
+                  if (widget.isChecked)
+                    scale = 0.95;
+                  else
+                    scale = 1.0;
+                });
+                return;
+              }
+              if (firstChecked) return;
               setState(() {
                 // pad = 0;
                 scale = 1.0;
@@ -257,6 +303,24 @@ class _ArticleListItemVerySimpleWidgetState
               }
             },
             onLongPress: () async {
+              onScaling = false;
+              if (widget.bookmarkMode) {
+                if (widget.isCheckMode) {
+                  widget.isChecked = !widget.isChecked;
+                  setState(() {
+                    scale = 1.0;
+                  });
+                  return;
+                }
+                widget.isChecked = true;
+                firstChecked = true;
+                setState(() {
+                  scale = 0.95;
+                });
+                widget.bookmarkCallback(widget.queryResult.id());
+                return;
+              }
+
               if (isBookmarked) {
                 if (!await Dialogs.yesnoDialog(context, '북마크를 삭제할까요?', '북마크'))
                   return;
@@ -295,18 +359,25 @@ class _ArticleListItemVerySimpleWidgetState
               });
             },
             onLongPressEnd: (detail) {
+              onScaling = false;
+              if (firstChecked) {
+                firstChecked = false;
+                return;
+              }
               setState(() {
                 pad = 0;
                 scale = 1.0;
               });
             },
             onTapCancel: () {
+              onScaling = false;
               setState(() {
                 pad = 0;
                 scale = 1.0;
               });
             },
             onDoubleTap: () async {
+              onScaling = false;
               var sz = await _calculateImageDimension(thumbnail);
               Navigator.of(context).push(PageRouteBuilder(
                 opaque: false,

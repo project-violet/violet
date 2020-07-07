@@ -121,5 +121,30 @@
     "enable_locking": "ロックを有効にする",
     "network": "ネットワーキング",
     "routing_rule": "ルーティングルール",
-    "proxy": "プロキシ"
+    "proxy": "プロキシ",
+
+    
+    
+    "selectall": "すべて選択",
+    "deselectall": "すべて選択解除",
+    "inverse": "選択を反転",
+
+    "readrecord": "レコードを読む",
+    "readrecorddesc": "複数回閲覧された作品/ライターが記録されます。",
+    "unclassified": "未分類",
+    "unclassifieddesc": "未分類のブックマーク",
+    "cannotmodifydefaultgroup": "デフォルトグループは変更できません。",
+    "filtering": "フィルタリング",
+    "editorder": "編集順序",
+    "newgroup": "新しいグループ",
+    "modifygroupinfo": "グループ情報の変更",
+    "name": "名前",
+    "desc": "説明",
+    "delete": "削除",
+    "deletegroupmsg": "削除されたグループは復元できません。グループ内のすべてのブックマークも削除されます。このグループを削除してもよろしいですか？",
+    "readpage": "ページまで読む",
+    "deletebookmarkmsg": "すべての％sアイテムを削除しますか？このアクションは元に戻せません。",
+    "wheretomove": "どこに移動しますか？",
+    "movetoto": "％2アイテムを '％1'に移動しますか？",
+    "movebookmark": "ブックマークを移動"
 }

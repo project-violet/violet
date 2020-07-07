@@ -129,6 +129,7 @@ class Bookmark {
       'DateTime': datetime.toString(),
       'GroupId': group,
     });
+    bookmarkSet.add(int.parse(article));
   }
 
   Future<void> insertArtist(String artist, int isgroup,
@@ -159,7 +160,9 @@ class Bookmark {
 
   Future<void> deleteGroup(BookmarkGroup group) async {
     var db = await CommonUserDatabase.getInstance();
+    await db.delete('BookmarkArticle', 'GroupId=?', [group.id().toString()]);
     await db.delete('BookmarkGroup', 'Id=?', [group.id().toString()]);
+    bookmarkSet = null;
     //
   }
 
@@ -215,7 +218,7 @@ class Bookmark {
   Future<void> unbookmark(int id) async {
     if (!await isBookmark(id)) return;
     var db = await CommonUserDatabase.getInstance();
-    db.delete('BookmarkArticle', 'Article=?', [id.toString()]);
+    await db.delete('BookmarkArticle', 'Article=?', [id.toString()]);
     bookmarkSet.remove(id);
   }
 }

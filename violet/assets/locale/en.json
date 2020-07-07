@@ -124,6 +124,29 @@
     "enable_locking": "Enable Locking",
     "network": "Networking",
     "routing_rule": "Routing Rule",
-    "proxy": "Proxy"
+    "proxy": "Proxy",
     
+    
+    "selectall": "Select All",
+    "deselectall": "DeSelect All",
+    "inverse": "Invert Selections",
+
+    "readrecord": "Read Record",
+    "readrecorddesc": "Viewed more than once articles are recorded.",
+    "unclassified": "Unclassified",
+    "unclassifieddesc": "Unclassified bookmarks",
+    "cannotmodifydefaultgroup": "The default group cannot be modified.",
+    "filtering": "Filtering",
+    "editorder": "Edit Order",
+    "newgroup": "New Group",
+    "modifygroupinfo": "Modify Group Information",
+    "name": "Name",
+    "desc": "Description",
+    "delete": "Delete",
+    "deletegroupmsg": "Deleted groups cannot be recovered. All bookmarks within the group are also deleted. Are you sure you want to delete this group?",
+    "readpage": "Read Until Page",
+    "deletebookmarkmsg": "Do you want to delete all %s items? This action is irreversible.",
+    "wheretomove": "Where to move?",
+    "movetoto": "Move %2 items to'%1'?",
+    "movebookmark": "Move Bookmark"
 }
