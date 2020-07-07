@@ -66,10 +66,11 @@ class DataBaseManager {
     });
   }
 
-  Future<void> update(String name, Map<String, dynamic> wh) async {
+  Future<void> update(String name, Map<String, dynamic> wh, String where,
+      List<dynamic> args) async {
     await lock.synchronized(() async {
       await _open();
-      await db.update(name, wh);
+      await db.update(name, wh, where: where, whereArgs: args);
       await _close();
     });
   }

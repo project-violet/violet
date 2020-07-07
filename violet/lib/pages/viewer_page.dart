@@ -18,7 +18,16 @@ class ViewerPage extends StatefulWidget {
 class _ViewerPageState extends State<ViewerPage> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: ViewerWidget(id: widget.id, headers: widget.headers, urls: widget.images));
+    var vw = ViewerWidget(
+        id: widget.id, headers: widget.headers, urls: widget.images);
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pop(context, vw.currentPage);
+        return new Future(() => false);
+      },
+      child: Container(
+        child: vw,
+      ),
+    );
   }
 }

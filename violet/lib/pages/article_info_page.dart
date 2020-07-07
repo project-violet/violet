@@ -239,7 +239,9 @@ class _InfoAreaWidget extends StatelessWidget {
                       ),
                     ),
                     color: Settings.majorColor,
-                    onPressed: () {
+                    onPressed: () async {
+                      await (await User.getInstance())
+                          .insertUserLog(queryResult.id(), 0);
                       SystemChrome.setEnabledSystemUIOverlays([]);
                       // SystemChrome.setEnabledSystemUIOverlays(
                       //     SystemUiOverlay.values);
@@ -256,7 +258,10 @@ class _InfoAreaWidget extends StatelessWidget {
                             );
                           },
                         ),
-                      ).then((value) {
+                      ).then((value) async {
+                        print(value);
+                        await (await User.getInstance())
+                            .updateUserLog(queryResult.id(), value as int);
                         SystemChrome.setEnabledSystemUIOverlays(
                             SystemUiOverlay.values);
                       });

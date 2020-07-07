@@ -92,6 +92,7 @@ dependencies:
   charts_flutter:
   uuid:
   # pinch_zoom_image:
+  flutter_speed_dial:
 
 dev_dependencies:
   flutter_test:

@@ -15,7 +15,9 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:violet/dialogs.dart';
 import 'package:violet/settings.dart';
+import 'package:violet/user.dart';
 import 'package:violet/widgets/flutter_scrollable_positioned_list_with_draggable_scrollbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -98,8 +100,28 @@ class ViewerWidget extends StatelessWidget {
 
   ScrollController scroll = ScrollController();
 
+  bool once = false;
+
   @override
   Widget build(BuildContext context) {
+    if (once == false) {
+      once = true;
+      User.getInstance().then((value) => value.getUserLog().then((value) async {
+            var x = value.where((e) => e.articleId().toString() == this.id);
+            if (x.length < 2) return;
+            var e = x.elementAt(1);
+            if (e.lastPage() > 1 &&
+                DateTime.parse(e.datetimeStart())
+                        .difference(DateTime.now())
+                        .inDays <
+                    7) {
+              if (await Dialogs.yesnoDialog(context,
+                  '이전에 ${e.lastPage()}페이지까지 읽었던 기록이 있습니다. 이어서 읽을까요?', '기록')) {
+                scroll.jumpTo(page2Offset(e.lastPage() - 1));
+              }
+            }
+          }));
+    }
     return Container(
       color: const Color(0xff444444),
       // child: Scrollbar(
