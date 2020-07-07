@@ -2,7 +2,6 @@ package xyz.project.violet
 
 import android.net.VpnService
 import androidx.annotation.NonNull
-//import com.rollrat.explorer.Tun2HttpVpnService
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel

@@ -617,6 +617,28 @@ class _SettingsPageState extends State<SettingsPage>
                 //     onTap: () {},
                 //   ),
                 // ]),
+
+                _buildGroup(Translations.of(context).trans('network')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: ListTile(
+                      // borderRadius: BorderRadius.circular(10.0),
+                      leading: Icon(
+                        Icons.router,
+                        color: Settings.majorColor,
+                      ),
+                      title:
+                          Text(Translations.of(context).trans('routing_rule')),
+                      trailing: Icon(
+                          // Icons.message,
+                          Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () {},
+                  ),
+                ]),
                 _buildGroup(Translations.of(context).trans('update')),
                 _buildItems([
                   InkWell(
@@ -993,8 +1015,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   void initState() {
     super.initState();
     if (widget.what == 'include')
-      _searchController =
-          TextEditingController(text: Settings.includeTags);
+      _searchController = TextEditingController(text: Settings.includeTags);
     else if (widget.what == 'exclude')
       _searchController =
           TextEditingController(text: Settings.excludeTags.join(' '));

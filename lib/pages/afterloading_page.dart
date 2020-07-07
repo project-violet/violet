@@ -122,9 +122,9 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                   : Colors.grey.shade50,
               icon: new Icon(Icons.search),
               title: new Text(Translations.of(context).trans('search'))),
-          new BottomNavigationBarItem(
-              icon: new Icon(MdiIcons.accountGroup),
-              title: new Text(Translations.of(context).trans('community'))),
+          // new BottomNavigationBarItem(
+          //     icon: new Icon(MdiIcons.accountGroup),
+          //     title: new Text(Translations.of(context).trans('community'))),
           // new BottomNavigationBarItem(
           //     icon: new Icon(Icons.file_download),
           //     title: new Text(Translations.of(context).trans('download'))),
@@ -211,44 +211,47 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //     children: <Widget>[new Icon(Icons.mail), new Text("Inbox")],
           //   ),
           // ),
-          new Center(
-            child: Padding(
-              padding: EdgeInsets.all(64),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  CachedNetworkImage(
-                    imageUrl:
-                        "https://www.amazing-animations.com/animations/construction5.gif",
-                  ),
-                  Container(padding: EdgeInsets.all(4),),
-                  Text('공사중!'),
-                ],
-              ),
-            ),
-          ),
-          new Center(
-            child: Padding(
-              padding: EdgeInsets.all(64),
-              child: ShaderMask(
-                shaderCallback: (bounds) => RadialGradient(
-                  center: Alignment.bottomLeft,
-                  radius: 2,
-                  colors: [Colors.yellow, Colors.red, Colors.purple],
-                  tileMode: TileMode.clamp,
-                ).createShader(bounds),
-                child: FlareActor(
-                  'assets/flare/Trim.flr',
-                  animation: "Untitled",
-                  alignment: Alignment.center,
-                  color: Colors.white,
-                  fit: BoxFit.cover,
-                  isPaused: false,
-                  snapToEnd: true,
-                ),
-              ),
-            ),
-          ),
+          // new Center(
+          //   child: Padding(
+          //     padding: EdgeInsets.all(64),
+          //     child: Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: <Widget>[
+          //         CachedNetworkImage(
+          //           imageUrl:
+          //               "https://www.amazing-animations.com/animations/construction5.gif",
+          //         ),
+          //         Container(
+          //           padding: EdgeInsets.all(4),
+          //         ),
+          //         Text('공사중!'),
+          //       ],
+          //     ),
+          //   ),
+          // ),
+          BookmarkPage(),
+          // new Center(
+          //   child: Padding(
+          //     padding: EdgeInsets.all(64),
+          //     child: ShaderMask(
+          //       shaderCallback: (bounds) => RadialGradient(
+          //         center: Alignment.bottomLeft,
+          //         radius: 2,
+          //         colors: [Colors.yellow, Colors.red, Colors.purple],
+          //         tileMode: TileMode.clamp,
+          //       ).createShader(bounds),
+          //       child: FlareActor(
+          //         'assets/flare/Trim.flr',
+          //         animation: "Untitled",
+          //         alignment: Alignment.center,
+          //         color: Colors.white,
+          //         fit: BoxFit.cover,
+          //         isPaused: false,
+          //         snapToEnd: true,
+          //       ),
+          //     ),
+          //   ),
+          // ),
           SettingsPage(),
           // new Center(
           //   child: new Column(

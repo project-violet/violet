@@ -20,6 +20,7 @@ import 'package:tuple/tuple.dart';
 import 'package:vibration/vibration.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
+import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/article_info_page.dart';
 import 'package:violet/pages/search_page.dart';
@@ -256,6 +257,10 @@ class _ArticleListItemVerySimpleWidgetState
               }
             },
             onLongPress: () async {
+              if (isBookmarked) {
+                if (!await Dialogs.yesnoDialog(context, '북마크를 삭제할까요?', '북마크'))
+                  return;
+              }
               try {
                 Scaffold.of(context).showSnackBar(SnackBar(
                   duration: Duration(seconds: 2),

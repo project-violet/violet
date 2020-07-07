@@ -40,6 +40,7 @@ Future<void> warmupFlare() async {
 
 Future<void> initDB() async {
   await Bookmark.getInstance();
+  await User.getInstance();
 }
 
 // WebSocketChannel channel = IOWebSocketChannel.connect(wss_url, pingInterval: Duration(milliseconds: 2000));

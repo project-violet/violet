@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -39,7 +40,7 @@ class BookmarkGroup {
 
   Future<void> update() async {
     var db = await CommonUserDatabase.getInstance();
-    await db.update('BookmarkGroup', result);
+    await db.update('BookmarkGroup', result, 'Id=?', [id()]);
   }
 }
 
@@ -54,7 +55,7 @@ class BookmarkArticle {
 
   Future<void> update() async {
     var db = await CommonUserDatabase.getInstance();
-    await db.update('BookmarkArticle', result);
+    await db.update('BookmarkArticle', result, 'Id=?', [id()]);
   }
 }
 
@@ -70,7 +71,7 @@ class BookmarkArtist {
 
   Future<void> update() async {
     var db = await CommonUserDatabase.getInstance();
-    await db.update('BookmarkArtist', result);
+    await db.update('BookmarkArtist', result, 'Id=?', [id()]);
   }
 }
 
@@ -86,7 +87,7 @@ class Bookmark {
         if (ee == null || ee.length == 0 || ee[0].length == 0) {
           try {
             await db.execute(
-                'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer)');
+                'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer, Gorder integer)');
             await db.execute('''CREATE TABLE BookmarkArticle (
               Id integer primary key autoincrement, 
               Article text, 
@@ -108,7 +109,8 @@ class Bookmark {
               'Name': 'violet_default', // 미분류
               'Description': 'Unclassified bookmarks.',
               'DateTime': DateTime.now().toString(),
-              'Color': Colors.grey.value
+              'Color': Colors.grey.value,
+              'Gorder': 1,
             });
           } catch (e) {}
         }
@@ -119,7 +121,7 @@ class Bookmark {
   }
 
   Future<void> insertArticle(String article,
-      [DateTime datetime, int group = 0]) async {
+      [DateTime datetime, int group = 1]) async {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
     await db.insert('BookmarkArticle', {
@@ -130,7 +132,7 @@ class Bookmark {
   }
 
   Future<void> insertArtist(String artist, int isgroup,
-      [DateTime datetime, int group = 0]) async {
+      [DateTime datetime, int group = 1]) async {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
     await db.insert('BookmarkArtist', {
@@ -141,7 +143,8 @@ class Bookmark {
     });
   }
 
-  Future<void> createGroup(String name, String description, Color color,
+  Future<void> createGroup(
+      String name, String description, Color color, int order,
       [DateTime datetime]) async {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
@@ -149,41 +152,43 @@ class Bookmark {
       'Name': name,
       'Description': description,
       'DateTime': DateTime.now().toString(),
-      'Color': color.value
+      'Color': color.value,
+      'Gorder': order
     });
   }
 
-  List<BookmarkGroup> group;
+  Future<void> deleteGroup(BookmarkGroup group) async {
+    var db = await CommonUserDatabase.getInstance();
+    await db.delete('BookmarkGroup', 'Id=?', [group.id().toString()]);
+    //
+  }
+
   Future<List<BookmarkGroup>> getGroup() async {
-    if (group == null) {
-      group = (await (await CommonUserDatabase.getInstance())
-              .query('SELECT * FROM BookmarkGroup'))
-          .map((x) => BookmarkGroup(result: x))
-          .toList();
-    }
-    return group;
+    return (await (await CommonUserDatabase.getInstance())
+            .query('SELECT * FROM BookmarkGroup'))
+        .map((x) => BookmarkGroup(result: x))
+        .toList();
   }
 
-  List<BookmarkArticle> article;
   Future<List<BookmarkArticle>> getArticle() async {
-    if (article == null) {
-      article = (await (await CommonUserDatabase.getInstance())
-              .query('SELECT * FROM BookmarkArticle'))
-          .map((x) => BookmarkArticle(result: x))
-          .toList();
-    }
-    return article;
+    return (await (await CommonUserDatabase.getInstance())
+            .query('SELECT * FROM BookmarkArticle'))
+        .map((x) => BookmarkArticle(result: x))
+        .toList();
   }
 
-  List<BookmarkArtist> artist;
   Future<List<BookmarkArtist>> getArtist() async {
-    if (artist == null) {
-      artist = (await (await CommonUserDatabase.getInstance())
-              .query('SELECT * FROM BookmarkArtist'))
-          .map((x) => BookmarkArtist(result: x))
-          .toList();
-    }
-    return artist;
+    return (await (await CommonUserDatabase.getInstance())
+            .query('SELECT * FROM BookmarkArtist'))
+        .map((x) => BookmarkArtist(result: x))
+        .toList();
+  }
+
+  Future<void> modfiyGroup(BookmarkGroup group) async {
+    await lock.synchronized(() async {
+      await (await CommonUserDatabase.getInstance())
+          .update('BookmarkGroup', group.result, 'Id=?', [group.id()]);
+    });
   }
 
   HashSet<int> bookmarkSet;
@@ -221,32 +226,102 @@ class Bookmark {
 ///
 ////////////////////////////////////////////////////////////////////////
 
-// Trivial Log
-class UserLog {
+// // Trivial Log
+// class UserLog {
+//   Map<String, dynamic> result;
+//   UserLog({this.result});
+
+//   int id() => result['Id'];
+//   String message() => result['Message'];
+//   String datetime() => result['DateTime'];
+//   String type() => result['Type'];
+// }
+
+// // Specific Log
+// class UserActivity {
+//   Map<String, dynamic> result;
+//   UserActivity({this.result});
+
+//   int id() => result['Id'];
+//   String message() => result['Message'];
+//   String datetime() => result['DateTime'];
+
+//   // 1: Startup Application
+//   // 2: Close Application
+//   // 3: Suspend Application
+//   // 100: Search
+//   // 101: Info View
+//   // 120: Viewer Open
+//   // 121: Viewer Close
+//   int type() => result['Type'];
+// }
+
+class ArticleReadLog {
   Map<String, dynamic> result;
-  UserLog({this.result});
+  ArticleReadLog({this.result});
 
   int id() => result['Id'];
-  String message() => result['Message'];
-  String datetime() => result['DateTime'];
-  String type() => result['Type'];
+  String articleId() => result['Article'];
+  String datetimeStart() => result['DateTimeStart'];
+  String datetimeEnd() => result['DateTimeEnd'];
+  int lastPage() => result['LastPage'];
+  // 0: Read on search, 1: Read on bookmark
+  int type() => result['Type'];
 }
 
-// Specific Log
-class UserActivity {
-  Map<String, dynamic> result;
-  UserActivity({this.result});
+class User {
+  static User _instance;
+  static Lock lock = Lock();
+  static Future<User> getInstance() async {
+    await lock.synchronized(() async {
+      if (_instance == null) {
+        var db = await CommonUserDatabase.getInstance();
+        var ee = await db.query(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='ArticleReadLog';");
+        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+          try {
+            await db.execute('''CREATE TABLE ArticleReadLog (
+              Id integer primary key autoincrement, 
+              Article text, 
+              DateTimeStart text,
+              DateTimeEnd text,
+              LastPage integer,
+              Type integer);
+              ''');
+          } catch (e) {}
+        }
+        _instance = new User();
+      }
+    });
+    return _instance;
+  }
 
-  int id() => result['Id'];
-  String message() => result['Message'];
-  String datetime() => result['DateTime'];
+  Future<List<ArticleReadLog>> getUserLog() async {
+    return (await (await CommonUserDatabase.getInstance())
+            .query('SELECT * FROM ArticleReadLog'))
+        .map((x) => ArticleReadLog(result: x))
+        .toList()
+        .reversed
+        .toList();
+  }
 
-  // 1: Startup Application
-  // 2: Close Application
-  // 3: Suspend Application
-  // 100: Search
-  // 101: Info View
-  // 120: Viewer Open
-  // 121: Viewer Close
-  int type() => result['Type'];
+  Future<void> insertUserLog(int article, int type, [DateTime datetime]) async {
+    datetime ??= DateTime.now();
+    var db = await CommonUserDatabase.getInstance();
+    await db.insert('ArticleReadLog', {
+      'Article': article.toString(),
+      'Type': type,
+      'DateTimeStart': datetime.toString(),
+    });
+  }
+
+  Future<void> updateUserLog(int article, int lastpage, [DateTime end]) async {
+    end ??= DateTime.now();
+    var db = await CommonUserDatabase.getInstance();
+    var rr = (await getUserLog())[0];
+    var xx = Map<String, dynamic>.from(rr.result);
+    xx['DateTimeEnd'] = end.toString();
+    xx['LastPage'] = lastpage;
+    await db.update('ArticleReadLog', xx, 'Id=?', [rr.id()]);
+  }
 }
