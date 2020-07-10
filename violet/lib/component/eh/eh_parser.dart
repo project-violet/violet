@@ -91,7 +91,7 @@ class EHParser {
       });
     } catch (e) {
       url.add(
-          doc.querySelector("table tr td[class='ptds' a").attributes['href'] +
+          doc.querySelector("table tr td[class='ptds'] a").attributes['href'] +
               '?=0');
     }
 
