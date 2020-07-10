@@ -30,6 +30,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_parser.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/statistics.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
@@ -189,6 +190,22 @@ class TestPage extends StatelessWidget {
                 child: Text('Hiyobi Test'),
                 onPressed: () async {
                   print(await HiyobiManager.getImageList('1678359'));
+                },
+              ),
+
+              RaisedButton(
+                child: Text('Exhentai Test'),
+                onPressed: () async {
+                  var qq = await (await DataBaseManager.getInstance()).query(
+                      'SELECT * FROM HitomiColumnModel WHERE Id=1678043' +
+                          ' ORDER BY Id DESC LIMIT 1 OFFSET 0');
+                  var qr = QueryResult(result: qq.first);
+                  var ss = HentaiManager.exHentaiStream(
+                      QueryResult(result: qq.first));
+                  // for (int i = 0; i < (qr.files() as int); i++) {
+                  //     print(element);
+                  //   // print(ss.)
+                  // }
                 },
               ),
               // RaisedButton(

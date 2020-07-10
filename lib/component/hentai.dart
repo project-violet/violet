@@ -51,7 +51,7 @@ class HentaiManager {
   static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
       _tryExHentai(QueryResult qr) async {}
 
-  Stream<String> eHentaiStream(QueryResult qr) async* {
+  static Stream<String> eHentaiStream(QueryResult qr) async* {
     var gg = await http.get('https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
     var urls = EHParser.getPagesUrl(gg.body);
     var imgurls = List<String>();
@@ -67,20 +67,20 @@ class HentaiManager {
     }
   }
 
-  Stream<String> exHentaiStream(QueryResult qr) async* {
+  static Future<void> exHentaiStream(QueryResult qr) async {
     var gg = await EHSession.requestString(
         'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/');
     var urls = EHParser.getPagesUrl(gg);
     var imgurls = List<String>();
 
     for (int i = 0; i < urls.length; i++) {
-      var page = await http.get(urls[i]);
-      imgurls.addAll(EHParser.getImagesUrl(page.body));
+      var page = await EHSession.requestString(urls[i]);
+      imgurls.addAll(EHParser.getImagesUrl(page));
     }
 
     for (int i = 0; i < imgurls.length; i++) {
-      var img = await http.get(urls[i]);
-      yield EHParser.getImagesAddress(img.body);
+      var img = await EHSession.requestString(imgurls[i]);
+      print(EHParser.getImagesAddress(img));
     }
   }
 
