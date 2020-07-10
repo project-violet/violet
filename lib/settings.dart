@@ -17,6 +17,7 @@ class Settings {
   static List<String> excludeTags;
   static List<String> blurredTags;
   static String language; // System Language
+  static List<String> routingRule;
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
@@ -83,6 +84,17 @@ class Settings {
     excludeTags = excludetags.split('|').toList();
     blurredTags =
         blurredtags != null ? blurredtags.split(' ').toList() : List<String>();
+
+    var routingrule =
+        (await SharedPreferences.getInstance()).getString('routingrule');
+
+    if (routingrule == null) {
+      routingrule = 'Hitomi|ExHentai|EHentai|Hiyobi|NHentai';
+
+      (await SharedPreferences.getInstance())
+          .setString('routingrule', routingrule);
+    }
+    routingRule = routingrule.split('|');
   }
 
   static Future<void> setThemeWhat(bool wh) async {

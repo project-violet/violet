@@ -33,6 +33,7 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/statistics.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
+import 'package:violet/component/hiyobi/hiyobi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/files.dart';
 import 'package:violet/main.dart';
@@ -183,6 +184,13 @@ class TestPage extends StatelessWidget {
                   Files.enumerate();
                 },
               ),
+
+              RaisedButton(
+                child: Text('Hiyobi Test'),
+                onPressed: () async {
+                  print(await HiyobiManager.getImageList('1678359'));
+                },
+              ),
               // RaisedButton(
               //   // child: Fireworks(),
               //   onPressed: () {
@@ -221,7 +229,6 @@ class TestPage extends StatelessWidget {
                   await VpnTest.asdf();
                 },
               ),
-
 
               // RaisedButton(
               //   child: Text('Unzip Test'),
@@ -1613,25 +1620,18 @@ class Delegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
 }
 
-
-
-
 class VpnTest {
-
   static const platform = const MethodChannel("xyz.project.violet/dpitunnel");
 
-  
   static Future<void> asdf() async {
     try {
-      var x= await platform.invokeMethod('');
+      var x = await platform.invokeMethod('');
       print(x);
     } on PlatformException catch (e) {
       print(e.message);
     } catch (e) {
       print(e);
     }
-      print('asdf');
+    print('asdf');
   }
-
-
 }
