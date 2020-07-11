@@ -1,8 +1,16 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'dart:io';
+import 'dart:math';
+
+import 'package:division/division.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:gradient_widgets/gradient_widgets.dart';
+import 'package:lottie/lottie.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/main.dart';
 import 'package:violet/server/ws.dart';
@@ -22,6 +30,8 @@ class _MainPageState extends State<MainPage> {
   bool get wantKeepAlive => true;
   var currentPage = images.length - 1.0;
   var currentPage2 = images.length - 1.0;
+  int count = 0;
+  bool ee = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +43,19 @@ class _MainPageState extends State<MainPage> {
         //currentPage2 = controller2.page;
       });
     });
+    final double width = MediaQuery.of(context).size.width;
 
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return Container(
+    return
+        // Stack(
+        //   children: <Widget>[
+        // Visibility(
+        //     visible: count >= 10,
+        //     child: Draggable(
+        //         feedback: Lottie.asset('assets/lottie/26438-drone-flight.json'),
+        //         child: Lottie.asset('assets/lottie/26438-drone-flight.json'))),
+        Container(
       //color: Color(0x2FB200ED),
       //decoration:
       // BoxDecoration(
@@ -134,6 +153,118 @@ class _MainPageState extends State<MainPage> {
               Text(Translations.of(context).trans('notice4')),
               Text(Translations.of(context).trans('notice5')),
               Text(''),
+              UpdateCard(
+                clickEvent: () {
+                  count++;
+                  if (count >= 10 && count <= 20 && !ee) {
+                    ee = true;
+                    Future.delayed(Duration(seconds: 8), () {
+                      count = 20;
+                      ee = false;
+                      setState(() {});
+                    });
+                  }
+                  setState(() {});
+                },
+              ),
+
+              Visibility(
+                visible: count >= 10 && ee,
+                child: Stack(children: <Widget>[
+                  // Lottie.asset('assets/lottie/26438-drone-flight.json'),
+                  Lottie.network(
+                      'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/lottiefiles/fabulous_onboarding_animation.json')
+                ]),
+              ),
+              Visibility(
+                visible: count >= 20 && !ee,
+                child: Stack(children: <Widget>[
+                  // Lottie.asset('assets/lottie/26438-drone-flight.json'),
+                  Lottie.asset(
+                      'assets/lottie/24208-menhera-chan-at-cocopry-sticker-10.json')
+                ]),
+              ),
+
+              // Container(
+              //   width: 88,
+              //   height: 30,
+              //   decoration: BoxDecoration(
+              //       color: Color(0xff00D99E),
+              //       borderRadius: BorderRadius.circular(15),
+              //       boxShadow: [
+              //         BoxShadow(
+              //             blurRadius: 8,
+              //             offset: Offset(0, 15),
+              //             color: Color(0xff00D99E).withOpacity(.6),
+              //             spreadRadius: -9)
+              //       ]),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: <Widget>[
+              //       Icon(
+              //         Icons.shopping_cart,
+              //         size: 12,
+              //       ),
+              //       SizedBox(width: 6),
+              //       Text("CART",
+              //           style: TextStyle(
+              //             fontSize: 10,
+              //             color: Colors.white,
+              //             letterSpacing: 1,
+              //           ))
+              //     ],
+              //   ),
+              // ),
+              // Container(
+              //   child: GradientCard(
+              //     gradient: Gradients.backToFuture,
+              //     shadowColor:
+              //         Gradients.backToFuture.colors.last.withOpacity(0.25),
+              //     elevation: 32,
+              //     child: Container(
+              //       width: width - 30,
+              //       height: 150,
+              //     ),
+              //   ),
+              // decoration: BoxDecoration(
+              //   // color: Colors.green,
+              //   borderRadius: BorderRadius.only(
+              //       topLeft: Radius.circular(10),
+              //       topRight: Radius.circular(10),
+              //       bottomLeft: Radius.circular(10),
+              //       bottomRight: Radius.circular(10)),
+              //   boxShadow: [
+              //     BoxShadow(
+              //       color: Colors.orange.withOpacity(0.5),
+              //       spreadRadius: 5,
+              //       blurRadius: 17,
+              //       offset: Offset(0, 3), // changes position of shadow
+              //     ),
+              //   ],
+              // ),
+              // ),
+              // Container(
+              //   // margin:
+              //   //     EdgeInsets.only(left: 30, top: 100, right: 30, bottom: 50),
+              //   height: 50,
+              //   width: 200,
+              //   decoration: BoxDecoration(
+              //     color: Colors.green,
+              //     borderRadius: BorderRadius.only(
+              //         topLeft: Radius.circular(10),
+              //         topRight: Radius.circular(10),
+              //         bottomLeft: Radius.circular(10),
+              //         bottomRight: Radius.circular(10)),
+              //     boxShadow: [
+              //       BoxShadow(
+              //         color: Colors.green.withOpacity(0.5),
+              //         spreadRadius: 5,
+              //         blurRadius: 7,
+              //         offset: Offset(0, 3), // changes position of shadow
+              //       ),
+              //     ],
+              //   ),
+              // ),
               // Text('Copyright (C) 2020. dc-koromo. All rights reserved.'),
               // Padding(
               //   padding: EdgeInsets.all(10),
@@ -214,6 +345,176 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
       ),
+      // ),
+      // ],
     );
+  }
+}
+
+class UpdateCard extends StatefulWidget {
+  final VoidCallback clickEvent;
+
+  UpdateCard({this.clickEvent});
+
+  @override
+  _UpdateCardState createState() => _UpdateCardState();
+}
+
+class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
+  bool pressed = false;
+  AnimationController rotationController;
+
+  @override
+  void initState() {
+    rotationController = AnimationController(
+      duration: const Duration(milliseconds: 270),
+      vsync: this,
+      // upperBound: pi * 2,
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    return SizedBox(
+      width: width - 150,
+      height: 100,
+      child: PimpedButton(
+        particle: MyRectangle2DemoParticle(),
+        pimpedWidgetBuilder: (context, controller) {
+          return Parent(
+              style: settingsItemStyle(pressed),
+              gesture: Gestures()
+                ..isTap((isTapped) {
+                  if (isTapped)
+                    rotationController.forward(from: 0.0);
+                  else
+                    rotationController.reverse(from: 0.7);
+                  setState(() => pressed = isTapped);
+                  controller.forward(from: 0.0);
+                  Future.delayed(Duration(milliseconds: 200),
+                      () => controller.forward(from: 0.0));
+                  // Future.delayed(Duration(milliseconds: 200),
+                  //     () => controller.forward(from: 0.0));
+                  // Future.delayed(Duration(milliseconds: 300),
+                  //     () => controller.forward(from: 0.0));
+                  widget.clickEvent();
+                }),
+              child: Container(
+                decoration: BoxDecoration(
+                  // color: Color(0xff00D99E),
+                  borderRadius: BorderRadius.circular(8),
+                  // gradient: LinearGradient(
+                  //   begin: Alignment.bottomLeft,
+                  //   end: Alignment(0.8, 0.0),
+                  //   colors: [
+                  //     Gradients.backToFuture.colors.first.withOpacity(.3),
+                  //     Colors.indigo.withOpacity(.3),
+                  //     Gradients.backToFuture.colors.last.withOpacity(.3)
+                  //   ],
+                  //   tileMode: TileMode.clamp,
+                  // ),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 8,
+                      offset: Offset(0, 15),
+                      color:
+                          Gradients.backToFuture.colors.first.withOpacity(.3),
+                      spreadRadius: -9,
+                    ),
+                  ],
+                ),
+                child: GradientCard(
+                  gradient: Gradients.aliHussien,
+                  // shadowColor: Gradients.backToFuture.colors.last.withOpacity(0.2),
+                  // elevation: 8,
+                  child: Container(
+                    child: Center(
+                      child: RotationTransition(
+                        turns: Tween(begin: 0.0, end: 0.7)
+                            .animate(rotationController),
+                        child: ShaderMask(
+                          shaderCallback: (bounds) => RadialGradient(
+                            center: Alignment.bottomLeft,
+                            radius: 1.5,
+                            colors: [
+                              Colors.red.shade300,
+                              Colors.purple.shade800
+                            ],
+                            tileMode: TileMode.clamp,
+                          ).createShader(bounds),
+                          child: Icon(
+                            MdiIcons.update,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                      // child: Text(
+                      //   // 'New Version',
+                      //   '',
+                      //   style: TextStyle(
+                      //     fontSize: 30,
+                      //     fontWeight: FontWeight.bold,
+                      //     fontFamily: "Calibre-Semibold",
+                      //     // letterSpacing: 1.0,
+                      //   ),
+                      // ),
+                    ),
+                  ),
+                ),
+              ));
+        },
+      ),
+    );
+  }
+
+  final settingsItemStyle = (pressed) => ParentStyle()
+    ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
+    ..scale(pressed ? 0.95 : 1.0)
+    ..alignmentContent.center()
+    // ..height(70)
+    // ..margin(vertical: 10)
+    // ..borderRadius(all: 15)
+    // ..background.hex('#ffffff')
+    ..ripple(true)
+    ..animate(150, Curves.easeOut);
+
+  final settingsItemIconStyle = (Color color) => ParentStyle()
+    ..background.color(color)
+    ..margin(left: 15)
+    ..padding(all: 12)
+    ..borderRadius(all: 30);
+
+  final TxtStyle itemTitleTextStyle = TxtStyle()
+    ..bold()
+    ..fontSize(16);
+
+  final TxtStyle itemDescriptionTextStyle = TxtStyle()
+    ..textColor(Colors.black26)
+    ..bold()
+    ..fontSize(12);
+}
+
+class MyRectangle2DemoParticle extends Particle {
+  @override
+  void paint(Canvas canvas, Size size, progress, seed) {
+    Random random = Random(seed);
+    int randomMirrorOffset = random.nextInt(10) + 1;
+    CompositeParticle(children: [
+      Firework(),
+      RectangleMirror.builder(
+          numberOfParticles: random.nextInt(6) + 4,
+          particleBuilder: (int) {
+            return AnimatedPositionedParticle(
+              begin: Offset(0.0, -10.0),
+              end: Offset(0.0, -60.0),
+              child:
+                  FadingRect(width: 5.0, height: 15.0, color: intToColor(int)),
+            );
+          },
+          initialDistance: -pi / randomMirrorOffset),
+    ]).paint(canvas, size, progress, seed);
   }
 }
