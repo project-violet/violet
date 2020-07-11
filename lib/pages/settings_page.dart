@@ -1,10 +1,13 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+import 'dart:io';
+
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
@@ -13,7 +16,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/dialogs.dart';
@@ -21,6 +27,7 @@ import 'package:violet/locale.dart';
 import 'package:violet/pages/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings.dart';
+import 'package:violet/user.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -31,11 +38,13 @@ class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage> {
   FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
+  FlutterToast flutterToast;
 
   @override
   void initState() {
     super.initState();
     _themeSwitch = Settings.themeWhat;
+    flutterToast = FlutterToast(context);
   }
 
   @override
@@ -452,43 +461,205 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                 ]),
-                // _buildGroup(Translations.of(context).trans('database')),
-                // _buildItems([
-                //   InkWell(
-                //     customBorder: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.only(
-                //             topLeft: Radius.circular(10.0),
-                //             topRight: Radius.circular(10.0))),
-                //     child: ListTile(
-                //       leading: Icon(MdiIcons.swapHorizontal,
-                //           color: Settings.majorColor),
-                //       title: Text(Translations.of(context).trans('switching')),
-                //       trailing: Icon(Icons.keyboard_arrow_right),
-                //     ),
-                //     onTap: () {},
-                //   ),
-                //   _buildDivider(),
-                //   InkWell(
-                //     customBorder: RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.only(
-                //             bottomLeft: Radius.circular(10.0),
-                //             bottomRight: Radius.circular(10.0))),
-                //     child: ListTile(
-                //       leading: Icon(MdiIcons.databaseSync,
-                //           color: Settings.majorColor),
-                //       title: Text(Translations.of(context).trans('syncmanual')),
-                //       trailing: Icon(Icons.keyboard_arrow_right),
-                //     ),
-                //     onTap: () {
-                //       Navigator.push(
-                //         context,
-                //         CupertinoPageRoute(
-                //           builder: (context) => TestPage(),
-                //         ),
-                //       );
-                //     },
-                //   ),
-                // ]),
+                _buildGroup(Translations.of(context).trans('database')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.swapHorizontal,
+                          color: Settings.majorColor),
+                      title: Text(Translations.of(context).trans('switching')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.databaseSync,
+                          color: Settings.majorColor),
+                      title: Text(Translations.of(context).trans('syncmanual')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => TestPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ]),
+                _buildGroup(Translations.of(context).trans('network')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
+                      title: Text('VPN'),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () {},
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10.0),
+                          bottomRight: Radius.circular(10.0)),
+                    ),
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.router,
+                        color: Settings.majorColor,
+                      ),
+                      title:
+                          Text(Translations.of(context).trans('routing_rule')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () {},
+                  ),
+                ]),
+                _buildGroup(Translations.of(context).trans('bookmark')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading:
+                          Icon(MdiIcons.import, color: Settings.majorColor),
+                      title: Text('북마크 가져오기'),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () async {
+                      if (!await Permission.storage.isGranted) {
+                        if (await Permission.storage.request() ==
+                            PermissionStatus.denied) {
+                          Widget toast = Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 12.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(25.0),
+                              color: Colors.redAccent.withOpacity(0.8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.cancel),
+                                SizedBox(
+                                  width: 12.0,
+                                ),
+                                Text("권한이 없어서 실행할 수 없습니다."),
+                              ],
+                            ),
+                          );
+
+                          flutterToast.showToast(
+                            child: toast,
+                            gravity: ToastGravity.BOTTOM,
+                            toastDuration: Duration(seconds: 4),
+                          );
+
+                          return;
+                        }
+                      }
+
+                      File file;
+                      file = await FilePicker.getFile(
+                        type: FileType.any,
+                      );
+
+                      if (file == null) {
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: false,
+                            msg: "선택된 데이터베이스가 없습니다.",
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+
+                        return;
+                      }
+
+                      var db = await getApplicationDocumentsDirectory();
+                      var extfile = File(file.path);
+                      await extfile.copy('${db.path}/user.db');
+
+                      await Bookmark.getInstance();
+
+                      flutterToast.showToast(
+                        child: ToastWrapper(
+                          isCheck: true,
+                          msg: "북마크를 가져왔습니다!",
+                        ),
+                        gravity: ToastGravity.BOTTOM,
+                        toastDuration: Duration(seconds: 4),
+                      );
+                    },
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10.0),
+                          bottomRight: Radius.circular(10.0)),
+                    ),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.export,
+                        color: Settings.majorColor,
+                      ),
+                      title: Text('북마크 내보내기'),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () async {
+                      if (!await Permission.storage.isGranted) {
+                        if (await Permission.storage.request() ==
+                            PermissionStatus.denied) {
+                          flutterToast.showToast(
+                            child: ToastWrapper(
+                              isCheck: false,
+                              msg: "권한이 없어서 실행할 수 없습니다.",
+                            ),
+                            gravity: ToastGravity.BOTTOM,
+                            toastDuration: Duration(seconds: 4),
+                          );
+
+                          return;
+                        }
+                      }
+
+                      var db = await getApplicationDocumentsDirectory();
+                      var dbfile = File('${db.path}/user.db');
+                      var ext = await getExternalStorageDirectory();
+                      var extpath = '${ext.path}/bookmark.db';
+                      var extfile = await dbfile.copy(extpath);
+
+                      flutterToast.showToast(
+                        child: ToastWrapper(
+                          isCheck: true,
+                          msg: "북마크를 내보냈습니다!",
+                        ),
+                        gravity: ToastGravity.BOTTOM,
+                        toastDuration: Duration(seconds: 4),
+                      );
+                    },
+                  ),
+                ]),
                 // _buildGroup(Translations.of(context).trans('viewer')),
                 // _buildItems([
                 //   ListTile(
@@ -1256,5 +1427,88 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       },
     );
     return fc;
+  }
+}
+
+class ToastWrapper extends StatefulWidget {
+  final bool isCheck;
+  final String msg;
+
+  ToastWrapper({this.isCheck, this.msg});
+
+  @override
+  _ToastWrapperState createState() => _ToastWrapperState();
+}
+
+class _ToastWrapperState extends State<ToastWrapper>
+    with SingleTickerProviderStateMixin {
+  double opacity = 0.0;
+  AnimationController controller;
+  Animation<Offset> offset;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 100)).then((value) {
+      // setState(() {
+      //   opacity = 1.0;
+      // });
+
+      controller.reverse(from: 0.8);
+      setState(() {
+        opacity = 1.0;
+      });
+    });
+    Future.delayed(Duration(milliseconds: 3000)).then((value) {
+      setState(() {
+        opacity = 0.0;
+      });
+      controller.forward();
+    });
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
+    offset = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.0))
+        .animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: offset,
+      child: AnimatedOpacity(
+        duration: Duration(milliseconds: 500),
+        opacity: opacity,
+        curve: Curves.easeInOut,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            color: widget.isCheck
+                ? Colors.greenAccent.withOpacity(0.8)
+                : Colors.redAccent.withOpacity(0.8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(widget.isCheck ? Icons.check : Icons.cancel),
+              SizedBox(
+                width: 12.0,
+              ),
+              Text(widget.msg),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
