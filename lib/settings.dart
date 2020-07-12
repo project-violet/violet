@@ -18,6 +18,7 @@ class Settings {
   static List<String> blurredTags;
   static String language; // System Language
   static List<String> routingRule;
+  static String databaseType;
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
@@ -95,6 +96,21 @@ class Settings {
           .setString('routingrule', routingrule);
     }
     routingRule = routingrule.split('|');
+
+    var databasetype =
+        (await SharedPreferences.getInstance()).getString('databasetype');
+    if (databasetype == null) {
+      var langcode = Platform.localeName.split('_')[0];
+      var acclc = ['ko', 'ja', 'en', 'ru', 'zh'];
+
+      if (!acclc.contains(langcode)) langcode = 'global';
+
+      databasetype = langcode;
+
+      await (await SharedPreferences.getInstance())
+          .setString('databasetype', langcode);
+    }
+    databaseType = databasetype;
   }
 
   static Future<void> setThemeWhat(bool wh) async {
