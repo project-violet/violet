@@ -20,6 +20,7 @@ class UpdateSyncManager {
   static bool updateRequire = false;
   static String version = "";
   static String updateMessage = "";
+  static String updateUrl = "";
 
   static bool syncRequire = false;
 
@@ -42,6 +43,7 @@ class UpdateSyncManager {
       updateRequire = true;
       version = info["version"] as String;
       updateMessage = info["message"] as String;
+      updateUrl = info["download_link"] as String;
       print(info);
     }
 

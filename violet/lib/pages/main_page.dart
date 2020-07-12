@@ -417,7 +417,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
         int progress = data[2];
         if (progress == 100 && !once) {
           OpenFile.open(
-              '${ext.path}/${UpdateSyncManager.updateInfoURL.split('/').last}');
+              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
           once = true;
         }
         setState(() {});
@@ -425,7 +425,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
 
       FlutterDownloader.registerCallback(downloadCallback);
       final taskId = await FlutterDownloader.enqueue(
-        url: UpdateSyncManager.updateInfoURL,
+        url: UpdateSyncManager.updateUrl,
         savedDir: '${ext.path}',
         showNotification:
             true, // show download progress in status bar (for Android)
