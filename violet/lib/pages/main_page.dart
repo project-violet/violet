@@ -383,9 +383,9 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
-        if (!await Dialogs.yesnoDialog(context,
-            '새로운 업데이트가 있습니다. ' + UpdateSyncManager.updateMessage + ' 다운로드할까요?'))
-          return;
+        var bb = await Dialogs.yesnoDialog(context,
+            '새로운 업데이트가 있습니다. ' + UpdateSyncManager.updateMessage + ' 다운로드할까요?');
+        if (bb == null || bb == false) return;
       } else
         return;
 
