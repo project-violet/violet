@@ -39,6 +39,7 @@ import 'package:violet/database.dart';
 import 'package:violet/files.dart';
 import 'package:violet/main.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/update_sync.dart';
 import 'package:violet/widgets/article_list_item_widget.dart';
 import 'package:violet/widgets/viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
@@ -206,6 +207,13 @@ class TestPage extends StatelessWidget {
                   //     print(element);
                   //   // print(ss.)
                   // }
+                },
+              ),
+
+              RaisedButton(
+                child: Text('Update Test'),
+                onPressed: () async {
+                  await UpdateSyncManager.checkUpdateSync();
                 },
               ),
               // RaisedButton(

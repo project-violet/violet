@@ -93,11 +93,14 @@ dependencies:
   uuid:
   # pinch_zoom_image:
   flutter_speed_dial:
-  flutter_vpn:
+  # flutter_vpn:
   gradient_widgets:
   division:
   lottie:
   fluttertoast:
+  imei_plugin:
+  crypto:
+  open_file:
 
 dev_dependencies:
   flutter_test:

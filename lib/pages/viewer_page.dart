@@ -2,6 +2,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'package:flutter/material.dart';
+import 'package:violet/main.dart';
 import 'package:violet/widgets/viewer_widget.dart';
 
 class ViewerPage extends StatefulWidget {
@@ -9,7 +10,16 @@ class ViewerPage extends StatefulWidget {
   final Map<String, String> headers;
   final String id;
 
-  ViewerPage({this.images, this.headers, this.id});
+  ViewerPage({this.images, this.headers, this.id}) {
+    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      await analytics.logEvent(
+        name: 'viewer',
+        parameters: <String, dynamic>{
+          'id': id,
+        },
+      );
+    });
+  }
 
   @override
   _ViewerPageState createState() => _ViewerPageState();

@@ -22,6 +22,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
+import 'package:violet/main.dart';
 import 'package:violet/pages/article_info_page.dart';
 import 'package:violet/pages/search_page.dart';
 import 'package:violet/pages/viewer_page.dart';
@@ -338,10 +339,16 @@ class _ArticleListItemVerySimpleWidgetState
                 ));
               } catch (e) {}
               isBookmarked = !isBookmarked;
-              if (isBookmarked)
+              if (isBookmarked) {
+                await analytics.logEvent(
+                  name: 'bookmark',
+                  parameters: <String, dynamic>{
+                    'id': widget.queryResult.id(),
+                  },
+                );
                 await (await Bookmark.getInstance())
                     .bookmark(widget.queryResult.id());
-              else
+              } else
                 await (await Bookmark.getInstance())
                     .unbookmark(widget.queryResult.id());
               if (!isBookmarked)

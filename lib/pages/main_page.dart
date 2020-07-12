@@ -2,16 +2,22 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:division/division.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:violet/dialogs.dart';
 import 'package:violet/main.dart';
 import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
@@ -19,6 +25,8 @@ import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/locale.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:open_file/open_file.dart';
+import 'package:violet/update_sync.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -158,7 +166,7 @@ class _MainPageState extends State<MainPage> {
                   count++;
                   if (count >= 10 && count <= 20 && !ee) {
                     ee = true;
-                    Future.delayed(Duration(seconds: 8), () {
+                    Future.delayed(Duration(milliseconds: 7800), () {
                       count = 20;
                       ee = false;
                       setState(() {});
@@ -372,6 +380,63 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
       // upperBound: pi * 2,
     );
     super.initState();
+
+    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      if (UpdateSyncManager.updateRequire) {
+        if (!await Dialogs.yesnoDialog(context,
+            '새로운 업데이트가 있습니다. ' + UpdateSyncManager.updateMessage + ' 다운로드할까요?'))
+          return;
+      } else
+        return;
+
+      if (!await Permission.storage.isGranted) {
+        if (await Permission.storage.request() == PermissionStatus.denied) {
+          await Dialogs.okDialog(context, '권한을 허용하지 않으면 업데이트를 진행할 수 없습니다.');
+          return;
+        }
+      }
+      var ext = await getExternalStorageDirectory();
+      bool once = false;
+      IsolateNameServer.registerPortWithName(
+          _port.sendPort, 'downloader_send_port');
+      _port.listen((dynamic data) {
+        String id = data[0];
+        DownloadTaskStatus status = data[1];
+        int progress = data[2];
+        if (progress == 100 && !once) {
+          OpenFile.open(
+              '${ext.path}/${UpdateSyncManager.updateInfoURL.split('/').last}');
+          once = true;
+        }
+        setState(() {});
+      });
+
+      FlutterDownloader.registerCallback(downloadCallback);
+      final taskId = await FlutterDownloader.enqueue(
+        url: UpdateSyncManager.updateInfoURL,
+        savedDir: '${ext.path}',
+        showNotification:
+            true, // show download progress in status bar (for Android)
+        openFileFromNotification:
+            true, // click on notification to open downloaded file (for Android)
+      );
+    });
+  }
+
+  ReceivePort _port = ReceivePort();
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override

@@ -19,6 +19,7 @@ import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database.dart';
 import 'package:violet/locale.dart';
+import 'package:violet/main.dart';
 import 'package:violet/pages/search_page.dart';
 import 'package:violet/settings.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -60,6 +61,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      await analytics.logEvent(
+        name: 'artist_info',
+        parameters: <String, dynamic>{
+          'artist': widget.artist,
+          'isGroup': widget.isGroup,
+          'isUploader': widget.isUploader,
+        },
+      );
+
       cc = await query([widget.artist, widget.isGroup, widget.isUploader]);
 
       //
