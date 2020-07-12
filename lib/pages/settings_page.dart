@@ -28,6 +28,7 @@ import 'package:violet/pages/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/user.dart';
+import 'package:violet/update_sync.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -548,31 +549,14 @@ class _SettingsPageState extends State<SettingsPage>
                       if (!await Permission.storage.isGranted) {
                         if (await Permission.storage.request() ==
                             PermissionStatus.denied) {
-                          Widget toast = Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24.0, vertical: 12.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25.0),
-                              color: Colors.redAccent.withOpacity(0.8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.cancel),
-                                SizedBox(
-                                  width: 12.0,
-                                ),
-                                Text("권한이 없어서 실행할 수 없습니다."),
-                              ],
-                            ),
-                          );
-
                           flutterToast.showToast(
-                            child: toast,
+                            child: ToastWrapper(
+                              isCheck: false,
+                              msg: "권한이 없어서 실행할 수 없습니다.",
+                            ),
                             gravity: ToastGravity.BOTTOM,
                             toastDuration: Duration(seconds: 4),
                           );
-
                           return;
                         }
                       }
@@ -810,27 +794,49 @@ class _SettingsPageState extends State<SettingsPage>
                 //     onTap: () {},
                 //   ),
                 // ]),
-                // _buildGroup(Translations.of(context).trans('update')),
-                // _buildItems([
-                //   InkWell(
-                //     customBorder: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(10.0),
-                //     ),
-                //     child: ListTile(
-                //       // borderRadius: BorderRadius.circular(10.0),
-                //       leading: Icon(
-                //         Icons.update,
-                //         color: Settings.majorColor,
-                //       ),
-                //       title:
-                //           Text(Translations.of(context).trans('checkupdate')),
-                //       trailing: Icon(
-                //           // Icons.message,
-                //           Icons.keyboard_arrow_right),
-                //     ),
-                //     onTap: () {},
-                //   ),
-                // ]),
+                _buildGroup(Translations.of(context).trans('update')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: ListTile(
+                      // borderRadius: BorderRadius.circular(10.0),
+                      leading: Icon(
+                        Icons.update,
+                        color: Settings.majorColor,
+                      ),
+                      title:
+                          Text(Translations.of(context).trans('checkupdate')),
+                      trailing: Icon(
+                          // Icons.message,
+                          Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () async {
+                      await UpdateSyncManager.checkUpdateSync();
+
+                      if (UpdateSyncManager.updateRequire) {
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: "새로운 업데이트가 있습니다.",
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                      } else {
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: "최신 버전입니다!",
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                      }
+                    },
+                  ),
+                ]),
                 _buildGroup(Translations.of(context).trans('etc')),
                 _buildItems([
                   InkWell(
