@@ -3,6 +3,10 @@
 
 // For the development of human civilization and science and technology
 
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -10,7 +14,11 @@ import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:imei_plugin/imei_plugin.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
@@ -23,6 +31,7 @@ import 'locale.dart';
 import 'package:violet/pages/database_download_page.dart';
 import 'package:violet/pages/splash_page.dart';
 import 'package:violet/pages/afterloading_page.dart';
+import 'package:violet/update_sync.dart';
 
 DateTime currentBackPressTime;
 final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -43,11 +52,17 @@ Future<void> initDB() async {
   await User.getInstance();
 }
 
+FirebaseAnalytics analytics;
+FirebaseAnalyticsObserver observer;
+
 // WebSocketChannel channel = IOWebSocketChannel.connect(wss_url, pingInterval: Duration(milliseconds: 2000));
 // String userConnectionCount = '0';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+      debug: true // optional: set false to disable printing logs to console
+      );
   FlareCache.doesPrune = false;
 
   // final String UA = '';
@@ -56,13 +71,23 @@ void main() async {
   // ga.analyticsOpt = AnalyticsOpt.optIn;
   // ga.sendScreenView('home');
 
-  FirebaseAnalytics analytics = FirebaseAnalytics();
-  await analytics.setUserId('some-user');
+  analytics = FirebaseAnalytics();
+  observer = FirebaseAnalyticsObserver(analytics: analytics);
+  var id = (await SharedPreferences.getInstance()).getString('fa_userid');
+  if (id == null) {
+    // var imei = await ImeiPlugin.getImei();
+    // print(imei);
+    var ii = sha1.convert(utf8.encode(DateTime.now().toString()));
+    id = ii.toString();
+    (await SharedPreferences.getInstance()).setString('fa_userid', id);
+  }
+  await analytics.setUserId(id);
 
   await Settings.init();
   await initDB();
   await Variables.init();
   await HitomiIndexs.init();
+  // await UpdateSyncManager.checkUpdateSync();
 
   // channel.stream.listen((event) {
   //   userConnectionCount = event.toString().split(' ')[1];
@@ -143,8 +168,16 @@ void main() async {
 
               if (locale == null) {
                 debugPrint("*language locale is null!!!");
-                if (Settings.language == null)
+                if (Settings.language == null) {
+                  analytics.logEvent(
+                    name: 'locale',
+                    parameters: <String, dynamic>{
+                      'lang': supportedLocales.first.languageCode,
+                      'country': supportedLocales.first.countryCode
+                    },
+                  );
                   Settings.setLanguage(supportedLocales.first.languageCode);
+                }
                 return supportedLocales.first;
               }
 
@@ -152,8 +185,16 @@ void main() async {
                 if (supportedLocale.languageCode == locale.languageCode ||
                     supportedLocale.countryCode == locale.countryCode) {
                   debugPrint("*language ok $supportedLocale");
-                  if (Settings.language == null)
+                  if (Settings.language == null) {
+                    analytics.logEvent(
+                      name: 'locale',
+                      parameters: <String, dynamic>{
+                        'lang': supportedLocale.languageCode,
+                        'country': supportedLocale.countryCode
+                      },
+                    );
                     Settings.setLanguage(supportedLocale.languageCode);
+                  }
                   return supportedLocale;
                 }
               }

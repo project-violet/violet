@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class UpdateSyncManager {
   static const String updateInfoURL =
-      "https://github.com/project-violet/violet-app/blob/master/version.json";
+      "https://raw.githubusercontent.com/project-violet/violet-app/master/version.json";
 
   static bool enableSensitiveUpdate = false;
 
@@ -39,6 +39,7 @@ class UpdateSyncManager {
       updateRequire = true;
       version = info["version"] as String;
       updateMessage = info["message"] as String;
+      print(info);
     }
   }
 }

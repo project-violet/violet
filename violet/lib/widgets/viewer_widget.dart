@@ -110,6 +110,7 @@ class ViewerWidget extends StatelessWidget {
             var x = value.where((e) => e.articleId().toString() == this.id);
             if (x.length < 2) return;
             var e = x.elementAt(1);
+            if (e.lastPage() == null) return;
             if (e.lastPage() > 1 &&
                 DateTime.parse(e.datetimeStart())
                         .difference(DateTime.now())
