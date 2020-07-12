@@ -4,23 +4,26 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:tuple/tuple.dart';
 
 class UpdateSyncManager {
   static const String updateInfoURL =
       "https://raw.githubusercontent.com/project-violet/violet-app/master/version.json";
 
-  static bool enableSensitiveUpdate = false;
+  static bool enableSensitiveUpdate = true;
 
   // Current version
   static const int majorVersion = 0;
   static const int minorVersion = 7;
-  static const int patchVersion = 0;
+  static const int patchVersion = 1;
 
   static bool updateRequire = false;
   static String version = "";
   static String updateMessage = "";
 
   static bool syncRequire = false;
+
+  static Map<String, Tuple2<DateTime, String>> rawlangDB;
 
   static Future<void> checkUpdateSync() async {
     var infoJson = await http.get(updateInfoURL);
@@ -41,5 +44,30 @@ class UpdateSyncManager {
       updateMessage = info["message"] as String;
       print(info);
     }
+
+    var rawdb = (info["rawdb"] as List<dynamic>);
+    rawlangDB = Map<String, Tuple2<DateTime, String>>();
+    rawdb.forEach((element) {
+      var lang = element['language'];
+      switch (lang) {
+        case 'all':
+          lang = 'global';
+          break;
+        case 'korean':
+          lang = 'ko';
+          break;
+        case 'chinese':
+          lang = 'zh';
+          break;
+        case 'japanese':
+          lang = 'ja';
+          break;
+        case 'english':
+          lang = 'en';
+          break;
+      }
+      rawlangDB[lang] = Tuple2<DateTime, String>(
+          DateTime.parse(element['date']), element['chunk']);
+    });
   }
 }

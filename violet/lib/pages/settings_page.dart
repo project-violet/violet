@@ -20,6 +20,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/dialogs.dart';
@@ -29,6 +30,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/user.dart';
 import 'package:violet/update_sync.dart';
+import 'package:violet/pages/database_download_page.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -489,13 +491,31 @@ class _SettingsPageState extends State<SettingsPage>
                       title: Text(Translations.of(context).trans('syncmanual')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => TestPage(),
-                        ),
-                      );
+                    onTap: () async {
+                      var latestDB = UpdateSyncManager
+                          .rawlangDB[Settings.databaseType].item1;
+                      var lastDB = (await SharedPreferences.getInstance())
+                          .getString('databasesync');
+
+                      if (lastDB != null &&
+                          latestDB.difference(DateTime.parse(lastDB)).inHours <
+                              1) {
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: '데이터베이스가 이미 최신상태입니다.',
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                        return;
+                      }
+
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => DataBaseDownloadPage(
+                                dbType: Settings.databaseType,
+                                isExistsDataBase: false,
+                              )));
                     },
                   ),
                 ]),
@@ -1144,7 +1164,7 @@ class VersionViewPage extends StatelessWidget {
                       style: TextStyle(fontSize: 30),
                     ),
                     Text(
-                      '0.4.0',
+                      '0.7.1',
                       style: TextStyle(fontSize: 20),
                     ),
                     Text(''),

@@ -380,7 +380,19 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
       // upperBound: pi * 2,
     );
     super.initState();
+    updateCheckAndDownload();
+  }
 
+  ReceivePort _port = ReceivePort();
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
+  }
+
+  void updateCheckAndDownload() {
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
         var bb = await Dialogs.yesnoDialog(context,
@@ -421,15 +433,6 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
             true, // click on notification to open downloaded file (for Android)
       );
     });
-  }
-
-  ReceivePort _port = ReceivePort();
-
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
   }
 
   @override

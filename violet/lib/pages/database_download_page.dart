@@ -31,6 +31,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:ffi/ffi.dart';
 import 'package:violet/files.dart';
 import 'package:violet/locale.dart';
+import 'package:violet/update_sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
   final bool isExistsDataBase;
@@ -88,11 +89,13 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future checkDownload() async {
     try {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
-        setState(() {
-          downloading = false;
-          baseString = Translations.instance.trans('dbderror');
-        });
-        return;
+        // setState(() {
+        //   downloading = false;
+        //   baseString = Translations.instance.trans('dbderror');
+        // });
+        // return;
+        await File((await SharedPreferences.getInstance()).getString('db_path'))
+            .delete();
       }
     } catch (e) {}
 
@@ -137,8 +140,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                 _tlatest = _tnu;
                 _tnu = 0;
               }));
-      await dio.download(imgUrls[widget.dbType], "${dir.path}/db.sql.7z",
-          onReceiveProgress: (rec, total) {
+      await dio.download(UpdateSyncManager.rawlangDB[widget.dbType].item2,
+          "${dir.path}/db.sql.7z", onReceiveProgress: (rec, total) {
         _nu += rec - latest;
         _tnu += rec - latest;
         latest = rec;
@@ -169,6 +172,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance()).setString('db_path',
           "${dir.path}/${imgUrls[widget.dbType].split('/').last.split('.')[0] + '.db'}");
+      await (await SharedPreferences.getInstance())
+          .setString('databasetype', widget.dbType);
+      await (await SharedPreferences.getInstance()).setString('databasesync',
+          UpdateSyncManager.rawlangDB[widget.dbType].item1.toString());
 
       await indexing();
 
