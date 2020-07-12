@@ -339,16 +339,10 @@ class _ArticleListItemVerySimpleWidgetState
                 ));
               } catch (e) {}
               isBookmarked = !isBookmarked;
-              if (isBookmarked) {
-                await analytics.logEvent(
-                  name: 'bookmark',
-                  parameters: <String, dynamic>{
-                    'id': widget.queryResult.id(),
-                  },
-                );
+              if (isBookmarked)
                 await (await Bookmark.getInstance())
                     .bookmark(widget.queryResult.id());
-              } else
+              else
                 await (await Bookmark.getInstance())
                     .unbookmark(widget.queryResult.id());
               if (!isBookmarked)
