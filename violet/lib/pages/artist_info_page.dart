@@ -61,15 +61,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      await analytics.logEvent(
-        name: 'artist_info',
-        parameters: <String, dynamic>{
-          'artist': widget.artist,
-          'isGroup': widget.isGroup,
-          'isUploader': widget.isUploader,
-        },
-      );
-
       cc = await query([widget.artist, widget.isGroup, widget.isUploader]);
 
       //

@@ -10,16 +10,7 @@ class ViewerPage extends StatefulWidget {
   final Map<String, String> headers;
   final String id;
 
-  ViewerPage({this.images, this.headers, this.id}) {
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      await analytics.logEvent(
-        name: 'viewer',
-        parameters: <String, dynamic>{
-          'id': id,
-        },
-      );
-    });
-  }
+  ViewerPage({this.images, this.headers, this.id});
 
   @override
   _ViewerPageState createState() => _ViewerPageState();

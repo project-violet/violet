@@ -169,13 +169,6 @@ void main() async {
               if (locale == null) {
                 debugPrint("*language locale is null!!!");
                 if (Settings.language == null) {
-                  analytics.logEvent(
-                    name: 'locale',
-                    parameters: <String, dynamic>{
-                      'lang': supportedLocales.first.languageCode,
-                      'country': supportedLocales.first.countryCode
-                    },
-                  );
                   Settings.setLanguage(supportedLocales.first.languageCode);
                 }
                 return supportedLocales.first;
@@ -186,13 +179,6 @@ void main() async {
                     supportedLocale.countryCode == locale.countryCode) {
                   debugPrint("*language ok $supportedLocale");
                   if (Settings.language == null) {
-                    analytics.logEvent(
-                      name: 'locale',
-                      parameters: <String, dynamic>{
-                        'lang': supportedLocale.languageCode,
-                        'country': supportedLocale.countryCode
-                      },
-                    );
                     Settings.setLanguage(supportedLocale.languageCode);
                   }
                   return supportedLocale;
