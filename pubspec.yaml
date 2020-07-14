@@ -1,0 +1,209 @@
+name: violet 
+description: A new Flutter project.
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 0.7.2+0
+
+environment:
+  sdk: ">=2.2.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.2
+  english_words: 
+  http:
+  flutter_local_notifications:
+  async:
+  convert:
+  intl: ^0.16.0
+  encrypt: ^4.0.1
+  stacked:
+  path_provider:
+  permission_handler:
+  dio:
+  flutter_file_picker:
+  shared_preferences:
+  #connectivity:
+  flutter_downloader:
+  file_picker:
+  sqflite:
+  # fluttertoast: #^2.2.1
+  material_design_icons_flutter:
+  url_launcher:
+  extended_image:
+  photo_view:
+  cached_network_image:
+  draggable_scrollbar:
+  scrollable_positioned_list:
+  flutter_reorderable_list:
+  visibility_detector:
+  #keyboard_visibility:
+  flare_flutter: ^1.8.3
+  flare_dart:
+  flutter_sidekick:
+  tuple:
+  fading_edge_scrollview:
+  infinite_listview: ^1.0.1+1
+  auto_animated: any
+  flutter_svg:
+  flutter_markdown:
+  usage:
+  cloud_firestore: ^0.13.0+1 
+  firebase_analytics:
+  kdtree:
+  dynamic_theme: ^1.0.1
+  html:
+  html_unescape:
+  vibration: ^1.4.0
+  pimp_my_button: ^1.0.0
+  flutter_staggered_animations: "^0.1.2"
+  animations:
+  hive:
+  synchronized:
+  json_annotation: ^3.0.0
+  flutter_colorpicker:
+  country_pickers:
+  syncfusion_flutter_core:
+  syncfusion_flutter_sliders:
+  syncfusion_flutter_charts:
+  web_socket_channel:
+  # archive:
+  # lzma:
+  circular_check_box: ^1.0.1
+  device_info:
+  ffi:
+  # flutter_linkify: ^3.1.3
+  expandable:
+  charts_flutter:
+  uuid:
+  # pinch_zoom_image:
+  flutter_speed_dial:
+  # flutter_vpn:
+  gradient_widgets:
+  division:
+  lottie:
+  fluttertoast:
+  imei_plugin:
+  crypto:
+  open_file:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^1.0.0
+  json_serializable: ^3.2.0
+
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #  - images/a_dot_burr.jpeg
+  #  - images/a_dot_ham.jpeg
+  assets:
+    - assets/locale/en.json
+    - assets/locale/ko.json
+    - assets/locale/ja.json
+    # - assets/images/loading.gif
+
+    # - assets/test/001.jpg
+    # - assets/test/001.png
+    # - assets/test/001.webp
+
+    # - assets/test/image_01.png
+    # - assets/test/image_02.jpg
+    # - assets/test/image_03.jpg
+    # - assets/test/image_04.jpg
+
+    - assets/images/logo.png
+
+    # - assets/script_valid_pub.pem
+
+    - assets/flare/Cosmos.flr
+    - assets/flare/search_close.flr
+
+    - assets/flare/Loading.flr
+    - assets/flare/Loading2.flr
+    - assets/flare/Trim.flr
+    - assets/flare/SlidinSquaresLoader.flr
+    - assets/flare/switch_daytime.flr
+    - assets/flare/likeUtsua.flr
+
+    - assets/lottie/26438-drone-flight.json
+    - assets/lottie/24208-menhera-chan-at-cocopry-sticker-10.json
+
+    # - assets/icons/pixiv.ico
+    
+    - p7zip/CPP/ANDROID/7zr/libs/arm64-v8a/lib7zr.so
+    - p7zip/CPP/ANDROID/7zr/libs/armeabi-v7a/lib7zr.so
+    - p7zip/CPP/ANDROID/7zr/libs/x86/lib7zr.so
+    - p7zip/CPP/ANDROID/7zr/libs/x86_64/lib7zr.so
+
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
+
+  fonts:
+    - family: SF-Pro-Text-Regular
+      fonts:
+        - asset: assets/SF-Pro-Text-Regular.otf
+
+    - family: SF-Pro-Text-Bold
+      fonts:
+        - asset: assets/SF-Pro-Text-Bold.otf
+
+    - family: Calibre-Semibold
+      fonts:
+        - asset: assets/Calibre-Semibold.otf
+
+    - family: CustomIcons
+      fonts:
+        - asset: assets/custom_icons.ttf
+   
