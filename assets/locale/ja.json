@@ -146,5 +146,12 @@
     "deletebookmarkmsg": "すべての％sアイテムを削除しますか？このアクションは元に戻せません。",
     "wheretomove": "どこに移動しますか？",
     "movetoto": "％2アイテムを '％1'に移動しますか？",
-    "movebookmark": "ブックマークを移動"
+    "movebookmark": "ブックマークを移動",
+    "thisislatestbookmark": "データベースが既に最新の状態です。",
+    "importingbookmark": "ブックマークをインポート",
+    "exportingbookmark": "ブックマークのエクスポート",
+    "noauth": "権限がなくて実行できません。",
+    "noselectedb": "選択されたデータベースがありません。",
+    "importbookmark": "ブックマークをインポートしました！",
+    "exportbookmark": "ブックマークをエクスポートしました！"
 }
