@@ -15,9 +15,10 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/user.dart';
+import 'package:violet/database/user/user.dart';
 import 'package:violet/widgets/flutter_scrollable_positioned_list_with_draggable_scrollbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 

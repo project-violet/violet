@@ -20,14 +20,19 @@ import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
-import 'package:violet/database.dart';
+import 'package:violet/database/database.dart';
+import 'package:violet/database/query.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
-import 'package:violet/pages/viewer_page.dart';
+import 'package:violet/pages/article_info/simple_info.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/user.dart';
-import 'package:violet/widgets/article_list_item_widget.dart';
-import 'package:violet/pages/artist_info_page.dart';
+import 'package:violet/database/user/user.dart';
+import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/widgets/article_item/thumbnail_manager.dart';
+import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 class ArticleInfoPage extends StatelessWidget {
   final QueryResult queryResult;
@@ -108,7 +113,7 @@ class ArticleInfoPage extends StatelessWidget {
                                   headers: headers,
                                   queryResult: queryResult,
                                 ),
-                                _SimpleInfoWidget(
+                                SimpleInfoWidget(
                                   heroKey: heroKey,
                                   headers: headers,
                                   thumbnail: thumbnail,
@@ -693,201 +698,5 @@ class _Chip extends StatelessWidget {
           },
         ));
     return fc;
-  }
-}
-
-class _SimpleInfoWidget extends StatelessWidget {
-  final String heroKey;
-  final String thumbnail;
-  final Map<String, String> headers;
-  final FlareControls _flareController = FlareControls();
-  bool isBookmarked;
-  final QueryResult queryResult;
-  final String title;
-  final String artist;
-  static DateFormat _dateFormat = DateFormat(' yyyy/MM/dd HH:mm');
-
-  _SimpleInfoWidget({
-    this.heroKey,
-    this.thumbnail,
-    this.headers,
-    this.isBookmarked,
-    this.queryResult,
-    this.title,
-    this.artist,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Stack(
-          children: <Widget>[
-            Hero(
-              tag: heroKey,
-              child: Padding(
-                padding: EdgeInsets.all(8),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5.0),
-                  child: GestureDetector(
-                      onTap: () async {
-                        Navigator.of(context).push(PageRouteBuilder(
-                          opaque: false,
-                          transitionDuration: Duration(milliseconds: 500),
-                          transitionsBuilder: (BuildContext context,
-                              Animation<double> animation,
-                              Animation<double> secondaryAnimation,
-                              Widget wi) {
-                            return new FadeTransition(
-                                opacity: animation, child: wi);
-                          },
-                          pageBuilder: (_, __, ___) => ThumbnailViewPage(
-                            size: null,
-                            thumbnail: thumbnail,
-                            headers: headers,
-                            heroKey: heroKey,
-                          ),
-                        ));
-                      },
-                      child: thumbnail != null
-                          ? CachedNetworkImage(
-                              imageUrl: thumbnail,
-                              fit: BoxFit.cover,
-                              httpHeaders: headers,
-                              height: 4 * 50.0,
-                              width: 3 * 50.0,
-                            )
-                          : SizedBox(
-                              height: 4 * 50.0,
-                              width: 3 * 50.0,
-                              child: FlareActor(
-                                "assets/flare/Loading2.flr",
-                                alignment: Alignment.center,
-                                fit: BoxFit.fitHeight,
-                                animation: "Alarm",
-                              ),
-                            )),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: GestureDetector(
-                child: Transform(
-                  transform: new Matrix4.identity()..scale(1.0),
-                  child: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: FlareActor(
-                      'assets/flare/likeUtsua.flr',
-                      animation: isBookmarked ? "Like" : "IdleUnlike",
-                      controller: _flareController,
-                      // color: Colors.orange,
-                      // snapToEnd: true,
-                    ),
-                  ),
-                ),
-                onTap: () async {
-                  isBookmarked = !isBookmarked;
-                  if (isBookmarked)
-                    await (await Bookmark.getInstance())
-                        .bookmark(queryResult.id());
-                  else
-                    await (await Bookmark.getInstance())
-                        .unbookmark(queryResult.id());
-                  if (!isBookmarked)
-                    _flareController.play('Unlike');
-                  else {
-                    _flareController.play('Like');
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-        Expanded(
-          child: SizedBox(
-            height: 4 * 50.0,
-            width: 3 * 50.0,
-            child: Padding(
-              padding: EdgeInsets.all(4),
-              child: Stack(children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: AnimationConfiguration.toStaggeredList(
-                      duration: const Duration(milliseconds: 900),
-                      childAnimationBuilder: (widget) => SlideAnimation(
-                            horizontalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: widget,
-                            ),
-                          ),
-                      children: <Widget>[
-                        Text(title,
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        Text(artist),
-                      ]),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 4 * 50.0 - 50, 0, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: AnimationConfiguration.toStaggeredList(
-                      duration: const Duration(milliseconds: 900),
-                      childAnimationBuilder: (widget) => SlideAnimation(
-                        horizontalOffset: 50.0,
-                        child: FadeInAnimation(
-                          child: widget,
-                        ),
-                      ),
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.date_range,
-                              size: 20,
-                            ),
-                            Text(
-                                queryResult.getDateTime() != null
-                                    ? _dateFormat
-                                        .format(queryResult.getDateTime())
-                                    : '',
-                                style: TextStyle(fontSize: 15)),
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              Icons.photo,
-                              size: 20,
-                            ),
-                            Text(
-                                ' ' +
-                                    (thumbnail != null
-                                        ? ThumbnailManager.get(queryResult.id())
-                                                .item2
-                                                .length
-                                                .toString() +
-                                            ' Page'
-                                        : ''),
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ]),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }
