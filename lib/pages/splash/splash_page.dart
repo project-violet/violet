@@ -11,10 +11,10 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/locale.dart';
-import 'package:violet/pages/afterloading_page.dart';
+import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:violet/dialogs.dart';
-import 'package:violet/pages/database_download_page.dart';
+import 'package:violet/pages/database_download/database_download_page.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -342,7 +342,8 @@ class _SplashPageState extends State<SplashPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Text(Translations.of(context).trans('download')),
+                                        Text(Translations.of(context)
+                                            .trans('download')),
                                         Icon(Icons.keyboard_arrow_right),
                                       ],
                                     ),
@@ -362,7 +363,11 @@ class _SplashPageState extends State<SplashPage> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 DataBaseDownloadPage(
-                                                  dbType: globalCheck ? 'global' : Translations.of(context).locale.languageCode,
+                                                  dbType: globalCheck
+                                                      ? 'global'
+                                                      : Translations.of(context)
+                                                          .locale
+                                                          .languageCode,
                                                   isExistsDataBase: false,
                                                 )));
                                   },
@@ -399,7 +404,11 @@ class _SplashPageState extends State<SplashPage> {
                     if (path == '') return;
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => DataBaseDownloadPage(
-                              dbType: globalCheck ? 'global' : Translations.of(context).locale.languageCode,
+                              dbType: globalCheck
+                                  ? 'global'
+                                  : Translations.of(context)
+                                      .locale
+                                      .languageCode,
                               isExistsDataBase: true,
                               dbPath: path,
                             )));

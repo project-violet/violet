@@ -23,7 +23,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:stacked/stacked.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:violet/database.dart';
+import 'package:violet/database/database.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/dialogs.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -31,6 +32,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:ffi/ffi.dart';
 import 'package:violet/files.dart';
 import 'package:violet/locale.dart';
+import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/update_sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
@@ -63,14 +65,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     // Chinese
     'zh':
         "https://github.com/violet-dev/db/releases/download/2020.07.07/hitomidata-chinese.7z",
-  };
-
-  final imgSize = {
-    'global': '32MB',
-    'ko': '9MB',
-    'en': '10MB',
-    'jp': '18MB',
-    'zh': '9MB',
   };
 
   bool downloading = false;
@@ -165,7 +159,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       });
 
       var pp = new P7zip();
-      await pp.compress(["${dir.path}/db.sql.7z"], path: "${dir.path}");
+      await pp.decompress(["${dir.path}/db.sql.7z"], path: "${dir.path}");
 
       await File("${dir.path}/db.sql.7z").delete();
 
@@ -402,95 +396,5 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             : Text(baseString),
       ),
     );
-  }
-}
-
-typedef _NativeP7zipShell = Int32 Function(Pointer<Int8>);
-typedef _DartP7zipShell = int Function(Pointer<Int8>);
-
-void _shell(List argv) async {
-  final SendPort sendPort = argv[0];
-  final String soPath = argv[1];
-  final String cmd = argv[2];
-  final p7zip = DynamicLibrary.open(soPath);
-  if (p7zip == null) {
-    return null;
-  }
-  final _DartP7zipShell p7zipShell = p7zip
-      .lookup<NativeFunction<_NativeP7zipShell>>("p7zipShell")
-      .asFunction();
-  if (p7zipShell == null) {
-    return null;
-  }
-  final cstr = intListToArray(cmd);
-  final result = p7zipShell.call(cstr);
-  sendPort.send(result);
-}
-
-Pointer<Int8> intListToArray(String list) {
-  final ptr = allocate<Int8>(count: list.length + 1);
-  for (var i = 0; i < list.length; i++) {
-    ptr.elementAt(i).value = list.codeUnitAt(i);
-  }
-  ptr.elementAt(list.length).value = 0;
-  return ptr;
-}
-
-class P7zip {
-  Future<String> compress(List<String> files, {String path}) async {
-    final soPath = await _checkSharedLibrary();
-    print(soPath);
-    if (soPath == null) {
-      return null;
-    }
-    String filesStr = "";
-    files.forEach((element) {
-      filesStr += " $element";
-    });
-
-    final receivePort = ReceivePort();
-    await Isolate.spawn(
-        _shell, [receivePort.sendPort, soPath, "7zr e $filesStr -o$path"]);
-    final result = await receivePort.first;
-    print("[p7zip] compress: after first result = $result");
-    return result == 0 ? path : null;
-  }
-
-  Future<String> _checkSharedLibrary() async {
-    final dir = await getTemporaryDirectory();
-    if (dir == null) {
-      return null;
-    }
-    final libFile = File(dir.path + "/lib7zr.so");
-    if (Platform.isAndroid) {
-      final devicePlugin = DeviceInfoPlugin();
-      final deviceInfo = await devicePlugin.androidInfo;
-      if (deviceInfo == null) {
-        return null;
-      }
-      String soResource = "p7zip/CPP/ANDROID/7zr/libs/armeabi-v7a/lib7zr.so";
-      if (kDebugMode) soResource = "p7zip/CPP/ANDROID/7zr/libs/x86/lib7zr.so";
-      final support64 = deviceInfo.supported64BitAbis;
-      if (support64 != null && support64.length > 0) {
-        if (kDebugMode)
-          soResource = "p7zip/CPP/ANDROID/7zr/libs/x86_64/lib7zr.so";
-        else
-          soResource = "p7zip/CPP/ANDROID/7zr/libs/arm64-v8a/lib7zr.so";
-      }
-      final data = await rootBundle.load(soResource);
-      if (data == null) {
-        return null;
-      }
-      final createFile = await libFile.create();
-      if (createFile == null) {
-        return null;
-      }
-      final writeFile = await createFile.open(mode: FileMode.write);
-      if (writeFile == null) {
-        return null;
-      }
-      await writeFile.writeFrom(Uint8List.view(data.buffer));
-      return libFile.path;
-    } else {}
   }
 }

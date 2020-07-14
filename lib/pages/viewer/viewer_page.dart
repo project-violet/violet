@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:violet/main.dart';
-import 'package:violet/widgets/viewer_widget.dart';
+import 'package:violet/pages/viewer/viewer_widget.dart';
 
 class ViewerPage extends StatefulWidget {
   final List<String> images;

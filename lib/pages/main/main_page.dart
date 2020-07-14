@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vibration/vibration.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/main.dart';
 import 'package:violet/server/ws.dart';
@@ -162,8 +163,9 @@ class _MainPageState extends State<MainPage> {
               Text(Translations.of(context).trans('notice5')),
               Text(''),
               UpdateCard(
-                clickEvent: () {
+                clickEvent: () async {
                   count++;
+                  await Vibration.vibrate(duration: 50, amplitude: 50);
                   if (count >= 10 && count <= 20 && !ee) {
                     ee = true;
                     Future.delayed(Duration(milliseconds: 7800), () {

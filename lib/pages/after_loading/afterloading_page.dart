@@ -11,13 +11,12 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'dart:developer';
 import 'package:violet/locale.dart';
 import 'package:violet/main.dart';
-import 'package:violet/pages/bookmark_page.dart';
-import 'package:violet/pages/database_download_page.dart';
-import 'package:violet/pages/loading_page.dart';
-import 'package:violet/pages/main_page.dart';
-import 'package:violet/pages/search_page.dart';
-import 'package:violet/pages/settings_page.dart';
-import 'package:violet/pages/splash_page.dart';
+import 'package:violet/pages/bookmark/bookmark_page.dart';
+import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/main/main_page.dart';
+import 'package:violet/pages/search/search_page.dart';
+import 'package:violet/pages/settings/settings_page.dart';
+import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
 

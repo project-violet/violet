@@ -19,37 +19,20 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:tuple/tuple.dart';
 import 'package:vibration/vibration.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/database.dart';
+import 'package:violet/database/database.dart';
+import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/main.dart';
-import 'package:violet/pages/article_info_page.dart';
-import 'package:violet/pages/search_page.dart';
-import 'package:violet/pages/viewer_page.dart';
+import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/search/search_page.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/user.dart';
-
-class ThumbnailManager {
-  static HashMap<int, Tuple3<List<String>, List<String>, List<String>>> _ids =
-      HashMap<int, Tuple3<List<String>, List<String>, List<String>>>();
-
-  static bool isExists(int id) {
-    return _ids.containsKey(id);
-  }
-
-  static void insert(
-      int id, Tuple3<List<String>, List<String>, List<String>> url) {
-    _ids[id] = url;
-  }
-
-  static Tuple3<List<String>, List<String>, List<String>> get(int id) {
-    return _ids[id];
-  }
-
-  static void clear() {
-    _ids.clear();
-  }
-}
+import 'package:violet/database/user/user.dart';
+import 'package:violet/widgets/article_item/thumbnail.dart';
+import 'package:violet/widgets/article_item/thumbnail_manager.dart';
+import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 typedef void BookmarkCallback(int article);
 typedef void BookmarkCheckCallback(int article, bool check);
@@ -446,7 +429,7 @@ class _ArticleListItemVerySimpleWidgetState
   }
 
   Widget buildThumbnail() {
-    return _ThumbnailWidget(
+    return ThumbnailWidget(
       id: widget.queryResult.id().toString(),
       showDetail: widget.showDetail,
       thumbnail: thumbnail,
@@ -481,127 +464,6 @@ class _ArticleListItemVerySimpleWidgetState
       ),
     );
     return completer.future;
-  }
-}
-
-// Article List Item Thumbnail
-class _ThumbnailWidget extends StatelessWidget {
-  final double pad;
-  final bool showDetail;
-  final String thumbnail;
-  final String thumbnailTag;
-  final int imageCount;
-  final bool isBookmarked;
-  final FlareControls flareController;
-  final String id;
-  final bool isBlurred;
-
-  _ThumbnailWidget({
-    this.pad,
-    this.showDetail,
-    this.thumbnail,
-    this.thumbnailTag,
-    this.imageCount,
-    this.isBookmarked,
-    this.flareController,
-    this.id,
-    this.isBlurred,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var headers = {"Referer": "https://hitomi.la/reader/${id}.html/"};
-    return Container(
-      width: showDetail ? 100 - pad / 6 * 5 : null,
-      child: thumbnail != null
-          ? ClipRRect(
-              borderRadius: showDetail
-                  ? BorderRadius.horizontal(left: Radius.circular(5.0))
-                  : BorderRadius.circular(5.0),
-              child: Stack(
-                children: <Widget>[
-                  Hero(
-                    tag: thumbnailTag,
-                    child: CachedNetworkImage(
-                      imageUrl: thumbnail,
-                      fit: BoxFit.cover,
-                      httpHeaders: headers,
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: imageProvider, fit: BoxFit.cover),
-                        ),
-                        child: isBlurred
-                            ? BackdropFilter(
-                                filter: new ImageFilter.blur(
-                                    sigmaX: 5.0, sigmaY: 5.0),
-                                child: new Container(
-                                  decoration: new BoxDecoration(
-                                      color: Colors.white.withOpacity(0.0)),
-                                ),
-                              )
-                            : Container(),
-                      ),
-                      placeholder: (b, c) {
-                        return FlareActor(
-                          "assets/flare/Loading2.flr",
-                          alignment: Alignment.center,
-                          fit: BoxFit.fitHeight,
-                          animation: "Alarm",
-                        );
-                      },
-                    ),
-                  ),
-                  Align(
-                    alignment: FractionalOffset.topLeft,
-                    child: Transform(
-                      transform: new Matrix4.identity()..scale(0.9),
-                      child: SizedBox(
-                        width: 35,
-                        height: 35,
-                        child: FlareActor(
-                          'assets/flare/likeUtsua.flr',
-                          animation: isBookmarked ? "Like" : "IdleUnlike",
-                          controller: flareController,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: !showDetail,
-                    child: Align(
-                      alignment: FractionalOffset.bottomRight,
-                      child: Transform(
-                        transform: new Matrix4.identity()..scale(0.9),
-                        child: Theme(
-                          data: ThemeData(canvasColor: Colors.transparent),
-                          child: RawChip(
-                            labelPadding: EdgeInsets.all(0.0),
-                            label: Text(
-                              '' + imageCount.toString() + ' Page',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                            elevation: 6.0,
-                            shadowColor: Colors.grey[60],
-                            padding: EdgeInsets.all(6.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          // : Container(),
-          : FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            ),
-    );
   }
 }
 
@@ -658,130 +520,6 @@ class _DetailWidget extends StatelessWidget {
       ),
     );
   }
-}
-
-class ThumbnailViewPage extends StatefulWidget {
-  final String thumbnail;
-  final String heroKey;
-  final Map<String, String> headers;
-  final Size size;
-
-  ThumbnailViewPage({this.thumbnail, this.headers, this.size, this.heroKey});
-
-  @override
-  _ThumbnailViewPageState createState() => _ThumbnailViewPageState();
-}
-
-class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
-  double scale = 1.0;
-  double latest = 1.0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        // loaded = true;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Container(
-        padding: EdgeInsets.all(0),
-        child: Transform.scale(
-          scale: scale,
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Hero(
-                  tag: widget.heroKey,
-                  child: CachedNetworkImage(
-                    imageUrl: widget.thumbnail,
-                    fit: BoxFit.cover,
-                    httpHeaders: widget.headers,
-                    placeholder: (b, c) {
-                      return FlareActor(
-                        "assets/flare/Loading2.flr",
-                        alignment: Alignment.center,
-                        fit: BoxFit.fitHeight,
-                        animation: "Alarm",
-                      );
-                    },
-                  ),
-                ),
-              ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.2)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-      ),
-      onScaleStart: (detail) {
-        tapCount = 2;
-      },
-      onScaleUpdate: (detail) {
-        setState(() {
-          scale = latest * detail.scale;
-        });
-
-        if (scale < 0.6) Navigator.pop(context);
-      },
-      onScaleEnd: (detail) {
-        latest = scale;
-        tapCount = 0;
-      },
-      onVerticalDragStart: (detail) {
-        dragStart = detail.localPosition.dy;
-      },
-      onVerticalDragUpdate: (detail) {
-        if (zooming || tapCount == 2) {
-          setState(() {
-            scale += (detail.delta.dy) / 100;
-          });
-          latest = scale;
-          if (scale < 0.6) Navigator.pop(context);
-        } else if (tapCount != 2 ||
-            (detail.localPosition.dy - dragStart).abs() > 70)
-          Navigator.pop(context);
-      },
-      onTapDown: (detail) {
-        tapCount++;
-        DateTime now = DateTime.now();
-        if (currentBackPressTime == null ||
-            now.difference(currentBackPressTime) >
-                Duration(milliseconds: 300)) {
-          currentBackPressTime = now;
-          return;
-        }
-        zooming = true;
-      },
-      onTapUp: (detail) {
-        tapCount--;
-        zooming = false;
-      },
-      onTapCancel: () {
-        tapCount = 0;
-      },
-    );
-  }
-
-  int tapCount = 0;
-  double dragStart;
-  bool zooming = false;
-  DateTime currentBackPressTime;
 }
 
 // class ArticleListItemDetailWidget extends StatefulWidget {

@@ -23,14 +23,16 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
-import 'package:violet/pages/test_page.dart';
+import 'package:violet/pages/test/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/user.dart';
+import 'package:violet/database/user/user.dart';
 import 'package:violet/update_sync.dart';
-import 'package:violet/pages/database_download_page.dart';
+import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/widgets/toast.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -1164,7 +1166,7 @@ class VersionViewPage extends StatelessWidget {
                       style: TextStyle(fontSize: 30),
                     ),
                     Text(
-                      '0.7.1',
+                      '0.7.2',
                       style: TextStyle(fontSize: 20),
                     ),
                     Text(''),
@@ -1453,88 +1455,5 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       },
     );
     return fc;
-  }
-}
-
-class ToastWrapper extends StatefulWidget {
-  final bool isCheck;
-  final String msg;
-
-  ToastWrapper({this.isCheck, this.msg});
-
-  @override
-  _ToastWrapperState createState() => _ToastWrapperState();
-}
-
-class _ToastWrapperState extends State<ToastWrapper>
-    with SingleTickerProviderStateMixin {
-  double opacity = 0.0;
-  AnimationController controller;
-  Animation<Offset> offset;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration(milliseconds: 100)).then((value) {
-      // setState(() {
-      //   opacity = 1.0;
-      // });
-
-      controller.reverse(from: 0.8);
-      setState(() {
-        opacity = 1.0;
-      });
-    });
-    Future.delayed(Duration(milliseconds: 3000)).then((value) {
-      setState(() {
-        opacity = 0.0;
-      });
-      controller.forward();
-    });
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
-    offset = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.0))
-        .animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    controller.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SlideTransition(
-      position: offset,
-      child: AnimatedOpacity(
-        duration: Duration(milliseconds: 500),
-        opacity: opacity,
-        curve: Curves.easeInOut,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25.0),
-            color: widget.isCheck
-                ? Colors.greenAccent.withOpacity(0.8)
-                : Colors.redAccent.withOpacity(0.8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(widget.isCheck ? Icons.check : Icons.cancel),
-              SizedBox(
-                width: 12.0,
-              ),
-              Text(widget.msg),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

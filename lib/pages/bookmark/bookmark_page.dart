@@ -14,14 +14,19 @@ import 'package:html_unescape/html_unescape.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
-import 'package:violet/database.dart';
+import 'package:violet/database/database.dart';
+import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
-import 'package:violet/pages/artist_info_page.dart';
-import 'package:violet/pages/search_page.dart';
+import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/artist_info/search_type2.dart';
+import 'package:violet/widgets/search_bar.dart';
+import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/user.dart';
-import 'package:violet/widgets/article_list_item_widget.dart';
+import 'package:violet/database/user/user.dart';
+import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -667,7 +672,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                       slivers: <Widget>[
                         SliverPersistentHeader(
                           floating: true,
-                          delegate: SearchBar(
+                          delegate: SearchBarSliver(
                             minExtent: 64 + 12.0,
                             maxExtent: 64.0 + 12,
                             searchBar: Padding(
