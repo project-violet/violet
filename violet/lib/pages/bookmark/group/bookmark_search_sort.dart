@@ -1,18 +1,12 @@
-// This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the MIT License.
-
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/settings.dart';
 
-class SearchFilter extends StatefulWidget {
-  bool ignoreBookmark;
-  bool blurred;
+class BookmarkSearchSort extends StatefulWidget {
   bool isOr;
   List<Tuple3<String, String, int>> tags = List<Tuple3<String, String, int>>();
   Map<String, bool> tagStates = Map<String, bool>();
@@ -21,9 +15,7 @@ class SearchFilter extends StatefulWidget {
   List<Tuple2<String, int>> groups = List<Tuple2<String, int>>();
   final List<QueryResult> queryResult;
 
-  SearchFilter({
-    this.ignoreBookmark,
-    this.blurred,
+  BookmarkSearchSort({
     this.queryResult,
     this.tagStates,
     this.groupStates,
@@ -31,15 +23,16 @@ class SearchFilter extends StatefulWidget {
   });
 
   @override
-  _SearchFilterState createState() => _SearchFilterState();
+  _BookmarkSearchSortState createState() => _BookmarkSearchSortState();
 }
 
-class _SearchFilterState extends State<SearchFilter> {
+class _BookmarkSearchSortState extends State<BookmarkSearchSort> {
   bool test = false;
 
   @override
   void initState() {
     super.initState();
+    // Future.delayed(Duration(milliseconds: 50)).then((value) {
     Map<String, int> tags = Map<String, int>();
     widget.queryResult.forEach((element) {
       if (element.tags() != null) {
@@ -89,6 +82,8 @@ class _SearchFilterState extends State<SearchFilter> {
     });
     widget.groups.sort((a, b) => b.item2.compareTo(a.item2));
     widget.tags.sort((a, b) => b.item3.compareTo(a.item3));
+    // setState(() {});
+    // });
   }
 
   void append(String group, String vv) {
@@ -121,8 +116,6 @@ class _SearchFilterState extends State<SearchFilter> {
     return WillPopScope(
       onWillPop: () {
         Navigator.pop(context, [
-          widget.ignoreBookmark,
-          widget.blurred,
           widget.tagStates,
           widget.groupStates,
           widget.isOr,
@@ -137,7 +130,7 @@ class _SearchFilterState extends State<SearchFilter> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Hero(
-              tag: "searchtype",
+              tag: "searchtype2",
               child: Card(
                 color: Settings.themeWhat
                     ? Color(0xFF353535)
@@ -287,26 +280,6 @@ class _SearchFilterState extends State<SearchFilter> {
                                   });
                                 },
                               ),
-                              // TODO: 북마크 블러 체크 필터
-                              // FilterChip(
-                              //   label: Text("북마크 제외"),
-                              //   selected: widget.ignoreBookmark,
-                              //   onSelected: (bool value) {
-                              //     setState(() {
-                              //       widget.ignoreBookmark =
-                              //           !widget.ignoreBookmark;
-                              //     });
-                              //   },
-                              // ),
-                              // FilterChip(
-                              //   label: Text("블러 처리"),
-                              //   selected: widget.blurred,
-                              //   onSelected: (bool value) {
-                              //     setState(() {
-                              //       widget.blurred = !widget.blurred;
-                              //     });
-                              //   },
-                              // ),
                             ],
                           ),
                         ],

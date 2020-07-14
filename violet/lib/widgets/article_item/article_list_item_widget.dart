@@ -413,19 +413,11 @@ class _ArticleListItemVerySimpleWidgetState
         child: widget.showDetail
             ? Row(
                 children: <Widget>[
-                  // Expanded(
-                  //   flex: 4,
-                  //   child: buildThumbnail(),
-                  // ),
                   buildThumbnail(),
-                  // Expanded(flex: 8, child: Text('asdf'),)
                   Expanded(child: buildDetail())
                 ],
               )
-            : buildThumbnail()
-        //     ),
-        // ),
-        );
+            : buildThumbnail());
   }
 
   Widget buildThumbnail() {
@@ -521,59 +513,3 @@ class _DetailWidget extends StatelessWidget {
     );
   }
 }
-
-// class ArticleListItemDetailWidget extends StatefulWidget {
-//   @override
-//   _ArticleListItemDetailWidgetState createState() =>
-//       _ArticleListItemDetailWidgetState();
-// }
-
-// class _ArticleListItemDetailWidgetState
-//     extends State<ArticleListItemDetailWidget> {
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     scaleAnimationController = AnimationController(
-//       vsync: this,
-//       lowerBound: 1.0,
-//       upperBound: 1.08,
-//       duration: Duration(milliseconds: 180),
-//     );
-//     scaleAnimationController.addListener(() {
-//       setState(() {
-//         scale = scaleAnimationController.value;
-//       });
-//     });
-//     _animationController =
-//         AnimationController(duration: Duration(milliseconds: 300), vsync: this);
-//     _tween = Tween(begin: 0.0, end: 5.0);
-//     _animation = _tween.animate(_animationController)
-//       ..addListener(() {
-//         setState(() {});
-//       })
-//       ..addStatusListener((status) {
-//         if (status == AnimationStatus.completed ||
-//             status == AnimationStatus.dismissed) {
-//           checkSearchPageBlur = searchPageBlur;
-//           animating = false;
-//         }
-//       });
-//     Bookmark.getInstance().then((value) async {
-//       isBookmarked = await value.isBookmark(widget.queryResult.id());
-//       if (isBookmarked) setState(() {});
-//     });
-//   }
-
-//   @override
-//   void dispose() {
-//     disposed = true;
-//     super.dispose();
-//     scaleAnimationController.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container();
-//   }
-// }

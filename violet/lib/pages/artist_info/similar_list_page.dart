@@ -76,9 +76,7 @@ class SimilarListPage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    // if (similarsAll == null) return Text('asdf');
     return Padding(
-      // padding: EdgeInsets.all(0),
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -149,11 +147,8 @@ class SimilarListPage extends StatelessWidget {
                                               mainAxisAlignment:
                                                   MainAxisAlignment
                                                       .spaceBetween,
-                                              // crossAxisAlignment: CrossAxisAlignment,
                                               children: <Widget>[
                                                 Text(
-                                                    // (index + 1).toString() +
-                                                    //     '. ' +
                                                     ' ' +
                                                         e.item1 +
                                                         ' (' +
@@ -188,78 +183,9 @@ class SimilarListPage extends StatelessWidget {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: <Widget>[
-                                                  Expanded(
-                                                      flex: 1,
-                                                      child: qq.length > 0
-                                                          ? Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(4),
-                                                              child:
-                                                                  ArticleListItemVerySimpleWidget(
-                                                                queryResult:
-                                                                    qq[0],
-                                                                showDetail:
-                                                                    false,
-                                                                addBottomPadding:
-                                                                    false,
-                                                                width: (windowWidth -
-                                                                        16 -
-                                                                        4.0 -
-                                                                        1.0) /
-                                                                    3,
-                                                                thumbnailTag:
-                                                                    Uuid().v4(),
-                                                              ))
-                                                          : Container()),
-                                                  Expanded(
-                                                      flex: 1,
-                                                      child: qq.length > 1
-                                                          ? Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(4),
-                                                              child:
-                                                                  ArticleListItemVerySimpleWidget(
-                                                                queryResult:
-                                                                    qq[1],
-                                                                showDetail:
-                                                                    false,
-                                                                addBottomPadding:
-                                                                    false,
-                                                                width: (windowWidth -
-                                                                        16 -
-                                                                        4.0 -
-                                                                        16.0) /
-                                                                    3,
-                                                                thumbnailTag:
-                                                                    Uuid().v4(),
-                                                              ))
-                                                          : Container()),
-                                                  Expanded(
-                                                      flex: 1,
-                                                      child: qq.length > 2
-                                                          ? Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(4),
-                                                              child:
-                                                                  ArticleListItemVerySimpleWidget(
-                                                                queryResult:
-                                                                    qq[2],
-                                                                showDetail:
-                                                                    false,
-                                                                addBottomPadding:
-                                                                    false,
-                                                                width: (windowWidth -
-                                                                        16 -
-                                                                        4.0 -
-                                                                        16.0) /
-                                                                    3,
-                                                                thumbnailTag:
-                                                                    Uuid().v4(),
-                                                              ))
-                                                          : Container()),
+                                                  _image(qq, 0, windowWidth),
+                                                  _image(qq, 1, windowWidth),
+                                                  _image(qq, 2, windowWidth),
                                                 ],
                                               ),
                                             ),
@@ -273,5 +199,21 @@ class SimilarListPage extends StatelessWidget {
             ),
           ]),
     );
+  }
+
+  Widget _image(List<QueryResult> qq, int index, double windowWidth) {
+    return Expanded(
+        flex: 1,
+        child: qq.length > index
+            ? Padding(
+                padding: EdgeInsets.all(4),
+                child: ArticleListItemVerySimpleWidget(
+                  queryResult: qq[index],
+                  showDetail: false,
+                  addBottomPadding: false,
+                  width: (windowWidth - 16 - 4.0 - 16.0) / 3,
+                  thumbnailTag: Uuid().v4(),
+                ))
+            : Container());
   }
 }

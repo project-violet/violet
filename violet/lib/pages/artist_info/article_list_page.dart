@@ -56,11 +56,14 @@ class _ArticleListPageState extends State<ArticleListPage> {
                           minExtent: 64 + 12.0,
                           maxExtent: 64.0 + 12,
                           searchBar: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Stack(children: <Widget>[
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Stack(
+                              children: <Widget>[
                                 _align(),
                                 _title(),
-                              ])),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       buildList()
@@ -220,49 +223,6 @@ class _ArticleListPageState extends State<ArticleListPage> {
             child: Text('Error :('),
           ),
         );
-
-      // return LiveSliverGrid(
-      //   showItemInterval: Duration(milliseconds: 50),
-      //   showItemDuration: Duration(milliseconds: 150),
-      //   visibleFraction: 0.001,
-      //   itemCount: widget.cc.length,
-      //   // physics: const BouncingScrollPhysics(),
-      //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      //     crossAxisCount: 3,
-      //     crossAxisSpacing: 8,
-      //     mainAxisSpacing: 8,
-      //     childAspectRatio: 3 / 4,
-      //   ),
-      //   itemBuilder: (context, index, animation) {
-      //     return FadeTransition(
-      //       opacity: Tween<double>(
-      //         begin: 0,
-      //         end: 1,
-      //       ).animate(animation),
-      //       child: SlideTransition(
-      //         position: Tween<Offset>(
-      //           begin: Offset(0, -0.1),
-      //           end: Offset.zero,
-      //         ).animate(animation),
-      //         child: Padding(
-      //           padding: EdgeInsets.zero,
-      //           child: Align(
-      //             alignment: Alignment.bottomCenter,
-      //             child: SizedBox(
-      //               child: ArticleListItemVerySimpleWidget(
-      //                 queryResult: widget.cc[index],
-      //                 showDetail: false,
-      //                 addBottomPadding: false,
-      //                 width: (windowWidth - 4.0) / 3,
-      //                 thumbnailTag: Uuid().v4(),
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //     );
-      //   },
-      // );
     }
   }
 }

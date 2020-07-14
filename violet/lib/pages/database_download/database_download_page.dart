@@ -83,11 +83,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future checkDownload() async {
     try {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
-        // setState(() {
-        //   downloading = false;
-        //   baseString = Translations.instance.trans('dbderror');
-        // });
-        // return;
         await File((await SharedPreferences.getInstance()).getString('db_path'))
             .delete();
       }
@@ -319,8 +314,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         path5.writeAsString(jsonEncode(tagUploader));
 
         setState(() {
-          baseString = Translations.instance
-              .trans('dbdcomplete'); //\n' + jsonEncode(index);
+          baseString = Translations.instance.trans('dbdcomplete');
         });
         break;
       }
@@ -349,7 +343,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Files.enumerate();
     if (baseString == '')
       baseString = Translations.of(context).trans('dbdwaitforrequest');
     return Scaffold(

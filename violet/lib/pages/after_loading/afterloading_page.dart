@@ -58,50 +58,17 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
     super.dispose();
   }
 
-  // var currentPage = images.length - 1.0;
-
   @override
   Widget build(BuildContext context) {
-    // PageController controller = PageController(initialPage: images.length - 1);
-    // controller.addListener(() {
-    //   setState(() {
-    //     currentPage = controller.page;
-    //   });
-    // });
-
-    return
-        // AnnotatedRegion<SystemUiOverlayStyle>(
-        //   value: SystemUiOverlayStyle(
-        //     statusBarColor: Colors.transparent,
-        //   ),
-        //   child:
-        new Scaffold(
+    return new Scaffold(
       key: scaffoldKey,
-      bottomNavigationBar: //new Theme(
-          // data: Theme.of(context).copyWith(
-          //     // sets the background color of the `BottomNavigationBar`
-          //     canvasColor: Colors.purple,
-          //     // sets the active color of the `BottomNavigationBar` if `Brightness` is light
-          //     primaryColor: Colors.red,
-
-          //     textTheme: Theme.of(context)
-          //         .textTheme
-          //         .copyWith(caption: new TextStyle(color: Colors.yellow))),
-          //child:
-          BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         elevation: 9,
-        // showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.shifting,
-        //  backgroundColor: Colors.black,
         fixedColor: Settings.majorColor,
         unselectedItemColor:
             Settings.themeWhat ? Colors.white : Colors.black, //Colors.black,
-        // backgroundColor: Colors.transparent,
-        //backgroundColor: Color(0x4FB200ED),
-        //backgroundColor: Color(0x4FB200ED),
-        // selectedItemColor: Colors.black,
-
         currentIndex: _page,
         onTap: (index) {
           this._c.animateToPage(index,
