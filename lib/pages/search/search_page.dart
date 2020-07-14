@@ -491,39 +491,6 @@ class _SearchPageState extends State<SearchPage>
                 );
               },
             ));
-
-      // return SliverPadding(
-      //     padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-      //     sliver: SliverGrid(
-      //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      //         crossAxisCount: mm,
-      //         crossAxisSpacing: 8,
-      //         mainAxisSpacing: 8,
-      //         childAspectRatio: 3 / 4,
-      //       ),
-      //       delegate: SliverChildBuilderDelegate(
-      //         (BuildContext context, int index) {
-      //           return Padding(
-      //             padding: EdgeInsets.zero,
-      //             child: Align(
-      //               alignment: Alignment.bottomCenter,
-      //               child: SizedBox(
-      //                 child: ArticleListItemVerySimpleWidget(
-      //                   queryResult: queryResult[index],
-      //                   showDetail: false,
-      //                   addBottomPadding: false,
-      //                   width: (windowWidth - 4.0) / mm,
-      //                   thumbnailTag:
-      //                       'thumbnail' + queryResult[index].id().toString(),
-      //                 ),
-      //               ),
-      //             ),
-      //           );
-      //         },
-      //         childCount: queryResult.length,
-      //       ),
-      //     ));
-
       case 2:
       case 3:
         return SliverList(
@@ -543,19 +510,6 @@ class _SearchPageState extends State<SearchPage>
             },
             childCount: filtered.length,
           ),
-          // itemCount: queryResult.length,
-          // itemBuilder: (context, index, animation) {
-          //   return Align(
-          //     alignment: Alignment.center,
-          //     child: ArticleListItemVerySimpleWidget(
-          //       addBottomPadding: true,
-          //       showDetail: Settings.searchResultType == 3,
-          //       queryResult: queryResult[index],
-          //       width: windowWidth - 4.0,
-          //       thumbnailTag: 'thumbnail' + queryResult[index].id().toString(),
-          //     ),
-          //   );
-          // },
         );
 
       default:

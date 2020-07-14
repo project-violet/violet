@@ -280,32 +280,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                             ),
                           ],
                         ),
-                  // child:  SingleChildScrollView(
-                  //   child: Column(
-                  //     children: <Widget>[
-                  //       Container(
-                  //         height: 16,
-                  //       ),
-                  //       Text(
-                  //           (widget.isGroup ? 'Groups:' : 'Artist: ') +
-                  //               widget.artist,
-                  //           style: TextStyle(
-                  //               fontSize: 20, fontWeight: FontWeight.bold)),
-                  //       qureyLoaded
-                  //           ? queryResult()
-                  //           : Expanded(
-                  //               child: Align(
-                  //                 alignment: Alignment.center,
-                  //                 child: SizedBox(
-                  //                   width: 50,
-                  //                   height: 50,
-                  //                   child: CircularProgressIndicator(),
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //     ],
-                  //   ),
-                  // ),
                 ),
               ),
             ),
@@ -713,21 +687,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             ),
           );
         });
-    // Column(
-    //   // mainAxisAlignment: MainAxisAlignment.start,
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: AnimationConfiguration.toStaggeredList(
-    //       duration: const Duration(milliseconds: 900),
-    //       childAnimationBuilder: (widget) => SlideAnimation(
-    //             horizontalOffset: 50.0,
-    //             child: FadeInAnimation(
-    //               child: widget,
-    //             ),
-    //           ),
-    //       children: children
-    //       ),
-    // ),
-    // );
   }
 
   Widget seriesArea() {
@@ -782,7 +741,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // crossAxisAlignment: CrossAxisAlignment,
                         children: <Widget>[
                           Flexible(
                               child: Text(
@@ -799,8 +757,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                               )),
                         ],
                       ),
-                      // Text(' ' + unescape.convert(cc[e[0]].title()),
-                      //         style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis,),
                       SizedBox(
                         height: 162,
                         child: Row(
@@ -860,98 +816,4 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           );
         });
   }
-}
-
-// class PieSmartLabels extends StatefulWidget {
-//   PieSmartLabels({this.sample, Key key}) : super(key: key);
-//   SubItem sample;
-
-//   @override
-//   _PieSmartLabelsState createState() => _PieSmartLabelsState(sample);
-// }
-
-// class _PieSmartLabelsState extends State<PieSmartLabels> {
-//   _PieSmartLabelsState(this.sample);
-//   final SubItem sample;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return getScopedModel(getSmartLabelPieChart(false), sample);
-//   }
-// }
-
-class ChartSampleData {
-  ChartSampleData(
-      {this.x,
-      this.y,
-      this.xValue,
-      this.yValue,
-      this.yValue2,
-      this.yValue3,
-      this.pointColor,
-      this.size,
-      this.text,
-      this.open,
-      this.close});
-  final dynamic x;
-  final num y;
-  final dynamic xValue;
-  final num yValue;
-  final num yValue2;
-  final num yValue3;
-  final Color pointColor;
-  final num size;
-  final String text;
-  final num open;
-  final num close;
-}
-
-SfCircularChart getSmartLabelPieChart(List<Tuple2<String, int>> ff) {
-  return SfCircularChart(
-    // title: ChartTitle(text: isTileView ? '' : 'Largest islands in the world'),
-    series: gettSmartLabelPieSeries(ff),
-    tooltipBehavior: TooltipBehavior(enable: true),
-  );
-}
-
-List<PieSeries<ChartSampleData, String>> gettSmartLabelPieSeries(
-    List<Tuple2<String, int>> ff) {
-  // final List<ChartSampleData> chartData = <ChartSampleData>[
-  //   ChartSampleData(x: 'Greenland', y: 2130800),
-  //   ChartSampleData(x: 'New\nGuinea', y: 785753),
-  //   ChartSampleData(x: 'Borneo', y: 743330),
-  //   ChartSampleData(x: 'Madagascar', y: 587713),
-  //   ChartSampleData(x: 'Baffin\nIsland', y: 507451),
-  //   ChartSampleData(x: 'Sumatra', y: 443066),
-  //   ChartSampleData(x: 'Honshu', y: 225800),
-  //   ChartSampleData(x: 'Victoria\nIsland', y: 217291),
-  // ];
-  var chartData = ff
-      .map((e) => ChartSampleData(
-          x: e.item1,
-          y: e.item2,
-          pointColor: e.item1.startsWith('female:')
-              ? Colors.pink
-              : e.item1.startsWith('male:')
-                  ? Colors.blue
-                  : e.item1 == 'etc' ? Colors.grey.shade200 : Colors.grey))
-      .toList();
-  return <PieSeries<ChartSampleData, String>>[
-    PieSeries<ChartSampleData, String>(
-        dataSource: chartData,
-        xValueMapper: (ChartSampleData data, _) => data.x,
-        yValueMapper: (ChartSampleData data, _) => data.y,
-        dataLabelMapper: (ChartSampleData data, _) => data.x,
-        pointColorMapper: (ChartSampleData data, _) => data.pointColor,
-        pointRadiusMapper: (ChartSampleData data, _) =>
-            (data.y / ff[0].item2 * 100.0).toString() + '%',
-        radius: '65%',
-        startAngle: 80,
-        endAngle: 80,
-        dataLabelSettings: DataLabelSettings(
-            isVisible: true,
-            labelPosition: ChartDataLabelPosition.outside,
-            connectorLineSettings:
-                ConnectorLineSettings(type: ConnectorType.curve)))
-  ];
 }
