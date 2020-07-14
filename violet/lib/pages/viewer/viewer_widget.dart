@@ -19,7 +19,6 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/database/user/user.dart';
-import 'package:violet/widgets/flutter_scrollable_positioned_list_with_draggable_scrollbar.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class ViewerWidget extends StatelessWidget {
