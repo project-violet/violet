@@ -147,6 +147,12 @@
     "deletebookmarkmsg": "%s개 항목을 모두 삭제할까요? 이 동작은 되돌릴 수 없어요.",
     "wheretomove": "어디로 옮길까요?",
     "movetoto": "'%1'로 '%2'개의 항목을 옮길까요?",
-    "movebookmark": "북마크 이동"
-
+    "movebookmark": "북마크 이동",
+    "thisislatestbookmark": "데이터베이스가 이미 최신상태입니다.",
+    "importingbookmark": "북마크 가져오기",
+    "exportingbookmark": "북마크 내보내기",
+    "noauth": "권한이 없어서 실행할 수 없습니다.",
+    "noselectedb": "선택된 데이터베이스가 없습니다.",
+    "importbookmark": "북마크를 가져왔습니다!",
+    "exportbookmark": "북마크를 내보냈습니다!"
 }

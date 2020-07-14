@@ -148,5 +148,12 @@
     "deletebookmarkmsg": "Do you want to delete all %s items? This action is irreversible.",
     "wheretomove": "Where to move?",
     "movetoto": "Move %2 items to'%1'?",
-    "movebookmark": "Move Bookmark"
+    "movebookmark": "Move Bookmark",
+    "thisislatestbookmark": "Database is already up to date..",
+    "importingbookmark": "Import Bookmark",
+    "exportingbookmark": "Export Bookmark",
+    "noauth": "You do not have permission to run it.",
+    "noselectedb": "No database selected.",
+    "importbookmark": "Bookmark Imported!",
+    "exportbookmark": "Bookmark Exported!"
 }

@@ -507,7 +507,8 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
-                            msg: '데이터베이스가 이미 최신상태입니다.',
+                            msg: Translations.of(context)
+                                .trans('thisislatestbookmark'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),
@@ -566,7 +567,8 @@ class _SettingsPageState extends State<SettingsPage>
                     child: ListTile(
                       leading:
                           Icon(MdiIcons.import, color: Settings.majorColor),
-                      title: Text('북마크 가져오기'),
+                      title: Text(
+                          Translations.of(context).trans('importingbookmark')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () async {
@@ -576,7 +578,7 @@ class _SettingsPageState extends State<SettingsPage>
                           flutterToast.showToast(
                             child: ToastWrapper(
                               isCheck: false,
-                              msg: "권한이 없어서 실행할 수 없습니다.",
+                              msg: Translations.of(context).trans('noauth'),
                             ),
                             gravity: ToastGravity.BOTTOM,
                             toastDuration: Duration(seconds: 4),
@@ -594,7 +596,7 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: false,
-                            msg: "선택된 데이터베이스가 없습니다.",
+                            msg: Translations.of(context).trans('noselectedb'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),
@@ -612,7 +614,7 @@ class _SettingsPageState extends State<SettingsPage>
                       flutterToast.showToast(
                         child: ToastWrapper(
                           isCheck: true,
-                          msg: "북마크를 가져왔습니다!",
+                          msg: Translations.of(context).trans('importbookmark'),
                         ),
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: Duration(seconds: 4),
@@ -631,7 +633,8 @@ class _SettingsPageState extends State<SettingsPage>
                         MdiIcons.export,
                         color: Settings.majorColor,
                       ),
-                      title: Text('북마크 내보내기'),
+                      title: Text(
+                          Translations.of(context).trans('exportingbookmark')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () async {
@@ -641,7 +644,7 @@ class _SettingsPageState extends State<SettingsPage>
                           flutterToast.showToast(
                             child: ToastWrapper(
                               isCheck: false,
-                              msg: "권한이 없어서 실행할 수 없습니다.",
+                              msg: Translations.of(context).trans('noauth'),
                             ),
                             gravity: ToastGravity.BOTTOM,
                             toastDuration: Duration(seconds: 4),
@@ -660,7 +663,7 @@ class _SettingsPageState extends State<SettingsPage>
                       flutterToast.showToast(
                         child: ToastWrapper(
                           isCheck: true,
-                          msg: "북마크를 내보냈습니다!",
+                          msg: Translations.of(context).trans('exportbookmark'),
                         ),
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: Duration(seconds: 4),

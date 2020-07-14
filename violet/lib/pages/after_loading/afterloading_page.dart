@@ -42,7 +42,6 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    // await new Future.delayed(const Duration(seconds: 3));
     setState(() {
       if (state == AppLifecycleState.paused ||
           state == AppLifecycleState.inactive)
