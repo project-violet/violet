@@ -10,6 +10,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -66,6 +67,9 @@ void main() async {
       debug: true // optional: set false to disable printing logs to console
       );
   FlareCache.doesPrune = false;
+
+  Crashlytics.instance.enableInDevMode = true;
+  FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
   // final String UA = '';
   // Analytics ga = new AnalyticsIO(UA, 'ga_test', '3.0',

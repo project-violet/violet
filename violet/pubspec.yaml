@@ -101,6 +101,7 @@ dependencies:
   imei_plugin:
   crypto:
   open_file:
+  firebase_crashlytics:
 
 dev_dependencies:
   flutter_test:
