@@ -20,6 +20,7 @@ import 'package:violet/dialogs.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:violet/locale.dart';
 
 class ViewerWidget extends StatelessWidget {
   final List<String> urls;
@@ -116,8 +117,12 @@ class ViewerWidget extends StatelessWidget {
                         .difference(DateTime.now())
                         .inDays <
                     7) {
-              if (await Dialogs.yesnoDialog(context,
-                  '이전에 ${e.lastPage()}페이지까지 읽었던 기록이 있습니다. 이어서 읽을까요?', '기록')) {
+              if (await Dialogs.yesnoDialog(
+                  context,
+                  Translations.of(context)
+                      .trans('recordmessage')
+                      .replaceAll('%s', e.lastPage().toString()),
+                  Translations.of(context).trans('record'))) {
                 scroll.jumpTo(page2Offset(e.lastPage() - 1));
               }
             }

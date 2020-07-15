@@ -155,5 +155,7 @@
     "noauth": "You do not have permission to run it.",
     "noselectedb": "No database selected.",
     "importbookmark": "Bookmark Imported!",
-    "exportbookmark": "Bookmark Exported!"
+    "exportbookmark": "Bookmark Exported!",
+    "record": "Record",
+    "recordmessage": "There is a record that you have read up to %s page before. Do you want to continue reading?"
 }
