@@ -11,6 +11,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_info/device_info.dart';
+import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_dart/math/aabb.dart';
@@ -25,6 +26,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -40,6 +42,7 @@ import 'package:violet/database/query.dart';
 import 'package:violet/files.dart';
 import 'package:violet/main.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/update_sync.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/pages/viewer/viewer_widget.dart';
@@ -255,6 +258,61 @@ class TestPage extends StatelessWidget {
                   await VpnTest.asdf();
                 },
               ),
+              RaisedButton(
+                child: Text('Raw Data Sync Test'),
+                onPressed: () async {
+                  var link =
+                      'https://violet-test-4b8cd3e.s3.ap-northeast-2.amazonaws.com/rawdata-english.7z';
+                  var ll =
+                      'https://violet-test-4b8cd3e.s3.ap-northeast-2.amazonaws.com/tag-uploader.7z';
+
+                  var dir = await getApplicationDocumentsDirectory();
+                  // File('${dir.path}/rawdata-english.7z').deleteSync();
+                  // File('${dir.path}/index.json').deleteSync();
+                  // File('${dir.path}/tag_artist.json').deleteSync();
+                  // File('${dir.path}/tag_group.json').deleteSync();
+                  // File('${dir.path}/tag_uploader.json').deleteSync();
+                  // File('${dir.path}/tag_index.json').deleteSync();
+                  // Directory("${dir.path}/data").createSync();
+                  print(dir.path);
+                  Files.enumeratePath(dir.path);
+                  // return;
+                  // Dio dio = Dio();
+                  // await dio.download(ll, "${dir.path}/tag-upload.7z",
+                  //     onReceiveProgress: (rec, total) {
+                  //   print(rec);
+                  // });
+                  // var pp = new P7zip();
+                  // await pp.decompress(["${dir.path}/rawdata-english.7z"],
+                  //     path: "${dir.path}/data");
+                  // print(dir.path);
+                  // Files.enumeratePath(dir.path);
+                  return;
+
+                  // bool once = false;
+                  // IsolateNameServer.registerPortWithName(
+                  //     _port.sendPort, 'downloader_send_port');
+                  // _port.listen((dynamic data) {
+                  //   String id = data[0];
+                  //   DownloadTaskStatus status = data[1];
+                  //   int progress = data[2];
+                  //   print(progress);
+                  //   if (progress == 100 && !once) {
+                  //     once = true;
+                  //   }
+                  // });
+
+                  // FlutterDownloader.registerCallback(downloadCallback);
+                  // final taskId = await FlutterDownloader.enqueue(
+                  //   url: link,
+                  //   savedDir: '${dir.path}',
+                  //   showNotification:
+                  //       true, // show download progress in status bar (for Android)
+                  //   openFileFromNotification:
+                  //       true, // click on notification to open downloaded file (for Android)
+                  // );
+                },
+              ),
 
               // RaisedButton(
               //   child: Text('Unzip Test'),
@@ -282,6 +340,15 @@ class TestPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  ReceivePort _port = ReceivePort();
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
   }
 }
 

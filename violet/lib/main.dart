@@ -89,7 +89,6 @@ void main() async {
   await initDB();
   await Variables.init();
   await HitomiIndexs.init();
-  await UpdateSyncManager.checkUpdateSync();
 
   // channel.stream.listen((event) {
   //   userConnectionCount = event.toString().split(' ')[1];
