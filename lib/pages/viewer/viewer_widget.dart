@@ -252,76 +252,80 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 4;
-    return Container(
-      child: FutureBuilder(
-        future: Future.delayed(Duration(milliseconds: 100)).then((value) => 1),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return SizedBox(
-              height: 300.0,
-              child: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-            );
-          }
-          return FutureBuilder(
-            future: _calculateImageDimension(),
-            builder: (context, AsyncSnapshot<Size> snapshot) {
-              if (snapshot.hasData) {
-                galleryExampleItem.loaded = true;
-                galleryExampleItem.height = width / snapshot.data.aspectRatio;
-              }
-              return SizedBox(
-                height: galleryExampleItem.loaded
-                    ? galleryExampleItem.height
-                    : 300.0,
-                child: GestureDetector(
-                  onTap: onTap,
-                  child: Hero(
-                    tag: galleryExampleItem.id.toString(),
-                    child: CachedNetworkImage(
-                      imageUrl: galleryExampleItem.url,
-                      httpHeaders: galleryExampleItem.headers,
-                      placeholder: (context, url) => Center(
-                        child: SizedBox(
-                          child: CircularProgressIndicator(),
-                          width: 30,
-                          height: 30,
-                        ),
-                      ),
-                      placeholderFadeInDuration: Duration(microseconds: 500),
-                      fadeInDuration: Duration(microseconds: 500),
-                      fadeInCurve: Curves.easeIn,
-                      progressIndicatorBuilder: (context, string, progress) {
-                        return Center(
-                          child: SizedBox(
-                            child: CircularProgressIndicator(
-                                value: progress.progress),
-                            width: 30,
-                            height: 30,
-                          ),
-                        );
-                      },
-                    ),
+
+    Widget fb = FutureBuilder(
+      future: _calculateImageDimension(),
+      builder: (context, AsyncSnapshot<Size> snapshot) {
+        if (snapshot.hasData) {
+          galleryExampleItem.loaded = true;
+          galleryExampleItem.height = width / snapshot.data.aspectRatio;
+        }
+        return SizedBox(
+          height: galleryExampleItem.loaded ? galleryExampleItem.height : 300.0,
+          child: GestureDetector(
+            onTap: onTap,
+            child: Hero(
+              tag: galleryExampleItem.id.toString(),
+              child: CachedNetworkImage(
+                imageUrl: galleryExampleItem.url,
+                httpHeaders: galleryExampleItem.headers,
+                placeholder: (context, url) => Center(
+                  child: SizedBox(
+                    child: CircularProgressIndicator(),
+                    width: 30,
+                    height: 30,
                   ),
                 ),
-              );
-            },
-          );
-        },
-      ),
+                placeholderFadeInDuration: Duration(microseconds: 500),
+                fadeInDuration: Duration(microseconds: 500),
+                fadeInCurve: Curves.easeIn,
+                progressIndicatorBuilder: (context, string, progress) {
+                  return Center(
+                    child: SizedBox(
+                      child:
+                          CircularProgressIndicator(value: progress.progress),
+                      width: 30,
+                      height: 30,
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    return Container(
+      child: galleryExampleItem.loaded
+          ? fb
+          : FutureBuilder(
+              future: Future.delayed(Duration(milliseconds: 100))
+                  .then((value) => 1),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return SizedBox(
+                    height: 300.0,
+                    child: Center(
+                      child: SizedBox(
+                        child: CircularProgressIndicator(),
+                        width: 30,
+                        height: 30,
+                      ),
+                    ),
+                  );
+                }
+                return fb;
+              },
+            ),
     );
   }
 
   Future<Size> _calculateImageDimension() async {
     Completer<Size> completer = Completer();
     Image image = new Image(
-        image: CachedNetworkImageProvider(
-            galleryExampleItem.url)); // I modified this line
+        image: CachedNetworkImageProvider(galleryExampleItem.url,
+            headers: galleryExampleItem.headers)); // I modified this line
     image.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
