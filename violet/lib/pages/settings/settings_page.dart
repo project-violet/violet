@@ -2,6 +2,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
@@ -21,6 +22,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -35,6 +37,8 @@ import 'package:violet/database/user/user.dart';
 import 'package:violet/update_sync.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/widgets/toast.dart';
+import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/database/database.dart';
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -516,11 +520,40 @@ class _SettingsPageState extends State<SettingsPage>
                         return;
                       }
 
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => DataBaseDownloadPage(
-                                dbType: Settings.databaseType,
-                                isExistsDataBase: false,
-                              )));
+                      var dir = await getApplicationDocumentsDirectory();
+                      try {
+                        await ((await openDatabase('${dir.path}/data/data.db'))
+                            .close());
+                        await deleteDatabase('${dir.path}/data/data.db');
+                        await Directory('${dir.path}/data')
+                            .delete(recursive: true);
+                      } catch (e) {}
+
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => DataBaseDownloadPage(
+                                    dbType: Settings.databaseType,
+                                    isExistsDataBase: false,
+                                    isSync: true,
+                                  )))
+                          .then((value) async {
+                        HitomiIndexs.init();
+                        final directory =
+                            await getApplicationDocumentsDirectory();
+                        final path = File('${directory.path}/data/index.json');
+                        final text = path.readAsStringSync();
+                        HitomiManager.tagmap = jsonDecode(text);
+                        await DataBaseManager.reloadInstance();
+
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: Translations.of(context).trans('synccomplete'),
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                      });
                     },
                   ),
                 ]),

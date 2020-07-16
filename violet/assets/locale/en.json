@@ -149,7 +149,7 @@
     "wheretomove": "Where to move?",
     "movetoto": "Move %2 items to'%1'?",
     "movebookmark": "Move Bookmark",
-    "thisislatestbookmark": "Database is already up to date..",
+    "thisislatestbookmark": "Database is already up to date.",
     "importingbookmark": "Import Bookmark",
     "exportingbookmark": "Export Bookmark",
     "noauth": "You do not have permission to run it.",
@@ -157,5 +157,6 @@
     "importbookmark": "Bookmark Imported!",
     "exportbookmark": "Bookmark Exported!",
     "record": "Record",
-    "recordmessage": "There is a record that you have read up to %s page before. Do you want to continue reading?"
+    "recordmessage": "There is a record that you have read up to %s page before. Do you want to continue reading?",
+    "synccomplete": "Synchronization is complete!"
 }

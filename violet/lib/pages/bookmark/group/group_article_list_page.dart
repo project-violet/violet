@@ -53,7 +53,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             return;
           }
           queryRaw += cc.map((e) => 'Id=${e.article()}').join(' OR ');
-          QueryManager.query(queryRaw).then((value) {
+          QueryManager.query(queryRaw + ' AND ExistOnHitomi=1').then((value) {
             var qr = Map<String, QueryResult>();
             value.results.forEach((element) {
               qr[element.id().toString()] = element;

@@ -30,6 +30,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
@@ -207,6 +208,7 @@ class TestPage extends StatelessWidget {
                   var qr = QueryResult(result: qq.first);
                   var ss = HentaiManager.exHentaiStream(
                       QueryResult(result: qq.first));
+
                   // for (int i = 0; i < (qr.files() as int); i++) {
                   //     print(element);
                   //   // print(ss.)
@@ -218,6 +220,18 @@ class TestPage extends StatelessWidget {
                 child: Text('Update Test'),
                 onPressed: () async {
                   await UpdateSyncManager.checkUpdateSync();
+                },
+              ),
+              RaisedButton(
+                child: Text('Init Latest Database'),
+                onPressed: () async {
+                  // var dir = await getApplicationDocumentsDirectory();
+                  // if (await Directory('${dir.path}/data').exists()) {
+                  //   print('asdf');
+                  //   await Directory('${dir.path}/data').delete(recursive: true);
+                  // }
+                  await (await SharedPreferences.getInstance())
+                      .setString('databasesync', '20000101');
                 },
               ),
               // RaisedButton(
@@ -256,6 +270,19 @@ class TestPage extends StatelessWidget {
                 child: Text('DPI Bypass Test'),
                 onPressed: () async {
                   await VpnTest.asdf();
+                },
+              ),
+              RaisedButton(
+                child: Text('Unzip Test'),
+                onPressed: () async {
+                  var dir = await getApplicationDocumentsDirectory();
+                  if (await Directory('${dir.path}/data2').exists())
+                    await Directory('${dir.path}/data2')
+                        .delete(recursive: true);
+                  var pp = new P7zip();
+                  await pp.decompress(["${dir.path}/db.sql.7z"],
+                      path: "${dir.path}/data2");
+                  print('asdf');
                 },
               ),
               RaisedButton(

@@ -32,6 +32,11 @@ class DataBaseManager {
     return _instance;
   }
 
+  static Future<void> reloadInstance() async {
+    _instance =
+        create((await SharedPreferences.getInstance()).getString('db_path'));
+  }
+
   Future _open() async {
     db = await openDatabase(dbPath);
   }

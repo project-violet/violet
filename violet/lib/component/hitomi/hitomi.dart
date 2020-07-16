@@ -53,7 +53,7 @@ class HitomiManager {
   static int getArticleCount(String classification, String name) {
     if (tagmap == null) {
       final path =
-          File('${Variables.applicationDocumentsDirectory}/index.json');
+          File('${Variables.applicationDocumentsDirectory}/data/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
@@ -66,7 +66,7 @@ class HitomiManager {
       String prefix) async {
     if (tagmap == null) {
       final directory = await getApplicationDocumentsDirectory();
-      final path = File('${directory.path}/index.json');
+      final path = File('${directory.path}/data/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
@@ -157,7 +157,7 @@ class HitomiManager {
       String prefix) async {
     if (tagmap == null) {
       final directory = await getApplicationDocumentsDirectory();
-      final path = File('${directory.path}/index.json');
+      final path = File('${directory.path}/data/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
@@ -314,7 +314,7 @@ class HitomiManager {
     }
 
     if (tokens == null || tokens.trim() == "")
-      return 'SELECT * FROM HitomiColumnModel';
+      return 'SELECT * FROM HitomiColumnModel WHERE ExistOnHitomi=1';
 
     final split =
         splitTokens(tokens).map((x) => x.trim()).where((x) => x != '').toList();
@@ -374,7 +374,7 @@ class HitomiManager {
             prefix = 'Class';
             break;
           case 'recent':
-            return 'SELECT * FROM HitomiColumnModel';
+            return 'SELECT * FROM HitomiColumnModel WHERE ExistOnHitomi=1';
         }
         if (prefix == '') return '';
         if (postfix == '') postfix = ss[1].replaceAll('_', ' ');
@@ -403,7 +403,7 @@ class HitomiManager {
       }
     }
 
-    return 'SELECT * FROM HitomiColumnModel WHERE $where';
+    return 'SELECT * FROM HitomiColumnModel WHERE $where AND ExistOnHitomi=1';
   }
 
   static String mapTag2Kor(String tag) {

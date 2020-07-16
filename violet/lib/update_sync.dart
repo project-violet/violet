@@ -15,7 +15,7 @@ class UpdateSyncManager {
   // Current version
   static const int majorVersion = 0;
   static const int minorVersion = 7;
-  static const int patchVersion = 2;
+  static const int patchVersion = 3;
 
   static bool updateRequire = false;
   static String version = "";
@@ -47,7 +47,7 @@ class UpdateSyncManager {
       print(info);
     }
 
-    var rawdb = (info["rawdb"] as List<dynamic>);
+    var rawdb = (info["rawdb2"] as List<dynamic>);
     rawlangDB = Map<String, Tuple2<DateTime, String>>();
     rawdb.forEach((element) {
       var lang = element['language'];
