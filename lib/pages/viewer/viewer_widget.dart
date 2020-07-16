@@ -17,6 +17,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
+import 'package:violet/pages/viewer/semaphore.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -221,12 +222,13 @@ class ViewerWidget extends StatelessWidget {
 }
 
 class GalleryExampleItem {
-  GalleryExampleItem(
-      {this.id,
-      this.url,
-      this.headers,
-      this.isSvg = false,
-      this.loaded = false});
+  GalleryExampleItem({
+    this.id,
+    this.url,
+    this.headers,
+    this.isSvg = false,
+    this.loaded = false,
+  });
 
   final String id;
   final String url;
@@ -237,8 +239,11 @@ class GalleryExampleItem {
 }
 
 class GalleryExampleItemThumbnail extends StatelessWidget {
-  GalleryExampleItemThumbnail({Key key, this.galleryExampleItem, this.onTap})
-      : super(key: key);
+  GalleryExampleItemThumbnail({
+    Key key,
+    this.galleryExampleItem,
+    this.onTap,
+  }) : super(key: key);
 
   final GalleryExampleItem galleryExampleItem;
 
@@ -249,52 +254,70 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
     final width = MediaQuery.of(context).size.width - 4;
     return Container(
       child: FutureBuilder(
-        future: _calculateImageDimension(),
-        builder: (context, AsyncSnapshot<Size> snapshot) {
-          if (snapshot.hasData) {
-            galleryExampleItem.loaded = true;
-            galleryExampleItem.height = width / snapshot.data.aspectRatio;
-          }
-          return SizedBox(
-            height:
-                galleryExampleItem.loaded ? galleryExampleItem.height : 300.0,
-            child: GestureDetector(
-              onTap: onTap,
-              child: Hero(
-                tag: galleryExampleItem.id.toString(),
-                child: CachedNetworkImage(
-                  imageUrl: galleryExampleItem.url,
-                  httpHeaders: galleryExampleItem.headers,
-                  placeholder: (context, url) => Center(
-                    child: SizedBox(
-                      child: CircularProgressIndicator(),
-                      width: 30,
-                      height: 30,
-                    ),
-                  ),
-                  placeholderFadeInDuration: Duration(microseconds: 500),
-                  fadeInDuration: Duration(microseconds: 500),
-                  fadeInCurve: Curves.easeIn,
-                  progressIndicatorBuilder: (context, string, progress) {
-                    return Center(
-                      child: SizedBox(
-                        child:
-                            CircularProgressIndicator(value: progress.progress),
-                        width: 30,
-                        height: 30,
-                      ),
-                    );
-                  },
+        future: Future.delayed(Duration(milliseconds: 100)).then((value) => 1),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return SizedBox(
+              height: 300.0,
+              child: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 30,
+                  height: 30,
                 ),
               ),
-            ),
+            );
+          }
+          return FutureBuilder(
+            future: _calculateImageDimension(),
+            builder: (context, AsyncSnapshot<Size> snapshot) {
+              if (snapshot.hasData) {
+                galleryExampleItem.loaded = true;
+                galleryExampleItem.height = width / snapshot.data.aspectRatio;
+              }
+              return SizedBox(
+                height: galleryExampleItem.loaded
+                    ? galleryExampleItem.height
+                    : 300.0,
+                child: GestureDetector(
+                  onTap: onTap,
+                  child: Hero(
+                    tag: galleryExampleItem.id.toString(),
+                    child: CachedNetworkImage(
+                      imageUrl: galleryExampleItem.url,
+                      httpHeaders: galleryExampleItem.headers,
+                      placeholder: (context, url) => Center(
+                        child: SizedBox(
+                          child: CircularProgressIndicator(),
+                          width: 30,
+                          height: 30,
+                        ),
+                      ),
+                      placeholderFadeInDuration: Duration(microseconds: 500),
+                      fadeInDuration: Duration(microseconds: 500),
+                      fadeInCurve: Curves.easeIn,
+                      progressIndicatorBuilder: (context, string, progress) {
+                        return Center(
+                          child: SizedBox(
+                            child: CircularProgressIndicator(
+                                value: progress.progress),
+                            width: 30,
+                            height: 30,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 
-  Future<Size> _calculateImageDimension() {
+  Future<Size> _calculateImageDimension() async {
     Completer<Size> completer = Completer();
     Image image = new Image(
         image: CachedNetworkImageProvider(
@@ -310,10 +333,6 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
     );
     return completer.future;
   }
-
-  // Widget get(BuildContext context, String string, DownloadProgress progress) {
-
-  // }
 }
 
 class GalleryPhotoViewWrapper extends StatefulWidget {
