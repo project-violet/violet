@@ -304,7 +304,7 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
         (ImageInfo image, bool synchronousCall) {
           var myImage = image.image;
           Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-          completer.complete(size);
+          if (!completer.isCompleted) completer.complete(size);
         },
       ),
     );
