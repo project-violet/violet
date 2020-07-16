@@ -23,19 +23,19 @@ class HitomiIndexs {
     final directory = await getApplicationDocumentsDirectory();
 
     // No data on first run.
-    final path2 = File('${directory.path}/tag_artist.json');
-    if (!await path2.exists())
-      return;
+    final path2 = File('${directory.path}/data/tag-artist.json');
+    if (!await path2.exists()) return;
     tagArtist = jsonDecode(await path2.readAsString());
-    final path3 = File('${directory.path}/tag_group.json');
+    final path3 = File('${directory.path}/data/tag-group.json');
     tagGroup = jsonDecode(await path3.readAsString());
-    final path4 = File('${directory.path}/tag_index.json');
+    final path4 = File('${directory.path}/data/tag-index.json');
     tagIndex = jsonDecode(await path4.readAsString());
-    final path5 = File('${directory.path}/tag_uploader.json');
+    final path5 = File('${directory.path}/data/tag-uploader.json');
     tagUploader = jsonDecode(await path5.readAsString());
   }
-  
-  static List<Tuple2<String, double>> _calculateSimilars(Map<String, dynamic> map, String artist) {
+
+  static List<Tuple2<String, double>> _calculateSimilars(
+      Map<String, dynamic> map, String artist) {
     var rr = map[artist];
     var result = List<Tuple2<String, double>>();
 
@@ -52,7 +52,6 @@ class HitomiIndexs {
     return result;
   }
 
-
   static List<Tuple2<String, double>> calculateSimilarArtists(String artist) {
     return _calculateSimilars(tagArtist, artist);
   }
@@ -60,8 +59,9 @@ class HitomiIndexs {
   static List<Tuple2<String, double>> calculateSimilarGroups(String group) {
     return _calculateSimilars(tagGroup, group);
   }
-  
-  static List<Tuple2<String, double>> calculateSimilarUploaders(String uploader) {
+
+  static List<Tuple2<String, double>> calculateSimilarUploaders(
+      String uploader) {
     return _calculateSimilars(tagUploader, uploader);
   }
 }
