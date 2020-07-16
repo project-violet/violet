@@ -123,7 +123,7 @@ class _ArticleListItemVerySimpleWidgetState
         thumbnail = images.item2[0];
         imageCount = images.item2.length;
         ThumbnailManager.insert(widget.queryResult.id(), images);
-        setState(() {});
+        if (!disposed) setState(() {});
       });
     } else {
       var thumbnails = ThumbnailManager.get(widget.queryResult.id()).item2;
