@@ -1,6 +1,6 @@
 # Violet 
 
-![](logopic.PNG)
+![](Preview.png)
 
 Project Violet Source Code
 
