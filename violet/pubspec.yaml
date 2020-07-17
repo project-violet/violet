@@ -25,83 +25,83 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  # english_words: 
-  http:
-  flutter_local_notifications:
+  animations:
   async:
-  convert:
-  intl: ^0.16.0
-  encrypt: ^4.0.1
-  # stacked:
-  path_provider:
-  permission_handler:
-  dio:
-  # flutter_file_picker:
-  shared_preferences:
-  #connectivity:
-  flutter_downloader:
-  file_picker:
-  sqflite:
-  # fluttertoast: #^2.2.1
-  material_design_icons_flutter:
-  url_launcher:
-  # extended_image:
-  photo_view:
-  cached_network_image:
-  draggable_scrollbar:
-  # scrollable_positioned_list:
-  flutter_reorderable_list:
-  # visibility_detector:
-  #keyboard_visibility:
-  flare_flutter: ^1.8.3
-  flare_dart:
-  flutter_sidekick:
-  tuple:
-  fading_edge_scrollview:
-  # infinite_listview: ^1.0.1+1
   auto_animated: any
-  # flutter_svg:
-  flutter_markdown:
-  # usage:
+  cached_network_image:
+  charts_flutter:
+  circular_check_box: ^1.0.1
   cloud_firestore: ^0.13.0+1 
-  firebase_analytics:
-  kdtree:
+  convert:
+  country_pickers:
+  crypto:
+  device_info:
+  dio:
+  division:
+  draggable_scrollbar:
   dynamic_theme: ^1.0.1
+  encrypt: ^4.0.1
+  expandable:
+  fading_edge_scrollview:
+  ffi:
+  file_picker:
+  firebase_analytics:
+  firebase_crashlytics:
+  flare_dart:
+  flare_flutter: ^1.8.3
+  flutter_colorpicker:
+  flutter_downloader:
+  flutter_local_notifications:
+  flutter_markdown:
+  flutter_reorderable_list:
+  flutter_sidekick:
+  flutter_speed_dial:
+  flutter_staggered_animations: "^0.1.2"
+  fluttertoast:
+  gradient_widgets:
+  hive:
   html:
   html_unescape:
-  vibration: ^1.4.0
+  http:
+  intl: ^0.16.0
+  kdtree:
+  lottie:
+  material_design_icons_flutter:
+  open_file:
+  path_provider:
+  permission_handler:
+  photo_view:
   pimp_my_button: ^1.0.0
-  flutter_staggered_animations: "^0.1.2"
-  animations:
-  hive:
+  shared_preferences:
+  sqflite:
   synchronized:
+  tuple:
+  url_launcher:
+  uuid:
+  vibration: ^1.4.0
+  # archive:
+  # english_words: 
+  # extended_image:
+  # flutter_file_picker:
+  # flutter_linkify: ^3.1.3
+  # flutter_svg:
+  # flutter_vpn:
+  # fluttertoast: #^2.2.1
+  # imei_plugin:
+  # infinite_listview: ^1.0.1+1
   # json_annotation: ^3.0.0
-  flutter_colorpicker:
-  country_pickers:
+  # lzma:
+  # pinch_zoom_image:
+  # scrollable_positioned_list:
+  # stacked:
+  # syncfusion_flutter_charts:
   # syncfusion_flutter_core:
   # syncfusion_flutter_sliders:
-  # syncfusion_flutter_charts:
+  # usage:
+  # visibility_detector:
   # web_socket_channel:
-  # archive:
-  # lzma:
-  circular_check_box: ^1.0.1
-  device_info:
-  ffi:
-  # flutter_linkify: ^3.1.3
-  expandable:
-  charts_flutter:
-  uuid:
-  # pinch_zoom_image:
-  flutter_speed_dial:
-  # flutter_vpn:
-  gradient_widgets:
-  division:
-  lottie:
-  fluttertoast:
-  # imei_plugin:
-  crypto:
-  open_file:
-  firebase_crashlytics:
+  # connectivity:
+  # keyboard_visibility:
 
 dev_dependencies:
   flutter_test:
