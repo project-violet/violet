@@ -150,19 +150,23 @@ class SimpleInfoWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
-          children: AnimationConfiguration.toStaggeredList(
-            duration: const Duration(milliseconds: 900),
-            childAnimationBuilder: (widget) => SlideAnimation(
-              horizontalOffset: 50.0,
-              child: FadeInAnimation(
-                child: widget,
-              ),
-            ),
-            children: <Widget>[
-              _simpleInfoDateTime(),
-              _simpleInfoPages(),
-            ],
-          ),
+          children: [
+            _simpleInfoDateTime(),
+            _simpleInfoPages(),
+          ],
+          // children: AnimationConfiguration.toStaggeredList(
+          //   duration: const Duration(milliseconds: 900),
+          //   childAnimationBuilder: (widget) => SlideAnimation(
+          //     horizontalOffset: 50.0,
+          //     child: FadeInAnimation(
+          //       child: widget,
+          //     ),
+          //   ),
+          //   children: <Widget>[
+          //     _simpleInfoDateTime(),
+          //     _simpleInfoPages(),
+          //   ],
+          // ),
         ),
       ),
     ]);
@@ -172,21 +176,28 @@ class SimpleInfoWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: AnimationConfiguration.toStaggeredList(
-          duration: const Duration(milliseconds: 900),
-          childAnimationBuilder: (widget) => SlideAnimation(
-                horizontalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: widget,
-                ),
-              ),
-          children: <Widget>[
-            Text(title,
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text(artist),
-          ]),
+      children: <Widget>[
+        Text(title,
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(artist),
+      ],
+      // children: AnimationConfiguration.toStaggeredList(
+      //     duration: const Duration(milliseconds: 900),
+      //     childAnimationBuilder: (widget) => SlideAnimation(
+      //           horizontalOffset: 50.0,
+      //           child: FadeInAnimation(
+      //             child: widget,
+      //           ),
+      //         ),
+      //     children: <Widget>[
+      //       Text(title,
+      //           maxLines: 5,
+      //           overflow: TextOverflow.ellipsis,
+      //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      //       Text(artist),
+      //     ]),
     );
   }
 
