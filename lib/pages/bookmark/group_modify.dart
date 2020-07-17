@@ -1,3 +1,6 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020. violet-team. Licensed under the MIT License.
+
 import 'package:flutter/material.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';

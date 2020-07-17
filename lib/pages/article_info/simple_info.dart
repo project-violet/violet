@@ -5,12 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:intl/intl.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/database/user/user.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 

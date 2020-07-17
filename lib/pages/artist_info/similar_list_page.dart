@@ -7,7 +7,6 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';

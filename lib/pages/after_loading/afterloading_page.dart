@@ -1,24 +1,16 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'dart:developer';
 import 'package:violet/locale.dart';
 import 'package:violet/main.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
-import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
-import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/widgets/CardScrollWidget.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   @override

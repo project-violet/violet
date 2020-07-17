@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:synchronized/synchronized.dart';
 import 'package:tuple/tuple.dart';
 
 class Semaphore {

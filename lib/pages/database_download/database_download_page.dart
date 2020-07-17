@@ -2,34 +2,22 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:archive/archive.dart';
-import 'package:device_info/device_info.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/dialogs.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:ffi/ffi.dart';
-import 'package:violet/files.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/update_sync.dart';
