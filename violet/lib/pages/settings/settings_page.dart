@@ -700,33 +700,57 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                 ]),
-                // _buildGroup(Translations.of(context).trans('viewer')),
-                // _buildItems([
-                //   ListTile(
-                //     leading: Icon(Icons.view_array, color: Settings.majorColor),
-                //     title: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         Text(Translations.of(context).trans('viewertype')),
-                //         Text(Translations.of(context).trans('currenttype') + ": " + Translations.of(context).trans('scrollview')),
-                //       ],
-                //     ),
-                //     trailing: Icon(Icons.keyboard_arrow_right),
-                //     onTap: () {},
-                //   ),
-                //   _buildDivider(),
-                //   ListTile(
-                //     leading: Icon(
-                //       Icons.blur_linear,
-                //       color: Settings.majorColor,
-                //     ),
-                //     title: Text(Translations.of(context).trans('imgquality')),
-                //     trailing: Icon(
-                //         // Icons.message,
-                //         Icons.keyboard_arrow_right),
-                //     onTap: () {},
-                //   ),
-                // ]),
+                _buildGroup(Translations.of(context).trans('viewer')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.signDirection,
+                          color: Settings.majorColor),
+                      title: Text(Translations.of(context).trans('right2left')),
+                      trailing: AbsorbPointer(
+                        child: Switch(
+                          value: Settings.rightToLeft,
+                          onChanged: (value) async {},
+                          activeTrackColor: Settings.majorColor,
+                          activeColor: Settings.majorAccentColor,
+                        ),
+                      ),
+                    ),
+                    onTap: () async {
+                      await Settings.setRightToLeft(!Settings.rightToLeft);
+                      setState(() {});
+                    },
+                  ),
+                  // ListTile(
+                  //   leading: Icon(Icons.view_array, color: Settings.majorColor),
+                  //   title: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Text(Translations.of(context).trans('viewertype')),
+                  //       Text(Translations.of(context).trans('currenttype') +
+                  //           ": " +
+                  //           Translations.of(context).trans('scrollview')),
+                  //     ],
+                  //   ),
+                  //   trailing: Icon(Icons.keyboard_arrow_right),
+                  //   onTap: () {},
+                  // ),
+                  // _buildDivider(),
+                  // ListTile(
+                  //   leading: Icon(
+                  //     Icons.blur_linear,
+                  //     color: Settings.majorColor,
+                  //   ),
+                  //   title: Text(Translations.of(context).trans('imgquality')),
+                  //   trailing: Icon(
+                  //       // Icons.message,
+                  //       Icons.keyboard_arrow_right),
+                  //   onTap: () {},
+                  // ),
+                ]),
                 // _buildGroup(Translations.of(context).trans('downloader')),
                 // _buildItems([
                 //   ListTile(
@@ -875,7 +899,7 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
-                            msg: "새로운 업데이트가 있습니다.",
+                            msg: Translations.of(context).trans('newupdate'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),
@@ -884,7 +908,7 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
-                            msg: "최신 버전입니다!",
+                            msg: Translations.of(context).trans('latestver'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),

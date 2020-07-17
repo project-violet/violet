@@ -158,5 +158,8 @@
     "exportbookmark": "Bookmark Exported!",
     "record": "Record",
     "recordmessage": "There is a record that you have read up to %s page before. Do you want to continue reading?",
-    "synccomplete": "Synchronization is complete!"
+    "synccomplete": "Synchronization is complete!",
+    "right2left": "Read Right To Left",
+    "newupdate": "New update available!",
+    "latestver": "This is the latest version!"
 }

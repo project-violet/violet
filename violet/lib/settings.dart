@@ -8,17 +8,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/shielder.dart';
 
 class Settings {
+  // Color Settings
   static Color themeColor; // default light
   static bool themeWhat; // default false == light
   static Color majorColor; // default purple
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
+
+  // Tag Settings
   static String includeTags;
   static List<String> excludeTags;
   static List<String> blurredTags;
   static String language; // System Language
+
+  // Like this Hitomi.la => e-hentai => exhentai => nhentai
   static List<String> routingRule;
+
+  // Global? English? Korean?
   static String databaseType;
+
+  // Reader Option
+  static bool rightToLeft;
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
@@ -112,6 +122,15 @@ class Settings {
           .setString('databasetype', langcode);
     }
     databaseType = databasetype;
+
+    var right2left =
+        (await SharedPreferences.getInstance()).getBool('right2left');
+    if (right2left == null) {
+      right2left = true;
+      await (await SharedPreferences.getInstance())
+          .setBool('right2left', right2left);
+    }
+    rightToLeft = right2left;
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -178,5 +197,10 @@ class Settings {
     blurredTags = nn.split(' ').toList();
     (await SharedPreferences.getInstance())
         .setString('blurredtags', blurredTags.join('|'));
+  }
+
+  static Future<void> setRightToLeft(bool nn) async {
+    rightToLeft = nn;
+    (await SharedPreferences.getInstance()).setBool('right2left', rightToLeft);
   }
 }
