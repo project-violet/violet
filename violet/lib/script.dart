@@ -1,17 +1,14 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart' show rootBundle;
 
-const String script_valid_pub = 
-'''-----BEGIN PUBLIC KEY-----
+const String script_valid_pub = '''-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtPg+B+aZmkTR2l7p+I29
 /iCsA0KfO09N6s9DWZN40zycKG0Fs3ir9sXVKCDVPF+zmuUi2vSEv+qG+65B5lMW
 qoDW1HvbEu4fMigpX+xJ73cZl8dhSSmxqyaPFqtHSHOx1ODeRayVVSdXONlbKo3y
@@ -41,7 +38,6 @@ class ScriptRawModel {
 }
 
 class Validator {
-
   static Future<bool> isValid(String inputB64, String sign) async {
     //final pubPem = await rootBundle.loadString('assets/script_valid_pub.pem');
     final pubPem = await rootBundle.loadString(script_valid_pub);

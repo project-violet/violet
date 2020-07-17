@@ -2,7 +2,6 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'package:flutter/material.dart';
-import 'package:violet/main.dart';
 import 'package:violet/pages/viewer/viewer_widget.dart';
 
 class ViewerPage extends StatefulWidget {

@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
@@ -19,13 +18,9 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 import 'package:violet/dialogs.dart';
-import 'package:violet/main.dart';
-import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/locale.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:open_file/open_file.dart';
 import 'package:violet/update_sync.dart';
 

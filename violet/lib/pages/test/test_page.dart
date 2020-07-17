@@ -3,17 +3,10 @@
 
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:device_info/device_info.dart';
-import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flare_dart/math/aabb.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -27,8 +20,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -40,17 +31,13 @@ import 'package:violet/component/hiyobi/hiyobi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/files.dart';
-import 'package:violet/main.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/update_sync.dart';
-import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/pages/viewer/viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
-import 'package:flare_flutter/flare_render_box.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
-import 'package:ffi/ffi.dart';
 
 class TestPage extends StatelessWidget {
   @override

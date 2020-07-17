@@ -1,29 +1,19 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:auto_animated/auto_animated.dart';
-import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flare_flutter/flare.dart';
-import 'package:flare_dart/math/mat2d.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache.dart';
-import 'package:html_unescape/html_unescape_small.dart';
-import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
-import 'package:vibration/vibration.dart';
-import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/other/flare_artboard.dart';

@@ -5,8 +5,6 @@
 
 //import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'dart:async';
-import 'dart:ui' as ui;
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
@@ -16,9 +14,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
-import 'package:violet/pages/viewer/semaphore.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/database/user/user.dart';
 import 'package:violet/locale.dart';
 
 class ViewerWidget extends StatelessWidget {

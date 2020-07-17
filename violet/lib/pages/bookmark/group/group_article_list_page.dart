@@ -1,3 +1,6 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020. violet-team. Licensed under the MIT License.
+
 import 'dart:collection';
 
 import 'package:auto_animated/auto_animated.dart';
@@ -9,7 +12,6 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
-import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/bookmark/group/bookmark_search_sort.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';

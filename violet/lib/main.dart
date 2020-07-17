@@ -4,7 +4,6 @@
 // For the development of human civilization and science and technology
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -17,22 +16,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
-import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/database/user/user.dart';
 import 'package:violet/variables.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'locale.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
-import 'package:violet/update_sync.dart';
 
 DateTime currentBackPressTime;
 final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();

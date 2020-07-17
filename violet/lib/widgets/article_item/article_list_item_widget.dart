@@ -2,34 +2,24 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:async';
-import 'dart:collection';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
-import 'package:tuple/tuple.dart';
-import 'package:vibration/vibration.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
-import 'package:violet/main.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
-import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/database/user/user.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
