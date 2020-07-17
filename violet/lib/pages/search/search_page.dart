@@ -79,9 +79,25 @@ class _SearchPageState extends State<SearchPage>
       queryResult = List<QueryResult>();
       await loadNextQuery();
     });
+
+    _scroll.addListener(() {
+      if (scrollOnce || queryEnd) return;
+      if (_scroll.offset > _scroll.position.maxScrollExtent / 4 * 3) {
+        scrollOnce = true;
+        Future.delayed(Duration(milliseconds: 100)).then((value) async {
+          print('qqqq');
+          await loadNextQuery();
+          scrollOnce = false;
+        });
+      }
+    });
   }
 
+  bool scrollOnce = false;
+
   Tuple2<QueryManager, String> latestQuery;
+
+  ScrollController _scroll = ScrollController();
 
   // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
@@ -92,6 +108,7 @@ class _SearchPageState extends State<SearchPage>
       padding: EdgeInsets.only(top: statusBarHeight),
       child: GestureDetector(
         child: CustomScrollView(
+          controller: _scroll,
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPersistentHeader(
@@ -197,6 +214,7 @@ class _SearchPageState extends State<SearchPage>
                             isOr = false;
                             tagStates = Map<String, bool>();
                             groupStates = Map<String, bool>();
+                            queryEnd = false;
                             await loadNextQuery();
                           });
                           // print(latestQuery);
@@ -363,9 +381,15 @@ class _SearchPageState extends State<SearchPage>
 
   ObjectKey key = ObjectKey(Uuid().v4());
 
+  bool queryEnd = false;
+
   Future<void> loadNextQuery() async {
+    if (queryEnd) return;
     var nn = await latestQuery.item1.next();
-    if (nn.length == 0) return;
+    if (nn.length == 0) {
+      queryEnd = true;
+      return;
+    }
     setState(() {
       queryResult.addAll(nn);
     });
