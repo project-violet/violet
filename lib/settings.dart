@@ -76,8 +76,9 @@ class Settings {
       (await SharedPreferences.getInstance())
           .setString('includetags', includetags);
     }
-    if (excludetags == null) {
-      excludetags = MinorShielderFilter.tags.join('|');
+    if (excludetags == null ||
+        excludetags == MinorShielderFilter.tags.join('|')) {
+      excludetags = '';
       (await SharedPreferences.getInstance())
           .setString('excludetags', excludetags);
     }
