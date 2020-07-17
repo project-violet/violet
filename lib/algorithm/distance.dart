@@ -5,8 +5,6 @@
 
 import 'dart:math';
 
-import 'package:extended_image/extended_image.dart';
-
 class Distance {
   static int hammingDistance<T extends num>(List<T> l1, List<T> l2) {
     if (l1.length != l2.length) return -1;
