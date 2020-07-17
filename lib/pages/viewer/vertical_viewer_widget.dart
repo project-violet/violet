@@ -279,7 +279,7 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
       child: galleryExampleItem.loaded
           ? fb
           : FutureBuilder(
-              future: Future.delayed(Duration(milliseconds: 100))
+              future: Future.delayed(Duration(milliseconds: 1000))
                   .then((value) => 1),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
