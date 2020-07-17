@@ -16,6 +16,8 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/locale.dart';
+import 'package:violet/pages/viewer/gallery_item.dart';
+import 'package:violet/pages/viewer/horizontal_viewer_widget.dart';
 
 class ViewerWidget extends StatelessWidget {
   final List<String> urls;
@@ -215,23 +217,6 @@ class ViewerWidget extends StatelessWidget {
   String latestLabel = '';
 }
 
-class GalleryExampleItem {
-  GalleryExampleItem({
-    this.id,
-    this.url,
-    this.headers,
-    this.isSvg = false,
-    this.loaded = false,
-  });
-
-  final String id;
-  final String url;
-  final Map<String, String> headers;
-  final bool isSvg;
-  double height;
-  bool loaded;
-}
-
 class GalleryExampleItemThumbnail extends StatelessWidget {
   GalleryExampleItemThumbnail({
     Key key,
@@ -330,101 +315,5 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
       ),
     );
     return completer.future;
-  }
-}
-
-class GalleryPhotoViewWrapper extends StatefulWidget {
-  GalleryPhotoViewWrapper({
-    this.loadingBuilder,
-    this.backgroundDecoration,
-    this.initialIndex,
-    @required this.galleryItems,
-    this.totalPage,
-    this.scrollDirection = Axis.horizontal,
-  }) : pageController = PageController(initialPage: initialIndex);
-
-  final LoadingBuilder loadingBuilder;
-  final Decoration backgroundDecoration;
-  final int initialIndex;
-  final PageController pageController;
-  final List<GalleryExampleItem> galleryItems;
-  final Axis scrollDirection;
-  final int totalPage;
-  int currentIndex;
-
-  @override
-  State<StatefulWidget> createState() {
-    return _GalleryPhotoViewWrapperState();
-  }
-}
-
-class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
-  @override
-  void initState() {
-    widget.currentIndex = widget.initialIndex;
-    super.initState();
-  }
-
-  void onPageChanged(int index) {
-    setState(() {
-      widget.currentIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: widget.backgroundDecoration,
-        constraints: BoxConstraints.expand(
-          height: MediaQuery.of(context).size.height,
-        ),
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: <Widget>[
-            PhotoViewGallery.builder(
-              scrollPhysics: const BouncingScrollPhysics(),
-              builder: _buildItem,
-              itemCount: widget.galleryItems.length,
-              loadingBuilder: widget.loadingBuilder,
-              backgroundDecoration: widget.backgroundDecoration,
-              pageController: widget.pageController,
-              onPageChanged: onPageChanged,
-              scrollDirection: widget.scrollDirection,
-              reverse: Settings.rightToLeft,
-            ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "${widget.currentIndex + 1}/${widget.totalPage}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.0,
-                  decoration: null,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    final GalleryExampleItem item = widget.galleryItems[index];
-    return PhotoViewGalleryPageOptions(
-      imageProvider: CachedNetworkImageProvider(
-        item.url,
-        headers: item.headers,
-        //(context, url) => Image.file(File('assets/images/loading.gif')),
-      ),
-      // NetworkImage(item.url, headers: item.headers),
-      initialScale: PhotoViewComputedScale.contained,
-      //minScale: PhotoViewComputedScale.contained * (0.5 + index / 10),
-      //maxScale: PhotoViewComputedScale.covered * 1.1,
-      minScale: PhotoViewComputedScale.contained * 1.0,
-      maxScale: PhotoViewComputedScale.contained * 5.0,
-      heroAttributes: PhotoViewHeroAttributes(tag: item.id),
-    );
   }
 }
