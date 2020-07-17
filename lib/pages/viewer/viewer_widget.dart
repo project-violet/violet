@@ -391,7 +391,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
               pageController: widget.pageController,
               onPageChanged: onPageChanged,
               scrollDirection: widget.scrollDirection,
-              reverse: true,
+              reverse: Settings.rightToLeft,
             ),
             Container(
               padding: const EdgeInsets.all(8.0),

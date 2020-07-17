@@ -157,5 +157,8 @@
     "exportbookmark": "북마크를 내보냈습니다!",
     "record": "기록",
     "recordmessage": "이전에 %s페이지까지 읽었던 기록이 있습니다. 이어서 읽을까요?",
-    "synccomplete": "동기화가 완료되었습니다!"
+    "synccomplete": "동기화가 완료되었습니다!",
+    "right2left": "오른쪽에서 왼쪽으로 읽기",
+    "newupdate": "새로운 업데이트가 있습니다!",
+    "latestver": "최신 버전입니다!"
 }

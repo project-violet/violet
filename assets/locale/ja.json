@@ -156,5 +156,8 @@
     "exportbookmark": "ブックマークをエクスポートしました！",
     "record": "記録",
     "recordmessage": "これまでに％sページまで読んだことがあるレコードがあります。 読み続けますか？",
-    "synccomplete": "同期が完了しました！"
+    "synccomplete": "同期が完了しました！",
+    "right2left": "右から左に読む",
+    "newupdate": "新しいアップデートが利用可能です！",
+    "latestver": "これは最新バージョンです！"
 }
