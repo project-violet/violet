@@ -49,5 +49,5 @@ ws.dart
 
 *.o
 *.d
-*.so
+# *.so
 # p7zip/CPP/ANDROID/7zr/obj/*
