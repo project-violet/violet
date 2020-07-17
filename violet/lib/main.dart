@@ -17,7 +17,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:imei_plugin/imei_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/indexs.dart';
@@ -25,7 +24,6 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/server/ws.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/syncfusion.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:violet/variables.dart';
 import 'package:web_socket_channel/io.dart';
@@ -98,7 +96,7 @@ void main() async {
   //   userConnectionCount = event.toString().split(' ')[1];
   // });
 
-  registerLicense();
+  // registerLicense();
 
   // StreamBuilder(
   //   stream: channel.stream,

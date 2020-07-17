@@ -14,13 +14,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/pages/viewer/semaphore.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/database/user/user.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 import 'package:violet/locale.dart';
 
 class ViewerWidget extends StatelessWidget {

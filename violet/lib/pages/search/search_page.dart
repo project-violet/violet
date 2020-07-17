@@ -17,9 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:infinite_listview/infinite_listview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:vibration/vibration.dart';
@@ -35,7 +33,6 @@ import 'package:violet/pages/search/search_filter_page.dart';
 import 'package:violet/pages/search/search_result_selector.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/syncfusion/slider.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 bool blurred = false;
@@ -99,10 +96,6 @@ class _SearchPageState extends State<SearchPage>
   // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
   Widget build(BuildContext context) {
-    final InfiniteScrollController _infiniteController =
-        InfiniteScrollController(
-      initialScrollOffset: 0.0,
-    );
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Container(
