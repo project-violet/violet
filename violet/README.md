@@ -33,15 +33,6 @@ void main() async {
   await analytics.setUserId(id);
   // -]
 
-  await Settings.init();
-  await initDB();
-  await Variables.init();
-  await HitomiIndexs.init();
-
-  // Community license registration function to use syncfusion library.
-  // Erase this too.
-  registerLicense();
-
 ...
 ```
 
