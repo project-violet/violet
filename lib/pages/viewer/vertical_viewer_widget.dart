@@ -102,6 +102,7 @@ class ViewerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
     if (once == false) {
       once = true;
       User.getInstance().then((value) => value.getUserLog().then((value) async {
@@ -125,7 +126,8 @@ class ViewerWidget extends StatelessWidget {
             }
           }));
     }
-    return Container(
+    return PhotoView.customChild(
+        child: Container(
       color: const Color(0xff444444),
       // child: Scrollbar(
       //   controller: scroll,
@@ -169,6 +171,7 @@ class ViewerWidget extends StatelessWidget {
         child: ListView.builder(
           itemCount: urls.length,
           controller: scroll,
+          cacheExtent: height * 4,
           itemBuilder: (context, index) {
             return Container(
               padding: EdgeInsets.all(2),
@@ -211,7 +214,7 @@ class ViewerWidget extends StatelessWidget {
               ]);
         },
       ),
-    );
+    ));
   }
 
   String latestLabel = '';
