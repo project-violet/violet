@@ -161,5 +161,8 @@
     "synccomplete": "Synchronization is complete!",
     "right2left": "Read Right To Left",
     "newupdate": "New update available!",
-    "latestver": "This is the latest version!"
+    "latestver": "This is the latest version!",
+
+    "yes": "Yes",
+    "no": "No"
 }
