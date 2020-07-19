@@ -160,5 +160,8 @@
     "synccomplete": "동기화가 완료되었습니다!",
     "right2left": "오른쪽에서 왼쪽으로 읽기",
     "newupdate": "새로운 업데이트가 있습니다!",
-    "latestver": "최신 버전입니다!"
+    "latestver": "최신 버전입니다!",
+
+    "yes": "예",
+    "no": "아니오"
 }
