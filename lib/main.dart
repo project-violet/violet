@@ -122,8 +122,8 @@ void main() async {
             theme: theme,
             home: SplashPage(),
             supportedLocales: [
-              const Locale('ko', 'KR'),
               const Locale('en', 'US'),
+              const Locale('ko', 'KR'),
               const Locale('ja', 'JP'),
             ],
             routes: <String, WidgetBuilder>{
