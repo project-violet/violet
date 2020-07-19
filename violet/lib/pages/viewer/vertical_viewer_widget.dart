@@ -14,15 +14,17 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/viewer/gallery_item.dart';
 import 'package:violet/pages/viewer/horizontal_viewer_widget.dart';
 
-class ViewerWidget extends StatelessWidget {
+class ViewerWidget extends StatefulWidget {
   final List<String> urls;
   final Map<String, String> headers;
   final String id;
+  List<GalleryExampleItem> galleryItems;
 
   ViewerWidget({this.urls, this.headers, this.id}) {
     galleryItems = new List<GalleryExampleItem>();
@@ -35,21 +37,58 @@ class ViewerWidget extends StatelessWidget {
         loaded: false,
       ));
     }
+  }
+
+  @override
+  _ViewerWidgetState createState() => _ViewerWidgetState();
+}
+
+class _ViewerWidgetState extends State<ViewerWidget> {
+  @override
+  void initState() {
+    super.initState();
 
     scroll.addListener(() {
       currentPage = offset2Page(scroll.offset);
     });
   }
 
-  List<GalleryExampleItem> galleryItems;
+  @override
+  void dispose() {
+    scroll.dispose();
+    super.dispose();
+  }
+
+  ScrollController scroll = ScrollController();
+
+  int offset2Page(double offset) {
+    double xx = 0.0;
+    for (int i = 0; i < widget.galleryItems.length; i++) {
+      xx += widget.galleryItems[i].loaded ? widget.galleryItems[i].height : 300;
+      xx += 4;
+      if (offset < xx) {
+        return i + 1;
+      }
+    }
+    return widget.galleryItems.length;
+  }
+
+  double page2Offset(int page) {
+    double xx = 0.0;
+    for (int i = 0; i < page; i++) {
+      xx += widget.galleryItems[i].loaded ? widget.galleryItems[i].height : 300;
+      xx += 4;
+    }
+    return xx;
+  }
 
   void open(BuildContext context, final int index) async {
     var w = GalleryPhotoViewWrapper(
-      galleryItems: galleryItems,
+      galleryItems: widget.galleryItems,
       backgroundDecoration: const BoxDecoration(
         color: Colors.black,
       ),
-      totalPage: galleryItems.length,
+      totalPage: widget.galleryItems.length,
       initialIndex: index,
       scrollDirection: Axis.horizontal,
     );
@@ -73,31 +112,6 @@ class ViewerWidget extends StatelessWidget {
     // );
   }
 
-  int offset2Page(double offset) {
-    double xx = 0.0;
-    for (int i = 0; i < galleryItems.length; i++) {
-      xx += galleryItems[i].loaded ? galleryItems[i].height : 300;
-      xx += 4;
-      if (offset < xx) {
-        return i + 1;
-      }
-    }
-    return galleryItems.length;
-  }
-
-  double page2Offset(int page) {
-    double xx = 0.0;
-    for (int i = 0; i < page; i++) {
-      xx += galleryItems[i].loaded ? galleryItems[i].height : 300;
-      xx += 4;
-    }
-    return xx;
-  }
-
-  int currentPage = 0;
-
-  ScrollController scroll = ScrollController();
-
   bool once = false;
 
   @override
@@ -106,7 +120,7 @@ class ViewerWidget extends StatelessWidget {
     if (once == false) {
       once = true;
       User.getInstance().then((value) => value.getUserLog().then((value) async {
-            var x = value.where((e) => e.articleId().toString() == this.id);
+            var x = value.where((e) => e.articleId().toString() == widget.id);
             if (x.length < 2) return;
             var e = x.elementAt(1);
             if (e.lastPage() == null) return;
@@ -127,94 +141,95 @@ class ViewerWidget extends StatelessWidget {
           }));
     }
     return PhotoView.customChild(
+        minScale: 1.0,
         child: Container(
-      color: const Color(0xff444444),
-      // child: Scrollbar(
-      //   controller: scroll,
-      //   child: ScrollablePositionedList.builder(
-      //     itemCount: urls.length,
-      //     minCacheExtent: 100,
-      //     itemScrollController: isc,
-      //     itemBuilder: (context, index) {
-      //       return Container(
-      //         padding: EdgeInsets.all(2),
-      //         child: GalleryExampleItemThumbnail(
-      //           galleryExampleItem: galleryItems[index],
-      //           onTap: () => open(context, index),
-      //         ),
-      //       );
-      //     },
-      //   ),
-      // ),
-      // child: DraggableScrollbar.arrows(
-      //   backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
-      //   controller: scroll,
-      //   labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
-      //   child: ListView.builder(
-      //     itemCount: urls.length,
-      //     controller: scroll,
-      //     itemBuilder: (context, index) {
-      //       return Container(
-      //         padding: EdgeInsets.all(2),
-      //         child: GalleryExampleItemThumbnail(
-      //           galleryExampleItem: galleryItems[index],
-      //           onTap: () => open(context, index),
-      //         ),
-      //       );
-      //     },
-      //   ),
-      // ),
-      child: DraggableScrollbar(
-        backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
-        controller: scroll,
-        labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
-        child: ListView.builder(
-          itemCount: urls.length,
-          controller: scroll,
-          cacheExtent: height * 4,
-          itemBuilder: (context, index) {
-            return Container(
-              padding: EdgeInsets.all(2),
-              child: GalleryExampleItemThumbnail(
-                galleryExampleItem: galleryItems[index],
-                onTap: () => open(context, index),
-              ),
-            );
-          },
-        ),
-        heightScrollThumb: 48.0,
-        scrollThumbBuilder: (
-          Color backgroundColor,
-          Animation<double> thumbAnimation,
-          Animation<double> labelAnimation,
-          double height, {
-          Text labelText,
-          BoxConstraints labelConstraints,
-        }) {
-          if (labelText != null &&
-              labelText.data != null &&
-              labelText.data.trim() != '') latestLabel = labelText.data;
-          return Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                ScrollLabel(
-                  animation: labelAnimation,
-                  child: Text(latestLabel),
-                  backgroundColor: backgroundColor,
-                ),
-                FadeTransition(
-                  opacity: thumbAnimation,
-                  child: Container(
-                    height: height,
-                    width: 6.0,
-                    color: backgroundColor.withOpacity(0.6),
+          color: const Color(0xff444444),
+          // child: Scrollbar(
+          //   controller: scroll,
+          //   child: ScrollablePositionedList.builder(
+          //     itemCount: urls.length,
+          //     minCacheExtent: 100,
+          //     itemScrollController: isc,
+          //     itemBuilder: (context, index) {
+          //       return Container(
+          //         padding: EdgeInsets.all(2),
+          //         child: GalleryExampleItemThumbnail(
+          //           galleryExampleItem: widget.galleryItems[index],
+          //           onTap: () => open(context, index),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
+          // child: DraggableScrollbar.arrows(
+          //   backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
+          //   controller: scroll,
+          //   labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
+          //   child: ListView.builder(
+          //     itemCount: urls.length,
+          //     controller: scroll,
+          //     itemBuilder: (context, index) {
+          //       return Container(
+          //         padding: EdgeInsets.all(2),
+          //         child: GalleryExampleItemThumbnail(
+          //           galleryExampleItem: widget.galleryItems[index],
+          //           onTap: () => open(context, index),
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
+          child: DraggableScrollbar(
+            backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
+            controller: scroll,
+            labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
+            child: ListView.builder(
+              itemCount: widget.urls.length,
+              controller: scroll,
+              cacheExtent: height * 4,
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: EdgeInsets.all(2),
+                  child: GalleryExampleItemThumbnail(
+                    galleryExampleItem: widget.galleryItems[index],
+                    onTap: () => open(context, index),
                   ),
-                )
-              ]);
-        },
-      ),
-    ));
+                );
+              },
+            ),
+            heightScrollThumb: 48.0,
+            scrollThumbBuilder: (
+              Color backgroundColor,
+              Animation<double> thumbAnimation,
+              Animation<double> labelAnimation,
+              double height, {
+              Text labelText,
+              BoxConstraints labelConstraints,
+            }) {
+              if (labelText != null &&
+                  labelText.data != null &&
+                  labelText.data.trim() != '') latestLabel = labelText.data;
+              return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    ScrollLabel(
+                      animation: labelAnimation,
+                      child: Text(latestLabel),
+                      backgroundColor: backgroundColor,
+                    ),
+                    FadeTransition(
+                      opacity: thumbAnimation,
+                      child: Container(
+                        height: height,
+                        width: 6.0,
+                        color: backgroundColor.withOpacity(0.6),
+                      ),
+                    )
+                  ]);
+            },
+          ),
+        ));
   }
 
   String latestLabel = '';
@@ -235,71 +250,70 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 4;
 
-    Widget fb = FutureBuilder(
-      future: _calculateImageDimension(),
-      builder: (context, AsyncSnapshot<Size> snapshot) {
-        if (snapshot.hasData) {
-          galleryExampleItem.loaded = true;
-          galleryExampleItem.height = width / snapshot.data.aspectRatio;
-        }
-        return SizedBox(
-          height: galleryExampleItem.loaded ? galleryExampleItem.height : 300.0,
-          child: GestureDetector(
-            onTap: onTap,
-            child: Hero(
-              tag: galleryExampleItem.id.toString(),
-              child: CachedNetworkImage(
-                imageUrl: galleryExampleItem.url,
-                httpHeaders: galleryExampleItem.headers,
-                placeholder: (context, url) => Center(
-                  child: SizedBox(
-                    child: CircularProgressIndicator(),
-                    width: 30,
-                    height: 30,
-                  ),
-                ),
-                placeholderFadeInDuration: Duration(microseconds: 500),
-                fadeInDuration: Duration(microseconds: 500),
-                fadeInCurve: Curves.easeIn,
-                progressIndicatorBuilder: (context, string, progress) {
-                  return Center(
-                    child: SizedBox(
-                      child:
-                          CircularProgressIndicator(value: progress.progress),
-                      width: 30,
-                      height: 30,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-
     return Container(
-      child: galleryExampleItem.loaded
-          ? fb
-          : FutureBuilder(
-              future: Future.delayed(Duration(milliseconds: 1000))
-                  .then((value) => 1),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return SizedBox(
-                    height: 300.0,
-                    child: Center(
+      child: FutureBuilder(
+        future: galleryExampleItem.loaded
+            ? Future.value(1)
+            : Future.delayed(Duration(milliseconds: 1000)).then((value) => 1),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return SizedBox(
+              height: 300.0,
+              child: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            );
+          }
+          return FutureBuilder(
+            future: _calculateImageDimension(),
+            builder: (context, AsyncSnapshot<Size> snapshot) {
+              if (snapshot.hasData) {
+                galleryExampleItem.loaded = true;
+                galleryExampleItem.height = width / snapshot.data.aspectRatio;
+              }
+              return SizedBox(
+                height: galleryExampleItem.loaded
+                    ? galleryExampleItem.height
+                    : 300.0,
+                // child: GestureDetector(
+                // onTap: onTap,
+                child: Hero(
+                  tag: galleryExampleItem.id.toString(),
+                  child: CachedNetworkImage(
+                    imageUrl: galleryExampleItem.url,
+                    httpHeaders: galleryExampleItem.headers,
+                    placeholder: (context, url) => Center(
                       child: SizedBox(
                         child: CircularProgressIndicator(),
                         width: 30,
                         height: 30,
                       ),
                     ),
-                  );
-                }
-                return fb;
-              },
-            ),
+                    placeholderFadeInDuration: Duration(microseconds: 500),
+                    fadeInDuration: Duration(microseconds: 500),
+                    fadeInCurve: Curves.easeIn,
+                    progressIndicatorBuilder: (context, string, progress) {
+                      return Center(
+                        child: SizedBox(
+                          child: CircularProgressIndicator(
+                              value: progress.progress),
+                          width: 30,
+                          height: 30,
+                        ),
+                      );
+                    },
+                  ),
+                  //   ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
