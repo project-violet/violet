@@ -57,8 +57,13 @@ class _ViewerWidgetState extends State<ViewerWidget> {
   @override
   void dispose() {
     scroll.dispose();
+
     PaintingBinding.instance.imageCache.clear();
-    PaintingBinding.instance.imageCache.clearLiveImages();
+
+    widget.urls.forEach((element) async {
+      await CachedNetworkImageProvider(element).evict();
+    });
+
     super.dispose();
   }
 
@@ -371,7 +376,6 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
         },
       ),
     );
-    imageCache.clear();
     return completer.future;
   }
 }
