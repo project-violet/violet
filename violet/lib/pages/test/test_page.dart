@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -327,6 +328,13 @@ class TestPage extends StatelessWidget {
                 },
               ),
 
+              RaisedButton(
+                child: Text('Image Cache Clear'),
+                onPressed: () {
+                  DefaultCacheManager().emptyCache();
+                  imageCache.clear();
+                },
+              ),
               // RaisedButton(
               //   child: Text('Unzip Test'),
               //   onPressed: () async {

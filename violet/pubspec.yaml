@@ -28,7 +28,7 @@ dependencies:
   animations:
   async:
   auto_animated: any
-  cached_network_image:
+  cached_network_image: ^2.3.0-rc
   charts_flutter:
   circular_check_box: ^1.0.1
   cloud_firestore: ^0.13.0+1 
