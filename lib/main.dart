@@ -52,7 +52,22 @@ FirebaseAnalyticsObserver observer;
 // WebSocketChannel channel = IOWebSocketChannel.connect(wss_url, pingInterval: Duration(milliseconds: 2000));
 // String userConnectionCount = '0';
 
+class CustomImageCache extends WidgetsFlutterBinding {
+  @override
+  ImageCache createImageCache() {
+    ImageCache imageCache = super.createImageCache();
+    // Set your image cache size
+    imageCache.maximumSizeBytes = 1024 * 1024 * 100; // 100 MB
+    imageCache.maximumSize = 10;
+    // print('cic');
+    return imageCache;
+  }
+}
+
 void main() async {
+  CustomImageCache();
+  // PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 10;
+  // PaintingBinding.instance.imageCache.maximumSize = 10;
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(
       debug: true // optional: set false to disable printing logs to console
@@ -84,6 +99,8 @@ void main() async {
   await initDB();
   await Variables.init();
   await HitomiIndexs.init();
+
+  // imageCache.maximumSizeBytes = 50000000;
 
   // channel.stream.listen((event) {
   //   userConnectionCount = event.toString().split(' ')[1];

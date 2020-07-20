@@ -10,6 +10,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive/hive.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/database/user/record.dart';
@@ -56,6 +57,8 @@ class _ViewerWidgetState extends State<ViewerWidget> {
   @override
   void dispose() {
     scroll.dispose();
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
     super.dispose();
   }
 
@@ -249,7 +252,6 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width - 4;
-
     return Container(
       child: FutureBuilder(
         future: galleryExampleItem.loaded
@@ -258,7 +260,8 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return SizedBox(
-              height: 300.0,
+              height:
+                  galleryExampleItem.loaded ? galleryExampleItem.height : 300.0,
               child: Center(
                 child: SizedBox(
                   child: CircularProgressIndicator(),
@@ -284,16 +287,48 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
                 child: Hero(
                   tag: galleryExampleItem.id.toString(),
                   child: CachedNetworkImage(
+                    // galleryExampleItem.url,
+                    // headers: galleryExampleItem.headers,
+                    // height: galleryExampleItem.loaded
+                    //     ? galleryExampleItem.height
+                    //     : 300.0,
+                    // // cacheWidth: width.toInt(),
+                    // // placeholder: (context, url) => Center(
+                    // //   child: SizedBox(
+                    // //     child: CircularProgressIndicator(),
+                    // //     width: 30,
+                    // //     height: 30,
+                    // //   ),
+                    // // ),
+                    // // placeholderFadeInDuration: Duration(microseconds: 500),
+                    // // fadeInDuration: Duration(microseconds: 500),
+                    // // fadeInCurve: Curves.easeIn,
+                    // // fit: BoxFit.fill,
+                    // loadingBuilder: (context, child, progress) {
+                    //   if (progress == null) return child;
+                    //   return Center(
+                    //     child: SizedBox(
+                    //       child: CircularProgressIndicator(
+                    //           value: 1.0 *
+                    //               progress.cumulativeBytesLoaded /
+                    //               progress.expectedTotalBytes),
+                    //       width: 30,
+                    //       height: 30,
+                    //     ),
+                    //   );
+                    // },
+                    // memCacheWidth: width.toInt(),
+                    // memCacheHeight: ,
                     imageUrl: galleryExampleItem.url,
                     httpHeaders: galleryExampleItem.headers,
-                    placeholder: (context, url) => Center(
-                      child: SizedBox(
-                        child: CircularProgressIndicator(),
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                    placeholderFadeInDuration: Duration(microseconds: 500),
+                    // placeholder: (context, url) => Center(
+                    //   child: SizedBox(
+                    //     child: CircularProgressIndicator(),
+                    //     width: 30,
+                    //     height: 30,
+                    //   ),
+                    // ),
+                    // placeholderFadeInDuration: Duration(microseconds: 500),
                     fadeInDuration: Duration(microseconds: 500),
                     fadeInCurve: Curves.easeIn,
                     progressIndicatorBuilder: (context, string, progress) {
@@ -321,7 +356,12 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
     Completer<Size> completer = Completer();
     Image image = new Image(
         image: CachedNetworkImageProvider(galleryExampleItem.url,
-            headers: galleryExampleItem.headers)); // I modified this line
+            headers: galleryExampleItem.headers));
+    // Image image = new Image.network(
+    // galleryExampleItem.url,
+    // headers: galleryExampleItem.headers,
+    // );
+
     image.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
@@ -331,6 +371,7 @@ class GalleryExampleItemThumbnail extends StatelessWidget {
         },
       ),
     );
+    imageCache.clear();
     return completer.future;
   }
 }
