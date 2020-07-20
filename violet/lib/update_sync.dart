@@ -15,7 +15,7 @@ class UpdateSyncManager {
   // Current version
   static const int majorVersion = 0;
   static const int minorVersion = 7;
-  static const int patchVersion = 6;
+  static const int patchVersion = 7;
 
   static bool updateRequire = false;
   static String version = "";

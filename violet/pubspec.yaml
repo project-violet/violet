@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.7.6+0
+version: 0.7.7+0
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -28,7 +28,7 @@ dependencies:
   animations:
   async:
   auto_animated: any
-  cached_network_image: ^2.3.0-rc
+  cached_network_image:
   charts_flutter:
   circular_check_box: ^1.0.1
   cloud_firestore: ^0.13.0+1 
