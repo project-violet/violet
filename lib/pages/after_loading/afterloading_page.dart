@@ -7,6 +7,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/locale.dart';
 import 'package:violet/main.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
+import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
@@ -82,9 +83,9 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           // new BottomNavigationBarItem(
           //     icon: new Icon(MdiIcons.accountGroup),
           //     title: new Text(Translations.of(context).trans('community'))),
-          // new BottomNavigationBarItem(
-          //     icon: new Icon(Icons.file_download),
-          //     title: new Text(Translations.of(context).trans('download'))),
+          new BottomNavigationBarItem(
+              icon: new Icon(Icons.file_download),
+              title: new Text(Translations.of(context).trans('download'))),
           new BottomNavigationBarItem(
               backgroundColor: Settings.themeWhat
                   ? Colors.grey.shade900.withOpacity(0.90)
@@ -186,6 +187,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //     ),
           //   ),
           // ),
+          DownloadPage(),
           BookmarkPage(),
           // new Center(
           //   child: Padding(

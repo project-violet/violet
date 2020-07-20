@@ -26,8 +26,27 @@ abstract class Session {
   }
 }
 
+abstract class DownloadTask {
+  int taskId;
+  String accept =
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
+  String userAgent =
+      "Mozilla/5.0 (Android 7.0; Mobile; rv:54.0) Gecko/54.0 Firefox/54.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/603.2.4";
+  String referer;
+  bool autoRedirection;
+  bool retryWhenFail;
+  int maxRetryCount;
+  String cookie;
+  String url;
+  List<String> failUrls;
+  Map<String, String> headers;
+  Map<String, String> query;
+  String filename;
+}
+
 abstract class Downloadable {
   bool loginRequire();
   Session getSession(String id, String pwd);
   bool acceptURL(String url);
+  Future<List<DownloadTask>> createTask(String url);
 }
