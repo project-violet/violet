@@ -302,6 +302,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.4"
+  ext_storage:
+    dependency: "direct main"
+    description:
+      name: ext_storage
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   fading_edge_scrollview:
     dependency: "direct main"
     description:
@@ -708,7 +715,7 @@ packages:
     source: hosted
     version: "1.9.3"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       url: "https://pub.dartlang.org"

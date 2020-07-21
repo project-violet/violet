@@ -12,11 +12,7 @@ class ViewerPage extends StatelessWidget {
   final Map<String, String> headers;
   final String id;
 
-  ViewerPage({this.images, this.headers, this.id}) {
-    imageCache.maximumSizeBytes = 1024 * 1024 * 100; // 100 MB
-    imageCache.maximumSize = 10;
-    // DefaultCacheManager().
-  }
+  ViewerPage({this.images, this.headers, this.id});
 
   @override
   Widget build(BuildContext context) {

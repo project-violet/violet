@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.7.7+0
+version: 0.8.0+0
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -42,6 +42,7 @@ dependencies:
   dynamic_theme: ^1.0.1
   encrypt: ^4.0.1
   expandable:
+  ext_storage:
   fading_edge_scrollview:
   ffi:
   file_picker:
@@ -68,6 +69,7 @@ dependencies:
   lottie:
   material_design_icons_flutter:
   open_file:
+  path:
   path_provider:
   permission_handler:
   photo_view:
@@ -158,7 +160,7 @@ flutter:
     - assets/lottie/26438-drone-flight.json
     - assets/lottie/24208-menhera-chan-at-cocopry-sticker-10.json
 
-    # - assets/icons/pixiv.ico
+    - assets/icons/pixiv.ico
     
     - p7zip/CPP/ANDROID/7zr/libs/arm64-v8a/lib7zr.so
     - p7zip/CPP/ANDROID/7zr/libs/armeabi-v7a/lib7zr.so

@@ -31,6 +31,7 @@ import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/component/hiyobi/hiyobi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/download.dart';
 import 'package:violet/files.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/database_download/decompress.dart';
@@ -327,12 +328,18 @@ class TestPage extends StatelessWidget {
                   // );
                 },
               ),
-
               RaisedButton(
                 child: Text('Image Cache Clear'),
                 onPressed: () {
                   DefaultCacheManager().emptyCache();
                   imageCache.clear();
+                },
+              ),
+              RaisedButton(
+                child: Text('User DB Clear'),
+                onPressed: () async {
+                  var dir = await getApplicationDocumentsDirectory();
+                  File('${dir.path}/user.db').deleteSync();
                 },
               ),
               // RaisedButton(

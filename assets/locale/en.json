@@ -164,5 +164,21 @@
     "latestver": "This is the latest version!",
 
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    
+    "date": "Date",
+    "complete": "Complete",
+    "waitqueue": "Waiting queue...",
+    "progress": "Progress",
+    "waitdownload": "Waiting for download...",
+    "extracting": "Extracting...",
+    "count": "%s",
+    "stop": "Stopped",
+    "unknownerr": "Unknown Error",
+    "urlnotsupport": "This URL does not support",
+    "tryagainlogin": "Try again, after login!",
+    "dinfo": "Info",
+    "state": "State",
+    "addurl": "Add URL",
+    "writeurl": "Write URL."
 }
