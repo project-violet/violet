@@ -22,7 +22,7 @@ class _DownloadPageState extends State<DownloadPage>
 
   ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = List<DownloadItemModel>();
-  Key key = ObjectKey(Uuid().v4());
+  // Key key = ObjectKey(Uuid().v4());
 
   @override
   void initState() {
@@ -37,12 +37,14 @@ class _DownloadPageState extends State<DownloadPage>
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     var windowWidth = MediaQuery.of(context).size.width;
+    var height = MediaQuery.of(context).size.height;
 
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
       child: GestureDetector(
         child: CustomScrollView(
           // key: key,
+          cacheExtent: height * 100,
           controller: _scroll,
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
@@ -60,17 +62,20 @@ class _DownloadPageState extends State<DownloadPage>
               ),
             ),
             SliverList(
-              delegate:
-                  SliverChildBuilderDelegate((BuildContext context, int index) {
-                return Align(
-                  alignment: Alignment.center,
-                  child: DownloadItemWidget(
-                    width: windowWidth - 4.0,
-                    item: items[index],
-                    // thumbnailTag: 'thumbnail' + filtered[index].id().toString(),
-                  ),
-                );
-              }, childCount: items.length),
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return Align(
+                    alignment: Alignment.center,
+                    child: DownloadItemWidget(
+                      width: windowWidth - 4.0,
+                      item: items[index],
+                      download: items[index].download,
+                      // thumbnailTag: 'thumbnail' + filtered[index].id().toString(),
+                    ),
+                  );
+                },
+                childCount: items.length,
+              ),
             ),
           ],
         ),
@@ -178,10 +183,11 @@ class _DownloadPageState extends State<DownloadPage>
 
   Future<void> appendTask(String url) async {
     var item = await (await Download.getInstance()).createNew(url);
+    item.download = true;
+    items.add(item);
     setState(() {
       // items.insert(0, item);
-      items.add(item);
-      key = ObjectKey(Uuid().v4());
+      // key = ObjectKey(Uuid().v4());
     });
   }
 }

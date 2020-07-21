@@ -7,6 +7,7 @@
 
 // import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:violet/component/download/gelbooru.dart';
 
 // import 'package:violet/main.dart';
 import 'package:violet/component/download/pixiv.dart';
@@ -30,15 +31,21 @@ void main() {
   //   expect(find.text('1'), findsOneWidget);
   // });
 
-  test('Pixiv Test', () async {
-    var pp = PixivManager();
+  // test('Pixiv Test', () async {
+  //   var pp = PixivManager();
 
-    await pp.setSession('rollrat', 'guswns1');
-    var tasks = await pp.createTask(
-        'https://www.pixiv.net/users/3614038', GeneralDownloadProgress());
+  //   var tasks = await pp.createTask(
+  //       'https://www.pixiv.net/users/3614038', GeneralDownloadProgress());
 
-    tasks.forEach((element) {
-      print(element.url);
-    });
+  //   tasks.forEach((element) {
+  //     print(element.url);
+  //   });
+  // });
+
+  test('Gelbooru Test', () async {
+    var gm = GelbooruManager();
+
+    await gm.createTask(
+        'https://gelbooru.com/index.php?page=post&s=list&tags=cura', null);
   });
 }

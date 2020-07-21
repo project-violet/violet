@@ -21,21 +21,19 @@ import 'package:violet/database/user/download.dart';
 class DownloadItemWidget extends StatefulWidget {
   final double width;
   final DownloadItemModel item;
+  final bool download;
 
   DownloadItemWidget({
     this.width,
     this.item,
+    this.download,
   });
 
   @override
   _DownloadItemWidgetState createState() => _DownloadItemWidgetState();
 }
 
-class _DownloadItemWidgetState extends State<DownloadItemWidget>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _DownloadItemWidgetState extends State<DownloadItemWidget> {
   double scale = 1.0;
   String fav = '';
   int cur = 0;
@@ -47,13 +45,24 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
   int downloadedFileCount = 0;
   int errorFileCount = 0;
   String downloadSpeed = ' KB/S';
+  bool once = false;
 
   @override
   void initState() {
     super.initState();
 
+    if (ExtractorManager.instance.existsExtractor(widget.item.url())) {
+      var extractor = ExtractorManager.instance.getExtractor(widget.item.url());
+      if (extractor != null) fav = extractor.fav();
+    }
+
     Future.delayed(Duration(milliseconds: 500)).then((value) async {
+      if (once) return;
+      once = true;
+
       var result = Map<String, dynamic>.from(widget.item.result);
+
+      print(widget.item.state());
 
       if (widget.item.state() != 1) {
         if (widget.item.state() == 2 || widget.item.state() == 3) {
@@ -61,6 +70,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           widget.item.result = result;
           await widget.item.update();
           setState(() {});
+          return;
         }
         return;
       }
@@ -80,9 +90,15 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       result['Extractor'] = extractor.name();
       widget.item.result = result;
       await widget.item.update();
-      setState(() {
-        fav = extractor.fav();
-      });
+      setState(() {});
+
+      if (!widget.download) {
+        result['State'] = 6;
+        widget.item.result = result;
+        await widget.item.update();
+        setState(() {});
+        return;
+      }
 
       while (true) {
         while (!BuiltinDownloader.getInstance().hasDownloadSlot())
@@ -374,7 +390,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                     Padding(
                       padding: EdgeInsets.fromLTRB(4, 0, 0, 4),
                       child: CachedNetworkImage(
-                          imageUrl: 'https://www.pixiv.net/favicon.ico',
+                          imageUrl: fav,
                           width: 25,
                           height: 25,
                           fadeInDuration: Duration(microseconds: 500),
@@ -434,6 +450,12 @@ class _ThumbnailWidget extends StatelessWidget {
         imageUrl: thumbnail,
         fit: BoxFit.cover,
         httpHeaders: headers,
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+          ),
+          child: Container(),
+        ),
         placeholder: (b, c) {
           return FlareActor(
             "assets/flare/Loading2.flr",
