@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class EHSession {
   // ??
-  static List<String> cookies = [""];
+  static List<String> cookies = [];
 
   String cookie;
 

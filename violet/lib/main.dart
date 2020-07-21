@@ -52,25 +52,25 @@ FirebaseAnalyticsObserver observer;
 // WebSocketChannel channel = IOWebSocketChannel.connect(wss_url, pingInterval: Duration(milliseconds: 2000));
 // String userConnectionCount = '0';
 
-class CustomImageCache extends WidgetsFlutterBinding {
-  @override
-  ImageCache createImageCache() {
-    ImageCache imageCache = super.createImageCache();
-    // Set your image cache size
-    imageCache.maximumSizeBytes = 1024 * 1024 * 100; // 100 MB
-    imageCache.maximumSize = 10;
-    // print('cic');
-    return imageCache;
-  }
-}
+// class CustomImageCache extends WidgetsFlutterBinding {
+//   @override
+//   ImageCache createImageCache() {
+//     ImageCache imageCache = super.createImageCache();
+//     // Set your image cache size
+//     imageCache.maximumSizeBytes = 1024 * 1024 * 100; // 100 MB
+//     imageCache.maximumSize = 10;
+//     // print('cic');
+//     return imageCache;
+//   }
+// }
 
 void main() async {
-  CustomImageCache();
+  // CustomImageCache();
   // PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 10;
   // PaintingBinding.instance.imageCache.maximumSize = 10;
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(
-      debug: true // optional: set false to disable printing logs to console
+      // debug: true // optional: set false to disable printing logs to console
       );
   FlareCache.doesPrune = false;
 

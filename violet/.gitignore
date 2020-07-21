@@ -51,4 +51,5 @@ ws.dart
 *.d
 # *.so
 # p7zip/CPP/ANDROID/7zr/obj/*
-lib/component/download/*
+# lib/component/download/*
+test/*

@@ -3,7 +3,10 @@
 
 import 'dart:io';
 
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/shielder.dart';
 
@@ -29,6 +32,9 @@ class Settings {
 
   // Reader Option
   static bool rightToLeft;
+
+  // Download Options
+  static String downloadBasePath;
 
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
@@ -131,6 +137,15 @@ class Settings {
           .setBool('right2left', right2left);
     }
     rightToLeft = right2left;
+
+    downloadBasePath =
+        (await SharedPreferences.getInstance()).getString('downloadbasepath');
+    if (downloadBasePath == null) {
+      final String path = await ExtStorage.getExternalStorageDirectory();
+      downloadBasePath = join(path, 'Violet');
+      await (await SharedPreferences.getInstance())
+          .setString('downloadbasepath', downloadBasePath);
+    }
   }
 
   static Future<void> setThemeWhat(bool wh) async {

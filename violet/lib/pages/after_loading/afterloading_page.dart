@@ -84,14 +84,14 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //     icon: new Icon(MdiIcons.accountGroup),
           //     title: new Text(Translations.of(context).trans('community'))),
           new BottomNavigationBarItem(
-              icon: new Icon(Icons.file_download),
-              title: new Text(Translations.of(context).trans('download'))),
-          new BottomNavigationBarItem(
               backgroundColor: Settings.themeWhat
                   ? Colors.grey.shade900.withOpacity(0.90)
                   : Colors.grey.shade50,
               icon: new Icon(Icons.bookmark),
               title: new Text(Translations.of(context).trans('bookmark'))),
+          new BottomNavigationBarItem(
+              icon: new Icon(Icons.file_download),
+              title: new Text(Translations.of(context).trans('download'))),
           new BottomNavigationBarItem(
               backgroundColor: Settings.themeWhat
                   ? Colors.grey.shade900.withOpacity(0.90)
@@ -187,8 +187,9 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //     ),
           //   ),
           // ),
-          DownloadPage(),
+
           BookmarkPage(),
+          DownloadPage(),
           // new Center(
           //   child: Padding(
           //     padding: EdgeInsets.all(64),

@@ -163,5 +163,21 @@
     
 
     "yes": "はい",
-    "no": "いいえ"
+    "no": "いいえ",
+    
+    "date": "日",
+    "complete": "完了",
+    "waitqueue": "キュー待機中...",
+    "progress": "進行",
+    "waitdownload": "ダウンロードを待っています...",
+    "extracting": "抽出中...",
+    "count": "%s項目",
+    "stop": "中断",
+    "unknownerr": "不明なエラーです",
+    "urlnotsupport": "サポートされていないURLです。",
+    "tryagainlogin": "ログイン後、再試行してください！",
+    "dinfo": "情報",
+    "state": "状態",
+    "addurl": " URLを直接追加",
+    "writeurl": "URL入力してください。"
 }

@@ -2,15 +2,186 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:uuid/uuid.dart';
+import 'package:violet/locale.dart';
+import 'package:violet/pages/download/download_item_widget.dart';
+import 'package:violet/settings.dart';
+import 'package:violet/widgets/search_bar.dart';
+import 'package:violet/database/user/download.dart';
 
 class DownloadPage extends StatefulWidget {
   @override
   _DownloadPageState createState() => _DownloadPageState();
 }
 
-class _DownloadPageState extends State<DownloadPage> {
+class _DownloadPageState extends State<DownloadPage>
+    with AutomaticKeepAliveClientMixin<DownloadPage> {
+  @override
+  bool get wantKeepAlive => true;
+
+  ScrollController _scroll = ScrollController();
+  List<DownloadItemModel> items = List<DownloadItemModel>();
+  Key key = ObjectKey(Uuid().v4());
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 500), () async {
+      items = await (await Download.getInstance()).getDownloadItems();
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+    var windowWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      padding: EdgeInsets.only(top: statusBarHeight),
+      child: GestureDetector(
+        child: CustomScrollView(
+          // key: key,
+          controller: _scroll,
+          physics: const BouncingScrollPhysics(),
+          slivers: <Widget>[
+            SliverPersistentHeader(
+              floating: true,
+              delegate: SearchBarSliver(
+                minExtent: 64 + 12.0,
+                maxExtent: 64.0 + 12,
+                searchBar: Stack(
+                  children: <Widget>[
+                    _urlBar(),
+                    // _align(),
+                  ],
+                ),
+              ),
+            ),
+            SliverList(
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return Align(
+                  alignment: Alignment.center,
+                  child: DownloadItemWidget(
+                    width: windowWidth - 4.0,
+                    item: items[index],
+                    // thumbnailTag: 'thumbnail' + filtered[index].id().toString(),
+                  ),
+                );
+              }, childCount: items.length),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _urlBar() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+      child: SizedBox(
+        height: 64,
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+          ),
+          elevation: 100,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: Stack(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Material(
+                    color: Settings.themeWhat
+                        ? Colors.grey.shade900.withOpacity(0.4)
+                        : Colors.grey.shade200.withOpacity(0.4),
+                    child: ListTile(
+                      title: TextFormField(
+                        cursorColor: Colors.black,
+                        decoration: new InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            contentPadding: EdgeInsets.only(
+                                left: 15, bottom: 11, top: 11, right: 15),
+                            hintText: Translations.of(context).trans('addurl')),
+                      ),
+                      leading: SizedBox(
+                        width: 25,
+                        height: 25,
+                        child: Icon(MdiIcons.instagram),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Positioned(
+                left: 0.0,
+                top: 0.0,
+                bottom: 0.0,
+                right: 0.0,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onTap: () async {
+                      Widget yesButton = FlatButton(
+                        child: Text(Translations.of(context).trans('ok'),
+                            style: TextStyle(color: Settings.majorColor)),
+                        focusColor: Settings.majorColor,
+                        splashColor: Settings.majorColor.withOpacity(0.3),
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                      );
+                      Widget noButton = FlatButton(
+                        child: Text(Translations.of(context).trans('cancel'),
+                            style: TextStyle(color: Settings.majorColor)),
+                        focusColor: Settings.majorColor,
+                        splashColor: Settings.majorColor.withOpacity(0.3),
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                      );
+                      TextEditingController text = TextEditingController();
+                      var dialog = await showDialog(
+                        context: context,
+                        child: AlertDialog(
+                          contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                          title:
+                              Text(Translations.of(context).trans('writeurl')),
+                          content: TextField(
+                            controller: text,
+                            autofocus: true,
+                          ),
+                          actions: [yesButton, noButton],
+                        ),
+                      );
+                      if (dialog == true) {
+                        await appendTask(text.text);
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> appendTask(String url) async {
+    var item = await (await Download.getInstance()).createNew(url);
+    setState(() {
+      // items.insert(0, item);
+      items.add(item);
+      key = ObjectKey(Uuid().v4());
+    });
   }
 }
