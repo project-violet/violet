@@ -85,6 +85,7 @@ class BuiltinDownloader {
 
       for (int i = 0; i < maxDownloadFileCount; i++) {
         if (allocatedTask[i] == null) {
+          if (tasks.length == 0) return;
           allocatedTask[i] = tasks.removeFirst();
           var header = Map<String, String>();
           header['Referer'] = allocatedTask[i].referer;

@@ -32,6 +32,8 @@ class DownloadItemModel {
   String thumbnail() => result['Thumbnail']; // file path
   String thumbnailHeader() => result['ThumbnailHeader'];
 
+  bool download = false;
+
   Future<void> update() async {
     var db = await CommonUserDatabase.getInstance();
     await db.update('DownloadItem', result, 'Id=?', [id()]);

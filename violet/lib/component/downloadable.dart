@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:violet/component/download/gelbooru.dart';
 import 'package:violet/component/download/pixiv.dart';
 
 enum DownloaderType {
@@ -273,6 +274,7 @@ class ExtractorManager {
   ExtractorManager() {
     _dl = [
       PixivManager(),
+      GelbooruManager(),
     ];
   }
 
