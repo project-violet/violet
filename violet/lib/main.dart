@@ -93,6 +93,7 @@ void main() async {
               const Locale('ko', 'KR'),
               const Locale('ja', 'JP'),
               const Locale('zh', 'CH'),
+              const Locale('it', 'IT'),
             ],
             routes: <String, WidgetBuilder>{
               '/AfterLoading': (BuildContext context) => WillPopScope(
