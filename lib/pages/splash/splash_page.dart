@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +14,7 @@ import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/update_sync.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -48,6 +48,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> navigationPage() async {
+    await UpdateSyncManager.checkUpdateSync();
+
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1)
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     else {

@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.7.2+0
+version: 0.8.1+0
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -25,82 +25,86 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  english_words: 
-  http:
-  flutter_local_notifications:
+  animations:
   async:
-  convert:
-  intl: ^0.16.0
-  encrypt: ^4.0.1
-  stacked:
-  path_provider:
-  permission_handler:
-  dio:
-  flutter_file_picker:
-  shared_preferences:
-  #connectivity:
-  flutter_downloader:
-  file_picker:
-  sqflite:
-  # fluttertoast: #^2.2.1
-  material_design_icons_flutter:
-  url_launcher:
-  extended_image:
-  photo_view:
-  cached_network_image:
-  draggable_scrollbar:
-  scrollable_positioned_list:
-  flutter_reorderable_list:
-  visibility_detector:
-  #keyboard_visibility:
-  flare_flutter: ^1.8.3
-  flare_dart:
-  flutter_sidekick:
-  tuple:
-  fading_edge_scrollview:
-  infinite_listview: ^1.0.1+1
   auto_animated: any
-  flutter_svg:
-  flutter_markdown:
-  usage:
+  cached_network_image:
+  charts_flutter:
+  circular_check_box: ^1.0.1
   cloud_firestore: ^0.13.0+1 
-  firebase_analytics:
-  kdtree:
+  convert:
+  country_pickers:
+  crypto:
+  device_info:
+  dio:
+  division:
+  draggable_scrollbar:
   dynamic_theme: ^1.0.1
+  encrypt: ^4.0.1
+  expandable:
+  ext_storage:
+  fading_edge_scrollview:
+  ffi:
+  file_picker:
+  firebase_analytics:
+  firebase_crashlytics:
+  flare_dart:
+  flare_flutter: ^1.8.3
+  flutter_colorpicker:
+  flutter_downloader:
+  flutter_local_notifications:
+  flutter_markdown:
+  flutter_reorderable_list:
+  flutter_sidekick:
+  flutter_speed_dial:
+  flutter_staggered_animations: "^0.1.2"
+  fluttertoast:
+  gradient_widgets:
+  hive:
   html:
   html_unescape:
-  vibration: ^1.4.0
-  pimp_my_button: ^1.0.0
-  flutter_staggered_animations: "^0.1.2"
-  animations:
-  hive:
-  synchronized:
-  json_annotation: ^3.0.0
-  flutter_colorpicker:
-  country_pickers:
-  syncfusion_flutter_core:
-  syncfusion_flutter_sliders:
-  syncfusion_flutter_charts:
-  web_socket_channel:
-  # archive:
-  # lzma:
-  circular_check_box: ^1.0.1
-  device_info:
-  ffi:
-  # flutter_linkify: ^3.1.3
-  expandable:
-  charts_flutter:
-  uuid:
-  # pinch_zoom_image:
-  flutter_speed_dial:
-  # flutter_vpn:
-  gradient_widgets:
-  division:
+  http:
+  intl: ^0.16.0
+  kdtree:
   lottie:
-  fluttertoast:
-  imei_plugin:
-  crypto:
+  material_design_icons_flutter:
   open_file:
+  path:
+  path_provider:
+  permission_handler:
+  photo_view:
+  pimp_my_button: ^1.0.0
+  shared_preferences:
+  sqflite:
+  synchronized:
+  tuple:
+  url_launcher:
+  uuid:
+  vibration: ^1.4.0
+  webview_flutter:
+  # archive:
+  # english_words: 
+  # extended_image:
+  # flutter_file_picker:
+  # flutter_linkify: ^3.1.3
+  # flutter_svg:
+  # flutter_vpn:
+  # fluttertoast: #^2.2.1
+  # imei_plugin:
+  # infinite_listview: ^1.0.1+1
+  # json_annotation: ^3.0.0
+  # lzma:
+  # pinch_zoom_image:
+  # scrollable_positioned_list:
+  # stacked:
+  # syncfusion_flutter_charts:
+  # syncfusion_flutter_core:
+  # syncfusion_flutter_sliders:
+  # usage:
+  # visibility_detector:
+  # web_socket_channel:
+  # connectivity:
+  # keyboard_visibility:
 
 dev_dependencies:
   flutter_test:
@@ -128,6 +132,10 @@ flutter:
     - assets/locale/en.json
     - assets/locale/ko.json
     - assets/locale/ja.json
+    - assets/locale/zh.json
+    - assets/locale/zh_Hant.json
+    - assets/locale/zh_Hans.json
+    - assets/locale/it.json
     # - assets/images/loading.gif
 
     # - assets/test/001.jpg
@@ -156,7 +164,7 @@ flutter:
     - assets/lottie/26438-drone-flight.json
     - assets/lottie/24208-menhera-chan-at-cocopry-sticker-10.json
 
-    # - assets/icons/pixiv.ico
+    - assets/icons/pixiv.ico
     
     - p7zip/CPP/ANDROID/7zr/libs/arm64-v8a/lib7zr.so
     - p7zip/CPP/ANDROID/7zr/libs/armeabi-v7a/lib7zr.so

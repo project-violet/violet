@@ -1,10 +1,11 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020. violet-team. Licensed under the MIT License.
+
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';

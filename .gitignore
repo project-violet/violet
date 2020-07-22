@@ -37,17 +37,8 @@ lib/generated_plugin_registrant.dart
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 # Private File
-script_valid_prv.pem
-script_valid_pub.pem
-#key.jks
-real_key.jks
 assets/test/*
 android/app/google-services.json
-syncfusion.dart
-ws.dart
-
 
 *.o
 *.d
-*.so
-# p7zip/CPP/ANDROID/7zr/obj/*

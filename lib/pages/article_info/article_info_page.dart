@@ -3,16 +3,11 @@
 
 import 'dart:ui';
 
-import 'package:auto_animated/auto_animated.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
-import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -20,19 +15,14 @@ import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
-import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/database/user/user.dart';
-import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
-import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 class ArticleInfoPage extends StatelessWidget {
   final QueryResult queryResult;
@@ -264,7 +254,6 @@ class _InfoAreaWidget extends StatelessWidget {
                           },
                         ),
                       ).then((value) async {
-                        print(value);
                         await (await User.getInstance())
                             .updateUserLog(queryResult.id(), value as int);
                         SystemChrome.setEnabledSystemUIOverlays(

@@ -1,37 +1,18 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'dart:async';
-import 'dart:collection';
-import 'dart:convert';
-import 'dart:io';
 import 'dart:ui';
 
-import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:html_unescape/html_unescape.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
-import 'package:violet/database/database.dart';
-import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
-import 'package:violet/pages/artist_info/artist_info_page.dart';
-import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
-import 'package:violet/widgets/search_bar.dart';
-import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/database/user/user.dart';
-import 'package:violet/widgets/article_item/article_list_item_widget.dart';
-import 'package:violet/widgets/floating_button.dart';
-import 'package:path_provider/path_provider.dart';
 
 class BookmarkPage extends StatefulWidget {
   @override

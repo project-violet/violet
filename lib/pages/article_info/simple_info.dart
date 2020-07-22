@@ -5,12 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:intl/intl.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/database/user/user.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
@@ -150,19 +147,23 @@ class SimpleInfoWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
-          children: AnimationConfiguration.toStaggeredList(
-            duration: const Duration(milliseconds: 900),
-            childAnimationBuilder: (widget) => SlideAnimation(
-              horizontalOffset: 50.0,
-              child: FadeInAnimation(
-                child: widget,
-              ),
-            ),
-            children: <Widget>[
-              _simpleInfoDateTime(),
-              _simpleInfoPages(),
-            ],
-          ),
+          children: [
+            _simpleInfoDateTime(),
+            _simpleInfoPages(),
+          ],
+          // children: AnimationConfiguration.toStaggeredList(
+          //   duration: const Duration(milliseconds: 900),
+          //   childAnimationBuilder: (widget) => SlideAnimation(
+          //     horizontalOffset: 50.0,
+          //     child: FadeInAnimation(
+          //       child: widget,
+          //     ),
+          //   ),
+          //   children: <Widget>[
+          //     _simpleInfoDateTime(),
+          //     _simpleInfoPages(),
+          //   ],
+          // ),
         ),
       ),
     ]);
@@ -172,21 +173,28 @@ class SimpleInfoWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: AnimationConfiguration.toStaggeredList(
-          duration: const Duration(milliseconds: 900),
-          childAnimationBuilder: (widget) => SlideAnimation(
-                horizontalOffset: 50.0,
-                child: FadeInAnimation(
-                  child: widget,
-                ),
-              ),
-          children: <Widget>[
-            Text(title,
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text(artist),
-          ]),
+      children: <Widget>[
+        Text(title,
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(artist),
+      ],
+      // children: AnimationConfiguration.toStaggeredList(
+      //     duration: const Duration(milliseconds: 900),
+      //     childAnimationBuilder: (widget) => SlideAnimation(
+      //           horizontalOffset: 50.0,
+      //           child: FadeInAnimation(
+      //             child: widget,
+      //           ),
+      //         ),
+      //     children: <Widget>[
+      //       Text(title,
+      //           maxLines: 5,
+      //           overflow: TextOverflow.ellipsis,
+      //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      //       Text(artist),
+      //     ]),
     );
   }
 

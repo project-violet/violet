@@ -5,7 +5,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Files {
   static Future<List<FileSystemEntity>> dirContents(Directory dir) {
@@ -21,7 +20,9 @@ class Files {
   static Future<void> enumeratePath(String path) async {
     (await Directory(path).list(recursive: true, followLinks: true).toList())
         .forEach((element) async {
-      print(element.path + '     ' + (await File(element.path).length()).toString());
+      print(element.path +
+          '     ' +
+          (await File(element.path).length()).toString());
       // if (await FileSystemEntity.isDirectory(element.path))
       //   await enumeratePath(element.path);
     });

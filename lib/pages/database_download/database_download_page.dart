@@ -2,35 +2,22 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:archive/archive.dart';
-import 'package:device_info/device_info.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:stacked/stacked.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/dialogs.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:ffi/ffi.dart';
-import 'package:violet/files.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/update_sync.dart';
@@ -39,8 +26,10 @@ class DataBaseDownloadPage extends StatefulWidget {
   final bool isExistsDataBase;
   final String dbPath;
   final String dbType;
+  final bool isSync;
 
-  DataBaseDownloadPage({this.isExistsDataBase, this.dbPath, this.dbType});
+  DataBaseDownloadPage(
+      {this.isExistsDataBase, this.dbPath, this.dbType, this.isSync});
 
   @override
   DataBaseDownloadPagepState createState() {
@@ -49,24 +38,6 @@ class DataBaseDownloadPage extends StatefulWidget {
 }
 
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
-  final imgUrls = {
-    // Global
-    'global':
-        "https://github.com/violet-dev/db/releases/download/2020.07.07/hitomidata.7z",
-    // Korean
-    'ko':
-        "https://github.com/violet-dev/db/releases/download/2020.07.07/hitomidata-korean.7z",
-    // English
-    'en':
-        "https://github.com/violet-dev/db/releases/download/2020.07.07/hitomidata-english.7z",
-    // Japanese
-    'jp':
-        "https://github.com/violet-dev/db/releases/download/2020.07.07/hitomidata-japanese.7z",
-    // Chinese
-    'zh':
-        "https://github.com/violet-dev/db/releases/download/2020.07.07/hitomidata-chinese.7z",
-  };
-
   bool downloading = false;
   var baseString = "";
   var progressString = "";
@@ -83,8 +54,15 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future checkDownload() async {
     try {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
-        await File((await SharedPreferences.getInstance()).getString('db_path'))
-            .delete();
+        if (await File(
+                (await SharedPreferences.getInstance()).getString('db_path'))
+            .exists())
+          await File(
+                  (await SharedPreferences.getInstance()).getString('db_path'))
+              .delete();
+        var dir = await getApplicationDocumentsDirectory();
+        if (await Directory('${dir.path}/data').exists())
+          await Directory('${dir.path}/data').delete(recursive: true);
       }
     } catch (e) {}
 
@@ -122,6 +100,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     try {
       var dir = await getApplicationDocumentsDirectory();
+      if (await File("${dir.path}/db.sql.7z").exists())
+        await File("${dir.path}/db.sql.7z").delete();
       Timer _timer = new Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
@@ -149,24 +129,39 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       _timer.cancel();
 
       setState(() {
-        downloading = false;
         baseString = Translations.instance.trans('dbdunzip');
+        print(baseString);
+        downloading = false;
       });
 
       var pp = new P7zip();
-      await pp.decompress(["${dir.path}/db.sql.7z"], path: "${dir.path}");
+      if (await Directory("${dir.path}/data2").exists())
+        await Directory("${dir.path}/data2").delete(recursive: true);
+      await pp.decompress(["${dir.path}/db.sql.7z"], path: "${dir.path}/data2");
+      if (await Directory('${dir.path}/data').exists())
+        await Directory('${dir.path}/data').delete(recursive: true);
+      await Directory("${dir.path}/data2").rename("${dir.path}/data");
+      if (await Directory("${dir.path}/data2").exists())
+        await Directory("${dir.path}/data2").delete(recursive: true);
 
       await File("${dir.path}/db.sql.7z").delete();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance()).setString('db_path',
-          "${dir.path}/${imgUrls[widget.dbType].split('/').last.split('.')[0] + '.db'}");
+      await (await SharedPreferences.getInstance())
+          .setString('db_path', "${dir.path}/data/data.db");
       await (await SharedPreferences.getInstance())
           .setString('databasetype', widget.dbType);
       await (await SharedPreferences.getInstance()).setString('databasesync',
           UpdateSyncManager.rawlangDB[widget.dbType].item1.toString());
 
-      await indexing();
+      // await indexing();
+
+      if (widget.isSync != null && widget.isSync == true)
+        Navigator.pop(context);
+      else
+        setState(() {
+          baseString = Translations.instance.trans('dbdcomplete');
+        });
 
       return;
     } catch (e) {

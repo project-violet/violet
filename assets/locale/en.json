@@ -13,7 +13,7 @@
     "colorsetting":"Color Setting",
     "defaulttag":"Default Tag",
     "currenttag":"Current Tag: ",
-    "excludetag":"Exclusive Tags",
+    "excludetag":"Excluded Tags",
     "blurredtag":"Blurred Tags",
     "howtoshowsearchresult":"How To Display Search Results",
     "system": "System",
@@ -119,14 +119,14 @@
     "notice3": "Any inquiries are welcome!",
     "notice4": "This app has nothing to do with",
     "notice5": "hitomi.la, e-hentai.org, exhentai.org.",
-    
+
     "locking": "Locking",
     "enable_locking": "Enable Locking",
     "network": "Networking",
     "routing_rule": "Routing Rule",
     "proxy": "Proxy",
-    
-    
+
+
     "selectall": "Select All",
     "deselectall": "DeSelect All",
     "inverse": "Invert Selections",
@@ -148,5 +148,38 @@
     "deletebookmarkmsg": "Do you want to delete all %s items? This action is irreversible.",
     "wheretomove": "Where to move?",
     "movetoto": "Move %2 items to'%1'?",
-    "movebookmark": "Move Bookmark"
+    "movebookmark": "Move Bookmark",
+    "thisislatestbookmark": "Database is already up to date.",
+    "importingbookmark": "Import Bookmark",
+    "exportingbookmark": "Export Bookmark",
+    "noauth": "You do not have permission to run it.",
+    "noselectedb": "No database selected.",
+    "importbookmark": "Bookmark Imported!",
+    "exportbookmark": "Bookmark Exported!",
+    "record": "Record",
+    "recordmessage": "There is a record that you have read up to %s page before. Do you want to continue reading?",
+    "synccomplete": "Synchronization is complete!",
+    "right2left": "Read Right To Left",
+    "newupdate": "New update available!",
+    "latestver": "This is the latest version!",
+
+    "yes": "Yes",
+    "no": "No",
+
+    "date": "Date",
+    "complete": "Complete",
+    "waitqueue": "Waiting queue...",
+    "progress": "Progress",
+    "waitdownload": "Waiting for download...",
+    "extracting": "Extracting...",
+    "count": "%s",
+    "stop": "Stopped",
+    "unknownerr": "Unknown Error",
+    "urlnotsupport": "This URL is not supported",
+    "tryagainlogin": "Try again, after login!",
+    "dinfo": "Info",
+    "state": "State",
+    "addurl": "Add URL",
+    "writeurl": "Write URL.",
+    "nothingtodownload": "Nothing to download :("
 }

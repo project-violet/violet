@@ -32,6 +32,11 @@ void _shell(List argv) async {
   final cstr = intListToArray(cmd);
   final result = p7zipShell.call(cstr);
   sendPort.send(result);
+  // final DynamicLibrary dlLib = DynamicLibrary.process();
+  // final int Function(Pointer<Void>) dlcloseFun = dlLib
+  //     .lookup<NativeFunction<Int32 Function(Pointer<Void>)>>("dlclose")
+  //     .asFunction();
+  // dlcloseFun(p7zip.handle);
 }
 
 Pointer<Int8> intListToArray(String list) {
@@ -60,6 +65,7 @@ class P7zip {
         _shell, [receivePort.sendPort, soPath, "7zr e $filesStr -o$path"]);
     final result = await receivePort.first;
     print("[p7zip] compress: after first result = $result");
+    receivePort.close();
     return result == 0 ? path : null;
   }
 

@@ -1,24 +1,17 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'dart:developer';
 import 'package:violet/locale.dart';
 import 'package:violet/main.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
-import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
-import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/widgets/CardScrollWidget.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   @override
@@ -42,7 +35,6 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    // await new Future.delayed(const Duration(seconds: 3));
     setState(() {
       if (state == AppLifecycleState.paused ||
           state == AppLifecycleState.inactive)
@@ -91,15 +83,15 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           // new BottomNavigationBarItem(
           //     icon: new Icon(MdiIcons.accountGroup),
           //     title: new Text(Translations.of(context).trans('community'))),
-          // new BottomNavigationBarItem(
-          //     icon: new Icon(Icons.file_download),
-          //     title: new Text(Translations.of(context).trans('download'))),
           new BottomNavigationBarItem(
               backgroundColor: Settings.themeWhat
                   ? Colors.grey.shade900.withOpacity(0.90)
                   : Colors.grey.shade50,
               icon: new Icon(Icons.bookmark),
               title: new Text(Translations.of(context).trans('bookmark'))),
+          new BottomNavigationBarItem(
+              icon: new Icon(Icons.file_download),
+              title: new Text(Translations.of(context).trans('download'))),
           new BottomNavigationBarItem(
               backgroundColor: Settings.themeWhat
                   ? Colors.grey.shade900.withOpacity(0.90)
@@ -195,7 +187,9 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           //     ),
           //   ),
           // ),
+
           BookmarkPage(),
+          DownloadPage(),
           // new Center(
           //   child: Padding(
           //     padding: EdgeInsets.all(64),

@@ -1,31 +1,19 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:auto_animated/auto_animated.dart';
-import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flare_flutter/flare.dart';
-import 'package:flare_dart/math/mat2d.dart';
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache.dart';
-import 'package:html_unescape/html_unescape_small.dart';
-import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:infinite_listview/infinite_listview.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
-import 'package:vibration/vibration.dart';
-import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/other/flare_artboard.dart';
@@ -35,7 +23,6 @@ import 'package:violet/pages/search/search_filter_page.dart';
 import 'package:violet/pages/search/search_result_selector.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/syncfusion/slider.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 bool blurred = false;
@@ -92,23 +79,36 @@ class _SearchPageState extends State<SearchPage>
       queryResult = List<QueryResult>();
       await loadNextQuery();
     });
+
+    _scroll.addListener(() {
+      if (scrollOnce || queryEnd) return;
+      if (_scroll.offset > _scroll.position.maxScrollExtent / 4 * 3) {
+        scrollOnce = true;
+        Future.delayed(Duration(milliseconds: 100)).then((value) async {
+          print('qqqq');
+          await loadNextQuery();
+          scrollOnce = false;
+        });
+      }
+    });
   }
 
+  bool scrollOnce = false;
+
   Tuple2<QueryManager, String> latestQuery;
+
+  ScrollController _scroll = ScrollController();
 
   // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
   Widget build(BuildContext context) {
-    final InfiniteScrollController _infiniteController =
-        InfiniteScrollController(
-      initialScrollOffset: 0.0,
-    );
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
       child: GestureDetector(
         child: CustomScrollView(
+          controller: _scroll,
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPersistentHeader(
@@ -214,6 +214,7 @@ class _SearchPageState extends State<SearchPage>
                             isOr = false;
                             tagStates = Map<String, bool>();
                             groupStates = Map<String, bool>();
+                            queryEnd = false;
                             await loadNextQuery();
                           });
                           // print(latestQuery);
@@ -380,9 +381,15 @@ class _SearchPageState extends State<SearchPage>
 
   ObjectKey key = ObjectKey(Uuid().v4());
 
+  bool queryEnd = false;
+
   Future<void> loadNextQuery() async {
+    if (queryEnd) return;
     var nn = await latestQuery.item1.next();
-    if (nn.length == 0) return;
+    if (nn.length == 0) {
+      queryEnd = true;
+      return;
+    }
     setState(() {
       queryResult.addAll(nn);
     });

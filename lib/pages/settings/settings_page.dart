@@ -2,14 +2,13 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_controller.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +20,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tuple/tuple.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:violet/component/download/pixiv.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/dialogs.dart';
@@ -31,10 +31,72 @@ import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/test/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings.dart';
-import 'package:violet/database/user/user.dart';
 import 'package:violet/update_sync.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/widgets/toast.dart';
+import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/database/database.dart';
+
+class ExCountry extends Country {
+  String language;
+  String script;
+  String region;
+  String variant;
+
+  ExCountry(String name, String iso) : super(name: name, isoCode: iso) {}
+
+  static ExCountry create(String iso,
+      {String language, String script, String region, String variant}) {
+    var c = CountryPickerUtils.getCountryByIsoCode(iso);
+    var country = ExCountry(c.name, c.isoCode);
+    country.language = language;
+    country.script = script;
+    country.region = region;
+    country.variant = variant;
+    return country;
+  }
+
+  String toString() {
+    final dict = {
+      'KR': 'ko',
+      'US': 'en',
+      'JP': 'ja',
+      // 'CN': 'zh',
+      'RU': 'ru',
+      'IT': 'it',
+    };
+
+    if (dict.containsKey(isoCode)) return dict[isoCode];
+
+    if (isoCode == 'CN') {
+      if (script == 'Hant') return 'zh_Hant';
+      if (script == 'Hans') return 'zh_Hans';
+    }
+
+    return 'en';
+  }
+
+  String getDisplayLanguage() {
+    final dict = {
+      'KR': '한국어',
+      'US': 'English',
+      'JP': '日本語',
+      // 'CN': '中文(简体)',
+      // 'CN': '中文(繁體)',
+      'RU': 'Русский',
+      'IT': 'Italiano',
+    };
+
+    if (dict.containsKey(isoCode)) return dict[isoCode];
+
+    if (isoCode == 'CN') {
+      if (script == 'Hant') return '中文(繁體)';
+      if (script == 'Hans') return '中文(简体)';
+    }
+
+    return 'English';
+  }
+}
 
 class SettingsPage extends StatefulWidget {
   @override
@@ -370,35 +432,23 @@ class _SettingsPageState extends State<SettingsPage>
                                 // isSearchable: true,
                                 title: Text('Select Language'),
                                 onValuePicked: (Country country) async {
-                                  final dict = {
-                                    'KR': 'ko',
-                                    'US': 'en',
-                                    'JP': 'ja',
-                                    'CN': 'zh',
-                                    'RU': 'ru'
-                                  };
+                                  var exc = country as ExCountry;
                                   await Translations.of(context)
-                                      .load(dict[country.isoCode]);
-                                  await Settings.setLanguage(
-                                      dict[country.isoCode]);
+                                      .load(exc.toString());
+                                  await Settings.setLanguage(exc.toString());
                                   setState(() {});
                                 },
                                 itemFilter: (c) => [].contains(c.isoCode),
                                 priorityList: [
-                                  CountryPickerUtils.getCountryByIsoCode('US'),
-                                  CountryPickerUtils.getCountryByIsoCode('KR'),
-                                  CountryPickerUtils.getCountryByIsoCode('JP'),
-                                  // CountryPickerUtils.getCountryByIsoCode('CN'),
+                                  ExCountry.create('US'),
+                                  ExCountry.create('KR'),
+                                  ExCountry.create('JP'),
+                                  ExCountry.create('CN', script: 'Hant'),
+                                  ExCountry.create('CN', script: 'Hans'),
+                                  ExCountry.create('IT'),
                                   // CountryPickerUtils.getCountryByIsoCode('RU'),
                                 ],
                                 itemBuilder: (Country country) {
-                                  final dict = {
-                                    'KR': '한국어',
-                                    'US': 'English',
-                                    'JP': '日本語',
-                                    'CN': '中文',
-                                    'RU': 'Русский'
-                                  };
                                   return Container(
                                     child: Row(
                                       children: <Widget>[
@@ -408,7 +458,8 @@ class _SettingsPageState extends State<SettingsPage>
                                           width: 8.0,
                                           height: 30,
                                         ),
-                                        Text("${dict[country.isoCode]}"),
+                                        Text(
+                                            "${(country as ExCountry).getDisplayLanguage()}"),
                                       ],
                                     ),
                                   );
@@ -507,7 +558,8 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
-                            msg: '데이터베이스가 이미 최신상태입니다.',
+                            msg: Translations.of(context)
+                                .trans('thisislatestbookmark'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),
@@ -515,11 +567,40 @@ class _SettingsPageState extends State<SettingsPage>
                         return;
                       }
 
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => DataBaseDownloadPage(
-                                dbType: Settings.databaseType,
-                                isExistsDataBase: false,
-                              )));
+                      var dir = await getApplicationDocumentsDirectory();
+                      try {
+                        await ((await openDatabase('${dir.path}/data/data.db'))
+                            .close());
+                        await deleteDatabase('${dir.path}/data/data.db');
+                        await Directory('${dir.path}/data')
+                            .delete(recursive: true);
+                      } catch (e) {}
+
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => DataBaseDownloadPage(
+                                    dbType: Settings.databaseType,
+                                    isExistsDataBase: false,
+                                    isSync: true,
+                                  )))
+                          .then((value) async {
+                        HitomiIndexs.init();
+                        final directory =
+                            await getApplicationDocumentsDirectory();
+                        final path = File('${directory.path}/data/index.json');
+                        final text = path.readAsStringSync();
+                        HitomiManager.tagmap = jsonDecode(text);
+                        await DataBaseManager.reloadInstance();
+
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: Translations.of(context).trans('synccomplete'),
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                      });
                     },
                   ),
                 ]),
@@ -566,7 +647,8 @@ class _SettingsPageState extends State<SettingsPage>
                     child: ListTile(
                       leading:
                           Icon(MdiIcons.import, color: Settings.majorColor),
-                      title: Text('북마크 가져오기'),
+                      title: Text(
+                          Translations.of(context).trans('importingbookmark')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () async {
@@ -576,7 +658,7 @@ class _SettingsPageState extends State<SettingsPage>
                           flutterToast.showToast(
                             child: ToastWrapper(
                               isCheck: false,
-                              msg: "권한이 없어서 실행할 수 없습니다.",
+                              msg: Translations.of(context).trans('noauth'),
                             ),
                             gravity: ToastGravity.BOTTOM,
                             toastDuration: Duration(seconds: 4),
@@ -594,7 +676,7 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: false,
-                            msg: "선택된 데이터베이스가 없습니다.",
+                            msg: Translations.of(context).trans('noselectedb'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),
@@ -612,7 +694,7 @@ class _SettingsPageState extends State<SettingsPage>
                       flutterToast.showToast(
                         child: ToastWrapper(
                           isCheck: true,
-                          msg: "북마크를 가져왔습니다!",
+                          msg: Translations.of(context).trans('importbookmark'),
                         ),
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: Duration(seconds: 4),
@@ -631,7 +713,8 @@ class _SettingsPageState extends State<SettingsPage>
                         MdiIcons.export,
                         color: Settings.majorColor,
                       ),
-                      title: Text('북마크 내보내기'),
+                      title: Text(
+                          Translations.of(context).trans('exportingbookmark')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () async {
@@ -641,7 +724,7 @@ class _SettingsPageState extends State<SettingsPage>
                           flutterToast.showToast(
                             child: ToastWrapper(
                               isCheck: false,
-                              msg: "권한이 없어서 실행할 수 없습니다.",
+                              msg: Translations.of(context).trans('noauth'),
                             ),
                             gravity: ToastGravity.BOTTOM,
                             toastDuration: Duration(seconds: 4),
@@ -660,7 +743,7 @@ class _SettingsPageState extends State<SettingsPage>
                       flutterToast.showToast(
                         child: ToastWrapper(
                           isCheck: true,
-                          msg: "북마크를 내보냈습니다!",
+                          msg: Translations.of(context).trans('exportbookmark'),
                         ),
                         gravity: ToastGravity.BOTTOM,
                         toastDuration: Duration(seconds: 4),
@@ -668,64 +751,182 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                 ]),
-                // _buildGroup(Translations.of(context).trans('viewer')),
-                // _buildItems([
-                //   ListTile(
-                //     leading: Icon(Icons.view_array, color: Settings.majorColor),
-                //     title: Column(
-                //       crossAxisAlignment: CrossAxisAlignment.start,
-                //       children: [
-                //         Text(Translations.of(context).trans('viewertype')),
-                //         Text(Translations.of(context).trans('currenttype') + ": " + Translations.of(context).trans('scrollview')),
-                //       ],
-                //     ),
-                //     trailing: Icon(Icons.keyboard_arrow_right),
-                //     onTap: () {},
-                //   ),
-                //   _buildDivider(),
-                //   ListTile(
-                //     leading: Icon(
-                //       Icons.blur_linear,
-                //       color: Settings.majorColor,
-                //     ),
-                //     title: Text(Translations.of(context).trans('imgquality')),
-                //     trailing: Icon(
-                //         // Icons.message,
-                //         Icons.keyboard_arrow_right),
-                //     onTap: () {},
-                //   ),
-                // ]),
-                // _buildGroup(Translations.of(context).trans('downloader')),
-                // _buildItems([
-                //   ListTile(
-                //     leading: ShaderMask(
-                //       shaderCallback: (bounds) => RadialGradient(
-                //         center: Alignment.bottomLeft,
-                //         radius: 1.3,
-                //         colors: [Colors.yellow, Colors.red, Colors.purple],
-                //         tileMode: TileMode.clamp,
-                //       ).createShader(bounds),
-                //       child: Icon(MdiIcons.instagram, color: Colors.white),
-                //     ),
-                //     title: Text(Translations.of(context).trans('instagram')),
-                //     trailing: Icon(Icons.keyboard_arrow_right),
-                //     onTap: () {},
-                //   ),
-                //   _buildDivider(),
-                //   ListTile(
-                //     leading: Icon(MdiIcons.twitter, color: Colors.blue),
-                //     title: Text(Translations.of(context).trans('twitter')),
-                //     trailing: Icon(Icons.keyboard_arrow_right),
-                //     onTap: () {},
-                //   ),
-                //   _buildDivider(),
-                //   ListTile(
-                //     leading: Image.asset('assets/icons/pixiv.ico', width: 25),
-                //     title: Text(Translations.of(context).trans('pixiv')),
-                //     trailing: Icon(Icons.keyboard_arrow_right),
-                //     onTap: () {},
-                //   ),
-                // ]),
+                _buildGroup(Translations.of(context).trans('viewer')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.signDirection,
+                          color: Settings.majorColor),
+                      title: Text(Translations.of(context).trans('right2left')),
+                      trailing: AbsorbPointer(
+                        child: Switch(
+                          value: Settings.rightToLeft,
+                          onChanged: (value) async {},
+                          activeTrackColor: Settings.majorColor,
+                          activeColor: Settings.majorAccentColor,
+                        ),
+                      ),
+                    ),
+                    onTap: () async {
+                      await Settings.setRightToLeft(!Settings.rightToLeft);
+                      setState(() {});
+                    },
+                  ),
+                  // ListTile(
+                  //   leading: Icon(Icons.view_array, color: Settings.majorColor),
+                  //   title: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Text(Translations.of(context).trans('viewertype')),
+                  //       Text(Translations.of(context).trans('currenttype') +
+                  //           ": " +
+                  //           Translations.of(context).trans('scrollview')),
+                  //     ],
+                  //   ),
+                  //   trailing: Icon(Icons.keyboard_arrow_right),
+                  //   onTap: () {},
+                  // ),
+                  // _buildDivider(),
+                  // ListTile(
+                  //   leading: Icon(
+                  //     Icons.blur_linear,
+                  //     color: Settings.majorColor,
+                  //   ),
+                  //   title: Text(Translations.of(context).trans('imgquality')),
+                  //   trailing: Icon(
+                  //       // Icons.message,
+                  //       Icons.keyboard_arrow_right),
+                  //   onTap: () {},
+                  // ),
+                ]),
+                _buildGroup(Translations.of(context).trans('downloader')),
+                _buildItems(
+                  [
+                    ListTile(
+                      leading: ShaderMask(
+                        shaderCallback: (bounds) => RadialGradient(
+                          center: Alignment.bottomLeft,
+                          radius: 1.3,
+                          colors: [Colors.yellow, Colors.red, Colors.purple],
+                          tileMode: TileMode.clamp,
+                        ).createShader(bounds),
+                        child: Icon(MdiIcons.instagram, color: Colors.white),
+                      ),
+                      title: Text(Translations.of(context).trans('instagram')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                      // onTap: () {},
+                    ),
+                    _buildDivider(),
+                    ListTile(
+                      leading: Icon(MdiIcons.twitter, color: Colors.blue),
+                      title: Text(Translations.of(context).trans('twitter')),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                      // onTap: () {},
+                    ),
+                    _buildDivider(),
+                    InkWell(
+                      customBorder: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(10.0),
+                              bottomRight: Radius.circular(10.0))),
+                      child: ListTile(
+                        leading:
+                            Image.asset('assets/icons/pixiv.ico', width: 25),
+                        title: Text(Translations.of(context).trans('pixiv')),
+                        trailing: Icon(Icons.keyboard_arrow_right),
+                      ),
+                      onTap: () async {
+                        var nameController = TextEditingController(
+                            text: (await SharedPreferences.getInstance())
+                                .getString('pixiv_id'));
+                        var descController = TextEditingController(
+                            text: (await SharedPreferences.getInstance())
+                                .getString('pixiv_pwd'));
+                        Widget yesButton = FlatButton(
+                          child: Text(Translations.of(context).trans('ok'),
+                              style: TextStyle(color: Settings.majorColor)),
+                          focusColor: Settings.majorColor,
+                          splashColor: Settings.majorColor.withOpacity(0.3),
+                          onPressed: () {
+                            Navigator.pop(context, true);
+                          },
+                        );
+                        Widget noButton = FlatButton(
+                          child: Text(Translations.of(context).trans('cancel'),
+                              style: TextStyle(color: Settings.majorColor)),
+                          focusColor: Settings.majorColor,
+                          splashColor: Settings.majorColor.withOpacity(0.3),
+                          onPressed: () {
+                            Navigator.pop(context, false);
+                          },
+                        );
+                        var dialog = await showDialog(
+                          context: context,
+                          child: AlertDialog(
+                            actions: [yesButton, noButton],
+                            title: Text('Pixiv Login'),
+                            contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Row(children: [
+                                  Text('Id: '),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: nameController,
+                                    ),
+                                  ),
+                                ]),
+                                Row(children: [
+                                  Text('Pwd: '),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: descController,
+                                    ),
+                                  ),
+                                ]),
+                              ],
+                            ),
+                          ),
+                        );
+                        if (dialog) {
+                          var id = nameController.text.trim();
+                          var pwd = descController.text.trim();
+                          print(id);
+                          print(pwd);
+                          await (await SharedPreferences.getInstance())
+                              .setString('pixiv_id', id);
+                          await (await SharedPreferences.getInstance())
+                              .setString('pixiv_pwd', pwd);
+                          var accessToken =
+                              await PixivAPI.getAccessToken(id, pwd);
+                          if (accessToken == null || accessToken == '') {
+                            flutterToast.showToast(
+                              child: ToastWrapper(
+                                isCheck: false,
+                                msg: 'Login Fail. Try Again!',
+                              ),
+                              gravity: ToastGravity.BOTTOM,
+                              toastDuration: Duration(seconds: 4),
+                            );
+                          } else {
+                            flutterToast.showToast(
+                              child: ToastWrapper(
+                                isCheck: true,
+                                msg: 'Login Success!',
+                              ),
+                              gravity: ToastGravity.BOTTOM,
+                              toastDuration: Duration(seconds: 4),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
                 // _buildGroup(Translations.of(context).trans('cache')),
                 // _buildItems([
                 //   ListTile(
@@ -843,7 +1044,7 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
-                            msg: "새로운 업데이트가 있습니다.",
+                            msg: Translations.of(context).trans('newupdate'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),
@@ -852,7 +1053,7 @@ class _SettingsPageState extends State<SettingsPage>
                         flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
-                            msg: "최신 버전입니다!",
+                            msg: Translations.of(context).trans('latestver'),
                           ),
                           gravity: ToastGravity.BOTTOM,
                           toastDuration: Duration(seconds: 4),
@@ -1028,7 +1229,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ),
                         Text(
-                          'Copyright (C) 2020 by dc-koromo',
+                          'Copyright (C) 2020 by project-violet',
                           style: TextStyle(
                             color: Settings.themeWhat
                                 ? Colors.white

@@ -3,17 +3,11 @@
 
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:device_info/device_info.dart';
-import 'package:extended_image/extended_image.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flare_dart/math/aabb.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -25,9 +19,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
@@ -37,17 +31,15 @@ import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/component/hiyobi/hiyobi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/download.dart';
 import 'package:violet/files.dart';
-import 'package:violet/main.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/update_sync.dart';
-import 'package:violet/widgets/article_item/article_list_item_widget.dart';
-import 'package:violet/pages/viewer/viewer_widget.dart';
+import 'package:violet/pages/viewer/vertical_viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
-import 'package:flare_flutter/flare_render_box.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
-import 'package:ffi/ffi.dart';
 
 class TestPage extends StatelessWidget {
   @override
@@ -204,6 +196,7 @@ class TestPage extends StatelessWidget {
                   var qr = QueryResult(result: qq.first);
                   var ss = HentaiManager.exHentaiStream(
                       QueryResult(result: qq.first));
+
                   // for (int i = 0; i < (qr.files() as int); i++) {
                   //     print(element);
                   //   // print(ss.)
@@ -215,6 +208,18 @@ class TestPage extends StatelessWidget {
                 child: Text('Update Test'),
                 onPressed: () async {
                   await UpdateSyncManager.checkUpdateSync();
+                },
+              ),
+              RaisedButton(
+                child: Text('Init Latest Database'),
+                onPressed: () async {
+                  // var dir = await getApplicationDocumentsDirectory();
+                  // if (await Directory('${dir.path}/data').exists()) {
+                  //   print('asdf');
+                  //   await Directory('${dir.path}/data').delete(recursive: true);
+                  // }
+                  await (await SharedPreferences.getInstance())
+                      .setString('databasesync', '20000101');
                 },
               ),
               // RaisedButton(
@@ -255,7 +260,88 @@ class TestPage extends StatelessWidget {
                   await VpnTest.asdf();
                 },
               ),
+              RaisedButton(
+                child: Text('Unzip Test'),
+                onPressed: () async {
+                  var dir = await getApplicationDocumentsDirectory();
+                  if (await Directory('${dir.path}/data2').exists())
+                    await Directory('${dir.path}/data2')
+                        .delete(recursive: true);
+                  var pp = new P7zip();
+                  await pp.decompress(["${dir.path}/db.sql.7z"],
+                      path: "${dir.path}/data2");
+                  print('asdf');
+                },
+              ),
+              RaisedButton(
+                child: Text('Raw Data Sync Test'),
+                onPressed: () async {
+                  var link =
+                      'https://violet-test-4b8cd3e.s3.ap-northeast-2.amazonaws.com/rawdata-english.7z';
+                  var ll =
+                      'https://violet-test-4b8cd3e.s3.ap-northeast-2.amazonaws.com/tag-uploader.7z';
 
+                  var dir = await getApplicationDocumentsDirectory();
+                  // File('${dir.path}/rawdata-english.7z').deleteSync();
+                  // File('${dir.path}/index.json').deleteSync();
+                  // File('${dir.path}/tag_artist.json').deleteSync();
+                  // File('${dir.path}/tag_group.json').deleteSync();
+                  // File('${dir.path}/tag_uploader.json').deleteSync();
+                  // File('${dir.path}/tag_index.json').deleteSync();
+                  // Directory("${dir.path}/data").createSync();
+                  print(dir.path);
+                  Files.enumeratePath(dir.path);
+                  // return;
+                  // Dio dio = Dio();
+                  // await dio.download(ll, "${dir.path}/tag-upload.7z",
+                  //     onReceiveProgress: (rec, total) {
+                  //   print(rec);
+                  // });
+                  // var pp = new P7zip();
+                  // await pp.decompress(["${dir.path}/rawdata-english.7z"],
+                  //     path: "${dir.path}/data");
+                  // print(dir.path);
+                  // Files.enumeratePath(dir.path);
+                  return;
+
+                  // bool once = false;
+                  // IsolateNameServer.registerPortWithName(
+                  //     _port.sendPort, 'downloader_send_port');
+                  // _port.listen((dynamic data) {
+                  //   String id = data[0];
+                  //   DownloadTaskStatus status = data[1];
+                  //   int progress = data[2];
+                  //   print(progress);
+                  //   if (progress == 100 && !once) {
+                  //     once = true;
+                  //   }
+                  // });
+
+                  // FlutterDownloader.registerCallback(downloadCallback);
+                  // final taskId = await FlutterDownloader.enqueue(
+                  //   url: link,
+                  //   savedDir: '${dir.path}',
+                  //   showNotification:
+                  //       true, // show download progress in status bar (for Android)
+                  //   openFileFromNotification:
+                  //       true, // click on notification to open downloaded file (for Android)
+                  // );
+                },
+              ),
+              RaisedButton(
+                child: Text('Image Cache Clear'),
+                onPressed: () {
+                  DefaultCacheManager().emptyCache();
+                  imageCache.clear();
+                },
+              ),
+              RaisedButton(
+                child: Text('User DB Clear'),
+                onPressed: () async {
+                  var dir = await getApplicationDocumentsDirectory();
+                  File('${dir.path}/user.db').deleteSync();
+                },
+              ),
               // RaisedButton(
               //   child: Text('Unzip Test'),
               //   onPressed: () async {
@@ -282,6 +368,15 @@ class TestPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  ReceivePort _port = ReceivePort();
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
   }
 }
 

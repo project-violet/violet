@@ -11,7 +11,7 @@ class Translations {
   Translations(this.locale);
 
   final Locale locale;
-  
+
   // Latest instance
   static Translations instance;
 
@@ -22,18 +22,22 @@ class Translations {
   Map<String, String> _sentences;
 
   Future<bool> load([String code]) async {
-    code ??= this.locale.languageCode;
-    instance = this;
+    if (code == null) {
+      code = locale.languageCode;
+      if (!code.contains('_')) {
+        if (locale.scriptCode != null && locale.scriptCode != '')
+          code += '_' + this.locale.scriptCode;
+      }
+      instance = this;
+    }
 
-    String data = await rootBundle
-        .loadString('assets/locale/$code.json');
+    String data = await rootBundle.loadString('assets/locale/$code.json');
     Map<String, dynamic> _result = json.decode(data);
 
     this._sentences = new Map();
     _result.forEach((String key, dynamic value) {
       this._sentences[key] = value.toString();
     });
-
 
     return true;
   }
@@ -48,8 +52,12 @@ class TranslationsDelegate extends LocalizationsDelegate<Translations> {
 
   @override
   bool isSupported(Locale locale) {
-    return ['ko', 'en', 'ja'].contains(locale.languageCode) ||
-        ['KR', 'US', 'JP'].contains(locale.countryCode);
+    var lc = ['ko', 'en', 'ja', 'zh', 'it'].contains(locale.languageCode);
+    var sc = ['Hans', 'Hant'].contains(locale.scriptCode);
+    if (locale.languageCode == 'zh') {
+      return sc;
+    }
+    return lc || sc;
   }
 
   @override
