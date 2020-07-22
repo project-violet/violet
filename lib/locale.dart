@@ -52,7 +52,7 @@ class TranslationsDelegate extends LocalizationsDelegate<Translations> {
 
   @override
   bool isSupported(Locale locale) {
-    var lc = ['ko', 'en', 'ja', 'zh'].contains(locale.languageCode);
+    var lc = ['ko', 'en', 'ja', 'zh', 'it'].contains(locale.languageCode);
     var sc = ['Hans', 'Hant'].contains(locale.scriptCode);
     if (locale.languageCode == 'zh') {
       return sc;
