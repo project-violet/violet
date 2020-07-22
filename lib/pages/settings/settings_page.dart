@@ -1229,7 +1229,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ),
                         Text(
-                          'Copyright (C) 2020 by dc-koromo',
+                          'Copyright (C) 2020 by project-violet',
                           style: TextStyle(
                             color: Settings.themeWhat
                                 ? Colors.white
