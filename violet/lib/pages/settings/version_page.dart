@@ -29,7 +29,7 @@ class VersionViewPage extends StatelessWidget {
                       style: TextStyle(fontSize: 30),
                     ),
                     Text(
-                      '0.8',
+                      '0.8.1',
                       style: TextStyle(fontSize: 20),
                     ),
                     Text(''),

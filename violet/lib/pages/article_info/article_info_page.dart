@@ -254,7 +254,6 @@ class _InfoAreaWidget extends StatelessWidget {
                           },
                         ),
                       ).then((value) async {
-                        print(value);
                         await (await User.getInstance())
                             .updateUserLog(queryResult.id(), value as int);
                         SystemChrome.setEnabledSystemUIOverlays(

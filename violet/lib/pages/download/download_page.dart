@@ -74,7 +74,9 @@ class _DownloadPageState extends State<DownloadPage>
             SliverList(
               delegate: SliverChildListDelegate(
                 items.reversed.map((e) {
+                  // print(e.url());
                   return Align(
+                    key: Key('dp' + e.id().toString() + e.url()),
                     alignment: Alignment.center,
                     child: DownloadItemWidget(
                       width: windowWidth - 4.0,

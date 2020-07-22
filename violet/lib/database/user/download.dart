@@ -44,7 +44,6 @@ class DownloadItemModel {
     var db = await CommonUserDatabase.getInstance();
     var x = await db
         .query('SELECT * FROM DownloadItem WHERE Id=' + id().toString());
-    print(x);
   }
 }
 
@@ -86,8 +85,6 @@ class Download {
             .query('SELECT * FROM DownloadItem'))
         .map((x) => DownloadItemModel(result: x))
         .toList();
-    // .reversed
-    // .toList();
   }
 
   Future<DownloadItemModel> createNew(String url) async {
