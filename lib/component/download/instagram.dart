@@ -2,6 +2,8 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 // Reference https://github.com/rollrat/downloader/blob/master/Koromo_Copy.Framework/Extractor/PixivExtractor.cs
+import 'dart:io';
+
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -170,6 +172,7 @@ class InstagramManager extends Downloadable {
   @override
   Future<List<DownloadTask>> createTask(
       String url, GeneralDownloadProgress gdp) async {
+    if (!url.endsWith('/')) url += '/';
     var html = (await http.get(url)).body;
     var user = await InstaAPI.getUser(html, gdp);
     var urls = List<String>();
