@@ -21,6 +21,7 @@ class DownloadItemModel {
   // 8: Error-Not Support
   // 9: Error-Login
   // 10: Error
+  // 11: Nothing to download
   int state() => result['State'];
   String path() => result['Path']; // directory
   String files() => result['Files']; // files path

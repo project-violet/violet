@@ -180,5 +180,6 @@
     "dinfo": "Info",
     "state": "State",
     "addurl": "Add URL",
-    "writeurl": "Write URL."
+    "writeurl": "Write URL.",
+    "nothingtodownload": "Nothing to download :("
 }

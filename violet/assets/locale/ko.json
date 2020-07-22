@@ -179,5 +179,6 @@
     "dinfo": "정보",
     "state": "상태",
     "addurl": "URL 직접 추가",
-    "writeurl": "URL을 입력해주세요."
+    "writeurl": "URL을 입력해주세요.",
+    "nothingtodownload": "다운로드할 내용이 없습니다 :("
 }

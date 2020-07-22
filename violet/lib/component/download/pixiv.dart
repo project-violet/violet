@@ -184,6 +184,11 @@ class PixivManager extends Downloadable {
       var works = await PixivAPI.getUserWorks(
           accessToken, int.parse(match.first.namedGroup('id')), 1, 10000000);
 
+      if (user == null ||
+          user.length == 0 ||
+          works == null ||
+          works.length == 0) return null;
+
       if (gdp.simpleInfoCallback != null)
         gdp.simpleInfoCallback.call('${user['name']} (${user['account']})');
       if (gdp.thumbnailCallback != null)
@@ -247,6 +252,7 @@ class PixivManager extends Downloadable {
       }
       return result;
     }
+    return null;
   }
 
   @override
