@@ -60,7 +60,7 @@ class InstaAPI {
         } else {
           for (var media in json2["data"]["shortcode_media"]
               ["edge_sidecar_to_children"]["edges"])
-            _extractUrl(media, result['firstpost']['displayurls']);
+            _extractUrl(media['node'], result['firstpost']['displayurls']);
         }
       }
     }
