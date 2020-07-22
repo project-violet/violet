@@ -52,7 +52,7 @@ void main() {
   // });
 
   test('Instagram Test', () async {
-    var url = 'https://www.instagram.com/ravi.me/?hl=ko';
+    var url = 'https://www.instagram.com/jen2jen2_/?hl=ko';
 
     // var html = (await http.get(url)).body;
     var im = InstagramManager();
