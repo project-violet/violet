@@ -84,9 +84,9 @@ class Download {
     return (await (await CommonUserDatabase.getInstance())
             .query('SELECT * FROM DownloadItem'))
         .map((x) => DownloadItemModel(result: x))
-        .toList()
-        .reversed
         .toList();
+    // .reversed
+    // .toList();
   }
 
   Future<DownloadItemModel> createNew(String url) async {

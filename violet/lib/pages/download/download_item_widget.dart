@@ -124,12 +124,14 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
         widget.item.url(),
         GeneralDownloadProgress(
           simpleInfoCallback: (info) async {
+            if (disposed) return;
             result['Info'] = info;
             widget.item.result = result;
             await widget.item.update();
             setState(() {});
           },
           thumbnailCallback: (url, header) async {
+            if (disposed) return;
             result['Thumbnail'] = url;
             result['ThumbnailHeader'] = header;
             widget.item.result = result;
@@ -137,6 +139,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
             setState(() {});
           },
           progressCallback: (cur, max) async {
+            if (disposed) return;
             setState(() {
               this.cur = cur;
               this.max = max;
@@ -147,6 +150,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
 
       // Download
       var _timer = new Timer.periodic(Duration(seconds: 1), (Timer timer) {
+        if (disposed) return;
         setState(() {
           if (downloadSec / 1024 < 500.0)
             downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";

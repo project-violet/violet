@@ -12,7 +12,7 @@ import 'package:violet/component/downloadable.dart' as violetd;
 
 class BuiltinDownloader {
   static const int maxDownloadCount = 2;
-  static const int maxDownloadFileCount = 24;
+  static const int maxDownloadFileCount = 8;
 
   int _curDownloadCount = 0;
   int _curDonwloadFileCount = 0;

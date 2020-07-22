@@ -22,6 +22,7 @@ class _DownloadPageState extends State<DownloadPage>
 
   ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = List<DownloadItemModel>();
+  Map<String, Widget> _items = Map<String, Widget>();
   // Key key = ObjectKey(Uuid().v4());
 
   @override
@@ -31,6 +32,12 @@ class _DownloadPageState extends State<DownloadPage>
       items = await (await Download.getInstance()).getDownloadItems();
       setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -62,19 +69,17 @@ class _DownloadPageState extends State<DownloadPage>
               ),
             ),
             SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
+              delegate: SliverChildListDelegate(
+                items.reversed.map((e) {
                   return Align(
                     alignment: Alignment.center,
                     child: DownloadItemWidget(
                       width: windowWidth - 4.0,
-                      item: items[index],
-                      download: items[index].download,
-                      // thumbnailTag: 'thumbnail' + filtered[index].id().toString(),
+                      item: e,
+                      download: e.download,
                     ),
                   );
-                },
-                childCount: items.length,
+                }).toList(),
               ),
             ),
           ],
@@ -184,8 +189,8 @@ class _DownloadPageState extends State<DownloadPage>
   Future<void> appendTask(String url) async {
     var item = await (await Download.getInstance()).createNew(url);
     item.download = true;
-    items.add(item);
     setState(() {
+      items.add(item);
       // items.insert(0, item);
       // key = ObjectKey(Uuid().v4());
     });
