@@ -37,6 +37,65 @@ import 'package:violet/widgets/toast.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
 
+class ExCountry extends Country {
+  String language;
+  String script;
+  String region;
+  String variant;
+
+  ExCountry(String name, String iso) : super(name: name, isoCode: iso) {}
+
+  static ExCountry create(String iso,
+      {String language, String script, String region, String variant}) {
+    var c = CountryPickerUtils.getCountryByIsoCode(iso);
+    var country = ExCountry(c.name, c.isoCode);
+    country.language = language;
+    country.script = script;
+    country.region = region;
+    country.variant = variant;
+    return country;
+  }
+
+  String toString() {
+    final dict = {
+      'KR': 'ko',
+      'US': 'en',
+      'JP': 'ja',
+      // 'CN': 'zh',
+      'RU': 'ru',
+    };
+
+    if (dict.containsKey(isoCode)) return dict[isoCode];
+
+    if (isoCode == 'CN') {
+      if (script == 'Hant') return 'zh_Hant';
+      if (script == 'Hans') return 'zh_Hans';
+    }
+
+    return 'en';
+  }
+
+  String getDisplayLanguage() {
+    final dict = {
+      'KR': '한국어',
+      'US': 'English',
+      'JP': '日本語',
+      // 'CN': '中文(简体)',
+      // 'CN': '中文(繁體)',
+      'RU': 'Русский'
+    };
+
+    if (dict.containsKey(isoCode)) return dict[isoCode];
+
+    if (isoCode == 'CN') {
+      if (script == 'Hant') return '中文(繁體)';
+      if (script == 'Hans') return '中文(简体)';
+    }
+
+    return 'English';
+  }
+}
+
 class SettingsPage extends StatefulWidget {
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -371,35 +430,22 @@ class _SettingsPageState extends State<SettingsPage>
                                 // isSearchable: true,
                                 title: Text('Select Language'),
                                 onValuePicked: (Country country) async {
-                                  final dict = {
-                                    'KR': 'ko',
-                                    'US': 'en',
-                                    'JP': 'ja',
-                                    'CN': 'zh',
-                                    'RU': 'ru'
-                                  };
+                                  var exc = country as ExCountry;
                                   await Translations.of(context)
-                                      .load(dict[country.isoCode]);
-                                  await Settings.setLanguage(
-                                      dict[country.isoCode]);
+                                      .load(exc.toString());
+                                  await Settings.setLanguage(exc.toString());
                                   setState(() {});
                                 },
                                 itemFilter: (c) => [].contains(c.isoCode),
                                 priorityList: [
-                                  CountryPickerUtils.getCountryByIsoCode('US'),
-                                  CountryPickerUtils.getCountryByIsoCode('KR'),
-                                  CountryPickerUtils.getCountryByIsoCode('JP'),
-                                  CountryPickerUtils.getCountryByIsoCode('CN'),
+                                  ExCountry.create('US'),
+                                  ExCountry.create('KR'),
+                                  ExCountry.create('JP'),
+                                  ExCountry.create('CN', script: 'Hant'),
+                                  ExCountry.create('CN', script: 'Hans'),
                                   // CountryPickerUtils.getCountryByIsoCode('RU'),
                                 ],
                                 itemBuilder: (Country country) {
-                                  final dict = {
-                                    'KR': '한국어',
-                                    'US': 'English',
-                                    'JP': '日本語',
-                                    'CN': '中文',
-                                    'RU': 'Русский'
-                                  };
                                   return Container(
                                     child: Row(
                                       children: <Widget>[
@@ -409,7 +455,8 @@ class _SettingsPageState extends State<SettingsPage>
                                           width: 8.0,
                                           height: 30,
                                         ),
-                                        Text("${dict[country.isoCode]}"),
+                                        Text(
+                                            "${(country as ExCountry).getDisplayLanguage()}"),
                                       ],
                                     ),
                                   );
