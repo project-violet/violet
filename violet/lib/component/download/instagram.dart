@@ -102,7 +102,7 @@ class InstaAPI {
   }
 
   static void _extractUrl(dynamic media, List<String> urls) {
-    if (media['is_video']) {
+    if (media['is_video'] != null && media['is_video']) {
       urls.add(media['video_url']);
       // Thumbnail
       // urls.add(media['display_url']);
@@ -126,7 +126,7 @@ class InstagramManager extends Downloadable {
 
   InstagramManager() {
     urlMatcher =
-        RegExp(r'^https?://(www\.)?instagram\.com/(?:p\/)?(?<id>.*?)/?.*?$/?');
+        RegExp(r'^https?://(www\.)?instagram\.com/(?:p\/)?(?<id>.*?)/?.*?$');
   }
 
   @override
