@@ -3,13 +3,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/database/user/download.dart';
 
+// This page must remain alive until the app is closed.
 class DownloadPage extends StatefulWidget {
   @override
   _DownloadPageState createState() => _DownloadPageState();
@@ -140,6 +143,14 @@ class _DownloadPageState extends State<DownloadPage>
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: () async {
+                      if (await Permission.storage.isUndetermined) {
+                        if (await Permission.storage.request() ==
+                            PermissionStatus.denied) {
+                          await Dialogs.okDialog(context,
+                              "You cannot use downloader, if you not allow external storage permission.");
+                          return;
+                        }
+                      }
                       Widget yesButton = FlatButton(
                         child: Text(Translations.of(context).trans('ok'),
                             style: TextStyle(color: Settings.majorColor)),
