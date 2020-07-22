@@ -48,47 +48,18 @@ Future<void> initDB() async {
 
 FirebaseAnalytics analytics;
 FirebaseAnalyticsObserver observer;
-
-// WebSocketChannel channel = IOWebSocketChannel.connect(wss_url, pingInterval: Duration(milliseconds: 2000));
-// String userConnectionCount = '0';
-
-// class CustomImageCache extends WidgetsFlutterBinding {
-//   @override
-//   ImageCache createImageCache() {
-//     ImageCache imageCache = super.createImageCache();
-//     // Set your image cache size
-//     imageCache.maximumSizeBytes = 1024 * 1024 * 100; // 100 MB
-//     imageCache.maximumSize = 10;
-//     // print('cic');
-//     return imageCache;
-//   }
-// }
-
 void main() async {
-  // CustomImageCache();
-  // PaintingBinding.instance.imageCache.maximumSizeBytes = 1024 * 1024 * 10;
-  // PaintingBinding.instance.imageCache.maximumSize = 10;
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize(
-      // debug: true // optional: set false to disable printing logs to console
-      );
+  await FlutterDownloader.initialize();
   FlareCache.doesPrune = false;
 
   Crashlytics.instance.enableInDevMode = true;
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
-  // final String UA = '';
-  // Analytics ga = new AnalyticsIO(UA, 'ga_test', '3.0',
-  //   documentDirectory: await getApplicationDocumentsDirectory());
-  // ga.analyticsOpt = AnalyticsOpt.optIn;
-  // ga.sendScreenView('home');
-
   analytics = FirebaseAnalytics();
   observer = FirebaseAnalyticsObserver(analytics: analytics);
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
   if (id == null) {
-    // var imei = await ImeiPlugin.getImei();
-    // print(imei);
     var ii = sha1.convert(utf8.encode(DateTime.now().toString()));
     id = ii.toString();
     (await SharedPreferences.getInstance()).setString('fa_userid', id);
@@ -99,27 +70,6 @@ void main() async {
   await initDB();
   await Variables.init();
   await HitomiIndexs.init();
-
-  // imageCache.maximumSizeBytes = 50000000;
-
-  // channel.stream.listen((event) {
-  //   userConnectionCount = event.toString().split(' ')[1];
-  // });
-
-  // registerLicense();
-
-  // StreamBuilder(
-  //   stream: channel.stream,
-  //   builder: (context, snapshot) {
-  //     print(snapshot.data.toString().split(' ')[1]);
-  //     return Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 24.0),
-  //       child: Text(snapshot.hasData
-  //           ? '${Translations.of(context).trans('numcunuser')}${snapshot.data.toString().split(' ')[1]}'
-  //           : ''),
-  //     );
-  //   },
-  // );
 
   warmupFlare().then((_) {
     runApp(
