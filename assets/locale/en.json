@@ -13,7 +13,7 @@
     "colorsetting":"Color Setting",
     "defaulttag":"Default Tag",
     "currenttag":"Current Tag: ",
-    "excludetag":"Exclusive Tags",
+    "excludetag":"Excluded Tags",
     "blurredtag":"Blurred Tags",
     "howtoshowsearchresult":"How To Display Search Results",
     "system": "System",
@@ -119,14 +119,14 @@
     "notice3": "Any inquiries are welcome!",
     "notice4": "This app has nothing to do with",
     "notice5": "hitomi.la, e-hentai.org, exhentai.org.",
-    
+
     "locking": "Locking",
     "enable_locking": "Enable Locking",
     "network": "Networking",
     "routing_rule": "Routing Rule",
     "proxy": "Proxy",
-    
-    
+
+
     "selectall": "Select All",
     "deselectall": "DeSelect All",
     "inverse": "Invert Selections",
@@ -165,7 +165,7 @@
 
     "yes": "Yes",
     "no": "No",
-    
+
     "date": "Date",
     "complete": "Complete",
     "waitqueue": "Waiting queue...",
@@ -175,7 +175,7 @@
     "count": "%s",
     "stop": "Stopped",
     "unknownerr": "Unknown Error",
-    "urlnotsupport": "This URL does not support",
+    "urlnotsupport": "This URL is not supported",
     "tryagainlogin": "Try again, after login!",
     "dinfo": "Info",
     "state": "State",
