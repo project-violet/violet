@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path/path.dart';
 import 'package:violet/component/downloadable.dart';
+import 'package:violet/component/downloadable.dart' as violetd;
 import 'package:violet/locale.dart';
 import 'package:violet/pages/download/builtin_downloader.dart';
 import 'package:violet/pages/download/flutter_downloader_downloader.dart';
@@ -120,37 +121,51 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       }
 
       // Extractor
-      var tasks = await extractor.createTask(
-        widget.item.url(),
-        GeneralDownloadProgress(
-          simpleInfoCallback: (info) async {
-            if (disposed) return;
-            result['Info'] = info;
-            widget.item.result = result;
-            await widget.item.update();
-            setState(() {});
-          },
-          thumbnailCallback: (url, header) async {
-            if (disposed) return;
-            result['Thumbnail'] = url;
-            result['ThumbnailHeader'] = header;
-            widget.item.result = result;
-            await widget.item.update();
-            setState(() {});
-          },
-          progressCallback: (cur, max) async {
-            if (disposed) return;
-            setState(() {
-              this.cur = cur;
-              this.max = max;
-            });
-          },
-        ),
-      );
+      List<violetd.DownloadTask> tasks;
+
+      try {
+        tasks = await extractor.createTask(
+          widget.item.url(),
+          GeneralDownloadProgress(
+            simpleInfoCallback: (info) async {
+              result['Info'] = info;
+              widget.item.result = result;
+              await widget.item.update();
+              setState(() {});
+            },
+            thumbnailCallback: (url, header) async {
+              result['Thumbnail'] = url;
+              result['ThumbnailHeader'] = header;
+              widget.item.result = result;
+              await widget.item.update();
+              setState(() {});
+            },
+            progressCallback: (cur, max) async {
+              setState(() {
+                this.cur = cur;
+                this.max = max;
+              });
+            },
+          ),
+        );
+      } catch (e) {
+        result['State'] = 7;
+        widget.item.result = result;
+        await widget.item.update();
+        setState(() {});
+        return;
+      }
+
+      if (tasks == null || tasks.length == 0) {
+        result['State'] = 11;
+        widget.item.result = result;
+        await widget.item.update();
+        setState(() {});
+        return;
+      }
 
       // Download
       var _timer = new Timer.periodic(Duration(seconds: 1), (Timer timer) {
-        if (disposed) return;
         setState(() {
           if (downloadSec / 1024 < 500.0)
             downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";
@@ -194,6 +209,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
         await Future.delayed(Duration(milliseconds: 500));
       }
       _timer.cancel();
+
+      await BuiltinDownloader.getInstance().returnDownload();
 
       // Postprocess
 
@@ -291,6 +308,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
     var pp =
         '${Translations.instance.trans('date')}: ' + widget.item.dateTime();
 
+    var statecolor = !Settings.themeWhat ? Colors.black : Colors.white;
+    var statebold = FontWeight.normal;
+
     switch (widget.item.state()) {
       case 0:
         state = Translations.instance.trans('complete');
@@ -325,18 +345,32 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       case 6:
         state = Translations.instance.trans('stop');
         pp = '';
+        statecolor = Colors.orange;
+        // statebold = FontWeight.bold;
         break;
       case 7:
         state = Translations.instance.trans('unknownerr');
         pp = '';
+        statecolor = Colors.red;
+        // statebold = FontWeight.bold;
         break;
       case 8:
         state = Translations.instance.trans('urlnotsupport');
         pp = '';
+        statecolor = Colors.redAccent;
+        // statebold = FontWeight.bold;
         break;
       case 9:
         state = Translations.instance.trans('tryagainlogin');
         pp = '';
+        statecolor = Colors.redAccent;
+        // statebold = FontWeight.bold;
+        break;
+      case 11:
+        state = Translations.instance.trans('nothingtodownload');
+        pp = '';
+        statecolor = Colors.orangeAccent;
+        // statebold = FontWeight.bold;
         break;
     }
 
@@ -356,7 +390,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
           Text(Translations.instance.trans('state') + ': ' + state,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 15)),
+              style: TextStyle(
+                  fontSize: 15, color: statecolor, fontWeight: statebold)),
           Container(
             height: 2,
           ),
@@ -393,12 +428,14 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
                   Row(children: <Widget>[
                     Padding(
                       padding: EdgeInsets.fromLTRB(4, 0, 0, 4),
-                      child: CachedNetworkImage(
-                          imageUrl: fav,
-                          width: 25,
-                          height: 25,
-                          fadeInDuration: Duration(microseconds: 500),
-                          fadeInCurve: Curves.easeIn),
+                      child: fav != '' && fav != null
+                          ? CachedNetworkImage(
+                              imageUrl: fav,
+                              width: 25,
+                              height: 25,
+                              fadeInDuration: Duration(microseconds: 500),
+                              fadeInCurve: Curves.easeIn)
+                          : Container(),
                     ),
                   ]),
                 ],

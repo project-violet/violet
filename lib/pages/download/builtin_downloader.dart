@@ -62,6 +62,12 @@ class BuiltinDownloader {
     return succ;
   }
 
+  Future<void> returnDownload() async {
+    await lock.synchronized(() {
+      _curDownloadCount--;
+    });
+  }
+
   Future<void> addTask(violetd.DownloadTask task) async {
     await lock.synchronized(() {
       tasks.add(task);
