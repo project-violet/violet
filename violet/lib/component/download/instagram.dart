@@ -56,7 +56,7 @@ class InstaAPI {
             await _graphqlQuery(sidecarQueryHash, {'shortcode': shortCode}));
 
         if (post['node']['__typename'] == 'GraphVideo') {
-          var media = jsonDecode(json2['data']['shortcode_media']);
+          var media = json2['data']['shortcode_media'];
           // extract video
           _extractUrl(media, result['firstpost']['displayurls']);
         } else {
@@ -185,9 +185,6 @@ class InstagramManager extends Downloadable {
     var count = 0;
     var pp = user['firstpost'];
     while (pp['hasnext']) {
-      // TODO: Adjust This Limit
-      if (count >= 1000) break;
-
       var posts = await InstaAPI.queryNext(
           InstaAPI.postQueryHash, user['userid'], "50", pp['endcursor']);
       urls.addAll(posts['displayurls']);
