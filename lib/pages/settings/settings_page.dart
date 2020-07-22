@@ -389,7 +389,7 @@ class _SettingsPageState extends State<SettingsPage>
                                   CountryPickerUtils.getCountryByIsoCode('US'),
                                   CountryPickerUtils.getCountryByIsoCode('KR'),
                                   CountryPickerUtils.getCountryByIsoCode('JP'),
-                                  // CountryPickerUtils.getCountryByIsoCode('CN'),
+                                  CountryPickerUtils.getCountryByIsoCode('CN'),
                                   // CountryPickerUtils.getCountryByIsoCode('RU'),
                                 ],
                                 itemBuilder: (Country country) {
