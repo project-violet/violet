@@ -177,7 +177,18 @@ void main() async {
             localeResolutionCallback:
                 (Locale locale, Iterable<Locale> supportedLocales) {
               if (Settings.language != null) {
-                return Locale(Settings.language);
+                if (Settings.language.contains('_')) {
+                  var ss = Settings.language.split('_');
+                  if (ss.length == 2)
+                    return Locale.fromSubtags(
+                        languageCode: ss[0], scriptCode: ss[1]);
+                  else
+                    return Locale.fromSubtags(
+                        languageCode: ss[0],
+                        scriptCode: ss[1],
+                        countryCode: ss[2]);
+                } else
+                  return Locale(Settings.language);
               }
 
               if (locale == null) {
