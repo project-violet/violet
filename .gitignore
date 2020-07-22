@@ -39,7 +39,6 @@ lib/generated_plugin_registrant.dart
 # Private File
 assets/test/*
 android/app/google-services.json
-syncfusion.dart
 
 *.o
 *.d
