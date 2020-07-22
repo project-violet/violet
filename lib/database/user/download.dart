@@ -38,6 +38,13 @@ class DownloadItemModel {
     var db = await CommonUserDatabase.getInstance();
     await db.update('DownloadItem', result, 'Id=?', [id()]);
   }
+
+  Future<void> test() async {
+    var db = await CommonUserDatabase.getInstance();
+    var x = await db
+        .query('SELECT * FROM DownloadItem WHERE Id=' + id().toString());
+    print(x);
+  }
 }
 
 class Download {
@@ -86,7 +93,9 @@ class Download {
     var rr = {'URL': url, 'State': 1, 'DateTime': DateTime.now().toString()};
     var db = await CommonUserDatabase.getInstance();
     await db.insert('DownloadItem', rr);
-    return DownloadItemModel(result: rr);
+    var ll = (await db
+        .query('SELECT * FROM DownloadItem ORDER BY Id DESC LIMIT 1'))[0];
+    return DownloadItemModel(result: ll);
   }
 
   Future<void> clear() async {
