@@ -81,14 +81,14 @@ class P7zip {
       if (deviceInfo == null) {
         return null;
       }
-      String soResource = "p7zip/CPP/ANDROID/7zr/libs/armeabi-v7a/lib7zr.so";
-      if (kDebugMode) soResource = "p7zip/CPP/ANDROID/7zr/libs/x86/lib7zr.so";
+      String soResource = "assets/p7zip/armeabi-v7a/lib7zr.so";
+      if (kDebugMode) soResource = "assets/p7zip/x86/lib7zr.so";
       final support64 = deviceInfo.supported64BitAbis;
       if (support64 != null && support64.length > 0) {
         if (kDebugMode)
-          soResource = "p7zip/CPP/ANDROID/7zr/libs/x86_64/lib7zr.so";
+          soResource = "assets/p7zip/x86_64/lib7zr.so";
         else
-          soResource = "p7zip/CPP/ANDROID/7zr/libs/arm64-v8a/lib7zr.so";
+          soResource = "assets/p7zip/arm64-v8a/lib7zr.so";
       }
       final data = await rootBundle.load(soResource);
       if (data == null) {
