@@ -35,6 +35,7 @@ class DownloadItemWidget extends StatefulWidget {
 }
 
 class _DownloadItemWidgetState extends State<DownloadItemWidget> {
+  bool get wantKeepAlive => true;
   double scale = 1.0;
   String fav = '';
   int cur = 0;
@@ -62,8 +63,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       once = true;
 
       var result = Map<String, dynamic>.from(widget.item.result);
-
-      print(widget.item.state());
 
       if (widget.item.state() != 1) {
         if (widget.item.state() == 2 || widget.item.state() == 3) {
@@ -143,7 +142,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
             progressCallback: (cur, max) async {
               setState(() {
                 this.cur = cur;
-                this.max = max;
+                if (this.max < max) this.max = max;
               });
             },
           ),
@@ -196,6 +195,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
           downloadedFileCount++;
           errorFileCount++;
         };
+
         return e;
       }).toList());
       downloadTotalFileCount = tasks.length;
@@ -427,7 +427,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
                 children: [
                   Row(children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.fromLTRB(4, 0, 0, 4),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
                       child: fav != '' && fav != null
                           ? CachedNetworkImage(
                               imageUrl: fav,

@@ -69,6 +69,9 @@ class GelbooruManager extends Downloadable {
 
     var postThumbnail = false;
     var result = List<DownloadTask>();
+
+    gdp.simpleInfoCallback.call(HtmlUnescape().convert(tags));
+
     while (true) {
       var durl =
           "https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=100&tags=" +
@@ -103,7 +106,7 @@ class GelbooruManager extends Downloadable {
       }
 
       page += 1;
-
+      gdp.progressCallback(result.length, 0);
       if (page > 10) break;
     }
 

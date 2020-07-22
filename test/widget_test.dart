@@ -8,6 +8,8 @@
 // import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/download/gelbooru.dart';
+import 'package:violet/component/download/instagram.dart';
+import 'package:http/http.dart' as http;
 
 // import 'package:violet/main.dart';
 import 'package:violet/component/download/pixiv.dart';
@@ -42,10 +44,30 @@ void main() {
   //   });
   // });
 
-  test('Gelbooru Test', () async {
-    var gm = GelbooruManager();
+  // test('Gelbooru Test', () async {
+  //   var gm = GelbooruManager();
 
-    await gm.createTask(
-        'https://gelbooru.com/index.php?page=post&s=list&tags=cura', null);
+  //   await gm.createTask(
+  //       'https://gelbooru.com/index.php?page=post&s=list&tags=cura', null);
+  // });
+
+  test('Instagram Test', () async {
+    var url = 'https://www.instagram.com/ravi.me/?hl=ko';
+
+    // var html = (await http.get(url)).body;
+    var im = InstagramManager();
+    await im.createTask(
+        url,
+        GeneralDownloadProgress(
+          progressCallback: (a, b) {
+            print(a.toString() + '/' + b.toString());
+          },
+          simpleInfoCallback: (a) {
+            print(a);
+          },
+          thumbnailCallback: (a, b) {
+            print(a);
+          },
+        ));
   });
 }

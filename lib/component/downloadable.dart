@@ -4,6 +4,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:violet/component/download/gelbooru.dart';
+import 'package:violet/component/download/instagram.dart';
 import 'package:violet/component/download/pixiv.dart';
 
 enum DownloaderType {
@@ -275,6 +276,7 @@ class ExtractorManager {
     _dl = [
       PixivManager(),
       GelbooruManager(),
+      InstagramManager(),
     ];
   }
 
