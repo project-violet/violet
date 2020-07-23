@@ -1135,6 +1135,23 @@ class _SettingsPageState extends State<SettingsPage>
                       // }
                     },
                   ),
+                  _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.humanHandsup,
+                      color: Settings.majorColor,
+                    ),
+                    title: Text('Developers'),
+                    trailing: Icon(
+                        // Icons.email,
+                        Icons.keyboard_arrow_right),
+                    onTap: () async {
+                      // const url = 'https://www.patreon.com/projectviolet';
+                      // if (await canLaunch(url)) {
+                      //   await launch(url);
+                      // }
+                    },
+                  ),
                   // _buildDivider(),
                   // ListTile(
                   //   leading: Icon(
