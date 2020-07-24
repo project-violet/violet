@@ -102,7 +102,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
     return xx;
   }
 
-  void open(BuildContext context, final int index) async {
+  void _transToGalleryView(BuildContext context, final int index) async {
     var w = GalleryPhotoViewWrapper(
       galleryItems: widget.galleryItems,
       backgroundDecoration: const BoxDecoration(
@@ -135,39 +135,39 @@ class _ViewerWidgetState extends State<ViewerWidget>
   bool once = false;
   AnimationController _controller;
 
+  void _checkLatestRead() {
+    User.getInstance().then((value) => value.getUserLog().then((value) async {
+          var x = value.where((e) => e.articleId().toString() == widget.id);
+          if (x.length < 2) return;
+          var e = x.elementAt(1);
+          if (e.lastPage() == null) return;
+          if (e.lastPage() > 1 &&
+              DateTime.parse(e.datetimeStart())
+                      .difference(DateTime.now())
+                      .inDays <
+                  7) {
+            if (await Dialogs.yesnoDialog(
+                context,
+                Translations.of(context)
+                    .trans('recordmessage')
+                    .replaceAll('%s', e.lastPage().toString()),
+                Translations.of(context).trans('record'))) {
+              scroll.jumpTo(page2Offset(e.lastPage() - 1));
+            }
+          }
+        }));
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final top = MediaQuery.of(context).padding.top;
-    final bottom = MediaQuery.of(context).padding.bottom;
-
-    // print(height.toString() + '  ' + top.toString());
 
     if (once == false) {
       once = true;
-      User.getInstance().then((value) => value.getUserLog().then((value) async {
-            var x = value.where((e) => e.articleId().toString() == widget.id);
-            if (x.length < 2) return;
-            var e = x.elementAt(1);
-            if (e.lastPage() == null) return;
-            if (e.lastPage() > 1 &&
-                DateTime.parse(e.datetimeStart())
-                        .difference(DateTime.now())
-                        .inDays <
-                    7) {
-              if (await Dialogs.yesnoDialog(
-                  context,
-                  Translations.of(context)
-                      .trans('recordmessage')
-                      .replaceAll('%s', e.lastPage().toString()),
-                  Translations.of(context).trans('record'))) {
-                scroll.jumpTo(page2Offset(e.lastPage() - 1));
-              }
-            }
-          }));
+      _checkLatestRead();
     }
+
     return Scaffold(
-      // appBar: AppBar(),
       body: SafeArea(
         child: AnimatedBuilder(
           animation: _controller,
@@ -177,42 +177,6 @@ class _ViewerWidgetState extends State<ViewerWidget>
                 minScale: 1.0,
                 child: Container(
                   color: const Color(0xff444444),
-                  // transform: Matrix4.translationValues(0.0, -top, 0.0),
-                  // child: Scrollbar(
-                  //   controller: scroll,
-                  //   child: ScrollablePositionedList.builder(
-                  //     itemCount: urls.length,
-                  //     minCacheExtent: 100,
-                  //     itemScrollController: isc,
-                  //     itemBuilder: (context, index) {
-                  //       return Container(
-                  //         padding: EdgeInsets.all(2),
-                  //         child: GalleryExampleItemThumbnail(
-                  //           galleryExampleItem: widget.galleryItems[index],
-                  //           onTap: () => open(context, index),
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
-                  // child: DraggableScrollbar.arrows(
-                  //   backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
-                  //   controller: scroll,
-                  //   labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
-                  //   child: ListView.builder(
-                  //     itemCount: urls.length,
-                  //     controller: scroll,
-                  //     itemBuilder: (context, index) {
-                  //       return Container(
-                  //         padding: EdgeInsets.all(2),
-                  //         child: GalleryExampleItemThumbnail(
-                  //           galleryExampleItem: widget.galleryItems[index],
-                  //           onTap: () => open(context, index),
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
                   child: DraggableScrollbar(
                     backgroundColor:
                         Settings.themeWhat ? Colors.black : Colors.white,
@@ -228,7 +192,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
                           padding: EdgeInsets.all(2),
                           child: GalleryExampleItemThumbnail(
                             galleryExampleItem: widget.galleryItems[index],
-                            onTap: () => open(context, index),
+                            onTap: () => _transToGalleryView(context, index),
                           ),
                         );
                       },
@@ -268,43 +232,9 @@ class _ViewerWidgetState extends State<ViewerWidget>
                   ),
                 ),
               ),
-              _touchArea(context),
-              Transform.translate(
-                offset: Offset(0, -_controller.value * 64),
-                child: Container(
-                  height: 56.0,
-                  child: AppBar(
-                    title: Text(widget.id.toString()),
-                    leading: InkWell(
-                      child: Icon(
-                        Icons.arrow_back,
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ),
-              ),
-              Transform.translate(
-                offset: Offset(0, _controller.value * 128),
-                child: Container(
-                  // height: 128,
-                  padding: EdgeInsets.only(top: height - bottom - 128),
-                  child: BottomAppBar(
-                    color: Colors.black,
-                    child: Container(
-                      height: 128,
-                      child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('???'),
-                          ]),
-                    ),
-                  ),
-                ),
-              ),
+              _touchArea(),
+              _topAppBar(),
+              _bottomAppBar(),
             ],
           ),
         ),
@@ -313,13 +243,12 @@ class _ViewerWidgetState extends State<ViewerWidget>
   }
 
   bool _overlayOpend = false;
-  Widget _touchArea(BuildContext context) {
+  Widget _touchArea() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
         if (!_overlayOpend) {
           if (_controller.isCompleted) {
             _controller.reverse();
@@ -337,10 +266,6 @@ class _ViewerWidgetState extends State<ViewerWidget>
           SystemChrome.setEnabledSystemUIOverlays([]);
         }
         _overlayOpend = !_overlayOpend;
-        // Future.delayed(Duration(milliseconds: 4000)).then((value) {
-        //   SystemChrome.setEnabledSystemUIOverlays([]);
-        //   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.)
-        // });
       },
       child: Align(
         alignment: Alignment.center,
@@ -348,6 +273,50 @@ class _ViewerWidgetState extends State<ViewerWidget>
           color: null,
           width: width / 3,
           height: height,
+        ),
+      ),
+    );
+  }
+
+  Widget _topAppBar() {
+    return Transform.translate(
+      offset: Offset(0, -_controller.value * 64),
+      child: Container(
+        height: 56.0,
+        child: AppBar(
+          title: Text(widget.id.toString()),
+          leading: InkWell(
+            child: Icon(
+              Icons.arrow_back,
+            ),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _bottomAppBar() {
+    final height = MediaQuery.of(context).size.height;
+    final bottom = MediaQuery.of(context).padding.bottom;
+    return Transform.translate(
+      offset: Offset(0, _controller.value * 128),
+      child: Container(
+        // height: 128,
+        padding: EdgeInsets.only(top: height - bottom - 128),
+        child: BottomAppBar(
+          color: Colors.black,
+          child: Container(
+            height: 128,
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('???'),
+                ]),
+          ),
         ),
       ),
     );
