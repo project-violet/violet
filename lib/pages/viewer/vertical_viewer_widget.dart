@@ -44,13 +44,25 @@ class ViewerWidget extends StatefulWidget {
   _ViewerWidgetState createState() => _ViewerWidgetState();
 }
 
-class _ViewerWidgetState extends State<ViewerWidget> {
+class _ViewerWidgetState extends State<ViewerWidget>
+    with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
 
     scroll.addListener(() {
       currentPage = offset2Page(scroll.offset);
+    });
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    Future.delayed(Duration(milliseconds: 500)).then((value) {
+      if (_controller.isCompleted) {
+        _controller.reverse();
+      } else {
+        _controller.forward();
+      }
     });
   }
 
@@ -121,10 +133,16 @@ class _ViewerWidgetState extends State<ViewerWidget> {
   }
 
   bool once = false;
+  AnimationController _controller;
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    final top = MediaQuery.of(context).padding.top;
+    final bottom = MediaQuery.of(context).padding.bottom;
+
+    // print(height.toString() + '  ' + top.toString());
+
     if (once == false) {
       once = true;
       User.getInstance().then((value) => value.getUserLog().then((value) async {
@@ -148,96 +166,191 @@ class _ViewerWidgetState extends State<ViewerWidget> {
             }
           }));
     }
-    return PhotoView.customChild(
-        minScale: 1.0,
-        child: Container(
-          color: const Color(0xff444444),
-          // child: Scrollbar(
-          //   controller: scroll,
-          //   child: ScrollablePositionedList.builder(
-          //     itemCount: urls.length,
-          //     minCacheExtent: 100,
-          //     itemScrollController: isc,
-          //     itemBuilder: (context, index) {
-          //       return Container(
-          //         padding: EdgeInsets.all(2),
-          //         child: GalleryExampleItemThumbnail(
-          //           galleryExampleItem: widget.galleryItems[index],
-          //           onTap: () => open(context, index),
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
-          // child: DraggableScrollbar.arrows(
-          //   backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
-          //   controller: scroll,
-          //   labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
-          //   child: ListView.builder(
-          //     itemCount: urls.length,
-          //     controller: scroll,
-          //     itemBuilder: (context, index) {
-          //       return Container(
-          //         padding: EdgeInsets.all(2),
-          //         child: GalleryExampleItemThumbnail(
-          //           galleryExampleItem: widget.galleryItems[index],
-          //           onTap: () => open(context, index),
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
-          child: DraggableScrollbar(
-            backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
-            controller: scroll,
-            labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
-            child: ListView.builder(
-              itemCount: widget.urls.length,
-              controller: scroll,
-              cacheExtent: height * 4,
-              itemBuilder: (context, index) {
-                return Container(
-                  padding: EdgeInsets.all(2),
-                  child: GalleryExampleItemThumbnail(
-                    galleryExampleItem: widget.galleryItems[index],
-                    onTap: () => open(context, index),
-                  ),
-                );
-              },
-            ),
-            heightScrollThumb: 48.0,
-            scrollThumbBuilder: (
-              Color backgroundColor,
-              Animation<double> thumbAnimation,
-              Animation<double> labelAnimation,
-              double height, {
-              Text labelText,
-              BoxConstraints labelConstraints,
-            }) {
-              if (labelText != null &&
-                  labelText.data != null &&
-                  labelText.data.trim() != '') latestLabel = labelText.data;
-              return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    ScrollLabel(
-                      animation: labelAnimation,
-                      child: Text(latestLabel),
-                      backgroundColor: backgroundColor,
+    return Scaffold(
+      // appBar: AppBar(),
+      body: SafeArea(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) => Stack(
+            children: <Widget>[
+              PhotoView.customChild(
+                minScale: 1.0,
+                child: Container(
+                  color: const Color(0xff444444),
+                  // transform: Matrix4.translationValues(0.0, -top, 0.0),
+                  // child: Scrollbar(
+                  //   controller: scroll,
+                  //   child: ScrollablePositionedList.builder(
+                  //     itemCount: urls.length,
+                  //     minCacheExtent: 100,
+                  //     itemScrollController: isc,
+                  //     itemBuilder: (context, index) {
+                  //       return Container(
+                  //         padding: EdgeInsets.all(2),
+                  //         child: GalleryExampleItemThumbnail(
+                  //           galleryExampleItem: widget.galleryItems[index],
+                  //           onTap: () => open(context, index),
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+                  // child: DraggableScrollbar.arrows(
+                  //   backgroundColor: Settings.themeWhat ? Colors.black : Colors.white,
+                  //   controller: scroll,
+                  //   labelTextBuilder: (double offset) => Text("${offset2Page(offset)}"),
+                  //   child: ListView.builder(
+                  //     itemCount: urls.length,
+                  //     controller: scroll,
+                  //     itemBuilder: (context, index) {
+                  //       return Container(
+                  //         padding: EdgeInsets.all(2),
+                  //         child: GalleryExampleItemThumbnail(
+                  //           galleryExampleItem: widget.galleryItems[index],
+                  //           onTap: () => open(context, index),
+                  //         ),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+                  child: DraggableScrollbar(
+                    backgroundColor:
+                        Settings.themeWhat ? Colors.black : Colors.white,
+                    controller: scroll,
+                    labelTextBuilder: (double offset) =>
+                        Text("${offset2Page(offset)}"),
+                    child: ListView.builder(
+                      itemCount: widget.urls.length,
+                      controller: scroll,
+                      cacheExtent: height * 4,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: EdgeInsets.all(2),
+                          child: GalleryExampleItemThumbnail(
+                            galleryExampleItem: widget.galleryItems[index],
+                            onTap: () => open(context, index),
+                          ),
+                        );
+                      },
                     ),
-                    FadeTransition(
-                      opacity: thumbAnimation,
-                      child: Container(
-                        height: height,
-                        width: 6.0,
-                        color: backgroundColor.withOpacity(0.6),
+                    heightScrollThumb: 48.0,
+                    scrollThumbBuilder: (
+                      Color backgroundColor,
+                      Animation<double> thumbAnimation,
+                      Animation<double> labelAnimation,
+                      double height, {
+                      Text labelText,
+                      BoxConstraints labelConstraints,
+                    }) {
+                      if (labelText != null &&
+                          labelText.data != null &&
+                          labelText.data.trim() != '')
+                        latestLabel = labelText.data;
+                      return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            ScrollLabel(
+                              animation: labelAnimation,
+                              child: Text(latestLabel),
+                              backgroundColor: backgroundColor,
+                            ),
+                            FadeTransition(
+                              opacity: thumbAnimation,
+                              child: Container(
+                                height: height,
+                                width: 6.0,
+                                color: backgroundColor.withOpacity(0.6),
+                              ),
+                            )
+                          ]);
+                    },
+                  ),
+                ),
+              ),
+              _touchArea(context),
+              Transform.translate(
+                offset: Offset(0, -_controller.value * 64),
+                child: Container(
+                  height: 56.0,
+                  child: AppBar(
+                    title: Text(widget.id.toString()),
+                    leading: InkWell(
+                      child: Icon(
+                        Icons.arrow_back,
                       ),
-                    )
-                  ]);
-            },
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Transform.translate(
+                offset: Offset(0, _controller.value * 128),
+                child: Container(
+                  // height: 128,
+                  padding: EdgeInsets.only(top: height - bottom - 128),
+                  child: BottomAppBar(
+                    color: Colors.black,
+                    child: Container(
+                      height: 128,
+                      child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('???'),
+                          ]),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
+  }
+
+  bool _overlayOpend = false;
+  Widget _touchArea(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+        if (!_overlayOpend) {
+          if (_controller.isCompleted) {
+            _controller.reverse();
+          } else {
+            _controller.forward();
+          }
+          SystemChrome.setEnabledSystemUIOverlays(
+              [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+        } else {
+          if (_controller.isCompleted) {
+            _controller.reverse();
+          } else {
+            _controller.forward();
+          }
+          SystemChrome.setEnabledSystemUIOverlays([]);
+        }
+        _overlayOpend = !_overlayOpend;
+        // Future.delayed(Duration(milliseconds: 4000)).then((value) {
+        //   SystemChrome.setEnabledSystemUIOverlays([]);
+        //   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.)
+        // });
+      },
+      child: Align(
+        alignment: Alignment.center,
+        child: Container(
+          color: null,
+          width: width / 3,
+          height: height,
+        ),
+      ),
+    );
   }
 
   String latestLabel = '';
