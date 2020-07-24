@@ -366,13 +366,13 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                         ),
                       ),
                       Text(
-                        downString,
+                        downString ?? '',
                         style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
                       Text(
-                        speedString,
+                        speedString ?? '',
                         style: TextStyle(
                           color: Colors.white,
                         ),
@@ -381,7 +381,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                   ),
                 ),
               )
-            : Text(baseString),
+            : Text(baseString ?? ''),
       ),
     );
   }
