@@ -8,6 +8,7 @@
 // import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/download/gelbooru.dart';
+import 'package:violet/component/download/hitomi.dart';
 import 'package:violet/component/download/instagram.dart';
 import 'package:http/http.dart' as http;
 
@@ -51,11 +52,31 @@ void main() {
   //       'https://gelbooru.com/index.php?page=post&s=list&tags=cura', null);
   // });
 
-  test('Instagram Test', () async {
-    var url = 'https://www.instagram.com/zennyrt/?hl=ko';
+  // test('Instagram Test', () async {
+  //   var url = 'https://www.instagram.com/zennyrt/?hl=ko';
+
+  //   // var html = (await http.get(url)).body;
+  //   var im = InstagramManager();
+  //   await im.createTask(
+  //       url,
+  //       GeneralDownloadProgress(
+  //         progressCallback: (a, b) {
+  //           print(a.toString() + '/' + b.toString());
+  //         },
+  //         simpleInfoCallback: (a) {
+  //           print(a);
+  //         },
+  //         thumbnailCallback: (a, b) {
+  //           print(a);
+  //         },
+  //       ));
+  // });
+
+  test('Hitomi Test', () async {
+    var url = 'https://hitomi.la/galleries/1685671.html';
 
     // var html = (await http.get(url)).body;
-    var im = InstagramManager();
+    var im = HitomiDonwloadManager();
     await im.createTask(
         url,
         GeneralDownloadProgress(

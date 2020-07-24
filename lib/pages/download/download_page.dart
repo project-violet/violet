@@ -5,12 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/downloadable.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/database/user/download.dart';
+
+typedef StringCallback = Future Function(String);
+
+class DownloadPageManager {
+  static bool downloadPageLoaded = false;
+  static StringCallback appendTask;
+}
 
 // This page must remain alive until the app is closed.
 class DownloadPage extends StatefulWidget {
@@ -25,8 +33,6 @@ class _DownloadPageState extends State<DownloadPage>
 
   ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = List<DownloadItemModel>();
-  Map<String, Widget> _items = Map<String, Widget>();
-  // Key key = ObjectKey(Uuid().v4());
 
   @override
   void initState() {
@@ -35,11 +41,11 @@ class _DownloadPageState extends State<DownloadPage>
       items = await (await Download.getInstance()).getDownloadItems();
       setState(() {});
     });
+    DownloadPageManager.appendTask = appendTask;
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -48,6 +54,7 @@ class _DownloadPageState extends State<DownloadPage>
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     var windowWidth = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
+    DownloadPageManager.downloadPageLoaded = true;
 
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
