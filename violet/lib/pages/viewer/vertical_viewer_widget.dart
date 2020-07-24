@@ -69,12 +69,18 @@ class _ViewerWidgetState extends State<ViewerWidget>
   @override
   void dispose() {
     scroll.dispose();
+    _controller.dispose();
 
     PaintingBinding.instance.imageCache.clear();
 
     widget.urls.forEach((element) async {
       await CachedNetworkImageProvider(element).evict();
     });
+
+    SystemChrome.setEnabledSystemUIOverlays([
+      SystemUiOverlay.top,
+      SystemUiOverlay.bottom,
+    ]);
 
     super.dispose();
   }
@@ -118,18 +124,10 @@ class _ViewerWidgetState extends State<ViewerWidget>
       MaterialPageRoute(builder: (context) => w),
     );
     SystemChrome.setEnabledSystemUIOverlays([]);
-    // 지금 인덱스랑 다르면 그쪽으로 이동시킴
-    //if (w.currentIndex != index)
-    //  Scrollable.ensureVisible(moveKey[w.currentIndex].currentContext,
-    //      alignment: 0.5);
+
     if (w.currentIndex != index) {
       scroll.jumpTo(page2Offset(w.currentIndex));
     }
-    // isc.scrollTo(
-    //   index: w.currentIndex,
-    //   duration: Duration(microseconds: 500),
-    //   alignment: 0.1,
-    // );
   }
 
   bool once = false;
