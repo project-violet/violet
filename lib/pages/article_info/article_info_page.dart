@@ -222,7 +222,7 @@ class _InfoAreaWidget extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    color: Settings.majorColor,
+                    color: Settings.majorColor.withAlpha(230),
                     onPressed: () async {
                       if (!DownloadPageManager.downloadPageLoaded) {
                         return;
