@@ -85,7 +85,7 @@ class HitomiDonwloadManager extends Downloadable {
     var result = List<DownloadTask>();
 
     gdp.thumbnailCallback(images.item2[0],
-        jsonEncode({'Referer': 'https://hitomi.la/reader/$id.html/'}));
+        jsonEncode({'Referer': 'https://hitomi.la/reader/$id.html'}));
 
     for (int i = 0; i < images.item1.length; i++) {
       var img = images.item1[i];
@@ -93,6 +93,7 @@ class HitomiDonwloadManager extends Downloadable {
         DownloadTask(
           url: img,
           filename: img.split('/').last,
+          referer: 'https://hitomi.la/reader/$id.html',
           format: FileNameFormat(
             title: article.title(),
             id: id,
