@@ -256,24 +256,49 @@ class _ArticleListItemVerySimpleWidgetState
                   ),
                 );
               } else {
-                Navigator.of(context).push(PageRouteBuilder(
-                  // opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder: (BuildContext context,
-                      Animation<double> animation,
-                      Animation<double> secondaryAnimation,
-                      Widget wi) {
-                    // return wi;
-                    return new FadeTransition(opacity: animation, child: wi);
+                // Navigator.of(context).push(PageRouteBuilder(
+                //   // opaque: false,
+                //   transitionDuration: Duration(milliseconds: 500),
+                //   transitionsBuilder: (BuildContext context,
+                //       Animation<double> animation,
+                //       Animation<double> secondaryAnimation,
+                //       Widget wi) {
+                //     // return wi;
+                //     return new FadeTransition(opacity: animation, child: wi);
+                //   },
+                //   pageBuilder: (_, __, ___) => ArticleInfoPage(
+                //     queryResult: widget.queryResult,
+                //     thumbnail: thumbnail,
+                //     headers: headers,
+                //     heroKey: widget.thumbnailTag,
+                //     isBookmarked: isBookmarked,
+                //   ),
+                // ));
+                final height = MediaQuery.of(context).size.height;
+
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) {
+                    return DraggableScrollableSheet(
+                      initialChildSize: 350 / height,
+                      minChildSize: 350 / height,
+                      maxChildSize: 1.0,
+                      expand: false,
+                      builder: (_, controller) {
+                        return ArticleInfoPage(
+                          key: ObjectKey('asdfasdf'),
+                          queryResult: widget.queryResult,
+                          thumbnail: thumbnail,
+                          headers: headers,
+                          heroKey: widget.thumbnailTag,
+                          isBookmarked: isBookmarked,
+                          controller: controller,
+                        );
+                      },
+                    );
                   },
-                  pageBuilder: (_, __, ___) => ArticleInfoPage(
-                    queryResult: widget.queryResult,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: widget.thumbnailTag,
-                    isBookmarked: isBookmarked,
-                  ),
-                ));
+                );
               }
             },
             onLongPress: () async {

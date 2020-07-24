@@ -353,6 +353,17 @@ class TestPage extends StatelessWidget {
                   );
                 },
               ),
+              RaisedButton(
+                child: Text('Get Test'),
+                onPressed: () async {
+                  var articles = (await (await DataBaseManager.getInstance()).query(
+                          "SELECT * FROM HitomiColumnModel WHERE Id=1685671 ORDER BY Id DESC LIMIT 1 OFFSET 0"))
+                      .map((e) => QueryResult(result: e))
+                      .toList();
+
+                  print(articles[0].result.toString());
+                },
+              ),
               // RaisedButton(
               //   child: Text('Unzip Test'),
               //   onPressed: () async {

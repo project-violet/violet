@@ -19,17 +19,20 @@ import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
+import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
 
 class ArticleInfoPage extends StatelessWidget {
+  final Key key;
   final QueryResult queryResult;
   final String thumbnail;
   final String heroKey;
   final Map<String, String> headers;
   final bool isBookmarked;
+  final ScrollController controller;
   String title;
   String artist;
 
@@ -39,7 +42,9 @@ class ArticleInfoPage extends StatelessWidget {
     this.headers,
     this.thumbnail,
     this.isBookmarked,
-  }) {
+    this.controller,
+    this.key,
+  }) : super(key: key) {
     artist = (queryResult.artists() as String)
         .split('|')
         .where((x) => x.length != 0)
@@ -86,6 +91,7 @@ class ArticleInfoPage extends StatelessWidget {
                     ),
                     Container(
                       child: SingleChildScrollView(
+                        controller: controller,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +223,16 @@ class _InfoAreaWidget extends StatelessWidget {
                       ),
                     ),
                     color: Settings.majorColor,
-                    // onPressed: () {},
+                    onPressed: () async {
+                      if (!DownloadPageManager.downloadPageLoaded) {
+                        return;
+                      }
+                      await DownloadPageManager.appendTask(
+                          'https://hitomi.la/galleries/' +
+                              queryResult.id().toString() +
+                              '.html');
+                      Navigator.pop(context);
+                    },
                   ),
                 ),
               ),
@@ -265,6 +280,18 @@ class _InfoAreaWidget extends StatelessWidget {
               ),
             ],
           ),
+          multipleChip(
+              queryResult.tags(),
+              Translations.of(context).trans('tags'),
+              queryResult.tags() != null
+                  ? (queryResult.tags() as String)
+                      .split('|')
+                      .where((element) => element != '')
+                      .map((e) => _Chip(
+                          group: e.contains(':') ? e.split(':')[0] : 'tags',
+                          name: e.contains(':') ? e.split(':')[1] : e))
+                      .toList()
+                  : []),
           singleChip(
               queryResult.language(),
               Translations.of(context).trans('language').split(' ')[0].trim(),
@@ -289,18 +316,7 @@ class _InfoAreaWidget extends StatelessWidget {
                       .map((e) => _Chip(group: 'groups', name: e))
                       .toList()
                   : []),
-          multipleChip(
-              queryResult.tags(),
-              Translations.of(context).trans('tags'),
-              queryResult.tags() != null
-                  ? (queryResult.tags() as String)
-                      .split('|')
-                      .where((element) => element != '')
-                      .map((e) => _Chip(
-                          group: e.contains(':') ? e.split(':')[0] : 'tags',
-                          name: e.contains(':') ? e.split(':')[1] : e))
-                      .toList()
-                  : []),
+
           multipleChip(
               queryResult.series(),
               Translations.of(context).trans('series'),
