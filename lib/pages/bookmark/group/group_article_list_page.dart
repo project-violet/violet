@@ -420,52 +420,41 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 1:
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
-          sliver: LiveSliverGrid(
-            key: key,
-            showItemInterval: Duration(milliseconds: 50),
-            showItemDuration: Duration(milliseconds: 150),
-            visibleFraction: 0.001,
-            itemCount: filterResult.length,
+          sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: mm,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
               childAspectRatio: 3 / 4,
             ),
-            itemBuilder: (context, index, animation) {
-              return FadeTransition(
-                opacity: Tween<double>(
-                  begin: 0,
-                  end: 1,
-                ).animate(animation),
-                child: SlideTransition(
-                  position: Tween<Offset>(
-                    begin: Offset(0, -0.1),
-                    end: Offset.zero,
-                  ).animate(animation),
-                  child: Padding(
-                    padding: EdgeInsets.zero,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        child: ArticleListItemVerySimpleWidget(
-                          queryResult: filterResult[index],
-                          showDetail: false,
-                          addBottomPadding: false,
-                          width: (windowWidth - 4.0) / mm,
-                          thumbnailTag: Uuid().v4(),
-                          bookmarkMode: true,
-                          bookmarkCallback: longpress,
-                          bookmarkCheckCallback: check,
-                          isCheckMode: checkMode,
-                          isChecked: checked.contains(filterResult[index].id()),
-                        ),
-                      ),
+            delegate: SliverChildListDelegate(filterResult.map((e) {
+              return Padding(
+                key: Key('group' +
+                    widget.groupId.toString() +
+                    '/' +
+                    nowType.toString() +
+                    '/' +
+                    e.id().toString()),
+                padding: EdgeInsets.zero,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    child: ArticleListItemVerySimpleWidget(
+                      queryResult: e,
+                      showDetail: false,
+                      addBottomPadding: false,
+                      width: (windowWidth - 4.0) / mm,
+                      thumbnailTag: Uuid().v4(),
+                      bookmarkMode: true,
+                      bookmarkCallback: longpress,
+                      bookmarkCheckCallback: check,
+                      isCheckMode: checkMode,
+                      isChecked: checked.contains(e.id()),
                     ),
                   ),
                 ),
               );
-            },
+            }).toList()),
           ),
         );
 
@@ -473,14 +462,18 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 3:
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
-          sliver: LiveSliverList(
-            key: key,
-            itemCount: filterResult.length,
-            itemBuilder: (context, index, animation) {
+          sliver: SliverList(
+            delegate: SliverChildListDelegate(filterResult.map((x) {
               return Align(
+                key: Key('group' +
+                    widget.groupId.toString() +
+                    '/' +
+                    nowType.toString() +
+                    '/' +
+                    x.id().toString()),
                 alignment: Alignment.center,
                 child: ArticleListItemVerySimpleWidget(
-                  queryResult: filterResult[index],
+                  queryResult: x,
                   showDetail: nowType == 3,
                   addBottomPadding: true,
                   width: (windowWidth - 4.0),
@@ -489,10 +482,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   bookmarkCallback: longpress,
                   bookmarkCheckCallback: check,
                   isCheckMode: checkMode,
-                  isChecked: checked.contains(filterResult[index].id()),
+                  isChecked: checked.contains(x.id()),
                 ),
               );
-            },
+            }).toList()),
           ),
         );
 
