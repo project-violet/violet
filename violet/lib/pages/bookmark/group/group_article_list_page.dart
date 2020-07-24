@@ -32,8 +32,6 @@ class GroupArticleListPage extends StatefulWidget {
 }
 
 class _GroupArticleListPageState extends State<GroupArticleListPage> {
-  // List<BookmarkArticle> cc;
-
   @override
   void initState() {
     super.initState();
@@ -103,10 +101,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    // if (similarsAll == null) return Text('asdf');
     return Padding(
-      key: key,
-      // padding: EdgeInsets.all(0),
       padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -192,10 +187,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 });
                 checked.clear();
                 refresh();
-                Future.delayed(Duration(milliseconds: 300))
-                    .then((value) => setState(() {
-                          key = ObjectKey(Uuid().v4());
-                        }));
               }
             },
             elevation: 4,
@@ -327,9 +318,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   if (succ) result.add(element);
                 });
                 filterResult = result;
-                setState(() {
-                  key = ObjectKey(Uuid().v4());
-                });
                 await Future.delayed(Duration(milliseconds: 50), () {
                   setState(() {});
                 });
@@ -357,8 +345,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   bool scaleOnce = false;
   List<QueryResult> queryResult = List<QueryResult>();
   List<QueryResult> filterResult = List<QueryResult>();
-
-  ObjectKey key = ObjectKey(Uuid().v4());
 
   static String prefix2Tag(String prefix) {
     switch (prefix) {
@@ -611,10 +597,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           });
         });
         refresh();
-        Future.delayed(Duration(milliseconds: 300))
-            .then((value) => setState(() {
-                  key = ObjectKey(Uuid().v4());
-                }));
       }
     } else {}
   }
