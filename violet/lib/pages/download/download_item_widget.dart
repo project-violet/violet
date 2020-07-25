@@ -61,6 +61,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
     Future.delayed(Duration(milliseconds: 500)).then((value) async {
       if (once) return;
       once = true;
+      var downloader = await BuiltinDownloader.getInstance();
 
       var result = Map<String, dynamic>.from(widget.item.result);
 
@@ -101,9 +102,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       }
 
       while (true) {
-        while (!BuiltinDownloader.getInstance().hasDownloadSlot())
+        while (!downloader.hasDownloadSlot())
           await Future.delayed(Duration(milliseconds: 500));
-        if (await BuiltinDownloader.getInstance().ensureDownload()) break;
+        if (await downloader.ensureDownload()) break;
       }
 
       // Login
@@ -175,7 +176,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
         });
       });
       // var downloader = FlutterDonwloadDonwloader.getInstance();
-      var downloader = BuiltinDownloader.getInstance();
       await downloader.addTasks(tasks.map((e) {
         e.downloadPath = join(Settings.downloadBasePath,
             e.format.formatting(extractor.defaultFormat()));
@@ -210,7 +210,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       }
       _timer.cancel();
 
-      await BuiltinDownloader.getInstance().returnDownload();
+      await (await BuiltinDownloader.getInstance()).returnDownload();
 
       // Postprocess
 
