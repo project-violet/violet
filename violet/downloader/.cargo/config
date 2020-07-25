@@ -1,0 +1,6 @@
+[target.aarch64-linux-android]
+linker = "F:/android-sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64/bin/aarch64-linux-android29-clang.cmd"
+[target.armv7-linux-androideabi]
+linker = "F:/android-sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64/bin/armv7a-linux-androideabi29-clang.cmd"
+[target.i686-linux-android]
+linker = "F:/android-sdk/ndk/21.1.6352462/toolchains/llvm/prebuilt/windows-x86_64/bin/i686-linux-android29-clang.cmd"
