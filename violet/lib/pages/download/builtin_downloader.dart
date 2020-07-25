@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
@@ -12,7 +13,7 @@ import 'package:violet/component/downloadable.dart' as violetd;
 
 class BuiltinDownloader {
   static const int maxDownloadCount = 2;
-  static const int maxDownloadFileCount = 24;
+  static const int maxDownloadFileCount = 8;
 
   int _curDownloadCount = 0;
   int _curDonwloadFileCount = 0;
@@ -29,11 +30,12 @@ class BuiltinDownloader {
         var sendrp = ReceivePort();
         var receivePort = ReceivePort();
         await Isolate.spawn(
-            remoteThreadHandler, [i, sendrp.sendPort, receivePort.sendPort]);
+            remoteThreadHandler2, [i, sendrp.sendPort, receivePort.sendPort]);
         send.add(await sendrp.first);
         receive.add(receivePort);
         receivePort.listen(messageReceive);
         allocatedTask.add(null);
+        print(i);
       }
     });
   }
@@ -181,6 +183,53 @@ class BuiltinDownloader {
           prev = rec;
         });
 
+        send.send([index, 2, (atotal - prev) * 1.0]);
+
+        // Complete
+        send.send([index, 0]);
+      } catch (e) {
+        // error
+        send.send([index, 3, e.toString()]);
+      }
+    });
+  }
+
+  static void remoteThreadHandler2(List argv) async {
+    var index = argv[0] as int;
+    var receive = new ReceivePort();
+    var send = argv[1] as SendPort;
+    send.send(receive.sendPort);
+    send = argv[2] as SendPort;
+
+    receive.listen((message) async {
+      var url = message[0] as String;
+      var downloadPath = message[1] as String;
+      var headers = message[2] as Map<String, String>;
+
+      int prev = 0;
+      int _1mb = 1024 * 1024;
+      int _nu = 0;
+      int latest = 0;
+      int atotal = 0;
+
+      try {
+        bool once = false;
+        final file = File(downloadPath);
+        file.createSync(recursive: true);
+
+        IOSink sink = file.openWrite(mode: FileMode.append);
+        var client = new HttpClient();
+        var request = await client.getUrl(Uri.parse(url));
+        headers.entries.map((e) => request.headers.add(e.key, e.value));
+        var response = await request.close();
+
+        send.send([index, 1, response.contentLength * 1.0]);
+        ;
+
+        await sink.addStream(response);
+
+        await sink.flush();
+        await sink.close();
         send.send([index, 2, (atotal - prev) * 1.0]);
 
         // Complete
