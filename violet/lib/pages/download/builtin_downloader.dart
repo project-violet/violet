@@ -6,6 +6,7 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:chunked_stream/chunked_stream.dart';
 import 'package:dio/dio.dart';
 import 'package:ffi/ffi.dart';
 import 'package:synchronized/synchronized.dart' as sync;
@@ -13,7 +14,7 @@ import 'package:violet/component/downloadable.dart' as violetd;
 
 class BuiltinDownloader {
   static const int maxDownloadCount = 2;
-  static const int maxDownloadFileCount = 8;
+  static const int maxDownloadFileCount = 24;
 
   int _curDownloadCount = 0;
   int _curDonwloadFileCount = 0;
@@ -29,7 +30,7 @@ class BuiltinDownloader {
       var sendrp = ReceivePort();
       var receivePort = ReceivePort();
       await Isolate.spawn(
-          remoteThreadHandler2, [i, sendrp.sendPort, receivePort.sendPort]);
+          remoteThreadHandler, [i, sendrp.sendPort, receivePort.sendPort]);
       send.add(await sendrp.first);
       receive.add(receivePort);
       receivePort.listen(messageReceive);
@@ -197,6 +198,7 @@ class BuiltinDownloader {
     var index = argv[0] as int;
     var receive = new ReceivePort();
     var send = argv[1] as SendPort;
+    var buffer = List<int>(65535);
     send.send(receive.sendPort);
     send = argv[2] as SendPort;
 
@@ -216,7 +218,7 @@ class BuiltinDownloader {
         final file = File(downloadPath);
         file.createSync(recursive: true);
 
-        IOSink sink = file.openWrite(mode: FileMode.append);
+        IOSink sink = file.openWrite(mode: FileMode.write);
         var client = new HttpClient();
         var request = await client.getUrl(Uri.parse(url));
         headers.entries.map((e) => request.headers.add(e.key, e.value));
@@ -224,10 +226,30 @@ class BuiltinDownloader {
 
         send.send([index, 1, response.contentLength * 1.0]);
 
-        await sink.addStream(response);
+        var reader = ChunkedStreamIterator(response);
+
+        while (true) {
+          var data = await reader.read(1024 * 512);
+          if (data.length < 0) break;
+          sink.add(data);
+        }
+
+        // await sink.addStream(response);
+
+        // response.listen((event) {
+        //   sink.add(event);
+        // });
+
+        // final doubler =
+        //     new StreamTransformer.fromHandlers(handleData: (data, sink) {
+        //   sink.add(data);
+        // });
+
+        // await sink.addStream(response);
 
         await sink.flush();
         await sink.close();
+        await file.length();
         send.send([index, 2, (atotal - prev) * 1.0]);
 
         // Complete

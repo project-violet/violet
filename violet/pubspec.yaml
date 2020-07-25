@@ -30,6 +30,7 @@ dependencies:
   auto_animated: any
   cached_network_image:
   charts_flutter:
+  chunked_stream:
   circular_check_box: ^1.0.1
   cloud_firestore: ^0.13.0+1 
   convert:
