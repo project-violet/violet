@@ -24,27 +24,26 @@ class BuiltinDownloader {
   List<ReceivePort> receive = List<ReceivePort>();
   List<violetd.DownloadTask> allocatedTask = List<violetd.DownloadTask>();
 
-  BuiltinDownloader() {
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      for (int i = 0; i < maxDownloadFileCount; i++) {
-        var sendrp = ReceivePort();
-        var receivePort = ReceivePort();
-        await Isolate.spawn(
-            remoteThreadHandler2, [i, sendrp.sendPort, receivePort.sendPort]);
-        send.add(await sendrp.first);
-        receive.add(receivePort);
-        receivePort.listen(messageReceive);
-        allocatedTask.add(null);
-        print(i);
-      }
-    });
+  Future<void> _init() async {
+    for (int i = 0; i < maxDownloadFileCount; i++) {
+      var sendrp = ReceivePort();
+      var receivePort = ReceivePort();
+      await Isolate.spawn(
+          remoteThreadHandler2, [i, sendrp.sendPort, receivePort.sendPort]);
+      send.add(await sendrp.first);
+      receive.add(receivePort);
+      receivePort.listen(messageReceive);
+      allocatedTask.add(null);
+      print(i);
+    }
   }
 
   static BuiltinDownloader _instance;
 
-  static BuiltinDownloader getInstance() {
+  static Future<BuiltinDownloader> getInstance() async {
     if (_instance == null) {
       _instance = BuiltinDownloader();
+      await _instance._init();
     }
     return _instance;
   }
@@ -224,7 +223,6 @@ class BuiltinDownloader {
         var response = await request.close();
 
         send.send([index, 1, response.contentLength * 1.0]);
-        ;
 
         await sink.addStream(response);
 
