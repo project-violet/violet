@@ -13,3 +13,9 @@ libviolet/.cargo/config
 libviolet/build.sh
 4. Run ./build.sh
 ```
+
+## Why is libviolet written by rust?
+
+I don't know anything about java, kotlin, swift and object-c.
+But similar to flutter, I wanted to find a way to support both `ios` and `Android`.
+C++ library dependencies and builds were too complex, so I used rust.
