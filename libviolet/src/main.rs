@@ -88,17 +88,29 @@ pub extern fn downloader_dispose() {
 
 #[no_mangle]
 pub extern fn downloader_status() -> *mut c_char {
-  let completed: String = DOWNLOAD_COMPLETE_INFO.clone().lock().unwrap().iter().enumerate().fold(String::new(), |res, (i, ch)| {
-      res + &format!("{},", ch)
-  });
+  let clone = DOWNLOAD_COMPLETE_INFO.clone();
+  let mut complete = clone.lock().unwrap();
 
-  CString::new(format!("{}|{}|{}|{}|{}", 
-    DOWNLOAD_TOTAL_COUNT.load(Ordering::SeqCst), 
-    DOWNLOAD_COMPLETED_COUNT.load(Ordering::SeqCst), 
-    DOWNLOADED_BYTES.load(Ordering::SeqCst), 
-    DOWNLOAD_ERROR_COUNT.load(Ordering::SeqCst),
-    completed
-  )).unwrap().into_raw()
+  if complete.len() == 0 {
+    return CString::new(format!("{}|{}|{}|{}", 
+      DOWNLOAD_TOTAL_COUNT.load(Ordering::SeqCst), 
+      DOWNLOAD_COMPLETED_COUNT.load(Ordering::SeqCst), 
+      DOWNLOADED_BYTES.load(Ordering::SeqCst), 
+      DOWNLOAD_ERROR_COUNT.load(Ordering::SeqCst),
+    )).unwrap().into_raw()
+  } else {
+    let completed: String = complete.iter().enumerate().fold(String::new(), |res, (_i, ch)| {
+        res + &format!("{},", ch)
+    });
+    complete.clear();
+    return CString::new(format!("{}|{}|{}|{}|{}", 
+      DOWNLOAD_TOTAL_COUNT.load(Ordering::SeqCst), 
+      DOWNLOAD_COMPLETED_COUNT.load(Ordering::SeqCst), 
+      DOWNLOADED_BYTES.load(Ordering::SeqCst), 
+      DOWNLOAD_ERROR_COUNT.load(Ordering::SeqCst),
+      completed
+    )).unwrap().into_raw();
+  }
 }
 
 #[no_mangle]

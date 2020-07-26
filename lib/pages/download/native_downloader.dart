@@ -10,6 +10,7 @@ import 'package:device_info/device_info.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:synchronized/synchronized.dart' as sync;
 import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/downloadable.dart';
 
@@ -30,18 +31,18 @@ class NativeDownloadTask {
 
   NativeDownloadTask({this.id, this.url, this.fullpath, this.header});
 
-  static NativeDownloadTask fromDownloadTask(DownloadTask task) {
+  static NativeDownloadTask fromDownloadTask(int taskId, DownloadTask task) {
     var header = Map<String, String>();
-    header['referer'] = task.referer;
-    header['accept'] = task.accept;
-    header['user-agent'] = task.userAgent;
+    if (task.referer != null) header['referer'] = task.referer;
+    if (task.accept != null) header['accept'] = task.accept;
+    if (task.userAgent != null) header['user-agent'] = task.userAgent;
     if (task.headers != null) {
       task.headers.entries.forEach((element) {
         header[element.key.toLowerCase()] = element.value;
       });
     }
     return NativeDownloadTask(
-      id: task.taskId,
+      id: taskId,
       url: task.url,
       fullpath: task.downloadPath,
       header: header,
@@ -50,7 +51,7 @@ class NativeDownloadTask {
 
   String toString() {
     return jsonEncode({
-      "id": 1,
+      "id": id,
       "url": url,
       "fullpath": fullpath,
       "header": header,
@@ -64,6 +65,9 @@ class NativeDownloader {
   DownloaderDispose downloaderDispose;
   DownloaderStatus downloaderStatus;
   DownloaderAppend downloaderAppend;
+  List<DownloadTask> downloadTasks = List<DownloadTask>();
+
+  sync.Lock lock = sync.Lock();
 
   Future<void> init() async {
     final soPath = await _checkSharedLibrary();
@@ -85,7 +89,7 @@ class NativeDownloader {
         .lookup<NativeFunction<downloader_append>>("downloader_append")
         .asFunction();
 
-    downloaderInit(8);
+    downloaderInit(32);
   }
 
   static NativeDownloader _instance;
@@ -98,16 +102,46 @@ class NativeDownloader {
     return _instance;
   }
 
-  void addTask(DownloadTask task) {
-    downloaderAppend(
-        Utf8.toUtf8(NativeDownloadTask.fromDownloadTask(task).toString()));
+  NativeDownloader() {
+    Future.delayed(Duration(seconds: 1)).then((value) async {
+      // int prev = 0;
+      while (true) {
+        var x = Utf8.fromUtf8(downloaderStatus());
+        // var y = int.parse(x.split('|')[2]);
+        // print(x + '       ' + ((y - prev) / 1024.0).toString() + ' KB/S');
+        // prev = y;
+        var ll = x.split('|');
+        if (ll.length == 5) {
+          var complete = ll.last.split(',');
+          complete.forEach((element) {
+            int v = int.tryParse(element);
+            if (v != null) {
+              downloadTasks[v].completeCallback();
+            }
+          });
+        }
+        await Future.delayed(Duration(milliseconds: 100));
+      }
+    });
   }
 
-  void addTasks(List<DownloadTask> tasks) {
-    tasks.forEach((task) {
-      // print(NativeDownloadTask.fromDownloadTask(task).toString());
-      downloaderAppend(
-          Utf8.toUtf8(NativeDownloadTask.fromDownloadTask(task).toString()));
+  Future<void> addTask(DownloadTask task) async {
+    await lock.synchronized(() {
+      downloadTasks.add(task);
+      downloaderAppend(Utf8.toUtf8(
+          NativeDownloadTask.fromDownloadTask(downloadTasks.length, task)
+              .toString()));
+    });
+  }
+
+  Future<void> addTasks(List<DownloadTask> tasks) async {
+    await lock.synchronized(() {
+      tasks.forEach((task) {
+        downloadTasks.add(task);
+        downloaderAppend(Utf8.toUtf8(
+            NativeDownloadTask.fromDownloadTask(downloadTasks.length - 1, task)
+                .toString()));
+      });
     });
   }
 

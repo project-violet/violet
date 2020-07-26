@@ -167,7 +167,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       }
 
       // Download
-      var _timer = new Timer.periodic(Duration(seconds: 1), (Timer timer) {
+      var _timer =
+          new Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
         setState(() {
           if (downloadSec / 1024 < 500.0)
             downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";
@@ -212,7 +213,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       }
       _timer.cancel();
 
-      await (await BuiltinDownloader.getInstance()).returnDownload();
+      // await (await BuiltinDownloader.getInstance()).returnDownload();
 
       // Postprocess
 
@@ -338,9 +339,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
         break;
 
       case 3:
-        state =
-            '[$downloadedFileCount/$downloadTotalFileCount] ($downloadSpeed ${(download / 1024.0 / 1024.0).toStringAsFixed(1)} MB)';
-        // state = '[$downloadedFileCount/$downloadTotalFileCount]';
+        // state =
+        //     '[$downloadedFileCount/$downloadTotalFileCount] ($downloadSpeed ${(download / 1024.0 / 1024.0).toStringAsFixed(1)} MB)';
+        state = '[$downloadedFileCount/$downloadTotalFileCount]';
         pp = Translations.instance.trans('progress') + ': ';
         break;
 
