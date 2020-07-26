@@ -1,6 +1,11 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+extern crate futures;
+extern crate futures_cpupool;
+extern crate hyper; // 0.12
+extern crate hyper_rustls;
+
 use std::collections::HashMap;
 use std::os::raw::{c_char};
 use std::ffi::{CString, CStr};
@@ -8,6 +13,10 @@ use std::thread;
 use std::time::Duration;
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
+// use hyper::rt::Stream;
+use hyper::{Body, Client, Request};
+use hyper_rustls::HttpsConnector;
+use futures_util::StreamExt;
 // use std::sync::mpsc::channel;
 // use std::rc::Rc;
 use serde::{Deserialize, Serialize};
@@ -15,6 +24,11 @@ use tokio::runtime::Runtime;
 use std::io;
 use std::fs::File;
 use serde_json::json;
+use futures::Future;
+use futures_cpupool::CpuPool;
+use hyper::body::HttpBody as _;
+use hyper_native_tls::NativeTlsClient;
+use tokio::io::{stdout, AsyncWriteExt as _};
 
 extern crate concurrent_queue;
 use concurrent_queue::ConcurrentQueue;
@@ -63,6 +77,7 @@ lazy_static! {
   static ref DOWNLOAD_LOCK: Arc<Mutex<i32>> = {
     Arc::new(Mutex::new(0))
   };
+  static ref DOWNLOAD_THREAD_POOL: CpuPool = CpuPool::new(4);
 }
 
 #[no_mangle]
@@ -108,22 +123,56 @@ pub extern fn downloader_append(to: *const c_char) {
 
   let task: DownloadTask = serde_json::from_str(info).unwrap();
   DOWNLOAD_QUEUE.push(task).ok();
+  // DOWNLOAD_THREAD_POOL.spawn(move || {
+  //       Runtime::new()
+  //         .expect("Failed to create Tokio runtime").
+  //         block_on(download(task.url, task.fullpath, task.header));
+  //     });
 }
 
-async fn download(url: String, fullpath: String, header: HashMap<String, serde_json::Value>) -> Result<(), reqwest::Error> {
+async fn download(url: String, fullpath: String, header: HashMap<String, serde_json::Value>) 
+-> Result<(), reqwest::Error> {
+  // -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
   // let text = reqwest::get("https://www.rust-lang.org").await?
   //       .text().await?;
     
   //   println!("body = {:?}", text);
   //   Ok(())
-    let resp = reqwest::get(&url).await?.text().await?;
+    // let resp = reqwest::get(&url).await?.text().await?;
+    // let mut rr = reqwest::get(&url).await?;
+    // let mut buffer = File::create("foo.txt");
+    let mut task = tokio::fs::File::create("foo.txt").await.unwrap();
+  let mut stream = reqwest::get(&url)
+    .await?
+    .bytes_stream();
     // let mut out = File::create(fullpath).expect("failed to create file");
     // io::copy(&mut resp, &mut out).expect("failed to copy content");
+  // let client = Client::new();
+  // let uri = url.parse()?;
+  // let mut resp = client.get(uri).await?;
 
-    println!("body = {:?}", resp);
-    Ok(())
+  // while let Some(chunk) = resp.body_mut().data().await {
+  //   stdout().write_all(&chunk?).await?;
+  // }
+  // while let Some(chunk) = rr.chunk().await? {
+  //   println!("Chunk: {:?}", chunk);
+  // }
+  // let mut ii = 0;
+  // Very Fast!
+  while let Some(item) = stream.next().await {
+    // println!("Chunk: {:?}", item?);
+    // println!("{}", item?.len());
+    // let mut slice: &[u8] = item?.as_ref();
+    task.write(item?.as_ref()).await.unwrap();
+    // ii += item?.len();
+    // println!("{}", ii);
+  }
+
+  // println!("body = {:?}", resp);
+  Ok(())
 }
 
+// Thread pool? I don't know  how to use that, any example is not found for threadpool(or cpupool).
 async fn remote_download_handler<'a>(index: i64) {
   println!("{}", index);
 
@@ -135,6 +184,13 @@ async fn remote_download_handler<'a>(index: i64) {
         println!("{}|{}", index, task.url);
         let down = download(task.url.to_string(), task.fullpath.to_string(), task.header).await;
         if down.is_err() {
+          match down {
+            Err(e) => {
+              println!("Error: {}", e);
+              // println!("Caused by: {}", e.source().unwrap());
+            }
+            _ => println!("No error"),
+          }
           DOWNLOAD_ERROR_COUNT.fetch_add(1, Ordering::SeqCst);
           continue;
         }
@@ -156,12 +212,46 @@ extern crate reqwest;
 
 
 fn main()  {
-  let mut list = Vec::new();
+
   
+    // let url = "https://steemitimages.com/DQmYWcEumaw1ajSge5PcGpgPpXydTkTcqe1daF4Ro3sRLDi/IMG_20130103_103123.jpg";
+
+    // // In real life we'd want an asynchronous reactor, such as the tokio_core, but for a short example the `CpuPool` should do.
+    // let pool = CpuPool::new(1);
+    // let https = hyper_rustls::HttpsConnector::new();
+    // let client: Client<_, hyper::Body> = Client::builder().build(https);
+
+    // // `unwrap` is used because there are different ways (and/or libraries) to handle the errors and you should pick one yourself.
+    // // Also to keep this example simple.
+    // let req = Request::builder().uri(url).body(Body::empty()).unwrap();
+    // let fut = client.request(req);
+
+    // // Rebinding (shadowing) the `fut` variable allows us (in smart IDEs) to more easily examine the gradual weaving of the types.
+    // let fut = fut.then(move |res| {
+    //     let res = res.unwrap();
+    //     println!("Status: {:?}.", res.status());
+    //     let body = res.into_body();
+    //     // `for_each` returns a `Future` that we must embed into our chain of futures in order to execute it.
+    //     body.for_each(move |chunk| {println!("Got a chunk of {} bytes.", chunk.len()); Ok(())})
+    // });
+
+    // // Handle the errors: we need error-free futures for `spawn`.
+    // let fut = fut.then(move |r| -> Result<(), ()> {r.unwrap(); Ok(())});
+
+    // // Spawning the future onto a runtime starts executing it in background.
+    // // If not spawned onto a runtime the future will be executed in `wait`.
+    // // 
+    // // Note that we should keep the future around.
+    // // To save resources most implementations would *cancel* the dropped futures.
+    // let _fut = pool.spawn(fut);
+
+    // thread::sleep (Duration::from_secs (1));  // or `_fut.wait()`.
+  let mut list = Vec::new();
+
   let info = r#"
   {
     "id": 1234,
-    "url": "zasdf",
+    "url": "https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso?_ga=2.61351020.1568697307.1595752688-82168734.1595752688",
     "fullpath": "asdf",
     "header": {
       "asdf": "asdf"
