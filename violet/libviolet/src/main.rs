@@ -1,12 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+extern crate reqwest;
 extern crate futures;
-extern crate futures_cpupool;
-extern crate hyper; // 0.12
-extern crate hyper_rustls;
 
-use http::StatusCode;
 use std::collections::HashMap;
 use std::os::raw::{c_char};
 use std::ffi::{CString, CStr};
@@ -14,25 +11,11 @@ use std::thread;
 use std::time::Duration;
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
-// use hyper::rt::Stream;
-use hyper::{Body, Client, Request};
-use hyper_rustls::HttpsConnector;
 use futures_util::StreamExt;
-// use reqwest::header::Headers;
-// use std::sync::mpsc::channel;
-// use std::rc::Rc;
 use serde::{Deserialize, Serialize};
 use tokio::runtime::Runtime;
-// use reqwest::{StatusCode};
 use reqwest::header::{HeaderMap, HeaderName};
-use std::io;
-use std::fs::File;
-use serde_json::json;
-use futures::Future;
-use futures_cpupool::CpuPool;
-use hyper::body::HttpBody as _;
-use hyper_native_tls::NativeTlsClient;
-use tokio::io::{stdout, AsyncWriteExt as _};
+use tokio::io::{AsyncWriteExt as _};
 
 extern crate concurrent_queue;
 use concurrent_queue::ConcurrentQueue;
@@ -51,20 +34,14 @@ pub extern fn rust_greeting(to: *const c_char) -> *mut c_char {
 }
 
 // Download Info
-static DOWNLOAD_TOTAL_COUNT: i32 = 0;
-static DOWNLOAD_COMPLETED_COUNT: i64 = 0;
-static DOWNLOADED_BYTES: i64 = 0;
+static DOWNLOAD_TOTAL_COUNT: AtomicUsize = AtomicUsize::new(0);
+static DOWNLOAD_COMPLETED_COUNT: AtomicUsize = AtomicUsize::new(0);
+static DOWNLOADED_BYTES: AtomicUsize = AtomicUsize::new(0);
 static DOWNLOAD_ERROR_COUNT: AtomicUsize = AtomicUsize::new(0);
 static mut DOWNLOADER_DISPOSED: bool = false;
 // static mut ERROR_INFO: Vec<i32> = Vec::new();
+// static mut DOWNLOAD_COMPLETE_INFO: Vec<i64> = Vec::new();
 static mut DOWNLOAD_THREAD: Vec<thread::JoinHandle<()>> = Vec::new();
-
-// struct DownloadTask<'a> {
-//   id: i64,
-//   url: &'a str,
-//   fullpath: &'a str,
-//   header: HashMap<&'a str, &'a str>,
-// }
 
 #[derive(Serialize, Deserialize)]
 struct DownloadTask {
@@ -81,7 +58,10 @@ lazy_static! {
   static ref DOWNLOAD_LOCK: Arc<Mutex<i32>> = {
     Arc::new(Mutex::new(0))
   };
-  static ref DOWNLOAD_THREAD_POOL: CpuPool = CpuPool::new(4);
+  static ref DOWNLOAD_COMPLETE_INFO: Arc<Mutex<Vec<i64>>> = {
+    Arc::new(Mutex::new(Vec::new()))
+  };
+  // static ref DOWNLOAD_THREAD_POOL: CpuPool = CpuPool::new(4);
 }
 
 #[no_mangle]
@@ -106,11 +86,17 @@ pub extern fn downloader_dispose() {
 
 #[no_mangle]
 pub extern fn downloader_status() -> *mut c_char {
-  CString::new(format!("{}|{}|{}|{}", 
-    DOWNLOAD_TOTAL_COUNT.to_string(), 
-    DOWNLOAD_COMPLETED_COUNT, 
-    DOWNLOADED_BYTES, 
-    DOWNLOAD_ERROR_COUNT.load(Ordering::SeqCst))).unwrap().into_raw()
+  let completed: String = DOWNLOAD_COMPLETE_INFO.clone().lock().unwrap().iter().enumerate().fold(String::new(), |res, (i, ch)| {
+      res + &format!("{},", ch)
+  });
+
+  CString::new(format!("{}|{}|{}|{}|{}", 
+    DOWNLOAD_TOTAL_COUNT.load(Ordering::SeqCst), 
+    DOWNLOAD_COMPLETED_COUNT.load(Ordering::SeqCst), 
+    DOWNLOADED_BYTES.load(Ordering::SeqCst), 
+    DOWNLOAD_ERROR_COUNT.load(Ordering::SeqCst),
+    completed
+  )).unwrap().into_raw()
 }
 
 #[no_mangle]
@@ -124,14 +110,11 @@ pub extern fn downloader_append(to: *const c_char) {
   if info.len() == 0 {
     return;
   }
+  
+  DOWNLOAD_TOTAL_COUNT.fetch_add(1, Ordering::SeqCst);
 
   let task: DownloadTask = serde_json::from_str(info).unwrap();
   DOWNLOAD_QUEUE.push(task).ok();
-  // DOWNLOAD_THREAD_POOL.spawn(move || {
-  //       Runtime::new()
-  //         .expect("Failed to create Tokio runtime").
-  //         block_on(download(task.url, task.fullpath, task.header));
-  //     });
 }
 
 async fn download(url: String, fullpath: String, header: HashMap<String, serde_json::Value>) -> Result<i64, reqwest::Error> {
@@ -149,49 +132,45 @@ async fn download(url: String, fullpath: String, header: HashMap<String, serde_j
   let status = resp.status();
   
   if status.as_u16() != 200 {
-    // return reqwest::Error::new(kind: ErrorKind::NotFound, source: status);
     return Ok(status.as_u16() as i64);
   }
 
   let mut stream = resp.bytes_stream();
 
   while let Some(item) = stream.next().await {
-    // println!("Chunk: {:?}", item?);
-    // println!("{}", item?.len());
-    // let mut slice: &[u8] = item?.as_ref();
-    task.write(item?.as_ref()).await.unwrap();
-    // ii += item?.len();
-    // println!("{}", ii);
+    let bytes = item?;
+    DOWNLOADED_BYTES.fetch_add(bytes.len(), Ordering::SeqCst);
+    task.write(bytes.as_ref()).await.unwrap();
   }
 
-  // println!("body = {:?}", resp);
   Ok(0)
 }
 
 // Thread pool? I don't know  how to use that, any example is not found for threadpool(or cpupool).
 async fn remote_download_handler<'a>(index: i64) {
-  println!("{}", index);
-
+  let complete_info = DOWNLOAD_COMPLETE_INFO.clone();
   loop {
     if DOWNLOAD_QUEUE.len() > 0 {
       let x = DOWNLOAD_QUEUE.pop();
       if x.is_ok() {
         let task = x.unwrap();
-        println!("{}|{}", index, task.url);
         let down = download(task.url.to_string(), task.fullpath.to_string(), task.header).await;
-        if down.is_err() {
-          match down {
-            Err(e) => {
-              // println!("Error: {}", e);
-              // println!("Caused by: {}", e.source().unwrap());
-            }
-            Ok(i) => {
-              // println!("No error");
+        match down {
+          Err(e) => {
+            // println!("Error: {}", e);
+            // println!("Caused by: {}", e.source().unwrap());
+            DOWNLOAD_ERROR_COUNT.fetch_add(1, Ordering::SeqCst);
+          }
+          Ok(i) => {
+            // println!("No error");
+            if i != 0 {
+              DOWNLOAD_ERROR_COUNT.fetch_add(1, Ordering::SeqCst);
             }
           }
-          DOWNLOAD_ERROR_COUNT.fetch_add(1, Ordering::SeqCst);
-          continue;
         }
+        DOWNLOAD_COMPLETED_COUNT.fetch_add(1, Ordering::SeqCst);
+        complete_info.lock().unwrap().push(task.id);
+        continue;
       }
     }
 
@@ -206,7 +185,7 @@ async fn remote_download_handler<'a>(index: i64) {
   }
 }
 
-extern crate reqwest;
+
 
 
 fn main()  {
@@ -280,11 +259,11 @@ fn main()  {
     }));
   }
 
-  thread::sleep(Duration::from_millis(100));
+  // thread::sleep(Duration::from_millis(100));
 
-  for ii in 12..100 {
-    thread::sleep(Duration::from_millis(100));
-  }
+  // for ii in 12..100 {
+  //   thread::sleep(Duration::from_millis(100));
+  // }
 
   for thread in list {
     thread.join().unwrap();
