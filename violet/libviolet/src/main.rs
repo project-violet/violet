@@ -36,13 +36,11 @@ static DOWNLOAD_COMPLETED_COUNT: i64 = 0;
 static DOWNLOADED_BYTES: i64 = 0;
 static DOWNLOAD_ERROR_COUNT: AtomicUsize = AtomicUsize::new(0);
 static mut DOWNLOADER_DISPOSED: bool = false;
-static mut ERROR_INFO: Vec<i32> = Vec::new();
+// static mut ERROR_INFO: Vec<i32> = Vec::new();
 static mut DOWNLOAD_THREAD: Vec<thread::JoinHandle<()>> = Vec::new();
-// static mut DOWNLOAD_QUEUE: Option<ConcurrentQueue<i64>> = 0;
-// static mut DOWNLOAD_QUEUE: Vec<i32> = Vec::new();
-// static mut MUTEX: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
 
 struct DownloadTask<'a> {
+  id: i64,
   url: &'a str,
   fullpath: &'a str,
   header: HashMap<&'a str, &'a str>,
@@ -60,23 +58,15 @@ lazy_static! {
 
 #[no_mangle]
 pub extern fn downloader_init(queue_size: i64) {
-  // let (tx, rx) = channel();
   unsafe {
     for x in 0..queue_size {
-      // let (data, tx) = (Arc::clone(&DOWNLOAD_LOCK), tx.clone());
       DOWNLOAD_THREAD.push(thread::spawn(move || {
-        // let mut data = data.lock().unwrap();
-        // *data += 1;
-        // if *data == 0 {
-        //     tx.send(()).unwrap();
-        // }
         Runtime::new()
           .expect("Failed to create Tokio runtime").
           block_on(remote_download_handler(x));
       }));
     }
   }
-  // DOWNLOAD_QUEUE = ConcurrentQueue::unbounded();
 }
 
 #[no_mangle]
@@ -102,7 +92,8 @@ pub extern fn downloader_append(to: *const c_char) {
   let fullpath = "asdf";
   let mut header = HashMap::new();
   header.insert("foo", "bar");
-  let task = DownloadTask{url, fullpath, header};
+  let id = 0;
+  let task = DownloadTask{id, url, fullpath, header};
 
   DOWNLOAD_QUEUE.push(task).ok();
 }
@@ -122,32 +113,14 @@ async fn download(url: String, fullpath: String) -> Result<(), reqwest::Error> {
 }
 
 async fn remote_download_handler<'a>(index: i64) {
-  // thread::sleep(Duration::from_millis((10-index) as u64));
   println!("{}", index);
-  // let cc = Arc::clone(&DOWNLOAD_LOCK);
 
   loop {
-    // let mut ok: bool = false;
-    // let mut task: i64 = 0;
-
-    // if DOWNLOAD_QUEUE.len() > 0 {
-    //   cc.lock().unwrap();
-    //   if DOWNLOAD_QUEUE.len() > 0 {
-    //     let x = DOWNLOAD_QUEUE.pop();
-    //     ok = x.is_ok();
-    //     if ok {
-    //       task = x.unwrap();
-    //     }
-    //   }
-    // }
-
     if DOWNLOAD_QUEUE.len() > 0 {
       let x = DOWNLOAD_QUEUE.pop();
       if x.is_ok() {
         let task = x.unwrap();
         println!("{}|{}", index, task.url);
-        // let resp = reqwest::get(task.url).await;
-        // let response = resp.ok().unwrap();
         let down = download(task.url.to_string(), task.fullpath.to_string()).await;
         if down.is_err() {
           DOWNLOAD_ERROR_COUNT.fetch_add(1, Ordering::SeqCst);
@@ -167,72 +140,39 @@ async fn remote_download_handler<'a>(index: i64) {
   }
 }
 
-
-
 extern crate reqwest;
-
-// use futures::executor::block_on;
-// use std::borrow::Cow;
-
-// fn basename<'a>(path: &'a String, sep: char) -> Cow<'a, str> {
-//     let mut pieces = path.rsplit(sep);
-//     match pieces.next() {
-//         Some(p) => p.into(),
-//         None => path.into(),
-//     }
-// }
-
 
 
 fn main()  {
-  // Runtime::new()
-  //       .expect("Failed to create Tokio runtime").
-  //   block_on(download("http://releases.ubuntu.com/bionic/ubuntu-18.04.1-desktop-amd64.iso".to_string()));
   let mut list = Vec::new();
   let dzata = Arc::new(Mutex::new(0));
 
-  let url = "asdf";
+  let url = "https://google.com";
   let fullpath = "asdf";
-  // let header = "asdf";
+  let id = 0;
   
-    let mut header = HashMap::new();
-    header.insert("foo", "bar");
+  let mut header = HashMap::new();
+  header.insert("foo", "bar");
 
-let task = DownloadTask{url, fullpath, header};
+  let task = DownloadTask{id, url, fullpath, header};
 
-  DOWNLOAD_QUEUE.push(task);
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
+  DOWNLOAD_QUEUE.push(task).ok();
 
   for x in 0..10 {
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-  // DOWNLOAD_QUEUE.push(10).unwrap();
-
-    list.push(thread::spawn(move || remote_download_handler(x)));
+    list.push(thread::spawn(move || {
+        Runtime::new()
+          .expect("Failed to create Tokio runtime").
+          block_on(remote_download_handler(x));
+    }));
   }
 
-  
-    // DOWNLOAD_LOCK.lock().unwrap();
   thread::sleep(Duration::from_millis(100));
 
   for ii in 12..100 {
-    // DOWNLOAD_QUEUE.push(ii).unwrap();
-    // DOWNLOAD_QUEUE.push(ii).unwrap();
-
     thread::sleep(Duration::from_millis(100));
   }
-
 
   for thread in list {
     thread.join().unwrap();
   }
-
-  // handle.join().unwrap();
 }
