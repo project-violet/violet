@@ -1,2 +1,151 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
+
+import 'dart:convert';
+import 'dart:ffi';
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:device_info/device_info.dart';
+import 'package:ffi/ffi.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:violet/component/downloadable.dart';
+
+typedef downloader_init = Void Function(Int64);
+typedef DownloaderInit = void Function(int queueSize);
+typedef downloader_dispose = Void Function();
+typedef DownloaderDispose = void Function();
+typedef downloader_status = Pointer<Utf8> Function();
+typedef DownloaderStatus = Pointer<Utf8> Function();
+typedef downloader_append = Pointer<Utf8> Function(Pointer<Utf8>);
+typedef DownloaderAppend = Pointer<Utf8> Function(Pointer<Utf8> downloadInfo);
+
+class NativeDownloadTask {
+  final int id;
+  final String url;
+  final String fullpath;
+  final Map<String, dynamic> header;
+
+  NativeDownloadTask({this.id, this.url, this.fullpath, this.header});
+
+  static NativeDownloadTask fromDownloadTask(DownloadTask task) {
+    var header = Map<String, String>();
+    header['referer'] = task.referer;
+    header['accept'] = task.accept;
+    header['user-agent'] = task.userAgent;
+    if (task.headers != null) {
+      task.headers.entries.forEach((element) {
+        header[element.key.toLowerCase()] = element.value;
+      });
+    }
+    return NativeDownloadTask(
+      id: task.taskId,
+      url: task.url,
+      fullpath: task.downloadPath,
+      header: header,
+    );
+  }
+
+  String toString() {
+    return jsonEncode({
+      "id": 1,
+      "url": url,
+      "fullpath": fullpath,
+      "header": header,
+    });
+  }
+}
+
+class NativeDownloader {
+  DynamicLibrary libviolet;
+  DownloaderInit downloaderInit;
+  DownloaderDispose downloaderDispose;
+  DownloaderStatus downloaderStatus;
+  DownloaderAppend downloaderAppend;
+
+  Future<void> init() async {
+    final soPath = await _checkSharedLibrary();
+    if (soPath == null) {
+      return null;
+    }
+    libviolet = DynamicLibrary.open(soPath);
+
+    downloaderInit = libviolet
+        .lookup<NativeFunction<downloader_init>>("downloader_init")
+        .asFunction();
+    downloaderDispose = libviolet
+        .lookup<NativeFunction<downloader_dispose>>("downloader_dispose")
+        .asFunction();
+    downloaderStatus = libviolet
+        .lookup<NativeFunction<downloader_status>>("downloader_status")
+        .asFunction();
+    downloaderAppend = libviolet
+        .lookup<NativeFunction<downloader_append>>("downloader_append")
+        .asFunction();
+
+    downloaderInit(8);
+  }
+
+  static NativeDownloader _instance;
+  static Future<NativeDownloader> getInstance() async {
+    if (_instance == null) {
+      _instance = NativeDownloader();
+      await _instance.init();
+    }
+
+    return _instance;
+  }
+
+  void addTask(DownloadTask task) {
+    downloaderAppend(
+        Utf8.toUtf8(NativeDownloadTask.fromDownloadTask(task).toString()));
+  }
+
+  void addTasks(List<DownloadTask> tasks) {
+    tasks.forEach((task) {
+      // print(NativeDownloadTask.fromDownloadTask(task).toString());
+      downloaderAppend(
+          Utf8.toUtf8(NativeDownloadTask.fromDownloadTask(task).toString()));
+    });
+  }
+
+  Future<String> _checkSharedLibrary() async {
+    final dir = await getTemporaryDirectory();
+    if (dir == null) {
+      return null;
+    }
+    final libFile = File(dir.path + "/libviolet.so");
+    if (Platform.isAndroid) {
+      final devicePlugin = DeviceInfoPlugin();
+      final deviceInfo = await devicePlugin.androidInfo;
+      if (deviceInfo == null) {
+        return null;
+      }
+      String soResource = "assets/libviolet/armeabi-v7a/libviolet.so";
+      if (kDebugMode) soResource = "assets/libviolet/x86/libviolet.so";
+      final support64 = deviceInfo.supported64BitAbis;
+      if (support64 != null && support64.length > 0) {
+        if (kDebugMode)
+          soResource = "assets/libviolet/x86_64/libviolet.so";
+        else
+          soResource = "assets/libviolet/arm64-v8a/libviolet.so";
+      }
+      final data = await rootBundle.load(soResource);
+      if (data == null) {
+        return null;
+      }
+      final createFile = await libFile.create();
+      if (createFile == null) {
+        return null;
+      }
+      final writeFile = await createFile.open(mode: FileMode.write);
+      if (writeFile == null) {
+        return null;
+      }
+      await writeFile.writeFrom(Uint8List.view(data.buffer));
+      return libFile.path;
+    } else {}
+  }
+}

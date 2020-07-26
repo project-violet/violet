@@ -4,6 +4,7 @@
 extern crate reqwest;
 extern crate futures;
 
+use tokio::fs::create_dir_all;
 use std::collections::HashMap;
 use std::os::raw::{c_char};
 use std::ffi::{CString, CStr};
@@ -11,6 +12,7 @@ use std::thread;
 use std::time::Duration;
 use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::path::Path;
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use tokio::runtime::Runtime;
@@ -118,6 +120,14 @@ pub extern fn downloader_append(to: *const c_char) {
 }
 
 async fn download(url: String, fullpath: String, header: HashMap<String, serde_json::Value>) -> Result<i64, reqwest::Error> {
+  let path = Path::new(&fullpath[..]);
+  if !path.exists() {
+    let mut a = path.ancestors();
+    let x = a.next().unwrap();
+    println!("{}", x.to_str().unwrap());
+    create_dir_all(a.next().unwrap()).await.unwrap();
+  }
+
   let mut task = tokio::fs::File::create(fullpath).await.unwrap();
   let client = reqwest::Client::new();
   let mut headers = HeaderMap::new();
@@ -229,7 +239,7 @@ fn main()  {
   {
     "id": 1234,
     "url": "https://releases.ubuntu.com/20.04/ubuntu-20.04-desktop-amd64.iso?_ga=2.61351020.1568697307.1595752688-82168734.1595752688",
-    "fullpath": "ubuntu-20.04-desktop-amd64.iso",
+    "fullpath": "asdf/ubuntu-20.04-desktop-amd64.iso",
     "header": {
       "asdf": "asdf"
     }
@@ -243,13 +253,23 @@ fn main()  {
       "referer": "https://hitomi.la/reader/1671821.html"
     }
   }"#;
+  let ii = r#"{
+   "id":1,
+   "url":"https://aa.hitomi.la/webp/a/c6/8049e9284fb506a014d6b6c8192cf809b030bf1745d910ff1647e9e08ee6ac6a.webp",
+   "fullpath":"[1685659] hutariha! hutanari! MAMA!/000.webp",
+   "header":{
+      "referer":"https://hitomi.la/reader/1685659.html",
+      "accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+      "user-agent":"Mozilla/5.0 (Android 7.0; Mobile; rv:54.0) Gecko/54.0 Firefox/54.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/603.2.4"
+   }
+}"#;
 
   
-  let task: DownloadTask = serde_json::from_str(info).unwrap();
-  let task2: DownloadTask = serde_json::from_str(info2).unwrap();
+  let task: DownloadTask = serde_json::from_str(ii).unwrap();
+  // let task2: DownloadTask = serde_json::from_str(info2).unwrap();
 
   DOWNLOAD_QUEUE.push(task).ok();
-  DOWNLOAD_QUEUE.push(task2).ok();
+  // DOWNLOAD_QUEUE.push(task2).ok();
 
   for x in 0..10 {
     list.push(thread::spawn(move || {

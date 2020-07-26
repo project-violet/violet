@@ -16,6 +16,7 @@ import 'package:violet/component/downloadable.dart' as violetd;
 import 'package:violet/locale.dart';
 import 'package:violet/pages/download/builtin_downloader.dart';
 import 'package:violet/pages/download/flutter_downloader_downloader.dart';
+import 'package:violet/pages/download/native_downloader.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/database/user/download.dart';
 
@@ -61,7 +62,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
     Future.delayed(Duration(milliseconds: 500)).then((value) async {
       if (once) return;
       once = true;
-      var downloader = await BuiltinDownloader.getInstance();
+      // var downloader = await BuiltinDownloader.getInstance();
+      var downloader = await NativeDownloader.getInstance();
 
       var result = Map<String, dynamic>.from(widget.item.result);
 
@@ -101,11 +103,11 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
         return;
       }
 
-      while (true) {
-        while (!downloader.hasDownloadSlot())
-          await Future.delayed(Duration(milliseconds: 500));
-        if (await downloader.ensureDownload()) break;
-      }
+      // while (true) {
+      //   while (!downloader.hasDownloadSlot())
+      //     await Future.delayed(Duration(milliseconds: 500));
+      //   if (await downloader.ensureDownload()) break;
+      // }
 
       // Login
       if (extractor.loginRequire()) {
