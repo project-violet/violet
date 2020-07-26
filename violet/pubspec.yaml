@@ -173,6 +173,11 @@ flutter:
     - assets/p7zip/x86/lib7zr.so
     - assets/p7zip/x86_64/lib7zr.so
 
+    - assets/libviolet/arm64-v8a/libviolet.so
+    - assets/libviolet/armeabi-v7a/libviolet.so
+    - assets/libviolet/x86/libviolet.so
+    - assets/libviolet/x86_64/libviolet.so
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
