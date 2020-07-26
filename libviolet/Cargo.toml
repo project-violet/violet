@@ -1,5 +1,5 @@
 [package]
-name = "downloader"
+name = "violet"
 version = "0.1.0"
 authors = ["violet-dev <violet.dev.master@gmail.com>"]
 edition = "2018"
