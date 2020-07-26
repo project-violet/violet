@@ -10,9 +10,11 @@ use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicUsize, Ordering};
 // use std::sync::mpsc::channel;
 // use std::rc::Rc;
+use serde::{Deserialize, Serialize};
 use tokio::runtime::Runtime;
 use std::io;
 use std::fs::File;
+use serde_json::json;
 
 extern crate concurrent_queue;
 use concurrent_queue::ConcurrentQueue;
@@ -39,15 +41,23 @@ static mut DOWNLOADER_DISPOSED: bool = false;
 // static mut ERROR_INFO: Vec<i32> = Vec::new();
 static mut DOWNLOAD_THREAD: Vec<thread::JoinHandle<()>> = Vec::new();
 
-struct DownloadTask<'a> {
+// struct DownloadTask<'a> {
+//   id: i64,
+//   url: &'a str,
+//   fullpath: &'a str,
+//   header: HashMap<&'a str, &'a str>,
+// }
+
+#[derive(Serialize, Deserialize)]
+struct DownloadTask {
   id: i64,
-  url: &'a str,
-  fullpath: &'a str,
-  header: HashMap<&'a str, &'a str>,
+  url: String,
+  fullpath: String,
+  header: HashMap<String, serde_json::Value>,
 }
 
 lazy_static! {
-  static ref DOWNLOAD_QUEUE: ConcurrentQueue<DownloadTask<'static>> = {
+  static ref DOWNLOAD_QUEUE: ConcurrentQueue<DownloadTask> = {
     ConcurrentQueue::unbounded()
   };
   static ref DOWNLOAD_LOCK: Arc<Mutex<i32>> = {
@@ -86,17 +96,21 @@ pub extern fn downloader_status() -> *mut c_char {
 
 #[no_mangle]
 pub extern fn downloader_append(to: *const c_char) {
-  let url = "asdf";
-  let fullpath = "asdf";
-  let mut header = HashMap::new();
-  header.insert("foo", "bar");
-  let id = 0;
-  let task = DownloadTask{id, url, fullpath, header};
+  let c_str = unsafe { CStr::from_ptr(to) };
+  let info = match c_str.to_str() {
+    Err(_) => "",
+    Ok(string) => string,
+  };
 
+  if info.len() == 0 {
+    return;
+  }
+
+  let task: DownloadTask = serde_json::from_str(info).unwrap();
   DOWNLOAD_QUEUE.push(task).ok();
 }
 
-async fn download(url: String, fullpath: String) -> Result<(), reqwest::Error> {
+async fn download(url: String, fullpath: String, header: HashMap<String, serde_json::Value>) -> Result<(), reqwest::Error> {
   // let text = reqwest::get("https://www.rust-lang.org").await?
   //       .text().await?;
     
@@ -119,7 +133,7 @@ async fn remote_download_handler<'a>(index: i64) {
       if x.is_ok() {
         let task = x.unwrap();
         println!("{}|{}", index, task.url);
-        let down = download(task.url.to_string(), task.fullpath.to_string()).await;
+        let down = download(task.url.to_string(), task.fullpath.to_string(), task.header).await;
         if down.is_err() {
           DOWNLOAD_ERROR_COUNT.fetch_add(1, Ordering::SeqCst);
           continue;
@@ -143,16 +157,18 @@ extern crate reqwest;
 
 fn main()  {
   let mut list = Vec::new();
-  let dzata = Arc::new(Mutex::new(0));
-
-  let url = "https://google.com";
-  let fullpath = "asdf";
-  let id = 0;
   
-  let mut header = HashMap::new();
-  header.insert("foo", "bar");
-
-  let task = DownloadTask{id, url, fullpath, header};
+  let info = r#"
+  {
+    "id": 1234,
+    "url": "zasdf",
+    "fullpath": "asdf",
+    "header": {
+      "asdf": "asdf"
+    }
+  }"#;
+  
+  let task: DownloadTask = serde_json::from_str(info).unwrap();
 
   DOWNLOAD_QUEUE.push(task).ok();
 

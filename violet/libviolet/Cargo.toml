@@ -6,19 +6,20 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[lib]
-name = "violet"
-crate-type = ["staticlib", "cdylib"]
+# [lib]
+# name = "violet"
+# crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
-openssl = { version = "0.10.30", features = ["vendored"] }
+# openssl = { version = "0.10.30", features = ["vendored"] }
 # futures = "0.3.5"
 # futures-cpupool = "0.1.8"
 # hyper = "0.12"
 # hyper-rustls = "0.12"
 reqwest = "0.10.7"
 tokio = "0.2.22"
-# serde_json = "1.0"
+serde_json = "1.0.56"
+serde = { version = "1.0", features = ["derive"] }
 concurrent-queue = "1.1.2"
 lazy_static = "1.4.0"
 
