@@ -4,3 +4,5 @@ linker = "/home/<username>/ndk/android-ndk-r21b/toolchains/llvm/prebuilt/linux-x
 linker = "/home/<username>/ndk/android-ndk-r21b/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi29-clang"
 [target.i686-linux-android]
 linker = "/home/<username>/ndk/android-ndk-r21b/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android29-clang"
+[target.x86_64-linux-android]
+linker = "/home/<username>/ndk/android-ndk-r21b/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android29-clang"
