@@ -1,13 +1,18 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
+use std::collections::HashMap;
 use std::os::raw::{c_char};
 use std::ffi::{CString, CStr};
 use std::thread;
 use std::time::Duration;
 use std::sync::{Arc, Mutex};
-use std::sync::mpsc::channel;
-use std::rc::Rc;
+use std::sync::atomic::{AtomicUsize, Ordering};
+// use std::sync::mpsc::channel;
+// use std::rc::Rc;
+use tokio::runtime::Runtime;
+use std::io;
+use std::fs::File;
 
 extern crate concurrent_queue;
 use concurrent_queue::ConcurrentQueue;
@@ -26,10 +31,10 @@ pub extern fn rust_greeting(to: *const c_char) -> *mut c_char {
 }
 
 // Download Info
-static mut DOWNLOAD_TOTAL_COUNT: i32 = 0;
-static mut DOWNLOAD_COMPLETED_COUNT: i64 = 0;
-static mut DOWNLOADED_BYTES: i64 = 0;
-static mut DOWNLOAD_ERROR_COUNT: i64 = 0;
+static DOWNLOAD_TOTAL_COUNT: i32 = 0;
+static DOWNLOAD_COMPLETED_COUNT: i64 = 0;
+static DOWNLOADED_BYTES: i64 = 0;
+static DOWNLOAD_ERROR_COUNT: AtomicUsize = AtomicUsize::new(0);
 static mut DOWNLOADER_DISPOSED: bool = false;
 static mut ERROR_INFO: Vec<i32> = Vec::new();
 static mut DOWNLOAD_THREAD: Vec<thread::JoinHandle<()>> = Vec::new();
@@ -37,8 +42,14 @@ static mut DOWNLOAD_THREAD: Vec<thread::JoinHandle<()>> = Vec::new();
 // static mut DOWNLOAD_QUEUE: Vec<i32> = Vec::new();
 // static mut MUTEX: Arc<Mutex<i32>> = Arc::new(Mutex::new(0));
 
+struct DownloadTask<'a> {
+  url: &'a str,
+  fullpath: &'a str,
+  header: HashMap<&'a str, &'a str>,
+}
+
 lazy_static! {
-  static ref DOWNLOAD_QUEUE: ConcurrentQueue<i64> = {
+  static ref DOWNLOAD_QUEUE: ConcurrentQueue<DownloadTask<'static>> = {
     ConcurrentQueue::unbounded()
   };
   static ref DOWNLOAD_LOCK: Arc<Mutex<i32>> = {
@@ -59,7 +70,9 @@ pub extern fn downloader_init(queue_size: i64) {
         // if *data == 0 {
         //     tx.send(()).unwrap();
         // }
-        remote_download_handler(x);
+        Runtime::new()
+          .expect("Failed to create Tokio runtime").
+          block_on(remote_download_handler(x));
       }));
     }
   }
@@ -71,34 +84,47 @@ pub extern fn downloader_dispose() {
   unsafe {
     DOWNLOADER_DISPOSED = true;
   }
-  notify();
 }
 
 
 #[no_mangle]
 pub extern fn downloader_status() -> *mut c_char {
-  unsafe {
-    CString::new(format!("{}|{}|{}|{}", 
-      DOWNLOAD_TOTAL_COUNT.to_string(), 
-      DOWNLOAD_COMPLETED_COUNT, 
-      DOWNLOADED_BYTES, 
-      DOWNLOAD_ERROR_COUNT)).unwrap().into_raw()
-  }
+  CString::new(format!("{}|{}|{}|{}", 
+    DOWNLOAD_TOTAL_COUNT.to_string(), 
+    DOWNLOAD_COMPLETED_COUNT, 
+    DOWNLOADED_BYTES, 
+    DOWNLOAD_ERROR_COUNT.load(Ordering::SeqCst))).unwrap().into_raw()
 }
 
 #[no_mangle]
 pub extern fn downloader_append(to: *const c_char) {
-  notify();
+  let url = "asdf";
+  let fullpath = "asdf";
+  let mut header = HashMap::new();
+  header.insert("foo", "bar");
+  let task = DownloadTask{url, fullpath, header};
+
+  DOWNLOAD_QUEUE.push(task).ok();
 }
 
-fn notify() {
+async fn download(url: String, fullpath: String) -> Result<(), reqwest::Error> {
+  // let text = reqwest::get("https://www.rust-lang.org").await?
+  //       .text().await?;
+    
+  //   println!("body = {:?}", text);
+  //   Ok(())
+    let resp = reqwest::get(&url).await?.text().await?;
+    // let mut out = File::create(fullpath).expect("failed to create file");
+    // io::copy(&mut resp, &mut out).expect("failed to copy content");
 
+    println!("body = {:?}", resp);
+    Ok(())
 }
 
-fn remote_download_handler<'a>(index: i64) {
+async fn remote_download_handler<'a>(index: i64) {
   // thread::sleep(Duration::from_millis((10-index) as u64));
   println!("{}", index);
-  let cc = Arc::clone(&DOWNLOAD_LOCK);
+  // let cc = Arc::clone(&DOWNLOAD_LOCK);
 
   loop {
     // let mut ok: bool = false;
@@ -118,15 +144,26 @@ fn remote_download_handler<'a>(index: i64) {
     if DOWNLOAD_QUEUE.len() > 0 {
       let x = DOWNLOAD_QUEUE.pop();
       if x.is_ok() {
-        println!("{}|{}", index, x.unwrap());
-
+        let task = x.unwrap();
+        println!("{}|{}", index, task.url);
+        // let resp = reqwest::get(task.url).await;
+        // let response = resp.ok().unwrap();
+        let down = download(task.url.to_string(), task.fullpath.to_string()).await;
+        if down.is_err() {
+          DOWNLOAD_ERROR_COUNT.fetch_add(1, Ordering::SeqCst);
+          continue;
+        }
       }
     }
 
     while DOWNLOAD_QUEUE.len() == 0 {
         // Where is semaphore for rust?
       thread::sleep(Duration::from_millis(100));
+
+      unsafe{if DOWNLOADER_DISPOSED {return}}
     }
+    
+    unsafe {if  DOWNLOADER_DISPOSED {return}}
   }
 }
 
@@ -135,10 +172,7 @@ fn remote_download_handler<'a>(index: i64) {
 extern crate reqwest;
 
 // use futures::executor::block_on;
-// use std::io;
-// use std::fs::File;
 // use std::borrow::Cow;
-// use tokio::runtime::Runtime;
 
 // fn basename<'a>(path: &'a String, sep: char) -> Cow<'a, str> {
 //     let mut pieces = path.rsplit(sep);
@@ -148,19 +182,7 @@ extern crate reqwest;
 //     }
 // }
 
-// async fn download(url: String) -> Result<(), reqwest::Error> {
-//   // let text = reqwest::get("https://www.rust-lang.org").await?
-//   //       .text().await?;
-    
-//   //   println!("body = {:?}", text);
-//   //   Ok(())
-//     let resp = reqwest::get(&url).await?.text().await?;
-//     // let mut out = File::create(basename(&url, '/').to_string()).expect("failed to create file");
-//     // io::copy(&mut resp, &mut out).expect("failed to copy content");
 
-//     println!("body = {:?}", resp);
-//     Ok(())
-// }
 
 fn main()  {
   // Runtime::new()
@@ -169,20 +191,29 @@ fn main()  {
   let mut list = Vec::new();
   let dzata = Arc::new(Mutex::new(0));
 
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
+  let url = "asdf";
+  let fullpath = "asdf";
+  // let header = "asdf";
+  
+    let mut header = HashMap::new();
+    header.insert("foo", "bar");
+
+let task = DownloadTask{url, fullpath, header};
+
+  DOWNLOAD_QUEUE.push(task);
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
 
   for x in 0..10 {
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
-  DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
+  // DOWNLOAD_QUEUE.push(10).unwrap();
 
     list.push(thread::spawn(move || remote_download_handler(x)));
   }
@@ -192,8 +223,8 @@ fn main()  {
   thread::sleep(Duration::from_millis(100));
 
   for ii in 12..100 {
-    DOWNLOAD_QUEUE.push(ii).unwrap();
-    DOWNLOAD_QUEUE.push(ii).unwrap();
+    // DOWNLOAD_QUEUE.push(ii).unwrap();
+    // DOWNLOAD_QUEUE.push(ii).unwrap();
 
     thread::sleep(Duration::from_millis(100));
   }
