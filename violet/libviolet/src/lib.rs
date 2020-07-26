@@ -55,7 +55,6 @@ lazy_static! {
   };
 }
 
-
 #[no_mangle]
 pub extern fn downloader_init(queue_size: i64) {
   unsafe {
@@ -75,7 +74,6 @@ pub extern fn downloader_dispose() {
     DOWNLOADER_DISPOSED = true;
   }
 }
-
 
 #[no_mangle]
 pub extern fn downloader_status() -> *mut c_char {
