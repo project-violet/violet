@@ -5,6 +5,7 @@
 
 //import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
@@ -46,12 +47,24 @@ class ViewerWidget extends StatefulWidget {
 
 class _ViewerWidgetState extends State<ViewerWidget>
     with SingleTickerProviderStateMixin {
+  int prevPage = 0;
   @override
   void initState() {
     super.initState();
 
-    scroll.addListener(() {
+    scroll.addListener(() async {
       currentPage = offset2Page(scroll.offset);
+      if (prevPage != currentPage) {
+        // prevPage = 0;
+        // print(currentPage);
+        // var evictStarts = min(0, currentPage - 5);
+        // var evictEnds = max(currentPage + 5, widget.urls.length);
+        // for (int i = 0; i < evictStarts; i++)
+        //   await CachedNetworkImageProvider(widget.urls[i]).evict();
+        // for (int i = evictEnds; i < widget.urls.length; i++)
+        //   await CachedNetworkImageProvider(widget.urls[i]).evict();
+        prevPage = currentPage;
+      }
     });
     _controller = AnimationController(
       vsync: this,
@@ -64,6 +77,9 @@ class _ViewerWidgetState extends State<ViewerWidget>
         _controller.forward();
       }
     });
+
+    Future.delayed(Duration(milliseconds: 100))
+        .then((value) => _checkLatestRead());
   }
 
   @override
@@ -130,7 +146,6 @@ class _ViewerWidgetState extends State<ViewerWidget>
     }
   }
 
-  bool once = false;
   AnimationController _controller;
 
   void _checkLatestRead() {
@@ -159,11 +174,6 @@ class _ViewerWidgetState extends State<ViewerWidget>
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-
-    if (once == false) {
-      once = true;
-      _checkLatestRead();
-    }
 
     return Scaffold(
       body: SafeArea(
