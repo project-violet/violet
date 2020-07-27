@@ -22,3 +22,13 @@ Italiano - https://github.com/AlexZorzi
 ## Web App Support?
 
 After making version 1.0.0, it will be ported to Web App.
+
+## Dependencies
+
+Downloader Library
+
+https://github.com/project-violet/libviolet
+
+Database Extraction Library
+
+https://github.com/project-violet/p7zip
