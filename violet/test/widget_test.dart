@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 
 // import 'package:violet/main.dart';
 import 'package:violet/component/download/pixiv.dart';
+import 'package:violet/component/download/twitter.dart';
 import 'package:violet/component/downloadable.dart';
 
 void main() {
@@ -72,23 +73,44 @@ void main() {
   //       ));
   // });
 
-  test('Hitomi Test', () async {
-    var url = 'https://hitomi.la/galleries/1685671.html';
+  // test('Hitomi Test', () async {
+  //   var url = 'https://hitomi.la/galleries/1685671.html';
+
+  //   // var html = (await http.get(url)).body;
+  //   var im = HitomiDonwloadManager();
+  //   await im.createTask(
+  //       url,
+  //       GeneralDownloadProgress(
+  //         progressCallback: (a, b) {
+  //           print(a.toString() + '/' + b.toString());
+  //         },
+  //         simpleInfoCallback: (a) {
+  //           print(a);
+  //         },
+  //         thumbnailCallback: (a, b) {
+  //           print(a);
+  //         },
+  //       ));
+  // });
+
+  test('Twitter Test', () async {
+    // print(await TwitterAPI.userByScreenName('WkfxjfrP'));
+    print(await TwitterAPI.timeline('945314922065305600'));
 
     // var html = (await http.get(url)).body;
-    var im = HitomiDonwloadManager();
-    await im.createTask(
-        url,
-        GeneralDownloadProgress(
-          progressCallback: (a, b) {
-            print(a.toString() + '/' + b.toString());
-          },
-          simpleInfoCallback: (a) {
-            print(a);
-          },
-          thumbnailCallback: (a, b) {
-            print(a);
-          },
-        ));
+    // var im = HitomiDonwloadManager();
+    // await im.createTask(
+    //     url,
+    //     GeneralDownloadProgress(
+    //       progressCallback: (a, b) {
+    //         print(a.toString() + '/' + b.toString());
+    //       },
+    //       simpleInfoCallback: (a) {
+    //         print(a);
+    //       },
+    //       thumbnailCallback: (a, b) {
+    //         print(a);
+    //       },
+    //     ));
   });
 }

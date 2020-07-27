@@ -103,7 +103,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
     double xx = 0.0;
     for (int i = 0; i < page; i++) {
       xx += widget.galleryItems[i].loaded ? widget.galleryItems[i].height : 300;
-      xx += 4;
+      // xx += 4;
     }
     return xx;
   }
@@ -187,7 +187,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
                       cacheExtent: height * 4,
                       itemBuilder: (context, index) {
                         return Container(
-                          padding: EdgeInsets.all(2),
+                          // padding: EdgeInsets.all(2),
                           child: GalleryExampleItemThumbnail(
                             galleryExampleItem: widget.galleryItems[index],
                             onTap: () => _transToGalleryView(context, index),
@@ -244,33 +244,33 @@ class _ViewerWidgetState extends State<ViewerWidget>
   Widget _touchArea() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
-        if (!_overlayOpend) {
-          if (_controller.isCompleted) {
-            _controller.reverse();
-          } else {
-            _controller.forward();
-          }
-          SystemChrome.setEnabledSystemUIOverlays(
-              [SystemUiOverlay.bottom, SystemUiOverlay.top]);
-        } else {
-          if (_controller.isCompleted) {
-            _controller.reverse();
-          } else {
-            _controller.forward();
-          }
-          SystemChrome.setEnabledSystemUIOverlays([]);
-        }
-        _overlayOpend = !_overlayOpend;
-      },
-      child: Align(
-        alignment: Alignment.center,
-        child: Container(
-          color: null,
-          width: width / 3,
-          height: height,
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        color: null,
+        width: width / 3,
+        height: height,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            if (!_overlayOpend) {
+              if (_controller.isCompleted) {
+                _controller.reverse();
+              } else {
+                _controller.forward();
+              }
+              SystemChrome.setEnabledSystemUIOverlays(
+                  [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+            } else {
+              if (_controller.isCompleted) {
+                _controller.reverse();
+              } else {
+                _controller.forward();
+              }
+              SystemChrome.setEnabledSystemUIOverlays([]);
+            }
+            _overlayOpend = !_overlayOpend;
+          },
         ),
       ),
     );
