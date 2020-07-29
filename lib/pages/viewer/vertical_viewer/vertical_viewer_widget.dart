@@ -241,36 +241,37 @@ class _ViewerWidgetState extends State<ViewerWidget>
               //     ),
               //   ),
               // ),
-              ListView.builder(
-                itemCount: widget.urls.length,
-                controller: scroll,
-                cacheExtent: height * 4,
-                itemBuilder: (context, index) {
-                  return Container(
-                    child: VerticalViewerHolder(
-                      galleryExampleItem: widget.galleryItems[index],
-                      onTap: () => _transToGalleryView(context, index),
-                    ),
-                  );
-                },
-              ),
+              // ListView.builder(
+              //   itemCount: widget.urls.length,
+              //   controller: scroll,
+              //   cacheExtent: height * 2,
+              //   itemBuilder: (context, index) {
+              //     return Container(
+              //       child: VerticalViewerHolder(
+              //         galleryExampleItem: widget.galleryItems[index],
+              //         onTap: () => _transToGalleryView(context, index),
+              //       ),
+              //     );
+              //   },
+              // ),
               // PhotoView.customChild(
               //   minScale: 1.0,
               //   child: Container(
               //     color: const Color(0xff444444),
-              //     child: ListView.builder(
-              //       itemCount: widget.urls.length,
-              //       controller: scroll,
-              //       cacheExtent: height * 4,
-              //       itemBuilder: (context, index) {
-              //         return Container(
-              //           child: GalleryExampleItemThumbnail(
-              //             galleryExampleItem: widget.galleryItems[index],
-              //             onTap: () => _transToGalleryView(context, index),
-              //           ),
-              //         );
-              //       },
-              //     ),
+              //     child:
+              // ListView.builder(
+              //   itemCount: widget.urls.length,
+              //   controller: scroll,
+              //   cacheExtent: height * 2,
+              //   itemBuilder: (context, index) {
+              //     return Container(
+              //       child: VerticalViewerHolder(
+              //         galleryExampleItem: widget.galleryItems[index],
+              //         onTap: () => _transToGalleryView(context, index),
+              //       ),
+              //     );
+              //   },
+              // ),
               //   ),
               // ),
               // ZoomableWidget(
@@ -292,44 +293,44 @@ class _ViewerWidgetState extends State<ViewerWidget>
               //   maxScale: 5.0,
               //   minScale: 0.5,
               //   multiFingersPan: false,
-              // ZoomableList(
-              //   maxScale: 2.0,
-              //   flingFactor: 1.0,
-              //   // child: ListView.builder(
-              //   //   itemCount: widget.urls.length,
-              //   //   controller: scroll,
-              //   //   cacheExtent: height * 4,
-              //   //   itemBuilder: (context, index) {
-              //   //     return Container(
-              //   //       child: GalleryExampleItemThumbnail(
-              //   //         galleryExampleItem: widget.galleryItems[index],
-              //   //         onTap: () => _transToGalleryView(context, index),
-              //   //       ),
-              //   //     );
-              //   //   },
-              //   // ),
-              //   child: Column(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: ll,
-              //     // children: <Widget>[
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[0].url,
-              //     //           header: widget.galleryItems[0].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[1].url,
-              //     //           header: widget.galleryItems[1].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[2].url,
-              //     //           header: widget.galleryItems[2].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[3].url,
-              //     //           header: widget.galleryItems[3].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[4].url,
-              //     //           header: widget.galleryItems[4].headers)),
-              //     // ],
-              //   ),
-              // ),
+              ZoomableList(
+                maxScale: 2.0,
+                flingFactor: 1.0,
+                // child: ListView.builder(
+                //   itemCount: widget.urls.length,
+                //   controller: scroll,
+                //   cacheExtent: height * 4,
+                //   itemBuilder: (context, index) {
+                //     return Container(
+                //       child: GalleryExampleItemThumbnail(
+                //         galleryExampleItem: widget.galleryItems[index],
+                //         onTap: () => _transToGalleryView(context, index),
+                //       ),
+                //     );
+                //   },
+                // ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: ll,
+                  // children: <Widget>[
+                  //   Image(
+                  //       image: AdvancedNetworkImage(widget.galleryItems[0].url,
+                  //           header: widget.galleryItems[0].headers)),
+                  //   Image(
+                  //       image: AdvancedNetworkImage(widget.galleryItems[1].url,
+                  //           header: widget.galleryItems[1].headers)),
+                  //   Image(
+                  //       image: AdvancedNetworkImage(widget.galleryItems[2].url,
+                  //           header: widget.galleryItems[2].headers)),
+                  //   Image(
+                  //       image: AdvancedNetworkImage(widget.galleryItems[3].url,
+                  //           header: widget.galleryItems[3].headers)),
+                  //   Image(
+                  //       image: AdvancedNetworkImage(widget.galleryItems[4].url,
+                  //           header: widget.galleryItems[4].headers)),
+                  // ],
+                ),
+              ),
               _touchArea(),
               _topAppBar(),
               _bottomAppBar(),
