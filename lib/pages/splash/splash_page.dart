@@ -256,8 +256,7 @@ class _SplashPageState extends State<SplashPage> {
                                             .replaceFirst(
                                                 '%s',
                                                 imgSize[Translations.of(context)
-                                                    .locale
-                                                    .languageCode]));
+                                                    .dbLanguageCode]));
                                   },
                                 ),
                               ),
@@ -367,6 +366,8 @@ class _SplashPageState extends State<SplashPage> {
                                         return;
                                       }
                                     }
+                                    print(Translations.of(context)
+                                        .dbLanguageCode);
                                     Navigator.of(context).pushReplacement(
                                         MaterialPageRoute(
                                             builder: (context) =>
@@ -374,8 +375,7 @@ class _SplashPageState extends State<SplashPage> {
                                                   dbType: globalCheck
                                                       ? 'global'
                                                       : Translations.of(context)
-                                                          .locale
-                                                          .languageCode,
+                                                          .dbLanguageCode,
                                                   isExistsDataBase: false,
                                                 )));
                                   },
@@ -482,8 +482,8 @@ class _SplashPageState extends State<SplashPage> {
                                 ExCountry.create('JP'),
                                 ExCountry.create('CN', script: 'Hant'),
                                 ExCountry.create('CN', script: 'Hans'),
-                                ExCountry.create('IT'),
-                                ExCountry.create('ES'),
+                                // ExCountry.create('IT'),
+                                // ExCountry.create('ES'),
                                 // CountryPickerUtils.getCountryByIsoCode('RU'),
                               ],
                               itemBuilder: (Country country) {
