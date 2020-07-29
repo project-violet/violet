@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 class Translations {
   Translations(this.locale);
 
-  final Locale locale;
+  Locale locale;
 
   // Latest instance
   static Translations instance;
@@ -21,14 +21,21 @@ class Translations {
 
   Map<String, String> _sentences;
 
+  String dbLanguageCode;
+
   Future<bool> load([String code]) async {
     if (code == null) {
       code = locale.languageCode;
+      dbLanguageCode = code;
       if (!code.contains('_')) {
         if (locale.scriptCode != null && locale.scriptCode != '')
           code += '_' + this.locale.scriptCode;
       }
       instance = this;
+    } else if (code.contains('_')) {
+      dbLanguageCode = code.split('_')[0];
+    } else {
+      dbLanguageCode = code;
     }
 
     String data = await rootBundle.loadString('assets/locale/$code.json');
