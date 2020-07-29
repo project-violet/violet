@@ -36,7 +36,7 @@ import 'package:violet/files.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/update_sync.dart';
-import 'package:violet/pages/viewer/vertical_viewer_widget.dart';
+import 'package:violet/pages/viewer/vertical_viewer/vertical_viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
