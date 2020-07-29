@@ -4,6 +4,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:circular_check_box/circular_check_box.dart';
+import 'package:country_pickers/country.dart';
+import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -14,6 +16,8 @@ import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/settings/settings_page.dart';
+import 'package:violet/settings.dart';
 import 'package:violet/update_sync.dart';
 
 class SplashPage extends StatefulWidget {
@@ -33,6 +37,8 @@ class _SplashPageState extends State<SplashPage> {
     'jp': '165MB',
     'zh': '85MB',
   };
+
+  final dbSuppors = {'global', 'ko', 'en', 'jp', 'zh'};
 
   final imgZipSize = {
     'global': '32MB',
@@ -449,7 +455,55 @@ class _SplashPageState extends State<SplashPage> {
                       ],
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => Theme(
+                          data: Theme.of(context)
+                              .copyWith(primaryColor: Colors.pink),
+                          child: CountryPickerDialog(
+                              titlePadding: EdgeInsets.symmetric(vertical: 16),
+                              // searchCursorColor: Colors.pinkAccent,
+                              // searchInputDecoration:
+                              //     InputDecoration(hintText: 'Search...'),
+                              // isSearchable: true,
+                              title: Text('Select Language'),
+                              onValuePicked: (Country country) async {
+                                var exc = country as ExCountry;
+                                await Translations.of(context)
+                                    .load(exc.toString());
+                                await Settings.setLanguage(exc.toString());
+                                setState(() {});
+                              },
+                              itemFilter: (c) => [].contains(c.isoCode),
+                              priorityList: [
+                                ExCountry.create('US'),
+                                ExCountry.create('KR'),
+                                ExCountry.create('JP'),
+                                ExCountry.create('CN', script: 'Hant'),
+                                ExCountry.create('CN', script: 'Hans'),
+                                ExCountry.create('IT'),
+                                ExCountry.create('ES'),
+                                // CountryPickerUtils.getCountryByIsoCode('RU'),
+                              ],
+                              itemBuilder: (Country country) {
+                                return Container(
+                                  child: Row(
+                                    children: <Widget>[
+                                      CountryPickerUtils.getDefaultFlagImage(
+                                          country),
+                                      SizedBox(
+                                        width: 8.0,
+                                        height: 30,
+                                      ),
+                                      Text(
+                                          "${(country as ExCountry).getDisplayLanguage()}"),
+                                    ],
+                                  ),
+                                );
+                              })),
+                    );
+                  },
                 ),
               ),
             ),
