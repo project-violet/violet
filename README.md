@@ -17,6 +17,7 @@ Thanks for translation
 ```
 Italiano - https://github.com/AlexZorzi
 中文-简化字 - https://github.com/casteryh
+Español - https://github.com/Culombiano
 ```
 
 ## Web App Support?
