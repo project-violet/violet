@@ -3,7 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:violet/pages/viewer/vertical_viewer_widget.dart';
+import 'package:violet/pages/viewer/vertical_viewer/vertical_viewer_widget.dart';
 
 int currentPage = 0;
 

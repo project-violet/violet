@@ -11,12 +11,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:flutter_advanced_networkimage/zoomable.dart';
+// import 'package:flutter_advanced_networkimage/provider.dart';
+// import 'package:flutter_advanced_networkimage/zoomable.dart';
 import 'package:hive/hive.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
+import 'package:violet/pages/viewer/vertical_viewer/vertical_holder.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
+// import 'package:violet/pages/viewer/zoomable_widget.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/locale.dart';
 import 'package:violet/pages/viewer/gallery_item.dart';
@@ -57,12 +63,35 @@ class _ViewerWidgetState extends State<ViewerWidget>
       if (prevPage != currentPage) {
         // prevPage = 0;
         // print(currentPage);
+        // print("cc: " + imageCache.currentSizeBytes.toString());
+        // print("ss: " + imageCache.liveImageCount.toString());
         // var evictStarts = min(0, currentPage - 5);
         // var evictEnds = max(currentPage + 5, widget.urls.length);
-        // for (int i = 0; i < evictStarts; i++)
+        // for (int i = 0; i < evictStarts; i++) {
         //   await CachedNetworkImageProvider(widget.urls[i]).evict();
-        // for (int i = evictEnds; i < widget.urls.length; i++)
+        //   final key = CachedNetworkImageProvider(widget.urls[i])
+        //       .obtainKey(ImageConfiguration.empty);
+        //   imageCache.maximumSizeBytes = 500 * 1024 * 1024;
+        //   // imageCache.putIfAbsent(key, () => null);
+        //   imageCache.evict(key);
+        // }
+        // for (int i = evictEnds; i < widget.urls.length; i++) {
         //   await CachedNetworkImageProvider(widget.urls[i]).evict();
+        //   final key = CachedNetworkImageProvider(widget.urls[i])
+        //       .obtainKey(ImageConfiguration.empty);
+        //   imageCache.maximumSizeBytes = 500 * 1024 * 1024;
+        //   // imageCache.putIfAbsent(key, () => null);
+        //   imageCache.evict(key);
+        // }
+        // print("ee: " + imageCache.liveImageCount.toString());
+        // void provider1 = CachedNetworkImageProvider(widget.urls[0]);
+        // final key = await provider1.obtainKey(ImageConfiguration.empty);
+        // final key = CachedNetworkImageProvider(widget.urls[0])
+        //     .obtainKey(ImageConfiguration.empty);
+        // imageCache.maximumSizeBytes = 500 * 1024 * 1024;
+        // imageCache.putIfAbsent(key, () => null);
+        // imageCache.clearLiveImages();
+        // imageCache.clear();
         prevPage = currentPage;
       }
     });
@@ -80,12 +109,20 @@ class _ViewerWidgetState extends State<ViewerWidget>
 
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
+
+    clearTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      imageCache.clearLiveImages();
+      imageCache.clear();
+    });
   }
+
+  Timer clearTimer;
 
   @override
   void dispose() {
     scroll.dispose();
     _controller.dispose();
+    clearTimer.cancel();
 
     PaintingBinding.instance.imageCache.clear();
 
@@ -175,71 +212,132 @@ class _ViewerWidgetState extends State<ViewerWidget>
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
 
+    var ll = List<Widget>();
+
+    widget.galleryItems.forEach((element) {
+      ll.add(VerticalViewerHolder(
+        galleryExampleItem: element,
+        // onTap: () => _transToGalleryView(context, index),
+      ));
+    });
+
     return Scaffold(
       body: SafeArea(
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) => Stack(
             children: <Widget>[
+              // ZoomableWidget(
+              //   maxScale: 5.0,
+              //   minScale: 0.5,
+              //   multiFingersPan: false,
+              //   // autoCenter: true,
+              //   child: Container(
+              //     color: const Color(0xff444444),
+              //     child: ListView.builder(
+              //       itemCount: widget.urls.length,
+              //       controller: scroll,
+              //       cacheExtent: height * 4,
+              //       itemBuilder: (context, index) {
+              //         return Container(
+              //           child: GalleryExampleItemThumbnail(
+              //             galleryExampleItem: widget.galleryItems[index],
+              //             onTap: () => _transToGalleryView(context, index),
+              //           ),
+              //         );
+              //       },
+              //     ),
+              //   ),
+              // ),
+              // ListView.builder(
+              //   itemCount: widget.urls.length,
+              //   controller: scroll,
+              //   cacheExtent: height * 2,
+              //   itemBuilder: (context, index) {
+              //     return Container(
+              //       child: VerticalViewerHolder(
+              //         galleryExampleItem: widget.galleryItems[index],
+              //         onTap: () => _transToGalleryView(context, index),
+              //       ),
+              //     );
+              //   },
+              // ),
               PhotoView.customChild(
                 minScale: 1.0,
                 child: Container(
                   color: const Color(0xff444444),
-                  child: DraggableScrollbar(
-                    backgroundColor:
-                        Settings.themeWhat ? Colors.black : Colors.white,
+                  child: ListView.builder(
+                    itemCount: widget.urls.length,
                     controller: scroll,
-                    labelTextBuilder: (double offset) =>
-                        Text("${offset2Page(offset)}"),
-                    child: ListView.builder(
-                      itemCount: widget.urls.length,
-                      controller: scroll,
-                      cacheExtent: height * 4,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          // padding: EdgeInsets.all(2),
-                          child: GalleryExampleItemThumbnail(
-                            galleryExampleItem: widget.galleryItems[index],
-                            onTap: () => _transToGalleryView(context, index),
-                          ),
-                        );
-                      },
-                    ),
-                    heightScrollThumb: 48.0,
-                    scrollThumbBuilder: (
-                      Color backgroundColor,
-                      Animation<double> thumbAnimation,
-                      Animation<double> labelAnimation,
-                      double height, {
-                      Text labelText,
-                      BoxConstraints labelConstraints,
-                    }) {
-                      if (labelText != null &&
-                          labelText.data != null &&
-                          labelText.data.trim() != '')
-                        latestLabel = labelText.data;
-                      return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            ScrollLabel(
-                              animation: labelAnimation,
-                              child: Text(latestLabel),
-                              backgroundColor: backgroundColor,
-                            ),
-                            FadeTransition(
-                              opacity: thumbAnimation,
-                              child: Container(
-                                height: height,
-                                width: 6.0,
-                                color: backgroundColor.withOpacity(0.6),
-                              ),
-                            )
-                          ]);
+                    cacheExtent: height * 2,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        child: VerticalViewerHolder(
+                          galleryExampleItem: widget.galleryItems[index],
+                          onTap: () => _transToGalleryView(context, index),
+                        ),
+                      );
                     },
                   ),
                 ),
               ),
+              // ZoomableWidget(
+              //   child: ListView.builder(
+              //     itemCount: widget.urls.length,
+              //     controller: scroll,
+              //     cacheExtent: height * 4,
+              //     itemBuilder: (context, index) {
+              //       return Container(
+              //         child: GalleryExampleItemThumbnail(
+              //           galleryExampleItem: widget.galleryItems[index],
+              //           onTap: () => _transToGalleryView(context, index),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
+              // ZoomableWidget(
+              //   maxScale: 5.0,
+              //   minScale: 0.5,
+              //   multiFingersPan: false,
+              // ZoomableList(
+              //   maxScale: 2.0,
+              //   flingFactor: 1.0,
+              //   // child: ListView.builder(
+              //   //   itemCount: widget.urls.length,
+              //   //   controller: scroll,
+              //   //   cacheExtent: height * 4,
+              //   //   itemBuilder: (context, index) {
+              //   //     return Container(
+              //   //       child: GalleryExampleItemThumbnail(
+              //   //         galleryExampleItem: widget.galleryItems[index],
+              //   //         onTap: () => _transToGalleryView(context, index),
+              //   //       ),
+              //   //     );
+              //   //   },
+              //   // ),
+              //   child: Column(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: ll,
+              //     // children: <Widget>[
+              //     //   Image(
+              //     //       image: AdvancedNetworkImage(widget.galleryItems[0].url,
+              //     //           header: widget.galleryItems[0].headers)),
+              //     //   Image(
+              //     //       image: AdvancedNetworkImage(widget.galleryItems[1].url,
+              //     //           header: widget.galleryItems[1].headers)),
+              //     //   Image(
+              //     //       image: AdvancedNetworkImage(widget.galleryItems[2].url,
+              //     //           header: widget.galleryItems[2].headers)),
+              //     //   Image(
+              //     //       image: AdvancedNetworkImage(widget.galleryItems[3].url,
+              //     //           header: widget.galleryItems[3].headers)),
+              //     //   Image(
+              //     //       image: AdvancedNetworkImage(widget.galleryItems[4].url,
+              //     //           header: widget.galleryItems[4].headers)),
+              //     // ],
+              //   ),
+              // ),
               _touchArea(),
               _topAppBar(),
               _bottomAppBar(),
@@ -251,7 +349,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
   }
 
   bool _overlayOpend = false;
-  Widget _touchArea() {
+  _touchArea() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Align(
@@ -286,7 +384,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
     );
   }
 
-  Widget _topAppBar() {
+  _topAppBar() {
     return Transform.translate(
       offset: Offset(0, -_controller.value * 64),
       child: Container(
@@ -306,7 +404,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
     );
   }
 
-  Widget _bottomAppBar() {
+  _bottomAppBar() {
     final height = MediaQuery.of(context).size.height;
     final bottom = MediaQuery.of(context).padding.bottom;
     return Transform.translate(
@@ -331,141 +429,4 @@ class _ViewerWidgetState extends State<ViewerWidget>
   }
 
   String latestLabel = '';
-}
-
-class GalleryExampleItemThumbnail extends StatelessWidget {
-  GalleryExampleItemThumbnail({
-    Key key,
-    this.galleryExampleItem,
-    this.onTap,
-  }) : super(key: key);
-
-  final GalleryExampleItem galleryExampleItem;
-
-  final GestureTapCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width - 4;
-    return Container(
-      child: FutureBuilder(
-        future: galleryExampleItem.loaded
-            ? Future.value(1)
-            : Future.delayed(Duration(milliseconds: 1000)).then((value) => 1),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return SizedBox(
-              height:
-                  galleryExampleItem.loaded ? galleryExampleItem.height : 300.0,
-              child: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-            );
-          }
-          return FutureBuilder(
-            future: _calculateImageDimension(),
-            builder: (context, AsyncSnapshot<Size> snapshot) {
-              if (snapshot.hasData) {
-                galleryExampleItem.loaded = true;
-                galleryExampleItem.height = width / snapshot.data.aspectRatio;
-              }
-              return SizedBox(
-                height: galleryExampleItem.loaded
-                    ? galleryExampleItem.height
-                    : 300.0,
-                // child: GestureDetector(
-                // onTap: onTap,
-                child: Hero(
-                  tag: galleryExampleItem.id.toString(),
-                  child: CachedNetworkImage(
-                    // galleryExampleItem.url,
-                    // headers: galleryExampleItem.headers,
-                    // height: galleryExampleItem.loaded
-                    //     ? galleryExampleItem.height
-                    //     : 300.0,
-                    // // cacheWidth: width.toInt(),
-                    // // placeholder: (context, url) => Center(
-                    // //   child: SizedBox(
-                    // //     child: CircularProgressIndicator(),
-                    // //     width: 30,
-                    // //     height: 30,
-                    // //   ),
-                    // // ),
-                    // // placeholderFadeInDuration: Duration(microseconds: 500),
-                    // // fadeInDuration: Duration(microseconds: 500),
-                    // // fadeInCurve: Curves.easeIn,
-                    // // fit: BoxFit.fill,
-                    // loadingBuilder: (context, child, progress) {
-                    //   if (progress == null) return child;
-                    //   return Center(
-                    //     child: SizedBox(
-                    //       child: CircularProgressIndicator(
-                    //           value: 1.0 *
-                    //               progress.cumulativeBytesLoaded /
-                    //               progress.expectedTotalBytes),
-                    //       width: 30,
-                    //       height: 30,
-                    //     ),
-                    //   );
-                    // },
-                    // memCacheWidth: width.toInt(),
-                    // memCacheHeight: ,
-                    imageUrl: galleryExampleItem.url,
-                    httpHeaders: galleryExampleItem.headers,
-                    // placeholder: (context, url) => Center(
-                    //   child: SizedBox(
-                    //     child: CircularProgressIndicator(),
-                    //     width: 30,
-                    //     height: 30,
-                    //   ),
-                    // ),
-                    // placeholderFadeInDuration: Duration(microseconds: 500),
-                    fadeInDuration: Duration(microseconds: 500),
-                    fadeInCurve: Curves.easeIn,
-                    progressIndicatorBuilder: (context, string, progress) {
-                      return Center(
-                        child: SizedBox(
-                          child: CircularProgressIndicator(
-                              value: progress.progress),
-                          width: 30,
-                          height: 30,
-                        ),
-                      );
-                    },
-                  ),
-                  //   ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Future<Size> _calculateImageDimension() async {
-    Completer<Size> completer = Completer();
-    Image image = new Image(
-        image: CachedNetworkImageProvider(galleryExampleItem.url,
-            headers: galleryExampleItem.headers));
-    // Image image = new Image.network(
-    // galleryExampleItem.url,
-    // headers: galleryExampleItem.headers,
-    // );
-
-    image.image.resolve(ImageConfiguration()).addListener(
-      ImageStreamListener(
-        (ImageInfo image, bool synchronousCall) {
-          var myImage = image.image;
-          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-          if (!completer.isCompleted) completer.complete(size);
-        },
-      ),
-    );
-    return completer.future;
-  }
 }
