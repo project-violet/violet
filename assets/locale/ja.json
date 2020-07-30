@@ -180,5 +180,15 @@
     "state": "状態",
     "addurl": " URLを直接追加",
     "writeurl": "URL入力してください。",
-    "nothingtodownload": "ダウンロードするコンテンツがありません:("
+    "nothingtodownload": "ダウンロードするコンテンツがありません:(",
+
+    
+    "maindiscord": "Violetディスコードチャンネル訪問する",
+    "maincontact": "開発者に連絡する",
+    "maingithub": "羽ハブプロジェクト訪問する",
+    "mainversion": "バージョン",
+    "maindb": "データベース",
+    "mainread": "読んだ作品数",
+    "mainbookmark": "ブックマーク数",
+    "maindownload": "ダウンロードすることができ"
 }

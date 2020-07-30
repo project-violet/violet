@@ -180,5 +180,14 @@
     "state": "상태",
     "addurl": "URL 직접 추가",
     "writeurl": "URL을 입력해주세요.",
-    "nothingtodownload": "다운로드할 내용이 없습니다 :("
+    "nothingtodownload": "다운로드할 내용이 없습니다 :(",
+    
+    "maindiscord": "Violet 디스코드 채널",
+    "maincontact": "개발자에게 연락하기",
+    "maingithub": "Github 프로젝트 방문하기",
+    "mainversion": "버전",
+    "maindb": "데이터베이스",
+    "mainread": "읽은 작품 수",
+    "mainbookmark": "북마크 수",
+    "maindownload": "다운로드 수"
 }

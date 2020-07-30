@@ -181,5 +181,14 @@
   "state": "状态",
   "addurl": "添加URL",
   "writeurl": "请输入URL.",
-  "nothingtodownload": "没有可以下载的东西 :("
+  "nothingtodownload": "没有可以下载的东西 :(",
+
+    "maindiscord": "参观紫罗兰Discord频道！",
+    "maincontact": "联络开发人员",
+    "maingithub": "参观Github项目",
+    "mainversion": "版",
+    "maindb": "数据库",
+    "mainread": "读取",
+    "mainbookmark": "书签",
+    "maindownload": "下载"
 }

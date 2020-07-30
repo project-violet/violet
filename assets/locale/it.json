@@ -181,5 +181,14 @@
     "state": "Stato",
     "addurl": "Aggiungi URL",
     "writeurl": "Scrivi URL.",
-    "nothingtodownload": "Niente da scaricare :("
+    "nothingtodownload": "Niente da scaricare :(",
+    
+    "maindiscord": "Visit violet Discord Channel!",
+    "maincontact": "Cotact Developer",
+    "maingithub": "Visit Github Project",
+    "mainversion": "Version",
+    "maindb": "Database",
+    "mainread": "Read",
+    "mainbookmark": "Boomkark",
+    "maindownload": "Donwload"
 }

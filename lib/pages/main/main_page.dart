@@ -5,18 +5,24 @@ import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:division/division.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
+import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/download.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/dialogs.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
@@ -36,6 +42,7 @@ class _MainPageState extends State<MainPage> {
   var currentPage2 = images.length - 1.0;
   int count = 0;
   bool ee = false;
+  int _current = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -51,42 +58,13 @@ class _MainPageState extends State<MainPage> {
 
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return
-        // Stack(
-        //   children: <Widget>[
-        // Visibility(
-        //     visible: count >= 10,
-        //     child: Draggable(
-        //         feedback: Lottie.asset('assets/lottie/26438-drone-flight.json'),
-        //         child: Lottie.asset('assets/lottie/26438-drone-flight.json'))),
-        Container(
-      //color: Color(0x2FB200ED),
-      //decoration:
-      // BoxDecoration(
-      //   boxShadow: [
-      //     // const BoxShadow(
-      //     //   color: Color(0x2FB200ED),
-      //     //   //color: Colors.black,
-      //     // ),
-      //     const BoxShadow(
-      //       //color: Colors.black,
-      //       color: Color(0x2FB200ED),
-      //       //offset: Offset(0,10),
-      //       spreadRadius: -12.0,
-      //       blurRadius: 12.0,
-      //     ),
-      //   ],
-      //   color: Color(0x2FB200ED),
-      // ),
-      // ShapeDecoration(
-      //   color: Color(0x2FB200EB),
-      //   shape: Border(bottom: BorderSide(width: 4)),
-      //   // shadows: [
-      //   //   const BoxShadow(
-      //   //     color: Colors.purple
-      //   //   ),
-      //   // ],
-      // ),
+    final cardList = [
+      DiscordCard(),
+      ContactCard(),
+      GithubCard(),
+    ];
+
+    return Container(
       child: Padding(
         padding: EdgeInsets.only(top: statusBarHeight),
         child: SingleChildScrollView(
@@ -94,14 +72,14 @@ class _MainPageState extends State<MainPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(80),
+                padding: EdgeInsets.all(4),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text('Notice', //Translations.of(context).trans('notice'),
+                    Text('Violet',
                         style: TextStyle(
                           fontSize: 46.0,
                           fontFamily: "Calibre-Semibold",
@@ -110,53 +88,59 @@ class _MainPageState extends State<MainPage> {
                   ],
                 ),
               ),
+              _versionArea(),
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 70,
+                  aspectRatio: 16 / 9,
+                  viewportFraction: 1.0,
+                  initialPage: 0,
+                  enableInfiniteScroll: false,
+                  reverse: false,
+                  autoPlay: true,
+                  autoPlayInterval: Duration(seconds: 10),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  enlargeCenterPage: true,
+                  scrollDirection: Axis.horizontal,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _current = index;
+                    });
+                  },
+                ),
+                items: cardList.map((card) {
+                  return Builder(
+                    builder: (BuildContext context) => card,
+                  );
+                }).toList(),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [1, 2, 3].map((url) {
+                  int index = [1, 2, 3].indexOf(url);
+                  return Container(
+                    width: 8.0,
+                    height: 8.0,
+                    margin:
+                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _current == index
+                          ? Settings.themeWhat
+                              ? Color.fromRGBO(255, 255, 255, 0.9)
+                              : Color.fromRGBO(0, 0, 0, 0.9)
+                          : Settings.themeWhat
+                              ? Color.fromRGBO(255, 255, 255, 0.4)
+                              : Color.fromRGBO(0, 0, 0, 0.4),
+                    ),
+                  );
+                }).toList(),
+              ),
               Padding(
                 padding: EdgeInsets.all(12),
               ),
-              // Text(
-              //   Translations.of(context).trans('notice1'),
-              // ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: Translations.of(context).trans('notice21'),
-                      style: TextStyle(
-                          color:
-                              Settings.themeWhat ? Colors.white : Colors.black),
-                    ),
-                    TextSpan(
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontStyle: FontStyle.italic,
-                        decoration: TextDecoration.underline,
-                      ),
-                      text: 'violet.dev.master@gmail.com',
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () async {
-                          final url = 'mailto:violet.dev.master@gmail.com';
-                          if (await canLaunch(url)) {
-                            await launch(
-                              url,
-                              forceSafariVC: false,
-                            );
-                          }
-                        },
-                    ),
-                    TextSpan(
-                      text: Translations.of(context).trans('notice22'),
-                      style: TextStyle(
-                          color:
-                              Settings.themeWhat ? Colors.white : Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-              // Text(Translations.of(context).trans('notice3')),
-              Text(''),
-              Text(Translations.of(context).trans('notice4')),
-              Text(Translations.of(context).trans('notice5')),
-              Text(''),
+              _userArea(),
               UpdateCard(
                 clickEvent: () async {
                   count++;
@@ -172,186 +156,205 @@ class _MainPageState extends State<MainPage> {
                   setState(() {});
                 },
               ),
-
-              Visibility(
-                visible: count >= 10 && ee,
-                child: Stack(children: <Widget>[
-                  // Lottie.asset('assets/lottie/26438-drone-flight.json'),
-                  Lottie.network(
-                      'https://raw.githubusercontent.com/xvrh/lottie-flutter/master/example/assets/lottiefiles/fabulous_onboarding_animation.json')
-                ]),
-              ),
-              Visibility(
-                visible: count >= 20 && !ee,
-                child: Stack(children: <Widget>[
-                  // Lottie.asset('assets/lottie/26438-drone-flight.json'),
-                  Lottie.asset(
-                      'assets/lottie/24208-menhera-chan-at-cocopry-sticker-10.json')
-                ]),
-              ),
-
-              // Container(
-              //   width: 88,
-              //   height: 30,
-              //   decoration: BoxDecoration(
-              //       color: Color(0xff00D99E),
-              //       borderRadius: BorderRadius.circular(15),
-              //       boxShadow: [
-              //         BoxShadow(
-              //             blurRadius: 8,
-              //             offset: Offset(0, 15),
-              //             color: Color(0xff00D99E).withOpacity(.6),
-              //             spreadRadius: -9)
-              //       ]),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: <Widget>[
-              //       Icon(
-              //         Icons.shopping_cart,
-              //         size: 12,
-              //       ),
-              //       SizedBox(width: 6),
-              //       Text("CART",
-              //           style: TextStyle(
-              //             fontSize: 10,
-              //             color: Colors.white,
-              //             letterSpacing: 1,
-              //           ))
-              //     ],
-              //   ),
-              // ),
-              // Container(
-              //   child: GradientCard(
-              //     gradient: Gradients.backToFuture,
-              //     shadowColor:
-              //         Gradients.backToFuture.colors.last.withOpacity(0.25),
-              //     elevation: 32,
-              //     child: Container(
-              //       width: width - 30,
-              //       height: 150,
-              //     ),
-              //   ),
-              // decoration: BoxDecoration(
-              //   // color: Colors.green,
-              //   borderRadius: BorderRadius.only(
-              //       topLeft: Radius.circular(10),
-              //       topRight: Radius.circular(10),
-              //       bottomLeft: Radius.circular(10),
-              //       bottomRight: Radius.circular(10)),
-              //   boxShadow: [
-              //     BoxShadow(
-              //       color: Colors.orange.withOpacity(0.5),
-              //       spreadRadius: 5,
-              //       blurRadius: 17,
-              //       offset: Offset(0, 3), // changes position of shadow
-              //     ),
-              //   ],
-              // ),
-              // ),
-              // Container(
-              //   // margin:
-              //   //     EdgeInsets.only(left: 30, top: 100, right: 30, bottom: 50),
-              //   height: 50,
-              //   width: 200,
-              //   decoration: BoxDecoration(
-              //     color: Colors.green,
-              //     borderRadius: BorderRadius.only(
-              //         topLeft: Radius.circular(10),
-              //         topRight: Radius.circular(10),
-              //         bottomLeft: Radius.circular(10),
-              //         bottomRight: Radius.circular(10)),
-              //     boxShadow: [
-              //       BoxShadow(
-              //         color: Colors.green.withOpacity(0.5),
-              //         spreadRadius: 5,
-              //         blurRadius: 7,
-              //         offset: Offset(0, 3), // changes position of shadow
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // Text('Copyright (C) 2020. dc-koromo. All rights reserved.'),
-              // Padding(
-              //   padding: EdgeInsets.all(10),
-              // ),
-              // Text('Violet 0.3'),
-              // Text(
-              //   'Thanks to Flutter developers.',
-              //   style: TextStyle(fontStyle: FontStyle.italic),
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.all(100),
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: <Widget>[
-              //       Text(Translations.of(context).trans('news'),
-              //           style: TextStyle(
-              //             fontSize: 46.0,
-              //             fontFamily: "Calibre-Semibold",
-              //             letterSpacing: 1.0,
-              //           )),
-              //     ],
-              //   ),
-              // ),
-              // Container(
-              //   transform: Matrix4.translationValues(0, 0, 0),
-              //   child: Stack(
-              //     children: <Widget>[
-              //       CardScrollWidget(currentPage),
-              //       Positioned.fill(
-              //         child: PageView.builder(
-              //           itemCount: images.length,
-              //           controller: controller,
-              //           reverse: true,
-              //           itemBuilder: (context, index) {
-              //             return Container();
-              //           },
-              //         ),
-              //       )
-              //     ],
-              //   ),
-              // ),
-              // Stack(
-              //   children: <Widget>[
-              //     CardScrollWidget(currentPage2),
-              //     Positioned.fill(
-              //      child: PageView.builder(
-              //        itemCount: images.length,
-              //        controller: controller2,
-              //        reverse: true,
-              //        itemBuilder: (context, index) {
-              //          return Container();
-              //        },
-              //      ),
-              //     )
-              //   ],
-              // ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(vertical: 24.0),
-              //   child: Text(
-              //       '${Translations.of(context).trans('numcunuser')}$userConnectionCount'),
-              // )
-              // StreamBuilder(
-              //   stream: channel.stream,
-              //   builder: (context, snapshot) {
-              //     print(snapshot.data.toString().split(' ')[1]);
-              //     return Padding(
-              //       padding: const EdgeInsets.symmetric(vertical: 24.0),
-              //       child: Text(snapshot.hasData
-              //           ? '${Translations.of(context).trans('numcunuser')}${snapshot.data.toString().split(' ')[1]}'
-              //           : ''),
-              //     );
-              //   },
-              // )
             ],
           ),
         ),
       ),
-      // ),
-      // ],
+    );
+  }
+
+  String numberWithComma(int param) {
+    return new NumberFormat('###,###,###,###')
+        .format(param)
+        .replaceAll(' ', '');
+  }
+
+  _versionArea() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(
+                width: 1.6,
+                color: Settings.themeWhat ? Colors.white : Colors.black,
+                style: BorderStyle.solid)),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                        // '${Translations.of(context).trans('mainversion')}:',
+                        'Version:',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18)),
+                  ),
+                  Text(
+                      ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
+                      style: TextStyle(
+                          fontFamily: "Calibre-Semibold", fontSize: 18))
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                        // '${Translations.of(context).trans('maindb')}:',
+                        'Database:',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18)),
+                  ),
+                  FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Text(' ??',
+                              style: TextStyle(
+                                  fontFamily: "Calibre-Semibold",
+                                  fontSize: 18));
+                        }
+                        return Text(
+                            ' ' +
+                                DateFormat('yyyy-MM-dd').format(DateTime.parse(
+                                    snapshot.data.getString('databasesync'))),
+                            style: TextStyle(
+                                fontFamily: "Calibre-Semibold", fontSize: 18));
+                      }),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _userArea() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            border: Border.all(
+                width: 1.6,
+                color: Settings.themeWhat ? Colors.white : Colors.black,
+                style: BorderStyle.solid)),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                        // '${Translations.of(context).trans('mainread')}:',
+                        'Read:',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18)),
+                  ),
+                  FutureBuilder(future: Future.sync(
+                    () async {
+                      return await (await User.getInstance()).getUserLog();
+                    },
+                  ), builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text(' ??',
+                          style: TextStyle(
+                              fontFamily: "Calibre-Semibold", fontSize: 18));
+                    }
+                    return Text(' ' + numberWithComma(snapshot.data.length),
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18));
+                  }),
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                        // '${Translations.of(context).trans('mainbookmark')}:',
+                        'Bookmark:',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18)),
+                  ),
+                  FutureBuilder(future: Future.sync(
+                    () async {
+                      return await (await Bookmark.getInstance()).getArticle();
+                    },
+                  ), builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text(' ??',
+                          style: TextStyle(
+                              fontFamily: "Calibre-Semibold", fontSize: 18));
+                    }
+                    return Text(' ' + numberWithComma(snapshot.data.length),
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18));
+                  }),
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                        // '${Translations.of(context).trans('maindownload')}:',
+                        'Donwload:',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18)),
+                  ),
+                  FutureBuilder(future: Future.sync(
+                    () async {
+                      return await (await Download.getInstance())
+                          .getDownloadItems();
+                    },
+                  ), builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text(' ??',
+                          style: TextStyle(
+                              fontFamily: "Calibre-Semibold", fontSize: 18));
+                    }
+                    return Text(' ' + numberWithComma(snapshot.data.length),
+                        style: TextStyle(
+                            fontFamily: "Calibre-Semibold", fontSize: 18));
+                  }),
+                ],
+              ),
+              count > 0
+                  ? Row(
+                      children: [
+                        SizedBox(
+                          width: 80,
+                          child: Text(
+                              // '${Translations.of(context).trans('maindownload')}:',
+                              'Tap Count:',
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                  fontFamily: "Calibre-Semibold",
+                                  fontSize: 18)),
+                        ),
+                        Text(' ' + numberWithComma(count),
+                            style: TextStyle(
+                                fontFamily: "Calibre-Semibold", fontSize: 18))
+                      ],
+                    )
+                  : Container(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -447,8 +450,8 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return SizedBox(
-      width: width - 150,
-      height: 100,
+      width: width - 16,
+      height: 75,
       child: PimpedButton(
         particle: MyRectangle2DemoParticle(),
         pimpedWidgetBuilder: (context, controller) {
@@ -499,38 +502,42 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                   // shadowColor: Gradients.backToFuture.colors.last.withOpacity(0.2),
                   // elevation: 8,
                   child: Container(
-                    child: Center(
-                      child: RotationTransition(
-                        turns: Tween(begin: 0.0, end: 0.7)
-                            .animate(rotationController),
-                        child: ShaderMask(
-                          shaderCallback: (bounds) => RadialGradient(
-                            center: Alignment.bottomLeft,
-                            radius: 1.5,
-                            colors: [
-                              Colors.red.shade300,
-                              Colors.purple.shade800
-                            ],
-                            tileMode: TileMode.clamp,
-                          ).createShader(bounds),
-                          child: Icon(
-                            MdiIcons.update,
-                            color: Colors.white,
-                            size: 30,
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: RotationTransition(
+                              turns: Tween(begin: 0.0, end: 0.7)
+                                  .animate(rotationController),
+                              child: Icon(
+                                MdiIcons.update,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                            ),
                           ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Text(
+                              '  Tap Me!',
+                              style: TextStyle(
+                                  fontFamily: "Calibre-Semibold",
+                                  fontSize: 18,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ]
+                        // child: Text(
+                        //   // 'New Version',
+                        //   '',
+                        //   style: TextStyle(
+                        //     fontSize: 30,
+                        //     fontWeight: FontWeight.bold,
+                        //     fontFamily: "Calibre-Semibold",
+                        //     // letterSpacing: 1.0,
+                        //   ),
+                        // ),
                         ),
-                      ),
-                      // child: Text(
-                      //   // 'New Version',
-                      //   '',
-                      //   style: TextStyle(
-                      //     fontSize: 30,
-                      //     fontWeight: FontWeight.bold,
-                      //     fontFamily: "Calibre-Semibold",
-                      //     // letterSpacing: 1.0,
-                      //   ),
-                      // ),
-                    ),
                   ),
                 ),
               ));
@@ -586,4 +593,215 @@ class MyRectangle2DemoParticle extends Particle {
           initialDistance: -pi / randomMirrorOffset),
     ]).paint(canvas, size, progress, seed);
   }
+}
+
+class DiscordCard extends StatefulWidget {
+  @override
+  _DiscordCardState createState() => _DiscordCardState();
+}
+
+class _DiscordCardState extends State<DiscordCard> {
+  bool pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    return SizedBox(
+      width: width - 16,
+      height: 65,
+      child: Parent(
+        style: settingsItemStyle(pressed),
+        gesture: Gestures()
+          ..isTap((isTapped) {
+            setState(() => pressed = isTapped);
+          })
+          ..onTapUp((detail) async {
+            const url = 'https://discord.gg/K8qny6E';
+            if (await canLaunch(url)) {
+              await launch(url);
+            }
+          }),
+        child: Container(
+          width: width - 16,
+          height: 65,
+          margin: EdgeInsets.symmetric(horizontal: 0.0),
+          child: Card(
+            color: Color(0xFF7189da),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  MdiIcons.discord,
+                  color: Colors.white,
+                ),
+                Padding(
+                  padding: Translations.of(context).dbLanguageCode == 'en'
+                      ? EdgeInsets.only(top: 4)
+                      : EdgeInsets.only(top: 0),
+                  child: Text(
+                    '  ${Translations.of(context).trans('maindiscord')}',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontFamily: "Calibre-Semibold",
+                      letterSpacing: 0.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  final settingsItemStyle = (pressed) => ParentStyle()
+    ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
+    ..scale(pressed ? 0.95 : 1.0)
+    ..alignmentContent.center()
+    ..ripple(true)
+    ..animate(150, Curves.easeOut);
+}
+
+class ContactCard extends StatefulWidget {
+  @override
+  _ContactCardState createState() => _ContactCardState();
+}
+
+class _ContactCardState extends State<ContactCard> {
+  bool pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    return SizedBox(
+      width: width - 16,
+      height: 65,
+      child: Parent(
+        style: settingsItemStyle(pressed),
+        gesture: Gestures()
+          ..isTap((isTapped) {
+            setState(() => pressed = isTapped);
+          })
+          ..onTapUp((detail) async {
+            const url =
+                'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
+            if (await canLaunch(url)) {
+              await launch(url);
+            }
+          }),
+        child: Container(
+          width: width - 16,
+          height: 65,
+          margin: EdgeInsets.symmetric(horizontal: 0.0),
+          child: Card(
+            color: Colors.redAccent,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  MdiIcons.gmail,
+                  color: Colors.white,
+                ),
+                Padding(
+                  padding: Translations.of(context).dbLanguageCode == 'en'
+                      ? EdgeInsets.only(top: 4)
+                      : EdgeInsets.only(top: 0),
+                  child: Text(
+                    '  ${Translations.of(context).trans('maincontact')}',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontFamily: "Calibre-Semibold",
+                      letterSpacing: 0.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  final settingsItemStyle = (pressed) => ParentStyle()
+    ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
+    ..scale(pressed ? 0.95 : 1.0)
+    ..alignmentContent.center()
+    ..ripple(true)
+    ..animate(150, Curves.easeOut);
+}
+
+class GithubCard extends StatefulWidget {
+  @override
+  _GithubCardState createState() => _GithubCardState();
+}
+
+class _GithubCardState extends State<GithubCard> {
+  bool pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    return SizedBox(
+      width: width - 16,
+      height: 65,
+      child: Parent(
+        style: settingsItemStyle(pressed),
+        gesture: Gestures()
+          ..isTap((isTapped) {
+            setState(() => pressed = isTapped);
+          })
+          ..onTapUp((detail) async {
+            const url = 'https://github.com/project-violet/';
+            if (await canLaunch(url)) {
+              await launch(url);
+            }
+          }),
+        child: Container(
+          width: width - 16,
+          height: 65,
+          margin: EdgeInsets.symmetric(horizontal: 0.0),
+          child: Card(
+            color: Color(0xFF24292E),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  MdiIcons.github,
+                  color: Colors.white,
+                ),
+                Padding(
+                  padding: Translations.of(context).dbLanguageCode == 'en'
+                      ? EdgeInsets.only(top: 4)
+                      : EdgeInsets.only(top: 0),
+                  child: Text(
+                    '  ${Translations.of(context).trans('maingithub')}',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontFamily: "Calibre-Semibold",
+                      letterSpacing: 0.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  final settingsItemStyle = (pressed) => ParentStyle()
+    ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
+    ..scale(pressed ? 0.95 : 1.0)
+    ..alignmentContent.center()
+    ..ripple(true)
+    ..animate(150, Curves.easeOut);
 }
