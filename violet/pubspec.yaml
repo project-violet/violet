@@ -31,6 +31,7 @@ dependencies:
   async:
   auto_animated: any
   cached_network_image:
+  carousel_slider:
   charts_flutter:
   chunked_stream:
   circular_check_box: ^1.0.1
