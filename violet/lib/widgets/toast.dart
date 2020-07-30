@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 
 class ToastWrapper extends StatefulWidget {
   final bool isCheck;
+  final bool isWarning;
   final String msg;
 
-  ToastWrapper({this.isCheck, this.msg});
+  ToastWrapper({this.isCheck, this.isWarning, this.msg});
 
   @override
   _ToastWrapperState createState() => _ToastWrapperState();
@@ -68,12 +69,18 @@ class _ToastWrapperState extends State<ToastWrapper>
             borderRadius: BorderRadius.circular(25.0),
             color: widget.isCheck
                 ? Colors.greenAccent.withOpacity(0.8)
-                : Colors.redAccent.withOpacity(0.8),
+                : widget.isWarning != null && widget.isWarning
+                    ? Colors.orangeAccent.withOpacity(0.8)
+                    : Colors.redAccent.withOpacity(0.8),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(widget.isCheck ? Icons.check : Icons.cancel),
+              Icon(widget.isCheck
+                  ? Icons.check
+                  : widget.isWarning != null && widget.isWarning
+                      ? Icons.warning
+                      : Icons.cancel),
               SizedBox(
                 width: 12.0,
               ),
