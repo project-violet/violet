@@ -392,15 +392,19 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
   void updateCheckAndDownload() {
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
-        var bb = await Dialogs.yesnoDialog(context,
-            '새로운 업데이트가 있습니다. ' + UpdateSyncManager.updateMessage + ' 다운로드할까요?');
+        var bb = await Dialogs.yesnoDialog(
+            context,
+            'New update available! ' +
+                UpdateSyncManager.updateMessage +
+                ' Would you update?');
         if (bb == null || bb == false) return;
       } else
         return;
 
       if (!await Permission.storage.isGranted) {
         if (await Permission.storage.request() == PermissionStatus.denied) {
-          await Dialogs.okDialog(context, '권한을 허용하지 않으면 업데이트를 진행할 수 없습니다.');
+          await Dialogs.okDialog(context,
+              'If you do not allow file permissions, you cannot continue :(');
           return;
         }
       }
