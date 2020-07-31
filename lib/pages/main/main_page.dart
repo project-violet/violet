@@ -186,7 +186,7 @@ class _MainPageState extends State<MainPage> {
               Row(
                 children: [
                   SizedBox(
-                    width: 80,
+                    width: 90,
                     child: Text(
                         // '${Translations.of(context).trans('mainversion')}:',
                         'Version:',
@@ -203,7 +203,7 @@ class _MainPageState extends State<MainPage> {
               Row(
                 children: [
                   SizedBox(
-                    width: 80,
+                    width: 90,
                     child: Text(
                         // '${Translations.of(context).trans('maindb')}:',
                         'Database:',
@@ -253,7 +253,7 @@ class _MainPageState extends State<MainPage> {
               Row(
                 children: [
                   SizedBox(
-                    width: 80,
+                    width: 90,
                     child: Text(
                         // '${Translations.of(context).trans('mainread')}:',
                         'Read:',
@@ -280,7 +280,7 @@ class _MainPageState extends State<MainPage> {
               Row(
                 children: [
                   SizedBox(
-                    width: 80,
+                    width: 90,
                     child: Text(
                         // '${Translations.of(context).trans('mainbookmark')}:',
                         'Bookmark:',
@@ -307,7 +307,7 @@ class _MainPageState extends State<MainPage> {
               Row(
                 children: [
                   SizedBox(
-                    width: 80,
+                    width: 90,
                     child: Text(
                         // '${Translations.of(context).trans('maindownload')}:',
                         'Donwload:',
@@ -336,7 +336,7 @@ class _MainPageState extends State<MainPage> {
                   ? Row(
                       children: [
                         SizedBox(
-                          width: 80,
+                          width: 90,
                           child: Text(
                               // '${Translations.of(context).trans('maindownload')}:',
                               'Tap Count:',
@@ -638,7 +638,7 @@ class _DiscordCardState extends State<DiscordCard> {
                 Padding(
                   padding: Translations.of(context).dbLanguageCode == 'en'
                       ? EdgeInsets.only(top: 4)
-                      : EdgeInsets.only(top: 0),
+                      : EdgeInsets.only(top: 4),
                   child: Text(
                     '  ${Translations.of(context).trans('maindiscord')}',
                     style: TextStyle(
@@ -709,7 +709,7 @@ class _ContactCardState extends State<ContactCard> {
                 Padding(
                   padding: Translations.of(context).dbLanguageCode == 'en'
                       ? EdgeInsets.only(top: 4)
-                      : EdgeInsets.only(top: 0),
+                      : EdgeInsets.only(top: 4),
                   child: Text(
                     '  ${Translations.of(context).trans('maincontact')}',
                     style: TextStyle(
@@ -779,7 +779,7 @@ class _GithubCardState extends State<GithubCard> {
                 Padding(
                   padding: Translations.of(context).dbLanguageCode == 'en'
                       ? EdgeInsets.only(top: 4)
-                      : EdgeInsets.only(top: 0),
+                      : EdgeInsets.only(top: 4),
                   child: Text(
                     '  ${Translations.of(context).trans('maingithub')}',
                     style: TextStyle(
