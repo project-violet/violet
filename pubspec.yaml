@@ -27,6 +27,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   # I know there are too many packages.
+  animated_widgets:
   animations:
   async:
   auto_animated: any
@@ -81,6 +82,7 @@ dependencies:
   permission_handler:
   photo_view:
   pimp_my_button: ^1.0.0
+  reorderables:
   shared_preferences:
   sqflite:
   synchronized:
