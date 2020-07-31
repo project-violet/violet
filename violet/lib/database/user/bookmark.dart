@@ -22,10 +22,25 @@ class BookmarkGroup {
   String datetime() => result['DateTime'];
   String description() => result['Description'];
   int color() => result['DateTime'];
+  int gorder() => result['Gorder'];
 
   Future<void> update() async {
     var db = await CommonUserDatabase.getInstance();
     await db.update('BookmarkGroup', result, 'Id=?', [id()]);
+  }
+
+  Future<void> swap(BookmarkGroup target) async {
+    var db = await CommonUserDatabase.getInstance();
+    await db.swap('BookmarkGroup', 'Id', 'Gorder', id(), target.id(), gorder(),
+        target.gorder());
+    var tid = gorder();
+
+    var xx = Map<String, dynamic>.from(result);
+    var yy = Map<String, dynamic>.from(target.result);
+    xx['Gorder'] = target.gorder();
+    result = xx;
+    yy['Gorder'] = tid;
+    target.result = yy;
   }
 }
 
@@ -129,17 +144,17 @@ class Bookmark {
     });
   }
 
-  Future<void> createGroup(
-      String name, String description, Color color, int order,
+  Future<void> createGroup(String name, String description, Color color,
       [DateTime datetime]) async {
     datetime ??= DateTime.now();
+    var groups = await getGroup();
     var db = await CommonUserDatabase.getInstance();
     await db.insert('BookmarkGroup', {
       'Name': name,
       'Description': description,
       'DateTime': DateTime.now().toString(),
       'Color': color.value,
-      'Gorder': order
+      'Gorder': groups.last.gorder() + 1,
     });
   }
 
@@ -151,11 +166,60 @@ class Bookmark {
     //
   }
 
-  Future<List<BookmarkGroup>> getGroup() async {
-    return (await (await CommonUserDatabase.getInstance())
+  Future<void> fixGroup() async {
+    var groups = (await (await CommonUserDatabase.getInstance())
             .query('SELECT * FROM BookmarkGroup'))
         .map((x) => BookmarkGroup(result: x))
         .toList();
+
+    if (groups.length > 1) {
+      if (groups[1].gorder() == 1) {
+        for (int i = 1; i < groups.length; i++) {
+          var rr = Map<String, dynamic>.from(groups[i].result);
+          rr['Gorder'] = i + 1;
+          groups[i].result = rr;
+          await groups[i].update();
+        }
+      }
+    }
+  }
+
+  Future<List<BookmarkGroup>> getGroup() async {
+    fixGroup();
+    return (await (await CommonUserDatabase.getInstance())
+            .query('SELECT * FROM BookmarkGroup ORDER BY Gorder ASC'))
+        .map((x) => BookmarkGroup(result: x))
+        .toList();
+  }
+
+  Future<void> positionSwap(int from, int to) async {
+    print(from.toString() + "|" + to.toString());
+    var groups = await getGroup();
+    void swap(int x, int y) {
+      var tmp = groups[x];
+      groups[x] = groups[y];
+      groups[y] = tmp;
+    }
+
+    groups.forEach((element) {
+      print(element.gorder());
+    });
+
+    if (from < to) {
+      for (; from < to; from++) {
+        await groups[from].swap(groups[from + 1]);
+        swap(from, from + 1);
+      }
+    } else if (from > to) {
+      for (; from > to; from--) {
+        await groups[from].swap(groups[from - 1]);
+        swap(from, from - 1);
+      }
+    }
+
+    groups.forEach((element) {
+      print(element.gorder());
+    });
   }
 
   Future<List<BookmarkArticle>> getArticle() async {

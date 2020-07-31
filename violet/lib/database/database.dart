@@ -80,6 +80,16 @@ class DataBaseManager {
     });
   }
 
+  Future<void> swap(String name, String key, String what, int key1, int key2,
+      int s1, int s2) async {
+    await lock.synchronized(() async {
+      await _open();
+      await db.rawUpdate("UPDATE $name SET $what=? WHERE $key=?", [s2, key1]);
+      await db.rawUpdate("UPDATE $name SET $what=? WHERE $key=?", [s1, key2]);
+      await _close();
+    });
+  }
+
   Future<void> delete(String name, String where, List<dynamic> args) async {
     await lock.synchronized(() async {
       await _open();
