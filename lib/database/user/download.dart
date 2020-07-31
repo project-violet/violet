@@ -45,6 +45,11 @@ class DownloadItemModel {
     var x = await db
         .query('SELECT * FROM DownloadItem WHERE Id=' + id().toString());
   }
+
+  Future<void> delete() async {
+    var db = await CommonUserDatabase.getInstance();
+    await db.delete('DownloadItem', 'Id=?', [id()]);
+  }
 }
 
 class Download {

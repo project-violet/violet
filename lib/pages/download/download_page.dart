@@ -37,16 +37,20 @@ class _DownloadPageState extends State<DownloadPage>
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 500), () async {
-      items = await (await Download.getInstance()).getDownloadItems();
-      setState(() {});
-    });
+    refresh();
     DownloadPageManager.appendTask = appendTask;
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  void refresh() {
+    Future.delayed(Duration(milliseconds: 500), () async {
+      items = await (await Download.getInstance()).getDownloadItems();
+      setState(() {});
+    });
   }
 
   @override
@@ -89,6 +93,7 @@ class _DownloadPageState extends State<DownloadPage>
                       width: windowWidth - 4.0,
                       item: e,
                       download: e.download,
+                      refeshCallback: refresh,
                     ),
                   );
                 }).toList(),

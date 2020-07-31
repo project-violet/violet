@@ -9,26 +9,32 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/downloadable.dart' as violetd;
 import 'package:violet/locale.dart';
 import 'package:violet/pages/download/builtin_downloader.dart';
+import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/flutter_downloader_downloader.dart';
 import 'package:violet/pages/download/native_downloader.dart';
 import 'package:violet/settings.dart';
 import 'package:violet/database/user/download.dart';
+import 'package:violet/widgets/toast.dart';
 
 class DownloadItemWidget extends StatefulWidget {
   final double width;
   final DownloadItemModel item;
   final bool download;
+  final VoidCallback refeshCallback;
 
   DownloadItemWidget({
     this.width,
     this.item,
     this.download,
+    this.refeshCallback,
   });
 
   @override
@@ -59,6 +65,10 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
       if (extractor != null) fav = extractor.fav();
     }
 
+    _downloadProcedure();
+  }
+
+  _downloadProcedure() {
     Future.delayed(Duration(milliseconds: 500)).then((value) async {
       if (once) return;
       once = true;
@@ -246,12 +256,51 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
           child: buildBody(),
         ),
       ),
+      onLongPress: () async {
+        setState(() {
+          scale = 1.0;
+        });
+
+        var v = await showDialog(
+          context: context,
+          child: DownloadImageMenu(),
+        );
+        print(v);
+
+        if (v == -1) {
+          await widget.item.delete();
+          widget.refeshCallback();
+        } else if (v == 2) {
+          Clipboard.setData(new ClipboardData(text: widget.item.url()));
+          FlutterToast(context).showToast(
+            child: ToastWrapper(
+              isCheck: true,
+              isWarning: false,
+              msg: 'URL Copied!',
+            ),
+            gravity: ToastGravity.BOTTOM,
+            toastDuration: Duration(seconds: 4),
+          );
+        } else if (v == 1) {
+          var copy = Map<String, dynamic>.from(widget.item.result);
+          copy['State'] = 1;
+          widget.item.result = copy;
+          once = false;
+          _downloadProcedure();
+          setState(() {});
+        }
+      },
       onTapDown: (details) {
         setState(() {
           scale = 0.95;
         });
       },
       onTapUp: (details) {
+        setState(() {
+          scale = 1.0;
+        });
+      },
+      onTapCancel: () {
         setState(() {
           scale = 1.0;
         });
