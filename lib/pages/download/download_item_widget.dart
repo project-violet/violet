@@ -27,7 +27,7 @@ import 'package:violet/widgets/toast.dart';
 class DownloadItemWidget extends StatefulWidget {
   final double width;
   final DownloadItemModel item;
-  final bool download;
+  bool download;
   final VoidCallback refeshCallback;
 
   DownloadItemWidget({
@@ -265,7 +265,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
           context: context,
           child: DownloadImageMenu(),
         );
-        print(v);
 
         if (v == -1) {
           await widget.item.delete();
@@ -286,6 +285,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget> {
           copy['State'] = 1;
           widget.item.result = copy;
           once = false;
+          widget.download = true;
           _downloadProcedure();
           setState(() {});
         }
