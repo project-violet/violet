@@ -20,6 +20,10 @@ Italiano - https://github.com/AlexZorzi
 Español - https://github.com/Culombiano
 ```
 
+If you want to support language in source code, please refer to the following commits.
+
+https://github.com/project-violet/violet/commit/203723c9d898bd99fc9200a7ba0ea5f354e1e90d
+
 ## Web App Support?
 
 After making version 1.0.0, it will be ported to Web App.
