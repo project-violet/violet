@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:violet/pages/viewer/gallery_item.dart';
+import 'package:violet/model/gallery_image_item.dart';
 
 class VerticalViewerHolder extends StatelessWidget {
   VerticalViewerHolder({
@@ -14,7 +14,7 @@ class VerticalViewerHolder extends StatelessWidget {
     this.onTap,
   }) : super(key: key);
 
-  final GalleryExampleItem galleryExampleItem;
+  final GalleryImageItem galleryExampleItem;
 
   final GestureTapCallback onTap;
 

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/pages/viewer/gallery_item.dart';
+import 'package:violet/model/gallery_image_item.dart';
 
 class GalleryPhotoViewWrapper extends StatefulWidget {
   GalleryPhotoViewWrapper({
@@ -22,7 +22,7 @@ class GalleryPhotoViewWrapper extends StatefulWidget {
   final Decoration backgroundDecoration;
   final int initialIndex;
   final PageController pageController;
-  final List<GalleryExampleItem> galleryItems;
+  final List<GalleryImageItem> galleryItems;
   final Axis scrollDirection;
   final int totalPage;
   int currentIndex;
@@ -86,7 +86,7 @@ class _GalleryPhotoViewWrapperState extends State<GalleryPhotoViewWrapper> {
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    final GalleryExampleItem item = widget.galleryItems[index];
+    final GalleryImageItem item = widget.galleryItems[index];
     return PhotoViewGalleryPageOptions(
       imageProvider: CachedNetworkImageProvider(
         item.url,
