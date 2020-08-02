@@ -12,9 +12,11 @@ import 'package:flutter/services.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
+import 'package:provider/provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
@@ -286,14 +288,18 @@ class _ArticleListItemVerySimpleWidgetState
                       maxChildSize: 1.0,
                       expand: false,
                       builder: (_, controller) {
-                        return ArticleInfoPage(
-                          key: ObjectKey('asdfasdf'),
-                          queryResult: widget.queryResult,
-                          thumbnail: thumbnail,
-                          headers: headers,
-                          heroKey: widget.thumbnailTag,
-                          isBookmarked: isBookmarked,
-                          controller: controller,
+                        return Provider<ArticleInfo>.value(
+                          child: ArticleInfoPage(
+                            key: ObjectKey('asdfasdf'),
+                          ),
+                          value: ArticleInfo.fromArticleInfo(
+                            queryResult: widget.queryResult,
+                            thumbnail: thumbnail,
+                            headers: headers,
+                            heroKey: widget.thumbnailTag,
+                            isBookmarked: isBookmarked,
+                            controller: controller,
+                          ),
                         );
                       },
                     );
