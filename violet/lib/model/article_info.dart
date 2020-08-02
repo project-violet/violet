@@ -10,10 +10,10 @@ class ArticleInfo {
   final String thumbnail;
   final String heroKey;
   final Map<String, String> headers;
-  final bool isBookmarked;
   final ScrollController controller;
   final String title;
   final String artist;
+  bool isBookmarked;
 
   ArticleInfo({
     @required this.queryResult,
