@@ -34,9 +34,7 @@ dependencies:
   cached_network_image:
   carousel_slider:
   charts_flutter:
-  chunked_stream:
   circular_check_box: ^1.0.1
-  cloud_firestore: ^0.13.0+1 
   convert:
   country_pickers:
   crypto:
@@ -48,26 +46,19 @@ dependencies:
   encrypt: ^4.0.1
   expandable:
   ext_storage:
-  fading_edge_scrollview:
   ffi:
   file_picker:
   firebase_analytics:
   firebase_crashlytics:
   flare_dart:
   flare_flutter: ^1.8.3
-  flutter_advanced_networkimage:
   flutter_colorpicker:
   flutter_downloader:
-  flutter_local_notifications:
-  flutter_markdown:
   flutter_reorderable_list:
-  flutter_sidekick:
-  flutter_slidable:
   flutter_speed_dial:
   flutter_staggered_animations: "^0.1.2"
   fluttertoast:
   gradient_widgets:
-  hive:
   html:
   html_unescape:
   http:
@@ -75,14 +66,12 @@ dependencies:
   kdtree:
   lottie:
   material_design_icons_flutter:
-  matrix_gesture_detector:
   open_file:
   path:
   path_provider:
   permission_handler:
   photo_view:
   pimp_my_button: ^1.0.0
-  reorderables:
   shared_preferences:
   sqflite:
   synchronized:
@@ -92,18 +81,29 @@ dependencies:
   vibration: ^1.4.0
   webview_flutter:
   # archive:
+  # chunked_stream:
+  # cloud_firestore: ^0.13.0+1 
   # english_words: 
   # extended_image:
+  # fading_edge_scrollview:
+  # flutter_advanced_networkimage:
   # flutter_file_picker:
   # flutter_linkify: ^3.1.3
+  # flutter_local_notifications:
+  # flutter_markdown:
+  # flutter_sidekick:
+  # flutter_slidable:
   # flutter_svg:
   # flutter_vpn:
   # fluttertoast: #^2.2.1
+  # hive:
   # imei_plugin:
   # infinite_listview: ^1.0.1+1
   # json_annotation: ^3.0.0
   # lzma:
+  # matrix_gesture_detector:
   # pinch_zoom_image:
+  # reorderables:
   # scrollable_positioned_list:
   # stacked:
   # syncfusion_flutter_charts:
