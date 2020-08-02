@@ -7,12 +7,19 @@ import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/main/card/artist_collection_card.dart';
 import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
 import 'package:violet/pages/main/card/github_card.dart';
@@ -119,21 +126,27 @@ class _MainPageState extends State<MainPage> {
                 padding: EdgeInsets.all(12),
               ),
               _userArea(),
-              UpdateCard(
-                clickEvent: () async {
-                  count++;
-                  await Vibration.vibrate(duration: 50, amplitude: 50);
-                  if (count >= 10 && count <= 20 && !ee) {
-                    ee = true;
-                    Future.delayed(Duration(milliseconds: 7800), () {
-                      count = 20;
-                      ee = false;
-                      setState(() {});
-                    });
-                  }
-                  setState(() {});
-                },
-              ),
+              ArtistCollectionCard(),
+              Lottie.asset(
+                  'assets/lottie/28395-hajj-mabroor-infographic-animation.json')
+              // Visibility(
+              //   visible: false,
+              //   child: UpdateCard(
+              //     clickEvent: () async {
+              //       count++;
+              //       await Vibration.vibrate(duration: 50, amplitude: 50);
+              //       if (count >= 10 && count <= 20 && !ee) {
+              //         ee = true;
+              //         Future.delayed(Duration(milliseconds: 7800), () {
+              //           count = 20;
+              //           ee = false;
+              //           setState(() {});
+              //         });
+              //       }
+              //       setState(() {});
+              //     },
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -334,5 +347,74 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateCheckAndDownload();
+  }
+
+  ReceivePort _port = ReceivePort();
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);
+  }
+
+  void updateCheckAndDownload() {
+    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      if (UpdateSyncManager.updateRequire) {
+        var bb = await Dialogs.yesnoDialog(
+            context,
+            'New update available! ' +
+                UpdateSyncManager.updateMessage +
+                ' Would you update?');
+        if (bb == null || bb == false) return;
+      } else
+        return;
+
+      if (!await Permission.storage.isGranted) {
+        if (await Permission.storage.request() == PermissionStatus.denied) {
+          await Dialogs.okDialog(context,
+              'If you do not allow file permissions, you cannot continue :(');
+          return;
+        }
+      }
+      var ext = await getExternalStorageDirectory();
+      bool once = false;
+      IsolateNameServer.registerPortWithName(
+          _port.sendPort, 'downloader_send_port');
+      _port.listen((dynamic data) {
+        String id = data[0];
+        DownloadTaskStatus status = data[1];
+        int progress = data[2];
+        if (progress == 100 && !once) {
+          OpenFile.open(
+              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
+          once = true;
+        }
+        setState(() {});
+      });
+
+      FlutterDownloader.registerCallback(downloadCallback);
+      final taskId = await FlutterDownloader.enqueue(
+        url: UpdateSyncManager.updateUrl,
+        savedDir: '${ext.path}',
+        showNotification:
+            true, // show download progress in status bar (for Android)
+        openFileFromNotification:
+            true, // click on notification to open downloaded file (for Android)
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    // TODO: implement dispose
+    super.dispose();
   }
 }
