@@ -32,7 +32,6 @@ import 'package:violet/component/hiyobi/hiyobi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/download.dart';
-import 'package:violet/files.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/version/update_sync.dart';
