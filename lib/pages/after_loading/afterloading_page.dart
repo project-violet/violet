@@ -80,9 +80,6 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                   : Colors.grey.shade50,
               icon: new Icon(Icons.search),
               title: new Text(Translations.of(context).trans('search'))),
-          // new BottomNavigationBarItem(
-          //     icon: new Icon(MdiIcons.accountGroup),
-          //     title: new Text(Translations.of(context).trans('community'))),
           new BottomNavigationBarItem(
               backgroundColor: Settings.themeWhat
                   ? Colors.grey.shade900.withOpacity(0.90)
@@ -109,154 +106,13 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         },
         children: <Widget>[
           MainPage(),
-          // new Center(
-          //   child: new Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       ShaderMask(
-          //         shaderCallback: (rect) {
-          //           return LinearGradient(
-          //             begin: Alignment.topCenter,
-          //             end: Alignment.bottomCenter,
-          //             colors: [
-          //               Colors.transparent,
-          //               Colors.black,
-          //               Colors.transparent
-          //             ],
-          //           ).createShader(
-          //               Rect.fromLTRB(0, 0, rect.width, rect.height));
-          //         },
-          //         blendMode: BlendMode.dstIn,
-          //         child: FadeInImage(
-          //           width: double.infinity,
-          //           height: 200,
-          //           image: NetworkImage(""),
-          //           fit: BoxFit.cover,
-          //           placeholder: AssetImage('assets/images/loading.gif'),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
           SearchPage(),
-          // new Center(
-          //   child: Padding(
-          //     padding: EdgeInsets.all(128),
-          //     child: ShaderMask(
-          //       shaderCallback: (bounds) => RadialGradient(
-          //         center: Alignment.centerLeft,
-          //         radius: 1,
-          //         colors: [Colors.yellow, Colors.red, Colors.purple],
-          //         tileMode: TileMode.clamp,
-          //       ).createShader(bounds),
-          //       child: FlareActor(
-          //         "assets/flare/SlidinSquaresLoader.flr",
-          //         animation: "SlideThem",
-          //         // 'assets/flare/Trim.flr',
-          //         // animation: "Untitled",
-          //         alignment: Alignment.center,
-          //         color: Colors.white,
-          //         fit: BoxFit.contain,
-          //         isPaused: false,
-          //         snapToEnd: true,
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // new Center(
-          //   child: new Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: <Widget>[new Icon(Icons.mail), new Text("Inbox")],
-          //   ),
-          // ),
-          // new Center(
-          //   child: Padding(
-          //     padding: EdgeInsets.all(64),
-          //     child: Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: <Widget>[
-          //         CachedNetworkImage(
-          //           imageUrl:
-          //               "https://www.amazing-animations.com/animations/construction5.gif",
-          //         ),
-          //         Container(
-          //           padding: EdgeInsets.all(4),
-          //         ),
-          //         Text('공사중!'),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-
           BookmarkPage(),
           DownloadPage(),
-          // new Center(
-          //   child: Padding(
-          //     padding: EdgeInsets.all(64),
-          //     child: ShaderMask(
-          //       shaderCallback: (bounds) => RadialGradient(
-          //         center: Alignment.bottomLeft,
-          //         radius: 2,
-          //         colors: [Colors.yellow, Colors.red, Colors.purple],
-          //         tileMode: TileMode.clamp,
-          //       ).createShader(bounds),
-          //       child: FlareActor(
-          //         'assets/flare/Trim.flr',
-          //         animation: "Untitled",
-          //         alignment: Alignment.center,
-          //         color: Colors.white,
-          //         fit: BoxFit.cover,
-          //         isPaused: false,
-          //         snapToEnd: true,
-          //       ),
-          //     ),
-          //   ),
-          // ),
           SettingsPage(),
-          // new Center(
-          //   child: new Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: <Widget>[new Icon(Icons.mail), new Text("Inbox")],
-          //   ),
-          // ),
         ],
       ),
       // ),
     );
   }
-}
-
-// https://stackoverflow.com/a/50074067/3355656
-class OnePage extends StatefulWidget {
-  final Color color;
-
-  const OnePage({Key key, this.color}) : super(key: key);
-
-  @override
-  _OnePageState createState() => new _OnePageState();
-}
-
-class _OnePageState extends State<OnePage>
-    with AutomaticKeepAliveClientMixin<OnePage> {
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return new SizedBox.expand(
-      child: new ListView.builder(
-        itemCount: 100,
-        itemBuilder: (context, index) {
-          return new Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: new Text(
-              '$index',
-              style: new TextStyle(color: widget.color),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  @override
-  bool get wantKeepAlive => true;
 }
