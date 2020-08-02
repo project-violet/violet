@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -514,13 +515,18 @@ class _SettingsPageState extends State<SettingsPage>
                       title: Text(Translations.of(context).trans('devtool')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => TestPage(),
-                        ),
-                      );
+                    onTap: () async {
+                      if (kDebugMode) {
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (context) => TestPage(),
+                          ),
+                        );
+                      } else {
+                        await Dialogs.okDialog(context,
+                            'Developer tools can only be run in debug mode.');
+                      }
                     },
                   ),
                 ]),
