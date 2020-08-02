@@ -4,6 +4,7 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -26,6 +27,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/test/test_page.dart';
@@ -808,6 +810,148 @@ class _SettingsPageState extends State<SettingsPage>
                 _buildGroup(Translations.of(context).trans('component')),
                 _buildItems(
                   [
+                    InkWell(
+                      customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0)),
+                      ),
+                      child: ListTile(
+                        leading: CachedNetworkImage(
+                          imageUrl: 'https://e-hentai.org/favicon.ico',
+                          width: 25,
+                        ),
+                        title: Text('E-Hentai/ExHentai'),
+                        trailing: Icon(Icons.keyboard_arrow_right),
+                      ),
+                      onTap: () async {
+                        var dialog = await showDialog(
+                          context: context,
+                          child: AlertDialog(
+                            title: Text('E-Hentai Login'),
+                            contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                RaisedButton(
+                                  child: Text('Login From WebPage'),
+                                  onPressed: () => Navigator.pop(context, 1),
+                                  color: Settings.majorColor,
+                                ),
+                                RaisedButton(
+                                  child: Text('Enter Cookie Information'),
+                                  onPressed: () => Navigator.pop(context, 2),
+                                  color: Settings.majorColor,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+
+                        if (dialog == null) return;
+
+                        if (dialog == 1) {
+                          var result = await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()));
+
+                          await (await SharedPreferences.getInstance())
+                              .setString('eh_cookies', result);
+
+                          if (result != null) {
+                            flutterToast.showToast(
+                              child: ToastWrapper(
+                                isCheck: true,
+                                msg: 'Login Success!',
+                              ),
+                              gravity: ToastGravity.BOTTOM,
+                              toastDuration: Duration(seconds: 4),
+                            );
+                          }
+                        } else if (dialog == 2) {
+                          var cookie = (await SharedPreferences.getInstance())
+                              .getString('eh_cookies');
+
+                          var iController = TextEditingController(
+                              text: cookie != null
+                                  ? parseCookies(cookie)['igneous']
+                                  : '');
+                          var imiController = TextEditingController(
+                              text: cookie != null
+                                  ? parseCookies(cookie)['ipb_member_id']
+                                  : '');
+                          var iphController = TextEditingController(
+                              text: cookie != null
+                                  ? parseCookies(cookie)['ipb_pass_hash']
+                                  : '');
+                          Widget yesButton = FlatButton(
+                            child: Text(Translations.of(context).trans('ok'),
+                                style: TextStyle(color: Settings.majorColor)),
+                            focusColor: Settings.majorColor,
+                            splashColor: Settings.majorColor.withOpacity(0.3),
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            },
+                          );
+                          Widget noButton = FlatButton(
+                            child: Text(
+                                Translations.of(context).trans('cancel'),
+                                style: TextStyle(color: Settings.majorColor)),
+                            focusColor: Settings.majorColor,
+                            splashColor: Settings.majorColor.withOpacity(0.3),
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                          );
+                          var dialog = await showDialog(
+                            context: context,
+                            child: AlertDialog(
+                              actions: [yesButton, noButton],
+                              title: Text('E-Hentai Login'),
+                              contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Row(children: [
+                                    Text('igneous: '),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: iController,
+                                      ),
+                                    ),
+                                  ]),
+                                  Row(children: [
+                                    Text('ipb_member_id: '),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: imiController,
+                                      ),
+                                    ),
+                                  ]),
+                                  Row(children: [
+                                    Text('ipb_pass_hash: '),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: iphController,
+                                      ),
+                                    ),
+                                  ]),
+                                ],
+                              ),
+                            ),
+                          );
+
+                          if (dialog != null && dialog == true) {
+                            var ck =
+                                'igneous=${iController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};';
+                            await (await SharedPreferences.getInstance())
+                                .setString('eh_cookies', ck);
+                          }
+                        }
+                      },
+                    ),
+                    _buildDivider(),
                     ListTile(
                       leading: ShaderMask(
                         shaderCallback: (bounds) => RadialGradient(

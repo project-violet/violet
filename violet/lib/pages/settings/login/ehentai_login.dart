@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (cookies.containsKey('ipb_member_id')) {
       // await sessionStore.setSession(cookieString);
       // await _cookieManager.clearCookies();
-      Navigator.pop(context);
+      Navigator.pop(context, cookieString);
     }
   }
 }
