@@ -2,8 +2,8 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'package:flutter/material.dart';
-import 'package:violet/locale.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/locale/locale.dart';
+import 'package:violet/settings/settings.dart';
 
 class VersionViewPage extends StatelessWidget {
   @override

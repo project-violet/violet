@@ -5,8 +5,8 @@ import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/locale.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/locale/locale.dart';
+import 'package:violet/settings/settings.dart';
 
 class TagSelectorDialog extends StatefulWidget {
   final String what;

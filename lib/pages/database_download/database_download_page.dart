@@ -15,12 +15,12 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/dialogs.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/database_download/decompress.dart';
-import 'package:violet/update_sync.dart';
+import 'package:violet/version/update_sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
   final bool isExistsDataBase;

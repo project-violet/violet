@@ -6,10 +6,10 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/downloadable.dart';
-import 'package:violet/dialogs.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/other/dialogs.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/database/user/download.dart';
 

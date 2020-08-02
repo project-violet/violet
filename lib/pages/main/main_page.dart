@@ -23,12 +23,12 @@ import 'package:vibration/vibration.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
-import 'package:violet/dialogs.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/other/dialogs.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/CardScrollWidget.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:open_file/open_file.dart';
-import 'package:violet/update_sync.dart';
+import 'package:violet/version/update_sync.dart';
 
 class MainPage extends StatefulWidget {
   @override

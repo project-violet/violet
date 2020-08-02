@@ -14,11 +14,11 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/series_list_page.dart';
 import 'package:violet/pages/artist_info/similar_list_page.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 

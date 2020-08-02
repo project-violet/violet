@@ -4,14 +4,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/main.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   @override

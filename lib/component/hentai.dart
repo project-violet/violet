@@ -6,7 +6,7 @@ import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 
 import 'package:http/http.dart' as http;
 

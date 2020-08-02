@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class SeriesListPage extends StatelessWidget {

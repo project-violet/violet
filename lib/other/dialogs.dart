@@ -3,8 +3,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:violet/locale.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/locale/locale.dart';
+import 'package:violet/settings/settings.dart';
 
 class Dialogs {
   static Future okDialog(BuildContext context, String message,
