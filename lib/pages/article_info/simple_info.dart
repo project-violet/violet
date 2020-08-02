@@ -7,8 +7,6 @@ import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:violet/database/query.dart';
-import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
@@ -108,13 +106,7 @@ class SimpleInfoWidget extends StatelessWidget {
           ),
         ),
         onTap: () async {
-          data.isBookmarked = !data.isBookmarked;
-          if (data.isBookmarked)
-            await (await Bookmark.getInstance())
-                .bookmark(data.queryResult.id());
-          else
-            await (await Bookmark.getInstance())
-                .unbookmark(data.queryResult.id());
+          await data.setIsBookmarked(!data.isBookmarked);
           if (!data.isBookmarked)
             _flareController.play('Unlike');
           else {

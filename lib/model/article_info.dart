@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 
 class ArticleInfo {
   final QueryResult queryResult;
@@ -58,5 +59,13 @@ class ArticleInfo {
       isBookmarked: isBookmarked,
       controller: controller,
     );
+  }
+
+  Future<void> setIsBookmarked(bool isBookmarked) async {
+    this.isBookmarked = isBookmarked;
+    if (isBookmarked)
+      await (await Bookmark.getInstance()).bookmark(queryResult.id());
+    else
+      await (await Bookmark.getInstance()).unbookmark(queryResult.id());
   }
 }
