@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:reorderables/reorderables.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';

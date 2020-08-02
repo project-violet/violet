@@ -2,28 +2,10 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:draggable_scrollbar/draggable_scrollbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
-import 'package:flutter_advanced_networkimage/zoomable.dart';
-// import 'package:flutter_advanced_networkimage/provider.dart';
-// import 'package:flutter_advanced_networkimage/zoomable.dart';
-import 'package:hive/hive.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
-import 'package:violet/database/user/record.dart';
-import 'package:violet/other/dialogs.dart';
-import 'package:violet/pages/viewer/vertical_viewer/vertical_holder.dart';
-import 'package:violet/pages/viewer/viewer_page.dart';
-// import 'package:violet/pages/viewer/zoomable_widget.dart';
-import 'package:violet/settings/settings.dart';
-import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/viewer/gallery_item.dart';
-import 'package:violet/pages/viewer/horizontal_viewer_widget.dart';
 
 class VerticalViewerHolder extends StatelessWidget {
   VerticalViewerHolder({

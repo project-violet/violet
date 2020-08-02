@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
-import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
@@ -202,20 +201,15 @@ class _SearchBarPageState extends State<SearchBarPage>
                                         .trans('inputsearchtoken')))
                             : Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 8),
-                                child: FadingEdgeScrollView
-                                    .fromSingleChildScrollView(
-                                  child: SingleChildScrollView(
-                                    controller: ScrollController(),
-                                    child: Wrap(
-                                      spacing: 4.0,
-                                      runSpacing: -10.0,
-                                      children: _searchLists
-                                          .map((item) => chip(item))
-                                          .toList(),
-                                    ),
+                                child: SingleChildScrollView(
+                                  controller: ScrollController(),
+                                  child: Wrap(
+                                    spacing: 4.0,
+                                    runSpacing: -10.0,
+                                    children: _searchLists
+                                        .map((item) => chip(item))
+                                        .toList(),
                                   ),
-                                  gradientFractionOnEnd: 0.1,
-                                  gradientFractionOnStart: 0.1,
                                 ),
                               ),
                       ),
