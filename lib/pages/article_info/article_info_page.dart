@@ -13,12 +13,14 @@ import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
@@ -31,43 +33,17 @@ import 'package:violet/widgets/toast.dart';
 
 class ArticleInfoPage extends StatelessWidget {
   final Key key;
-  final QueryResult queryResult;
-  final String thumbnail;
-  final String heroKey;
-  final Map<String, String> headers;
-  final bool isBookmarked;
-  final ScrollController controller;
-  String title;
-  String artist;
 
   ArticleInfoPage({
-    this.queryResult,
-    this.heroKey,
-    this.headers,
-    this.thumbnail,
-    this.isBookmarked,
-    this.controller,
     this.key,
-  }) : super(key: key) {
-    artist = (queryResult.artists() as String)
-        .split('|')
-        .where((x) => x.length != 0)
-        .elementAt(0);
-
-    if (artist == 'N/A') {
-      var group = queryResult.groups() != null
-          ? queryResult.groups().split('|')[1]
-          : '';
-      if (group != '') artist = group;
-    }
-
-    title = HtmlUnescape().convert(queryResult.title());
-  }
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
+    final data = Provider.of<ArticleInfo>(context);
+
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
       child: Padding(
@@ -95,7 +71,7 @@ class ArticleInfoPage extends StatelessWidget {
                     ),
                     Container(
                       child: SingleChildScrollView(
-                        controller: controller,
+                        controller: data.controller,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,17 +86,17 @@ class ArticleInfoPage extends StatelessWidget {
                                       : Colors.white.withOpacity(0.2),
                                 ),
                                 _InfoAreaWithCommentWidget(
-                                  headers: headers,
-                                  queryResult: queryResult,
+                                  headers: data.headers,
+                                  queryResult: data.queryResult,
                                 ),
                                 SimpleInfoWidget(
-                                  heroKey: heroKey,
-                                  headers: headers,
-                                  thumbnail: thumbnail,
-                                  isBookmarked: isBookmarked,
-                                  queryResult: queryResult,
-                                  title: title,
-                                  artist: artist,
+                                  heroKey: data.heroKey,
+                                  headers: data.headers,
+                                  thumbnail: data.thumbnail,
+                                  isBookmarked: data.isBookmarked,
+                                  queryResult: data.queryResult,
+                                  title: data.title,
+                                  artist: data.artist,
                                 )
                               ],
                             ),
