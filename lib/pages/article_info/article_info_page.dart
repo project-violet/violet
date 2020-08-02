@@ -89,15 +89,7 @@ class ArticleInfoPage extends StatelessWidget {
                                   headers: data.headers,
                                   queryResult: data.queryResult,
                                 ),
-                                SimpleInfoWidget(
-                                  heroKey: data.heroKey,
-                                  headers: data.headers,
-                                  thumbnail: data.thumbnail,
-                                  isBookmarked: data.isBookmarked,
-                                  queryResult: data.queryResult,
-                                  title: data.title,
-                                  artist: data.artist,
-                                )
+                                SimpleInfoWidget()
                               ],
                             ),
                           ],

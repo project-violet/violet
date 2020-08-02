@@ -6,40 +6,26 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/model/article_info.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 class SimpleInfoWidget extends StatelessWidget {
-  final String heroKey;
-  final String thumbnail;
-  final Map<String, String> headers;
   final FlareControls _flareController = FlareControls();
-  bool isBookmarked;
-  final QueryResult queryResult;
-  final String title;
-  final String artist;
   static DateFormat _dateFormat = DateFormat(' yyyy/MM/dd HH:mm');
-
-  SimpleInfoWidget({
-    this.heroKey,
-    this.thumbnail,
-    this.headers,
-    this.isBookmarked,
-    this.queryResult,
-    this.title,
-    this.artist,
-  });
 
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<ArticleInfo>(context);
     return Row(
       children: [
         Stack(
           children: <Widget>[
-            _thumbnail(context),
-            _bookmark(),
+            _thumbnail(context, data),
+            _bookmark(data),
           ],
         ),
         Expanded(
@@ -48,7 +34,7 @@ class SimpleInfoWidget extends StatelessWidget {
             width: 3 * 50.0,
             child: Padding(
               padding: EdgeInsets.all(4),
-              child: _simpleInfo(),
+              child: _simpleInfo(data),
             ),
           ),
         ),
@@ -56,9 +42,9 @@ class SimpleInfoWidget extends StatelessWidget {
     );
   }
 
-  Widget _thumbnail(BuildContext context) {
+  Widget _thumbnail(BuildContext context, ArticleInfo data) {
     return Hero(
-      tag: heroKey,
+      tag: data.heroKey,
       child: Padding(
         padding: EdgeInsets.all(8),
         child: ClipRRect(
@@ -76,17 +62,17 @@ class SimpleInfoWidget extends StatelessWidget {
                   },
                   pageBuilder: (_, __, ___) => ThumbnailViewPage(
                     size: null,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: heroKey,
+                    thumbnail: data.thumbnail,
+                    headers: data.headers,
+                    heroKey: data.heroKey,
                   ),
                 ));
               },
-              child: thumbnail != null
+              child: data.thumbnail != null
                   ? CachedNetworkImage(
-                      imageUrl: thumbnail,
+                      imageUrl: data.thumbnail,
                       fit: BoxFit.cover,
-                      httpHeaders: headers,
+                      httpHeaders: data.headers,
                       height: 4 * 50.0,
                       width: 3 * 50.0,
                     )
@@ -105,7 +91,7 @@ class SimpleInfoWidget extends StatelessWidget {
     );
   }
 
-  Widget _bookmark() {
+  Widget _bookmark(ArticleInfo data) {
     return Padding(
       padding: EdgeInsets.all(8),
       child: GestureDetector(
@@ -116,20 +102,20 @@ class SimpleInfoWidget extends StatelessWidget {
             height: 40,
             child: FlareActor(
               'assets/flare/likeUtsua.flr',
-              animation: isBookmarked ? "Like" : "IdleUnlike",
+              animation: data.isBookmarked ? "Like" : "IdleUnlike",
               controller: _flareController,
-              // color: Colors.orange,
-              // snapToEnd: true,
             ),
           ),
         ),
         onTap: () async {
-          isBookmarked = !isBookmarked;
-          if (isBookmarked)
-            await (await Bookmark.getInstance()).bookmark(queryResult.id());
+          data.isBookmarked = !data.isBookmarked;
+          if (data.isBookmarked)
+            await (await Bookmark.getInstance())
+                .bookmark(data.queryResult.id());
           else
-            await (await Bookmark.getInstance()).unbookmark(queryResult.id());
-          if (!isBookmarked)
+            await (await Bookmark.getInstance())
+                .unbookmark(data.queryResult.id());
+          if (!data.isBookmarked)
             _flareController.play('Unlike');
           else {
             _flareController.play('Like');
@@ -139,66 +125,38 @@ class SimpleInfoWidget extends StatelessWidget {
     );
   }
 
-  Widget _simpleInfo() {
+  Widget _simpleInfo(ArticleInfo data) {
     return Stack(children: <Widget>[
-      _simpleInfoTextArtist(),
+      _simpleInfoTextArtist(data),
       Padding(
         padding: EdgeInsets.fromLTRB(0, 4 * 50.0 - 50, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _simpleInfoDateTime(),
-            _simpleInfoPages(),
+            _simpleInfoDateTime(data),
+            _simpleInfoPages(data),
           ],
-          // children: AnimationConfiguration.toStaggeredList(
-          //   duration: const Duration(milliseconds: 900),
-          //   childAnimationBuilder: (widget) => SlideAnimation(
-          //     horizontalOffset: 50.0,
-          //     child: FadeInAnimation(
-          //       child: widget,
-          //     ),
-          //   ),
-          //   children: <Widget>[
-          //     _simpleInfoDateTime(),
-          //     _simpleInfoPages(),
-          //   ],
-          // ),
         ),
       ),
     ]);
   }
 
-  Widget _simpleInfoTextArtist() {
+  Widget _simpleInfoTextArtist(ArticleInfo data) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
-        Text(title,
+        Text(data.title,
             maxLines: 5,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        Text(artist),
+        Text(data.artist),
       ],
-      // children: AnimationConfiguration.toStaggeredList(
-      //     duration: const Duration(milliseconds: 900),
-      //     childAnimationBuilder: (widget) => SlideAnimation(
-      //           horizontalOffset: 50.0,
-      //           child: FadeInAnimation(
-      //             child: widget,
-      //           ),
-      //         ),
-      //     children: <Widget>[
-      //       Text(title,
-      //           maxLines: 5,
-      //           overflow: TextOverflow.ellipsis,
-      //           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      //       Text(artist),
-      //     ]),
     );
   }
 
-  Widget _simpleInfoDateTime() {
+  Widget _simpleInfoDateTime(ArticleInfo data) {
     return Row(
       children: <Widget>[
         Icon(
@@ -206,15 +164,15 @@ class SimpleInfoWidget extends StatelessWidget {
           size: 20,
         ),
         Text(
-            queryResult.getDateTime() != null
-                ? _dateFormat.format(queryResult.getDateTime())
+            data.queryResult.getDateTime() != null
+                ? _dateFormat.format(data.queryResult.getDateTime())
                 : '',
             style: TextStyle(fontSize: 15)),
       ],
     );
   }
 
-  Widget _simpleInfoPages() {
+  Widget _simpleInfoPages(ArticleInfo data) {
     return Row(
       children: <Widget>[
         Icon(
@@ -223,8 +181,8 @@ class SimpleInfoWidget extends StatelessWidget {
         ),
         Text(
             ' ' +
-                (thumbnail != null
-                    ? ThumbnailManager.get(queryResult.id())
+                (data.thumbnail != null
+                    ? ThumbnailManager.get(data.queryResult.id())
                             .item2
                             .length
                             .toString() +
