@@ -805,7 +805,7 @@ class _SettingsPageState extends State<SettingsPage>
                   //   onTap: () {},
                   // ),
                 ]),
-                _buildGroup(Translations.of(context).trans('downloader')),
+                _buildGroup(Translations.of(context).trans('component')),
                 _buildItems(
                   [
                     ListTile(
