@@ -11,12 +11,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/dialogs.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/other/dialogs.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class BookmarkPage extends StatefulWidget {

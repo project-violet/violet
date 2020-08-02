@@ -15,14 +15,14 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_filter_page.dart';
 import 'package:violet/pages/search/search_result_selector.dart';
 import 'package:violet/pages/search/search_type.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 bool blurred = false;

@@ -9,11 +9,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/dialogs.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/other/dialogs.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/bookmark/group/bookmark_search_sort.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
 import 'package:violet/widgets/search_bar.dart';

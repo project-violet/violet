@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
-import 'package:violet/locale.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/locale/locale.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class RecordViewPage extends StatelessWidget {

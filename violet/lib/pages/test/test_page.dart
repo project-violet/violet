@@ -35,7 +35,7 @@ import 'package:violet/database/user/download.dart';
 import 'package:violet/files.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/database_download/decompress.dart';
-import 'package:violet/update_sync.dart';
+import 'package:violet/version/update_sync.dart';
 import 'package:violet/pages/viewer/vertical_viewer/vertical_viewer_widget.dart';
 import 'package:flutter_sidekick/flutter_sidekick.dart';
 import 'package:flutter/rendering.dart';
@@ -174,13 +174,6 @@ class TestPage extends StatelessWidget {
                 },
               ),
               RaisedButton(
-                child: Text('File Test'),
-                onPressed: () {
-                  Files.enumerate();
-                },
-              ),
-
-              RaisedButton(
                 child: Text('Hiyobi Test'),
                 onPressed: () async {
                   print(await HiyobiManager.getImageList('1678359'));
@@ -290,7 +283,7 @@ class TestPage extends StatelessWidget {
                   // File('${dir.path}/tag_index.json').deleteSync();
                   // Directory("${dir.path}/data").createSync();
                   print(dir.path);
-                  Files.enumeratePath(dir.path);
+                  // Files.enumeratePath(dir.path);
                   // return;
                   // Dio dio = Dio();
                   // await dio.download(ll, "${dir.path}/tag-upload.7z",

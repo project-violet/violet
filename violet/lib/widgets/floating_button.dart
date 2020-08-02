@@ -3,7 +3,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the MIT License.
 
 import 'package:flutter/material.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 
 class TransformFloatButton extends StatelessWidget {
   final Widget floatButton;

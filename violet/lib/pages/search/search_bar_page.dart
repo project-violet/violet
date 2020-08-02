@@ -10,9 +10,9 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/locale.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/other/flare_artboard.dart';
-import 'package:violet/settings.dart';
+import 'package:violet/settings/settings.dart';
 
 class SearchBarPage extends StatefulWidget {
   final FlareControls heroController;
