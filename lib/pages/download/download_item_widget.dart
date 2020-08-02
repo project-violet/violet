@@ -16,7 +16,7 @@ import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/downloadable.dart' as violetd;
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
-import 'package:violet/pages/download/native_downloader.dart';
+import 'package:violet/downloader/native_downloader.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/widgets/toast.dart';
