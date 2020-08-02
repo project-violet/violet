@@ -24,7 +24,6 @@ import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/widgets/CardScrollWidget.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:open_file/open_file.dart';
 import 'package:violet/version/update_sync.dart';
@@ -37,24 +36,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   bool get wantKeepAlive => true;
-  var currentPage = images.length - 1.0;
-  var currentPage2 = images.length - 1.0;
   int count = 0;
   bool ee = false;
   int _current = 0;
 
   @override
   Widget build(BuildContext context) {
-    PageController controller = PageController(initialPage: images.length - 1);
-    //PageController controller2 = PageController(initialPage: images.length - 1);
-    controller.addListener(() {
-      setState(() {
-        currentPage = controller.page;
-        //currentPage2 = controller2.page;
-      });
-    });
-    final double width = MediaQuery.of(context).size.width;
-
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     final cardList = [
