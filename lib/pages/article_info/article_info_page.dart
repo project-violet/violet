@@ -3,6 +3,7 @@
 
 import 'dart:ui';
 
+import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/gestures.dart';
@@ -14,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_headers.dart';
@@ -135,8 +137,24 @@ class __InfoAreaWithCommentWidgetState
     super.initState();
     if (widget.queryResult.ehash() != null) {
       Future.delayed(Duration(milliseconds: 100)).then((value) async {
-        var html = await EHSession.requestString(
-            'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/');
+        var cookie =
+            (await SharedPreferences.getInstance()).getString('eh_cookies');
+        if (cookie != null) {
+          try {
+            var html = await EHSession.requestString(
+                'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/');
+            var article = EHParser.parseArticleData(html);
+            setState(() {
+              comments = article.comment;
+            });
+            return;
+          } catch (e) {}
+        }
+        var html = (await http.get(
+                'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/'))
+            .body;
+        if (html.contains('This gallery has been removed or is unavailable.'))
+          return;
         var article = EHParser.parseArticleData(html);
         setState(() {
           comments = article.comment;
