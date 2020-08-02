@@ -11,11 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
@@ -483,13 +485,16 @@ class _SearchPageState extends State<SearchPage>
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: SizedBox(
-                          child: ArticleListItemVerySimpleWidget(
-                            queryResult: filtered[index],
-                            showDetail: false,
-                            addBottomPadding: false,
-                            width: (windowWidth - 4.0) / mm,
-                            thumbnailTag:
-                                'thumbnail' + filtered[index].id().toString(),
+                          child: Provider<ArticleListItem>.value(
+                            value: ArticleListItem.fromArticleListItem(
+                              queryResult: filtered[index],
+                              showDetail: false,
+                              addBottomPadding: false,
+                              width: (windowWidth - 4.0) / mm,
+                              thumbnailTag:
+                                  'thumbnail' + filtered[index].id().toString(),
+                            ),
+                            child: ArticleListItemVerySimpleWidget(),
                           ),
                         ),
                       ),
@@ -506,12 +511,15 @@ class _SearchPageState extends State<SearchPage>
             (BuildContext context, int index) {
               return Align(
                 alignment: Alignment.center,
-                child: ArticleListItemVerySimpleWidget(
-                  addBottomPadding: true,
-                  showDetail: Settings.searchResultType == 3,
-                  queryResult: filtered[index],
-                  width: windowWidth - 4.0,
-                  thumbnailTag: 'thumbnail' + filtered[index].id().toString(),
+                child: Provider<ArticleListItem>.value(
+                  value: ArticleListItem.fromArticleListItem(
+                    addBottomPadding: true,
+                    showDetail: Settings.searchResultType == 3,
+                    queryResult: filtered[index],
+                    width: windowWidth - 4.0,
+                    thumbnailTag: 'thumbnail' + filtered[index].id().toString(),
+                  ),
+                  child: ArticleListItemVerySimpleWidget(),
                 ),
               );
             },

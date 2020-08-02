@@ -7,6 +7,7 @@ import 'package:auto_animated/auto_animated.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
@@ -15,6 +16,7 @@ import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/series_list_page.dart';
 import 'package:violet/pages/artist_info/similar_list_page.dart';
@@ -518,12 +520,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               child: Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
-                  child: ArticleListItemVerySimpleWidget(
-                    queryResult: cc[index],
-                    showDetail: false,
-                    addBottomPadding: false,
-                    width: (windowWidth - 4.0) / 3,
-                    thumbnailTag: Uuid().v4(),
+                  child: Provider<ArticleListItem>.value(
+                    value: ArticleListItem.fromArticleListItem(
+                      queryResult: cc[index],
+                      showDetail: false,
+                      addBottomPadding: false,
+                      width: (windowWidth - 4.0) / 3,
+                      thumbnailTag: Uuid().v4(),
+                    ),
+                    child: ArticleListItemVerySimpleWidget(),
                   ),
                 ),
               ),
@@ -626,45 +631,63 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                 child: qq.length > 0
                                     ? Padding(
                                         padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: qq[0],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 1.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[0],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
                                     : Container()),
                             Expanded(
                                 flex: 1,
                                 child: qq.length > 1
                                     ? Padding(
                                         padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: qq[1],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 16.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[1],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
                                     : Container()),
                             Expanded(
                                 flex: 1,
                                 child: qq.length > 2
                                     ? Padding(
                                         padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: qq[2],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 16.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[2],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
                                     : Container()),
                           ],
                         ),
@@ -759,45 +782,63 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                 child: e.length > 0
                                     ? Padding(
                                         padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: cc[e[0]],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 1.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: cc[e[0]],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
                                     : Container()),
                             Expanded(
                                 flex: 1,
                                 child: e.length > 1
                                     ? Padding(
                                         padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: cc[e[1]],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 16.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: cc[e[1]],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
                                     : Container()),
                             Expanded(
                                 flex: 1,
                                 child: e.length > 2
                                     ? Padding(
                                         padding: EdgeInsets.all(4),
-                                        child: ArticleListItemVerySimpleWidget(
-                                          queryResult: cc[e[2]],
-                                          showDetail: false,
-                                          addBottomPadding: false,
-                                          width:
-                                              (windowWidth - 16 - 4.0 - 16.0) /
-                                                  3,
-                                          thumbnailTag: Uuid().v4(),
-                                        ))
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: cc[e[2]],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
                                     : Container()),
                           ],
                         ),

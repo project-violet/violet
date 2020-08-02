@@ -4,10 +4,12 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
@@ -74,12 +76,15 @@ class RecordViewPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         snapshot.hasData
-                            ? ArticleListItemVerySimpleWidget(
-                                queryResult: snapshot.data.results[0],
-                                showDetail: true,
-                                addBottomPadding: false,
-                                width: (width - 16),
-                                thumbnailTag: Uuid().v4(),
+                            ? Provider<ArticleListItem>.value(
+                                value: ArticleListItem.fromArticleListItem(
+                                  queryResult: snapshot.data.results[0],
+                                  showDetail: true,
+                                  addBottomPadding: false,
+                                  width: (width - 16),
+                                  thumbnailTag: Uuid().v4(),
+                                ),
+                                child: ArticleListItemVerySimpleWidget(),
                               )
                             : Container(),
                         Row(
