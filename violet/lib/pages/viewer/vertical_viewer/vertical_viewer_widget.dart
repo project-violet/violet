@@ -16,20 +16,20 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/viewer/vertical_viewer/vertical_holder.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/pages/viewer/gallery_item.dart';
+import 'package:violet/model/gallery_image_item.dart';
 import 'package:violet/pages/viewer/horizontal_viewer_widget.dart';
 
 class ViewerWidget extends StatefulWidget {
   final List<String> urls;
   final Map<String, String> headers;
   final String id;
-  List<GalleryExampleItem> galleryItems;
+  List<GalleryImageItem> galleryItems;
 
   ViewerWidget({this.urls, this.headers, this.id}) {
-    galleryItems = new List<GalleryExampleItem>();
+    galleryItems = new List<GalleryImageItem>();
 
     for (int i = 0; i < urls.length; i++) {
-      galleryItems.add(GalleryExampleItem(
+      galleryItems.add(GalleryImageItem(
         id: i == 0 ? 'thumbnail' + id : urls[i],
         url: urls[i],
         headers: headers,
