@@ -54,6 +54,7 @@ dependencies:
   flare_flutter: ^1.8.3
   flutter_colorpicker:
   flutter_downloader:
+  flutter_mobx:
   flutter_reorderable_list:
   flutter_speed_dial:
   flutter_staggered_animations: "^0.1.2"
@@ -72,6 +73,7 @@ dependencies:
   permission_handler:
   photo_view:
   pimp_my_button: ^1.0.0
+  provider:
   shared_preferences:
   sqflite:
   synchronized:
