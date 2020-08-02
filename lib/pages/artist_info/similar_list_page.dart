@@ -3,12 +3,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
@@ -206,13 +208,17 @@ class SimilarListPage extends StatelessWidget {
         child: qq.length > index
             ? Padding(
                 padding: EdgeInsets.all(4),
-                child: ArticleListItemVerySimpleWidget(
-                  queryResult: qq[index],
-                  showDetail: false,
-                  addBottomPadding: false,
-                  width: (windowWidth - 16 - 4.0 - 16.0) / 3,
-                  thumbnailTag: Uuid().v4(),
-                ))
+                child: Provider<ArticleListItem>.value(
+                  value: ArticleListItem.fromArticleListItem(
+                    queryResult: qq[index],
+                    showDetail: false,
+                    addBottomPadding: false,
+                    width: (windowWidth - 16 - 4.0 - 16.0) / 3,
+                    thumbnailTag: Uuid().v4(),
+                  ),
+                  child: ArticleListItemVerySimpleWidget(),
+                ),
+              )
             : Container());
   }
 }

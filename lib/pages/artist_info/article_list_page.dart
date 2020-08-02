@@ -4,8 +4,10 @@
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
@@ -181,12 +183,15 @@ class _ArticleListPageState extends State<ArticleListPage> {
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: SizedBox(
-                        child: ArticleListItemVerySimpleWidget(
-                          queryResult: widget.cc[index],
-                          showDetail: false,
-                          addBottomPadding: false,
-                          width: (windowWidth - 4.0) / mm,
-                          thumbnailTag: Uuid().v4(),
+                        child: Provider<ArticleListItem>.value(
+                          value: ArticleListItem.fromArticleListItem(
+                            queryResult: widget.cc[index],
+                            showDetail: false,
+                            addBottomPadding: false,
+                            width: (windowWidth - 4.0) / mm,
+                            thumbnailTag: Uuid().v4(),
+                          ),
+                          child: ArticleListItemVerySimpleWidget(),
                         ),
                       ),
                     ),
@@ -206,12 +211,15 @@ class _ArticleListPageState extends State<ArticleListPage> {
             itemBuilder: (context, index, animation) {
               return Align(
                 alignment: Alignment.center,
-                child: ArticleListItemVerySimpleWidget(
-                  addBottomPadding: true,
-                  showDetail: nowType == 3,
-                  queryResult: widget.cc[index],
-                  width: windowWidth - 4.0,
-                  thumbnailTag: Uuid().v4(),
+                child: Provider<ArticleListItem>.value(
+                  value: ArticleListItem.fromArticleListItem(
+                    addBottomPadding: true,
+                    showDetail: nowType == 3,
+                    queryResult: widget.cc[index],
+                    width: windowWidth - 4.0,
+                    thumbnailTag: Uuid().v4(),
+                  ),
+                  child: ArticleListItemVerySimpleWidget(),
                 ),
               );
             },

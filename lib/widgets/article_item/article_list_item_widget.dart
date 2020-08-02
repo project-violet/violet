@@ -17,6 +17,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/model/article_info.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
@@ -30,29 +31,29 @@ typedef void BookmarkCallback(int article);
 typedef void BookmarkCheckCallback(int article, bool check);
 
 class ArticleListItemVerySimpleWidget extends StatefulWidget {
-  final bool addBottomPadding;
-  final bool showDetail;
-  final QueryResult queryResult;
-  final double width;
-  final String thumbnailTag;
-  final bool bookmarkMode;
-  final BookmarkCallback bookmarkCallback;
-  final BookmarkCheckCallback bookmarkCheckCallback;
-  bool isChecked;
-  final bool isCheckMode;
+  // final bool addBottomPadding;
+  // final bool showDetail;
+  // final QueryResult queryResult;
+  // final double width;
+  // final String thumbnailTag;
+  // final bool bookmarkMode;
+  // final BookmarkCallback bookmarkCallback;
+  // final BookmarkCheckCallback bookmarkCheckCallback;
+  // bool isChecked;
+  // final bool isCheckMode;
 
-  ArticleListItemVerySimpleWidget({
-    this.queryResult,
-    this.addBottomPadding,
-    this.showDetail,
-    this.width,
-    this.thumbnailTag,
-    this.bookmarkMode = false,
-    this.bookmarkCallback,
-    this.bookmarkCheckCallback,
-    this.isChecked = false,
-    this.isCheckMode = false,
-  });
+  // ArticleListItemVerySimpleWidget({
+  //   this.queryResult,
+  //   this.addBottomPadding,
+  //   this.showDetail,
+  //   this.width,
+  //   this.thumbnailTag,
+  //   this.bookmarkMode = false,
+  //   this.bookmarkCallback,
+  //   this.bookmarkCheckCallback,
+  //   this.isChecked = false,
+  //   this.isCheckMode = false,
+  // });
 
   @override
   _ArticleListItemVerySimpleWidgetState createState() =>
@@ -62,6 +63,8 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
 class _ArticleListItemVerySimpleWidgetState
     extends State<ArticleListItemVerySimpleWidget>
     with TickerProviderStateMixin {
+  ArticleListItem data;
+
   String thumbnail;
   int imageCount = 0;
   double pad = 0.0;
@@ -77,51 +80,6 @@ class _ArticleListItemVerySimpleWidgetState
   @override
   void initState() {
     super.initState();
-    scaleAnimationController = AnimationController(
-      vsync: this,
-      lowerBound: 1.0,
-      upperBound: 1.08,
-      duration: Duration(milliseconds: 180),
-    );
-    scaleAnimationController.addListener(() {
-      setState(() {
-        scale = scaleAnimationController.value;
-      });
-    });
-
-    Bookmark.getInstance().then((value) async {
-      isBookmarked = await value.isBookmark(widget.queryResult.id());
-      if (isBookmarked) setState(() {});
-    });
-    artist = (widget.queryResult.artists() as String)
-        .split('|')
-        .where((x) => x.length != 0)
-        .join(',');
-    if (artist == 'N/A') {
-      var group = widget.queryResult.groups() != null
-          ? widget.queryResult.groups().split('|')[1]
-          : '';
-      if (group != '') artist = group;
-    }
-
-    title = HtmlUnescape().convert(widget.queryResult.title());
-    dateTime = widget.queryResult.getDateTime() != null
-        ? DateFormat('yyyy/MM/dd HH:mm')
-            .format(widget.queryResult.getDateTime())
-        : '';
-    if (!ThumbnailManager.isExists(widget.queryResult.id())) {
-      HitomiManager.getImageList(widget.queryResult.id().toString())
-          .then((images) {
-        thumbnail = images.item2[0];
-        imageCount = images.item2.length;
-        ThumbnailManager.insert(widget.queryResult.id(), images);
-        if (!disposed) setState(() {});
-      });
-    } else {
-      var thumbnails = ThumbnailManager.get(widget.queryResult.id()).item2;
-      thumbnail = thumbnails[0];
-      imageCount = thumbnails.length;
-    }
   }
 
   String artist;
@@ -137,34 +95,84 @@ class _ArticleListItemVerySimpleWidgetState
 
   bool firstChecked = false;
 
+  bool _inited = false;
+
+  _init() {
+    if (_inited) return;
+    _inited = true;
+    data = Provider.of<ArticleListItem>(context);
+    scaleAnimationController = AnimationController(
+      vsync: this,
+      lowerBound: 1.0,
+      upperBound: 1.08,
+      duration: Duration(milliseconds: 180),
+    );
+    scaleAnimationController.addListener(() {
+      setState(() {
+        scale = scaleAnimationController.value;
+      });
+    });
+
+    Bookmark.getInstance().then((value) async {
+      isBookmarked = await value.isBookmark(data.queryResult.id());
+      if (isBookmarked) setState(() {});
+    });
+    artist = (data.queryResult.artists() as String)
+        .split('|')
+        .where((x) => x.length != 0)
+        .join(',');
+    if (artist == 'N/A') {
+      var group = data.queryResult.groups() != null
+          ? data.queryResult.groups().split('|')[1]
+          : '';
+      if (group != '') artist = group;
+    }
+
+    title = HtmlUnescape().convert(data.queryResult.title());
+    dateTime = data.queryResult.getDateTime() != null
+        ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime())
+        : '';
+    if (!ThumbnailManager.isExists(data.queryResult.id())) {
+      HitomiManager.getImageList(data.queryResult.id().toString())
+          .then((images) {
+        thumbnail = images.item2[0];
+        imageCount = images.item2.length;
+        ThumbnailManager.insert(data.queryResult.id(), images);
+        if (!disposed) setState(() {});
+      });
+    } else {
+      var thumbnails = ThumbnailManager.get(data.queryResult.id()).item2;
+      thumbnail = thumbnails[0];
+      imageCount = thumbnails.length;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (disposed) return null;
-    if (widget.bookmarkMode &&
-        !widget.isCheckMode &&
-        !onScaling &&
-        scale != 1.0) {
+    _init();
+    if (data.bookmarkMode && !data.isCheckMode && !onScaling && scale != 1.0) {
       setState(() {
         scale = 1.0;
       });
-    } else if (widget.bookmarkMode &&
-        widget.isCheckMode &&
-        widget.isChecked &&
+    } else if (data.bookmarkMode &&
+        data.isCheckMode &&
+        data.isChecked &&
         scale != 0.95) {
       setState(() {
         scale = 0.95;
       });
     }
 
-    double ww = widget.showDetail
-        ? widget.width - 16
-        : widget.width - (widget.addBottomPadding ? 100 : 0);
-    double hh = widget.showDetail
+    double ww = data.showDetail
+        ? data.width - 16
+        : data.width - (data.addBottomPadding ? 100 : 0);
+    double hh = data.showDetail
         ? 130.0
-        : widget.addBottomPadding ? 500.0 : widget.width * 4 / 3;
+        : data.addBottomPadding ? 500.0 : data.width * 4 / 3;
 
     var headers = {
-      "Referer": "https://hitomi.la/reader/${widget.queryResult.id()}.html/"
+      "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
     };
     return PimpedButton(
         particle: Rectangle2DemoParticle(),
@@ -225,12 +233,12 @@ class _ArticleListItemVerySimpleWidgetState
             onTapUp: (detail) {
               // if (onScaling) return;
               onScaling = false;
-              if (widget.isCheckMode) {
-                widget.isChecked = !widget.isChecked;
-                widget.bookmarkCheckCallback(
-                    widget.queryResult.id(), widget.isChecked);
+              if (data.isCheckMode) {
+                data.isChecked = !data.isChecked;
+                data.bookmarkCheckCallback(
+                    data.queryResult.id(), data.isChecked);
                 setState(() {
-                  if (widget.isChecked)
+                  if (data.isChecked)
                     scale = 0.95;
                   else
                     scale = 1.0;
@@ -249,9 +257,9 @@ class _ArticleListItemVerySimpleWidgetState
                     fullscreenDialog: true,
                     builder: (context) {
                       return ViewerPage(
-                        id: widget.queryResult.id().toString(),
+                        id: data.queryResult.id().toString(),
                         images:
-                            ThumbnailManager.get(widget.queryResult.id()).item1,
+                            ThumbnailManager.get(data.queryResult.id()).item1,
                         headers: headers,
                       );
                     },
@@ -293,10 +301,10 @@ class _ArticleListItemVerySimpleWidgetState
                             key: ObjectKey('asdfasdf'),
                           ),
                           value: ArticleInfo.fromArticleInfo(
-                            queryResult: widget.queryResult,
+                            queryResult: data.queryResult,
                             thumbnail: thumbnail,
                             headers: headers,
-                            heroKey: widget.thumbnailTag,
+                            heroKey: data.thumbnailTag,
                             isBookmarked: isBookmarked,
                             controller: controller,
                           ),
@@ -309,20 +317,20 @@ class _ArticleListItemVerySimpleWidgetState
             },
             onLongPress: () async {
               onScaling = false;
-              if (widget.bookmarkMode) {
-                if (widget.isCheckMode) {
-                  widget.isChecked = !widget.isChecked;
+              if (data.bookmarkMode) {
+                if (data.isCheckMode) {
+                  data.isChecked = !data.isChecked;
                   setState(() {
                     scale = 1.0;
                   });
                   return;
                 }
-                widget.isChecked = true;
+                data.isChecked = true;
                 firstChecked = true;
                 setState(() {
                   scale = 0.95;
                 });
-                widget.bookmarkCallback(widget.queryResult.id());
+                data.bookmarkCallback(data.queryResult.id());
                 return;
               }
 
@@ -335,8 +343,8 @@ class _ArticleListItemVerySimpleWidgetState
                   duration: Duration(seconds: 2),
                   content: new Text(
                     isBookmarked
-                        ? '${widget.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
-                        : '${widget.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
+                        ? '${data.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
+                        : '${data.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
                     style: TextStyle(color: Colors.white),
                   ),
                   backgroundColor: Colors.grey.shade800,
@@ -345,10 +353,10 @@ class _ArticleListItemVerySimpleWidgetState
               isBookmarked = !isBookmarked;
               if (isBookmarked)
                 await (await Bookmark.getInstance())
-                    .bookmark(widget.queryResult.id());
+                    .bookmark(data.queryResult.id());
               else
                 await (await Bookmark.getInstance())
-                    .unbookmark(widget.queryResult.id());
+                    .unbookmark(data.queryResult.id());
               if (!isBookmarked)
                 _flareController.play('Unlike');
               else {
@@ -397,7 +405,7 @@ class _ArticleListItemVerySimpleWidgetState
                   size: sz,
                   thumbnail: thumbnail,
                   headers: headers,
-                  heroKey: widget.thumbnailTag,
+                  heroKey: data.thumbnailTag,
                 ),
               ));
               setState(() {
@@ -410,13 +418,13 @@ class _ArticleListItemVerySimpleWidgetState
 
   Widget buildBody() {
     return Container(
-        margin: widget.addBottomPadding
-            ? widget.showDetail
+        margin: data.addBottomPadding
+            ? data.showDetail
                 ? EdgeInsets.only(bottom: 6)
                 : EdgeInsets.only(bottom: 50)
             : EdgeInsets.zero,
         decoration: BoxDecoration(
-          color: widget.showDetail
+          color: data.showDetail
               ? Settings.themeWhat ? Colors.grey.shade800 : Colors.white70
               : Colors.grey.withOpacity(0.3),
           borderRadius: BorderRadius.all(Radius.circular(5)),
@@ -431,7 +439,7 @@ class _ArticleListItemVerySimpleWidgetState
             ),
           ],
         ),
-        child: widget.showDetail
+        child: data.showDetail
             ? Row(
                 children: <Widget>[
                   buildThumbnail(),
@@ -443,10 +451,10 @@ class _ArticleListItemVerySimpleWidgetState
 
   Widget buildThumbnail() {
     return ThumbnailWidget(
-      id: widget.queryResult.id().toString(),
-      showDetail: widget.showDetail,
+      id: data.queryResult.id().toString(),
+      showDetail: data.showDetail,
       thumbnail: thumbnail,
-      thumbnailTag: widget.thumbnailTag,
+      thumbnailTag: data.thumbnailTag,
       imageCount: imageCount,
       isBookmarked: isBookmarked,
       flareController: _flareController,

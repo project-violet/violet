@@ -6,9 +6,11 @@ import 'dart:collection';
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
@@ -425,17 +427,20 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 child: Align(
                   alignment: Alignment.bottomCenter,
                   child: SizedBox(
-                    child: ArticleListItemVerySimpleWidget(
-                      queryResult: e,
-                      showDetail: false,
-                      addBottomPadding: false,
-                      width: (windowWidth - 4.0) / mm,
-                      thumbnailTag: Uuid().v4(),
-                      bookmarkMode: true,
-                      bookmarkCallback: longpress,
-                      bookmarkCheckCallback: check,
-                      isCheckMode: checkMode,
-                      isChecked: checked.contains(e.id()),
+                    child: Provider<ArticleListItem>.value(
+                      value: ArticleListItem.fromArticleListItem(
+                        queryResult: e,
+                        showDetail: false,
+                        addBottomPadding: false,
+                        width: (windowWidth - 4.0) / mm,
+                        thumbnailTag: Uuid().v4(),
+                        bookmarkMode: true,
+                        bookmarkCallback: longpress,
+                        bookmarkCheckCallback: check,
+                        isCheckMode: checkMode,
+                        isChecked: checked.contains(e.id()),
+                      ),
+                      child: ArticleListItemVerySimpleWidget(),
                     ),
                   ),
                 ),
@@ -458,17 +463,20 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     '/' +
                     x.id().toString()),
                 alignment: Alignment.center,
-                child: ArticleListItemVerySimpleWidget(
-                  queryResult: x,
-                  showDetail: nowType == 3,
-                  addBottomPadding: true,
-                  width: (windowWidth - 4.0),
-                  thumbnailTag: Uuid().v4(),
-                  bookmarkMode: true,
-                  bookmarkCallback: longpress,
-                  bookmarkCheckCallback: check,
-                  isCheckMode: checkMode,
-                  isChecked: checked.contains(x.id()),
+                child: Provider<ArticleListItem>.value(
+                  value: ArticleListItem.fromArticleListItem(
+                    queryResult: x,
+                    showDetail: nowType == 3,
+                    addBottomPadding: true,
+                    width: (windowWidth - 4.0),
+                    thumbnailTag: Uuid().v4(),
+                    bookmarkMode: true,
+                    bookmarkCallback: longpress,
+                    bookmarkCheckCallback: check,
+                    isCheckMode: checkMode,
+                    isChecked: checked.contains(x.id()),
+                  ),
+                  child: ArticleListItemVerySimpleWidget(),
                 ),
               );
             }).toList()),
