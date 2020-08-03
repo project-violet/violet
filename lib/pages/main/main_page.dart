@@ -127,8 +127,10 @@ class _MainPageState extends State<MainPage> {
               ),
               _userArea(),
               ArtistCollectionCard(),
-              Lottie.asset(
-                  'assets/lottie/28395-hajj-mabroor-infographic-animation.json')
+              // Stack(children: [
+              //   Lottie.asset(
+              //       'assets/lottie/28395-hajj-mabroor-infographic-animation.json'),
+              // ]),
               // Visibility(
               //   visible: false,
               //   child: UpdateCard(

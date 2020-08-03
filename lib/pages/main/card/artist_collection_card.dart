@@ -8,8 +8,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:lottie/lottie.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
+import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/card/update_card.dart';
 
 class ArtistCollectionCard extends StatefulWidget {
@@ -40,8 +40,27 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
               gesture: Gestures()
                 ..isTap((isTapped) {
                   setState(() => pressed = isTapped);
-                  if (isTapped) {
+                  if (!isTapped) {
                     controller.forward(from: 0.0);
+
+                    Navigator.of(context).push(PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        var begin = Offset(0.0, 1.0);
+                        var end = Offset.zero;
+                        var curve = Curves.ease;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (_, __, ___) => ArtistCollectionPage(),
+                    ));
                   }
                 }),
               child: Container(
