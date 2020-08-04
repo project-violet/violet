@@ -16,6 +16,8 @@ import 'package:http/http.dart' as http;
 import 'package:violet/component/download/pixiv.dart';
 import 'package:violet/component/download/twitter.dart';
 import 'package:violet/component/downloadable.dart';
+import 'package:violet/component/eh/eh_parser.dart';
+import 'package:violet/database/query.dart';
 
 void main() {
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -93,24 +95,49 @@ void main() {
   //       ));
   // });
 
-  test('Twitter Test', () async {
-    // print(await TwitterAPI.userByScreenName('WkfxjfrP'));
-    print(await TwitterAPI.timeline('945314922065305600'));
+  // test('Twitter Test', () async {
+  //   // print(await TwitterAPI.userByScreenName('WkfxjfrP'));
+  //   print(await TwitterAPI.timeline('945314922065305600'));
 
-    // var html = (await http.get(url)).body;
-    // var im = HitomiDonwloadManager();
-    // await im.createTask(
-    //     url,
-    //     GeneralDownloadProgress(
-    //       progressCallback: (a, b) {
-    //         print(a.toString() + '/' + b.toString());
-    //       },
-    //       simpleInfoCallback: (a) {
-    //         print(a);
-    //       },
-    //       thumbnailCallback: (a, b) {
-    //         print(a);
-    //       },
-    //     ));
+  //   // var html = (await http.get(url)).body;
+  //   // var im = HitomiDonwloadManager();
+  //   // await im.createTask(
+  //   //     url,
+  //   //     GeneralDownloadProgress(
+  //   //       progressCallback: (a, b) {
+  //   //         print(a.toString() + '/' + b.toString());
+  //   //       },
+  //   //       simpleInfoCallback: (a) {
+  //   //         print(a);
+  //   //       },
+  //   //       thumbnailCallback: (a, b) {
+  //   //         print(a);
+  //   //       },
+  //   //     ));
+  // });
+
+  test("EHentai Test", () async {
+    var what = 'ahegao';
+
+    var search = Uri.encodeComponent(what);
+
+    var url =
+        'https://e-hentai.org/?inline_set=dm_e&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
+
+    // await http.get('https://exhentai.org/?inline_set=dm_e', headers: {
+    //   'Cookie':
+    //       'igneous=30e0c0a66;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f'
+    // });
+    var html = (await http.get(url, headers: {
+      'Cookie':
+          'igneous=30e0c0a66;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f;sl=dm_2'
+    }))
+        .body;
+
+    var result = EHParser.parseReulstPageExtendedListView(html);
+
+    result.forEach((element) {
+      print(element.title);
+    });
   });
 }
