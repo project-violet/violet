@@ -25,7 +25,9 @@ class Settings {
   static String language; // System Language
 
   // Like this Hitomi.la => e-hentai => exhentai => nhentai
-  static List<String> routingRule;
+  static List<String> routingRule; // image routing rule
+  static List<String> searchRule;
+  static bool searchNetwork;
 
   // Global? English? Korean?
   static String databaseType;
@@ -41,12 +43,12 @@ class Settings {
     var mac =
         (await SharedPreferences.getInstance()).getInt('majorAccentColor');
     if (mc == null) {
-      (await SharedPreferences.getInstance())
+      await (await SharedPreferences.getInstance())
           .setInt('majorColor', Colors.purple.value);
       mc = Colors.purple.value;
     }
     if (mac == null) {
-      (await SharedPreferences.getInstance())
+      await (await SharedPreferences.getInstance())
           .setInt('majorAccentColor', Colors.purpleAccent.value);
       mac = Colors.purpleAccent.value;
     }
@@ -55,7 +57,8 @@ class Settings {
 
     themeWhat = (await SharedPreferences.getInstance()).getBool('themeColor');
     if (themeWhat == null) {
-      (await SharedPreferences.getInstance()).setBool('themeColor', false);
+      await (await SharedPreferences.getInstance())
+          .setBool('themeColor', false);
       themeWhat = false;
     }
     if (!themeWhat)
@@ -66,7 +69,7 @@ class Settings {
     searchResultType =
         (await SharedPreferences.getInstance()).getInt('searchResultType');
     if (searchResultType == null) {
-      (await SharedPreferences.getInstance())
+      await (await SharedPreferences.getInstance())
           .setInt('searchResultType', searchResultType);
       searchResultType = 0;
     }
@@ -89,13 +92,13 @@ class Settings {
         language = 'lang:japanese';
       else if (langcode == 'zh') language = 'lang:chinese';
       includetags = '($language or lang:n/a)';
-      (await SharedPreferences.getInstance())
+      await (await SharedPreferences.getInstance())
           .setString('includetags', includetags);
     }
     if (excludetags == null ||
         excludetags == MinorShielderFilter.tags.join('|')) {
       excludetags = '';
-      (await SharedPreferences.getInstance())
+      await (await SharedPreferences.getInstance())
           .setString('excludetags', excludetags);
     }
     includeTags = includetags;
@@ -105,14 +108,31 @@ class Settings {
 
     var routingrule =
         (await SharedPreferences.getInstance()).getString('routingrule');
+    var searchrule =
+        (await SharedPreferences.getInstance()).getString('searchrule');
+    var searchnetwork =
+        (await SharedPreferences.getInstance()).getBool('searchnetwork');
 
     if (routingrule == null) {
       routingrule = 'Hitomi|ExHentai|EHentai|Hiyobi|NHentai';
 
-      (await SharedPreferences.getInstance())
+      await (await SharedPreferences.getInstance())
           .setString('routingrule', routingrule);
     }
     routingRule = routingrule.split('|');
+    if (searchrule == null) {
+      searchrule = 'Hitomi|ExHentai|EHentai|Hiyobi|NHentai';
+
+      await (await SharedPreferences.getInstance())
+          .setString('searchrule', searchrule);
+    }
+    searchRule = searchrule.split('|');
+    if (searchnetwork == null) {
+      searchnetwork = false;
+
+      await (await SharedPreferences.getInstance())
+          .setBool('searchnetwork', searchnetwork);
+    }
 
     var databasetype =
         (await SharedPreferences.getInstance()).getString('databasetype');
@@ -160,7 +180,8 @@ class Settings {
   static Future<void> setMajorColor(Color color) async {
     if (majorColor == color) return;
 
-    (await SharedPreferences.getInstance()).setInt('majorColor', color.value);
+    await (await SharedPreferences.getInstance())
+        .setInt('majorColor', color.value);
     majorColor = color;
 
     Color accent;
@@ -180,42 +201,43 @@ class Settings {
       else if (color == Colors.black) accent = Colors.black;
     }
 
-    (await SharedPreferences.getInstance())
+    await (await SharedPreferences.getInstance())
         .setInt('majorAccentColor', accent.value);
     majorAccentColor = accent;
   }
 
   static Future<void> setSearchResultType(int wh) async {
     searchResultType = wh;
-    (await SharedPreferences.getInstance())
+    await (await SharedPreferences.getInstance())
         .setInt('searchResultType', searchResultType);
   }
 
   static Future<void> setLanguage(String lang) async {
     language = lang;
-    (await SharedPreferences.getInstance()).setString('language', lang);
+    await (await SharedPreferences.getInstance()).setString('language', lang);
   }
 
   static Future<void> setIncludeTags(String nn) async {
     includeTags = nn;
-    (await SharedPreferences.getInstance())
+    await (await SharedPreferences.getInstance())
         .setString('includetags', includeTags);
   }
 
   static Future<void> setExcludeTags(String nn) async {
     excludeTags = nn.split(' ').toList();
-    (await SharedPreferences.getInstance())
+    await (await SharedPreferences.getInstance())
         .setString('excludetags', excludeTags.join('|'));
   }
 
   static Future<void> setBlurredTags(String nn) async {
     blurredTags = nn.split(' ').toList();
-    (await SharedPreferences.getInstance())
+    await (await SharedPreferences.getInstance())
         .setString('blurredtags', blurredTags.join('|'));
   }
 
   static Future<void> setRightToLeft(bool nn) async {
     rightToLeft = nn;
-    (await SharedPreferences.getInstance()).setBool('right2left', rightToLeft);
+    await (await SharedPreferences.getInstance())
+        .setBool('right2left', rightToLeft);
   }
 }

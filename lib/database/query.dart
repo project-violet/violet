@@ -22,8 +22,16 @@ class QueryResult {
   files() => result['Files'];
   classname() => result['Class'];
 
+  // For E/Ex Hentai
+  publishedeh() => result['PublishedEH'];
+  thumbnail() => result['Thumbnail'];
+  url() => result['URL'];
+
   DateTime getDateTime() {
-    if (published() == null || published() == 0) return null;
+    if (published() == null || published() == 0) {
+      if (publishedeh() != null) return DateTime.parse(published());
+      return null;
+    }
 
     const epochTicks = 621355968000000000;
     const ticksPerMillisecond = 10000;
