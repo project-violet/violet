@@ -12,6 +12,22 @@ import 'package:violet/settings/settings.dart';
 
 import 'package:http/http.dart' as http;
 
+//
+// Hentai Component
+// Search and Image Download Method
+//
+// 1. Search
+//    - From Database
+//    - From Web
+//    require info: title, id, pages
+//          option: thumbnail, url
+//    this function is implemented on `search` method
+//
+// 2. Image donwload
+//    require info: Images
+//          option: Header (Most sites only need 0 or 1 header for all images)
+//    this funciton is implemented on `getImageListFromEHId` method
+//
 class HentaiManager {
   // <Query Results, next offset>
   // if next offset == 0, then search start
@@ -52,6 +68,7 @@ class HentaiManager {
             return Tuple2<List<QueryResult>, int>(
                 result, result.length >= 25 ? offset + 1 : -1);
           case 'Hitomi':
+            // https://hiyobi.me/search/loli|sex
             break;
           case 'Hiyobi':
             break;
@@ -65,6 +82,7 @@ class HentaiManager {
     throw Exception('Never Taken');
   }
 
+  // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
   static Future<Tuple3<List<String>, List<String>, List<String>>>
       getImageListFromEHId(QueryResult qr) async {
     var lang = qr.language() as String;
@@ -84,7 +102,7 @@ class HentaiManager {
 
         // Scroll View Allowed
         case 'Hitomi':
-          nt = await _tryHiyobi(qr);
+          nt = await _tryHitomi(qr);
           break;
         case 'Hiyobi':
           if (lang == 'korean') nt = await _tryHiyobi(qr);
@@ -100,6 +118,9 @@ class HentaiManager {
 
     return null;
   }
+
+  static Future<Tuple2<List<Future<String>>, Map<String, dynamic>>> getImages(
+      QueryResult qr) async {}
 
   static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
       _tryEHentai(QueryResult qr) async {}
