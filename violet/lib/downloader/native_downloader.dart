@@ -153,6 +153,7 @@ class NativeDownloader {
       return null;
     }
     final libFile = File(dir.path + "/libviolet.so");
+    if (await libFile.exists()) return libFile.path;
     if (Platform.isAndroid) {
       final devicePlugin = DeviceInfoPlugin();
       final deviceInfo = await devicePlugin.androidInfo;
