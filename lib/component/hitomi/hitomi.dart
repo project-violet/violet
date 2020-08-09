@@ -29,22 +29,34 @@ class HitomiManager {
       var rr = row.cast<String, dynamic>();
       var hash = rr['hash'] as String;
       var postfix = hash.substring(hash.length - 3);
+
+      var subdomainx = subdomain;
+
+      var x = int.tryParse('${postfix[0]}${postfix[1]}', radix: 16);
+
+      if (x != null && !x.isNaN) {
+        var nf = 3;
+        if (x < 0x30) nf = 2;
+        if (x < 0x09) x = 1;
+        subdomainx = String.fromCharCode(97 + (x % nf));
+      }
+
       if (rr['haswebp'] == 0 || rr['haswebp'] == null) {
         result.add(
-            'https://${subdomain}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
+            'https://${subdomainx}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
       } else if (hash == "")
         result.add(
-            'https://${subdomain}a.hitomi.la/webp/${rr['name'] as String}.webp');
+            'https://${subdomainx}a.hitomi.la/webp/${rr['name'] as String}.webp');
       else if (hash.length < 3)
-        result.add('https://${subdomain}a.hitomi.la/webp/$hash.webp');
+        result.add('https://${subdomainx}a.hitomi.la/webp/$hash.webp');
       else {
         result.add(
-            'https://${subdomain}a.hitomi.la/webp/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.webp');
+            'https://${subdomainx}a.hitomi.la/webp/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.webp');
       }
       btresult.add(
           'https://tn.hitomi.la/bigtn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
       stresult.add(
-          'https://${subdomain}tn.hitomi.la/smalltn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
+          'https://${subdomainx}tn.hitomi.la/smalltn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
     }
     return Tuple3<List<String>, List<String>, List<String>>(
         result, btresult, stresult);
