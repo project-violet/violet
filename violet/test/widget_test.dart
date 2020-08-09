@@ -17,6 +17,7 @@ import 'package:violet/component/download/pixiv.dart';
 import 'package:violet/component/download/twitter.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/eh/eh_parser.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 
 void main() {
@@ -115,6 +116,12 @@ void main() {
   //   //       },
   //   //     ));
   // });
+
+  test("hitomi test", () async {
+    (await HitomiManager.getImageList('1702084')).item1.forEach((element) {
+      print(element);
+    });
+  });
 
   test("EHentai Test", () async {
     var what = 'ahegao';
