@@ -355,19 +355,13 @@ class _SettingsPageState extends State<SettingsPage>
                   //   },
                   // ),
                   _buildDivider(),
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10.0),
-                            bottomRight: Radius.circular(10.0))),
-                    child: ListTile(
-                      leading: Icon(
-                        MdiIcons.tooltipEdit,
-                        color: Settings.majorColor,
-                      ),
-                      title: Text(Translations.of(context).trans('tagrebuild')),
-                      trailing: Icon(Icons.keyboard_arrow_right),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.tooltipEdit,
+                      color: Settings.majorColor,
                     ),
+                    title: Text(Translations.of(context).trans('tagrebuild')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
                     onTap: () async {
                       if (await Dialogs.yesnoDialog(
                           context,
@@ -375,6 +369,32 @@ class _SettingsPageState extends State<SettingsPage>
                           Translations.of(context).trans('tagrebuild'))) {
                         await Dialogs.okDialog(context, 'TODO: Implementation');
                       }
+                    },
+                  ),
+
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.searchWeb,
+                        color: Settings.majorColor,
+                      ),
+                      title:
+                          Text(Translations.of(context).trans('usewebsearch')),
+                      trailing: Switch(
+                        value: Settings.searchNetwork,
+                        onChanged: (value) async {},
+                        activeTrackColor: Settings.majorColor,
+                        activeColor: Settings.majorAccentColor,
+                      ),
+                    ),
+                    onTap: () async {
+                      await Settings.setSearchOnWeb(!Settings.searchNetwork);
+                      setState(() {});
                     },
                   ),
                   // _buildDivider(),

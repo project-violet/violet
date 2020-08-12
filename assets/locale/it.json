@@ -191,5 +191,7 @@
     "maindb": "Database",
     "mainread": "Read",
     "mainbookmark": "Boomkark",
-    "maindownload": "Donwload"
+    "maindownload": "Donwload",
+    
+    "usewebsearch": "Search on Web"
 }

@@ -190,5 +190,7 @@
     "maindb": "데이터베이스",
     "mainread": "읽은 작품 수",
     "mainbookmark": "북마크 수",
-    "maindownload": "다운로드 수"
+    "maindownload": "다운로드 수",
+
+    "usewebsearch": "웹에서 검색하기"
 }

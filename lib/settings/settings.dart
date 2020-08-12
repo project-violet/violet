@@ -133,6 +133,7 @@ class Settings {
       await (await SharedPreferences.getInstance())
           .setBool('searchnetwork', searchnetwork);
     }
+    searchNetwork = searchnetwork;
 
     var databasetype =
         (await SharedPreferences.getInstance()).getString('databasetype');
@@ -239,5 +240,10 @@ class Settings {
     rightToLeft = nn;
     await (await SharedPreferences.getInstance())
         .setBool('right2left', rightToLeft);
+  }
+
+  static Future<void> setSearchOnWeb(bool nn) async {
+    searchNetwork = nn;
+    await (await SharedPreferences.getInstance()).setBool('searchnetwork', nn);
   }
 }

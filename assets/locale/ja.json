@@ -191,5 +191,7 @@
     "maindb": "データベース",
     "mainread": "読んだ作品数",
     "mainbookmark": "ブックマーク数",
-    "maindownload": "ダウンロードすることができ"
+    "maindownload": "ダウンロードすることができ",
+    
+    "usewebsearch": "ウェブで検索する"
 }
