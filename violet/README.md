@@ -1,5 +1,7 @@
 # Violet - Open Source Hentai Viewer App
 
+![](Preview.png)
+
 Project Violet Source Code
 
 https://discord.gg/fqrtRxC
