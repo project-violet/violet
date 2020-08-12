@@ -958,28 +958,28 @@ class _SettingsPageState extends State<SettingsPage>
                       },
                     ),
                     _buildDivider(),
-                    ListTile(
-                      leading: ShaderMask(
-                        shaderCallback: (bounds) => RadialGradient(
-                          center: Alignment.bottomLeft,
-                          radius: 1.3,
-                          colors: [Colors.yellow, Colors.red, Colors.purple],
-                          tileMode: TileMode.clamp,
-                        ).createShader(bounds),
-                        child: Icon(MdiIcons.instagram, color: Colors.white),
-                      ),
-                      title: Text(Translations.of(context).trans('instagram')),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                      // onTap: () {},
-                    ),
-                    _buildDivider(),
-                    ListTile(
-                      leading: Icon(MdiIcons.twitter, color: Colors.blue),
-                      title: Text(Translations.of(context).trans('twitter')),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                      // onTap: () {},
-                    ),
-                    _buildDivider(),
+                    // ListTile(
+                    //   leading: ShaderMask(
+                    //     shaderCallback: (bounds) => RadialGradient(
+                    //       center: Alignment.bottomLeft,
+                    //       radius: 1.3,
+                    //       colors: [Colors.yellow, Colors.red, Colors.purple],
+                    //       tileMode: TileMode.clamp,
+                    //     ).createShader(bounds),
+                    //     child: Icon(MdiIcons.instagram, color: Colors.white),
+                    //   ),
+                    //   title: Text(Translations.of(context).trans('instagram')),
+                    //   trailing: Icon(Icons.keyboard_arrow_right),
+                    //   // onTap: () {},
+                    // ),
+                    // _buildDivider(),
+                    // ListTile(
+                    //   leading: Icon(MdiIcons.twitter, color: Colors.blue),
+                    //   title: Text(Translations.of(context).trans('twitter')),
+                    //   trailing: Icon(Icons.keyboard_arrow_right),
+                    //   // onTap: () {},
+                    // ),
+                    // _buildDivider(),
                     InkWell(
                       customBorder: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
