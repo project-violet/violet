@@ -91,16 +91,12 @@ class HentaiManager {
     for (int i = 0; i < route.length; i++) {
       Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>> nt = null;
       switch (route[i]) {
-
-        // Scroll View Prohibited
         case 'EHentai':
           nt = await _tryHiyobi(qr);
           break;
         case 'ExHentai':
           nt = await _tryHiyobi(qr);
           break;
-
-        // Scroll View Allowed
         case 'Hitomi':
           nt = await _tryHitomi(qr);
           break;
@@ -174,7 +170,7 @@ class HentaiManager {
         'https://e${exh ? 'x' : '-'}hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
 
     var cookie =
-        (await SharedPreferences.getInstance()).getString('eh_cookies');
+        (await SharedPreferences.getInstance()).getString('eh_cookies') ?? '';
     var html =
         (await http.get(url, headers: {'Cookie': cookie + ';sl=dm_2'})).body;
 
