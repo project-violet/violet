@@ -191,5 +191,7 @@
     "maindb": "数据库",
     "mainread": "读取",
     "mainbookmark": "书签",
-    "maindownload": "下载"
+    "maindownload": "下载",
+    
+    "usewebsearch": "在网路上搜寻"
 }
