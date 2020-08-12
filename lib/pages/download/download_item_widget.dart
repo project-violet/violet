@@ -38,7 +38,9 @@ class DownloadItemWidget extends StatefulWidget {
   _DownloadItemWidgetState createState() => _DownloadItemWidgetState();
 }
 
-class _DownloadItemWidgetState extends State<DownloadItemWidget> {
+class _DownloadItemWidgetState extends State<DownloadItemWidget>
+    with AutomaticKeepAliveClientMixin {
+  @override
   bool get wantKeepAlive => true;
   double scale = 1.0;
   String fav = '';

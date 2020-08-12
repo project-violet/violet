@@ -65,7 +65,7 @@ class _DownloadPageState extends State<DownloadPage>
       child: GestureDetector(
         child: CustomScrollView(
           // key: key,
-          cacheExtent: height * 100,
+          // cacheExtent: height * 100,
           controller: _scroll,
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
