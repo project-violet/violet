@@ -18,8 +18,8 @@ class ArticleListItem {
   final bool bookmarkMode;
   final BookmarkCallback bookmarkCallback;
   final BookmarkCheckCallback bookmarkCheckCallback;
-  final bool isCheckMode;
-  bool isChecked;
+  // final bool isCheckMode;
+  // bool isChecked;
 
   ArticleListItem({
     @required this.queryResult,
@@ -30,8 +30,8 @@ class ArticleListItem {
     @required this.bookmarkMode,
     @required this.bookmarkCallback,
     @required this.bookmarkCheckCallback,
-    @required this.isChecked,
-    @required this.isCheckMode,
+    // @required this.isChecked,
+    // @required this.isCheckMode,
   });
 
   factory ArticleListItem.fromArticleListItem({
@@ -43,8 +43,8 @@ class ArticleListItem {
     bool bookmarkMode = false,
     BookmarkCallback bookmarkCallback,
     BookmarkCheckCallback bookmarkCheckCallback,
-    bool isCheckMode = false,
-    bool isChecked = false,
+    // bool isCheckMode = false,
+    // bool isChecked = false,
   }) {
     return ArticleListItem(
       addBottomPadding: addBottomPadding,
@@ -55,8 +55,8 @@ class ArticleListItem {
       bookmarkMode: bookmarkMode,
       bookmarkCallback: bookmarkCallback,
       bookmarkCheckCallback: bookmarkCheckCallback,
-      isCheckMode: isCheckMode,
-      isChecked: isChecked,
+      // isCheckMode: isCheckMode,
+      // isChecked: isChecked,
     );
   }
 }

@@ -14,6 +14,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
@@ -69,17 +70,19 @@ class _SearchPageState extends State<SearchPage>
     WidgetsBinding.instance
         .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
     Future.delayed(Duration(milliseconds: 500), () async {
-      final query = HitomiManager.translate2query(Settings.includeTags +
-          ' ' +
-          Settings.excludeTags
-              .where((e) => e.trim() != '')
-              .map((e) => '-$e')
-              .join(' '));
-      final result = QueryManager.queryPagination(query);
+      // final query = HitomiManager.translate2query(Settings.includeTags +
+      //     ' ' +
+      //     Settings.excludeTags
+      //         .where((e) => e.trim() != '')
+      //         .map((e) => '-$e')
+      //         .join(' '));
+      // final result = QueryManager.queryPagination(query);
+      final result = await HentaiManager.search('');
 
-      latestQuery = Tuple2<QueryManager, String>(result, '');
-      queryResult = List<QueryResult>();
-      await loadNextQuery();
+      latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
+      // queryResult = List<QueryResult>();
+      // await loadNextQuery();
+      queryResult = latestQuery.item1.item1;
     });
 
     _scroll.addListener(() {
@@ -87,7 +90,6 @@ class _SearchPageState extends State<SearchPage>
       if (_scroll.offset > _scroll.position.maxScrollExtent / 4 * 3) {
         scrollOnce = true;
         Future.delayed(Duration(milliseconds: 100)).then((value) async {
-          print('qqqq');
           await loadNextQuery();
           scrollOnce = false;
         });
@@ -97,7 +99,7 @@ class _SearchPageState extends State<SearchPage>
 
   bool scrollOnce = false;
 
-  Tuple2<QueryManager, String> latestQuery;
+  Tuple2<Tuple2<List<QueryResult>, int>, String> latestQuery;
 
   ScrollController _scroll = ScrollController();
 
@@ -210,7 +212,10 @@ class _SearchPageState extends State<SearchPage>
                               heroFlareControls.play('close2search');
                             });
                             if (value == null) return;
-                            latestQuery = value;
+                            // latestQuery = value;
+                            latestQuery =
+                                Tuple2<Tuple2<List<QueryResult>, int>, String>(
+                                    null, value);
                             queryResult = List<QueryResult>();
                             isFilterUsed = false;
                             isOr = false;
@@ -387,13 +392,16 @@ class _SearchPageState extends State<SearchPage>
 
   Future<void> loadNextQuery() async {
     if (queryEnd) return;
-    var nn = await latestQuery.item1.next();
-    if (nn.length == 0) {
+    if (latestQuery.item1.item2 == -1) return;
+    var next = await HentaiManager.search(latestQuery.item2,
+        latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
+
+    if (next.item1.length == 0) {
       queryEnd = true;
       return;
     }
     setState(() {
-      queryResult.addAll(nn);
+      queryResult.addAll(next.item1);
     });
   }
 

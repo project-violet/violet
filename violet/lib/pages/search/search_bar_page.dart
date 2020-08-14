@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
@@ -163,22 +164,30 @@ class _SearchBarPageState extends State<SearchBarPage>
                               child: Text(
                                   Translations.of(context).trans('search')),
                               onPressed: () async {
-                                final query = HitomiManager.translate2query(
-                                    _searchController.text +
-                                        ' ' +
-                                        Settings.includeTags +
-                                        ' ' +
-                                        Settings.excludeTags
-                                            .where((e) => e.trim() != '')
-                                            .map((e) => '-$e')
-                                            .join(' ')
-                                            .trim());
-                                final result =
-                                    QueryManager.queryPagination(query);
-                                Navigator.pop(
-                                    context,
-                                    Tuple2<QueryManager, String>(
-                                        result, _searchController.text));
+                                // final query = HitomiManager.translate2query(
+                                //     _searchController.text +
+                                //         ' ' +
+                                //         Settings.includeTags +
+                                //         ' ' +
+                                //         Settings.excludeTags
+                                //             .where((e) => e.trim() != '')
+                                //             .map((e) => '-$e')
+                                //             .join(' ')
+                                //             .trim());
+                                // final result =
+                                //     QueryManager.queryPagination(query);
+                                // Navigator.pop(
+                                //     context,
+                                //     Tuple2<QueryManager, String>(
+                                //         result, _searchController.text));
+                                // final searchInfo = await HentaiManager.search(
+                                //     _searchController.text);
+                                Navigator.pop(context, _searchController.text
+                                    // Tuple2<Tuple2<List<QueryResult>, int>,
+                                    //         String>(
+                                    //     searchInfo, _searchController.text
+                                    // )
+                                    );
                               },
                             ),
                           ),
