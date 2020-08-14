@@ -437,10 +437,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                         bookmarkMode: true,
                         bookmarkCallback: longpress,
                         bookmarkCheckCallback: check,
+                        // isCheckMode: checkMode,
+                        // isChecked: checked.contains(e.id()),
+                      ),
+                      child: ArticleListItemVerySimpleWidget(
                         isCheckMode: checkMode,
                         isChecked: checked.contains(e.id()),
                       ),
-                      child: ArticleListItemVerySimpleWidget(),
                     ),
                   ),
                 ),
@@ -473,10 +476,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     bookmarkMode: true,
                     bookmarkCallback: longpress,
                     bookmarkCheckCallback: check,
+                    // isCheckMode: checkMode,
+                    // isChecked: checked.contains(x.id()),
+                  ),
+                  child: ArticleListItemVerySimpleWidget(
                     isCheckMode: checkMode,
                     isChecked: checked.contains(x.id()),
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
                 ),
               );
             }).toList()),
@@ -497,6 +503,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   HashSet<int> checked = HashSet<int>();
 
   void longpress(int article) {
+    print(article);
     if (!checkMode) {
       checkMode = true;
       checkModePre = true;

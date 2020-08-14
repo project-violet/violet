@@ -39,21 +39,21 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final bool bookmarkMode;
   // final BookmarkCallback bookmarkCallback;
   // final BookmarkCheckCallback bookmarkCheckCallback;
-  // bool isChecked;
-  // final bool isCheckMode;
+  bool isChecked;
+  final bool isCheckMode;
 
-  // ArticleListItemVerySimpleWidget({
-  //   this.queryResult,
-  //   this.addBottomPadding,
-  //   this.showDetail,
-  //   this.width,
-  //   this.thumbnailTag,
-  //   this.bookmarkMode = false,
-  //   this.bookmarkCallback,
-  //   this.bookmarkCheckCallback,
-  //   this.isChecked = false,
-  //   this.isCheckMode = false,
-  // });
+  ArticleListItemVerySimpleWidget({
+    // this.queryResult,
+    // this.addBottomPadding,
+    // this.showDetail,
+    // this.width,
+    // this.thumbnailTag,
+    // this.bookmarkMode = false,
+    // this.bookmarkCallback,
+    // this.bookmarkCheckCallback,
+    this.isChecked = false,
+    this.isCheckMode = false,
+  });
 
   @override
   _ArticleListItemVerySimpleWidgetState createState() =>
@@ -151,13 +151,16 @@ class _ArticleListItemVerySimpleWidgetState
   Widget build(BuildContext context) {
     if (disposed) return null;
     _init();
-    if (data.bookmarkMode && !data.isCheckMode && !onScaling && scale != 1.0) {
+    if (data.bookmarkMode &&
+        !widget.isCheckMode &&
+        !onScaling &&
+        scale != 1.0) {
       setState(() {
         scale = 1.0;
       });
     } else if (data.bookmarkMode &&
-        data.isCheckMode &&
-        data.isChecked &&
+        widget.isCheckMode &&
+        widget.isChecked &&
         scale != 0.95) {
       setState(() {
         scale = 0.95;
@@ -233,12 +236,12 @@ class _ArticleListItemVerySimpleWidgetState
             onTapUp: (detail) {
               // if (onScaling) return;
               onScaling = false;
-              if (data.isCheckMode) {
-                data.isChecked = !data.isChecked;
+              if (widget.isCheckMode) {
+                widget.isChecked = !widget.isChecked;
                 data.bookmarkCheckCallback(
-                    data.queryResult.id(), data.isChecked);
+                    data.queryResult.id(), widget.isChecked);
                 setState(() {
-                  if (data.isChecked)
+                  if (widget.isChecked)
                     scale = 0.95;
                   else
                     scale = 1.0;
@@ -318,14 +321,14 @@ class _ArticleListItemVerySimpleWidgetState
             onLongPress: () async {
               onScaling = false;
               if (data.bookmarkMode) {
-                if (data.isCheckMode) {
-                  data.isChecked = !data.isChecked;
+                if (widget.isCheckMode) {
+                  widget.isChecked = !widget.isChecked;
                   setState(() {
                     scale = 1.0;
                   });
                   return;
                 }
-                data.isChecked = true;
+                widget.isChecked = true;
                 firstChecked = true;
                 setState(() {
                   scale = 0.95;

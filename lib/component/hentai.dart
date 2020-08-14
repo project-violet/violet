@@ -52,12 +52,14 @@ class HentaiManager {
               "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
           .map((e) => QueryResult(result: e))
           .toList();
+      print(queryResult[0].id());
       return Tuple2<List<QueryResult>, int>(
           queryResult, queryResult.length >= itemsPerPage ? offset + 1 : -1);
     }
     // is web search?
     else {
       for (int i = 0; i < route.length; i++) {
+        print(route[i]);
         switch (route[i]) {
           case 'EHentai':
             var result = await _searchEHentai(what, offset.toString());
@@ -67,6 +69,7 @@ class HentaiManager {
             var result = await _searchEHentai(what, offset.toString(), true);
             return Tuple2<List<QueryResult>, int>(
                 result, result.length >= 25 ? offset + 1 : -1);
+            break;
           case 'Hitomi':
             // https://hiyobi.me/search/loli|sex
             break;
