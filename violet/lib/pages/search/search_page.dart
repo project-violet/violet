@@ -392,7 +392,7 @@ class _SearchPageState extends State<SearchPage>
 
   Future<void> loadNextQuery() async {
     if (queryEnd) return;
-    if (latestQuery.item1.item2 == -1) return;
+    if (latestQuery.item1 != null && latestQuery.item1.item2 == -1) return;
     var next = await HentaiManager.search(latestQuery.item2,
         latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
 
