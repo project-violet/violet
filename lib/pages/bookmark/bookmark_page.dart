@@ -37,7 +37,12 @@ class _BookmarkPageState extends State<BookmarkPage>
       body: FutureBuilder(
         future: Bookmark.getInstance().then((value) => value.getGroup()),
         builder: (context, AsyncSnapshot<List<BookmarkGroup>> snapshot) {
-          if (!snapshot.hasData) return Container();
+          if (!snapshot.hasData)
+            return Container(
+              child: Center(
+                child: Text('Loading ...'),
+              ),
+            );
           void _onReorder(int oldIndex, int newIndex) async {
             if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
               FlutterToast(context).showToast(
