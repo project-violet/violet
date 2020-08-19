@@ -29,7 +29,7 @@ class QueryResult {
 
   DateTime getDateTime() {
     if (published() == null || published() == 0) {
-      if (publishedeh() != null) return DateTime.parse(published());
+      if (publishedeh() != null) return DateTime.parse(publishedeh());
       return null;
     }
 

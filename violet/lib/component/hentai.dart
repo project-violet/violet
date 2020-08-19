@@ -190,7 +190,7 @@ class HentaiManager {
         tag.addAll(element.descripts['misc']);
 
       var map = {
-        'Id': element.url.split('/')[4],
+        'Id': int.parse(element.url.split('/')[4]),
         'EHash': element.url.split('/')[5],
         'Title': element.title,
         'Artists': element.descripts['artist'] != null
@@ -218,6 +218,8 @@ class HentaiManager {
         'Type': element.type,
         'URL': element.url,
       };
+
+      print(map);
 
       return QueryResult(result: map);
     }).toList();
