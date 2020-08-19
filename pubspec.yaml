@@ -182,12 +182,12 @@ flutter:
     
     - assets/p7zip/arm64-v8a/lib7zr.so
     - assets/p7zip/armeabi-v7a/lib7zr.so
-    # - assets/p7zip/x86/lib7zr.so
+    - assets/p7zip/x86/lib7zr.so
     # - assets/p7zip/x86_64/lib7zr.so
 
     - assets/libviolet/arm64-v8a/libviolet.so
     - assets/libviolet/armeabi-v7a/libviolet.so
-    # - assets/libviolet/x86/libviolet.so
+    - assets/libviolet/x86/libviolet.so
     # - assets/libviolet/x86_64/libviolet.so
 
 
