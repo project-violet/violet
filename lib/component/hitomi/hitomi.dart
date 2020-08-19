@@ -16,6 +16,7 @@ class HitomiManager {
       String id) async {
     var gg = await http.get('https://ltn.hitomi.la/galleries/$id.js');
     var urls = gg.body;
+    if (urls.trim().startsWith('<html>')) return null;
     var files = jsonDecode(urls.substring(urls.indexOf('=') + 1))
         .cast<String, dynamic>()['files'];
     const number_of_frontends = 3;
