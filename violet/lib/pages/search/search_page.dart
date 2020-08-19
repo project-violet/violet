@@ -396,6 +396,8 @@ class _SearchPageState extends State<SearchPage>
     var next = await HentaiManager.search(latestQuery.item2,
         latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
 
+    latestQuery =
+        Tuple2<Tuple2<List<QueryResult>, int>, String>(next, latestQuery.item2);
     if (next.item1.length == 0) {
       queryEnd = true;
       return;

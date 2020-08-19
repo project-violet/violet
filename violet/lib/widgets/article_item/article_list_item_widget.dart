@@ -135,6 +135,9 @@ class _ArticleListItemVerySimpleWidgetState
     if (!ThumbnailManager.isExists(data.queryResult.id())) {
       HitomiManager.getImageList(data.queryResult.id().toString())
           .then((images) {
+        if (images == null) {
+          return;
+        }
         thumbnail = images.item2[0];
         imageCount = images.item2.length;
         ThumbnailManager.insert(data.queryResult.id(), images);

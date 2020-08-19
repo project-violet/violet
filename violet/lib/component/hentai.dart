@@ -169,8 +169,10 @@ class HentaiManager {
   static Future<List<QueryResult>> _searchEHentai(String what, String page,
       [bool exh = false]) async {
     var search = Uri.encodeComponent(what);
+    // var url =
+    //     'https://e${exh ? 'x' : '-'}hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
     var url =
-        'https://e${exh ? 'x' : '-'}hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
+        'https://e${exh ? 'x' : '-'}hentai.org/?page=$page&f_cats=0&f_search=$what&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_spf=&f_spt=';
 
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies') ?? '';
@@ -218,8 +220,6 @@ class HentaiManager {
         'Type': element.type,
         'URL': element.url,
       };
-
-      print(map);
 
       return QueryResult(result: map);
     }).toList();
