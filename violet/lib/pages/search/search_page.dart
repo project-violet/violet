@@ -82,7 +82,9 @@ class _SearchPageState extends State<SearchPage>
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
       // queryResult = List<QueryResult>();
       // await loadNextQuery();
-      queryResult = latestQuery.item1.item1;
+      setState(() {
+        queryResult = latestQuery.item1.item1;
+      });
     });
 
     _scroll.addListener(() {
