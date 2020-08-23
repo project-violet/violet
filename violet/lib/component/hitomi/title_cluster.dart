@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the MIT License.
+// Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:kdtree/kdtree.dart';
 import 'package:violet/algorithm/disjointset.dart';
@@ -88,17 +88,15 @@ class HitomiTitleCluster {
     });
 
     var join = Map<int, List<int>>();
-    for (int i = 0; i < titles.length; i++)
-    {
+    for (int i = 0; i < titles.length; i++) {
       var v = ds.find(i);
-      if (!join.containsKey(v))
-        join[v] = List<int>();
+      if (!join.containsKey(v)) join[v] = List<int>();
       join[v].add(i);
     }
 
     var result = join.values.toList();
 
-    // result.forEach((element) { 
+    // result.forEach((element) {
     //   print('------------');
     //   element.forEach((element) {
     //     print(titles[element]);

@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the MIT License.
+// Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
 // This code base is from here.
 // https://github.com/mchome/flutter_advanced_networkimage/blob/master/lib/src/zoomable/zoomable_list.dart
