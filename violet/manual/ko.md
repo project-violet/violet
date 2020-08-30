@@ -9,7 +9,6 @@
 ## 0. 왜 이름이 Violet인가요?
 
 `Violet`은 `Violation`에서 가져온 단어입니다.
-이것 외엔 다른 유래는 없습니다.
 
 `Violet` 앱은 `Project Violet`의 첫 번째 서브 프로젝트로 `뷰어`를 중심으로 개발된 앱입니다.
 
