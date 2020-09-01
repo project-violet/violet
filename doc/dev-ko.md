@@ -59,4 +59,16 @@ https://github.com/project-violet/violet/blob/d158779a99ba23b9621a3c44243a774a1e
 3. LIMIT와 OFFSET을 이용해 필요한 만큼 데이터를 불러옵니다.
   참고: https://github.com/project-violet/violet/blob/d158779a99ba23b9621a3c44243a774a1e0cfb10/lib/pages/search/search_page.dart#L395
 
+## 3. 비슷한 작가/그룹/업로더 기능
 
+이 기능은 `Cosine Distance`를 이용해 구현되었습니다.
+
+참고: https://github.com/project-violet/violet/blob/d158779a99ba23b9621a3c44243a774a1e0cfb10/lib/component/hitomi/indexs.dart#L37
+
+## 4. 다국어 지원
+
+`Violet`은 가능한 모든 언어와 알파벳을 지원하기 위해 `IETF language tag`를 사용합니다.
+
+## 5. 설정
+
+모든 설정 정보는 https://github.com/project-violet/violet/blob/d158779a99ba23b9621a3c44243a774a1e0cfb10/lib/settings/settings.dart 여기에 저장됩니다.
