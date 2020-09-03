@@ -63,6 +63,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
             var result = List<QueryResult>();
             cc.forEach((element) {
+              if (qr[element.article()] == null) {
+                // TODO: Handle qurey not found
+                return;
+              }
               result.add(qr[element.article()]);
             });
             queryResult = result;
