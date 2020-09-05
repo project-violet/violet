@@ -66,31 +66,37 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       }
     } catch (e) {}
 
-    if (widget.isExistsDataBase) {
-      setState(() {
-        downloading = false;
-        baseString = Translations.instance.trans('dbdcheck');
-      });
+    if (Platform.isAndroid) {
+      if (widget.isExistsDataBase) {
+        setState(() {
+          downloading = false;
+          baseString = Translations.instance.trans('dbdcheck');
+        });
 
-      if (await DataBaseManager.create(widget.dbPath).test() == false) {
-        await Dialogs.okDialog(
-            context, Translations.instance.trans('dbdcheckerr'));
-        await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        if (await DataBaseManager.create(widget.dbPath).test() == false) {
+          await Dialogs.okDialog(
+              context, Translations.instance.trans('dbdcheckerr'));
+          await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+          return;
+        }
+
+        await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
+        await (await SharedPreferences.getInstance())
+            .setString('db_path', widget.dbPath);
+
+        await indexing();
+
         return;
       }
-
-      await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance())
-          .setString('db_path', widget.dbPath);
-
-      await indexing();
-
-      return;
+      downloadFileAndroid();
+    } else if (Platform.isIOS) {
+      // p7zip is not supported on IOS.
+      // So, download raw database.
+      downloadFileIOS();
     }
-    downloadFile();
   }
 
-  Future<void> downloadFile() async {
+  Future<void> downloadFileAndroid() async {
     Dio dio = Dio();
     int _1mb = 1024 * 1024;
     int _nu = 0;
@@ -155,6 +161,76 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           UpdateSyncManager.rawlangDB[widget.dbType].item1.toString());
 
       // await indexing();
+
+      if (widget.isSync != null && widget.isSync == true)
+        Navigator.pop(context);
+      else
+        setState(() {
+          baseString = Translations.instance.trans('dbdcomplete');
+        });
+
+      return;
+    } catch (e) {
+      print(e);
+    }
+
+    setState(() {
+      downloading = false;
+      baseString = Translations.instance.trans('dbretry');
+    });
+  }
+
+  Future<void> downloadFileIOS() async {
+    Dio dio = Dio();
+    int _1mb = 1024 * 1024;
+    int _nu = 0;
+    int latest = 0;
+    int _tlatest = 0;
+    int _tnu = 0;
+
+    try {
+      var dir = await getApplicationDocumentsDirectory();
+      if (await File("${dir.path}/data.db").exists())
+        await File("${dir.path}/data.db").delete();
+      Timer _timer = new Timer.periodic(
+          Duration(seconds: 1),
+          (Timer timer) => setState(() {
+                speedString = (_tlatest / 1024).toString() + " KB/S";
+                _tlatest = _tnu;
+                _tnu = 0;
+              }));
+      await dio.download(UpdateSyncManager.rawlangDBIOS[widget.dbType].item2,
+          "${dir.path}/data.db", onReceiveProgress: (rec, total) {
+        _nu += rec - latest;
+        _tnu += rec - latest;
+        latest = rec;
+        if (_nu <= _1mb) return;
+
+        _nu = 0;
+
+        setState(
+          () {
+            downloading = true;
+            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
+            downString = "[${numberWithComma(rec)}/${numberWithComma(total)}]";
+          },
+        );
+      });
+      _timer.cancel();
+
+      await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
+      await (await SharedPreferences.getInstance())
+          .setString('db_path', "${dir.path}/data.db");
+      await (await SharedPreferences.getInstance())
+          .setString('databasetype', widget.dbType);
+      await (await SharedPreferences.getInstance()).setString('databasesync',
+          UpdateSyncManager.rawlangDBIOS[widget.dbType].item1.toString());
+
+      setState(() {
+        downloading = false;
+      });
+
+      await indexing();
 
       if (widget.isSync != null && widget.isSync == true)
         Navigator.pop(context);
@@ -315,19 +391,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       }
       i++;
     }
-  }
-
-  @override
-  void dispose() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
-    super.dispose();
-  }
-
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
   }
 
   String numberWithComma(int param) {
