@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:http/http.dart' as http;
@@ -213,33 +214,35 @@ class _InfoAreaWidget extends StatelessWidget {
                       ),
                     ),
                     color: Settings.majorColor.withAlpha(230),
-                    onPressed: () async {
-                      if (!await Permission.storage.isGranted) {
-                        if (await Permission.storage.request() ==
-                            PermissionStatus.denied) {
-                          await Dialogs.okDialog(context,
-                              'If you do not allow file permissions, you cannot continue :(');
-                          return;
-                        }
-                      }
-                      if (!DownloadPageManager.downloadPageLoaded) {
-                        FlutterToast(context).showToast(
-                          child: ToastWrapper(
-                            isCheck: false,
-                            isWarning: true,
-                            msg: 'You need to open the download tab!',
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
-                        return;
-                      }
-                      await DownloadPageManager.appendTask(
-                          'https://hitomi.la/galleries/' +
-                              queryResult.id().toString() +
-                              '.html');
-                      Navigator.pop(context);
-                    },
+                    onPressed: Platform.isAndroid
+                        ? () async {
+                            if (!await Permission.storage.isGranted) {
+                              if (await Permission.storage.request() ==
+                                  PermissionStatus.denied) {
+                                await Dialogs.okDialog(context,
+                                    'If you do not allow file permissions, you cannot continue :(');
+                                return;
+                              }
+                            }
+                            if (!DownloadPageManager.downloadPageLoaded) {
+                              FlutterToast(context).showToast(
+                                child: ToastWrapper(
+                                  isCheck: false,
+                                  isWarning: true,
+                                  msg: 'You need to open the download tab!',
+                                ),
+                                gravity: ToastGravity.BOTTOM,
+                                toastDuration: Duration(seconds: 4),
+                              );
+                              return;
+                            }
+                            await DownloadPageManager.appendTask(
+                                'https://hitomi.la/galleries/' +
+                                    queryResult.id().toString() +
+                                    '.html');
+                            Navigator.pop(context);
+                          }
+                        : null,
                   ),
                 ),
               ),
