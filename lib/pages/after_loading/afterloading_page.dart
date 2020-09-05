@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -52,67 +54,130 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: scaffoldKey,
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 9,
-        showUnselectedLabels: false,
-        type: BottomNavigationBarType.shifting,
-        fixedColor: Settings.majorColor,
-        unselectedItemColor:
-            Settings.themeWhat ? Colors.white : Colors.black, //Colors.black,
-        currentIndex: _page,
-        onTap: (index) {
-          this._c.animateToPage(index,
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut);
-        },
-        items: <BottomNavigationBarItem>[
-          new BottomNavigationBarItem(
-              backgroundColor: Settings.themeWhat
-                  ? Colors.grey.shade900.withOpacity(0.90)
-                  : Colors.grey.shade50,
-              icon: new Icon(MdiIcons.home),
-              title: new Text(Translations.of(context).trans('main'))),
-          new BottomNavigationBarItem(
-              backgroundColor: Settings.themeWhat
-                  ? Colors.grey.shade900.withOpacity(0.90)
-                  : Colors.grey.shade50,
-              icon: new Icon(Icons.search),
-              title: new Text(Translations.of(context).trans('search'))),
-          new BottomNavigationBarItem(
-              backgroundColor: Settings.themeWhat
-                  ? Colors.grey.shade900.withOpacity(0.90)
-                  : Colors.grey.shade50,
-              icon: new Icon(Icons.bookmark),
-              title: new Text(Translations.of(context).trans('bookmark'))),
-          new BottomNavigationBarItem(
-              icon: new Icon(Icons.file_download),
-              title: new Text(Translations.of(context).trans('download'))),
-          new BottomNavigationBarItem(
-              backgroundColor: Settings.themeWhat
-                  ? Colors.grey.shade900.withOpacity(0.90)
-                  : Colors.grey.shade50,
-              icon: new Icon(Icons.settings),
-              title: new Text(Translations.of(context).trans('settings'))),
-        ],
-      ),
-      body: new PageView(
-        controller: _c,
-        onPageChanged: (newPage) {
-          setState(() {
-            this._page = newPage;
-          });
-        },
-        children: <Widget>[
-          MainPage(),
-          SearchPage(),
-          BookmarkPage(),
-          DownloadPage(),
-          SettingsPage(),
-        ],
-      ),
-      // ),
-    );
+    if (Platform.isAndroid) {
+      return new Scaffold(
+        key: scaffoldKey,
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 9,
+          showUnselectedLabels: false,
+          type: BottomNavigationBarType.shifting,
+          fixedColor: Settings.majorColor,
+          unselectedItemColor:
+              Settings.themeWhat ? Colors.white : Colors.black, //Colors.black,
+          currentIndex: _page,
+          onTap: (index) {
+            this._c.animateToPage(index,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut);
+          },
+          items: <BottomNavigationBarItem>[
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(MdiIcons.home),
+                title: new Text(Translations.of(context).trans('main'))),
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(Icons.search),
+                title: new Text(Translations.of(context).trans('search'))),
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(Icons.bookmark),
+                title: new Text(Translations.of(context).trans('bookmark'))),
+            new BottomNavigationBarItem(
+                icon: new Icon(Icons.file_download),
+                title: new Text(Translations.of(context).trans('download'))),
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(Icons.settings),
+                title: new Text(Translations.of(context).trans('settings'))),
+          ],
+        ),
+        body: new PageView(
+          controller: _c,
+          onPageChanged: (newPage) {
+            setState(() {
+              this._page = newPage;
+            });
+          },
+          children: <Widget>[
+            MainPage(),
+            SearchPage(),
+            BookmarkPage(),
+            DownloadPage(),
+            SettingsPage(),
+          ],
+        ),
+        // ),
+      );
+    } else if (Platform.isIOS) {
+      return new Scaffold(
+        key: scaffoldKey,
+        bottomNavigationBar: BottomNavigationBar(
+          elevation: 9,
+          showUnselectedLabels: false,
+          type: BottomNavigationBarType.shifting,
+          fixedColor: Settings.majorColor,
+          unselectedItemColor:
+              Settings.themeWhat ? Colors.white : Colors.black, //Colors.black,
+          currentIndex: _page,
+          onTap: (index) {
+            this._c.animateToPage(index,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut);
+          },
+          items: <BottomNavigationBarItem>[
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(MdiIcons.home),
+                title: new Text(Translations.of(context).trans('main'))),
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(Icons.search),
+                title: new Text(Translations.of(context).trans('search'))),
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(Icons.bookmark),
+                title: new Text(Translations.of(context).trans('bookmark'))),
+            new BottomNavigationBarItem(
+                backgroundColor: Settings.themeWhat
+                    ? Colors.grey.shade900.withOpacity(0.90)
+                    : Colors.grey.shade50,
+                icon: new Icon(Icons.settings),
+                title: new Text(Translations.of(context).trans('settings'))),
+          ],
+        ),
+        body: new PageView(
+          controller: _c,
+          onPageChanged: (newPage) {
+            setState(() {
+              this._page = newPage;
+            });
+          },
+          children: <Widget>[
+            MainPage(),
+            SearchPage(),
+            BookmarkPage(),
+            SettingsPage(),
+          ],
+        ),
+        // ),
+      );
+    }
+
+    throw new Exception('not implemented');
   }
 }
