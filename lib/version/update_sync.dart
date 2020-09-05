@@ -72,7 +72,7 @@ class UpdateSyncManager {
       }
       rawlangDB[lang] = Tuple2<DateTime, String>(
           DateTime.parse(element['date']), element['chunk']);
-      rawlangDB[lang] = Tuple2<DateTime, String>(
+      rawlangDBIOS[lang] = Tuple2<DateTime, String>(
           DateTime.parse(element['date']), element['raw']);
     });
   }
