@@ -1,8 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
-// For the development of human civilization and science and technology
-
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
