@@ -18,6 +18,7 @@ import 'package:vibration/vibration.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/card/artist_collection_card.dart';
 import 'package:violet/pages/main/card/contact_card.dart';
@@ -367,13 +368,16 @@ class _MainPageState extends State<MainPage> {
   }
 
   void updateCheckAndDownload() {
+    bool updateContinued = false;
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
         var bb = await Dialogs.yesnoDialog(
             context,
-            'New update available! ' +
+            Translations.of(context).trans('newupdate') +
+                ' ' +
                 UpdateSyncManager.updateMessage +
-                ' Would you update?');
+                ' ' +
+                Translations.of(context).trans('wouldyouupdate'));
         if (bb == null || bb == false) return;
       } else
         return;
@@ -385,6 +389,7 @@ class _MainPageState extends State<MainPage> {
           return;
         }
       }
+      updateContinued = true;
       var ext = await getExternalStorageDirectory();
       bool once = false;
       IsolateNameServer.registerPortWithName(
@@ -410,6 +415,19 @@ class _MainPageState extends State<MainPage> {
         openFileFromNotification:
             true, // click on notification to open downloaded file (for Android)
       );
+    }).then((value) async {
+      if (updateContinued) return;
+      if ((await SharedPreferences.getInstance())
+              .getBool('usevioletserver_check') !=
+          null) return;
+
+      var bb = await Dialogs.yesnoDialog(
+          context, Translations.of(context).trans('violetservermsg'));
+      if (bb == null || bb == false) return;
+
+      await Settings.setUseVioletServer(true);
+      await (await SharedPreferences.getInstance())
+          .setBool('usevioletserver_check', false);
     });
   }
 

@@ -262,7 +262,7 @@ class _InfoAreaWidget extends StatelessWidget {
                     color: Settings.majorColor,
                     onPressed: () async {
                       if (Settings.useVioletServer) {
-                        VioletServer.view(queryResult.id());
+                        await VioletServer.view(queryResult.id());
                       }
                       await (await User.getInstance())
                           .insertUserLog(queryResult.id(), 0);

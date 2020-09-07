@@ -121,6 +121,14 @@ void main() {
 
   test("hitomi test", () async {
     await VioletServer.view(1702084);
+    await VioletServer.view(1702084);
+    await VioletServer.view(1702084);
+    await VioletServer.view(1702084);
+    await VioletServer.view(1702084);
+    await VioletServer.view(17021084);
+    await VioletServer.view(17020184);
+    await VioletServer.view(17020184);
+    await VioletServer.view(17020184);
     // (await HitomiManager.getImageList('1702084')).item1.forEach((element) {
     //   print(element);
     // });
