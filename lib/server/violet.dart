@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:tuple/tuple.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:violet/server/salt.dart' as salt;
+import 'package:violet/server/salt.dart';
 
 class VioletServer {
   static const protocol = 'https';
@@ -24,5 +24,20 @@ class VioletServer {
     return (jsonDecode(gg.body)['result'] as List<dynamic>).map((e) =>
         Tuple2<int, int>(
             (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int));
+  }
+
+  static Future<void> view(int articleid) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+
+    var gg = await http.post('$api/view',
+        headers: {
+          'v-token': vToken.toString(),
+          'v-valid': vValid,
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({'no': articleid.toString(), 'user': 'test'}));
+
+    print(gg.statusCode);
   }
 }
