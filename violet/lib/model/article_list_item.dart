@@ -18,6 +18,7 @@ class ArticleListItem {
   final bool bookmarkMode;
   final BookmarkCallback bookmarkCallback;
   final BookmarkCheckCallback bookmarkCheckCallback;
+  final int viewed;
   // final bool isCheckMode;
   // bool isChecked;
 
@@ -30,6 +31,7 @@ class ArticleListItem {
     @required this.bookmarkMode,
     @required this.bookmarkCallback,
     @required this.bookmarkCheckCallback,
+    @required this.viewed,
     // @required this.isChecked,
     // @required this.isCheckMode,
   });
@@ -43,6 +45,7 @@ class ArticleListItem {
     bool bookmarkMode = false,
     BookmarkCallback bookmarkCallback,
     BookmarkCheckCallback bookmarkCheckCallback,
+    int viewed,
     // bool isCheckMode = false,
     // bool isChecked = false,
   }) {
@@ -55,6 +58,7 @@ class ArticleListItem {
       bookmarkMode: bookmarkMode,
       bookmarkCallback: bookmarkCallback,
       bookmarkCheckCallback: bookmarkCheckCallback,
+      viewed: viewed,
       // isCheckMode: isCheckMode,
       // isChecked: isChecked,
     );

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -475,6 +476,7 @@ class _ArticleListItemVerySimpleWidgetState
       title: title,
       imageCount: imageCount.toString(),
       dateTime: dateTime,
+      viewed: (data.viewed == null) ? null : data.viewed.toString(),
     );
   }
 
@@ -500,8 +502,10 @@ class _DetailWidget extends StatelessWidget {
   final String artist;
   final String imageCount;
   final String dateTime;
+  final String viewed;
 
-  _DetailWidget({this.title, this.artist, this.imageCount, this.dateTime});
+  _DetailWidget(
+      {this.title, this.artist, this.imageCount, this.dateTime, this.viewed});
 
   @override
   Widget build(BuildContext context) {
@@ -535,6 +539,18 @@ class _DetailWidget extends StatelessWidget {
                     Text(' ' + imageCount.toString() + ' Page',
                         style: TextStyle(
                             fontSize: 12, fontWeight: FontWeight.w500)),
+                    Container(width: 4, height: 0),
+                    viewed != null
+                        ? Icon(
+                            MdiIcons.eyeOutline,
+                            size: 18,
+                          )
+                        : Container(height: 0),
+                    viewed != null
+                        ? Text(' ' + viewed.toString() + ' Viewed',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.w500))
+                        : Container(height: 0)
                   ]),
                   Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
