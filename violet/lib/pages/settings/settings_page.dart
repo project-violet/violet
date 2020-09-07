@@ -650,21 +650,13 @@ class _SettingsPageState extends State<SettingsPage>
                     onTap: () {},
                   ),
                   _buildDivider(),
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10.0),
-                          bottomRight: Radius.circular(10.0)),
+                  ListTile(
+                    leading: Icon(
+                      Icons.router,
+                      color: Settings.majorColor,
                     ),
-                    child: ListTile(
-                      leading: Icon(
-                        Icons.router,
-                        color: Settings.majorColor,
-                      ),
-                      title:
-                          Text(Translations.of(context).trans('routing_rule')),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                    ),
+                    title: Text(Translations.of(context).trans('routing_rule')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
                     onTap: () {},
                   ),
                   _buildDivider(),
@@ -674,9 +666,10 @@ class _SettingsPageState extends State<SettingsPage>
                             bottomLeft: Radius.circular(10.0),
                             bottomRight: Radius.circular(10.0))),
                     child: ListTile(
-                      leading: Icon(
-                        MdiIcons.searchWeb,
-                        color: Settings.majorColor,
+                      leading: Image.asset(
+                        'assets/images/logo.png',
+                        width: 25,
+                        height: 25,
                       ),
                       title: Text(
                           Translations.of(context).trans('usevioletserver')),

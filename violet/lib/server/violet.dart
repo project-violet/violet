@@ -30,6 +30,8 @@ class VioletServer {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
 
+    print(articleid);
+
     // throw view request
     try {
       http.post('$api/view',
