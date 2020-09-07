@@ -192,5 +192,6 @@
     "mainbookmark": "북마크 수",
     "maindownload": "다운로드 수",
 
-    "usewebsearch": "웹에서 검색하기"
+    "usewebsearch": "웹에서 검색하기",
+    "usevioletserver": "바이올렛 서버 사용하기"
 }

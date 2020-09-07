@@ -38,6 +38,8 @@ class Settings {
   // Download Options
   static String downloadBasePath;
 
+  static bool useVioletServer;
+
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
     var mac =
@@ -167,6 +169,14 @@ class Settings {
       await (await SharedPreferences.getInstance())
           .setString('downloadbasepath', downloadBasePath);
     }
+
+    useVioletServer =
+        (await SharedPreferences.getInstance()).getBool('usevioletserver');
+    if (useVioletServer == null) {
+      useVioletServer = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('usevioletserver', useVioletServer);
+    }
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -245,5 +255,11 @@ class Settings {
   static Future<void> setSearchOnWeb(bool nn) async {
     searchNetwork = nn;
     await (await SharedPreferences.getInstance()).setBool('searchnetwork', nn);
+  }
+
+  static Future<void> setUseVioletServer(bool nn) async {
+    useVioletServer = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('usevioletserver', nn);
   }
 }

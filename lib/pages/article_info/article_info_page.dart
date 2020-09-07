@@ -29,6 +29,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/widgets/article_item/thumbnail_manager.dart';
@@ -260,6 +261,9 @@ class _InfoAreaWidget extends StatelessWidget {
                     ),
                     color: Settings.majorColor,
                     onPressed: () async {
+                      if (Settings.useVioletServer) {
+                        VioletServer.view(queryResult.id());
+                      }
                       await (await User.getInstance())
                           .insertUserLog(queryResult.id(), 0);
                       SystemChrome.setEnabledSystemUIOverlays([]);
