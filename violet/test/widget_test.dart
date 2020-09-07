@@ -20,6 +20,7 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/server/violet.dart';
 
 void main() {
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -119,9 +120,10 @@ void main() {
   // });
 
   test("hitomi test", () async {
-    (await HitomiManager.getImageList('1702084')).item1.forEach((element) {
-      print(element);
-    });
+    await VioletServer.view(1702084);
+    // (await HitomiManager.getImageList('1702084')).item1.forEach((element) {
+    //   print(element);
+    // });
   });
 
   test("EHentai Test", () async {
@@ -148,59 +150,59 @@ void main() {
     //   print(element.title);
     // });
 
-    var page = 0;
-    var search = Uri.encodeComponent('ahegao');
-    var url =
-        'https://e-hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
+    // var page = 0;
+    // var search = Uri.encodeComponent('ahegao');
+    // var url =
+    //     'https://e-hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
 
-    var html = (await http.get(url, headers: {'Cookie': 'sl=dm_2'})).body;
+    // var html = (await http.get(url, headers: {'Cookie': 'sl=dm_2'})).body;
 
-    var result = EHParser.parseReulstPageExtendedListView(html);
+    // var result = EHParser.parseReulstPageExtendedListView(html);
 
-    var x = result.map((element) {
-      var tag = List<String>();
+    // var x = result.map((element) {
+    //   var tag = List<String>();
 
-      if (element.descripts['female'] != null)
-        tag.addAll(element.descripts['female'].map((e) => "female:" + e));
-      if (element.descripts['male'] != null)
-        tag.addAll(element.descripts['male'].map((e) => "male:" + e));
-      if (element.descripts['misc'] != null)
-        tag.addAll(element.descripts['misc']);
+    //   if (element.descripts['female'] != null)
+    //     tag.addAll(element.descripts['female'].map((e) => "female:" + e));
+    //   if (element.descripts['male'] != null)
+    //     tag.addAll(element.descripts['male'].map((e) => "male:" + e));
+    //   if (element.descripts['misc'] != null)
+    //     tag.addAll(element.descripts['misc']);
 
-      var map = {
-        'Id': element.url.split('/')[4],
-        'EHash': element.url.split('/')[5],
-        'Title': element.title,
-        'Artists': element.descripts['artist'] != null
-            ? element.descripts['artist'].join('|')
-            : 'n/a',
-        'Groups': element.descripts['group'] != null
-            ? element.descripts['group'].join('|')
-            : null,
-        'Characters': element.descripts['character'] != null
-            ? element.descripts['character'].join('|')
-            : null,
-        'Series': element.descripts['parody'] != null
-            ? element.descripts['parody'].join('|')
-            : 'n/a',
-        'Language': element.descripts['language'] != null
-            ? element.descripts['language']
-                .where((element) => !element.contains('translate'))
-                .join('|')
-            : 'n/a',
-        'Tags': tag.join('|'),
-        'Uploader': element.uploader,
-        'PublishedEH': element.published,
-        'Files': element.files,
-        'Thumbnail': element.thumbnail,
-        'Type': element.type,
-        'URL': element.url,
-      };
+    //   var map = {
+    //     'Id': element.url.split('/')[4],
+    //     'EHash': element.url.split('/')[5],
+    //     'Title': element.title,
+    //     'Artists': element.descripts['artist'] != null
+    //         ? element.descripts['artist'].join('|')
+    //         : 'n/a',
+    //     'Groups': element.descripts['group'] != null
+    //         ? element.descripts['group'].join('|')
+    //         : null,
+    //     'Characters': element.descripts['character'] != null
+    //         ? element.descripts['character'].join('|')
+    //         : null,
+    //     'Series': element.descripts['parody'] != null
+    //         ? element.descripts['parody'].join('|')
+    //         : 'n/a',
+    //     'Language': element.descripts['language'] != null
+    //         ? element.descripts['language']
+    //             .where((element) => !element.contains('translate'))
+    //             .join('|')
+    //         : 'n/a',
+    //     'Tags': tag.join('|'),
+    //     'Uploader': element.uploader,
+    //     'PublishedEH': element.published,
+    //     'Files': element.files,
+    //     'Thumbnail': element.thumbnail,
+    //     'Type': element.type,
+    //     'URL': element.url,
+    //   };
 
-      print(map);
+    //   print(map);
 
-      return QueryResult(result: map);
-    }).toList();
+    //   return QueryResult(result: map);
+    // }).toList();
 
 /*
 {Id: 1705700, EHash: 5aa9831938, Title: [Black Pharaoh] JL Forsaken Souls (Ongoing), Artists: n/a, Groups: null, Characters: null, Series: n/a, Language: n/a, Tags: , Uploader: BlackPharaoh, PublishedEH: 2020-08-12 05:04, Files: 260 pages, Thumbnail: https://ehgt.org/t/97/c5/97c5439bd4a2fe844f43c6f02a3f22b0e2493653-359924-1333-2000-jpg_250.jpg, Type: western, URL: https://e-hentai.org/g/1705700/5aa9831938/}
