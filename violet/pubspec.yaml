@@ -31,6 +31,7 @@ dependencies:
   animations:
   async:
   auto_animated: any
+  bubble_tab_indicator: "^0.1.4"
   cached_network_image:
   carousel_slider:
   charts_flutter:
@@ -58,6 +59,7 @@ dependencies:
   flutter_reorderable_list:
   flutter_speed_dial:
   flutter_staggered_animations: "^0.1.2"
+  flutter_svg:
   fluttertoast:
   gradient_widgets:
   html:

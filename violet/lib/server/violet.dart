@@ -21,9 +21,10 @@ class VioletServer {
       return null;
     }
 
-    return (jsonDecode(gg.body)['result'] as List<dynamic>).map((e) =>
-        Tuple2<int, int>(
-            (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int));
+    return (jsonDecode(gg.body)['result'] as List<dynamic>)
+        .map((e) => Tuple2<int, int>(
+            (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
+        .toList();
   }
 
   static Future<void> view(int articleid) async {

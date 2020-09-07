@@ -28,6 +28,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
@@ -1387,17 +1388,23 @@ class _SettingsPageState extends State<SettingsPage>
                           Icons.keyboard_arrow_right),
                     ),
                     onTap: () {
+                      // Navigator.push(
+                      //   context,
+                      //   CupertinoPageRoute(
+                      //     builder: (context) => LicensePage(
+                      //       applicationName: 'Project Violet\n',
+                      //       applicationIcon: Image.asset(
+                      //         'assets/images/logo.png',
+                      //         width: 100,
+                      //         height: 100,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // );
                       Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => LicensePage(
-                            applicationName: 'Project Violet\n',
-                            applicationIcon: Image.asset(
-                              'assets/images/logo.png',
-                              width: 100,
-                              height: 100,
-                            ),
-                          ),
+                          builder: (context) => VioletLicensePage(),
                         ),
                       );
                     },
