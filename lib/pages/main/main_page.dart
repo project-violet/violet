@@ -25,6 +25,7 @@ import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
 import 'package:violet/pages/main/card/github_card.dart';
 import 'package:violet/pages/main/card/update_card.dart';
+import 'package:violet/pages/main/card/views_card.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
 
@@ -128,6 +129,7 @@ class _MainPageState extends State<MainPage> {
               ),
               _userArea(),
               ArtistCollectionCard(),
+              ViewsCard(),
               // Stack(children: [
               //   Lottie.asset(
               //       'assets/lottie/28395-hajj-mabroor-infographic-animation.json'),
