@@ -13,18 +13,22 @@ class VioletServer {
   static const host = 'api.koromo.xyz';
   static const api = '$protocol://$host';
 
-  static Future<List<Tuple2<int, int>>> top(
-      int offset, int count, String type) async {
+  static Future<dynamic> top(int offset, int count, String type) async {
     var gg = await http.get('$api/top?offset=$offset&count=$count&type=$type');
 
     if (gg.statusCode != 200) {
-      return null;
+      return gg.statusCode;
     }
 
-    return (jsonDecode(gg.body)['result'] as List<dynamic>)
-        .map((e) => Tuple2<int, int>(
-            (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
-        .toList();
+    try {
+      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+          .map((e) => Tuple2<int, int>(
+              (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
+          .toList();
+      return result;
+    } catch (e) {
+      return 900;
+    }
   }
 
   static Future<void> view(int articleid) async {
@@ -35,13 +39,17 @@ class VioletServer {
 
     // throw view request
     try {
-      http.post('$api/view',
-          headers: {
-            'v-token': vToken.toString(),
-            'v-valid': vValid,
-            "Content-Type": "application/json"
-          },
-          body: jsonEncode({'no': articleid.toString(), 'user': 'test'}));
+      http
+          .post('$api/view',
+              headers: {
+                'v-token': vToken.toString(),
+                'v-valid': vValid,
+                "Content-Type": "application/json"
+              },
+              body: jsonEncode({'no': articleid.toString(), 'user': 'test'}))
+          .then((value) {
+        print(value.statusCode);
+      });
     } catch (e) {}
   }
 }

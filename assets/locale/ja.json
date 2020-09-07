@@ -196,5 +196,5 @@
     "usewebsearch": "ウェブで検索する",
     "usevioletserver": "Violet Serverを使用する",
     "wouldyouupdate": "更新しますか？",
-    "violetservermsg": "Violet Serverの機能を有効にしますか？この機能は、ユーザーの行動情報（現在は読み取り機能のみ）を収集し、リアルタイムで統計情報を表示するサービスです。ユーザーを特定することができる任意の情報を収集しません。"
+    "violetservermsg": "Violet Serverの機能を有効にしますか？この機能は、ユーザーの行動情報を収集し、リアルタイムで統計情報を表示するサービスです。ユーザーを特定することができる任意の情報を収集しません。"
 }

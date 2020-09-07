@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.9.3+0
+version: 0.9.4+0
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -175,6 +175,7 @@ flutter:
     - assets/flare/switch_daytime.flr
     - assets/flare/likeUtsua.flr
 
+    - assets/lottie/3227-error-404-facebook-style.json
     - assets/lottie/5040-shooting-star.json
     - assets/lottie/26438-drone-flight.json
     - assets/lottie/24208-menhera-chan-at-cocopry-sticker-10.json

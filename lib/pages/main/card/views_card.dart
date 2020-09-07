@@ -9,9 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/main/views/views_page.dart';
+import 'package:violet/settings/settings.dart';
 
 class ViewsCard extends StatefulWidget {
   @override
@@ -38,10 +40,16 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
           return Parent(
               style: settingsItemStyle(pressed),
               gesture: Gestures()
-                ..isTap((isTapped) {
+                ..isTap((isTapped) async {
                   setState(() => pressed = isTapped);
                   if (!isTapped) {
                     controller.forward(from: 0.0);
+
+                    if (!Settings.useVioletServer) {
+                      await Dialogs.okDialog(context,
+                          'To use this feature, turn on the Violet Server feature in Settings');
+                      return;
+                    }
 
                     Navigator.of(context).push(PageRouteBuilder(
                       transitionDuration: Duration(milliseconds: 500),
