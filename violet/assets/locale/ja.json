@@ -193,5 +193,6 @@
     "mainbookmark": "ブックマーク数",
     "maindownload": "ダウンロードすることができ",
     
-    "usewebsearch": "ウェブで検索する"
+    "usewebsearch": "ウェブで検索する",
+    "usevioletserver": "Violet Serverを使用する"
 }

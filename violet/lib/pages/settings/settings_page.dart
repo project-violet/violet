@@ -667,6 +667,32 @@ class _SettingsPageState extends State<SettingsPage>
                     ),
                     onTap: () {},
                   ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.searchWeb,
+                        color: Settings.majorColor,
+                      ),
+                      title: Text(
+                          Translations.of(context).trans('usevioletserver')),
+                      trailing: Switch(
+                        value: Settings.useVioletServer,
+                        onChanged: (value) async {},
+                        activeTrackColor: Settings.majorColor,
+                        activeColor: Settings.majorAccentColor,
+                      ),
+                    ),
+                    onTap: () async {
+                      await Settings.setUseVioletServer(
+                          !Settings.useVioletServer);
+                      setState(() {});
+                    },
+                  ),
                 ]),
                 _buildGroup(Translations.of(context).trans('bookmark')),
                 _buildItems([

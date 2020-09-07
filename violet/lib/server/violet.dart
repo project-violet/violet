@@ -30,14 +30,15 @@ class VioletServer {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
 
-    var gg = await http.post('$api/view',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          "Content-Type": "application/json"
-        },
-        body: jsonEncode({'no': articleid.toString(), 'user': 'test'}));
-
-    print(gg.statusCode);
+    // throw view request
+    try {
+      http.post('$api/view',
+          headers: {
+            'v-token': vToken.toString(),
+            'v-valid': vValid,
+            "Content-Type": "application/json"
+          },
+          body: jsonEncode({'no': articleid.toString(), 'user': 'test'}));
+    } catch (e) {}
   }
 }
