@@ -1,12 +1,33 @@
-# Violet - Open Source Hentai Viewer App
+<p align="center">
+ <img width="150px" src="https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png" align="center" alt="GitHub Readme Stats" />
+ <h2 align="center">Project Violet</h2>
+  <p align="center">
+    Open Source Hentai Viewer App
+  </p>
+  <p align="center">
+    <b><a href="https://github.com/project-violet/violet/wiki/Screenshots">Screenshots</a></b>
+    •
+    <b><a href="https://github.com/project-violet/violet/releases/latest">Download</a></b>
+    •
+    <b><a href="/manual">User Manual</a></b>
+    •
+    <b><a href="/doc">docs</a></b>
+  </p>
+</p>
 
-![](Preview.png)
+### Community
 
-Project Violet Source Code
+Leave any questions on the github issue or on the Discord channel below.
 
-https://discord.gg/fqrtRxC
+Discord Channel: https://discord.gg/fqrtRxC
 
-## Multiple Language Support
+### Sub Projects
+
+ - [Violet Server](https://github.com/project-violet/violet-server) - Real-time statistics provided by collecting user behavior
+ - [libviolet](https://github.com/project-violet/libviolet) - Native multithread downloader for android, ios
+ - [hsync](https://github.com/project-violet/violet-server/tree/master/tools/hsync) - Very fast metadata synchronizer
+
+### Multiple Language Support
 
 If you want to add your language to the app,
 please translate https://github.com/project-violet/violet/blob/dev/assets/locale/en.json.
