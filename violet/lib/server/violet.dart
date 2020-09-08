@@ -37,9 +37,8 @@ class VioletServer {
 
     print(articleid);
 
-    // throw view request
     try {
-      http
+      await http
           .post('$api/view',
               headers: {
                 'v-token': vToken.toString(),
