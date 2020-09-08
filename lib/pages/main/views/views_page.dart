@@ -141,10 +141,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                         child: new TabBarView(
                           // controller: _tabController,
                           children: [
-                            _tab(0),
-                            _tab(1),
-                            _tab(2),
-                            _tab(3),
+                            _Tab(0),
+                            _Tab(1),
+                            _Tab(2),
+                            _Tab(3),
                           ],
                         ),
                       ),
@@ -158,11 +158,26 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
       ),
     );
   }
+}
 
-  _tab(index) {
+class _Tab extends StatefulWidget {
+  final int index;
+
+  _Tab(this.index);
+
+  @override
+  __TabState createState() => __TabState();
+}
+
+class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder(
       future: VioletServer.top(
-              0, 1000, ['daily', 'week', 'month', 'alltime'][index])
+              0, 1000, ['daily', 'week', 'month', 'alltime'][widget.index])
           .then((value) async {
         if (value is int) return value;
 
@@ -259,8 +274,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
           physics: BouncingScrollPhysics(),
           children: results.map((x) {
             return Align(
-              key: Key(
-                  'views' + index.toString() + '/' + x.item1.id().toString()),
+              key: Key('views' +
+                  widget.index.toString() +
+                  '/' +
+                  x.item1.id().toString()),
               alignment: Alignment.center,
               child: Provider<ArticleListItem>.value(
                 value: ArticleListItem.fromArticleListItem(
