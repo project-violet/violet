@@ -27,6 +27,11 @@ Discord Channel: https://discord.gg/fqrtRxC
  - [libviolet](https://github.com/project-violet/libviolet) - Native multithread downloader for android, ios
  - [hsync](https://github.com/project-violet/violet-server/tree/master/tools/hsync) - Very fast metadata synchronizer
 
+### iOS Support
+
+iOS version of violet is already ready.
+However, unlike the Android version, 7z decompression and downloader are omitted.
+
 ### Multiple Language Support
 
 If you want to add your language to the app,
