@@ -115,7 +115,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                           Padding(
                             padding: EdgeInsets.only(top: 4),
                             child: Text(
-                              'Real Time Ranking!',
+                              'Real Time Best!',
                               style: TextStyle(
                                   fontFamily: "Calibre-Semibold",
                                   fontSize: 18,

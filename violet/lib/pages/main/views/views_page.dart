@@ -76,7 +76,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                                     color: Settings.themeWhat
                                         ? null
                                         : Colors.black),
-                                Text('Today',
+                                Text(Translations.of(context).trans('daily'),
                                     style: Settings.themeWhat
                                         ? null
                                         : TextStyle(color: Colors.black)),
@@ -93,7 +93,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                                     color: Settings.themeWhat
                                         ? null
                                         : Colors.black),
-                                Text('Weekly',
+                                Text(Translations.of(context).trans('weekly'),
                                     style: Settings.themeWhat
                                         ? null
                                         : TextStyle(color: Colors.black)),
@@ -110,7 +110,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                                     color: Settings.themeWhat
                                         ? null
                                         : Colors.black),
-                                Text('Monthly',
+                                Text(Translations.of(context).trans('monthly'),
                                     style: Settings.themeWhat
                                         ? null
                                         : TextStyle(color: Colors.black)),
@@ -127,7 +127,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                                     color: Settings.themeWhat
                                         ? null
                                         : Colors.black),
-                                Text('All Time',
+                                Text(Translations.of(context).trans('alltime'),
                                     style: Settings.themeWhat
                                         ? null
                                         : TextStyle(color: Colors.black)),
