@@ -14,15 +14,14 @@ namespace hsync.Network
     /// <summary>
     /// Implementaion of real download procedure
     /// </summary>
-    public class NetField : IField<NetTask, NetPriority>
+    public class NetField
     {
-        public override void Main(NetTask content)
+        public static void Do(NetTask content)
         {
             var retry_count = 0;
 
         RETRY_PROCEDURE:
 
-            interrupt.WaitOne();
             if (content.Cancel != null && content.Cancel.IsCancellationRequested)
             {
                 content.CancleCallback();
@@ -31,8 +30,6 @@ namespace hsync.Network
 
             NetTaskPass.RunOnField(ref content);
 
-            interrupt.WaitOne();
-
             //if (content.DownloadString)
             //    Log.Logs.Instance.Push("[NetField] Start download string... " + content.Url);
             //else if (content.MemoryCache)
@@ -40,9 +37,8 @@ namespace hsync.Network
             //else if (content.SaveFile)
             //    Log.Logs.Instance.Push("[NetField] Start download file... " + content.Url + " to " + content.Filename);
 
-            REDIRECTION:
+        REDIRECTION:
 
-            interrupt.WaitOne();
             if (content.Cancel != null && content.Cancel.IsCancellationRequested)
             {
                 content.CancleCallback();
@@ -98,7 +94,6 @@ namespace hsync.Network
                     request_stream.Write(query);
                     request_stream.Close();
 
-                    interrupt.WaitOne();
                     if (content.Cancel != null && content.Cancel.IsCancellationRequested)
                     {
                         content.CancleCallback();
@@ -138,7 +133,6 @@ namespace hsync.Network
                     }
                     else if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        interrupt.WaitOne();
                         if (content.Cancel != null && content.Cancel.IsCancellationRequested)
                         {
                             content.CancleCallback();
@@ -173,7 +167,6 @@ namespace hsync.Network
                             return;
                         }
 
-                        interrupt.WaitOne();
                         if (content.Cancel != null && content.Cancel.IsCancellationRequested)
                         {
                             content.CancleCallback();
@@ -189,7 +182,6 @@ namespace hsync.Network
 
                         do
                         {
-                            interrupt.WaitOne();
                             if (content.Cancel != null && content.Cancel.IsCancellationRequested)
                             {
                                 content.CancleCallback();
@@ -199,7 +191,6 @@ namespace hsync.Network
                             byte_read = istream.Read(buffer, 0, buffer.Length);
                             ostream.Write(buffer, 0, (int)byte_read);
 
-                            interrupt.WaitOne();
                             if (content.Cancel != null && content.Cancel.IsCancellationRequested)
                             {
                                 content.CancleCallback();

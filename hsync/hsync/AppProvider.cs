@@ -27,7 +27,7 @@ namespace hsync
         public static Dictionary<string, object> Instance =>
             InstanceMonitor.Instances;
 
-        public static NetScheduler Scheduler { get; set; }
+        public static NetQueue DownloadQueue { get; set; }
 
         public static DateTime StartTime = DateTime.Now;
 
@@ -40,7 +40,7 @@ namespace hsync
 
             ServicePointManager.DefaultConnectionLimit = int.MaxValue;
 
-            Scheduler = new NetScheduler(Settings.Instance.Model.ThreadCount);
+            DownloadQueue = new NetQueue(Settings.Instance.Model.ThreadCount);
 
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
         }

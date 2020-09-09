@@ -15,7 +15,7 @@ namespace hsync.Network
     /// Information of what download for
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class NetTask : ISchedulerContents<NetTask, NetPriority>
+    public class NetTask
     {
         public static NetTask MakeDefault(string url, string cookie = "")
             => new NetTask
@@ -28,7 +28,6 @@ namespace hsync.Network
                 RetryWhenFail = true,
                 RetryCount = Settings.Instance.Network.RetryCount,
                 DownloadBufferSize = Settings.Instance.Network.DownloadBufferSize,
-                Priority = new NetPriority() { Type = NetPriorityType.Trivial },
                 Proxy = !string.IsNullOrEmpty(Settings.Instance.Network.Proxy) ? new WebProxy(Settings.Instance.Network.Proxy) : null,
                 Cookie = cookie,
                 Url = url
@@ -45,7 +44,6 @@ namespace hsync.Network
                 RetryWhenFail = true,
                 RetryCount = Settings.Instance.Network.RetryCount,
                 DownloadBufferSize = Settings.Instance.Network.DownloadBufferSize,
-                Priority = new NetPriority() { Type = NetPriorityType.Trivial },
                 Proxy = !string.IsNullOrEmpty(Settings.Instance.Network.Proxy) ? new WebProxy(Settings.Instance.Network.Proxy) : null,
                 Cookie = cookie,
                 Url = url
