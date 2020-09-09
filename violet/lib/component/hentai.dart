@@ -35,8 +35,27 @@ class HentaiManager {
   static Future<Tuple2<List<QueryResult>, int>> search(String what,
       [int offset = 0]) async {
     var route = Settings.searchRule;
+    // is random pick?
+    if (what.trim() == 'random') {
+      final queryString = HitomiManager.translate2query(Settings.includeTags +
+          ' ' +
+          Settings.excludeTags
+              .where((e) => e.trim() != '')
+              .map((e) => '-$e')
+              .join(' ')
+              .trim());
+
+      const int itemsPerPage = 500;
+      var queryResult = (await (await DataBaseManager.getInstance()).query(
+              "$queryString ORDER BY RANDOM() LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
+          .map((e) => QueryResult(result: e))
+          .toList();
+      print(queryResult[0].id());
+      return Tuple2<List<QueryResult>, int>(
+          queryResult, queryResult.length >= itemsPerPage ? offset + 1 : -1);
+    }
     // is db search?
-    if (!Settings.searchNetwork) {
+    else if (!Settings.searchNetwork) {
       final queryString = HitomiManager.translate2query(what +
           ' ' +
           Settings.includeTags +
