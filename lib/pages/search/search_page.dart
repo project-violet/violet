@@ -249,6 +249,22 @@ class _SearchPageState extends State<SearchPage>
                             });
                           });
                         },
+                        onDoubleTap: () async {
+                          // latestQuery = value;
+                          latestQuery =
+                              Tuple2<Tuple2<List<QueryResult>, int>, String>(
+                                  null, 'random');
+                          queryResult = List<QueryResult>();
+                          isFilterUsed = false;
+                          isOr = false;
+                          tagStates = Map<String, bool>();
+                          groupStates = Map<String, bool>();
+                          queryEnd = false;
+                          await loadNextQuery();
+                          setState(() {
+                            key = ObjectKey(Uuid().v4());
+                          });
+                        },
                       ),
                     ),
                   ),
