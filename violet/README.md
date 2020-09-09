@@ -25,7 +25,7 @@ Discord Channel: https://discord.gg/fqrtRxC
 
  - [Violet Server](https://github.com/project-violet/violet-server) - Real-time statistics provided by collecting user behavior
  - [libviolet](https://github.com/project-violet/libviolet) - Native multithread downloader for android, ios
- - [hsync](https://github.com/project-violet/violet-server/tree/master/tools/hsync) - Very fast metadata synchronizer
+ - [hsync](https://github.com/project-violet/hsync) - Very fast metadata synchronizer
 
 ### iOS Support
 
