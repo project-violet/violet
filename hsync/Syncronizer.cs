@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace hsync
 {
@@ -40,7 +41,8 @@ namespace hsync
             foreach (var metadata in HitomiData.Instance.metadata_collection)
                 exists.Add(metadata.ID);
 
-            var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
+            //var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
+            var gburls = Enumerable.Range(1000, latestId + hitomiSyncRange / 2)
                 .Where(x => !exists.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
             var ecnt = 0;
@@ -56,7 +58,7 @@ namespace hsync
                 () =>
                 {
                     pb.Report(gburls.Count, dcnt, Interlocked.Increment(ref ecnt));
-                });
+                }).Result;
             }
             Console.WriteLine("Complete");
 
@@ -87,23 +89,23 @@ namespace hsync
                     () =>
                     {
                         pb.Report(gburls.Count, dcnt, Interlocked.Increment(ref ecnt));
-                    });
+                    }).Result;
                 }
             Console.WriteLine("Complete");
 
-            Console.Write("Check redirect gallery html... ");
-            for (int i = 0; i < htmls2.Count; i++)
-            {
-                if (htmls2[i] == null)
-                    continue;
-                var node = htmls2[i].ToHtmlNode();
-                var title = node.SelectSingleNode("//title");
-                if (title != null && title.InnerText == "Redirect")
-                {
-                    htmls2.RemoveAt(i--);
-                }
-            }
-            Console.WriteLine("Complete");
+            //Console.Write("Check redirect gallery html... ");
+            //for (int i = 0; i < htmls2.Count; i++)
+            //{
+            //    if (htmls2[i] == null)
+            //        continue;
+            //    var node = htmls2[i].ToHtmlNode();
+            //    var title = node.SelectSingleNode("//title");
+            //    if (title != null && title.InnerText == "Redirect")
+            //    {
+            //        htmls2.RemoveAt(i--);
+            //    }
+            //}
+            //Console.WriteLine("Complete");
 
             var result = new List<HitomiArticle>();
             for (int i = 0, j = 0; i < gburls.Count; i++)
@@ -113,9 +115,14 @@ namespace hsync
                 var aa = HitomiParser.ParseGalleryBlock(htmls[i]);
                 if (htmls2[j] != null)
                 {
-                    var ab = HitomiParser.ParseGallery(htmls2[j]);
-                    aa.Groups = ab.Groups;
-                    aa.Characters = ab.Characters;
+                    var node = htmls2[j].ToHtmlNode();
+                    var title = node.SelectSingleNode("//title");
+                    if (!(title != null && title.InnerText == "Redirect"))
+                    {
+                        var ab = HitomiParser.ParseGallery(htmls2[j]);
+                        aa.Groups = ab.Groups;
+                        aa.Characters = ab.Characters;
+                    }
                 }
                 try
                 {

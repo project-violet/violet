@@ -12,7 +12,7 @@ namespace hsync.Network
 {
     public class NetTools
     {
-        public static List<string> DownloadStrings(List<string> urls, string cookie = "", Action complete = null, Action error = null)
+        public static async Task<List<string>> DownloadStrings(List<string> urls, string cookie = "", Action complete = null, Action error = null)
         {
             var interrupt = new ManualResetEvent(false);
             var result = new string[urls.Count];
@@ -38,7 +38,7 @@ namespace hsync.Network
                     error?.Invoke();
                 };
                 task.Cookie = cookie;
-                AppProvider.Scheduler.Add(task);
+                await AppProvider.DownloadQueue.Add(task).ConfigureAwait(false);
                 iter++;
             }
 
@@ -47,7 +47,7 @@ namespace hsync.Network
             return result.ToList();
         }
 
-        public static List<string> DownloadStrings(List<NetTask> tasks, string cookie = "", Action complete = null)
+        public static async Task<List<string>> DownloadStrings(List<NetTask> tasks, string cookie = "", Action complete = null)
         {
             var interrupt = new ManualResetEvent(false);
             var result = new string[tasks.Count];
@@ -71,7 +71,7 @@ namespace hsync.Network
                         interrupt.Set();
                 };
                 task.Cookie = cookie;
-                AppProvider.Scheduler.Add(task);
+                await AppProvider.DownloadQueue.Add(task).ConfigureAwait(false);
                 iter++;
             }
 
@@ -92,7 +92,7 @@ namespace hsync.Network
 
         public static async Task<string> DownloadStringAsync(NetTask task)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 var interrupt = new ManualResetEvent(false);
                 string result = null;
@@ -110,7 +110,7 @@ namespace hsync.Network
                     interrupt.Set();
                 };
 
-                AppProvider.Scheduler.Add(task);
+                await AppProvider.DownloadQueue.Add(task).ConfigureAwait(false);
 
                 interrupt.WaitOne();
 
@@ -118,7 +118,7 @@ namespace hsync.Network
             }).ConfigureAwait(false);
         }
 
-        public static List<string> DownloadFiles(List<(string, string)> url_path, string cookie = "", Action<long> download = null, Action complete = null)
+        public static async Task<List<string>> DownloadFiles(List<(string, string)> url_path, string cookie = "", Action<long> download = null, Action complete = null)
         {
             var interrupt = new ManualResetEvent(false);
             var result = new string[url_path.Count];
@@ -147,7 +147,7 @@ namespace hsync.Network
                         interrupt.Set();
                 };
                 task.Cookie = cookie;
-                AppProvider.Scheduler.Add(task);
+                await AppProvider.DownloadQueue.Add(task).ConfigureAwait(false);
                 iter++;
             }
 
@@ -161,7 +161,6 @@ namespace hsync.Network
             var task = NetTask.MakeDefault(url);
             task.SaveFile = true;
             task.Filename = filename;
-            task.Priority = new NetPriority { Type = NetPriorityType.Low };
             DownloadFileAsync(task).Wait();
         }
 
@@ -172,7 +171,7 @@ namespace hsync.Network
 
         public static async Task DownloadFileAsync(NetTask task)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 var interrupt = new ManualResetEvent(false);
 
@@ -188,7 +187,7 @@ namespace hsync.Network
                     interrupt.Set();
                 };
 
-                AppProvider.Scheduler.Add(task);
+                await AppProvider.DownloadQueue.Add(task).ConfigureAwait(false);
 
                 interrupt.WaitOne();
             }).ConfigureAwait(false);
@@ -206,7 +205,7 @@ namespace hsync.Network
 
         public static async Task<byte[]> DownloadDataAsync(NetTask task)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 var interrupt = new ManualResetEvent(false);
                 byte[] result = null;
@@ -224,7 +223,7 @@ namespace hsync.Network
                     interrupt.Set();
                 };
 
-                AppProvider.Scheduler.Add(task);
+                await AppProvider.DownloadQueue.Add(task).ConfigureAwait(false);
 
                 interrupt.WaitOne();
 
