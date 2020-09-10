@@ -26,7 +26,9 @@ class VioletServer {
               (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
           .toList();
       return result;
-    } catch (e) {
+    } catch (e, st) {
+      print(e);
+      print(st);
       return 900;
     }
   }

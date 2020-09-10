@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/artists.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
@@ -177,16 +178,24 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: VioletServer.top(
-              0, 1000, ['daily', 'week', 'month', 'alltime'][widget.index])
+              0, 600, ['daily', 'week', 'month', 'alltime'][widget.index])
           .then((value) async {
         if (value is int) return value;
 
         if (value == null || value.length == 0) return 900;
 
-        var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+        var queryRaw = HitomiManager.translate2query(Settings.includeTags +
+                ' ' +
+                Settings.excludeTags
+                    .where((e) => e.trim() != '')
+                    .map((e) => '-$e')
+                    .join(' ')) +
+            ' AND ';
+        // var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
         queryRaw += value.map((e) => 'Id=${e.item1}').join(' OR ');
-        var query = await QueryManager.query(queryRaw + ' AND ExistOnHitomi=1');
+        var query = await QueryManager.query(queryRaw);
 
+        print(query.results.length);
         if (query.results.length == 0) return 901;
 
         var qr = Map<String, QueryResult>();
