@@ -261,7 +261,7 @@ class _ArticleListItemVerySimpleWidgetState
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    fullscreenDialog: true,
+                    // fullscreenDialog: true,
                     builder: (context) {
                       return ViewerPage(
                         id: data.queryResult.id().toString(),

@@ -10,6 +10,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/other/dialogs.dart';
@@ -47,6 +48,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
   int prevPage = 0;
   @override
   void initState() {
+    // SystemChrome.setEnabledSystemUIOverlays([]);
     super.initState();
 
     scroll.addListener(() async {
@@ -86,17 +88,17 @@ class _ViewerWidgetState extends State<ViewerWidget>
         prevPage = currentPage;
       }
     });
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 500),
-    );
-    Future.delayed(Duration(milliseconds: 500)).then((value) {
-      if (_controller.isCompleted) {
-        _controller.reverse();
-      } else {
-        _controller.forward();
-      }
-    });
+    // _controller = AnimationController(
+    //   vsync: this,
+    //   duration: Duration(milliseconds: 500),
+    // );
+    // Future.delayed(Duration(milliseconds: 500)).then((value) {
+    //   if (_controller.isCompleted) {
+    //     _controller.reverse();
+    //   } else {
+    //     _controller.forward();
+    //   }
+    // });
 
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
@@ -201,141 +203,152 @@ class _ViewerWidgetState extends State<ViewerWidget>
 
   @override
   Widget build(BuildContext context) {
+    print('asdf');
+
     final height = MediaQuery.of(context).size.height;
 
-    var ll = List<Widget>();
+    // var ll = List<Widget>();
 
-    widget.galleryItems.forEach((element) {
-      ll.add(VerticalViewerHolder(
-        galleryExampleItem: element,
-        // onTap: () => _transToGalleryView(context, index),
-      ));
-    });
+    // widget.galleryItems.forEach((element) {
+    //   ll.add(VerticalViewerHolder(
+    //     galleryExampleItem: element,
+    //     // onTap: () => _transToGalleryView(context, index),
+    //   ));
+    // });
 
-    return Scaffold(
-      body: SafeArea(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) => Stack(
-            children: <Widget>[
-              // ZoomableWidget(
-              //   maxScale: 5.0,
-              //   minScale: 0.5,
-              //   multiFingersPan: false,
-              //   // autoCenter: true,
-              //   child: Container(
-              //     color: const Color(0xff444444),
-              //     child: ListView.builder(
-              //       itemCount: widget.urls.length,
-              //       controller: scroll,
-              //       cacheExtent: height * 4,
-              //       itemBuilder: (context, index) {
-              //         return Container(
-              //           child: GalleryExampleItemThumbnail(
-              //             galleryExampleItem: widget.galleryItems[index],
-              //             onTap: () => _transToGalleryView(context, index),
-              //           ),
-              //         );
-              //       },
-              //     ),
-              //   ),
-              // ),
-              // ListView.builder(
-              //   itemCount: widget.urls.length,
-              //   controller: scroll,
-              //   cacheExtent: height * 2,
-              //   itemBuilder: (context, index) {
-              //     return Container(
-              //       child: VerticalViewerHolder(
-              //         galleryExampleItem: widget.galleryItems[index],
-              //         onTap: () => _transToGalleryView(context, index),
-              //       ),
-              //     );
-              //   },
-              // ),
-              PhotoView.customChild(
-                minScale: 1.0,
-                child: Container(
-                  color: const Color(0xff444444),
-                  child: ListView.builder(
-                    itemCount: widget.urls.length,
-                    controller: scroll,
-                    cacheExtent: height * 2,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        child: VerticalViewerHolder(
-                          galleryExampleItem: widget.galleryItems[index],
-                          onTap: () => _transToGalleryView(context, index),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+    return
+        //Scaffold(
+        //  resizeToAvoidBottomInset: false,
+        //  resizeToAvoidBottomPadding: false,
+//
+        //  body:
+        //      //  SafeArea(
+        //      //   child:
+        //   AnimatedBuilder(
+        // animation: _controller,
+        // builder: (context, child) =>
+        Stack(
+      children: <Widget>[
+        // ZoomableWidget(
+        //   maxScale: 5.0,
+        //   minScale: 0.5,
+        //   multiFingersPan: false,
+        //   // autoCenter: true,
+        //   child: Container(
+        //     color: const Color(0xff444444),
+        //     child: ListView.builder(
+        //       itemCount: widget.urls.length,
+        //       controller: scroll,
+        //       cacheExtent: height * 4,
+        //       itemBuilder: (context, index) {
+        //         return Container(
+        //           child: GalleryExampleItemThumbnail(
+        //             galleryExampleItem: widget.galleryItems[index],
+        //             onTap: () => _transToGalleryView(context, index),
+        //           ),
+        //         );
+        //       },
+        //     ),
+        //   ),
+        // ),
+        // ListView.builder(
+        //   itemCount: widget.urls.length,
+        //   controller: scroll,
+        //   cacheExtent: height * 2,
+        //   itemBuilder: (context, index) {
+        //     return Container(
+        //       child: VerticalViewerHolder(
+        //         galleryExampleItem: widget.galleryItems[index],
+        //         onTap: () => _transToGalleryView(context, index),
+        //       ),
+        //     );
+        //   },
+        // ),
+        // PhotoView.customChild(
+        //   minScale: 1.0,
+        //   child: Container(
+        //     color: const Color(0xff444444),
+        //     child:
+        ListView.builder(
+          padding: EdgeInsets.zero,
+          itemCount: widget.urls.length,
+          // controller: scroll,
+          cacheExtent: height * 2,
+          itemBuilder: (context, index) {
+            return Container(
+              child: VerticalViewerHolder(
+                galleryExampleItem: widget.galleryItems[index],
+                onTap: () => _transToGalleryView(context, index),
               ),
-              // ZoomableWidget(
-              //   child: ListView.builder(
-              //     itemCount: widget.urls.length,
-              //     controller: scroll,
-              //     cacheExtent: height * 4,
-              //     itemBuilder: (context, index) {
-              //       return Container(
-              //         child: GalleryExampleItemThumbnail(
-              //           galleryExampleItem: widget.galleryItems[index],
-              //           onTap: () => _transToGalleryView(context, index),
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
-              // ZoomableWidget(
-              //   maxScale: 5.0,
-              //   minScale: 0.5,
-              //   multiFingersPan: false,
-              // ZoomableList(
-              //   maxScale: 2.0,
-              //   flingFactor: 1.0,
-              //   // child: ListView.builder(
-              //   //   itemCount: widget.urls.length,
-              //   //   controller: scroll,
-              //   //   cacheExtent: height * 4,
-              //   //   itemBuilder: (context, index) {
-              //   //     return Container(
-              //   //       child: GalleryExampleItemThumbnail(
-              //   //         galleryExampleItem: widget.galleryItems[index],
-              //   //         onTap: () => _transToGalleryView(context, index),
-              //   //       ),
-              //   //     );
-              //   //   },
-              //   // ),
-              //   child: Column(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: ll,
-              //     // children: <Widget>[
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[0].url,
-              //     //           header: widget.galleryItems[0].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[1].url,
-              //     //           header: widget.galleryItems[1].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[2].url,
-              //     //           header: widget.galleryItems[2].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[3].url,
-              //     //           header: widget.galleryItems[3].headers)),
-              //     //   Image(
-              //     //       image: AdvancedNetworkImage(widget.galleryItems[4].url,
-              //     //           header: widget.galleryItems[4].headers)),
-              //     // ],
-              //   ),
-              // ),
-              _touchArea(),
-              _topAppBar(),
-              _bottomAppBar(),
-            ],
-          ),
+            );
+          },
         ),
-      ),
+        //   ),
+        // ),
+        // ZoomableWidget(
+        //   child: ListView.builder(
+        //     itemCount: widget.urls.length,
+        //     controller: scroll,
+        //     cacheExtent: height * 4,
+        //     itemBuilder: (context, index) {
+        //       return Container(
+        //         child: GalleryExampleItemThumbnail(
+        //           galleryExampleItem: widget.galleryItems[index],
+        //           onTap: () => _transToGalleryView(context, index),
+        //         ),
+        //       );
+        //     },
+        //   ),
+        // ),
+        // ZoomableWidget(
+        //   maxScale: 5.0,
+        //   minScale: 0.5,
+        //   multiFingersPan: false,
+        // ZoomableList(
+        //   maxScale: 2.0,
+        //   flingFactor: 1.0,
+        //   // child: ListView.builder(
+        //   //   itemCount: widget.urls.length,
+        //   //   controller: scroll,
+        //   //   cacheExtent: height * 4,
+        //   //   itemBuilder: (context, index) {
+        //   //     return Container(
+        //   //       child: GalleryExampleItemThumbnail(
+        //   //         galleryExampleItem: widget.galleryItems[index],
+        //   //         onTap: () => _transToGalleryView(context, index),
+        //   //       ),
+        //   //     );
+        //   //   },
+        //   // ),
+        //   child: Column(
+        //     mainAxisSize: MainAxisSize.min,
+        //     children: ll,
+        //     // children: <Widget>[
+        //     //   Image(
+        //     //       image: AdvancedNetworkImage(widget.galleryItems[0].url,
+        //     //           header: widget.galleryItems[0].headers)),
+        //     //   Image(
+        //     //       image: AdvancedNetworkImage(widget.galleryItems[1].url,
+        //     //           header: widget.galleryItems[1].headers)),
+        //     //   Image(
+        //     //       image: AdvancedNetworkImage(widget.galleryItems[2].url,
+        //     //           header: widget.galleryItems[2].headers)),
+        //     //   Image(
+        //     //       image: AdvancedNetworkImage(widget.galleryItems[3].url,
+        //     //           header: widget.galleryItems[3].headers)),
+        //     //   Image(
+        //     //       image: AdvancedNetworkImage(widget.galleryItems[4].url,
+        //     //           header: widget.galleryItems[4].headers)),
+        //     // ],
+        //   ),
+        // ),
+        _touchArea(),
+        // _topAppBar(),
+        // _bottomAppBar(),
+      ],
+      // ),
+      // ),
+      // ),
     );
   }
 
@@ -351,22 +364,32 @@ class _ViewerWidgetState extends State<ViewerWidget>
         height: height,
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () {
+          onTap: () async {
             if (!_overlayOpend) {
-              if (_controller.isCompleted) {
-                _controller.reverse();
-              } else {
-                _controller.forward();
-              }
+              // if (_controller.isCompleted) {
+              //   _controller.reverse();
+              // } else {
+              //   _controller.forward();
+              // }
+              // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+              //   statusBarColor: Colors.transparent,
+              //   systemNavigationBarDividerColor: Colors.transparent,
+              //   systemNavigationBarColor: Colors.transparent,
+              // ));
               SystemChrome.setEnabledSystemUIOverlays(
                   [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+              // await FlutterStatusbarManager.setHidden(false,
+              // animation: StatusBarAnimation.SLIDE);
+              // await FlutterStatusbarManager.setTranslucent(true);
             } else {
-              if (_controller.isCompleted) {
-                _controller.reverse();
-              } else {
-                _controller.forward();
-              }
+              // if (_controller.isCompleted) {
+              //   _controller.reverse();
+              // } else {
+              //   _controller.forward();
+              // }
               SystemChrome.setEnabledSystemUIOverlays([]);
+              // await FlutterStatusbarManager.setHidden(true,
+              // animation: StatusBarAnimation.SLIDE);
             }
             _overlayOpend = !_overlayOpend;
           },
@@ -404,7 +427,7 @@ class _ViewerWidgetState extends State<ViewerWidget>
         // height: 128,
         padding: EdgeInsets.only(top: height - bottom - 128),
         child: BottomAppBar(
-          color: Colors.black,
+          color: Colors.black.withOpacity(0.3),
           child: Container(
             height: 128,
             child: Row(

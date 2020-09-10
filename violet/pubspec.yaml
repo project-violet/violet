@@ -57,6 +57,7 @@ dependencies:
   flutter_downloader:
   flutter_mobx:
   flutter_reorderable_list:
+  flutter_statusbar_manager:
   flutter_speed_dial:
   flutter_staggered_animations: "^0.1.2"
   flutter_svg:
