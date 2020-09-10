@@ -4,6 +4,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
@@ -267,6 +268,9 @@ class _InfoAreaWidget extends StatelessWidget {
                       await (await User.getInstance())
                           .insertUserLog(queryResult.id(), 0);
                       SystemChrome.setEnabledSystemUIOverlays([]);
+
+                      // await FlutterStatusbarManager.setHidden(true,
+                      //     animation: StatusBarAnimation.SLIDE);
                       // SystemChrome.setEnabledSystemUIOverlays(
                       //     SystemUiOverlay.values);
                       Navigator.push(
