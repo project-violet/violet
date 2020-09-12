@@ -13,9 +13,9 @@ class UpdateSyncManager {
   static bool enableSensitiveUpdate = true;
 
   // Current version
-  static const int majorVersion = 0;
-  static const int minorVersion = 9;
-  static const int patchVersion = 4;
+  static const int majorVersion = 1;
+  static const int minorVersion = 0;
+  static const int patchVersion = 0;
 
   static bool updateRequire = false;
   static String version = "";

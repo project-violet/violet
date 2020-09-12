@@ -135,8 +135,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     double xx = 0.0;
     for (int i = 0; i < _cachedHeight.length; i++) {
       xx += _loaded[i] ? _cachedHeight[i] : 300;
-      xx += 4;
-      if (offset < xx) {
+      // xx += 4;
+      if (offset + 96 < xx) {
         return i + 1;
       }
     }
@@ -424,6 +424,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 min: 1,
                 label: _prevPage.toString(),
                 divisions: _pageInfo.uris.length,
+                inactiveColor: Settings.majorColor.withOpacity(0.7),
+                activeColor: Settings.majorColor,
                 onChanged: (value) {
                   if (!Settings.isHorizontal) {
                     _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
