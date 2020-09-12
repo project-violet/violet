@@ -107,8 +107,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final mediaQuery = MediaQuery.of(context);
     return Padding(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,8 +122,12 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
             child: SizedBox(
               width: width - 16,
-              height: height - 16,
+              height: height -
+                  16 -
+                  (mediaQuery.padding + mediaQuery.viewInsets).bottom,
               child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                resizeToAvoidBottomPadding: false,
                 floatingActionButton: Visibility(
                   visible: checkMode,
                   child: AnimatedOpacity(
@@ -130,28 +137,26 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   ),
                 ),
                 // floatingActionButton: Container(child: Text('asdf')),
-                body: Container(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      slivers: <Widget>[
-                        SliverPersistentHeader(
-                          floating: true,
-                          delegate: SearchBarSliver(
-                            minExtent: 64 + 12.0,
-                            maxExtent: 64.0 + 12,
-                            searchBar: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Stack(children: <Widget>[
-                                  _filter(),
-                                  _title(),
-                                ])),
-                          ),
+                body: Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverPersistentHeader(
+                        floating: true,
+                        delegate: SearchBarSliver(
+                          minExtent: 64 + 12.0,
+                          maxExtent: 64.0 + 12,
+                          searchBar: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Stack(children: <Widget>[
+                                _filter(),
+                                _title(),
+                              ])),
                         ),
-                        buildList()
-                      ],
-                    ),
+                      ),
+                      buildList()
+                    ],
                   ),
                 ),
               ),

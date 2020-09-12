@@ -72,8 +72,11 @@ class ArtistListPage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final mediaQuery = MediaQuery.of(context);
     return Padding(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,7 +87,9 @@ class ArtistListPage extends StatelessWidget {
                   Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
               child: SizedBox(
                 width: width - 16,
-                height: height - 16,
+                height: height -
+                    16 -
+                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
                 child: Container(
                     child: ListView.builder(
                         padding: EdgeInsets.fromLTRB(0, 4, 0, 0),

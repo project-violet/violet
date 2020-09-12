@@ -32,10 +32,13 @@ class _ArticleListPageState extends State<ArticleListPage> {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final mediaQuery = MediaQuery.of(context);
     // if (similarsAll == null) return Text('asdf');
     return Padding(
       // padding: EdgeInsets.all(0),
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,10 +49,12 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
             child: SizedBox(
               width: width - 16,
-              height: height - 16,
+              height: height -
+                  16 -
+                  (mediaQuery.padding + mediaQuery.viewInsets).bottom,
               child: Container(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: <Widget>[

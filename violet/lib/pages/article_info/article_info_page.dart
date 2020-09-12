@@ -50,65 +50,69 @@ class ArticleInfoPage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final data = Provider.of<ArticleInfo>(context);
+    final mediaQuery = MediaQuery.of(context);
+
+    print((mediaQuery.padding + mediaQuery.viewInsets).top);
 
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
-      child: Padding(
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Card(
-              elevation: 5,
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
-              // color: Colors.transparent,
-              child: SizedBox(
-                width: width - 32,
-                height: height - 64,
-                child: Stack(
-                  children: [
-                    Container(
-                      width: width,
-                      height: height,
-                      color: Settings.themeWhat
-                          ? Colors.black.withOpacity(0.9)
-                          : Colors.white.withOpacity(0.97),
-                    ),
-                    Container(
-                      child: SingleChildScrollView(
-                        controller: data.controller,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Stack(
-                              children: [
-                                Container(
-                                  width: width,
-                                  height: 4 * 50.0 + 16,
-                                  color: Settings.themeWhat
-                                      ? Colors.grey.shade900.withOpacity(0.6)
-                                      : Colors.white.withOpacity(0.2),
-                                ),
-                                _InfoAreaWithCommentWidget(
-                                  headers: data.headers,
-                                  queryResult: data.queryResult,
-                                ),
-                                SimpleInfoWidget()
-                              ],
-                            ),
-                          ],
-                        ),
+      padding: EdgeInsets.only(
+          top: 16, bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Card(
+            elevation: 5,
+            color:
+                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
+            // color: Colors.transparent,
+            child: SizedBox(
+              width: width - 32,
+              height: height -
+                  52 -
+                  (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+              child: Stack(
+                children: [
+                  Container(
+                    width: width,
+                    height: height,
+                    color: Settings.themeWhat
+                        ? Colors.black.withOpacity(0.9)
+                        : Colors.white.withOpacity(0.97),
+                  ),
+                  Container(
+                    child: SingleChildScrollView(
+                      controller: data.controller,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Stack(
+                            children: [
+                              Container(
+                                width: width,
+                                height: 4 * 50.0 + 16,
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade900.withOpacity(0.6)
+                                    : Colors.white.withOpacity(0.2),
+                              ),
+                              _InfoAreaWithCommentWidget(
+                                headers: data.headers,
+                                queryResult: data.queryResult,
+                              ),
+                              SimpleInfoWidget()
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -188,6 +192,7 @@ class _InfoAreaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+
     return Container(
       padding: EdgeInsets.only(top: 4 * 50.0 + 16),
       child: Column(
@@ -275,38 +280,17 @@ class _InfoAreaWidget extends StatelessWidget {
                       //     animation: StatusBarAnimation.SLIDE);
                       // SystemChrome.setEnabledSystemUIOverlays(
                       //     SystemUiOverlay.values);
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     fullscreenDialog: true,
-                      //     builder: (context) {
-                      //       return ViewerPage(
-                      //         id: queryResult.id().toString(),
-                      //         images:
-                      //             ThumbnailManager.get(queryResult.id()).item1,
-                      //         headers: headers,
-                      //       );
-                      //     },
-                      //   ),
-                      // ).then((value) async {
-                      //   await (await User.getInstance())
-                      //       .updateUserLog(queryResult.id(), value as int);
-                      //   SystemChrome.setEnabledSystemUIOverlays(
-                      //       SystemUiOverlay.values);
-                      // });
-
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           fullscreenDialog: true,
                           builder: (context) {
-                            return Provider<ViewerPageProvider>.value(
-                                value: ViewerPageProvider(
-                                    uris: ThumbnailManager.get(queryResult.id())
-                                        .item1,
-                                    useWeb: true,
-                                    headers: headers),
-                                child: NViewerPage());
+                            return ViewerPage(
+                              id: queryResult.id().toString(),
+                              images:
+                                  ThumbnailManager.get(queryResult.id()).item1,
+                              headers: headers,
+                            );
                           },
                         ),
                       ).then((value) async {
@@ -315,6 +299,27 @@ class _InfoAreaWidget extends StatelessWidget {
                         SystemChrome.setEnabledSystemUIOverlays(
                             SystemUiOverlay.values);
                       });
+
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     fullscreenDialog: true,
+                      //     builder: (context) {
+                      //       return Provider<ViewerPageProvider>.value(
+                      //           value: ViewerPageProvider(
+                      //               uris: ThumbnailManager.get(queryResult.id())
+                      //                   .item1,
+                      //               useWeb: true,
+                      //               headers: headers),
+                      //           child: NViewerPage());
+                      //     },
+                      //   ),
+                      // ).then((value) async {
+                      //   await (await User.getInstance())
+                      //       .updateUserLog(queryResult.id(), value as int);
+                      //   SystemChrome.setEnabledSystemUIOverlays(
+                      //       SystemUiOverlay.values);
+                      // });
                     },
                   ),
                 ),

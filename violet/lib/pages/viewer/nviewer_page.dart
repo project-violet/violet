@@ -64,7 +64,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer> {
     super.didChangeDependencies();
     _pageInfo = Provider.of<ViewerPageProvider>(context);
     _loaded = List<bool>.filled(_pageInfo.uris.length, false);
-    _cachedHeight = List<double>.filled(_pageInfo.uris.length, 0);
+    _cachedHeight = List<double>.filled(_pageInfo.uris.length, -1);
   }
 
   @override
@@ -118,6 +118,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer> {
 
   _networkImageItem(index) {
     final width = MediaQuery.of(context).size.width - 4;
+
+    print(index);
+
+    if (_loaded[index] && _cachedHeight[index] >= 0) {
+      return _neworkImageView(index);
+    }
+
     return FutureBuilder(
       future: _loaded[index]
           ? Future.value(1)
@@ -142,32 +149,36 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer> {
               _loaded[index] = true;
               _cachedHeight[index] = width / snapshot.data.aspectRatio;
             }
-            return SizedBox(
-              height: _loaded[index] ? _cachedHeight[index] : 300.0,
-              width: width,
-              child: CachedNetworkImage(
-                height: _loaded[index] ? _cachedHeight[index] : 300.0,
-                width: width,
-                imageUrl: _pageInfo.uris[index],
-                httpHeaders: _pageInfo.headers,
-                fit: BoxFit.cover,
-                fadeInDuration: Duration(microseconds: 500),
-                fadeInCurve: Curves.easeIn,
-                progressIndicatorBuilder: (context, string, progress) {
-                  return Center(
-                    child: SizedBox(
-                      child:
-                          CircularProgressIndicator(value: progress.progress),
-                      width: 30,
-                      height: 30,
-                    ),
-                  );
-                },
-              ),
-            );
+            return _neworkImageView(index);
           },
         );
       },
+    );
+  }
+
+  _neworkImageView(index) {
+    final width = MediaQuery.of(context).size.width - 4;
+    return SizedBox(
+      height: _loaded[index] ? _cachedHeight[index] : 300.0,
+      width: width,
+      child: CachedNetworkImage(
+        height: _loaded[index] ? _cachedHeight[index] : 300.0,
+        width: width,
+        imageUrl: _pageInfo.uris[index],
+        httpHeaders: _pageInfo.headers,
+        fit: BoxFit.cover,
+        fadeInDuration: Duration(microseconds: 500),
+        fadeInCurve: Curves.easeIn,
+        progressIndicatorBuilder: (context, string, progress) {
+          return Center(
+            child: SizedBox(
+              child: CircularProgressIndicator(value: progress.progress),
+              width: 30,
+              height: 30,
+            ),
+          );
+        },
+      ),
     );
   }
 

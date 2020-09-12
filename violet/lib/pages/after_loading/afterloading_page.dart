@@ -60,7 +60,9 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         key: scaffoldKey,
         bottomNavigationBar: MediaQuery(
           data: mediaQuery.copyWith(
-            padding: mediaQuery.padding + mediaQuery.viewInsets,
+            padding: mediaQuery.padding +
+                mediaQuery.viewInsets +
+                EdgeInsets.only(bottom: 6),
           ),
           child: BottomNavigationBar(
             elevation: 9,
