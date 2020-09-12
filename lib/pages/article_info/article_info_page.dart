@@ -29,7 +29,9 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/download/download_page.dart';
+import 'package:violet/pages/viewer/nviewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
+import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
@@ -273,17 +275,38 @@ class _InfoAreaWidget extends StatelessWidget {
                       //     animation: StatusBarAnimation.SLIDE);
                       // SystemChrome.setEnabledSystemUIOverlays(
                       //     SystemUiOverlay.values);
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     fullscreenDialog: true,
+                      //     builder: (context) {
+                      //       return ViewerPage(
+                      //         id: queryResult.id().toString(),
+                      //         images:
+                      //             ThumbnailManager.get(queryResult.id()).item1,
+                      //         headers: headers,
+                      //       );
+                      //     },
+                      //   ),
+                      // ).then((value) async {
+                      //   await (await User.getInstance())
+                      //       .updateUserLog(queryResult.id(), value as int);
+                      //   SystemChrome.setEnabledSystemUIOverlays(
+                      //       SystemUiOverlay.values);
+                      // });
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           fullscreenDialog: true,
                           builder: (context) {
-                            return ViewerPage(
-                              id: queryResult.id().toString(),
-                              images:
-                                  ThumbnailManager.get(queryResult.id()).item1,
-                              headers: headers,
-                            );
+                            return Provider<ViewerPageProvider>.value(
+                                value: ViewerPageProvider(
+                                    uris: ThumbnailManager.get(queryResult.id())
+                                        .item1,
+                                    useWeb: true,
+                                    headers: headers),
+                                child: NViewerPage());
                           },
                         ),
                       ).then((value) async {
