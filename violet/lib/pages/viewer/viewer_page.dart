@@ -194,7 +194,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       new PageController(initialPage: _prevPage - 1);
                 } else {
                   Future.delayed(Duration(milliseconds: 100)).then((value) {
-                    _scroll.jumpTo(page2Offset(_prevPage) - 96);
+                    _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
                   });
                 }
                 setState(() {});
