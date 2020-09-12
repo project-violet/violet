@@ -34,7 +34,6 @@ import 'package:violet/database/query.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/version/update_sync.dart';
-import 'package:violet/pages/viewer/vertical_viewer/vertical_viewer_widget.dart';
 import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 
@@ -832,11 +831,7 @@ class _ImageTestPageState extends State<ImageTestPage> {
           title: Text('이미지 테스트'),
           backgroundColor: Colors.orange,
         ),
-        body: ViewerWidget(
-          id: "",
-          urls: imgs,
-          headers: {"Referer": "https://hitomi.la/reader/16440821.html/"},
-        ),
+
         //Scrollbar(
         //  child: SingleChildScrollView(
         //    child: Container(

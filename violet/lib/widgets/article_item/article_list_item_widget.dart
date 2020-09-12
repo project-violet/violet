@@ -257,72 +257,56 @@ class _ArticleListItemVerySimpleWidgetState
                 // pad = 0;
                 scale = 1.0;
               });
-              if (false) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // fullscreenDialog: true,
-                    builder: (context) {
-                      return ViewerPage(
-                        id: data.queryResult.id().toString(),
-                        images:
-                            ThumbnailManager.get(data.queryResult.id()).item1,
-                        headers: headers,
+
+              // Navigator.of(context).push(PageRouteBuilder(
+              //   // opaque: false,
+              //   transitionDuration: Duration(milliseconds: 500),
+              //   transitionsBuilder: (BuildContext context,
+              //       Animation<double> animation,
+              //       Animation<double> secondaryAnimation,
+              //       Widget wi) {
+              //     // return wi;
+              //     return new FadeTransition(opacity: animation, child: wi);
+              //   },
+              //   pageBuilder: (_, __, ___) => ArticleInfoPage(
+              //     queryResult: widget.queryResult,
+              //     thumbnail: thumbnail,
+              //     headers: headers,
+              //     heroKey: widget.thumbnailTag,
+              //     isBookmarked: isBookmarked,
+              //   ),
+              // ));
+              final mediaQuery = MediaQuery.of(context);
+              final pad = mediaQuery.padding + mediaQuery.viewInsets;
+              final height = MediaQuery.of(context).size.height;
+
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (_) {
+                  return DraggableScrollableSheet(
+                    initialChildSize: 400 / height,
+                    minChildSize: 400 / height,
+                    maxChildSize: 1.0,
+                    expand: false,
+                    builder: (_, controller) {
+                      return Provider<ArticleInfo>.value(
+                        child: ArticleInfoPage(
+                          key: ObjectKey('asdfasdf'),
+                        ),
+                        value: ArticleInfo.fromArticleInfo(
+                          queryResult: data.queryResult,
+                          thumbnail: thumbnail,
+                          headers: headers,
+                          heroKey: data.thumbnailTag,
+                          isBookmarked: isBookmarked,
+                          controller: controller,
+                        ),
                       );
                     },
-                  ),
-                );
-              } else {
-                // Navigator.of(context).push(PageRouteBuilder(
-                //   // opaque: false,
-                //   transitionDuration: Duration(milliseconds: 500),
-                //   transitionsBuilder: (BuildContext context,
-                //       Animation<double> animation,
-                //       Animation<double> secondaryAnimation,
-                //       Widget wi) {
-                //     // return wi;
-                //     return new FadeTransition(opacity: animation, child: wi);
-                //   },
-                //   pageBuilder: (_, __, ___) => ArticleInfoPage(
-                //     queryResult: widget.queryResult,
-                //     thumbnail: thumbnail,
-                //     headers: headers,
-                //     heroKey: widget.thumbnailTag,
-                //     isBookmarked: isBookmarked,
-                //   ),
-                // ));
-                final mediaQuery = MediaQuery.of(context);
-                final pad = mediaQuery.padding + mediaQuery.viewInsets;
-                final height = MediaQuery.of(context).size.height;
-
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) {
-                    return DraggableScrollableSheet(
-                      initialChildSize: 400 / height,
-                      minChildSize: 400 / height,
-                      maxChildSize: 1.0,
-                      expand: false,
-                      builder: (_, controller) {
-                        return Provider<ArticleInfo>.value(
-                          child: ArticleInfoPage(
-                            key: ObjectKey('asdfasdf'),
-                          ),
-                          value: ArticleInfo.fromArticleInfo(
-                            queryResult: data.queryResult,
-                            thumbnail: thumbnail,
-                            headers: headers,
-                            heroKey: data.thumbnailTag,
-                            isBookmarked: isBookmarked,
-                            controller: controller,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              }
+                  );
+                },
+              );
             },
             onLongPress: () async {
               onScaling = false;
