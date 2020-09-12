@@ -34,6 +34,8 @@ class Settings {
 
   // Reader Option
   static bool rightToLeft;
+  static bool isHorizontal;
+  static bool scrollVertical;
 
   // Download Options
   static String downloadBasePath;
@@ -161,6 +163,22 @@ class Settings {
     }
     rightToLeft = right2left;
 
+    isHorizontal =
+        (await SharedPreferences.getInstance()).getBool('ishorizontal');
+    if (isHorizontal == null) {
+      isHorizontal = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('ishorizontal', isHorizontal);
+    }
+
+    scrollVertical =
+        (await SharedPreferences.getInstance()).getBool('scrollvertical');
+    if (scrollVertical == null) {
+      scrollVertical = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('scrollvertical', scrollVertical);
+    }
+
     downloadBasePath =
         (await SharedPreferences.getInstance()).getString('downloadbasepath');
     if (downloadBasePath == null) {
@@ -250,6 +268,18 @@ class Settings {
     rightToLeft = nn;
     await (await SharedPreferences.getInstance())
         .setBool('right2left', rightToLeft);
+  }
+
+  static Future<void> setIsHorizontal(bool nn) async {
+    isHorizontal = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('ishorizontal', isHorizontal);
+  }
+
+  static Future<void> setScrollVertical(bool nn) async {
+    scrollVertical = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('scrollvertical', scrollVertical);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {

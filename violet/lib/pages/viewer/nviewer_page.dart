@@ -7,11 +7,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/settings/settings.dart';
 
 int currentPage = 0;
 
@@ -32,7 +34,8 @@ class NViewerPage extends StatelessWidget {
 
 enum _ViewAppBarAction {
   toggleViewer,
-  openInBrowser,
+  toggleRightToLeft,
+  toggleScrollVertical,
 }
 
 class _VerticalImageViewer extends StatefulWidget {
@@ -50,6 +53,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   int _prevPage = 1;
   double _opacity = 0.0;
   bool _disableBottom = false;
+  PageController _pageController = PageController();
 
   @override
   void initState() {
@@ -117,7 +121,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                     .trans('recordmessage')
                     .replaceAll('%s', e.lastPage().toString()),
                 Translations.of(context).trans('record'))) {
-              _scroll.jumpTo(page2Offset(e.lastPage() - 1));
+              if (!Settings.isHorizontal) {
+                _scroll.jumpTo(page2Offset(e.lastPage() - 1));
+              } else {
+                _pageController.jumpToPage(e.lastPage() - 1);
+              }
             }
           }
         }));
@@ -145,8 +153,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -158,67 +164,150 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
-        appBar: _opacity == 1.0
-            ? AppBar(
-                elevation: 0.0,
-                backgroundColor: Colors.black.withOpacity(0.3),
-                title: Text('$_prevPage/${_pageInfo.uris.length}'),
-                leading: IconButton(
-                  icon: new Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pop(context, currentPage);
-                    return new Future(() => false);
-                  },
-                ),
-                actions: [
-                  PopupMenuButton<_ViewAppBarAction>(
-                    onSelected: (action) {
-                      switch (action) {
-                        case _ViewAppBarAction.toggleViewer:
-                          // Navigator.pushNamed(context, SettingScreen.routeName);
-                          break;
+        appBar: _opacity == 1.0 ? _appBar() : null,
+        body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
+      ),
+    );
+  }
 
-                        case _ViewAppBarAction.openInBrowser:
-                          // tryLaunch(client.getImageUrl(image.id));
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: _ViewAppBarAction.toggleViewer,
-                        child: Text('Toggle to Vertical'),
-                      ),
-                      PopupMenuItem(
-                        value: _ViewAppBarAction.openInBrowser,
-                        child: Text('asdf'),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : null,
-        body: Stack(
-          children: <Widget>[
-            PhotoView.customChild(
-              minScale: 1.0,
-              child: Container(
-                color: const Color(0xff444444),
-                child: ListView.builder(
-                  padding: EdgeInsets.zero,
-                  itemCount: _pageInfo.uris.length,
-                  controller: _scroll,
-                  cacheExtent: height * 2,
-                  itemBuilder: (context, index) {
-                    return _networkImageViewTest(index);
-                  },
-                ),
-              ),
+  _appBar() {
+    return AppBar(
+      elevation: 0.0,
+      backgroundColor: Colors.black.withOpacity(0.3),
+      title: Text('$_prevPage/${_pageInfo.uris.length}'),
+      leading: IconButton(
+        icon: new Icon(Icons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context, currentPage);
+          return new Future(() => false);
+        },
+      ),
+      actions: [
+        PopupMenuButton<_ViewAppBarAction>(
+          onSelected: (action) {
+            switch (action) {
+              case _ViewAppBarAction.toggleViewer:
+                // Navigator.pushNamed(context, SettingScreen.routeName);
+                Settings.setIsHorizontal(!Settings.isHorizontal);
+                if (Settings.isHorizontal) {
+                  _pageController =
+                      new PageController(initialPage: _prevPage - 1);
+                } else {
+                  Future.delayed(Duration(milliseconds: 100)).then((value) {
+                    _scroll.jumpTo(page2Offset(_prevPage) - 96);
+                  });
+                }
+                setState(() {});
+                break;
+
+              case _ViewAppBarAction.toggleRightToLeft:
+                // tryLaunch(client.getImageUrl(image.id));
+                Settings.setRightToLeft(!Settings.rightToLeft);
+                setState(() {});
+                break;
+
+              case _ViewAppBarAction.toggleScrollVertical:
+                Settings.setScrollVertical(!Settings.scrollVertical);
+                setState(() {});
+                break;
+            }
+          },
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: _ViewAppBarAction.toggleViewer,
+              child: Text('Toggle Viewer Style'),
             ),
-            _touchArea(),
-            !_disableBottom ? _bottomAppBar() : Container(),
+            PopupMenuItem(
+              value: _ViewAppBarAction.toggleRightToLeft,
+              enabled: Settings.isHorizontal,
+              child: Text('Toggle Right To Left'),
+            ),
+            PopupMenuItem(
+              value: _ViewAppBarAction.toggleScrollVertical,
+              enabled: Settings.isHorizontal,
+              child: Text('Toggle Scroll Vertical'),
+            ),
           ],
         ),
+      ],
+    );
+  }
+
+  _bodyVertical() {
+    final height = MediaQuery.of(context).size.height;
+
+    return Stack(
+      children: <Widget>[
+        PhotoView.customChild(
+          minScale: 1.0,
+          child: Container(
+            color: const Color(0xff444444),
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: _pageInfo.uris.length,
+              controller: _scroll,
+              cacheExtent: height * 2,
+              itemBuilder: (context, index) {
+                return _networkImageItem(index);
+              },
+            ),
+          ),
+        ),
+        _touchArea(),
+        !_disableBottom ? _bottomAppBar() : Container(),
+      ],
+    );
+  }
+
+  _bodyHorizontal() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          decoration: const BoxDecoration(
+            color: Colors.black,
+          ),
+          constraints: BoxConstraints.expand(
+            height: MediaQuery.of(context).size.height,
+          ),
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: <Widget>[
+              PhotoViewGallery.builder(
+                scrollPhysics: const BouncingScrollPhysics(),
+                builder: _buildItem,
+                itemCount: _pageInfo.uris.length,
+                backgroundDecoration: const BoxDecoration(
+                  color: Colors.black,
+                ),
+                pageController: _pageController,
+                onPageChanged: (page) {
+                  currentPage = page.toInt() + 1;
+                  setState(() {
+                    _prevPage = page.toInt() + 1;
+                  });
+                },
+                scrollDirection:
+                    Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
+                reverse: Settings.rightToLeft,
+              ),
+            ],
+          ),
+        ),
+        _touchArea(),
+        !_disableBottom ? _bottomAppBar() : Container(),
+      ],
+    );
+  }
+
+  PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
+    return PhotoViewGalleryPageOptions(
+      imageProvider: CachedNetworkImageProvider(
+        _pageInfo.uris[index],
+        headers: _pageInfo.headers,
       ),
+      initialScale: PhotoViewComputedScale.contained,
+      minScale: PhotoViewComputedScale.contained * 1.0,
+      maxScale: PhotoViewComputedScale.contained * 5.0,
     );
   }
 
@@ -236,7 +325,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             if (!_overlayOpend) {
-              _prevPage = currentPage;
+              if (!Settings.isHorizontal) _prevPage = currentPage;
               setState(() {
                 _opacity = 1.0;
                 _disableBottom = false;
@@ -262,74 +351,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   _networkImageItem(index) {
-    final width = MediaQuery.of(context).size.width - 4;
-
-    if (_loaded[index] && _cachedHeight[index] >= 0) {
-      return _neworkImageView(index);
-    }
-
-    return FutureBuilder(
-      future: _loaded[index]
-          ? Future.value(1)
-          : Future.delayed(Duration(milliseconds: 1000)).then((value) => 1),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox(
-            height: _loaded[index] ? _cachedHeight[index] : 300.0,
-            child: Center(
-              child: SizedBox(
-                child: CircularProgressIndicator(),
-                width: 30,
-                height: 30,
-              ),
-            ),
-          );
-        }
-        return FutureBuilder(
-          future: _calculateImageDimension(_pageInfo.uris[index]),
-          builder: (context, AsyncSnapshot<Size> snapshot) {
-            if (snapshot.hasData) {
-              _loaded[index] = true;
-              _cachedHeight[index] = width / snapshot.data.aspectRatio;
-            }
-            return _neworkImageView(index);
-          },
-        );
-      },
-    );
-  }
-
-  _neworkImageView(index) {
-    final width = MediaQuery.of(context).size.width - 4;
-    return SizedBox(
-      height: _loaded[index] ? _cachedHeight[index] : 300.0,
-      width: width,
-      child: CachedNetworkImage(
-        height: _loaded[index] ? _cachedHeight[index] : 300.0,
-        width: width,
-        memCacheWidth: width.toInt(),
-        imageUrl: _pageInfo.uris[index],
-        httpHeaders: _pageInfo.headers,
-        fit: BoxFit.cover,
-        fadeInDuration: Duration(microseconds: 500),
-        fadeInCurve: Curves.easeIn,
-        progressIndicatorBuilder: (context, string, progress) {
-          return SizedBox(
-            height: 300,
-            child: Center(
-              child: SizedBox(
-                child: CircularProgressIndicator(value: progress.progress),
-                width: 30,
-                height: 30,
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  _networkImageViewTest(index) {
     final width = MediaQuery.of(context).size.width;
     return FutureBuilder(
       future: _calculateImageDimension(_pageInfo.uris[index]),
@@ -379,7 +400,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   _bottomAppBar() {
     final height = MediaQuery.of(context).size.height;
-    final bottom = MediaQuery.of(context).padding.bottom;
     final mediaQuery = MediaQuery.of(context);
     return AnimatedOpacity(
       opacity: _opacity,
@@ -405,7 +425,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 label: _prevPage.toString(),
                 divisions: _pageInfo.uris.length,
                 onChanged: (value) {
-                  _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
+                  if (!Settings.isHorizontal) {
+                    _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
+                  } else {
+                    _pageController.jumpToPage(value.toInt() - 1);
+                  }
+                  currentPage = value.toInt();
                   setState(() {
                     _prevPage = value.toInt();
                   });
