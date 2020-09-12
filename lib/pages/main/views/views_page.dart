@@ -39,10 +39,16 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+
+    final mediaQuery = MediaQuery.of(context);
+
+    print((mediaQuery.padding + mediaQuery.viewInsets).top);
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
       child: Padding(
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top,
+            bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -53,7 +59,9 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                   Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
               child: SizedBox(
                 width: width - 16,
-                height: height - 16,
+                height: height -
+                    16 -
+                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
                 child: DefaultTabController(
                   length: 4,
                   child: Column(

@@ -52,6 +52,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   @override
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
+    final mediaQuery = MediaQuery.of(context);
     controller.forward();
 
     if (_searchLists.length == 0 && !_nothing) {
@@ -71,7 +72,8 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     return Container(
         color: Settings.themeWhat ? Colors.grey.shade900 : Colors.white,
-        padding: EdgeInsets.fromLTRB(2, statusBarHeight + 2, 0, 0),
+        padding: EdgeInsets.fromLTRB(2, statusBarHeight + 2, 0,
+            (mediaQuery.padding + mediaQuery.viewInsets).bottom),
         child: Stack(children: <Widget>[
           Hero(
             tag: "searchbar",

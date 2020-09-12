@@ -291,6 +291,8 @@ class _ArticleListItemVerySimpleWidgetState
                 //     isBookmarked: isBookmarked,
                 //   ),
                 // ));
+                final mediaQuery = MediaQuery.of(context);
+                final pad = mediaQuery.padding + mediaQuery.viewInsets;
                 final height = MediaQuery.of(context).size.height;
 
                 showModalBottomSheet(

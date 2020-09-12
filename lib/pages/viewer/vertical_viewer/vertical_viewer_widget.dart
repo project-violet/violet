@@ -86,19 +86,22 @@ class _ViewerWidgetState extends State<ViewerWidget>
         // imageCache.clearLiveImages();
         // imageCache.clear();
         prevPage = currentPage;
+        setState(() {
+          page = currentPage;
+        });
       }
     });
-    // _controller = AnimationController(
-    //   vsync: this,
-    //   duration: Duration(milliseconds: 500),
-    // );
-    // Future.delayed(Duration(milliseconds: 500)).then((value) {
-    //   if (_controller.isCompleted) {
-    //     _controller.reverse();
-    //   } else {
-    //     _controller.forward();
-    //   }
-    // });
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    Future.delayed(Duration(milliseconds: 500)).then((value) {
+      if (_controller.isCompleted) {
+        _controller.reverse();
+      } else {
+        _controller.forward();
+      }
+    });
 
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
@@ -224,9 +227,6 @@ class _ViewerWidgetState extends State<ViewerWidget>
         //  body:
         //      //  SafeArea(
         //      //   child:
-        //   AnimatedBuilder(
-        // animation: _controller,
-        // builder: (context, child) =>
         Stack(
       children: <Widget>[
         // ZoomableWidget(
@@ -264,27 +264,26 @@ class _ViewerWidgetState extends State<ViewerWidget>
         //     );
         //   },
         // ),
-        // PhotoView.customChild(
-        //   minScale: 1.0,
-        //   child: Container(
-        //     color: const Color(0xff444444),
-        //     child:
-        ListView.builder(
-          padding: EdgeInsets.zero,
-          itemCount: widget.urls.length,
-          // controller: scroll,
-          cacheExtent: height * 2,
-          itemBuilder: (context, index) {
-            return Container(
-              child: VerticalViewerHolder(
-                galleryExampleItem: widget.galleryItems[index],
-                onTap: () => _transToGalleryView(context, index),
-              ),
-            );
-          },
+        PhotoView.customChild(
+          minScale: 1.0,
+          child: Container(
+            color: const Color(0xff444444),
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemCount: widget.urls.length,
+              controller: scroll,
+              cacheExtent: height * 2,
+              itemBuilder: (context, index) {
+                return Container(
+                  child: VerticalViewerHolder(
+                    galleryExampleItem: widget.galleryItems[index],
+                    onTap: () => _transToGalleryView(context, index),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
-        //   ),
-        // ),
         // ZoomableWidget(
         //   child: ListView.builder(
         //     itemCount: widget.urls.length,
@@ -344,9 +343,8 @@ class _ViewerWidgetState extends State<ViewerWidget>
         // ),
         _touchArea(),
         // _topAppBar(),
-        // _bottomAppBar(),
+        _bottomAppBar(),
       ],
-      // ),
       // ),
       // ),
     );
@@ -366,11 +364,12 @@ class _ViewerWidgetState extends State<ViewerWidget>
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             if (!_overlayOpend) {
-              // if (_controller.isCompleted) {
-              //   _controller.reverse();
-              // } else {
-              //   _controller.forward();
-              // }
+              page = currentPage;
+              if (_controller.isCompleted) {
+                _controller.reverse();
+              } else {
+                _controller.forward();
+              }
               // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
               //   statusBarColor: Colors.transparent,
               //   systemNavigationBarDividerColor: Colors.transparent,
@@ -382,11 +381,11 @@ class _ViewerWidgetState extends State<ViewerWidget>
               // animation: StatusBarAnimation.SLIDE);
               // await FlutterStatusbarManager.setTranslucent(true);
             } else {
-              // if (_controller.isCompleted) {
-              //   _controller.reverse();
-              // } else {
-              //   _controller.forward();
-              // }
+              if (_controller.isCompleted) {
+                _controller.reverse();
+              } else {
+                _controller.forward();
+              }
               SystemChrome.setEnabledSystemUIOverlays([]);
               // await FlutterStatusbarManager.setHidden(true,
               // animation: StatusBarAnimation.SLIDE);
@@ -421,26 +420,45 @@ class _ViewerWidgetState extends State<ViewerWidget>
   _bottomAppBar() {
     final height = MediaQuery.of(context).size.height;
     final bottom = MediaQuery.of(context).padding.bottom;
-    return Transform.translate(
-      offset: Offset(0, _controller.value * 128),
-      child: Container(
-        // height: 128,
-        padding: EdgeInsets.only(top: height - bottom - 128),
-        child: BottomAppBar(
-          color: Colors.black.withOpacity(0.3),
-          child: Container(
-            height: 128,
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('???'),
-                ]),
+    final mediaQuery = MediaQuery.of(context);
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(0, _controller.value * (128)),
+        child: Container(
+          // height: 128,
+          padding: EdgeInsets.only(
+              top: height - bottom - 128,
+              bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
+          child: BottomAppBar(
+            color: Colors.black.withOpacity(0.2),
+            child: Container(
+              height: 64,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Slider(
+                      value: page.toDouble(),
+                      max: widget.galleryItems.length.toDouble(),
+                      min: 1,
+                      label: page.toString(),
+                      divisions: widget.galleryItems.length,
+                      onChanged: (value) {
+                        scroll.jumpTo(page2Offset(page - 1) - 32);
+                        setState(() {
+                          page = value.toInt();
+                        });
+                      },
+                    ),
+                  ]),
+            ),
           ),
         ),
       ),
     );
   }
 
+  int page = 1;
   String latestLabel = '';
 }
