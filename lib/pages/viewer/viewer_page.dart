@@ -132,11 +132,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   int offset2Page(double offset) {
-    double xx = 0.0;
+    double xx = -96;
     for (int i = 0; i < _cachedHeight.length; i++) {
       xx += _loaded[i] ? _cachedHeight[i] : 300;
       // xx += 4;
-      if (offset + 96 < xx) {
+      if (offset < xx) {
         return i + 1;
       }
     }
