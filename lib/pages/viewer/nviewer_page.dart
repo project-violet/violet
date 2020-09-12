@@ -30,6 +30,11 @@ class NViewerPage extends StatelessWidget {
   }
 }
 
+enum _ViewAppBarAction {
+  toggleViewer,
+  openInBrowser,
+}
+
 class _VerticalImageViewer extends StatefulWidget {
   @override
   __VerticalImageViewerState createState() => __VerticalImageViewerState();
@@ -43,7 +48,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   List<double> _cachedHeight;
   ScrollController _scroll = ScrollController();
   int _prevPage = 1;
-  AnimationController _controller;
+  double _opacity = 0.0;
+  bool _disableBottom = false;
 
   @override
   void initState() {
@@ -54,6 +60,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     //   imageCache.clear();
     // });
 
+    Future.delayed(Duration(milliseconds: 100))
+        .then((value) => _checkLatestRead());
+
     _scroll.addListener(() async {
       currentPage = offset2Page(_scroll.offset);
       if (_prevPage != currentPage) {
@@ -63,20 +72,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           });
         }
       }
-    });
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 500),
-    );
-
-    Future.delayed(Duration(milliseconds: 500)).then((value) {
-      if (_controller.isCompleted) {
-        _controller.reverse();
-      } else {
-        _controller.forward();
-      }
-      _checkLatestRead();
     });
   }
 
@@ -90,7 +85,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   @override
   void dispose() {
-    _controller.dispose();
     _scroll.dispose();
     _clearTimer.cancel();
     PaintingBinding.instance.imageCache.clear();
@@ -101,6 +95,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       SystemUiOverlay.top,
       SystemUiOverlay.bottom,
     ]);
+    imageCache.clearLiveImages();
+    imageCache.clear();
     super.dispose();
   }
 
@@ -158,8 +154,49 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       ),
       sized: false,
       child: Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
+        appBar: _opacity == 1.0
+            ? AppBar(
+                elevation: 0.0,
+                backgroundColor: Colors.black.withOpacity(0.3),
+                title: Text('$_prevPage/${_pageInfo.uris.length}'),
+                leading: IconButton(
+                  icon: new Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context, currentPage);
+                    return new Future(() => false);
+                  },
+                ),
+                actions: [
+                  PopupMenuButton<_ViewAppBarAction>(
+                    onSelected: (action) {
+                      switch (action) {
+                        case _ViewAppBarAction.toggleViewer:
+                          // Navigator.pushNamed(context, SettingScreen.routeName);
+                          break;
+
+                        case _ViewAppBarAction.openInBrowser:
+                          // tryLaunch(client.getImageUrl(image.id));
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: _ViewAppBarAction.toggleViewer,
+                        child: Text('Toggle to Vertical'),
+                      ),
+                      PopupMenuItem(
+                        value: _ViewAppBarAction.openInBrowser,
+                        child: Text('asdf'),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            : null,
         body: Stack(
           children: <Widget>[
             PhotoView.customChild(
@@ -172,13 +209,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   controller: _scroll,
                   cacheExtent: height * 2,
                   itemBuilder: (context, index) {
-                    return _networkImageItem(index);
+                    return _networkImageViewTest(index);
                   },
                 ),
               ),
             ),
             _touchArea(),
-            _bottomAppBar(),
+            !_disableBottom ? _bottomAppBar() : Container(),
           ],
         ),
       ),
@@ -200,20 +237,22 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           onTap: () async {
             if (!_overlayOpend) {
               _prevPage = currentPage;
-              if (_controller.isCompleted) {
-                _controller.reverse();
-              } else {
-                _controller.forward();
-              }
+              setState(() {
+                _opacity = 1.0;
+                _disableBottom = false;
+              });
               SystemChrome.setEnabledSystemUIOverlays(
                   [SystemUiOverlay.bottom, SystemUiOverlay.top]);
             } else {
-              if (_controller.isCompleted) {
-                _controller.reverse();
-              } else {
-                _controller.forward();
-              }
+              setState(() {
+                _opacity = 0.0;
+              });
               SystemChrome.setEnabledSystemUIOverlays([]);
+              Future.delayed(Duration(milliseconds: 300)).then((value) {
+                setState(() {
+                  _disableBottom = true;
+                });
+              });
             }
             _overlayOpend = !_overlayOpend;
           },
@@ -268,21 +307,57 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       child: CachedNetworkImage(
         height: _loaded[index] ? _cachedHeight[index] : 300.0,
         width: width,
+        memCacheWidth: width.toInt(),
         imageUrl: _pageInfo.uris[index],
         httpHeaders: _pageInfo.headers,
         fit: BoxFit.cover,
         fadeInDuration: Duration(microseconds: 500),
         fadeInCurve: Curves.easeIn,
         progressIndicatorBuilder: (context, string, progress) {
-          return Center(
-            child: SizedBox(
-              child: CircularProgressIndicator(value: progress.progress),
-              width: 30,
-              height: 30,
+          return SizedBox(
+            height: 300,
+            child: Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(value: progress.progress),
+                width: 30,
+                height: 30,
+              ),
             ),
           );
         },
       ),
+    );
+  }
+
+  _networkImageViewTest(index) {
+    final width = MediaQuery.of(context).size.width;
+    return FutureBuilder(
+      future: _calculateImageDimension(_pageInfo.uris[index]),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          _loaded[index] = true;
+          _cachedHeight[index] = width / snapshot.data.aspectRatio;
+        }
+        return CachedNetworkImage(
+          imageUrl: _pageInfo.uris[index],
+          httpHeaders: _pageInfo.headers,
+          fit: BoxFit.cover,
+          fadeInDuration: Duration(microseconds: 500),
+          fadeInCurve: Curves.easeIn,
+          progressIndicatorBuilder: (context, string, progress) {
+            return SizedBox(
+              height: 300,
+              child: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(value: progress.progress),
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -306,38 +381,37 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     final height = MediaQuery.of(context).size.height;
     final bottom = MediaQuery.of(context).padding.bottom;
     final mediaQuery = MediaQuery.of(context);
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) => Transform.translate(
-        offset: Offset(0, _controller.value * (128)),
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: Duration(milliseconds: 300),
+      child: Padding(
+        padding: EdgeInsets.only(
+            top: height -
+                (mediaQuery.padding + mediaQuery.viewInsets).bottom -
+                (48)),
         child: Container(
-          // height: 128,
-          padding: EdgeInsets.only(
-              top: height - bottom - 128,
-              bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
-          child: BottomAppBar(
-            color: Colors.black.withOpacity(0.2),
-            child: Container(
-              height: 64,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Slider(
-                      value: _prevPage.toDouble(),
-                      max: _pageInfo.uris.length.toDouble(),
-                      min: 1,
-                      label: _prevPage.toString(),
-                      divisions: _pageInfo.uris.length,
-                      onChanged: (value) {
-                        _scroll.jumpTo(page2Offset(_prevPage - 1) - 32);
-                        setState(() {
-                          _prevPage = value.toInt();
-                        });
-                      },
-                    ),
-                  ]),
-            ),
+          alignment: Alignment.bottomCenter,
+          // padding: EdgeInsets.only(top: height - bottom - 48),
+          color: Colors.black.withOpacity(0.2),
+          height: 48,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Slider(
+                value: _prevPage.toDouble() > 0 ? _prevPage.toDouble() : 1,
+                max: _pageInfo.uris.length.toDouble(),
+                min: 1,
+                label: _prevPage.toString(),
+                divisions: _pageInfo.uris.length,
+                onChanged: (value) {
+                  _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
+                  setState(() {
+                    _prevPage = value.toInt();
+                  });
+                },
+              ),
+            ],
           ),
         ),
       ),
