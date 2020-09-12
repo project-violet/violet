@@ -57,8 +57,7 @@ class ArticleInfoPage extends StatelessWidget {
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
       padding: EdgeInsets.only(
-          top: 0,
-          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom + 16),
+          top: 0, bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -71,7 +70,7 @@ class ArticleInfoPage extends StatelessWidget {
             child: SizedBox(
               width: width - 32,
               height: height -
-                  56 -
+                  36 -
                   (mediaQuery.padding + mediaQuery.viewInsets).bottom,
               child: Stack(
                 children: [
