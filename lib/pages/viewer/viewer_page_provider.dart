@@ -8,11 +8,13 @@ class ViewerPageProvider {
   final bool useWeb;
   final List<String> uris;
   final Map<String, String> headers;
+  final int id;
 
   ViewerPageProvider({
     this.useFileSystem = false,
     this.useWeb = false,
     @required this.uris,
+    @required this.id,
     this.headers,
   });
 }
