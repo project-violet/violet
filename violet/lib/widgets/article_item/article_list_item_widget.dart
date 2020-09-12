@@ -300,8 +300,8 @@ class _ArticleListItemVerySimpleWidgetState
                   isScrollControlled: true,
                   builder: (_) {
                     return DraggableScrollableSheet(
-                      initialChildSize: 350 / height,
-                      minChildSize: 350 / height,
+                      initialChildSize: 400 / height,
+                      minChildSize: 400 / height,
                       maxChildSize: 1.0,
                       expand: false,
                       builder: (_, controller) {

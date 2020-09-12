@@ -57,9 +57,10 @@ class ArticleInfoPage extends StatelessWidget {
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
       padding: EdgeInsets.only(
-          top: 16, bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
+          top: 0,
+          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom + 16),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Card(
@@ -70,7 +71,7 @@ class ArticleInfoPage extends StatelessWidget {
             child: SizedBox(
               width: width - 32,
               height: height -
-                  52 -
+                  56 -
                   (mediaQuery.padding + mediaQuery.viewInsets).bottom,
               child: Stack(
                 children: [
@@ -280,38 +281,17 @@ class _InfoAreaWidget extends StatelessWidget {
                       //     animation: StatusBarAnimation.SLIDE);
                       // SystemChrome.setEnabledSystemUIOverlays(
                       //     SystemUiOverlay.values);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          fullscreenDialog: true,
-                          builder: (context) {
-                            return ViewerPage(
-                              id: queryResult.id().toString(),
-                              images:
-                                  ThumbnailManager.get(queryResult.id()).item1,
-                              headers: headers,
-                            );
-                          },
-                        ),
-                      ).then((value) async {
-                        await (await User.getInstance())
-                            .updateUserLog(queryResult.id(), value as int);
-                        SystemChrome.setEnabledSystemUIOverlays(
-                            SystemUiOverlay.values);
-                      });
-
                       // Navigator.push(
                       //   context,
                       //   MaterialPageRoute(
                       //     fullscreenDialog: true,
                       //     builder: (context) {
-                      //       return Provider<ViewerPageProvider>.value(
-                      //           value: ViewerPageProvider(
-                      //               uris: ThumbnailManager.get(queryResult.id())
-                      //                   .item1,
-                      //               useWeb: true,
-                      //               headers: headers),
-                      //           child: NViewerPage());
+                      //       return ViewerPage(
+                      //         id: queryResult.id().toString(),
+                      //         images:
+                      //             ThumbnailManager.get(queryResult.id()).item1,
+                      //         headers: headers,
+                      //       );
                       //     },
                       //   ),
                       // ).then((value) async {
@@ -320,6 +300,29 @@ class _InfoAreaWidget extends StatelessWidget {
                       //   SystemChrome.setEnabledSystemUIOverlays(
                       //       SystemUiOverlay.values);
                       // });
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (context) {
+                            return Provider<ViewerPageProvider>.value(
+                                value: ViewerPageProvider(
+                                  uris: ThumbnailManager.get(queryResult.id())
+                                      .item1,
+                                  useWeb: true,
+                                  headers: headers,
+                                  id: queryResult.id(),
+                                ),
+                                child: NViewerPage());
+                          },
+                        ),
+                      ).then((value) async {
+                        await (await User.getInstance())
+                            .updateUserLog(queryResult.id(), value as int);
+                        SystemChrome.setEnabledSystemUIOverlays(
+                            SystemUiOverlay.values);
+                      });
                     },
                   ),
                 ),
