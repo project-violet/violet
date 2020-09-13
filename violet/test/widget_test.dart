@@ -119,20 +119,20 @@ void main() {
   //   //     ));
   // });
 
-  test("hitomi test", () async {
-    await VioletServer.view(1702084);
-    await VioletServer.view(1702084);
-    await VioletServer.view(1702084);
-    await VioletServer.view(1702084);
-    await VioletServer.view(1702084);
-    await VioletServer.view(17021084);
-    await VioletServer.view(17020184);
-    await VioletServer.view(17020184);
-    await VioletServer.view(17020184);
-    // (await HitomiManager.getImageList('1702084')).item1.forEach((element) {
-    //   print(element);
-    // });
-  });
+  // test("hitomi test", () async {
+  //   await VioletServer.view(1702084);
+  //   await VioletServer.view(1702084);
+  //   await VioletServer.view(1702084);
+  //   await VioletServer.view(1702084);
+  //   await VioletServer.view(1702084);
+  //   await VioletServer.view(17021084);
+  //   await VioletServer.view(17020184);
+  //   await VioletServer.view(17020184);
+  //   await VioletServer.view(17020184);
+  //   // (await HitomiManager.getImageList('1702084')).item1.forEach((element) {
+  //   //   print(element);
+  //   // });
+  // });
 
   test("EHentai Test", () async {
     // var what = 'ahegao';
@@ -158,14 +158,63 @@ void main() {
     //   print(element.title);
     // });
 
-    // var page = 0;
-    // var search = Uri.encodeComponent('ahegao');
-    // var url =
-    //     'https://e-hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
+    var page = 0;
+    var search = Uri.encodeComponent('ahegao');
+    var url =
+        'https://e-hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
 
-    // var html = (await http.get(url, headers: {'Cookie': 'sl=dm_2'})).body;
+    var html = (await http.get(url, headers: {'Cookie': 'sl=dm_2'})).body;
 
-    // var result = EHParser.parseReulstPageExtendedListView(html);
+    var result = EHParser.parseReulstPageExtendedListView(html);
+
+    var x = result.map(
+      (element) {
+        var tag = List<String>();
+
+        if (element.descripts['female'] != null)
+          tag.addAll(element.descripts['female'].map((e) => "female:" + e));
+        if (element.descripts['male'] != null)
+          tag.addAll(element.descripts['male'].map((e) => "male:" + e));
+        if (element.descripts['misc'] != null)
+          tag.addAll(element.descripts['misc']);
+
+        var map = {
+          'Id': int.parse(element.url.split('/')[4]),
+          'EHash': element.url.split('/')[5],
+          'Title': element.title,
+          'Artists': element.descripts['artist'] != null
+              ? element.descripts['artist'].join('|')
+              : 'n/a',
+          'Groups': element.descripts['group'] != null
+              ? element.descripts['group'].join('|')
+              : null,
+          'Characters': element.descripts['character'] != null
+              ? element.descripts['character'].join('|')
+              : null,
+          'Series': element.descripts['parody'] != null
+              ? element.descripts['parody'].join('|')
+              : 'n/a',
+          'Language': element.descripts['language'] != null
+              ? element.descripts['language']
+                  .where((element) => !element.contains('translate'))
+                  .join('|')
+              : 'n/a',
+          'Tags': tag.join('|'),
+          'Uploader': element.uploader,
+          'PublishedEH': element.published,
+          'Files': element.files,
+          'Thumbnail': element.thumbnail,
+          'Type': element.type,
+          'URL': element.url,
+        };
+
+        return map;
+      },
+    );
+
+    x.forEach((element) {
+      print(element);
+    });
 
     // var x = result.map((element) {
     //   var tag = List<String>();
