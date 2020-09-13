@@ -290,7 +290,10 @@ class EHParser {
         try {
           var dict = Map<String, List<String>>();
 
-          gref.querySelectorAll('div > tr').forEach((element) {
+          gref
+              .querySelector('div > table')
+              .querySelectorAll('tr')
+              .forEach((element) {
             var cont = element.querySelector('td').text.trim();
             cont = cont.substring(0, cont.length - 1);
 
