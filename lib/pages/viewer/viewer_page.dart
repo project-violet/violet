@@ -85,6 +85,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     _pageInfo = Provider.of<ViewerPageProvider>(context);
     _loaded = List<bool>.filled(_pageInfo.uris.length, false);
     _cachedHeight = List<double>.filled(_pageInfo.uris.length, -1);
+
+    for (var url in _pageInfo.uris) {
+      print(url);
+    }
+
+    print(_pageInfo.headers);
   }
 
   @override
@@ -365,6 +371,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           fit: BoxFit.cover,
           fadeInDuration: Duration(microseconds: 500),
           fadeInCurve: Curves.easeIn,
+          // memCacheWidth: width.toInt(),
           progressIndicatorBuilder: (context, string, progress) {
             return SizedBox(
               height: 300,
