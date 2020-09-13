@@ -290,24 +290,30 @@ class EHParser {
         try {
           var dict = Map<String, List<String>>();
 
-          gref
-              .querySelector('div > table')
-              .querySelectorAll('tr')
-              .forEach((element) {
-            var cont = element.querySelector('td').text.trim();
-            cont = cont.substring(0, cont.length - 1);
+          var tagarea = gref.querySelector('div > table');
 
-            var cc = List<String>();
+          if (tagarea != null) {
+            gref
+                .querySelector('div > table')
+                .querySelectorAll('tr')
+                .forEach((element) {
+              var cont = element.querySelector('td').text.trim();
+              cont = cont.substring(0, cont.length - 1);
 
-            element
-                .querySelectorAll('td')[1]
-                .querySelectorAll('div')
-                .forEach((element) => cc.add(element.text));
+              var cc = List<String>();
 
-            dict[cont] = cc;
-          });
+              element
+                  .querySelectorAll('td')[1]
+                  .querySelectorAll('div')
+                  .forEach((element) => cc.add(element.text));
+
+              dict[cont] = cc;
+            });
+          }
           article.descripts = dict;
-        } catch (e) {}
+        } catch (e) {
+          print(e);
+        }
 
         result.add(article);
 
