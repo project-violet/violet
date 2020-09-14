@@ -36,6 +36,7 @@ class Settings {
   static bool rightToLeft;
   static bool isHorizontal;
   static bool scrollVertical;
+  static bool animation;
 
   // Download Options
   static String downloadBasePath;
@@ -179,6 +180,13 @@ class Settings {
           .setBool('scrollvertical', scrollVertical);
     }
 
+    animation = (await SharedPreferences.getInstance()).getBool('animation');
+    if (animation == null) {
+      animation = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('animation', animation);
+    }
+
     downloadBasePath =
         (await SharedPreferences.getInstance()).getString('downloadbasepath');
     if (downloadBasePath == null) {
@@ -280,6 +288,12 @@ class Settings {
     scrollVertical = nn;
     await (await SharedPreferences.getInstance())
         .setBool('scrollvertical', scrollVertical);
+  }
+
+  static Future<void> setAnimation(bool nn) async {
+    animation = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('animation', animation);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {
