@@ -436,7 +436,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 // );
                 _sliderOnChange = true;
                 await itemScrollController.scrollTo(
-                  index: next,
+                  index: next - 1,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   alignment: 0.12,
@@ -492,7 +492,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 // );
                 _sliderOnChange = true;
                 await itemScrollController.scrollTo(
-                  index: next,
+                  index: next - 1,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   alignment: 0.12,
