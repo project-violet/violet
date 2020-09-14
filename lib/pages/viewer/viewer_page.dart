@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
@@ -51,6 +52,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   List<bool> _loaded;
   List<double> _cachedHeight;
   ScrollController _scroll = ScrollController();
+  AutoScrollController _autoScrollController = AutoScrollController();
   int _prevPage = 1;
   double _opacity = 0.0;
   bool _disableBottom = false;
@@ -262,9 +264,15 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               padding: EdgeInsets.zero,
               itemCount: _pageInfo.uris.length,
               controller: _scroll,
+              // controller: _autoScrollController,
               cacheExtent: height * 2,
               itemBuilder: (context, index) {
-                return _networkImageItem(index);
+                return AutoScrollTag(
+                  key: ValueKey(index),
+                  controller: _autoScrollController,
+                  index: index,
+                  child: _networkImageItem(index),
+                );
               },
             ),
           ),
@@ -383,15 +391,24 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             var next = Settings.rightToLeft ? _prevPage - 1 : _prevPage + 1;
+            if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
-                _scroll.jumpTo(page2Offset(next) - 96);
+                _scroll.jumpTo(page2Offset(next - 1) - 96);
+                // await _autoScrollController.scrollToIndex(
+                //   next - 1,
+                //   preferPosition: AutoScrollPosition.middle,
+                // );
               } else {
                 await _scroll.animateTo(
-                  page2Offset(next) - 96,
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.bounceIn,
+                  page2Offset(next - 1) - 96,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                 );
+                // await _autoScrollController.scrollToIndex(
+                //   next - 1,
+                //   preferPosition: AutoScrollPosition.middle,
+                // );
               }
             } else {
               if (!Settings.animation) {
@@ -400,7 +417,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 _pageController.animateToPage(
                   next - 1,
                   duration: Duration(milliseconds: 200),
-                  curve: Curves.bounceIn,
+                  curve: Curves.easeInOut,
                 );
               }
             }
@@ -427,15 +444,24 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             var next = Settings.rightToLeft ? _prevPage + 1 : _prevPage - 1;
+            if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
-                _scroll.jumpTo(page2Offset(next) - 96);
+                _scroll.jumpTo(page2Offset(next - 1) - 96);
+                // await _autoScrollController.scrollToIndex(
+                // next - 1,
+                // preferPosition: AutoScrollPosition.middle,
+                // );
               } else {
                 await _scroll.animateTo(
-                  page2Offset(next) - 96,
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.bounceIn,
+                  page2Offset(next - 1) - 96,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
                 );
+                // await _autoScrollController.scrollToIndex(
+                //   next - 1,
+                //   preferPosition: AutoScrollPosition.middle,
+                // );
               }
             } else {
               if (!Settings.animation) {
@@ -444,7 +470,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 _pageController.animateToPage(
                   next - 1,
                   duration: Duration(milliseconds: 200),
-                  curve: Curves.bounceIn,
+                  curve: Curves.easeInOut,
                 );
               }
             }
