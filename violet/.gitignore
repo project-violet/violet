@@ -44,3 +44,4 @@ android/app/google-services.json
 *.d
 
 lib/server/salt.dart
+lib/game/*
