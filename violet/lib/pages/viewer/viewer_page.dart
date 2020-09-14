@@ -36,6 +36,7 @@ enum _ViewAppBarAction {
   toggleViewer,
   toggleRightToLeft,
   toggleScrollVertical,
+  toggleAnimation,
 }
 
 class _VerticalImageViewer extends StatefulWidget {
@@ -85,12 +86,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     _pageInfo = Provider.of<ViewerPageProvider>(context);
     _loaded = List<bool>.filled(_pageInfo.uris.length, false);
     _cachedHeight = List<double>.filled(_pageInfo.uris.length, -1);
-
-    for (var url in _pageInfo.uris) {
-      print(url);
-    }
-
-    print(_pageInfo.headers);
   }
 
   @override
@@ -159,6 +154,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   @override
   Widget build(BuildContext context) {
+    ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    if (_imageCache.currentSizeBytes >= 200 << 20 ||
+        _imageCache.currentSize >= 50) {
+      _imageCache.clear();
+      _imageCache.clearLiveImages();
+    }
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -216,6 +217,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 Settings.setScrollVertical(!Settings.scrollVertical);
                 setState(() {});
                 break;
+
+              case _ViewAppBarAction.toggleAnimation:
+                Settings.setAnimation(!Settings.animation);
+                setState(() {});
+                break;
             }
           },
           itemBuilder: (context) => [
@@ -232,6 +238,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               value: _ViewAppBarAction.toggleScrollVertical,
               enabled: Settings.isHorizontal,
               child: Text('Toggle Scroll Vertical'),
+            ),
+            PopupMenuItem(
+              value: _ViewAppBarAction.toggleAnimation,
+              child: Text('Toggle Animation'),
             ),
           ],
         ),
@@ -259,7 +269,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             ),
           ),
         ),
-        _touchArea(),
+        _touchAreaMiddle(),
+        _touchAreaLeft(),
+        _touchAreaRight(),
         !_disableBottom ? _bottomAppBar() : Container(),
       ],
     );
@@ -299,7 +311,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             ],
           ),
         ),
-        _touchArea(),
+        _touchAreaMiddle(),
+        _touchAreaLeft(),
+        _touchAreaRight(),
         !_disableBottom ? _bottomAppBar() : Container(),
       ],
     );
@@ -318,7 +332,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   bool _overlayOpend = false;
-  _touchArea() {
+  _touchAreaMiddle() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Align(
@@ -350,6 +364,94 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               });
             }
             _overlayOpend = !_overlayOpend;
+          },
+        ),
+      ),
+    );
+  }
+
+  _touchAreaLeft() {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        color: null,
+        width: width / 3,
+        height: height,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () async {
+            var next = Settings.rightToLeft ? _prevPage - 1 : _prevPage + 1;
+            if (!Settings.isHorizontal) {
+              if (!Settings.animation) {
+                _scroll.jumpTo(page2Offset(next) - 96);
+              } else {
+                await _scroll.animateTo(
+                  page2Offset(next) - 96,
+                  duration: Duration(milliseconds: 200),
+                  curve: Curves.bounceIn,
+                );
+              }
+            } else {
+              if (!Settings.animation) {
+                _pageController.jumpToPage(next - 1);
+              } else {
+                _pageController.animateToPage(
+                  next - 1,
+                  duration: Duration(milliseconds: 200),
+                  curve: Curves.bounceIn,
+                );
+              }
+            }
+            currentPage = next;
+            setState(() {
+              _prevPage = next;
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  _touchAreaRight() {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Container(
+        color: null,
+        width: width / 3,
+        height: height,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () async {
+            var next = Settings.rightToLeft ? _prevPage + 1 : _prevPage - 1;
+            if (!Settings.isHorizontal) {
+              if (!Settings.animation) {
+                _scroll.jumpTo(page2Offset(next) - 96);
+              } else {
+                await _scroll.animateTo(
+                  page2Offset(next) - 96,
+                  duration: Duration(milliseconds: 200),
+                  curve: Curves.bounceIn,
+                );
+              }
+            } else {
+              if (!Settings.animation) {
+                _pageController.jumpToPage(next - 1);
+              } else {
+                _pageController.animateToPage(
+                  next - 1,
+                  duration: Duration(milliseconds: 200),
+                  curve: Curves.bounceIn,
+                );
+              }
+            }
+            currentPage = next;
+            setState(() {
+              _prevPage = next;
+            });
           },
         ),
       ),
