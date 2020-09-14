@@ -10,6 +10,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
@@ -51,12 +52,15 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   Timer _clearTimer;
   List<bool> _loaded;
   List<double> _cachedHeight;
-  ScrollController _scroll = ScrollController();
-  AutoScrollController _autoScrollController = AutoScrollController();
+  // ScrollController _scroll = ScrollController();
+  // AutoScrollController _autoScrollController = AutoScrollController();
   int _prevPage = 1;
   double _opacity = 0.0;
   bool _disableBottom = false;
   PageController _pageController = PageController();
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
 
   @override
   void initState() {
@@ -70,14 +74,35 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
 
-    _scroll.addListener(() async {
-      currentPage = offset2Page(_scroll.offset);
-      if (_prevPage != currentPage) {
-        if (currentPage > 0) {
-          setState(() {
-            _prevPage = currentPage;
-          });
+    // _scroll.addListener(() async {
+    //   currentPage = offset2Page(_scroll.offset);
+    //   if (_prevPage != currentPage) {
+    //     if (currentPage > 0) {
+    //       setState(() {
+    //         _prevPage = currentPage;
+    //       });
+    //     }
+    //   }
+    // });
+
+    itemPositionsListener.itemPositions.addListener(() {
+      var v = itemPositionsListener.itemPositions.value;
+
+      var selected;
+
+      v.forEach((element) {
+        print(element.itemLeadingEdge);
+        if (element.itemLeadingEdge <= 0.125) {
+          selected = element.index;
         }
+      });
+
+      if (selected != null &&
+          _prevPage != selected + 1 &&
+          (_prevPage - (selected as int)).toInt().abs() <= 1) {
+        setState(() {
+          _prevPage = selected + 1;
+        });
       }
     });
   }
@@ -92,7 +117,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   @override
   void dispose() {
-    _scroll.dispose();
+    // _scroll.dispose();
     _clearTimer.cancel();
     PaintingBinding.instance.imageCache.clear();
     _pageInfo.uris.forEach((element) async {
@@ -125,7 +150,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                     .replaceAll('%s', e.lastPage().toString()),
                 Translations.of(context).trans('record'))) {
               if (!Settings.isHorizontal) {
-                _scroll.jumpTo(page2Offset(e.lastPage() - 1));
+                // _scroll.jumpTo(page2Offset(e.lastPage() - 1));
+                itemScrollController.jumpTo(
+                    index: e.lastPage() - 1, alignment: 0.12);
               } else {
                 _pageController.jumpToPage(e.lastPage() - 1);
               }
@@ -203,7 +230,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       new PageController(initialPage: _prevPage - 1);
                 } else {
                   Future.delayed(Duration(milliseconds: 100)).then((value) {
-                    _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
+                    // _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
+                    itemScrollController.jumpTo(
+                        index: _prevPage - 1, alignment: 0.12);
                   });
                 }
                 setState(() {});
@@ -260,19 +289,17 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           minScale: 1.0,
           child: Container(
             color: const Color(0xff444444),
-            child: ListView.builder(
+            child: ScrollablePositionedList.builder(
               padding: EdgeInsets.zero,
               itemCount: _pageInfo.uris.length,
-              controller: _scroll,
+              // controller: _scroll,
               // controller: _autoScrollController,
-              cacheExtent: height * 2,
+              // cacheExtent: height * 2,
+              itemScrollController: itemScrollController,
+              itemPositionsListener: itemPositionsListener,
+              minCacheExtent: height * 2,
               itemBuilder: (context, index) {
-                return AutoScrollTag(
-                  key: ValueKey(index),
-                  controller: _autoScrollController,
-                  index: index,
-                  child: _networkImageItem(index),
-                );
+                return _networkImageItem(index);
               },
             ),
           ),
@@ -394,21 +421,20 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
-                _scroll.jumpTo(page2Offset(next - 1) - 96);
-                // await _autoScrollController.scrollToIndex(
-                //   next - 1,
-                //   preferPosition: AutoScrollPosition.middle,
-                // );
+                // _scroll.jumpTo(page2Offset(next - 1) - 96);
+                itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
               } else {
-                await _scroll.animateTo(
-                  page2Offset(next - 1) - 96,
+                // await _scroll.animateTo(
+                //   page2Offset(next - 1) - 96,
+                //   duration: Duration(milliseconds: 300),
+                //   curve: Curves.easeInOut,
+                // );
+                await itemScrollController.scrollTo(
+                  index: next,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
+                  alignment: 0.12,
                 );
-                // await _autoScrollController.scrollToIndex(
-                //   next - 1,
-                //   preferPosition: AutoScrollPosition.middle,
-                // );
               }
             } else {
               if (!Settings.animation) {
@@ -447,21 +473,20 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
-                _scroll.jumpTo(page2Offset(next - 1) - 96);
-                // await _autoScrollController.scrollToIndex(
-                // next - 1,
-                // preferPosition: AutoScrollPosition.middle,
-                // );
+                // _scroll.jumpTo(page2Offset(next - 1) - 96);
+                itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
               } else {
-                await _scroll.animateTo(
-                  page2Offset(next - 1) - 96,
+                // await _scroll.animateTo(
+                //   page2Offset(next - 1) - 96,
+                //   duration: Duration(milliseconds: 300),
+                //   curve: Curves.easeInOut,
+                // );
+                await itemScrollController.scrollTo(
+                  index: next,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
+                  alignment: 0.12,
                 );
-                // await _autoScrollController.scrollToIndex(
-                //   next - 1,
-                //   preferPosition: AutoScrollPosition.middle,
-                // );
               }
             } else {
               if (!Settings.animation) {
@@ -493,7 +518,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           _loaded[index] = true;
           _cachedHeight[index] = width / snapshot.data.aspectRatio;
         }
-        return CachedNetworkImage(
+        return
+            // SizedBox(
+            //   height: _loaded[index] ? _cachedHeight[index] : 300,
+            //   child:
+            CachedNetworkImage(
           imageUrl: _pageInfo.uris[index],
           httpHeaders: _pageInfo.headers,
           fit: BoxFit.cover,
@@ -512,6 +541,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               ),
             );
           },
+          // ),
         );
       },
     );
@@ -563,7 +593,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 activeColor: Settings.majorColor,
                 onChanged: (value) {
                   if (!Settings.isHorizontal) {
-                    _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
+                    // _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
+                    itemScrollController.jumpTo(
+                        index: _prevPage - 1, alignment: 0.12);
                   } else {
                     _pageController.jumpToPage(value.toInt() - 1);
                   }

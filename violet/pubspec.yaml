@@ -78,6 +78,7 @@ dependencies:
   pimp_my_button: ^1.0.0
   provider:
   scroll_to_index:
+  scrollable_positioned_list:
   shared_preferences:
   sqflite:
   synchronized:
