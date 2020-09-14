@@ -61,6 +61,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
+  bool _sliderOnChange = false;
 
   @override
   void initState() {
@@ -86,20 +87,21 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     // });
 
     itemPositionsListener.itemPositions.addListener(() {
-      var v = itemPositionsListener.itemPositions.value;
-
+      if (_sliderOnChange) return;
+      var v = itemPositionsListener.itemPositions.value.toList();
       var selected;
 
-      v.forEach((element) {
-        print(element.itemLeadingEdge);
-        if (element.itemLeadingEdge <= 0.125) {
-          selected = element.index;
-        }
-      });
+      v.sort((x, y) => x.itemLeadingEdge.compareTo(y.itemLeadingEdge));
 
-      if (selected != null &&
-          _prevPage != selected + 1 &&
-          (_prevPage - (selected as int)).toInt().abs() <= 1) {
+      for (var e in v) {
+        if (e.itemLeadingEdge <= 0.125) {
+          selected = e.index;
+        } else {
+          break;
+        }
+      }
+
+      if (selected != null && _prevPage != selected + 1) {
         setState(() {
           _prevPage = selected + 1;
         });
@@ -229,10 +231,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   _pageController =
                       new PageController(initialPage: _prevPage - 1);
                 } else {
+                  var npage = _prevPage;
+                  _sliderOnChange = true;
                   Future.delayed(Duration(milliseconds: 100)).then((value) {
                     // _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
                     itemScrollController.jumpTo(
-                        index: _prevPage - 1, alignment: 0.12);
+                        index: npage - 1, alignment: 0.12);
+                    _sliderOnChange = false;
                   });
                 }
                 setState(() {});
@@ -429,12 +434,16 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 //   duration: Duration(milliseconds: 300),
                 //   curve: Curves.easeInOut,
                 // );
+                _sliderOnChange = true;
                 await itemScrollController.scrollTo(
                   index: next,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   alignment: 0.12,
                 );
+                Future.delayed(Duration(milliseconds: 300)).then((value) {
+                  _sliderOnChange = false;
+                });
               }
             } else {
               if (!Settings.animation) {
@@ -481,12 +490,16 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 //   duration: Duration(milliseconds: 300),
                 //   curve: Curves.easeInOut,
                 // );
+                _sliderOnChange = true;
                 await itemScrollController.scrollTo(
                   index: next,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   alignment: 0.12,
                 );
+                Future.delayed(Duration(milliseconds: 300)).then((value) {
+                  _sliderOnChange = false;
+                });
               }
             } else {
               if (!Settings.animation) {
@@ -591,6 +604,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 divisions: _pageInfo.uris.length,
                 inactiveColor: Settings.majorColor.withOpacity(0.7),
                 activeColor: Settings.majorColor,
+                onChangeStart: (value) {
+                  _sliderOnChange = true;
+                },
+                onChangeEnd: (value) {
+                  _sliderOnChange = false;
+                },
                 onChanged: (value) {
                   if (!Settings.isHorizontal) {
                     // _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
