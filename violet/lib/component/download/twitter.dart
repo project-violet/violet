@@ -200,3 +200,181 @@ class TwitterAPI {
     }
   }
 }
+
+class TwitterManager extends Downloadable {
+  RegExp urlMatcher;
+
+  TwitterManager() {
+    urlMatcher = RegExp(
+        r'^https?://(www\.|mobile\.)?twitter.com/(?<id>.*?)(/(?<what>\w+)?(/(?<x>.*?)?)?)?$');
+  }
+
+  @override
+  bool acceptURL(String url) {
+    return urlMatcher.stringMatch(url) == url;
+  }
+
+  @override
+  String defaultFormat() {
+    return "%(extractor)s/%(user)s (%(account)s)/%(file)s.%(ext)s";
+  }
+
+  @override
+  String saveOneFormat() {}
+
+  @override
+  String fav() {
+    return 'https://abs.twimg.com/responsive-web/client-web/icon-ios.8ea219d5.png';
+  }
+
+  @override
+  bool loginRequire() {
+    return false;
+  }
+
+  @override
+  bool logined() {
+    return false;
+  }
+
+  @override
+  String name() {
+    return 'twitter';
+  }
+
+  @override
+  Future<void> setSession(String id, String pwd) async {}
+
+  @override
+  Future<bool> tryLogin() async {
+    return true;
+  }
+
+  @override
+  bool supportCommunity() {
+    return false;
+  }
+
+  @override
+  bool acceptCommunity(String url) {
+    return false;
+  }
+
+  @override
+  Future<List<DownloadTask>> createTask(
+      String url, GeneralDownloadProgress gdp) async {
+    var match = urlMatcher.allMatches(url);
+
+    var result = List<DownloadTask>();
+
+    var id = match.first.namedGroup('id');
+
+    await TwitterAPI.init();
+
+    var info = await TwitterAPI.userByScreenName(id);
+    var name = info['legacy']['name'];
+    var profile = (info['legacy']['profile_image_url_https'] as String)
+        .replaceAll('_normal.', '_400x400.');
+    var ss = TwitterAPI.pagination('2/timeline/media/${info['rest_id']}.json');
+    const retweets = false;
+    const replies = false;
+    const quoted = false;
+
+    gdp.simpleInfoCallback('$name ($id)');
+    gdp.thumbnailCallback(profile, jsonEncode({'Referer': url}));
+
+    var i = 0;
+
+    await ss.forEach((element) {
+      if (!retweets && element.containsKey('retweeted_status_id_str')) return;
+      if (!replies && element.containsKey('in_reply_to_user_id_str')) return;
+      if (!quoted && element.containsKey('quoted')) return;
+
+      // extract twitpic
+      // https://github.com/mikf/gallery-dl/blob/2b88c90f6f128fe421e9e2bb25d85e1f798b73ca/gallery_dl/extractor/twitter.py#L62
+      if (!element.containsKey('extended_entities')) return;
+
+      for (var media in element['extended_entities']['media']) {
+        if (media.containsKey('video_info')) {
+          var info = media['video_info']['variants'];
+          var ll = (info as List<dynamic>)
+              .where((element) => element.containsKey('bitrate'))
+              .toList();
+          ll.sort((x, y) => y['bitrate'].compareTo(x['bitrate']));
+
+          if (ll[0]['url'].contains('.mp4')) {
+            result.add(
+              DownloadTask(
+                url: ll[0]['url'],
+                referer: url,
+                format: FileNameFormat(
+                  user: name,
+                  account: id,
+                  filenameWithoutExtension: intToString(i, pad: 3),
+                  extension: 'mp4',
+                  extractor: 'twitter',
+                ),
+              ),
+            );
+            i++;
+          }
+
+          // m3u8 is not support ㅠㅠ
+        } else if (media.containsKey('media_url_https')) {
+          var url = media['media_url_https'] + ':orig';
+          result.add(
+            DownloadTask(
+              url: url,
+              referer: url,
+              format: FileNameFormat(
+                user: name,
+                account: id,
+                filenameWithoutExtension: intToString(i, pad: 3),
+                extension: media['media_url'].split('.').last,
+                extractor: 'twitter',
+              ),
+            ),
+          );
+          i++;
+        } else {
+          var url = media['media_url'] + ':orig';
+          result.add(
+            DownloadTask(
+              url: url,
+              referer: url,
+              format: FileNameFormat(
+                user: name,
+                account: id,
+                filenameWithoutExtension: intToString(i, pad: 3),
+                extension: media['media_url'].split('.').last,
+                extractor: 'twitter',
+              ),
+            ),
+          );
+          i++;
+        }
+      }
+      gdp.progressCallback(result.length, 0);
+    });
+
+    result.forEach((element) {
+      print(element.url);
+    });
+
+    return result;
+  }
+
+  // https://stackoverflow.com/questions/15193983/is-there-a-built-in-method-to-pad-a-string
+  static String intToString(int i, {int pad: 0}) {
+    var str = i.toString();
+    var paddingToAdd = pad - str.length;
+    return (paddingToAdd > 0)
+        ? "${new List.filled(paddingToAdd, '0').join('')}$i"
+        : str;
+  }
+
+  @override
+  String communityName() {
+    return null;
+  }
+}

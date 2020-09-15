@@ -7,6 +7,7 @@ import 'package:violet/component/download/gelbooru.dart';
 import 'package:violet/component/download/hitomi.dart';
 import 'package:violet/component/download/instagram.dart';
 import 'package:violet/component/download/pixiv.dart';
+import 'package:violet/component/download/twitter.dart';
 
 enum DownloaderType {
   // Gelbooru, Danbooru, ...
@@ -279,6 +280,7 @@ class ExtractorManager {
       GelbooruManager(),
       InstagramManager(),
       HitomiDonwloadManager(),
+      TwitterManager(),
     ];
   }
 
