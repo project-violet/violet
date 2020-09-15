@@ -2,6 +2,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -304,7 +305,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               itemPositionsListener: itemPositionsListener,
               minCacheExtent: height * 2,
               itemBuilder: (context, index) {
-                return _networkImageItem(index);
+                if (_pageInfo.useWeb)
+                  return _networkImageItem(index);
+                else if (_pageInfo.useFileSystem)
+                  return _storageImageItem(index);
               },
             ),
           ),
@@ -561,6 +565,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           // ),
         );
       },
+    );
+  }
+
+  _storageImageItem(index) {
+    return Image.file(
+      File(_pageInfo.uris[index]),
+      fit: BoxFit.cover,
     );
   }
 
