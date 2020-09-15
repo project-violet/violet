@@ -10,7 +10,73 @@ import 'package:path/path.dart' as path;
 import 'package:crypto/crypto.dart';
 
 class TwitterAPI {
-  static Future<String> userByScreenName(String name) async {
+  static String csrf;
+  static Map<String, dynamic> header;
+  static Map<String, dynamic> param;
+  static Map<String, dynamic> cookie;
+
+  static Future<void> init() async {
+    if (param != null) return;
+
+    csrf = md5
+        .convert(utf8.encode(
+            (DateTime.now().microsecondsSinceEpoch / 1000000).toString()))
+        .toString();
+    var hheader = {
+      'authorization':
+          'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+      'x-twitter-client-language': 'en',
+      'x-twitter-active-user': 'yes',
+      "x-guest-token": null,
+      "x-csrf-token": csrf,
+      'Origin': 'https://twitter.com',
+      'Referer': 'https://twitter.com',
+    };
+    var url = 'https://api.twitter.com/1.1/guest/activate.json';
+    var result = await http.post(url, headers: hheader);
+    hheader['x-guest-token'] = jsonDecode(result.body)['guest_token'];
+    header = hheader;
+
+    cookie = {
+      'ct0': csrf,
+      'gt': hheader['x-guest-token'],
+    };
+
+    hheader['cookie'] = cookie.entries
+            .map((e) => '${e.key}=${Uri.encodeQueryComponent(e.value)}')
+            .join('; ') +
+        ';';
+
+    param = {
+      "include_profile_interstitial_type": "1",
+      "include_blocking": "1",
+      "include_blocked_by": "1",
+      "include_followed_by": "1",
+      "include_want_retweets": "1",
+      "include_mute_edge": "1",
+      "include_can_dm": "1",
+      "include_can_media_tag": "1",
+      "skip_status": "1",
+      "cards_platform": "Web-12",
+      "include_cards": "1",
+      "include_composer_source": "true",
+      "include_ext_alt_text": "true",
+      "include_reply_count": "1",
+      "tweet_mode": "extended",
+      "include_entities": "true",
+      "include_user_entities": "true",
+      "include_ext_media_color": "true",
+      "include_ext_media_availability": "true",
+      "send_error_codes": "true",
+      "simple_quoted_tweet": "true",
+      "count": "100",
+      // "cursor": null,
+      "ext": "mediaStats,highlightedLabel,cameraMoment",
+      "include_quote_count": "true",
+    };
+  }
+
+  static Future<dynamic> userByScreenName(String name) async {
     var json = {
       "screen_name": name.toLowerCase(),
       "withHighlightedLabel": true
@@ -23,7 +89,7 @@ class TwitterAPI {
               'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
         });
 
-    return result.body;
+    return jsonDecode(result.body)['data']['user'];
   }
 
   static Future<String> timeline(String restId) async {
@@ -52,5 +118,85 @@ class TwitterAPI {
         });
 
     return result.body;
+  }
+
+  static Stream<dynamic> pagination(String postfix) async* {
+    var params = Map<String, dynamic>.from(param);
+    var tweet;
+    var cursor;
+
+    while (true) {
+      tweet = cursor = null;
+
+      var url = 'https://api.twitter.com/' + postfix;
+      url += '?' +
+          params.entries
+              .map((e) =>
+                  '${e.key}=${e.value != null ? Uri.encodeQueryComponent(e.value) : ''}')
+              .join('&');
+      var res = (await http.get(
+        url,
+        headers: header,
+      ))
+          .body;
+      var data = jsonDecode(res);
+
+      var instr = data['timeline']['instructions'];
+
+      if (instr == false) break;
+      var tweets = data['globalObjects']['tweets'];
+      var users = data['globalObjects']['users'];
+
+      for (var entry in instr[0]['addEntries']['entries']) {
+        if (entry['entryId'].startsWith('tweet-')) {
+          try {
+            tweet = tweets[entry['content']['item']['content']['tweet']['id']];
+          } catch (e) {
+            continue;
+          }
+
+          if (tweet == null) continue;
+
+          tweet['user'] = users[tweet['user_id_str']];
+
+          if (tweet.containsKey('retweeted_status_id_str')) {
+            var retweet = tweets[tweet['retweeted_status_id_str']];
+            if (retweet != null) {
+              tweet['author'] = users[retweet['user_id_str']];
+            }
+          }
+
+          yield tweet;
+
+          if (tweet.containsKey("quoted_status_id_str")) {
+            var quoted = tweets[tweet['quoted_status_id_str']];
+            if (quoted != null) {
+              quoted['author'] = users[quoted['user_id_str']];
+              quoted['user'] = tweet['user'];
+              quoted['quoted'] = true;
+              yield quoted;
+            }
+          }
+        } else if (entry['entryId'].startsWith('cursor-bottom-')) {
+          cursor = entry['content']['operation']['cursor'];
+          if (!cursor.containsKey('stopOnEmptyResponse')) {
+            tweet = true;
+          }
+          cursor = cursor['value'];
+        }
+      }
+
+      if (instr.last.containsKey('replaceEntry')) {
+        cursor = (instr.last['replaceEntry']['entry']['content']['operation']
+            ['cursor']['value']);
+      }
+
+      print(cursor);
+      print(tweet);
+
+      if (cursor == null || tweet == null) return;
+
+      params['cursor'] = cursor;
+    }
   }
 }
