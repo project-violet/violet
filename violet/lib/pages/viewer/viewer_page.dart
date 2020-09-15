@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
@@ -51,10 +50,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     with SingleTickerProviderStateMixin {
   ViewerPageProvider _pageInfo;
   Timer _clearTimer;
-  List<bool> _loaded;
-  List<double> _cachedHeight;
-  // ScrollController _scroll = ScrollController();
-  // AutoScrollController _autoScrollController = AutoScrollController();
   int _prevPage = 1;
   double _opacity = 0.0;
   bool _disableBottom = false;
@@ -68,24 +63,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   void initState() {
     super.initState();
 
-    // _clearTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-    //   imageCache.clearLiveImages();
-    //   imageCache.clear();
-    // });
-
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
-
-    // _scroll.addListener(() async {
-    //   currentPage = offset2Page(_scroll.offset);
-    //   if (_prevPage != currentPage) {
-    //     if (currentPage > 0) {
-    //       setState(() {
-    //         _prevPage = currentPage;
-    //       });
-    //     }
-    //   }
-    // });
 
     itemPositionsListener.itemPositions.addListener(() {
       if (_sliderOnChange) return;
@@ -114,13 +93,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    _loaded = List<bool>.filled(_pageInfo.uris.length, false);
-    _cachedHeight = List<double>.filled(_pageInfo.uris.length, -1);
   }
 
   @override
   void dispose() {
-    // _scroll.dispose();
     if (_clearTimer != null) _clearTimer.cancel();
     PaintingBinding.instance.imageCache.clear();
     _pageInfo.uris.forEach((element) async {
@@ -162,26 +138,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             }
           }
         }));
-  }
-
-  int offset2Page(double offset) {
-    double xx = -96;
-    for (int i = 0; i < _cachedHeight.length; i++) {
-      xx += _loaded[i] ? _cachedHeight[i] : 300;
-      // xx += 4;
-      if (offset < xx) {
-        return i + 1;
-      }
-    }
-    return _cachedHeight.length;
-  }
-
-  double page2Offset(int page) {
-    double xx = 0.0;
-    for (int i = 0; i < page; i++) {
-      xx += _loaded[i] ? _cachedHeight[i] : 300;
-    }
-    return xx;
   }
 
   @override
@@ -226,7 +182,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           onSelected: (action) {
             switch (action) {
               case _ViewAppBarAction.toggleViewer:
-                // Navigator.pushNamed(context, SettingScreen.routeName);
                 Settings.setIsHorizontal(!Settings.isHorizontal);
                 if (Settings.isHorizontal) {
                   _pageController =
@@ -235,7 +190,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   var npage = _prevPage;
                   _sliderOnChange = true;
                   Future.delayed(Duration(milliseconds: 100)).then((value) {
-                    // _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
                     itemScrollController.jumpTo(
                         index: npage - 1, alignment: 0.12);
                     _sliderOnChange = false;
@@ -245,7 +199,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 break;
 
               case _ViewAppBarAction.toggleRightToLeft:
-                // tryLaunch(client.getImageUrl(image.id));
                 Settings.setRightToLeft(!Settings.rightToLeft);
                 setState(() {});
                 break;
@@ -298,9 +251,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             child: ScrollablePositionedList.builder(
               padding: EdgeInsets.zero,
               itemCount: _pageInfo.uris.length,
-              // controller: _scroll,
-              // controller: _autoScrollController,
-              // cacheExtent: height * 2,
               itemScrollController: itemScrollController,
               itemPositionsListener: itemPositionsListener,
               minCacheExtent: height * 2,
@@ -432,14 +382,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
-                // _scroll.jumpTo(page2Offset(next - 1) - 96);
                 itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
               } else {
-                // await _scroll.animateTo(
-                //   page2Offset(next - 1) - 96,
-                //   duration: Duration(milliseconds: 300),
-                //   curve: Curves.easeInOut,
-                // );
                 _sliderOnChange = true;
                 await itemScrollController.scrollTo(
                   index: next - 1,
@@ -490,14 +434,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
-                // _scroll.jumpTo(page2Offset(next - 1) - 96);
                 itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
               } else {
-                // await _scroll.animateTo(
-                //   page2Offset(next - 1) - 96,
-                //   duration: Duration(milliseconds: 300),
-                //   curve: Curves.easeInOut,
-                // );
                 _sliderOnChange = true;
                 await itemScrollController.scrollTo(
                   index: next - 1,
@@ -531,38 +469,23 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   _networkImageItem(index) {
-    final width = MediaQuery.of(context).size.width;
-    return FutureBuilder(
-      future: _calculateImageDimension(_pageInfo.uris[index]),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          _loaded[index] = true;
-          _cachedHeight[index] = width / snapshot.data.aspectRatio;
-        }
-        return
-            // SizedBox(
-            //   height: _loaded[index] ? _cachedHeight[index] : 300,
-            //   child:
-            CachedNetworkImage(
-          imageUrl: _pageInfo.uris[index],
-          httpHeaders: _pageInfo.headers,
-          fit: BoxFit.cover,
-          fadeInDuration: Duration(microseconds: 500),
-          fadeInCurve: Curves.easeIn,
-          // memCacheWidth: width.toInt(),
-          progressIndicatorBuilder: (context, string, progress) {
-            return SizedBox(
-              height: 300,
-              child: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(value: progress.progress),
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-            );
-          },
-          // ),
+    return CachedNetworkImage(
+      imageUrl: _pageInfo.uris[index],
+      httpHeaders: _pageInfo.headers,
+      fit: BoxFit.cover,
+      fadeInDuration: Duration(microseconds: 500),
+      fadeInCurve: Curves.easeIn,
+      // memCacheWidth: width.toInt(),
+      progressIndicatorBuilder: (context, string, progress) {
+        return SizedBox(
+          height: 300,
+          child: Center(
+            child: SizedBox(
+              child: CircularProgressIndicator(value: progress.progress),
+              width: 30,
+              height: 30,
+            ),
+          ),
         );
       },
     );
@@ -573,22 +496,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       File(_pageInfo.uris[index]),
       fit: BoxFit.cover,
     );
-  }
-
-  Future<Size> _calculateImageDimension(String url) async {
-    Completer<Size> completer = Completer();
-    Image image = new Image(
-        image: CachedNetworkImageProvider(url, headers: _pageInfo.headers));
-    image.image.resolve(ImageConfiguration()).addListener(
-      ImageStreamListener(
-        (ImageInfo image, bool synchronousCall) {
-          var myImage = image.image;
-          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-          if (!completer.isCompleted) completer.complete(size);
-        },
-      ),
-    );
-    return completer.future;
   }
 
   _bottomAppBar() {
@@ -604,7 +511,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 (48)),
         child: Container(
           alignment: Alignment.bottomCenter,
-          // padding: EdgeInsets.only(top: height - bottom - 48),
           color: Colors.black.withOpacity(0.2),
           height: 48,
           child: Column(
@@ -627,7 +533,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 },
                 onChanged: (value) {
                   if (!Settings.isHorizontal) {
-                    // _scroll.jumpTo(page2Offset(_prevPage - 1) - 96);
                     itemScrollController.jumpTo(
                         index: _prevPage - 1, alignment: 0.12);
                   } else {
