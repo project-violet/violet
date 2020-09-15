@@ -32,7 +32,6 @@ import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
-import 'package:violet/pages/test/test_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
@@ -538,12 +537,12 @@ class _SettingsPageState extends State<SettingsPage>
                     ),
                     onTap: () async {
                       if (kDebugMode) {
-                        Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => TestPage(),
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   CupertinoPageRoute(
+                        //     builder: (context) => TestPage(),
+                        //   ),
+                        // );
                       } else {
                         await Dialogs.okDialog(context,
                             'Developer tools can only be run in debug mode.');
