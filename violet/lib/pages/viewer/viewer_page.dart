@@ -120,7 +120,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   @override
   void dispose() {
     // _scroll.dispose();
-    _clearTimer.cancel();
+    if (_clearTimer != null) _clearTimer.cancel();
     PaintingBinding.instance.imageCache.clear();
     _pageInfo.uris.forEach((element) async {
       await CachedNetworkImageProvider(element).evict();
@@ -422,7 +422,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
-            var next = Settings.rightToLeft ? _prevPage - 1 : _prevPage + 1;
+            var next = Settings.rightToLeft ^ Settings.isHorizontal
+                ? _prevPage - 1
+                : _prevPage + 1;
             if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
@@ -478,7 +480,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
-            var next = Settings.rightToLeft ? _prevPage + 1 : _prevPage - 1;
+            var next = Settings.rightToLeft ^ Settings.isHorizontal
+                ? _prevPage + 1
+                : _prevPage - 1;
             if (next < 1 || next > _pageInfo.uris.length) return;
             if (!Settings.isHorizontal) {
               if (!Settings.animation) {
