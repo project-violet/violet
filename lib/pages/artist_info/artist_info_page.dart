@@ -191,7 +191,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
     var query = HitomiManager.translate2query(
         (isGroup ? 'group:' : isUploader ? 'uploader:' : 'artist:') +
-            '${artist.replaceAll(' ', '_')}' +
+            '${artist.replaceAll(' ', '_')} ' +
             Settings.includeTags +
             ' ' +
             Settings.excludeTags
@@ -199,9 +199,14 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 .map((e) => '-$e')
                 .join(' '));
 
+    print(query);
+
     // DateTime dt = DateTime.now();
     QueryManager qm = await QueryManager.query(query + ' ORDER BY Id DESC');
     // print((DateTime.now().difference(dt)).inSeconds);
+    qm.results.forEach((element) {
+      print(element.result);
+    });
     return qm.results;
   }
 
