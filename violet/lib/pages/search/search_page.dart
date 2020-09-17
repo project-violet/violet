@@ -120,7 +120,7 @@ class _SearchPageState extends State<SearchPage>
             SliverPersistentHeader(
               // pinned: true,
               floating: true,
-              delegate: SearchBarSliver(
+              delegate: AnimatedOpacitySliver(
                 minExtent: 64 + 12.0,
                 maxExtent: 64.0 + 12,
                 searchBar: Stack(
