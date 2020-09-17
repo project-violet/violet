@@ -6,8 +6,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class SearchBarSliver implements SliverPersistentHeaderDelegate {
-  SearchBarSliver({this.minExtent, @required this.maxExtent, this.searchBar});
+class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
+  AnimatedOpacitySliver(
+      {this.minExtent, @required this.maxExtent, this.searchBar});
   final double minExtent;
   final double maxExtent;
 

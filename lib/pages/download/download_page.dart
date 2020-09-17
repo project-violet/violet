@@ -71,7 +71,7 @@ class _DownloadPageState extends State<DownloadPage>
           slivers: <Widget>[
             SliverPersistentHeader(
               floating: true,
-              delegate: SearchBarSliver(
+              delegate: AnimatedOpacitySliver(
                 minExtent: 64 + 12.0,
                 maxExtent: 64.0 + 12,
                 searchBar: Stack(

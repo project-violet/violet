@@ -320,6 +320,7 @@ class HitomiManager {
   }
 
   static String translate2query(String tokens) {
+    print(tokens);
     tokens = tokens.trim();
     final nn = int.tryParse(tokens.split(' ')[0]);
     if (nn != null) {
@@ -415,6 +416,7 @@ class HitomiManager {
         } else if (split[i + 1] != ')') where += ' AND ';
       }
     }
+    print(where);
 
     return 'SELECT * FROM HitomiColumnModel WHERE $where AND ExistOnHitomi=1';
   }
