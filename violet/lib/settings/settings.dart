@@ -37,6 +37,7 @@ class Settings {
   static bool isHorizontal;
   static bool scrollVertical;
   static bool animation;
+  static bool padding;
 
   // Download Options
   static String downloadBasePath;
@@ -187,6 +188,12 @@ class Settings {
           .setBool('animation', animation);
     }
 
+    padding = (await SharedPreferences.getInstance()).getBool('padding');
+    if (padding == null) {
+      padding = false;
+      await (await SharedPreferences.getInstance()).setBool('padding', padding);
+    }
+
     downloadBasePath =
         (await SharedPreferences.getInstance()).getString('downloadbasepath');
     if (downloadBasePath == null) {
@@ -294,6 +301,11 @@ class Settings {
     animation = nn;
     await (await SharedPreferences.getInstance())
         .setBool('animation', animation);
+  }
+
+  static Future<void> setPadding(bool nn) async {
+    padding = nn;
+    await (await SharedPreferences.getInstance()).setBool('padding', padding);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {
