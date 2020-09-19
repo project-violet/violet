@@ -39,6 +39,7 @@ enum _ViewAppBarAction {
   toggleRightToLeft,
   toggleScrollVertical,
   toggleAnimation,
+  togglePadding,
 }
 
 class _VerticalImageViewer extends StatefulWidget {
@@ -212,6 +213,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 Settings.setAnimation(!Settings.animation);
                 setState(() {});
                 break;
+
+              case _ViewAppBarAction.togglePadding:
+                Settings.setPadding(!Settings.padding);
+                setState(() {});
+                break;
             }
           },
           itemBuilder: (context) => [
@@ -232,6 +238,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             PopupMenuItem(
               value: _ViewAppBarAction.toggleAnimation,
               child: Text('Toggle Animation'),
+            ),
+            PopupMenuItem(
+              value: _ViewAppBarAction.togglePadding,
+              child: Text('Toggle Padding'),
             ),
           ],
         ),
@@ -255,10 +265,24 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               itemPositionsListener: itemPositionsListener,
               minCacheExtent: height * 2,
               itemBuilder: (context, index) {
-                if (_pageInfo.useWeb)
-                  return _networkImageItem(index);
-                else if (_pageInfo.useFileSystem)
-                  return _storageImageItem(index);
+                if (!Settings.padding) {
+                  if (_pageInfo.useWeb)
+                    return _networkImageItem(index);
+                  else if (_pageInfo.useFileSystem)
+                    return _storageImageItem(index);
+                } else {
+                  if (_pageInfo.useWeb)
+                    return Padding(
+                      child: _networkImageItem(index),
+                      padding: EdgeInsets.all(4),
+                    );
+                  else if (_pageInfo.useFileSystem)
+                    return Padding(
+                      child: _storageImageItem(index),
+                      padding: EdgeInsets.all(4),
+                    );
+                  ;
+                }
               },
             ),
           ),
