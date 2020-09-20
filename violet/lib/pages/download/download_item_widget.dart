@@ -175,6 +175,29 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         return;
       }
 
+      // Files and Path
+      var files = tasks
+          .map((e) => join(Settings.downloadBasePath,
+              e.format.formatting(extractor.defaultFormat())))
+          .toList();
+      result['Files'] = jsonEncode(files);
+      // Extract Super Path
+      var cp = dirname(files[0]).split('/');
+      var vp = cp.length;
+      for (int i = 1; i < files.length; i++) {
+        var tp = dirname(files[i]).split('/');
+        for (int i = 0; i < vp; i++) {
+          if (cp[i] != tp[i]) {
+            vp = i;
+            break;
+          }
+        }
+      }
+      var pp = cp.take(vp).join('/');
+      result['Path'] = pp;
+      widget.item.result = result;
+      await widget.item.update();
+
       // Download
       var _timer =
           new Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
