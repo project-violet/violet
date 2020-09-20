@@ -30,6 +30,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
+import 'package:violet/pages/settings/route.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -657,7 +658,12 @@ class _SettingsPageState extends State<SettingsPage>
                     ),
                     title: Text(Translations.of(context).trans('routing_rule')),
                     trailing: Icon(Icons.keyboard_arrow_right),
-                    onTap: () {},
+                    onTap: () async {
+                      await showDialog(
+                        context: context,
+                        child: RouteDialog(),
+                      );
+                    },
                   ),
                   _buildDivider(),
                   InkWell(
