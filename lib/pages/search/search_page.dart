@@ -53,6 +53,8 @@ class _SearchPageState extends State<SearchPage>
   int eventCalled = 0;
   bool whenTopScroll = false;
 
+  DateTime datetime = DateTime.now();
+
   @override
   void initState() {
     super.initState();
@@ -519,8 +521,9 @@ class _SearchPageState extends State<SearchPage>
                               showDetail: false,
                               addBottomPadding: false,
                               width: (windowWidth - 4.0) / mm,
-                              thumbnailTag:
-                                  'thumbnail' + filtered[index].id().toString(),
+                              thumbnailTag: 'thumbnail' +
+                                  filtered[index].id().toString() +
+                                  datetime.toString(),
                             ),
                             child: ArticleListItemVerySimpleWidget(),
                           ),
@@ -545,7 +548,9 @@ class _SearchPageState extends State<SearchPage>
                     showDetail: Settings.searchResultType == 3,
                     queryResult: filtered[index],
                     width: windowWidth - 4.0,
-                    thumbnailTag: 'thumbnail' + filtered[index].id().toString(),
+                    thumbnailTag: 'thumbnail' +
+                        filtered[index].id().toString() +
+                        datetime.toString(),
                   ),
                   child: ArticleListItemVerySimpleWidget(),
                 ),

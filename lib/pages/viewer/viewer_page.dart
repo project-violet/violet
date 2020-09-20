@@ -277,17 +277,17 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   if (_pageInfo.useWeb)
                     return Padding(
                       child: _networkImageItem(index),
-                      padding: EdgeInsets.all(4),
+                      padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
                     );
                   else if (_pageInfo.useFileSystem)
                     return Padding(
                       child: _storageImageItem(index),
-                      padding: EdgeInsets.all(4),
+                      padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
                     );
                   else if (_pageInfo.useProvider)
                     return Padding(
                       child: _providerImageItem(index),
-                      padding: EdgeInsets.all(4),
+                      padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
                     );
                 }
               },
@@ -567,11 +567,67 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     );
   }
 
+  List<double> _height;
   _storageImageItem(index) {
-    return Image.file(
-      File(_pageInfo.uris[index]),
-      fit: BoxFit.cover,
+    final width = MediaQuery.of(context).size.width;
+    if (_height == null) {
+      _height = List<double>.filled(_pageInfo.uris.length, 0);
+    }
+    if (_height[index] == 0) {
+      return FutureBuilder(
+        // to avoid loading all images when fast scrolling
+        future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
+          return await _calculateImageDimension(_pageInfo.uris[index]);
+        }),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _height[index] = width / snapshot.data.aspectRatio;
+            return Container(
+              height: _height[index],
+              child: Image(
+                image: FileImage(File(_pageInfo.uris[index])),
+                fit: BoxFit.cover,
+              ),
+            );
+          }
+
+          return SizedBox(
+            height: _height[index] != 0 ? _height[index] : 300,
+            child: Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(),
+                width: 30,
+                height: 30,
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      // Prevent flicking when no animate jump page
+      return Container(
+        height: _height[index],
+        child: Image(
+          image: FileImage(File(_pageInfo.uris[index])),
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+  }
+
+  Future<Size> _calculateImageDimension(String uri) async {
+    Completer<Size> completer = Completer();
+    Image image = Image.file(File(uri));
+    image.image.resolve(ImageConfiguration()).addListener(
+      ImageStreamListener(
+        (ImageInfo image, bool synchronousCall) {
+          var myImage = image.image;
+          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+          if (!completer.isCompleted) completer.complete(size);
+        },
+      ),
     );
+    return completer.future;
   }
 
   _providerImageItem(index) {

@@ -6,12 +6,19 @@ import 'package:html/parser.dart';
 import 'package:violet/database/query.dart';
 
 class HitomiParser {
-  // Extract only title
-  static Future<String> parseGalleryBlock(String html) async {
+  // Extract only title and artists
+  static Future<Map<String, dynamic>> parseGalleryBlock(String html) async {
     var doc = (await compute(parse, html)).querySelector('div');
 
     var title = doc.querySelector('h1').text.trim();
+    var artists = ['N/A'];
+    try {
+      artists = doc
+          .querySelector('div.artists-list')
+          .querySelectorAll('li')
+          .map((e) => e.querySelector('a').text.trim());
+    } catch (e) {}
 
-    return title;
+    return {'Title': title, 'Artists': artists};
   }
 }
