@@ -106,9 +106,9 @@ class HitomiDonwloadManager extends Downloadable {
       }
     } else {
       var html = await http.get('https://ltn.hitomi.la/galleryblock/$id.html');
-      var title = await HitomiParser.parseGalleryBlock(html.body);
+      var article = await HitomiParser.parseGalleryBlock(html.body);
 
-      gdp.simpleInfoCallback('[$id] $title');
+      gdp.simpleInfoCallback('[$id] ${article['Title']}');
 
       var images = await HitomiManager.getImageList(id);
 
@@ -123,7 +123,7 @@ class HitomiDonwloadManager extends Downloadable {
             filename: img.split('/').last,
             referer: 'https://hitomi.la/reader/$id.html',
             format: FileNameFormat(
-              title: title,
+              title: article['Title'],
               id: id,
               filenameWithoutExtension: intToString(i, pad: 3),
               extension:

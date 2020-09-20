@@ -8,10 +8,10 @@ class QueryResult {
   QueryResult({this.result});
 
   int id() => result['Id'];
-  title() => result['Title'];
+  title() => result['Title'] ?? '';
   ehash() => result['EHash'];
   type() => result['Type'];
-  artists() => result['Artists'];
+  artists() => result['Artists'] ?? '';
   characters() => result['Characters'];
   groups() => result['Groups'];
   language() => result['Language'];

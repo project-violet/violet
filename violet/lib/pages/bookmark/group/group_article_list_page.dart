@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/model/article_list_item.dart';
@@ -19,6 +20,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
 import 'package:violet/widgets/search_bar.dart';
+import 'package:http/http.dart' as http;
 
 class GroupArticleListPage extends StatefulWidget {
   final String name;
@@ -55,20 +57,32 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             return;
           }
           queryRaw += cc.map((e) => 'Id=${e.article()}').join(' OR ');
-          QueryManager.query(queryRaw + ' AND ExistOnHitomi=1').then((value) {
+          QueryManager.query(queryRaw + ' AND ExistOnHitomi=1')
+              .then((value) async {
             var qr = Map<String, QueryResult>();
             value.results.forEach((element) {
               qr[element.id().toString()] = element;
             });
 
             var result = List<QueryResult>();
-            cc.forEach((element) {
+            cc.forEach((element) async {
               if (qr[element.article()] == null) {
                 // TODO: Handle qurey not found
+                var hh = await http.get(
+                    'https://ltn.hitomi.la/galleryblock/${element.article()}.html');
+                var article = await HitomiParser.parseGalleryBlock(hh.body);
+                var meta = {
+                  'Id': int.parse(element.article()),
+                  'Title': article['Title'],
+                  'Artists': article['Artists'].join('|'),
+                };
+                result.add(QueryResult(result: meta));
+                setState(() {});
                 return;
               }
               result.add(qr[element.article()]);
             });
+
             queryResult = result;
             if (isFilterUsed) {
               result.clear();
