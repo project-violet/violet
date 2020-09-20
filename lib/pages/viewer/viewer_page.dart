@@ -345,15 +345,60 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    return PhotoViewGalleryPageOptions(
-      imageProvider: CachedNetworkImageProvider(
-        _pageInfo.uris[index],
-        headers: _pageInfo.headers,
-      ),
-      initialScale: PhotoViewComputedScale.contained,
-      minScale: PhotoViewComputedScale.contained * 1.0,
-      maxScale: PhotoViewComputedScale.contained * 5.0,
-    );
+    if (_pageInfo.useWeb)
+      return PhotoViewGalleryPageOptions(
+        imageProvider: CachedNetworkImageProvider(
+          _pageInfo.uris[index],
+          headers: _pageInfo.headers,
+        ),
+        initialScale: PhotoViewComputedScale.contained,
+        minScale: PhotoViewComputedScale.contained * 1.0,
+        maxScale: PhotoViewComputedScale.contained * 5.0,
+      );
+    else if (_pageInfo.useFileSystem) {
+      return PhotoViewGalleryPageOptions(
+        imageProvider: FileImage(File(_pageInfo.uris[index])),
+        initialScale: PhotoViewComputedScale.contained,
+        minScale: PhotoViewComputedScale.contained * 1.0,
+        maxScale: PhotoViewComputedScale.contained * 5.0,
+      );
+    } else if (_pageInfo.useProvider) {
+      return PhotoViewGalleryPageOptions.customChild(
+        child: FutureBuilder(
+          future:
+              Future.delayed(Duration(milliseconds: 300)).then((value) async {
+            var header = await _pageInfo.provider.getHeader(index);
+            var url = await _pageInfo.provider.getImageUrl(index);
+
+            return Tuple2<Map<String, String>, String>(header, url);
+          }),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return SizedBox(
+                height: 300,
+                child: Center(
+                  child: SizedBox(
+                    child: CircularProgressIndicator(),
+                    width: 30,
+                    height: 30,
+                  ),
+                ),
+              );
+            }
+
+            return PhotoView(
+              imageProvider: CachedNetworkImageProvider(
+                snapshot.data.item2,
+                headers: snapshot.data.item1,
+              ),
+            );
+          },
+        ),
+        initialScale: PhotoViewComputedScale.contained,
+        minScale: PhotoViewComputedScale.contained * 1.0,
+        maxScale: PhotoViewComputedScale.contained * 5.0,
+      );
+    }
   }
 
   bool _overlayOpend = false;

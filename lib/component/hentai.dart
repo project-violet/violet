@@ -79,24 +79,26 @@ class HentaiManager {
     else {
       for (int i = 0; i < route.length; i++) {
         print(route[i]);
-        switch (route[i]) {
-          case 'EHentai':
-            var result = await _searchEHentai(what, offset.toString());
-            return Tuple2<List<QueryResult>, int>(
-                result, result.length >= 25 ? offset + 1 : -1);
-          case 'ExHentai':
-            var result = await _searchEHentai(what, offset.toString(), true);
-            return Tuple2<List<QueryResult>, int>(
-                result, result.length >= 25 ? offset + 1 : -1);
-            break;
-          case 'Hitomi':
-            // https://hiyobi.me/search/loli|sex
-            break;
-          case 'Hiyobi':
-            break;
-          case 'NHentai':
-            break;
-        }
+        try {
+          switch (route[i]) {
+            case 'EHentai':
+              var result = await _searchEHentai(what, offset.toString());
+              return Tuple2<List<QueryResult>, int>(
+                  result, result.length >= 25 ? offset + 1 : -1);
+            case 'ExHentai':
+              var result = await _searchEHentai(what, offset.toString(), true);
+              return Tuple2<List<QueryResult>, int>(
+                  result, result.length >= 25 ? offset + 1 : -1);
+              break;
+            case 'Hitomi':
+              // https://hiyobi.me/search/loli|sex
+              break;
+            case 'Hiyobi':
+              break;
+            case 'NHentai':
+              break;
+          }
+        } catch (e) {}
       }
     }
 
