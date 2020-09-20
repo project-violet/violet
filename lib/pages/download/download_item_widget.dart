@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/downloadable.dart' as violetd;
 import 'package:violet/locale/locale.dart';
@@ -19,8 +20,11 @@ import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/downloader/native_downloader.dart';
 import 'package:violet/pages/download/gallery/gallery_item.dart';
 import 'package:violet/pages/download/gallery/gallery_page.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
+import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/database/user/download.dart';
+import 'package:violet/widgets/article_item/thumbnail_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
 class DownloadItemWidget extends StatefulWidget {
@@ -314,30 +318,53 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           setState(() {});
         }
       },
-      onTap: () {
+      onTap: () async {
         if (widget.item.state() == 0 && widget.item.files() != null) {
-          var gi = GalleryItem.fromDonwloadItem(widget.item);
+          if (['hitomi', 'ehentai', 'exhentai']
+              .contains(widget.item.extractor())) {
+            SystemChrome.setEnabledSystemUIOverlays([]);
 
-          if (gi.length != 0) {
-            Navigator.of(context).push(PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 500),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                var begin = Offset(0.0, 1.0);
-                var end = Offset.zero;
-                var curve = Curves.ease;
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) {
+                  return Provider<ViewerPageProvider>.value(
+                      value: ViewerPageProvider(
+                        uris: (jsonDecode(widget.item.files()) as List<dynamic>)
+                            .map((e) => e as String)
+                            .toList(),
+                        useFileSystem: true,
+                        id: widget.item.id(),
+                      ),
+                      child: ViewerPage());
+                },
+              ),
+            );
+          } else {
+            var gi = GalleryItem.fromDonwloadItem(widget.item);
 
-                var tween = Tween(begin: begin, end: end)
-                    .chain(CurveTween(curve: curve));
+            if (gi.length != 0) {
+              Navigator.of(context).push(PageRouteBuilder(
+                transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.ease;
 
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-              pageBuilder: (_, __, ___) =>
-                  GalleryPage(item: gi, model: widget.item),
-            ));
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+                pageBuilder: (_, __, ___) =>
+                    GalleryPage(item: gi, model: widget.item),
+              ));
+            }
           }
         }
       },
