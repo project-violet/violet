@@ -11,6 +11,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
@@ -270,6 +271,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                     return _networkImageItem(index);
                   else if (_pageInfo.useFileSystem)
                     return _storageImageItem(index);
+                  else if (_pageInfo.useProvider)
+                    return _providerImageItem(index);
                 } else {
                   if (_pageInfo.useWeb)
                     return Padding(
@@ -281,7 +284,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       child: _storageImageItem(index),
                       padding: EdgeInsets.all(4),
                     );
-                  ;
+                  else if (_pageInfo.useProvider)
+                    return Padding(
+                      child: _providerImageItem(index),
+                      padding: EdgeInsets.all(4),
+                    );
                 }
               },
             ),
@@ -519,6 +526,52 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     return Image.file(
       File(_pageInfo.uris[index]),
       fit: BoxFit.cover,
+    );
+  }
+
+  _providerImageItem(index) {
+    return FutureBuilder(
+      future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
+        var header = await _pageInfo.provider.getHeader(index);
+        var url = await _pageInfo.provider.getImageUrl(index);
+
+        return Tuple2<Map<String, String>, String>(header, url);
+      }),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return SizedBox(
+            height: 300,
+            child: Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(),
+                width: 30,
+                height: 30,
+              ),
+            ),
+          );
+        }
+
+        return CachedNetworkImage(
+          imageUrl: snapshot.data.item2,
+          httpHeaders: snapshot.data.item1,
+          fit: BoxFit.cover,
+          fadeInDuration: Duration(microseconds: 500),
+          fadeInCurve: Curves.easeIn,
+          // memCacheWidth: width.toInt(),
+          progressIndicatorBuilder: (context, string, progress) {
+            return SizedBox(
+              height: 300,
+              child: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(value: progress.progress),
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
