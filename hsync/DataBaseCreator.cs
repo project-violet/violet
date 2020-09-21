@@ -323,7 +323,9 @@ namespace hsync
             var result_artist = new Dictionary<string, Dictionary<int, int>>();
             var result_group = new Dictionary<string, Dictionary<int, int>>();
             var result_uploader = new Dictionary<string, Dictionary<int, int>>();
-            var result_series = new Dictionary<string, Dictionary<string, int>>();
+            var result_series = new Dictionary<string, Dictionary<int, int>>();
+            var result_character = new Dictionary<string, Dictionary<int, int>>();
+            var result_characterseries = new Dictionary<string, Dictionary<string, int>>();
             var ff = new Dictionary<string, int>();
 
             foreach (var article in datas)
@@ -401,21 +403,61 @@ namespace hsync
                         }
                     }
                 }
+                if (article.Series != null)
+                {
+                    foreach (var artist in article.Series.Split('|'))
+                    {
+                        if (artist == "")
+                            continue;
+                        if (!result_series.ContainsKey(artist))
+                            result_series.Add(artist, new Dictionary<int, int>());
+                        foreach (var tag in article.Tags.Split('|'))
+                        {
+                            if (tag == "")
+                                continue;
+                            if (!ff.ContainsKey(tag))
+                                ff.Add(tag, ff.Count);
+                            if (!result_series[artist].ContainsKey(ff[tag]))
+                                result_series[artist].Add(ff[tag], 0);
+                            result_series[artist][ff[tag]] += 1;
+                        }
+                    }
+                }
+                if (article.Characters != null)
+                {
+                    foreach (var artist in article.Characters.Split('|'))
+                    {
+                        if (artist == "")
+                            continue;
+                        if (!result_character.ContainsKey(artist))
+                            result_character.Add(artist, new Dictionary<int, int>());
+                        foreach (var tag in article.Tags.Split('|'))
+                        {
+                            if (tag == "")
+                                continue;
+                            if (!ff.ContainsKey(tag))
+                                ff.Add(tag, ff.Count);
+                            if (!result_character[artist].ContainsKey(ff[tag]))
+                                result_character[artist].Add(ff[tag], 0);
+                            result_character[artist][ff[tag]] += 1;
+                        }
+                    }
+                }
                 if (article.Series != null && article.Characters != null)
                 {
                     foreach (var series in article.Series.Split('|'))
                     {
                         if (series == "")
                             continue;
-                        if (!result_series.ContainsKey(series))
-                            result_series.Add(series, new Dictionary<string, int>());
+                        if (!result_characterseries.ContainsKey(series))
+                            result_characterseries.Add(series, new Dictionary<string, int>());
                         foreach (var character in article.Characters.Split('|'))
                         {
                             if (character == "")
                                 continue;
-                            if (!result_series[series].ContainsKey(character))
-                                result_series[series].Add(character, 0);
-                            result_series[series][character] += 1;
+                            if (!result_characterseries[series].ContainsKey(character))
+                                result_characterseries[series].Add(character, 0);
+                            result_characterseries[series][character] += 1;
                         }
                     }
                 }
@@ -426,7 +468,9 @@ namespace hsync
             File.WriteAllText(filename + "/tag-artist.json", JsonConvert.SerializeObject(result_artist));
             File.WriteAllText(filename + "/tag-group.json", JsonConvert.SerializeObject(result_group));
             File.WriteAllText(filename + "/tag-uploader.json", JsonConvert.SerializeObject(result_uploader));
-            File.WriteAllText(filename + "/character-series.json", JsonConvert.SerializeObject(result_series));
+            File.WriteAllText(filename + "/tag-series.json", JsonConvert.SerializeObject(result_series));
+            File.WriteAllText(filename + "/tag-character.json", JsonConvert.SerializeObject(result_character));
+            File.WriteAllText(filename + "/character-series.json", JsonConvert.SerializeObject(result_characterseries));
         }
 
         class IndexData
