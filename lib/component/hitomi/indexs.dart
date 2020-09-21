@@ -23,6 +23,10 @@ class HitomiIndexs {
   // Series, <Character, Count>
   // Map<String, Map<String, int>>
   static Map<String, dynamic> characterSeries;
+  // Unmap of character series
+  // Character, <Series, Count>
+  // Map<String, Map<String, int>>
+  static Map<String, dynamic> seriesCharacter;
 
   static Future<void> init() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -44,6 +48,8 @@ class HitomiIndexs {
       tagCharacter = jsonDecode(await path7.readAsString());
       final path8 = File('${directory.path}/data/character-series.json');
       characterSeries = jsonDecode(await path8.readAsString());
+      final path9 = File('${directory.path}/data/series-character.json');
+      seriesCharacter = jsonDecode(await path9.readAsString());
     } catch (e) {}
   }
 
@@ -87,8 +93,35 @@ class HitomiIndexs {
     return _calculateSimilars(tagCharacter, character);
   }
 
-  static List<Tuple2<String, double>> calculateSimilarCharacterSeries(
+  static List<Tuple2<String, double>> calculateRelatedCharacterSeries(
       String series) {
-    return _calculateSimilars(characterSeries, series);
+    return _calculateSimilars(characterSeries, series)
+        .where((element) => element.item2 >= 0.000001)
+        .toList();
+  }
+
+  static List<Tuple2<String, double>> calculateRelatedSeriesCharacter(
+      String character) {
+    return _calculateSimilars(seriesCharacter, character)
+        .where((element) => element.item2 >= 0.000001)
+        .toList();
+  }
+
+  static List<Tuple2<String, double>> getRelatedCharacters(String series) {
+    var ll = (characterSeries[series] as Map<String, dynamic>)
+        .entries
+        .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+        .toList();
+    ll.sort((x, y) => y.item2.compareTo(x.item2));
+    return ll;
+  }
+
+  static List<Tuple2<String, double>> getRelatedSeries(String character) {
+    var ll = (seriesCharacter[character] as Map<String, dynamic>)
+        .entries
+        .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+        .toList();
+    ll.sort((x, y) => y.item2.compareTo(x.item2));
+    return ll;
   }
 }
