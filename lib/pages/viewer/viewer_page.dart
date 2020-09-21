@@ -145,12 +145,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   @override
   Widget build(BuildContext context) {
-    ImageCache _imageCache = PaintingBinding.instance.imageCache;
-    if (_imageCache.currentSizeBytes >= 200 << 20 ||
-        _imageCache.currentSize >= 50) {
-      _imageCache.clear();
-      _imageCache.clearLiveImages();
-    }
+    // ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    // if (_imageCache.currentSizeBytes >= 200 << 20 ||
+    //     _imageCache.currentSize >= 50) {
+    //   _imageCache.clear();
+    //   _imageCache.clearLiveImages();
+    // }
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -546,26 +546,83 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   _networkImageItem(index) {
-    return OptimizedCacheImage(
-      imageUrl: _pageInfo.uris[index],
-      httpHeaders: _pageInfo.headers,
-      fit: BoxFit.cover,
-      fadeInDuration: Duration(microseconds: 500),
-      fadeInCurve: Curves.easeIn,
-      // memCacheWidth: width.toInt(),
-      progressIndicatorBuilder: (context, string, progress) {
-        return SizedBox(
-          height: 300,
-          child: Center(
-            child: SizedBox(
-              child: CircularProgressIndicator(value: progress.progress),
-              width: 30,
-              height: 30,
+    final width = MediaQuery.of(context).size.width;
+    if (_height == null) {
+      _height = List<double>.filled(_pageInfo.uris.length, 0);
+    }
+    if (_height[index] == 0) {
+      return FutureBuilder(
+        // to avoid loading all images when fast scrolling
+        future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
+          return await _calculateNetworkImageDimension(_pageInfo.uris[index]);
+        }),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            _height[index] = width / snapshot.data.aspectRatio;
+            return Container(
+              height: _height[index],
+              child: OptimizedCacheImage(
+                imageUrl: _pageInfo.uris[index],
+                httpHeaders: _pageInfo.headers,
+                fit: BoxFit.cover,
+                fadeInDuration: Duration(microseconds: 500),
+                fadeInCurve: Curves.easeIn,
+                // memCacheWidth: width.toInt(),
+                progressIndicatorBuilder: (context, string, progress) {
+                  return SizedBox(
+                    height: 300,
+                    child: Center(
+                      child: SizedBox(
+                        child:
+                            CircularProgressIndicator(value: progress.progress),
+                        width: 30,
+                        height: 30,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          }
+
+          return SizedBox(
+            height: _height[index] != 0 ? _height[index] : 300,
+            child: Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(),
+                width: 30,
+                height: 30,
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    } else {
+      // Prevent flicking when no animate jump page
+      return Container(
+        height: _height[index],
+        child: OptimizedCacheImage(
+          imageUrl: _pageInfo.uris[index],
+          httpHeaders: _pageInfo.headers,
+          fit: BoxFit.cover,
+          fadeInDuration: Duration(microseconds: 500),
+          fadeInCurve: Curves.easeIn,
+          // memCacheWidth: width.toInt(),
+          progressIndicatorBuilder: (context, string, progress) {
+            return SizedBox(
+              height: 300,
+              child: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(value: progress.progress),
+                  width: 30,
+                  height: 30,
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    }
   }
 
   List<double> _height;
@@ -625,6 +682,21 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           var myImage = image.image;
           Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
           if (!completer.isCompleted) completer.complete(size);
+        },
+      ),
+    );
+    return completer.future;
+  }
+
+  Future<Size> _calculateNetworkImageDimension(String uri) async {
+    Completer<Size> completer = Completer();
+    Image image = new Image(image: OptimizedCacheImageProvider(uri));
+    image.image.resolve(ImageConfiguration()).addListener(
+      ImageStreamListener(
+        (ImageInfo image, bool synchronousCall) {
+          var myImage = image.image;
+          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+          completer.complete(size);
         },
       ),
     );
