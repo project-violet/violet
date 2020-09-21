@@ -36,6 +36,18 @@ namespace hsync
         [CommandLine("--recover-settings", CommandType.OPTION, Info = "Recover settings.json")]
         public bool RecoverSettings;
 
+        [CommandLine("--related-tag-test", CommandType.ARGUMENTS, ArgumentsCount = 2, ShortOption = "-r",
+            Info = "Related Tag Test", Help = "use --related-tag-test <db file path> <threshold>")]
+        public string[] RelatedTagTest;
+
+        [CommandLine("--character-test", CommandType.ARGUMENTS, ArgumentsCount = 2, ShortOption = "-h",
+            Info = "Character Test", Help = "use --character-tag-test <db file path> <threshold>")]
+        public string[] CharacterTest;
+
+        [CommandLine("--series-test", CommandType.ARGUMENTS, ShortOption = "-p",
+            Info = "Series Test", Help = "use --series-tag-test <db file path>")]
+        public string[] SeriesTest;
+
         /// <summary>
         /// User Option
         /// </summary>
@@ -51,6 +63,7 @@ namespace hsync
         [CommandLine("--include-exhentai", CommandType.OPTION, ShortOption = "-x",
             Info = "Include ExHentai Database", Help = "use --include-exhentai")]
         public bool IncludeExHetaiData;
+
     }
 
     public class Command
@@ -75,6 +88,18 @@ namespace hsync
             {
                 Settings.Instance.Recover();
                 Settings.Instance.Save();
+            }
+            else if (option.RelatedTagTest != null)
+            {
+                ProcessRelatedTagTest(option.RelatedTagTest);
+            }
+            else if (option.CharacterTest != null)
+            {
+                ProcessCharacterTest(option.CharacterTest);
+            }
+            else if (option.SeriesTest != null)
+            {
+                ProcessSeriesTest(option.SeriesTest);
             }
             else if (option.Start)
             {
@@ -279,6 +304,24 @@ namespace hsync
             public Dictionary<string, int> characters = new Dictionary<string, int>();
             [JsonProperty(PropertyName = "class")]
             public Dictionary<string, int> classes = new Dictionary<string, int>();
+        }
+
+        static void ProcessRelatedTagTest(string[] args)
+        {
+            var rtt = new RelatedTagTest(args[0], double.Parse(args[1]));
+            rtt.Start();
+        }
+
+        static void ProcessCharacterTest(string[] args)
+        {
+            var rtt = new CharacterTest(args[0], double.Parse(args[1]));
+            rtt.Start();
+        }
+
+        static void ProcessSeriesTest(string[] args)
+        {
+            var rtt = new SeriesTest(args[0]);
+            rtt.Start();
         }
     }
 

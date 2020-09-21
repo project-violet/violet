@@ -30,7 +30,7 @@ namespace hsync
         {
             HitomiData.Instance.Load();
             latestId = HitomiData.Instance.metadata_collection.First().ID;
-            hitomiSyncRange = 10000;
+            hitomiSyncRange = 2000;
             newedDataHitomi = new List<int>();
             newedDataEH = new List<int>();
         }
@@ -41,8 +41,8 @@ namespace hsync
             foreach (var metadata in HitomiData.Instance.metadata_collection)
                 exists.Add(metadata.ID);
 
-            //var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
-            var gburls = Enumerable.Range(1000, latestId + hitomiSyncRange / 2)
+            var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
+            //var gburls = Enumerable.Range(1000, latestId + hitomiSyncRange / 2)
                 .Where(x => !exists.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
             var ecnt = 0;

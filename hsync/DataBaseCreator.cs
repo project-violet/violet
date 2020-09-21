@@ -323,6 +323,7 @@ namespace hsync
             var result_artist = new Dictionary<string, Dictionary<int, int>>();
             var result_group = new Dictionary<string, Dictionary<int, int>>();
             var result_uploader = new Dictionary<string, Dictionary<int, int>>();
+            var result_series = new Dictionary<string, Dictionary<string, int>>();
             var ff = new Dictionary<string, int>();
 
             foreach (var article in datas)
@@ -400,6 +401,24 @@ namespace hsync
                         }
                     }
                 }
+                if (article.Series != null && article.Characters != null)
+                {
+                    foreach (var series in article.Series.Split('|'))
+                    {
+                        if (series == "")
+                            continue;
+                        if (!result_series.ContainsKey(series))
+                            result_series.Add(series, new Dictionary<string, int>());
+                        foreach (var character in article.Characters.Split('|'))
+                        {
+                            if (character == "")
+                                continue;
+                            if (!result_series[series].ContainsKey(character))
+                                result_series[series].Add(character, 0);
+                            result_series[series][character] += 1;
+                        }
+                    }
+                }
             }
 
             File.WriteAllText(filename + "/index.json", JsonConvert.SerializeObject(index));
@@ -407,6 +426,7 @@ namespace hsync
             File.WriteAllText(filename + "/tag-artist.json", JsonConvert.SerializeObject(result_artist));
             File.WriteAllText(filename + "/tag-group.json", JsonConvert.SerializeObject(result_group));
             File.WriteAllText(filename + "/tag-uploader.json", JsonConvert.SerializeObject(result_uploader));
+            File.WriteAllText(filename + "/character-series.json", JsonConvert.SerializeObject(result_series));
         }
 
         class IndexData
