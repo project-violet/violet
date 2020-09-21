@@ -18,6 +18,8 @@ class HitomiIndexs {
   static Map<String, dynamic> tagArtist;
   static Map<String, dynamic> tagGroup;
   static Map<String, dynamic> tagUploader;
+  static Map<String, dynamic> tagSeries;
+  static Map<String, dynamic> tagCharacter;
   // Series, <Character, Count>
   // Map<String, Map<String, int>>
   static Map<String, dynamic> characterSeries;
@@ -35,8 +37,14 @@ class HitomiIndexs {
     tagIndex = jsonDecode(await path4.readAsString());
     final path5 = File('${directory.path}/data/tag-uploader.json');
     tagUploader = jsonDecode(await path5.readAsString());
-    final path6 = File('${directory.path}/data/character-series.json');
-    characterSeries = jsonDecode(await path6.readAsString());
+    try {
+      final path6 = File('${directory.path}/data/tag-series.json');
+      tagSeries = jsonDecode(await path6.readAsString());
+      final path7 = File('${directory.path}/data/tag-character.json');
+      tagCharacter = jsonDecode(await path7.readAsString());
+      final path8 = File('${directory.path}/data/character-series.json');
+      characterSeries = jsonDecode(await path8.readAsString());
+    } catch (e) {}
   }
 
   static List<Tuple2<String, double>> _calculateSimilars(
@@ -68,6 +76,15 @@ class HitomiIndexs {
   static List<Tuple2<String, double>> calculateSimilarUploaders(
       String uploader) {
     return _calculateSimilars(tagUploader, uploader);
+  }
+
+  static List<Tuple2<String, double>> calculateSimilarSeries(String series) {
+    return _calculateSimilars(tagSeries, series);
+  }
+
+  static List<Tuple2<String, double>> calculateSimilarCharacter(
+      String character) {
+    return _calculateSimilars(tagCharacter, character);
   }
 
   static List<Tuple2<String, double>> calculateSimilarCharacterSeries(

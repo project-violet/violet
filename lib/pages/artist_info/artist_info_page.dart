@@ -28,8 +28,16 @@ class ArtistInfoPage extends StatefulWidget {
   final String artist;
   final bool isGroup;
   final bool isUploader;
+  final bool isSeries;
+  final bool isCharacter;
 
-  ArtistInfoPage({this.artist, this.isGroup, this.isUploader});
+  ArtistInfoPage({
+    @required this.artist,
+    this.isGroup = false,
+    this.isUploader = false,
+    this.isSeries = false,
+    this.isCharacter = false,
+  });
 
   @override
   _ArtistInfoPageState createState() => _ArtistInfoPageState();
@@ -60,7 +68,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      cc = await query([widget.artist, widget.isGroup, widget.isUploader]);
+      cc = await query([
+        widget.artist,
+        widget.isGroup,
+        widget.isUploader,
+        widget.isSeries,
+        widget.isCharacter
+      ]);
 
       //
       //  Title based article clustering
@@ -110,6 +124,10 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         similars = HitomiIndexs.calculateSimilarGroups(widget.artist);
       else if (widget.isUploader)
         similars = HitomiIndexs.calculateSimilarUploaders(widget.artist);
+      else if (widget.isSeries)
+        similars = HitomiIndexs.calculateSimilarSeries(widget.artist);
+      else if (widget.isCharacter)
+        similars = HitomiIndexs.calculateSimilarCharacter(widget.artist);
       else
         similars = HitomiIndexs.calculateSimilarArtists(widget.artist);
 
@@ -119,7 +137,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       prefix = 'artist:';
       if (widget.isGroup)
         prefix = 'group:';
-      else if (widget.isUploader) prefix = 'uploader:';
+      else if (widget.isUploader)
+        prefix = 'uploader:';
+      else if (widget.isSeries)
+        prefix = 'series:';
+      else if (widget.isCharacter) prefix = 'character:';
 
       var unescape = new HtmlUnescape();
       for (int i = 0; i < similars.length; i++) {
@@ -188,16 +210,23 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var artist = obj[0] as String;
     var isGroup = obj[1] as bool;
     var isUploader = obj[2] as bool;
+    var isSeries = obj[3] as bool;
+    var isCharacter = obj[4] as bool;
 
-    var query = HitomiManager.translate2query(
-        (isGroup ? 'group:' : isUploader ? 'uploader:' : 'artist:') +
-            '${artist.replaceAll(' ', '_')} ' +
-            Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' '));
+    var query = HitomiManager.translate2query((isGroup
+            ? 'group:'
+            : isUploader
+                ? 'uploader:'
+                : isSeries
+                    ? 'series:'
+                    : isCharacter ? 'character:' : 'artist:') +
+        '${artist.replaceAll(' ', '_')} ' +
+        Settings.includeTags +
+        ' ' +
+        Settings.excludeTags
+            .where((e) => e.trim() != '')
+            .map((e) => '-$e')
+            .join(' '));
 
     // DateTime dt = DateTime.now();
     QueryManager qm = await QueryManager.query(query + ' ORDER BY Id DESC');
@@ -245,7 +274,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                           ? 'Groups: '
                                           : widget.isUploader
                                               ? 'Uploader: '
-                                              : 'Artist: ') +
+                                              : widget.isSeries
+                                                  ? 'Series: '
+                                                  : widget.isCharacter
+                                                      ? 'Character: '
+                                                      : 'Artist: ') +
                                       widget.artist,
                                   style: TextStyle(
                                       fontSize: 20,
@@ -264,7 +297,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                         ? 'Groups: '
                                         : widget.isUploader
                                             ? 'Uploader: '
-                                            : 'Artist: ') +
+                                            : widget.isSeries
+                                                ? 'Series: '
+                                                : widget.isCharacter
+                                                    ? 'Character: '
+                                                    : 'Artist: ') +
                                     widget.artist,
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
@@ -405,7 +442,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                     ? 'Groups: '
                                     : widget.isUploader
                                         ? 'Uploader: '
-                                        : 'Artist: ') +
+                                        : widget.isSeries
+                                            ? 'Series: '
+                                            : widget.isCharacter
+                                                ? 'Character: '
+                                                : 'Artist: ') +
                                 widget.artist)))
                   ]),
                 ),
@@ -429,7 +470,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                             ? Translations.of(context).trans('igroups')
                             : widget.isUploader
                                 ? Translations.of(context).trans('iuploader')
-                                : Translations.of(context).trans('iartists'))),
+                                : widget.isSeries
+                                    ? Translations.of(context).trans('iseries')
+                                    : widget.isCharacter
+                                        ? Translations.of(context)
+                                            .trans('icharacter')
+                                        : Translations.of(context)
+                                            .trans('iartists'))),
                   ),
                   expanded: similarArea(),
                 ),
@@ -559,6 +606,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               similarsAll: similarsAll,
               isGroup: widget.isGroup,
               isUploader: widget.isUploader,
+              isCharacter: widget.isCharacter,
+              isSeries: widget.isSeries,
             ));
           }
           var e = similars[index];
@@ -585,6 +634,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 pageBuilder: (_, __, ___) => ArtistInfoPage(
                   isGroup: widget.isGroup,
                   isUploader: widget.isUploader,
+                  isCharacter: widget.isCharacter,
+                  isSeries: widget.isSeries,
                   artist: e.item1,
                 ),
               ));
@@ -611,7 +662,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                               ? 'group'
                                               : widget.isUploader
                                                   ? 'uploader'
-                                                  : 'artist',
+                                                  : widget.isSeries
+                                                      ? 'series'
+                                                      : widget.isCharacter
+                                                          ? 'character'
+                                                          : 'artist',
                                           e.item1)
                                       .toString() +
                                   ')',
