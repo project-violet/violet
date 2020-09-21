@@ -12,6 +12,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tuple/tuple.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
@@ -347,7 +348,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     if (_pageInfo.useWeb)
       return PhotoViewGalleryPageOptions(
-        imageProvider: CachedNetworkImageProvider(
+        imageProvider: OptimizedCacheImageProvider(
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
         ),
@@ -387,7 +388,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             }
 
             return PhotoView(
-              imageProvider: CachedNetworkImageProvider(
+              imageProvider: OptimizedCacheImageProvider(
                 snapshot.data.item2,
                 headers: snapshot.data.item1,
               ),
@@ -545,7 +546,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   _networkImageItem(index) {
-    return CachedNetworkImage(
+    return OptimizedCacheImage(
       imageUrl: _pageInfo.uris[index],
       httpHeaders: _pageInfo.headers,
       fit: BoxFit.cover,
@@ -652,7 +653,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           );
         }
 
-        return CachedNetworkImage(
+        return OptimizedCacheImage(
           imageUrl: snapshot.data.item2,
           httpHeaders: snapshot.data.item1,
           fit: BoxFit.cover,
