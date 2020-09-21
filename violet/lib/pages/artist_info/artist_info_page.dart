@@ -59,8 +59,14 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   // Similar Aritsts Info
   List<Tuple2<String, double>> similars;
   List<Tuple2<String, double>> similarsAll;
+  List<Tuple2<String, double>> relatedCOSSingle;
+  List<Tuple2<String, double>> relatedCharacterOrSeries;
+  List<Tuple2<String, double>> relatedCOSSingleAll;
+  List<Tuple2<String, double>> relatedCharacterOrSeriesAll;
   // Similar Item Lists
   List<List<QueryResult>> qrs = List<List<QueryResult>>();
+  List<List<QueryResult>> qrsCOSSingle = List<List<QueryResult>>();
+  List<List<QueryResult>> qrsCharacterOrSeries = List<List<QueryResult>>();
   // Title clustering
   List<List<int>> series;
 
@@ -143,57 +149,33 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         prefix = 'series:';
       else if (widget.isCharacter) prefix = 'character:';
 
-      var unescape = new HtmlUnescape();
-      for (int i = 0; i < similars.length; i++) {
-        var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
-        if (widget.isUploader) postfix = similars[i].item1;
-        var queryString = HitomiManager.translate2query(prefix +
-            postfix +
-            ' ' +
-            Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' '));
-        final qm = QueryManager.queryPagination(queryString);
-        qm.itemsPerPage = 10;
+      await querySimilars(similars, prefix, qrs);
 
-        var x = await qm.next();
-        if (x == null || x.length == 0) {
-          qrs.add(List<QueryResult>());
-          continue;
+      if (widget.isCharacter || widget.isSeries) {
+        if (widget.isCharacter) {
+          relatedCharacterOrSeriesAll =
+              HitomiIndexs.calculateRelatedSeriesCharacter(widget.artist);
+          relatedCOSSingleAll = HitomiIndexs.getRelatedSeries(widget.artist);
+        } else {
+          relatedCharacterOrSeriesAll =
+              HitomiIndexs.calculateRelatedCharacterSeries(widget.artist);
+          relatedCOSSingleAll =
+              HitomiIndexs.getRelatedCharacters(widget.artist);
         }
-        var y = [x[0]];
+        relatedCharacterOrSeries = relatedCharacterOrSeriesAll.take(6).toList();
+        relatedCOSSingle = relatedCOSSingleAll.take(6).toList();
 
-        var titles = [unescape.convert((x[0].title() as String).trim())];
-        if (titles[0].contains('Ch.'))
-          titles[0] = titles[0].split('Ch.')[0];
-        else if (titles[0].contains('ch.'))
-          titles[0] = titles[0].split('ch.')[0];
+        await querySimilars(
+          relatedCharacterOrSeries,
+          widget.isCharacter ? 'character:' : 'series:',
+          qrsCharacterOrSeries,
+        );
 
-        for (int i = 1; i < x.length; i++) {
-          var skip = false;
-          var ff = unescape.convert((x[i].title() as String).trim());
-          if (ff.contains('Ch.'))
-            ff = ff.split('Ch.')[0];
-          else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
-          for (int j = 0; j < titles.length; j++) {
-            var tt = titles[j];
-            if (Distance.levenshteinDistanceComparable(
-                    tt.runes.map((e) => e.toString()).toList(),
-                    ff.runes.map((e) => e.toString()).toList()) <
-                3) {
-              skip = true;
-              break;
-            }
-          }
-          if (skip) continue;
-          y.add(x[i]);
-          titles.add(ff.trim());
-        }
-
-        qrs.add(y);
+        await querySimilars(
+          relatedCOSSingle,
+          widget.isCharacter ? 'series:' : 'character:',
+          qrsCOSSingle,
+        );
       }
 
       setState(() {
@@ -204,6 +186,60 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         ec.expanded = true;
       });
     });
+  }
+
+  Future<void> querySimilars(List<Tuple2<String, double>> similars,
+      String prefix, List<List<QueryResult>> qrs) async {
+    var unescape = new HtmlUnescape();
+    for (int i = 0; i < similars.length; i++) {
+      var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
+      var queryString = HitomiManager.translate2query(prefix +
+          postfix +
+          ' ' +
+          Settings.includeTags +
+          ' ' +
+          Settings.excludeTags
+              .where((e) => e.trim() != '')
+              .map((e) => '-$e')
+              .join(' '));
+      final qm = QueryManager.queryPagination(queryString);
+      qm.itemsPerPage = 10;
+
+      var x = await qm.next();
+      if (x == null || x.length == 0) {
+        qrs.add(List<QueryResult>());
+        continue;
+      }
+      var y = [x[0]];
+
+      var titles = [unescape.convert((x[0].title() as String).trim())];
+      if (titles[0].contains('Ch.'))
+        titles[0] = titles[0].split('Ch.')[0];
+      else if (titles[0].contains('ch.')) titles[0] = titles[0].split('ch.')[0];
+
+      for (int i = 1; i < x.length; i++) {
+        var skip = false;
+        var ff = unescape.convert((x[i].title() as String).trim());
+        if (ff.contains('Ch.'))
+          ff = ff.split('Ch.')[0];
+        else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
+        for (int j = 0; j < titles.length; j++) {
+          var tt = titles[j];
+          if (Distance.levenshteinDistanceComparable(
+                  tt.runes.map((e) => e.toString()).toList(),
+                  ff.runes.map((e) => e.toString()).toList()) <
+              3) {
+            skip = true;
+            break;
+          }
+        }
+        if (skip) continue;
+        y.add(x[i]);
+        titles.add(ff.trim());
+      }
+
+      qrs.add(y);
+    }
   }
 
   Future<List<QueryResult>> query(dynamic obj) async {
@@ -453,6 +489,60 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               ),
             ),
           ),
+          widget.isCharacter || widget.isSeries
+              ? ExpandableNotifier(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                    child: ScrollOnExpand(
+                      child: ExpandablePanel(
+                        theme: ExpandableThemeData(
+                            iconColor:
+                                Settings.themeWhat ? Colors.white : Colors.grey,
+                            animationDuration:
+                                const Duration(milliseconds: 500)),
+                        header: Padding(
+                          padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                          child: Text(Translations.of(context)
+                                  .trans('related') +
+                              ' ' +
+                              (widget.isSeries
+                                  ? Translations.of(context).trans('iseries')
+                                  : Translations.of(context)
+                                      .trans('icharacter'))),
+                        ),
+                        expanded: relatedArea(),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+          widget.isCharacter || widget.isSeries
+              ? ExpandableNotifier(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                    child: ScrollOnExpand(
+                      child: ExpandablePanel(
+                        theme: ExpandableThemeData(
+                            iconColor:
+                                Settings.themeWhat ? Colors.white : Colors.grey,
+                            animationDuration:
+                                const Duration(milliseconds: 500)),
+                        header: Padding(
+                          padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                          child: Text(Translations.of(context)
+                                  .trans('related') +
+                              ' ' +
+                              (widget.isCharacter
+                                  ? Translations.of(context).trans('iseries')
+                                  : Translations.of(context)
+                                      .trans('icharacter'))),
+                        ),
+                        expanded: relatedSingleArea(),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
           ExpandableNotifier(
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -904,6 +994,340 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                           ],
                         ),
                       ),
+                    ],
+                  )),
+            ),
+          );
+        });
+  }
+
+  Widget relatedArea() {
+    var windowWidth = MediaQuery.of(context).size.width;
+    return ListView.builder(
+        padding: EdgeInsets.all(0),
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: relatedCharacterOrSeries.length + 1,
+        itemBuilder: (BuildContext ctxt, int index) {
+          if (index == relatedCharacterOrSeries.length) {
+            return more(SimilarListPage(
+              prefix: prefix,
+              similarsAll: relatedCharacterOrSeriesAll,
+              isGroup: widget.isGroup,
+              isUploader: widget.isUploader,
+              isCharacter: widget.isCharacter,
+              isSeries: widget.isSeries,
+            ));
+          }
+          var e = relatedCharacterOrSeries[index];
+          var qq = qrsCharacterOrSeries[index];
+          return InkWell(
+            onTap: () async {
+              Navigator.of(context).push(PageRouteBuilder(
+                // opaque: false,
+                transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+                pageBuilder: (_, __, ___) => ArtistInfoPage(
+                  isGroup: widget.isGroup,
+                  isUploader: widget.isUploader,
+                  isCharacter: widget.isCharacter,
+                  isSeries: widget.isSeries,
+                  artist: e.item1,
+                ),
+              ));
+            },
+            child: SizedBox(
+              height: 195,
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // crossAxisAlignment: CrossAxisAlignment,
+                        children: <Widget>[
+                          Text(
+                              // (index + 1).toString() +
+                              //     '. ' +
+                              ' ' +
+                                  e.item1 +
+                                  ' (' +
+                                  HitomiManager.getArticleCount(
+                                          widget.isSeries
+                                              ? 'series'
+                                              : 'character',
+                                          e.item1)
+                                      .toString() +
+                                  ')',
+                              style: TextStyle(fontSize: 17)),
+                          Text(
+                              '${Translations.of(context).trans('score')}: ' +
+                                  e.item2.toStringAsFixed(1) +
+                                  ' ',
+                              style: TextStyle(
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade300
+                                    : Colors.grey.shade700,
+                              )),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 162,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Expanded(
+                                flex: 1,
+                                child: qq.length > 0
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[0],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
+                                    : Container()),
+                            Expanded(
+                                flex: 1,
+                                child: qq.length > 1
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[1],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
+                                    : Container()),
+                            Expanded(
+                                flex: 1,
+                                child: qq.length > 2
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[2],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
+                                    : Container()),
+                          ],
+                        ),
+                      ),
+                      // Container(
+                      //   padding: EdgeInsets.all(2),
+                      // ),
+                      // Text('Score: ' + e.item2.toStringAsFixed(1),
+                      //     style: TextStyle(color: Colors.grey.shade300)),
+                    ],
+                  )),
+            ),
+          );
+        });
+  }
+
+  Widget relatedSingleArea() {
+    var windowWidth = MediaQuery.of(context).size.width;
+    return ListView.builder(
+        padding: EdgeInsets.all(0),
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemCount: relatedCOSSingle.length + 1,
+        itemBuilder: (BuildContext ctxt, int index) {
+          if (index == relatedCOSSingle.length) {
+            return more(SimilarListPage(
+              prefix: widget.isCharacter ? 'series:' : 'character:',
+              similarsAll: relatedCOSSingleAll,
+              isGroup: widget.isGroup,
+              isUploader: widget.isUploader,
+              isSeries: widget.isCharacter,
+              isCharacter: widget.isSeries,
+            ));
+          }
+          var e = relatedCOSSingle[index];
+          var qq = qrsCOSSingle[index];
+          return InkWell(
+            onTap: () async {
+              Navigator.of(context).push(PageRouteBuilder(
+                // opaque: false,
+                transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+                pageBuilder: (_, __, ___) => ArtistInfoPage(
+                  isGroup: widget.isGroup,
+                  isUploader: widget.isUploader,
+                  isSeries: widget.isCharacter,
+                  isCharacter: widget.isSeries,
+                  artist: e.item1,
+                ),
+              ));
+            },
+            child: SizedBox(
+              height: 195,
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // crossAxisAlignment: CrossAxisAlignment,
+                        children: <Widget>[
+                          Text(
+                              // (index + 1).toString() +
+                              //     '. ' +
+                              ' ' +
+                                  e.item1 +
+                                  ' (' +
+                                  HitomiManager.getArticleCount(
+                                          widget.isCharacter
+                                              ? 'series'
+                                              : 'character',
+                                          e.item1)
+                                      .toString() +
+                                  ')',
+                              style: TextStyle(fontSize: 17)),
+                          Text(
+                              '${Translations.of(context).trans('score')}: ' +
+                                  e.item2.toStringAsFixed(1) +
+                                  ' ',
+                              style: TextStyle(
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade300
+                                    : Colors.grey.shade700,
+                              )),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 162,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Expanded(
+                                flex: 1,
+                                child: qq.length > 0
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[0],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
+                                    : Container()),
+                            Expanded(
+                                flex: 1,
+                                child: qq.length > 1
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[1],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
+                                    : Container()),
+                            Expanded(
+                                flex: 1,
+                                child: qq.length > 2
+                                    ? Padding(
+                                        padding: EdgeInsets.all(4),
+                                        child: Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: qq[2],
+                                            showDetail: false,
+                                            addBottomPadding: false,
+                                            width:
+                                                (windowWidth - 16 - 4.0 - 1.0) /
+                                                    3,
+                                            thumbnailTag: Uuid().v4(),
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        ),
+                                      )
+                                    : Container()),
+                          ],
+                        ),
+                      ),
+                      // Container(
+                      //   padding: EdgeInsets.all(2),
+                      // ),
+                      // Text('Score: ' + e.item2.toStringAsFixed(1),
+                      //     style: TextStyle(color: Colors.grey.shade300)),
                     ],
                   )),
             ),
