@@ -690,7 +690,9 @@ class _Chip extends StatelessWidget {
           onPressed: () async {
             if ((group == 'groups' ||
                     group == 'artists' ||
-                    group == 'uploader') &&
+                    group == 'uploader' ||
+                    group == 'series' ||
+                    group == 'character') &&
                 name.toLowerCase() != 'n/a') {
               Navigator.of(context).push(PageRouteBuilder(
                 // opaque: false,
@@ -719,6 +721,8 @@ class _Chip extends StatelessWidget {
                 pageBuilder: (_, __, ___) => ArtistInfoPage(
                   isGroup: group == 'groups',
                   isUploader: group == 'uploader',
+                  isCharacter: group == 'character',
+                  isSeries: group == 'series',
                   artist: name,
                 ),
               ));

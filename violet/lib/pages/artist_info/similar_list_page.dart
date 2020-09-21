@@ -19,9 +19,18 @@ class SimilarListPage extends StatelessWidget {
   final String prefix;
   final bool isGroup;
   final bool isUploader;
+  final bool isSeries;
+  final bool isCharacter;
   final List<Tuple2<String, double>> similarsAll;
-  SimilarListPage(
-      {this.prefix, this.similarsAll, this.isGroup, this.isUploader});
+
+  SimilarListPage({
+    this.prefix,
+    this.similarsAll,
+    this.isGroup,
+    this.isUploader,
+    this.isSeries,
+    this.isCharacter,
+  });
 
   Future<List<QueryResult>> _future(String e) async {
     var unescape = new HtmlUnescape();
@@ -150,6 +159,8 @@ class SimilarListPage extends StatelessWidget {
                                           ArtistInfoPage(
                                         isGroup: isGroup,
                                         isUploader: isUploader,
+                                        isCharacter: isCharacter,
+                                        isSeries: isSeries,
                                         artist: e.item1,
                                       ),
                                     ));
@@ -177,7 +188,11 @@ class SimilarListPage extends StatelessWidget {
                                                                     ? 'group'
                                                                     : isUploader
                                                                         ? 'uploader'
-                                                                        : 'artist',
+                                                                        : isSeries
+                                                                            ? 'series'
+                                                                            : isCharacter
+                                                                                ? 'character'
+                                                                                : 'artist',
                                                                 e.item1)
                                                             .toString() +
                                                         ')',
