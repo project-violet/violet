@@ -27,8 +27,9 @@ namespace hsync.Network
             if (this.capacity == 0)
                 this.capacity = Environment.ProcessorCount;
 
-            ThreadPool.SetMinThreads(816, 816);
-            semaphore = new SemaphoreSlim(816, 816);
+            int count = 50; //816;
+            ThreadPool.SetMinThreads(count, count);
+            semaphore = new SemaphoreSlim(count, count);
         }
 
         public Task Add(NetTask task)

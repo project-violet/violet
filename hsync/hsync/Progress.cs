@@ -85,7 +85,6 @@ namespace hsync
         public ExtractingProgressBar()
             : base()
         {
-            timer.Dispose();
         }
 
         public void Report(long total, long complete)
@@ -94,21 +93,24 @@ namespace hsync
             Interlocked.Exchange(ref currentProgress, value);
             this.total = total;
             this.complete = complete;
-
-            if (disposed) return;
-
-            int progressBlockCount = (int)(currentProgress * blockCount);
-            int percent = (int)(currentProgress * 100);
-
-            string text = string.Format("[{0}{1}] {2,3}% [{3}/{4}]",
-                new string('#', progressBlockCount), new string('-', blockCount - progressBlockCount),
-                percent, complete, total);
-
-            UpdateText(text);
         }
 
         protected override void TimerHandler(object state)
         {
+            lock (timer)
+            {
+                if (disposed) return;
+
+                int progressBlockCount = (int)(currentProgress * blockCount);
+                int percent = (int)(currentProgress * 100);
+
+                string text = string.Format("[{0}{1}] {2,3}% [{3}/{4}]",
+                    new string('#', progressBlockCount), new string('-', blockCount - progressBlockCount),
+                    percent, complete, total);
+                UpdateText(text);
+
+                ResetTimer();
+            }
         }
     }
 
