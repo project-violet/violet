@@ -99,7 +99,14 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 퍼지 검색은 검색어와 일부만 일치하는 태그들을 탐색합니다.
 이때 가장 일치하는 순서대로 태그들이 표시됩니다.
 
-## 4. 작품 정보
+## 4. 뷰어
+
+![](img/ko_viewer.png)
+
+`Violet`은 다양한 형태의 뷰어를 제공합니다.
+기본은 수직 스크롤 뷰(코믹 뷰어)이며 오른쪽 상단의 메뉴를 통해 뷰어를 바꿀 수 있습니다.
+
+## 5. 작품 정보
 
 ![](img/ko_article_info.png)
 
@@ -116,7 +123,7 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 
 미리보기는 작은 썸네일을 최대 30장까지 보여줍니다.
 
-## 5. 작가/그룹/업로더/시리즈/캐릭터 정보
+## 6. 작가/그룹/업로더/시리즈/캐릭터 정보
 
 ![](img/ko_agu_info.png)
 
@@ -132,16 +139,16 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 우측 사진은 시리즈 목록을 보여줍니다.
 비슷한 제목을 가진 작품들을 모아서 보여줍니다.
 
-## 6. 북마크
+## 7. 북마크
 
-### 6.1. 북마크 등록
+### 7.1. 북마크 등록
 
 ![](img/ko_bookmark_how1.gif) ![](img/ko_bookmark_how2.gif)
 
 작품썸네일을 길게 누르면 북마크를 등록/해제할 수 있습니다.
 기본적으로 모든 북마크는 `미분류` 북마크 그룹에 등록됩니다.
 
-### 6.2. 북마크 관리
+### 7.2. 북마크 관리
 
 ![](img/ko_bookmark_group.gif)
 
@@ -155,7 +162,7 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 우측 하단 플로팅 버튼에서 순서 편집을 누르면 북마크 그룹의 순서를 편집할 수 있습니다.
 편집이 끝나면 다시 우측 하단 플로팅 메뉴 버튼에서 순서 편집을 눌러 순서 편집을 종료하세요.
 
-### 6.3. 북마크 백업
+### 7.3. 북마크 백업
 
 `설정 -> 북마크 -> 북마크 내보내기`를 통해 북마크를 내보낼 수 있습니다.
 내보낸 북마크는 `Android/data/xyz.project.violet/files/bookmark.db`에서 찾을 수 있습니다.
@@ -167,7 +174,7 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 북마크를 내보낸 후 앱 데이터를 초기화하거나 앱을 삭제하면 북마크 데이터베이스도 같이 삭제됩니다.
 반드시 bookmark.db를 다른 기기나, 다른 폴더로 이동시킨 후 앱을 삭제해주세요.
 
-## 7. 필터
+## 8. 필터
 
 검색창 및 북마크 그룹 페이지에서 필터 기능을 사용할 수 있습니다.
 
@@ -175,18 +182,14 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 
 필터 기능을 사용하면 필터에서 선택된 태그가 포함된 작품들만 보여줍니다.
 
-## 8. 다운로드
+## 9. 다운로드
 
 다운로드 탭에서 직접 URL을 입력해 `Hitomi.la` 작품과 `인스타그램`, `픽시브` 계정의 컨텐츠를 다운로드할 수 있습니다.
 `픽시브`는 설정창에서 로그인이 필요합니다.
 
-## 9. 작가 컬렉션
+## 10. 작가 컬렉션
 
 작가 컬렉션은 홈 화면의 `Artists Collection!`을 통해 확인할 수 있습니다.
 전체 작가 목록은 아래 URL에서 확인해주세요.
 
 https://github.com/project-violet/violet/blob/dev/lib/component/hitomi/artists.dart
-
-## 10. 향후 계획
-
-완벽한 웹 검색 지원을 1.0 버전 목표로하고 있습니다.
