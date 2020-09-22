@@ -16,6 +16,7 @@ import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -96,6 +97,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pageInfo = Provider.of<ViewerPageProvider>(context);
+
+    // _pageInfo.uris.forEach((element) {
+    //   print("'$element',");
+    // });
   }
 
   @override
@@ -145,12 +150,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   @override
   Widget build(BuildContext context) {
-    // ImageCache _imageCache = PaintingBinding.instance.imageCache;
-    // if (_imageCache.currentSizeBytes >= 200 << 20 ||
-    //     _imageCache.currentSize >= 50) {
-    //   _imageCache.clear();
-    //   _imageCache.clearLiveImages();
-    // }
+    ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    if (_imageCache.currentSizeBytes >= 1024 << 20
+        // || _imageCache.currentSize >= 50
+        ) {
+      _imageCache.clear();
+      _imageCache.clearLiveImages();
+    }
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -265,7 +271,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               itemCount: _pageInfo.uris.length,
               itemScrollController: itemScrollController,
               itemPositionsListener: itemPositionsListener,
-              minCacheExtent: height * 2,
+              minCacheExtent: height * 1.5,
               itemBuilder: (context, index) {
                 if (!Settings.padding) {
                   if (_pageInfo.useWeb)
@@ -547,10 +553,14 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     );
   }
 
+  List<double> _height;
+  List<GlobalKey> _keys;
   _networkImageItem(index) {
     final width = MediaQuery.of(context).size.width;
     if (_height == null) {
       _height = List<double>.filled(_pageInfo.uris.length, 0);
+      _keys = List<GlobalKey>.generate(
+          _pageInfo.uris.length, (index) => GlobalKey());
     }
     return FutureBuilder(
       // to avoid loading all images when fast scrolling
@@ -574,26 +584,22 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         return Container(
           constraints: BoxConstraints(
               minHeight: _height[index] != 0 ? _height[index] : 300),
-          child: OptimizedCacheImage(
+          child: VOptimizedCacheImage(
+            key: _keys[index],
             imageUrl: _pageInfo.uris[index],
             httpHeaders: _pageInfo.headers,
             fit: BoxFit.cover,
             fadeInDuration: Duration(microseconds: 500),
             fadeInCurve: Curves.easeIn,
-            imageBuilder: (context, imageProvider) {
-              Image imageView = Image(
-                image: imageProvider,
-              );
-              ImageStream stream =
-                  imageView.image.resolve(ImageConfiguration());
-              stream.addListener(
-                  ImageStreamListener((ImageInfo info, bool synchronousCall) {
-                var myImage = info.image;
-                Size size =
-                    Size(myImage.width.toDouble(), myImage.height.toDouble());
-                _height[index] = width / size.aspectRatio;
-              }));
-              return imageView;
+            imageBuilder: (context, imageProvider, child) {
+              try {
+                final RenderBox renderBoxRed =
+                    _keys[index].currentContext.findRenderObject();
+                final sizeRender = renderBoxRed.size;
+                if (sizeRender.height != 300)
+                  _height[index] = width / sizeRender.aspectRatio;
+              } catch (e) {}
+              return child;
             },
             progressIndicatorBuilder: (context, string, progress) {
               return SizedBox(
@@ -613,7 +619,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     );
   }
 
-  List<double> _height;
   _storageImageItem(index) {
     final width = MediaQuery.of(context).size.width;
     if (_height == null) {
