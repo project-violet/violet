@@ -690,7 +690,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   Future<Size> _calculateNetworkImageDimension(String uri) async {
     Completer<Size> completer = Completer();
-    Image image = new Image(image: OptimizedCacheImageProvider(uri));
+    Image image = new Image(
+        image: OptimizedCacheImageProvider(uri, headers: _pageInfo.headers));
     image.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
