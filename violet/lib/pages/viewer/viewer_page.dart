@@ -291,6 +291,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
                     );
                 }
+                throw new Exception('Dead Reaching');
               },
             ),
           ),
@@ -400,6 +401,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         maxScale: PhotoViewComputedScale.contained * 5.0,
       );
     }
+    throw new Exception('Dead Reaching');
   }
 
   bool _overlayOpend = false;
@@ -550,43 +552,15 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     if (_height == null) {
       _height = List<double>.filled(_pageInfo.uris.length, 0);
     }
-    if (_height[index] == 0) {
-      return FutureBuilder(
-        // to avoid loading all images when fast scrolling
-        future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
-          return await _calculateNetworkImageDimension(_pageInfo.uris[index]);
-        }),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            _height[index] = width / snapshot.data.aspectRatio;
-            return Container(
-              height: _height[index],
-              child: OptimizedCacheImage(
-                imageUrl: _pageInfo.uris[index],
-                httpHeaders: _pageInfo.headers,
-                fit: BoxFit.cover,
-                fadeInDuration: Duration(microseconds: 500),
-                fadeInCurve: Curves.easeIn,
-                // memCacheWidth: width.toInt(),
-                progressIndicatorBuilder: (context, string, progress) {
-                  return SizedBox(
-                    height: 300,
-                    child: Center(
-                      child: SizedBox(
-                        child:
-                            CircularProgressIndicator(value: progress.progress),
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-
+    return FutureBuilder(
+      // to avoid loading all images when fast scrolling
+      future: Future.delayed(Duration(milliseconds: 300)).then((value) => 1),
+      builder: (context, snapshot) {
+        // To prevent the scroll from being chewed,
+        // it is necessary to put an empty box for the invisible part.
+        if (!snapshot.hasData && _height[index] == 0) {
           return SizedBox(
-            height: _height[index] != 0 ? _height[index] : 300,
+            height: 300,
             child: Center(
               child: SizedBox(
                 child: CircularProgressIndicator(),
@@ -595,34 +569,48 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               ),
             ),
           );
-        },
-      );
-    } else {
-      // Prevent flicking when no animate jump page
-      return Container(
-        height: _height[index],
-        child: OptimizedCacheImage(
-          imageUrl: _pageInfo.uris[index],
-          httpHeaders: _pageInfo.headers,
-          fit: BoxFit.cover,
-          fadeInDuration: Duration(microseconds: 500),
-          fadeInCurve: Curves.easeIn,
-          // memCacheWidth: width.toInt(),
-          progressIndicatorBuilder: (context, string, progress) {
-            return SizedBox(
-              height: 300,
-              child: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(value: progress.progress),
-                  width: 30,
-                  height: 30,
+        }
+
+        return Container(
+          constraints: BoxConstraints(
+              minHeight: _height[index] != 0 ? _height[index] : 300),
+          child: OptimizedCacheImage(
+            imageUrl: _pageInfo.uris[index],
+            httpHeaders: _pageInfo.headers,
+            fit: BoxFit.cover,
+            fadeInDuration: Duration(microseconds: 500),
+            fadeInCurve: Curves.easeIn,
+            imageBuilder: (context, imageProvider) {
+              Image imageView = Image(
+                image: imageProvider,
+              );
+              ImageStream stream =
+                  imageView.image.resolve(ImageConfiguration());
+              stream.addListener(
+                  ImageStreamListener((ImageInfo info, bool synchronousCall) {
+                var myImage = info.image;
+                Size size =
+                    Size(myImage.width.toDouble(), myImage.height.toDouble());
+                _height[index] = width / size.aspectRatio;
+              }));
+              return imageView;
+            },
+            progressIndicatorBuilder: (context, string, progress) {
+              return SizedBox(
+                height: 300,
+                child: Center(
+                  child: SizedBox(
+                    child: CircularProgressIndicator(value: progress.progress),
+                    width: 30,
+                    height: 30,
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
-      );
-    }
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 
   List<double> _height;

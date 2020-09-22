@@ -63,6 +63,7 @@ dependencies:
   flutter_staggered_animations: "^0.1.2"
   flutter_svg:
   fluttertoast:
+  freezed_annotation:
   gradient_widgets:
   html:
   html_unescape:
@@ -129,6 +130,8 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
+  freezed: ^0.12.1
+  moor_flutter: ^3.1.0
 
 
 # For information on the generic Dart part of this file, see the
