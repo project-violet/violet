@@ -151,7 +151,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   @override
   Widget build(BuildContext context) {
     ImageCache _imageCache = PaintingBinding.instance.imageCache;
-    if (_imageCache.currentSizeBytes >= 1024 << 20
+    if (_imageCache.currentSizeBytes >= (1024 + 256) << 20
         // || _imageCache.currentSize >= 50
         ) {
       _imageCache.clear();
@@ -271,7 +271,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               itemCount: _pageInfo.uris.length,
               itemScrollController: itemScrollController,
               itemPositionsListener: itemPositionsListener,
-              minCacheExtent: height * 1.5,
+              minCacheExtent: height * 3.0,
               itemBuilder: (context, index) {
                 if (!Settings.padding) {
                   if (_pageInfo.useWeb)
