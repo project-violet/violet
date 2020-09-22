@@ -32,6 +32,12 @@ Discord Channel: https://discord.gg/fqrtRxC
 iOS version of violet is already ready.
 However, unlike the Android version, 7z decompression and downloader are omitted.
 
+### Code Refactoring Plan
+
+Violet is my first mobile app project.
+Since I started without knowing anything, I didn't even know basic concepts like state management, so the code is very dirty.
+I have plans to refactor all my code until 2.0.0 version using bloc and provider etc.
+
 ### Multiple Language Support
 
 If you want to add your language to the app,
