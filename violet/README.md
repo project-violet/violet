@@ -32,6 +32,19 @@ Discord Channel: https://discord.gg/fqrtRxC
 iOS version of violet is already ready.
 However, unlike the Android version, 7z decompression and downloader are omitted.
 
+#### How to build?
+
+Install `flutter` and `Xcode` and make the following changes:
+
+```
+1. Remove 'firebase_*' and 'flutter_downloader' packages
+2. Remove validator on lib/server/violet.dart
+3. Run 'flutter run --release' command
+   or Run ios/Runner.xcworkspace and build release
+```
+
+Developer certificate renewal is required once a week, so use `AltStore` if necessary.
+
 ### Code Refactoring Plan
 
 Violet is my first mobile app project.
