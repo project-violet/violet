@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:auto_animated/auto_animated.dart';
@@ -329,65 +330,67 @@ class _SearchPageState extends State<SearchPage>
                 });
               },
               onLongPress: () async {
-                Navigator.of(context)
-                    .push(PageRouteBuilder(
-                  // opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder: (BuildContext context,
-                      Animation<double> animation,
-                      Animation<double> secondaryAnimation,
-                      Widget wi) {
-                    return new FadeTransition(opacity: animation, child: wi);
-                  },
-                  pageBuilder: (_, __, ___) => SearchFilter(
-                    ignoreBookmark: ignoreBookmark,
-                    blurred: blurred,
-                    queryResult: queryResult,
-                    tagStates: tagStates,
-                    groupStates: groupStates,
-                    isOr: isOr,
-                  ),
-                ))
-                    .then((value) async {
-                  isFilterUsed = true;
-                  ignoreBookmark = value[0];
-                  blurred = value[1];
-                  tagStates = value[2];
-                  groupStates = value[3];
-                  isOr = value[4];
-                  var result = List<QueryResult>();
-                  queryResult.forEach((element) {
-                    var succ = !isOr;
-                    tagStates.forEach((key, value) {
-                      if (!value) return;
-                      if (succ == isOr) return;
-                      var split = key.split('|');
-                      var kk = prefix2Tag(split[0]);
-                      if (element.result[kk] == null && !isOr) {
-                        succ = false;
-                        return;
-                      }
-                      if (!isSingleTag(split[0])) {
-                        var tt = split[1];
-                        if (split[0] == 'female' || split[0] == 'male')
-                          tt = split[0] + ':' + split[1];
-                        if ((element.result[kk] as String)
-                                .contains('|' + tt + '|') ==
+                if (!Platform.isIOS) {
+                  Navigator.of(context)
+                      .push(PageRouteBuilder(
+                    // opaque: false,
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder: (BuildContext context,
+                        Animation<double> animation,
+                        Animation<double> secondaryAnimation,
+                        Widget wi) {
+                      return new FadeTransition(opacity: animation, child: wi);
+                    },
+                    pageBuilder: (_, __, ___) => SearchFilter(
+                      ignoreBookmark: ignoreBookmark,
+                      blurred: blurred,
+                      queryResult: queryResult,
+                      tagStates: tagStates,
+                      groupStates: groupStates,
+                      isOr: isOr,
+                    ),
+                  ))
+                      .then((value) async {
+                    isFilterUsed = true;
+                    ignoreBookmark = value[0];
+                    blurred = value[1];
+                    tagStates = value[2];
+                    groupStates = value[3];
+                    isOr = value[4];
+                    var result = List<QueryResult>();
+                    queryResult.forEach((element) {
+                      var succ = !isOr;
+                      tagStates.forEach((key, value) {
+                        if (!value) return;
+                        if (succ == isOr) return;
+                        var split = key.split('|');
+                        var kk = prefix2Tag(split[0]);
+                        if (element.result[kk] == null && !isOr) {
+                          succ = false;
+                          return;
+                        }
+                        if (!isSingleTag(split[0])) {
+                          var tt = split[1];
+                          if (split[0] == 'female' || split[0] == 'male')
+                            tt = split[0] + ':' + split[1];
+                          if ((element.result[kk] as String)
+                                  .contains('|' + tt + '|') ==
+                              isOr) succ = isOr;
+                        } else if ((element.result[kk] as String == split[1]) ==
                             isOr) succ = isOr;
-                      } else if ((element.result[kk] as String == split[1]) ==
-                          isOr) succ = isOr;
+                      });
+                      if (succ) result.add(element);
                     });
-                    if (succ) result.add(element);
+                    filterResult = result;
+                    setState(() {
+                      key = ObjectKey(Uuid().v4());
+                    });
+                    // await Future.delayed(
+                    //     Duration(milliseconds: 50), () {
+                    //   setState(() {});
+                    // });
                   });
-                  filterResult = result;
-                  setState(() {
-                    key = ObjectKey(Uuid().v4());
-                  });
-                  // await Future.delayed(
-                  //     Duration(milliseconds: 50), () {
-                  //   setState(() {});
-                  // });
-                });
+                }
               },
             ),
           ),

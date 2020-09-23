@@ -194,13 +194,15 @@ class Settings {
       await (await SharedPreferences.getInstance()).setBool('padding', padding);
     }
 
-    downloadBasePath =
-        (await SharedPreferences.getInstance()).getString('downloadbasepath');
-    if (downloadBasePath == null) {
-      final String path = await ExtStorage.getExternalStorageDirectory();
-      downloadBasePath = join(path, 'Violet');
-      await (await SharedPreferences.getInstance())
-          .setString('downloadbasepath', downloadBasePath);
+    if (Platform.isAndroid) {
+      downloadBasePath =
+          (await SharedPreferences.getInstance()).getString('downloadbasepath');
+      if (downloadBasePath == null) {
+        final String path = await ExtStorage.getExternalStorageDirectory();
+        downloadBasePath = join(path, 'Violet');
+        await (await SharedPreferences.getInstance())
+            .setString('downloadbasepath', downloadBasePath);
+      }
     }
 
     useVioletServer =

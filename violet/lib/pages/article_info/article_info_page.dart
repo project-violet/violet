@@ -4,6 +4,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_statusbar_manager/flutter_statusbar_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
@@ -694,38 +695,50 @@ class _Chip extends StatelessWidget {
                     group == 'series' ||
                     group == 'character') &&
                 name.toLowerCase() != 'n/a') {
-              Navigator.of(context).push(PageRouteBuilder(
-                // opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                // transitionsBuilder: (BuildContext context,
-                //     Animation<double> animation,
-                //     Animation<double> secondaryAnimation,
-                //     Widget wi) {
-                //   // return wi;
-                //   return new FadeTransition(opacity: animation, child: wi);
-                // },
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  var begin = Offset(0.0, 1.0);
-                  var end = Offset.zero;
-                  var curve = Curves.ease;
+              if (!Platform.isIOS) {
+                Navigator.of(context).push(PageRouteBuilder(
+                  // opaque: false,
+                  transitionDuration: Duration(milliseconds: 500),
+                  // transitionsBuilder: (BuildContext context,
+                  //     Animation<double> animation,
+                  //     Animation<double> secondaryAnimation,
+                  //     Widget wi) {
+                  //   // return wi;
+                  //   return new FadeTransition(opacity: animation, child: wi);
+                  // },
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    var begin = Offset(0.0, 1.0);
+                    var end = Offset.zero;
+                    var curve = Curves.ease;
 
-                  var tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: curve));
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
 
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-                pageBuilder: (_, __, ___) => ArtistInfoPage(
-                  isGroup: group == 'groups',
-                  isUploader: group == 'uploader',
-                  isCharacter: group == 'character',
-                  isSeries: group == 'series',
-                  artist: name,
-                ),
-              ));
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (_, __, ___) => ArtistInfoPage(
+                    isGroup: group == 'groups',
+                    isUploader: group == 'uploader',
+                    isCharacter: group == 'character',
+                    isSeries: group == 'series',
+                    artist: name,
+                  ),
+                ));
+              } else {
+                Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (_) => ArtistInfoPage(
+                    isGroup: group == 'groups',
+                    isUploader: group == 'uploader',
+                    isCharacter: group == 'character',
+                    isSeries: group == 'series',
+                    artist: name,
+                  ),
+                ));
+              }
             }
           },
         ));

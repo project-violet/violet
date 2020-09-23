@@ -1,7 +1,10 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:violet/component/hitomi/artists.dart';
 import 'package:violet/locale/locale.dart';
@@ -105,27 +108,32 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                             ),
                           ),
                           onTap: () {
-                            Navigator.of(context).push(PageRouteBuilder(
-                              opaque: false,
-                              transitionDuration: Duration(milliseconds: 500),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = Offset(0.0, 1.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
+                            if (!Platform.isIOS) {
+                              Navigator.of(context).push(PageRouteBuilder(
+                                opaque: false,
+                                transitionDuration: Duration(milliseconds: 500),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  var begin = Offset(0.0, 1.0);
+                                  var end = Offset.zero;
+                                  var curve = Curves.ease;
 
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
+                                  var tween = Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: curve));
 
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
-                              pageBuilder: (_, __, ___) => ArtistListPage(
-                                aritsts: item.value,
-                              ),
-                            ));
+                                  return SlideTransition(
+                                    position: animation.drive(tween),
+                                    child: child,
+                                  );
+                                },
+                                pageBuilder: (_, __, ___) => ArtistListPage(
+                                  aritsts: item.value,
+                                ),
+                              ));
+                            } else {
+                              Navigator.of(context).push(CupertinoPageRoute(
+                                  builder: (_) => ArtistListPage()));
+                            }
                           },
                         ),
                       );
