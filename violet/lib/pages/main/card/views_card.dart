@@ -72,10 +72,10 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                         },
                         pageBuilder: (_, __, ___) => ViewsPage(),
                       ));
+                    } else {
+                      Navigator.of(context).push(
+                          CupertinoPageRoute(builder: (_) => ViewsPage()));
                     }
-                  } else {
-                    Navigator.of(context)
-                        .push(CupertinoPageRoute(builder: (_) => ViewsPage()));
                   }
                 }),
               child: Container(
