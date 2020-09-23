@@ -1,6 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:provider/provider.dart';
@@ -108,32 +111,44 @@ class ArtistListPage extends StatelessWidget {
                                   );
                                 return InkWell(
                                   onTap: () async {
-                                    Navigator.of(context).push(PageRouteBuilder(
-                                      // opaque: false,
-                                      transitionDuration:
-                                          Duration(milliseconds: 500),
-                                      transitionsBuilder: (context, animation,
-                                          secondaryAnimation, child) {
-                                        var begin = Offset(0.0, 1.0);
-                                        var end = Offset.zero;
-                                        var curve = Curves.ease;
+                                    if (!Platform.isIOS) {
+                                      Navigator.of(context)
+                                          .push(PageRouteBuilder(
+                                        // opaque: false,
+                                        transitionDuration:
+                                            Duration(milliseconds: 500),
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          var begin = Offset(0.0, 1.0);
+                                          var end = Offset.zero;
+                                          var curve = Curves.ease;
 
-                                        var tween = Tween(
-                                                begin: begin, end: end)
-                                            .chain(CurveTween(curve: curve));
+                                          var tween = Tween(
+                                                  begin: begin, end: end)
+                                              .chain(CurveTween(curve: curve));
 
-                                        return SlideTransition(
-                                          position: animation.drive(tween),
-                                          child: child,
-                                        );
-                                      },
-                                      pageBuilder: (_, __, ___) =>
-                                          ArtistInfoPage(
-                                        isGroup: false,
-                                        isUploader: false,
-                                        artist: e,
-                                      ),
-                                    ));
+                                          return SlideTransition(
+                                            position: animation.drive(tween),
+                                            child: child,
+                                          );
+                                        },
+                                        pageBuilder: (_, __, ___) =>
+                                            ArtistInfoPage(
+                                          isGroup: false,
+                                          isUploader: false,
+                                          artist: e,
+                                        ),
+                                      ));
+                                    } else {
+                                      Navigator.of(context)
+                                          .push(CupertinoPageRoute(
+                                        builder: (_) => ArtistInfoPage(
+                                          isGroup: false,
+                                          isUploader: false,
+                                          artist: e,
+                                        ),
+                                      ));
+                                    }
                                   },
                                   child: SizedBox(
                                     height: 195,

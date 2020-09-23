@@ -1,10 +1,12 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:animated_widgets/animated_widgets.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -240,33 +242,40 @@ class _BookmarkPageState extends State<BookmarkPage>
                 )
               : ListTile(
                   onTap: () {
-                    Navigator.of(context).push(PageRouteBuilder(
-                        opaque: false,
-                        transitionDuration: Duration(milliseconds: 500),
-                        // transitionsBuilder: (BuildContext context,
-                        //     Animation<double> animation,
-                        //     Animation<double> secondaryAnimation,
-                        //     Widget wi) {
-                        //   // return wi;
-                        //   return new FadeTransition(opacity: animation, child: wi);
-                        // },
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          var begin = Offset(0.0, 1.0);
-                          var end = Offset.zero;
-                          var curve = Curves.ease;
+                    if (!Platform.isIOS) {
+                      Navigator.of(context).push(PageRouteBuilder(
+                          opaque: false,
+                          transitionDuration: Duration(milliseconds: 500),
+                          // transitionsBuilder: (BuildContext context,
+                          //     Animation<double> animation,
+                          //     Animation<double> secondaryAnimation,
+                          //     Widget wi) {
+                          //   // return wi;
+                          //   return new FadeTransition(opacity: animation, child: wi);
+                          // },
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            var begin = Offset(0.0, 1.0);
+                            var end = Offset.zero;
+                            var curve = Curves.ease;
 
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
 
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                        pageBuilder: (_, __, ___) => id == -1
-                            ? RecordViewPage()
-                            : GroupArticleListPage(groupId: id, name: name)));
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (_, __, ___) => id == -1
+                              ? RecordViewPage()
+                              : GroupArticleListPage(groupId: id, name: name)));
+                    } else {
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (_) => id == -1
+                              ? RecordViewPage()
+                              : GroupArticleListPage(groupId: id, name: name)));
+                    }
                   },
                   onLongPress: () async {
                     if (index == -1 || oname == 'violet_default')

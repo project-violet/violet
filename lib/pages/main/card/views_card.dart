@@ -1,9 +1,11 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:division/division.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
@@ -51,24 +53,29 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                       return;
                     }
 
-                    Navigator.of(context).push(PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        var begin = Offset(0.0, 1.0);
-                        var end = Offset.zero;
-                        var curve = Curves.ease;
+                    if (!Platform.isIOS) {
+                      Navigator.of(context).push(PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 500),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          var begin = Offset(0.0, 1.0);
+                          var end = Offset.zero;
+                          var curve = Curves.ease;
 
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
 
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (_, __, ___) => ViewsPage(),
-                    ));
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (_, __, ___) => ViewsPage(),
+                      ));
+                    }
+                  } else {
+                    Navigator.of(context)
+                        .push(CupertinoPageRoute(builder: (_) => ViewsPage()));
                   }
                 }),
               child: Container(
