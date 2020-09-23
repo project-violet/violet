@@ -65,10 +65,10 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                         },
                         pageBuilder: (_, __, ___) => ArtistCollectionPage(),
                       ));
+                    } else {
+                      Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (_) => ArtistCollectionPage()));
                     }
-                  } else {
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (_) => ArtistCollectionPage()));
                   }
                 }),
               child: Container(
