@@ -17,7 +17,6 @@ import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/version/update_sync.dart';
@@ -375,13 +374,13 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         final path1 = File('${directory.path}/index.json');
         path1.writeAsString(jsonEncode(index));
 
-        final path2 = File('${directory.path}/tag_artist.json');
+        final path2 = File('${directory.path}/tag-artist.json');
         path2.writeAsString(jsonEncode(tagArtist));
-        final path3 = File('${directory.path}/tag_group.json');
+        final path3 = File('${directory.path}/tag-group.json');
         path3.writeAsString(jsonEncode(tagGroup));
-        final path4 = File('${directory.path}/tag_index.json');
+        final path4 = File('${directory.path}/tag-index.json');
         path4.writeAsString(jsonEncode(tagIndex));
-        final path5 = File('${directory.path}/tag_uploader.json');
+        final path5 = File('${directory.path}/tag-uploader.json');
         path5.writeAsString(jsonEncode(tagUploader));
 
         setState(() {

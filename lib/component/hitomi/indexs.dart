@@ -30,25 +30,26 @@ class HitomiIndexs {
 
   static Future<void> init() async {
     final directory = await getApplicationDocumentsDirectory();
+    final subdir = Platform.isAndroid ? '/data' : '';
 
     // No data on first run.
-    final path2 = File('${directory.path}/data/tag-artist.json');
+    final path2 = File('${directory.path}$subdir/tag-artist.json');
     if (!await path2.exists()) return;
     tagArtist = jsonDecode(await path2.readAsString());
-    final path3 = File('${directory.path}/data/tag-group.json');
+    final path3 = File('${directory.path}$subdir/tag-group.json');
     tagGroup = jsonDecode(await path3.readAsString());
-    final path4 = File('${directory.path}/data/tag-index.json');
+    final path4 = File('${directory.path}$subdir/tag-index.json');
     tagIndex = jsonDecode(await path4.readAsString());
-    final path5 = File('${directory.path}/data/tag-uploader.json');
+    final path5 = File('${directory.path}$subdir/tag-uploader.json');
     tagUploader = jsonDecode(await path5.readAsString());
     try {
-      final path6 = File('${directory.path}/data/tag-series.json');
+      final path6 = File('${directory.path}$subdir/tag-series.json');
       tagSeries = jsonDecode(await path6.readAsString());
-      final path7 = File('${directory.path}/data/tag-character.json');
+      final path7 = File('${directory.path}$subdir/tag-character.json');
       tagCharacter = jsonDecode(await path7.readAsString());
-      final path8 = File('${directory.path}/data/character-series.json');
+      final path8 = File('${directory.path}$subdir/character-series.json');
       characterSeries = jsonDecode(await path8.readAsString());
-      final path9 = File('${directory.path}/data/series-character.json');
+      final path9 = File('${directory.path}$subdir/series-character.json');
       seriesCharacter = jsonDecode(await path9.readAsString());
     } catch (e) {}
   }
