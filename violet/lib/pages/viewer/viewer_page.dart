@@ -592,13 +592,15 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             fadeInDuration: Duration(microseconds: 500),
             fadeInCurve: Curves.easeIn,
             imageBuilder: (context, imageProvider, child) {
-              try {
-                final RenderBox renderBoxRed =
-                    _keys[index].currentContext.findRenderObject();
-                final sizeRender = renderBoxRed.size;
-                if (sizeRender.height != 300)
-                  _height[index] = width / sizeRender.aspectRatio;
-              } catch (e) {}
+              if (_height[index] == 0 || _height[index] == 300) {
+                try {
+                  final RenderBox renderBoxRed =
+                      _keys[index].currentContext.findRenderObject();
+                  final sizeRender = renderBoxRed.size;
+                  if (sizeRender.height != 300)
+                    _height[index] = width / sizeRender.aspectRatio;
+                } catch (e) {}
+              }
               return child;
             },
             progressIndicatorBuilder: (context, string, progress) {
