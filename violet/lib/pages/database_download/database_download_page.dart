@@ -13,6 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/other/dialogs.dart';
@@ -188,9 +189,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     int _tnu = 0;
 
     try {
-      var dir = await getApplicationDocumentsDirectory();
-      if (await File("${dir.path}/data.db").exists())
-        await File("${dir.path}/data.db").delete();
+      var dir = await getDatabasesPath();
+      if (await File("$dir/data.db").exists())
+        await File("$dir/data.db").delete();
       Timer _timer = new Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
@@ -198,8 +199,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                 _tlatest = _tnu;
                 _tnu = 0;
               }));
-      await dio.download(UpdateSyncManager.rawlangDBIOS[widget.dbType].item2,
-          "${dir.path}/data.db", onReceiveProgress: (rec, total) {
+      await dio.download(
+          UpdateSyncManager.rawlangDBIOS[widget.dbType].item2, "$dir/data.db",
+          onReceiveProgress: (rec, total) {
         _nu += rec - latest;
         _tnu += rec - latest;
         latest = rec;
@@ -219,7 +221,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
-          .setString('db_path', "${dir.path}/data.db");
+          .setString('db_path', "$dir/data.db");
       await (await SharedPreferences.getInstance())
           .setString('databasetype', widget.dbType);
       await (await SharedPreferences.getInstance()).setString('databasesync',

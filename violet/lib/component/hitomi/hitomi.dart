@@ -65,8 +65,9 @@ class HitomiManager {
 
   static int getArticleCount(String classification, String name) {
     if (tagmap == null) {
+      final subdir = Platform.isAndroid ? '/data' : '';
       final path =
-          File('${Variables.applicationDocumentsDirectory}/data/index.json');
+          File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
@@ -78,8 +79,9 @@ class HitomiManager {
   static Future<List<Tuple3<String, String, int>>> queryAutoComplete(
       String prefix) async {
     if (tagmap == null) {
+      final subdir = Platform.isAndroid ? '/data' : '';
       final directory = await getApplicationDocumentsDirectory();
-      final path = File('${directory.path}/data/index.json');
+      final path = File('${directory.path}$subdir/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
@@ -169,8 +171,9 @@ class HitomiManager {
   static Future<List<Tuple3<String, String, int>>> queryAutoCompleteFuzzy(
       String prefix) async {
     if (tagmap == null) {
+      final subdir = Platform.isAndroid ? '/data' : '';
       final directory = await getApplicationDocumentsDirectory();
-      final path = File('${directory.path}/data/index.json');
+      final path = File('${directory.path}$subdir/index.json');
       final text = path.readAsStringSync();
       tagmap = jsonDecode(text);
     }
