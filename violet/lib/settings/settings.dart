@@ -44,6 +44,8 @@ class Settings {
 
   static bool useVioletServer;
 
+  static bool useDrawer;
+
   static Future<void> init() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
     var mac =
@@ -212,6 +214,13 @@ class Settings {
       await (await SharedPreferences.getInstance())
           .setBool('usevioletserver', useVioletServer);
     }
+
+    useDrawer = (await SharedPreferences.getInstance()).getBool('usedrawer');
+    if (useDrawer == null) {
+      useDrawer = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('usedrawer', useDrawer);
+    }
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -319,5 +328,10 @@ class Settings {
     useVioletServer = nn;
     await (await SharedPreferences.getInstance())
         .setBool('usevioletserver', nn);
+  }
+
+  static Future<void> setUseDrawer(bool nn) async {
+    useDrawer = nn;
+    await (await SharedPreferences.getInstance()).setBool('usedrawer', nn);
   }
 }

@@ -185,57 +185,22 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                   _buildDivider(),
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10.0),
-                            bottomRight: Radius.circular(10.0))),
-                    child: ListTile(
-                      leading: ShaderMask(
-                        shaderCallback: (bounds) => RadialGradient(
-                          center: Alignment.bottomLeft,
-                          radius: 1.2,
-                          colors: [Colors.orange, Colors.pink],
-                          tileMode: TileMode.clamp,
-                        ).createShader(bounds),
-                        child:
-                            Icon(MdiIcons.formatColorFill, color: Colors.white),
-                      ),
-                      title:
-                          Text(Translations.of(context).trans('colorsetting')),
-                      trailing: Icon(
-                          // Icons.message,
-                          Icons.keyboard_arrow_right),
+                  ListTile(
+                    leading: ShaderMask(
+                      shaderCallback: (bounds) => RadialGradient(
+                        center: Alignment.bottomLeft,
+                        radius: 1.2,
+                        colors: [Colors.orange, Colors.pink],
+                        tileMode: TileMode.clamp,
+                      ).createShader(bounds),
+                      child:
+                          Icon(MdiIcons.formatColorFill, color: Colors.white),
                     ),
+                    title: Text(Translations.of(context).trans('colorsetting')),
+                    trailing: Icon(
+                        // Icons.message,
+                        Icons.keyboard_arrow_right),
                     onTap: () {
-                      // showDialog(
-                      //   context: context,
-                      //   builder: (BuildContext context) {
-                      //     return AlertDialog(
-                      //       titlePadding: const EdgeInsets.all(0.0),
-                      //       contentPadding: const EdgeInsets.all(0.0),
-                      //       content: SingleChildScrollView(
-                      //         child: ColorPicker(
-                      //           pickerColor: Settings.majorColor,
-                      //           onColorChanged: (color) async {
-                      //             await Settings.setMajorColor(color);
-                      //             setState(() {});
-                      //           },
-                      //           colorPickerWidth: 300.0,
-                      //           pickerAreaHeightPercent: 0.7,
-                      //           enableAlpha: true,
-                      //           displayThumbColor: true,
-                      //           showLabel: true,
-                      //           paletteType: PaletteType.hsv,
-                      //           pickerAreaBorderRadius: const BorderRadius.only(
-                      //             topLeft: const Radius.circular(2.0),
-                      //             topRight: const Radius.circular(2.0),
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     );
-                      //   },
-                      // );
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -254,25 +219,28 @@ class _SettingsPageState extends State<SettingsPage>
                           );
                         },
                       );
-                      // showDialog(
-                      //   context: context,
-                      //   builder: (BuildContext context) {
-                      //     return AlertDialog(
-                      //       titlePadding: const EdgeInsets.all(0.0),
-                      //       contentPadding: const EdgeInsets.all(0.0),
-                      //       content: SingleChildScrollView(
-                      //         child: MaterialPicker(
-                      //           pickerColor: Settings.majorColor,
-                      //           onColorChanged: (color) async {
-                      //             await Settings.setMajorColor(color);
-                      //             setState(() {});
-                      //           },
-                      //           enableLabel: true,
-                      //         ),
-                      //       ),
-                      //     );
-                      //   },
-                      // );
+                    },
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.cellphoneText,
+                          color: Settings.majorColor),
+                      title: Text('Drawer 사용'),
+                      trailing: Switch(
+                        value: Settings.useDrawer,
+                        onChanged: (value) async {},
+                        activeTrackColor: Settings.majorColor,
+                        activeColor: Settings.majorAccentColor,
+                      ),
+                    ),
+                    onTap: () async {
+                      await Settings.setUseDrawer(!Settings.useDrawer);
+                      setState(() {});
                     },
                   ),
                 ]),
