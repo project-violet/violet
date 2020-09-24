@@ -636,6 +636,22 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                   _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      Icons.router,
+                      color: Settings.majorColor,
+                    ),
+                    title: Text('Image ' +
+                        Translations.of(context).trans('routing_rule')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () async {
+                      await showDialog(
+                        context: context,
+                        child: ImageRouteDialog(),
+                      );
+                    },
+                  ),
+                  _buildDivider(),
                   InkWell(
                     customBorder: RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(

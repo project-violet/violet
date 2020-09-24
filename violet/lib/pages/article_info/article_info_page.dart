@@ -286,6 +286,11 @@ class _InfoAreaWidget extends StatelessWidget {
                                   // uris: ThumbnailManager.get(queryResult.id())
                                   //     .item1,
                                   // useWeb: true,
+
+                                  uris: List<String>.filled(
+                                      ProviderManager.get(queryResult.id())
+                                          .length(),
+                                      null),
                                   useProvider: true,
                                   provider:
                                       ProviderManager.get(queryResult.id()),
@@ -575,7 +580,7 @@ class _InfoAreaWidget extends StatelessWidget {
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            children: snapshot.data
+            children: (snapshot.data as List<String>)
                 .map((e) => CachedNetworkImage(
                       imageUrl: e,
                     ))
