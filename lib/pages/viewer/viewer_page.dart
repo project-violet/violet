@@ -700,16 +700,28 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     return completer.future;
   }
 
+  List<Map<String, String>> _headerCache;
+  List<String> _urlCache;
   _providerImageItem(index) {
-    return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
-        var header = await _pageInfo.provider.getHeader(index);
-        var url = await _pageInfo.provider.getImageUrl(index);
+    if (_headerCache == null) {
+      _headerCache =
+          List<Map<String, String>>.filled(_pageInfo.uris.length, null);
+      _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+    }
 
-        return Tuple2<Map<String, String>, String>(header, url);
-      }),
+    final width = MediaQuery.of(context).size.width;
+    if (_height == null) {
+      _height = List<double>.filled(_pageInfo.uris.length, 0);
+      _keys = List<GlobalKey>.generate(
+          _pageInfo.uris.length, (index) => GlobalKey());
+    }
+    return FutureBuilder(
+      // to avoid loading all images when fast scrolling
+      future: Future.delayed(Duration(milliseconds: 300)).then((value) => 1),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+        // To prevent the scroll from being chewed,
+        // it is necessary to put an empty box for the invisible part.
+        if (!snapshot.hasData && _height[index] == 0) {
           return SizedBox(
             height: 300,
             child: Center(
@@ -722,28 +734,118 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           );
         }
 
-        return OptimizedCacheImage(
-          imageUrl: snapshot.data.item2,
-          httpHeaders: snapshot.data.item1,
-          fit: BoxFit.cover,
-          fadeInDuration: Duration(microseconds: 500),
-          fadeInCurve: Curves.easeIn,
-          // memCacheWidth: width.toInt(),
-          progressIndicatorBuilder: (context, string, progress) {
-            return SizedBox(
-              height: 300,
-              child: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(value: progress.progress),
-                  width: 30,
-                  height: 30,
+        return FutureBuilder(
+          future: Future.delayed(Duration(milliseconds: 1)).then((value) async {
+            if (_headerCache[index] == null) {
+              var header = await _pageInfo.provider.getHeader(index);
+              _headerCache[index] = header;
+            }
+
+            if (_urlCache[index] == null) {
+              var url = await _pageInfo.provider.getImageUrl(index);
+              _urlCache[index] = url;
+            }
+
+            return 1;
+          }),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData &&
+                (_urlCache[index] == null || _headerCache[index] == null)) {
+              return SizedBox(
+                height: 300,
+                child: Center(
+                  child: SizedBox(
+                    child: CircularProgressIndicator(),
+                    width: 30,
+                    height: 30,
+                  ),
                 ),
+              );
+            }
+            return Container(
+              constraints: BoxConstraints(
+                  minHeight: _height[index] != 0 ? _height[index] : 300),
+              child: VOptimizedCacheImage(
+                key: _keys[index],
+                imageUrl: _urlCache[index],
+                httpHeaders: _headerCache[index],
+                fit: BoxFit.cover,
+                fadeInDuration: Duration(microseconds: 500),
+                fadeInCurve: Curves.easeIn,
+                imageBuilder: (context, imageProvider, child) {
+                  if (_height[index] == 0 || _height[index] == 300) {
+                    try {
+                      final RenderBox renderBoxRed =
+                          _keys[index].currentContext.findRenderObject();
+                      final sizeRender = renderBoxRed.size;
+                      if (sizeRender.height != 300)
+                        _height[index] = width / sizeRender.aspectRatio;
+                    } catch (e) {}
+                  }
+                  return child;
+                },
+                progressIndicatorBuilder: (context, string, progress) {
+                  return SizedBox(
+                    height: 300,
+                    child: Center(
+                      child: SizedBox(
+                        child:
+                            CircularProgressIndicator(value: progress.progress),
+                        width: 30,
+                        height: 30,
+                      ),
+                    ),
+                  );
+                },
               ),
             );
           },
         );
       },
     );
+    // return FutureBuilder(
+    //   future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
+    //     var header = await _pageInfo.provider.getHeader(index);
+    //     var url = await _pageInfo.provider.getImageUrl(index);
+
+    //     return Tuple2<Map<String, String>, String>(header, url);
+    //   }),
+    //   builder: (context, snapshot) {
+    //     if (!snapshot.hasData) {
+    //       return SizedBox(
+    //         height: 300,
+    //         child: Center(
+    //           child: SizedBox(
+    //             child: CircularProgressIndicator(),
+    //             width: 30,
+    //             height: 30,
+    //           ),
+    //         ),
+    //       );
+    //     }
+
+    //     return OptimizedCacheImage(
+    //       imageUrl: snapshot.data.item2,
+    //       httpHeaders: snapshot.data.item1,
+    //       fit: BoxFit.cover,
+    //       fadeInDuration: Duration(microseconds: 500),
+    //       fadeInCurve: Curves.easeIn,
+    //       // memCacheWidth: width.toInt(),
+    //       progressIndicatorBuilder: (context, string, progress) {
+    //         return SizedBox(
+    //           height: 300,
+    //           child: Center(
+    //             child: SizedBox(
+    //               child: CircularProgressIndicator(value: progress.progress),
+    //               width: 30,
+    //               height: 30,
+    //             ),
+    //           ),
+    //         );
+    //       },
+    //     );
+    //   },
+    // );
   }
 
   _bottomAppBar() {
