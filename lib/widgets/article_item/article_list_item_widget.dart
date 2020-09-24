@@ -149,6 +149,7 @@ class _ArticleListItemVerySimpleWidgetState
       HentaiManager.getImageProvider(data.queryResult).then((value) async {
         thumbnail = await value.getThumbnailUrl();
         imageCount = value.length();
+        ProviderManager.insert(data.queryResult.id(), value);
         if (!disposed) setState(() {});
       });
     } else {
