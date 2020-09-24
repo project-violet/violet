@@ -12,6 +12,18 @@ class EHentaiImageProvider extends VioletImageProvider {
   EHentaiImageProvider(this.urls);
 
   @override
+  Future<List<String>> getSmallImagesUrl() async {
+    // https://e-hentai.org/g/1740744/2944a0ec84/
+    // https://ehgt.org/m/001740/1740744-00.jpg
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getThumbnailUrl() async {
+    return await getImageUrl(0);
+  }
+
+  @override
   Future<Map<String, String>> getHeader(int page) async {
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies');

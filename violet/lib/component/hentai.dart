@@ -5,7 +5,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
+import 'package:violet/component/eh/eh_provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/hitomi_provider.dart';
+import 'package:violet/component/hiyobi/hiyobi.dart';
+import 'package:violet/component/hiyobi/hiyobi_provider.dart';
+import 'package:violet/component/image_provider.dart';
+import 'package:violet/component/nhentai/nhentai.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/settings/settings.dart';
@@ -106,86 +112,137 @@ class HentaiManager {
     throw Exception('Never Taken');
   }
 
-  // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
-  static Future<Tuple3<List<String>, List<String>, List<String>>>
-      getImageListFromEHId(QueryResult qr) async {
+  Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
     var lang = qr.language() as String;
     var route = Settings.routingRule;
 
     for (int i = 0; i < route.length; i++) {
-      Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>> nt = null;
-      switch (route[i]) {
-        case 'EHentai':
-          nt = await _tryHiyobi(qr);
-          break;
-        case 'ExHentai':
-          nt = await _tryHiyobi(qr);
-          break;
-        case 'Hitomi':
-          nt = await _tryHitomi(qr);
-          break;
-        case 'Hiyobi':
-          if (lang == 'korean') nt = await _tryHiyobi(qr);
-          break;
-        case 'NHentai':
-          if (lang == 'english' || lang == 'japanese' || lang == 'chinese')
-            nt = await _tryNHentai(qr);
-          break;
-      }
-
-      if (nt != null && nt.item1) return nt.item2;
+      try {
+        switch (route[i]) {
+          case 'EHentai':
+            var html = await EHSession.requestString(
+                'https://e-hentai/g/${qr.id()}/${qr.ehash()}/');
+            var pages = EHParser.getPagesUrl(html);
+            var urls = List<String>();
+            for (int i = 0; i < pages.length; i++) {
+              var phtml = await EHSession.requestString(pages[i]);
+              urls.addAll(EHParser.getImagesUrl(phtml));
+            }
+            return EHentaiImageProvider(urls);
+            break;
+          case 'ExHentai':
+            var html = await EHSession.requestString(
+                'https://exhentai/g/${qr.id()}/${qr.ehash()}/');
+            var pages = EHParser.getPagesUrl(html);
+            var urls = List<String>();
+            for (int i = 0; i < pages.length; i++) {
+              var phtml = await EHSession.requestString(pages[i]);
+              urls.addAll(EHParser.getImagesUrl(phtml));
+            }
+            return EHentaiImageProvider(urls);
+          case 'Hitomi':
+            return HitomiImageProvider(
+                await HitomiManager.getImageList(qr.id().toString()));
+            break;
+          case 'Hiyobi':
+            if (lang == 'korean') {
+              return HiyobiImageProvider(
+                  await HiyobiManager.getImageList(qr.id().toString()));
+            }
+            break;
+          case 'NHentai':
+            if (lang == 'english' || lang == 'japanese' || lang == 'chinese') {
+              // return HitomiImageProvider(
+              //     await NHentaiManager.getImageList(qr.id().toString()));
+            }
+            break;
+        }
+      } catch (e) {}
     }
 
-    return null;
+    throw Exception('gallery not found');
   }
 
-  static Future<Tuple2<List<Future<String>>, Map<String, dynamic>>> getImages(
-      QueryResult qr) async {}
+  // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
+  // static Future<Tuple3<List<String>, List<String>, List<String>>>
+  //     getImageListFromEHId(QueryResult qr) async {
+  //   var lang = qr.language() as String;
+  //   var route = Settings.routingRule;
 
-  static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
-      _tryEHentai(QueryResult qr) async {}
-  static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
-      _tryExHentai(QueryResult qr) async {}
+  //   for (int i = 0; i < route.length; i++) {
+  //     Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>> nt = null;
+  //     switch (route[i]) {
+  //       case 'EHentai':
+  //         nt = await _tryHiyobi(qr);
+  //         break;
+  //       case 'ExHentai':
+  //         nt = await _tryHiyobi(qr);
+  //         break;
+  //       case 'Hitomi':
+  //         nt = await _tryHitomi(qr);
+  //         break;
+  //       case 'Hiyobi':
+  //         if (lang == 'korean') nt = await _tryHiyobi(qr);
+  //         break;
+  //       case 'NHentai':
+  //         if (lang == 'english' || lang == 'japanese' || lang == 'chinese')
+  //           nt = await _tryNHentai(qr);
+  //         break;
+  //     }
 
-  static Stream<String> eHentaiStream(QueryResult qr) async* {
-    var gg = await http.get('https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
-    var urls = EHParser.getPagesUrl(gg.body);
-    var imgurls = List<String>();
+  //     if (nt != null && nt.item1) return nt.item2;
+  //   }
 
-    for (int i = 0; i < urls.length; i++) {
-      var page = await http.get(urls[i]);
-      imgurls.addAll(EHParser.getImagesUrl(page.body));
-    }
+  //   return null;
+  // }
 
-    for (int i = 0; i < imgurls.length; i++) {
-      var img = await http.get(urls[i]);
-      yield EHParser.getImagesAddress(img.body);
-    }
-  }
+  // static Future<Tuple2<List<Future<String>>, Map<String, dynamic>>> getImages(
+  //     QueryResult qr) async {}
 
-  static Future<void> exHentaiStream(QueryResult qr) async {
-    var gg = await EHSession.requestString(
-        'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/');
-    var urls = EHParser.getPagesUrl(gg);
-    var imgurls = List<String>();
+  // static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
+  //     _tryEHentai(QueryResult qr) async {}
+  // static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
+  //     _tryExHentai(QueryResult qr) async {}
 
-    for (int i = 0; i < urls.length; i++) {
-      var page = await EHSession.requestString(urls[i]);
-      imgurls.addAll(EHParser.getImagesUrl(page));
-    }
+  // static Stream<String> eHentaiStream(QueryResult qr) async* {
+  //   var gg = await http.get('https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
+  //   var urls = EHParser.getPagesUrl(gg.body);
+  //   var imgurls = List<String>();
 
-    for (int i = 0; i < imgurls.length; i++) {
-      var img = await EHSession.requestString(imgurls[i]);
-      print(EHParser.getImagesAddress(img));
-    }
-  }
+  //   for (int i = 0; i < urls.length; i++) {
+  //     var page = await http.get(urls[i]);
+  //     imgurls.addAll(EHParser.getImagesUrl(page.body));
+  //   }
 
-  static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
-      _tryHitomi(QueryResult qr) async {}
-  static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
-      _tryHiyobi(QueryResult qr) async {}
-  static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
-      _tryNHentai(QueryResult qr) async {}
+  //   for (int i = 0; i < imgurls.length; i++) {
+  //     var img = await http.get(urls[i]);
+  //     yield EHParser.getImagesAddress(img.body);
+  //   }
+  // }
+
+  // static Future<void> exHentaiStream(QueryResult qr) async {
+  //   var gg = await EHSession.requestString(
+  //       'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/');
+  //   var urls = EHParser.getPagesUrl(gg);
+  //   var imgurls = List<String>();
+
+  //   for (int i = 0; i < urls.length; i++) {
+  //     var page = await EHSession.requestString(urls[i]);
+  //     imgurls.addAll(EHParser.getImagesUrl(page));
+  //   }
+
+  //   for (int i = 0; i < imgurls.length; i++) {
+  //     var img = await EHSession.requestString(imgurls[i]);
+  //     print(EHParser.getImagesAddress(img));
+  //   }
+  // }
+
+  // static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
+  //     _tryHitomi(QueryResult qr) async {}
+  // static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
+  //     _tryHiyobi(QueryResult qr) async {}
+  // static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
+  //     _tryNHentai(QueryResult qr) async {}
 
   static Future<List<QueryResult>> _searchEHentai(String what, String page,
       [bool exh = false]) async {
