@@ -302,6 +302,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             ),
           ),
         ),
+        _verticalPageLabel(),
         _touchAreaMiddle(),
         _touchAreaLeft(),
         _touchAreaRight(),
@@ -794,6 +795,32 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  _verticalPageLabel() {
+    return Container(
+      alignment: Alignment.bottomCenter,
+      padding: EdgeInsets.all(8),
+      child: Stack(
+        children: [
+          Text(
+            '$_prevPage/${_pageInfo.uris.length}',
+            style: TextStyle(
+              foreground: Paint()
+                ..style = PaintingStyle.stroke
+                ..strokeWidth = 2
+                ..color = Colors.black,
+            ),
+          ),
+          Text(
+            '$_prevPage/${_pageInfo.uris.length}',
+            style: TextStyle(
+              color: Colors.grey.shade300,
+            ),
+          ),
+        ],
       ),
     );
   }
