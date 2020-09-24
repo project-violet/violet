@@ -174,9 +174,8 @@ class SimpleInfoWidget extends StatelessWidget {
         Text(
             ' ' +
                 (data.thumbnail != null
-                    ? ThumbnailManager.get(data.queryResult.id())
-                            .item2
-                            .length
+                    ? ProviderManager.get(data.queryResult.id())
+                            .length()
                             .toString() +
                         ' Page'
                     : ''),

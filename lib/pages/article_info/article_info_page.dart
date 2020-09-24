@@ -283,9 +283,12 @@ class _InfoAreaWidget extends StatelessWidget {
                           builder: (context) {
                             return Provider<ViewerPageProvider>.value(
                                 value: ViewerPageProvider(
-                                  uris: ThumbnailManager.get(queryResult.id())
-                                      .item1,
-                                  useWeb: true,
+                                  // uris: ThumbnailManager.get(queryResult.id())
+                                  //     .item1,
+                                  // useWeb: true,
+                                  useProvider: true,
+                                  provider:
+                                      ProviderManager.get(queryResult.id()),
                                   headers: headers,
                                   id: queryResult.id(),
                                 ),
@@ -558,22 +561,27 @@ class _InfoAreaWidget extends StatelessWidget {
       Text.rich(TextSpan(children: linkify(textToLink)));
 
   Widget previewArea() {
-    if (ThumbnailManager.isExists(queryResult.id())) {
-      var thumbnails =
-          ThumbnailManager.get(queryResult.id()).item3.take(30).toList();
-      return GridView.count(
-        controller: null,
-        physics: ScrollPhysics(),
-        shrinkWrap: true,
-        crossAxisCount: 3,
-        childAspectRatio: 3 / 4,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        children: thumbnails
-            .map((e) => CachedNetworkImage(
-                  imageUrl: e,
-                ))
-            .toList(),
+    if (ProviderManager.isExists(queryResult.id())) {
+      return FutureBuilder(
+        future: ProviderManager.get(queryResult.id()).getSmallImagesUrl(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData)
+            return Container(child: CircularProgressIndicator());
+          return GridView.count(
+            controller: null,
+            physics: ScrollPhysics(),
+            shrinkWrap: true,
+            crossAxisCount: 3,
+            childAspectRatio: 3 / 4,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            children: snapshot.data
+                .map((e) => CachedNetworkImage(
+                      imageUrl: e,
+                    ))
+                .toList(),
+          );
+        },
       );
     }
     return Row(
