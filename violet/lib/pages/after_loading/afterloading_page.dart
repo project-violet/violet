@@ -292,7 +292,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                     'Copyright (C) 2020\nby project-violet',
                     style: TextStyle(
                       color: Settings.themeWhat ? Colors.white : Colors.black87,
-                      fontSize: 14.0,
+                      fontSize: 12.0,
                       fontFamily: "Calibre-Semibold",
                       letterSpacing: 1.0,
                     ),
