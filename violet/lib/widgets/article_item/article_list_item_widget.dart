@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -133,21 +134,29 @@ class _ArticleListItemVerySimpleWidgetState
     dateTime = data.queryResult.getDateTime() != null
         ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime())
         : '';
-    if (!ThumbnailManager.isExists(data.queryResult.id())) {
-      HitomiManager.getImageList(data.queryResult.id().toString())
-          .then((images) {
-        if (images == null) {
-          return;
-        }
-        thumbnail = images.item2[0];
-        imageCount = images.item2.length;
-        ThumbnailManager.insert(data.queryResult.id(), images);
+    if (!ProviderManager.isExists(data.queryResult.id())) {
+      // HitomiManager.getImageList(data.queryResult.id().toString())
+      //     .then((images) {
+      //   if (images == null) {
+      //     return;
+      //   }
+      //   thumbnail = images.item2[0];
+      //   imageCount = images.item2.length;
+      //   ThumbnailManager.insert(data.queryResult.id(), images);
+      //   if (!disposed) setState(() {});
+      // });
+
+      HentaiManager.getImageProvider(data.queryResult).then((value) async {
+        thumbnail = await value.getThumbnailUrl();
+        imageCount = value.length();
         if (!disposed) setState(() {});
       });
     } else {
-      var thumbnails = ThumbnailManager.get(data.queryResult.id()).item2;
-      thumbnail = thumbnails[0];
-      imageCount = thumbnails.length;
+      Future.delayed(Duration(milliseconds: 1)).then((v) async {
+        var provider = ProviderManager.get(data.queryResult.id());
+        thumbnail = await provider.getThumbnailUrl();
+        imageCount = provider.length();
+      });
     }
   }
 

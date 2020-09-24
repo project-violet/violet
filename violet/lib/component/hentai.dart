@@ -112,7 +112,7 @@ class HentaiManager {
     throw Exception('Never Taken');
   }
 
-  Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
+  static Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
     var lang = qr.language() as String;
     var route = Settings.routingRule;
 
