@@ -43,6 +43,8 @@ enum _ViewAppBarAction {
   toggleScrollVertical,
   toggleAnimation,
   togglePadding,
+  toggleOverlayButton,
+  toggleFullScreen,
 }
 
 class _VerticalImageViewer extends StatefulWidget {
@@ -151,27 +153,44 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   @override
   Widget build(BuildContext context) {
     ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    final mediaQuery = MediaQuery.of(context);
     if (_imageCache.currentSizeBytes >= (1024 + 256) << 20
         // || _imageCache.currentSize >= 50
         ) {
       _imageCache.clear();
       _imageCache.clearLiveImages();
     }
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.transparent,
-      ),
-      sized: false,
-      child: Scaffold(
+    // return Container(
+    //   padding: EdgeInsets.only(top: statusBarHeight),
+    if (Settings.disableFullScreen) {
+      return Scaffold(
         extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
         appBar: _opacity == 1.0 ? _appBar() : null,
-        body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
-      ),
-    );
+        body: Padding(
+          padding: mediaQuery.padding + mediaQuery.viewInsets,
+          child: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
+        ),
+      );
+    } else {
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.transparent,
+        ),
+        sized: false,
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomPadding: false,
+          appBar: _opacity == 1.0 ? _appBar() : null,
+          body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
+        ),
+      );
+    }
   }
 
   _appBar() {
@@ -226,6 +245,21 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 Settings.setPadding(!Settings.padding);
                 setState(() {});
                 break;
+
+              case _ViewAppBarAction.toggleOverlayButton:
+                Settings.setDisableOverlayButton(
+                    !Settings.disableOverlayButton);
+                setState(() {});
+                break;
+
+              case _ViewAppBarAction.toggleFullScreen:
+                Settings.setDisableFullScreen(!Settings.disableFullScreen);
+                if (Settings.disableFullScreen) {
+                  SystemChrome.setEnabledSystemUIOverlays(
+                      [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+                }
+                setState(() {});
+                break;
             }
           },
           itemBuilder: (context) => [
@@ -235,7 +269,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             ),
             PopupMenuItem(
               value: _ViewAppBarAction.toggleRightToLeft,
-              enabled: Settings.isHorizontal,
               child: Text('Toggle Right To Left'),
             ),
             PopupMenuItem(
@@ -250,6 +283,14 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             PopupMenuItem(
               value: _ViewAppBarAction.togglePadding,
               child: Text('Toggle Padding'),
+            ),
+            PopupMenuItem(
+              value: _ViewAppBarAction.toggleOverlayButton,
+              child: Text('Disable Overlay Buttons'),
+            ),
+            PopupMenuItem(
+              value: _ViewAppBarAction.toggleFullScreen,
+              child: Text('Disable Full Screen'),
             ),
           ],
         ),
@@ -304,8 +345,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         ),
         _verticalPageLabel(),
         _touchAreaMiddle(),
-        _touchAreaLeft(),
-        _touchAreaRight(),
+        !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
+        !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
         !_disableBottom ? _bottomAppBar() : Container(),
       ],
     );
@@ -346,8 +387,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           ),
         ),
         _touchAreaMiddle(),
-        _touchAreaLeft(),
-        _touchAreaRight(),
+        !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
+        !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
         !_disableBottom ? _bottomAppBar() : Container(),
       ],
     );
@@ -430,13 +471,17 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 _opacity = 1.0;
                 _disableBottom = false;
               });
-              SystemChrome.setEnabledSystemUIOverlays(
-                  [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+              if (!Settings.disableFullScreen) {
+                SystemChrome.setEnabledSystemUIOverlays(
+                    [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+              }
             } else {
               setState(() {
                 _opacity = 0.0;
               });
-              SystemChrome.setEnabledSystemUIOverlays([]);
+              if (!Settings.disableFullScreen) {
+                SystemChrome.setEnabledSystemUIOverlays([]);
+              }
               Future.delayed(Duration(milliseconds: 300)).then((value) {
                 setState(() {
                   _disableBottom = true;
@@ -849,6 +894,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   _bottomAppBar() {
+    final statusBarHeight =
+        Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
     final height = MediaQuery.of(context).size.height;
     final mediaQuery = MediaQuery.of(context);
     return AnimatedOpacity(
@@ -858,7 +905,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         padding: EdgeInsets.only(
             top: height -
                 (mediaQuery.padding + mediaQuery.viewInsets).bottom -
-                (48)),
+                (48) -
+                statusBarHeight),
         child: Container(
           alignment: Alignment.bottomCenter,
           color: Colors.black.withOpacity(0.2),

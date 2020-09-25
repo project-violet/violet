@@ -38,6 +38,8 @@ class Settings {
   static bool scrollVertical;
   static bool animation;
   static bool padding;
+  static bool disableOverlayButton;
+  static bool disableFullScreen;
 
   // Download Options
   static String downloadBasePath;
@@ -196,6 +198,22 @@ class Settings {
       await (await SharedPreferences.getInstance()).setBool('padding', padding);
     }
 
+    disableOverlayButton =
+        (await SharedPreferences.getInstance()).getBool('disableoverlaybutton');
+    if (disableOverlayButton == null) {
+      disableOverlayButton = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('disableoverlaybutton', disableOverlayButton);
+    }
+
+    disableFullScreen =
+        (await SharedPreferences.getInstance()).getBool('disablefullscreen');
+    if (disableFullScreen == null) {
+      disableFullScreen = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('disablefullscreen', disableFullScreen);
+    }
+
     if (Platform.isAndroid) {
       downloadBasePath =
           (await SharedPreferences.getInstance()).getString('downloadbasepath');
@@ -317,6 +335,18 @@ class Settings {
   static Future<void> setPadding(bool nn) async {
     padding = nn;
     await (await SharedPreferences.getInstance()).setBool('padding', padding);
+  }
+
+  static Future<void> setDisableOverlayButton(bool nn) async {
+    disableOverlayButton = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('disableoverlaybutton', disableOverlayButton);
+  }
+
+  static Future<void> setDisableFullScreen(bool nn) async {
+    disableFullScreen = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('disablefullscreen', disableFullScreen);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {

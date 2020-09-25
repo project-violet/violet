@@ -117,7 +117,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                             child: Padding(
                               padding: EdgeInsets.only(top: 4),
                               child: Text(
-                                'Collection!',
+                                'Artists Collection!',
                                 style: TextStyle(
                                     fontFamily: "Calibre-Semibold",
                                     fontSize: 18,
