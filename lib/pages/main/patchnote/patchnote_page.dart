@@ -26,13 +26,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2020, 09, 26),
+    dateTime: DateTime(2020, 09, 25),
     version: '1.4 Minor Update <<= Latest',
     isMinor: true,
     contents: [
       'add Drawer Theme',
-      'show page number on vetical viewe',
-      'keep align on bookmark group',
+      'add option to disable fullscreen',
+      'add option to disable overlay buttons',
+      'show page number in vetical viewer',
+      'keep bookmark group align',
       'Robust Multiple Image Hosting Network Connection',
     ],
   ),
