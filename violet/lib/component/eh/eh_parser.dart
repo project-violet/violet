@@ -78,21 +78,32 @@ class EHParser {
   // ex: https://exhentai.org/g/1212168/421ef300a8/
   // ex: https://exhentai.org/g/1212396/71a853083e/ //  5 pages
   // ex: https://exhentai.org/g/1201400/48f9b8e20a/ // 43 pages
-  static List<String> getPagesUrl(String html) {
+  static List<String> getPagesUrl(String html, {String url}) {
     var doc = parse(html).querySelector("div.gtb");
 
     var url = List<String>();
     try {
-      doc
-          .querySelectorAll("table tr td[onclick*='document']")
-          .forEach((element) {
-        var a = element.querySelector('a');
-        if (a != null) url.add(a.attributes['href']);
-      });
+      var rr = doc.querySelectorAll("table tbody tr td[onclick*='document']");
+      if (rr.length != 0) {
+        doc
+            .querySelectorAll("table tbody tr td[onclick*='document']")
+            .forEach((element) {
+          var a = element.querySelector('a');
+          if (a != null) url.add(a.attributes['href']);
+        });
+      } else {
+        url.add(doc
+                .querySelector("table tbody tr td.ptds")
+                .querySelector('a')
+                .attributes['href'] +
+            '?p=0');
+      }
     } catch (e) {
-      url.add(
-          doc.querySelector("table tr td[class='ptds'] a").attributes['href'] +
-              '?=0');
+      url.add(doc
+              .querySelector("table tbody tr td.ptds")
+              .querySelector('a')
+              .attributes['href'] +
+          '?p=0');
     }
 
     int max = 0;

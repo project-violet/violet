@@ -109,7 +109,7 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
               Settings.routingRule[newIndex - 1] = old;
             }
             await (await SharedPreferences.getInstance())
-                .setString('searchrule', Settings.routingRule.join('|'));
+                .setString('routingrule', Settings.routingRule.join('|'));
             setState(() {});
           },
           children: Settings.routingRule.map((e) {

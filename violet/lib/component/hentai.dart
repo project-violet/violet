@@ -117,29 +117,37 @@ class HentaiManager {
     var route = Settings.routingRule;
 
     for (int i = 0; i < route.length; i++) {
+      print(route[i]);
+
       try {
         switch (route[i]) {
           case 'EHentai':
-            var html = await EHSession.requestString(
-                'https://e-hentai/g/${qr.id()}/${qr.ehash()}/');
-            var pages = EHParser.getPagesUrl(html);
-            var urls = List<String>();
-            for (int i = 0; i < pages.length; i++) {
-              var phtml = await EHSession.requestString(pages[i]);
-              urls.addAll(EHParser.getImagesUrl(phtml));
+            if (qr.ehash() != null) {
+              print('https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
+              var html = await EHSession.requestString(
+                  'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
+              var pages = EHParser.getPagesUrl(html);
+              var urls = List<String>();
+              for (int i = 0; i < pages.length; i++) {
+                var phtml = await EHSession.requestString(pages[i]);
+                urls.addAll(EHParser.getImagesUrl(phtml));
+              }
+              return EHentaiImageProvider(urls);
             }
-            return EHentaiImageProvider(urls);
             break;
           case 'ExHentai':
-            var html = await EHSession.requestString(
-                'https://exhentai/g/${qr.id()}/${qr.ehash()}/');
-            var pages = EHParser.getPagesUrl(html);
-            var urls = List<String>();
-            for (int i = 0; i < pages.length; i++) {
-              var phtml = await EHSession.requestString(pages[i]);
-              urls.addAll(EHParser.getImagesUrl(phtml));
+            if (qr.ehash() != null) {
+              var html = await EHSession.requestString(
+                  'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/');
+              var pages = EHParser.getPagesUrl(html);
+              var urls = List<String>();
+              for (int i = 0; i < pages.length; i++) {
+                var phtml = await EHSession.requestString(pages[i]);
+                urls.addAll(EHParser.getImagesUrl(phtml));
+              }
+              return EHentaiImageProvider(urls);
             }
-            return EHentaiImageProvider(urls);
+            break;
           case 'Hitomi':
             return HitomiImageProvider(
                 await HitomiManager.getImageList(qr.id().toString()));
@@ -157,7 +165,10 @@ class HentaiManager {
             }
             break;
         }
-      } catch (e) {}
+      } catch (e, st) {
+        print(e);
+        print(st);
+      }
     }
 
     throw Exception('gallery not found');
