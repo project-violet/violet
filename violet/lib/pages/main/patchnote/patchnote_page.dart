@@ -26,8 +26,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 09, 26),
+    version: '1.4.1 Patch (HotFix) <<= Latest',
+    contents: [
+      'fix e/exhentai parsing error (images are doubled)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 09, 25),
-    version: '1.4 Minor Update <<= Latest',
+    version: '1.4 Minor Update',
     isMinor: true,
     contents: [
       'add Drawer Theme',

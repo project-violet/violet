@@ -64,7 +64,8 @@ class EHParser {
     doc.querySelectorAll('div').forEach((element) {
       var a = element.querySelector('a');
       if (a == null) return;
-      result.add(element.querySelector('a').attributes['href']);
+      var url = element.querySelector('a').attributes['href'];
+      if (!result.contains(url)) result.add(url);
     });
     return result;
   }
