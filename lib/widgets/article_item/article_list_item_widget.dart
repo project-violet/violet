@@ -77,6 +77,7 @@ class _ArticleListItemVerySimpleWidgetState
   bool disposed = false;
   bool isBookmarked = false;
   bool animating = false;
+  Map<String, String> headers;
   final FlareControls _flareController = FlareControls();
 
   @override
@@ -149,6 +150,7 @@ class _ArticleListItemVerySimpleWidgetState
       HentaiManager.getImageProvider(data.queryResult).then((value) async {
         thumbnail = await value.getThumbnailUrl();
         imageCount = value.length();
+        headers = await value.getHeader(0);
         ProviderManager.insert(data.queryResult.id(), value);
         if (!disposed) setState(() {});
       });
@@ -157,6 +159,8 @@ class _ArticleListItemVerySimpleWidgetState
         var provider = ProviderManager.get(data.queryResult.id());
         thumbnail = await provider.getThumbnailUrl();
         imageCount = provider.length();
+        headers = await provider.getHeader(0);
+        if (!disposed) setState(() {});
       });
     }
   }
@@ -463,6 +467,7 @@ class _ArticleListItemVerySimpleWidgetState
       flareController: _flareController,
       pad: pad,
       isBlurred: isBlurred,
+      headers: headers,
     );
   }
 

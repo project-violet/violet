@@ -216,7 +216,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           ],
         ),
         drawer: Container(
-          width: 200,
+          width: 220,
           padding: mediaQuery.padding + mediaQuery.viewInsets,
           child: Drawer(
             child: Column(

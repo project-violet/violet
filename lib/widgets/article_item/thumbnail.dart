@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
+import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 
 class ThumbnailWidget extends StatelessWidget {
   final double pad;
@@ -18,6 +19,7 @@ class ThumbnailWidget extends StatelessWidget {
   final FlareControls flareController;
   final String id;
   final bool isBlurred;
+  final Map<String, String> headers;
 
   ThumbnailWidget({
     this.pad,
@@ -29,6 +31,7 @@ class ThumbnailWidget extends StatelessWidget {
     this.flareController,
     this.id,
     this.isBlurred,
+    this.headers,
   });
 
   @override
@@ -58,10 +61,10 @@ class ThumbnailWidget extends StatelessWidget {
   }
 
   Widget _thumbnailImage() {
-    var headers = {"Referer": "https://hitomi.la/reader/${id}.html/"};
+    // var headers = {"Referer": "https://hitomi.la/reader/${id}.html/"};
     return Hero(
       tag: thumbnailTag,
-      child: CachedNetworkImage(
+      child: OptimizedCacheImage(
         imageUrl: thumbnail,
         fit: BoxFit.cover,
         httpHeaders: headers,
