@@ -7,6 +7,7 @@ import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/database/query.dart';
@@ -43,77 +44,81 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   void refresh() {
-    Bookmark.getInstance().then((value) => value.getArticle().then((value) {
-          var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-          var cc = value
-              .where((e) => e.group() == widget.groupId)
-              .toList()
-              .reversed
-              .toList();
-          if (cc.length == 0) {
-            queryResult = List<QueryResult>();
-            filterResult = queryResult;
-            setState(() {});
-            return;
-          }
-          queryRaw += cc.map((e) => 'Id=${e.article()}').join(' OR ');
-          QueryManager.query(queryRaw + ' AND ExistOnHitomi=1')
-              .then((value) async {
-            var qr = Map<String, QueryResult>();
-            value.results.forEach((element) {
-              qr[element.id().toString()] = element;
-            });
-
-            var result = List<QueryResult>();
-            cc.forEach((element) async {
-              if (qr[element.article()] == null) {
-                // TODO: Handle qurey not found
-                var hh = await http.get(
-                    'https://ltn.hitomi.la/galleryblock/${element.article()}.html');
-                var article = await HitomiParser.parseGalleryBlock(hh.body);
-                var meta = {
-                  'Id': int.parse(element.article()),
-                  'Title': article['Title'],
-                  'Artists': article['Artists'].join('|'),
-                };
-                result.add(QueryResult(result: meta));
+    Bookmark.getInstance()
+        .then((value) => value.getArticle().then((value) async {
+              nowType = (await SharedPreferences.getInstance())
+                  .getInt('bookmark_${widget.groupId}');
+              if (nowType == null) nowType = 3;
+              var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+              var cc = value
+                  .where((e) => e.group() == widget.groupId)
+                  .toList()
+                  .reversed
+                  .toList();
+              if (cc.length == 0) {
+                queryResult = List<QueryResult>();
+                filterResult = queryResult;
                 setState(() {});
                 return;
               }
-              result.add(qr[element.article()]);
-            });
+              queryRaw += cc.map((e) => 'Id=${e.article()}').join(' OR ');
+              QueryManager.query(queryRaw + ' AND ExistOnHitomi=1')
+                  .then((value) async {
+                var qr = Map<String, QueryResult>();
+                value.results.forEach((element) {
+                  qr[element.id().toString()] = element;
+                });
 
-            queryResult = result;
-            if (isFilterUsed) {
-              result.clear();
-              queryResult.forEach((element) {
-                var succ = !isOr;
-                tagStates.forEach((key, value) {
-                  if (!value) return;
-                  if (succ == isOr) return;
-                  var split = key.split('|');
-                  var kk = prefix2Tag(split[0]);
-                  if (element.result[kk] == null && !isOr) {
-                    succ = false;
+                var result = List<QueryResult>();
+                cc.forEach((element) async {
+                  if (qr[element.article()] == null) {
+                    // TODO: Handle qurey not found
+                    var hh = await http.get(
+                        'https://ltn.hitomi.la/galleryblock/${element.article()}.html');
+                    var article = await HitomiParser.parseGalleryBlock(hh.body);
+                    var meta = {
+                      'Id': int.parse(element.article()),
+                      'Title': article['Title'],
+                      'Artists': article['Artists'].join('|'),
+                    };
+                    result.add(QueryResult(result: meta));
+                    setState(() {});
                     return;
                   }
-                  if (!isSingleTag(split[0])) {
-                    var tt = split[1];
-                    if (split[0] == 'female' || split[0] == 'male')
-                      tt = split[0] + ':' + split[1];
-                    if ((element.result[kk] as String)
-                            .contains('|' + tt + '|') ==
-                        isOr) succ = isOr;
-                  } else if ((element.result[kk] as String == split[1]) == isOr)
-                    succ = isOr;
+                  result.add(qr[element.article()]);
                 });
-                if (succ) result.add(element);
+
+                queryResult = result;
+                if (isFilterUsed) {
+                  result.clear();
+                  queryResult.forEach((element) {
+                    var succ = !isOr;
+                    tagStates.forEach((key, value) {
+                      if (!value) return;
+                      if (succ == isOr) return;
+                      var split = key.split('|');
+                      var kk = prefix2Tag(split[0]);
+                      if (element.result[kk] == null && !isOr) {
+                        succ = false;
+                        return;
+                      }
+                      if (!isSingleTag(split[0])) {
+                        var tt = split[1];
+                        if (split[0] == 'female' || split[0] == 'male')
+                          tt = split[0] + ':' + split[1];
+                        if ((element.result[kk] as String)
+                                .contains('|' + tt + '|') ==
+                            isOr) succ = isOr;
+                      } else if ((element.result[kk] as String == split[1]) ==
+                          isOr) succ = isOr;
+                    });
+                    if (succ) result.add(element);
+                  });
+                }
+                filterResult = result;
+                setState(() {});
               });
-            }
-            filterResult = result;
-            setState(() {});
-          });
-        }));
+            }));
   }
 
   @override
@@ -290,6 +295,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   .then((value) async {
                 if (value == null) return;
                 nowType = value;
+                await (await SharedPreferences.getInstance())
+                    .setInt('bookmark_${widget.groupId}', value);
                 await Future.delayed(Duration(milliseconds: 50), () {
                   setState(() {});
                 });
