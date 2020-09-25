@@ -86,7 +86,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 15),
+                      offset: Offset(0, 8),
                       color:
                           Gradients.cosmicFusion.colors.first.withOpacity(.3),
                       spreadRadius: -9,
@@ -99,34 +99,38 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: Transform.translate(
-                              offset: Offset(-20, 0),
-                              child: Transform.scale(
-                                scale: 1.3,
-                                child: Center(
-                                  child: Lottie.asset(
-                                    'assets/lottie/5040-shooting-star.json',
-                                  ),
-                                ),
+                          // SizedBox(
+                          //   width: 50,
+                          //   height: 50,
+                          //   child: Transform.translate(
+                          //     offset: Offset(-20, 0),
+                          //     child: Transform.scale(
+                          //       scale: 1.3,
+                          //       child: Center(
+                          //         child: Lottie.asset(
+                          //           'assets/lottie/5040-shooting-star.json',
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          //   // Icon(
+                          //   //   MdiIcons.group,
+                          //   //   color: Colors.white,
+                          //   //   size: 30,
+                          //   // ),
+                          // ),
+                          Transform.translate(
+                            // offset: Offset(-5, -0),
+                            offset: Offset(0, -0),
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Text(
+                                'Best',
+                                style: TextStyle(
+                                    fontFamily: "Calibre-Semibold",
+                                    fontSize: 18,
+                                    color: Colors.white),
                               ),
-                            ),
-                            // Icon(
-                            //   MdiIcons.group,
-                            //   color: Colors.white,
-                            //   size: 30,
-                            // ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Text(
-                              'Real Time Best!',
-                              style: TextStyle(
-                                  fontFamily: "Calibre-Semibold",
-                                  fontSize: 18,
-                                  color: Colors.white),
                             ),
                           ),
                         ]),

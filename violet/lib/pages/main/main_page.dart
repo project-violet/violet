@@ -25,6 +25,7 @@ import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
 import 'package:violet/pages/main/card/github_card.dart';
 import 'package:violet/pages/main/card/update_card.dart';
+import 'package:violet/pages/main/card/update_log_card.dart';
 import 'package:violet/pages/main/card/views_card.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
@@ -44,6 +45,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
+    final double width = MediaQuery.of(context).size.width;
 
     final cardList = [
       DiscordCard(),
@@ -128,8 +130,21 @@ class _MainPageState extends State<MainPage> {
                 padding: EdgeInsets.all(12),
               ),
               _userArea(),
-              ArtistCollectionCard(),
-              ViewsCard(),
+              GridView.count(
+                padding: EdgeInsets.all(8),
+                controller: null,
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                childAspectRatio: width / (75 - 5) / 2,
+                // crossAxisSpacing: 4,
+                mainAxisSpacing: 2,
+                children: [
+                  ArtistCollectionCard(),
+                  ViewsCard(),
+                  UpdateLogCard(),
+                ],
+              )
               // Stack(children: [
               //   Lottie.asset(
               //       'assets/lottie/28395-hajj-mabroor-infographic-animation.json'),
