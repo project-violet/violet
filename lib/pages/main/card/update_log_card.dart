@@ -11,16 +11,19 @@ import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
-import 'package:violet/component/hitomi/artists.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/card/update_card.dart';
+import 'package:violet/pages/main/patchnote/patchnote_page.dart';
+import 'package:violet/pages/main/views/views_page.dart';
+import 'package:violet/settings/settings.dart';
 
-class ArtistCollectionCard extends StatefulWidget {
+class UpdateLogCard extends StatefulWidget {
   @override
-  _ArtistCollectionCarddState createState() => _ArtistCollectionCarddState();
+  _UpdateLogCardState createState() => _UpdateLogCardState();
 }
 
-class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
+class _UpdateLogCardState extends State<UpdateLogCard>
     with TickerProviderStateMixin {
   bool pressed = false;
 
@@ -41,7 +44,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
           return Parent(
               style: settingsItemStyle(pressed),
               gesture: Gestures()
-                ..isTap((isTapped) {
+                ..isTap((isTapped) async {
                   setState(() => pressed = isTapped);
                   if (!isTapped) {
                     controller.forward(from: 0.0);
@@ -63,11 +66,11 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                             child: child,
                           );
                         },
-                        pageBuilder: (_, __, ___) => ArtistCollectionPage(),
+                        pageBuilder: (_, __, ___) => PatchNotePage(),
                       ));
                     } else {
-                      Navigator.of(context).push(CupertinoPageRoute(
-                          builder: (_) => ArtistCollectionPage()));
+                      Navigator.of(context).push(
+                          CupertinoPageRoute(builder: (_) => PatchNotePage()));
                     }
                   }
                 }),
@@ -80,49 +83,25 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                     BoxShadow(
                       blurRadius: 8,
                       offset: Offset(0, 8),
-                      color: Gradients.coldLinear.colors.first.withOpacity(.3),
+                      color: Gradients.taitanum.colors.first.withOpacity(.3),
                       spreadRadius: -9,
                     ),
                   ],
                 ),
                 child: GradientCard(
-                  gradient: Gradients.coldLinear,
+                  gradient: Gradients.taitanum,
                   child: Container(
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // SizedBox(
-                          //   width: 50,
-                          //   height: 50,
-                          //   child: Transform.translate(
-                          //     offset: Offset(-10, -20),
-                          //     child: Transform.scale(
-                          //       scale: 3.8,
-                          //       child: Center(
-                          //         child: Lottie.asset(
-                          //           'assets/lottie/28446-floward-gift-box.json',
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   // Icon(
-                          //   //   MdiIcons.group,
-                          //   //   color: Colors.white,
-                          //   //   size: 30,
-                          //   // ),
-                          // ),
-                          Transform.translate(
-                            // offset: Offset(-5, -0),
-                            offset: Offset(-0, -0),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Text(
-                                'Collection!',
-                                style: TextStyle(
-                                    fontFamily: "Calibre-Semibold",
-                                    fontSize: 18,
-                                    color: Colors.white),
-                              ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Text(
+                              'Patch Notes',
+                              style: TextStyle(
+                                  fontFamily: "Calibre-Semibold",
+                                  fontSize: 18,
+                                  color: Colors.white),
                             ),
                           ),
                         ]),
