@@ -169,7 +169,7 @@ flutter:
     # - assets/test/image_03.jpg
     # - assets/test/image_04.jpg
 
-    - assets/images/logo.png
+    - assets/images/
 
     # - assets/script_valid_pub.pem
 
