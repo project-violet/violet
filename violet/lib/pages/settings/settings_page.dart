@@ -744,6 +744,48 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                   _buildDivider(),
+                  ListTile(
+                    leading: Icon(
+                      MdiIcons.export,
+                      color: Settings.majorColor,
+                    ),
+                    title: Text(
+                        Translations.of(context).trans('exportingbookmark')),
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    onTap: () async {
+                      if (!await Permission.storage.isGranted) {
+                        if (await Permission.storage.request() ==
+                            PermissionStatus.denied) {
+                          flutterToast.showToast(
+                            child: ToastWrapper(
+                              isCheck: false,
+                              msg: Translations.of(context).trans('noauth'),
+                            ),
+                            gravity: ToastGravity.BOTTOM,
+                            toastDuration: Duration(seconds: 4),
+                          );
+
+                          return;
+                        }
+                      }
+
+                      var db = await getApplicationDocumentsDirectory();
+                      var dbfile = File('${db.path}/user.db');
+                      var ext = await getExternalStorageDirectory();
+                      var extpath = '${ext.path}/bookmark.db';
+                      var extfile = await dbfile.copy(extpath);
+
+                      flutterToast.showToast(
+                        child: ToastWrapper(
+                          isCheck: true,
+                          msg: Translations.of(context).trans('exportbookmark'),
+                        ),
+                        gravity: ToastGravity.BOTTOM,
+                        toastDuration: Duration(seconds: 4),
+                      );
+                    },
+                  ),
+                  _buildDivider(),
                   InkWell(
                     customBorder: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -752,11 +794,10 @@ class _SettingsPageState extends State<SettingsPage>
                     ),
                     child: ListTile(
                       leading: Icon(
-                        MdiIcons.export,
+                        MdiIcons.cloudSearchOutline,
                         color: Settings.majorColor,
                       ),
-                      title: Text(
-                          Translations.of(context).trans('exportingbookmark')),
+                      title: Text('Import From Others'),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () async {
