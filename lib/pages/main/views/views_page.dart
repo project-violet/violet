@@ -200,7 +200,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                     .join(' ')) +
             ' AND ';
         // var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-        queryRaw += value.map((e) => 'Id=${e.item1}').join(' OR ');
+        queryRaw += '(' + value.map((e) => 'Id=${e.item1}').join(' OR ') + ')';
         var query = await QueryManager.query(queryRaw);
 
         print(query.results.length);
