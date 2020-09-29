@@ -185,6 +185,7 @@ class _DownloadPageState extends State<DownloadPage>
                       );
                       TextEditingController text = TextEditingController();
                       var dialog = await showDialog(
+                        useRootNavigator: false,
                         context: context,
                         child: AlertDialog(
                           contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),

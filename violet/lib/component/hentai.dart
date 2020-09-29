@@ -83,6 +83,8 @@ class HentaiManager {
     }
     // is web search?
     else {
+      int no = int.tryParse(what);
+      if (no != null) {}
       for (int i = 0; i < route.length; i++) {
         print(route[i]);
         try {
@@ -132,6 +134,7 @@ class HentaiManager {
                 var phtml = await EHSession.requestString(pages[i]);
                 urls.addAll(EHParser.getImagesUrl(phtml));
               }
+              if (urls.length == 0) break;
               return EHentaiImageProvider(urls);
             }
             break;
@@ -145,17 +148,20 @@ class HentaiManager {
                 var phtml = await EHSession.requestString(pages[i]);
                 urls.addAll(EHParser.getImagesUrl(phtml));
               }
+              if (urls.length == 0) break;
               return EHentaiImageProvider(urls);
             }
             break;
           case 'Hitomi':
-            return HitomiImageProvider(
-                await HitomiManager.getImageList(qr.id().toString()));
+            var urls = await HitomiManager.getImageList(qr.id().toString());
+            if (urls.item1.length == 0 || urls.item2.length == 0) break;
+            return HitomiImageProvider(urls);
             break;
           case 'Hiyobi':
             if (lang == 'korean') {
-              return HiyobiImageProvider(
-                  await HiyobiManager.getImageList(qr.id().toString()));
+              var urls = await HiyobiManager.getImageList(qr.id().toString());
+              if (urls.item2.length == 0) break;
+              return HiyobiImageProvider(urls);
             }
             break;
           case 'NHentai':
