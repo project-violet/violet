@@ -152,7 +152,7 @@ class _SearchPageState extends State<SearchPage>
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
-                  Radius.circular(8.0),
+                  Radius.circular(4.0),
                 ),
               ),
               elevation: 100,
@@ -271,7 +271,7 @@ class _SearchPageState extends State<SearchPage>
                 Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(8.0),
+                Radius.circular(4.0),
               ),
             ),
             elevation: 100,
