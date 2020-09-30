@@ -24,10 +24,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/component/download/pixiv.dart';
+import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/route.dart';
@@ -797,40 +799,85 @@ class _SettingsPageState extends State<SettingsPage>
                         MdiIcons.cloudSearchOutline,
                         color: Settings.majorColor,
                       ),
-                      title: Text('Import From Others'),
+                      title: Text('Import From E/Ex-Hentai'),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () async {
-                      if (!await Permission.storage.isGranted) {
-                        if (await Permission.storage.request() ==
-                            PermissionStatus.denied) {
-                          flutterToast.showToast(
-                            child: ToastWrapper(
-                              isCheck: false,
-                              msg: Translations.of(context).trans('noauth'),
-                            ),
-                            gravity: ToastGravity.BOTTOM,
-                            toastDuration: Duration(seconds: 4),
-                          );
+                      var ehc = (await SharedPreferences.getInstance())
+                          .getString('eh_cookies');
 
-                          return;
-                        }
+                      if (ehc == null || ehc == '') {
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: false,
+                            msg: 'Set Cookie First!',
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                        return;
                       }
 
-                      var db = await getApplicationDocumentsDirectory();
-                      var dbfile = File('${db.path}/user.db');
-                      var ext = await getExternalStorageDirectory();
-                      var extpath = '${ext.path}/bookmark.db';
-                      var extfile = await dbfile.copy(extpath);
-
-                      flutterToast.showToast(
-                        child: ToastWrapper(
-                          isCheck: true,
-                          msg: Translations.of(context).trans('exportbookmark'),
-                        ),
-                        gravity: ToastGravity.BOTTOM,
-                        toastDuration: Duration(seconds: 4),
+                      await showDialog(
+                        context: context,
+                        child: ImportFromEHPage(),
                       );
+
+                      if (EHBookmark.bookmarkInfo == null) {
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: false,
+                            isWarning: true,
+                            msg: 'Bookmark is empty!',
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                        return;
+                      }
+
+                      int count = 0;
+                      EHBookmark.bookmarkInfo.forEach((element) {
+                        count += element.length;
+                      });
+
+                      var qqq = await Dialogs.yesnoDialog(context,
+                          '$count개 항목을 북마크에 추가할까요? (각 Favorite별로 그룹이 생성됩니다.)');
+                      if (qqq != null && qqq == true) {
+                        var bookmark = await Bookmark.getInstance();
+                        for (int i = 0;
+                            i < EHBookmark.bookmarkInfo.length;
+                            i++) {
+                          if (EHBookmark.bookmarkInfo[i].isEmpty) continue;
+                          await bookmark.createGroup(
+                              'Favorite $i', '', Colors.black);
+                          var group = (await bookmark.getGroup())
+                              .where(
+                                  (element) => element.name() == 'Favorite $i')
+                              .first
+                              .id();
+                          for (int j = 0;
+                              j < EHBookmark.bookmarkInfo[i].length;
+                              j++) {
+                            await bookmark.insertArticle(
+                                EHBookmark.bookmarkInfo[i]
+                                    .elementAt(j)
+                                    .toString(),
+                                DateTime.now(),
+                                group);
+                          }
+                        }
+
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            isWarning: false,
+                            msg: '북마크 정보를 모두 불러왔습니다!',
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                      }
                     },
                   ),
                 ]),
