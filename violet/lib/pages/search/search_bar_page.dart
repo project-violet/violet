@@ -17,7 +17,9 @@ import 'package:violet/settings/settings.dart';
 class SearchBarPage extends StatefulWidget {
   final FlareControls heroController;
   final FlutterActorArtboard artboard;
-  const SearchBarPage({Key key, this.artboard, this.heroController})
+  final String initText;
+  const SearchBarPage(
+      {Key key, this.artboard, this.initText, this.heroController})
       : super(key: key);
 
   @override
@@ -30,7 +32,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   List<Tuple3<String, String, int>> _searchLists =
       List<Tuple3<String, String, int>>();
 
-  TextEditingController _searchController = TextEditingController();
+  TextEditingController _searchController;
   int _insertPos, _insertLength;
   String _searchText;
   bool _nothing = false;
@@ -47,6 +49,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       duration: Duration(milliseconds: 400),
       reverseDuration: Duration(milliseconds: 400),
     );
+    _searchController = TextEditingController(text: widget.initText ?? '');
   }
 
   @override

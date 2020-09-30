@@ -208,6 +208,7 @@ class _SearchPageState extends State<SearchPage>
                               builder: (context) {
                                 return new SearchBarPage(
                                   artboard: artboard,
+                                  initText: latestQuery.item2,
                                   heroController: heroFlareControls,
                                 );
                               },
