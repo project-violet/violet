@@ -231,27 +231,6 @@ class _SearchPageState extends State<SearchPage>
                           });
                           // print(latestQuery);
                         },
-                        onLongPress: () async {
-                          Navigator.of(context)
-                              .push(PageRouteBuilder(
-                            opaque: false,
-                            transitionDuration: Duration(milliseconds: 500),
-                            transitionsBuilder: (BuildContext context,
-                                Animation<double> animation,
-                                Animation<double> secondaryAnimation,
-                                Widget wi) {
-                              return new FadeTransition(
-                                  opacity: animation, child: wi);
-                            },
-                            pageBuilder: (_, __, ___) => SearchResultSelector(),
-                          ))
-                              .then((value) async {
-                            await Future.delayed(Duration(milliseconds: 50),
-                                () {
-                              setState(() {});
-                            });
-                          });
-                        },
                         onDoubleTap: () async {
                           // latestQuery = value;
                           latestQuery =
