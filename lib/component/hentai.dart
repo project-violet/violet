@@ -41,99 +41,117 @@ class HentaiManager {
   // if next offset == -1, then search end
   static Future<Tuple2<List<QueryResult>, int>> search(String what,
       [int offset = 0]) async {
-    var route = Settings.searchRule;
     int no = int.tryParse(what);
     // is Id Search?
     if (no != null) {
-      final queryString = HitomiManager.translate2query(what);
-      var queryResult = (await (await DataBaseManager.getInstance())
-              .query("$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0"))
-          .map((e) => QueryResult(result: e))
-          .toList();
-
-      if (queryResult != null && queryResult.length != 0) {
-        return Tuple2<List<QueryResult>, int>(queryResult, -1);
-      }
-
-      try {
-        var hh =
-            await http.get('https://ltn.hitomi.la/galleryblock/${no}.html');
-        var article = await HitomiParser.parseGalleryBlock(hh.body);
-        var meta = {
-          'Id': no,
-          'Title': article['Title'],
-          'Artists': article['Artists'].join('|'),
-        };
-        return Tuple2<List<QueryResult>, int>([QueryResult(result: meta)], -1);
-      } catch (e) {}
-
-      return Tuple2<List<QueryResult>, int>([], -1);
+      return await _idSearch(what, offset);
     }
     // is random pick?
     else if (what.trim() == 'random') {
-      final queryString = HitomiManager.translate2query(Settings.includeTags +
-          ' ' +
-          Settings.excludeTags
-              .where((e) => e.trim() != '')
-              .map((e) => '-$e')
-              .join(' ')
-              .trim());
-
-      const int itemsPerPage = 500;
-      var queryResult = (await (await DataBaseManager.getInstance()).query(
-              "$queryString ORDER BY RANDOM() LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
-          .map((e) => QueryResult(result: e))
-          .toList();
-      print(queryResult[0].id());
-      return Tuple2<List<QueryResult>, int>(
-          queryResult, queryResult.length >= itemsPerPage ? offset + 1 : -1);
+      return await _randomSearch(what, offset);
     }
     // is db search?
     else if (!Settings.searchNetwork) {
-      final queryString = HitomiManager.translate2query(what +
-          ' ' +
-          Settings.includeTags +
-          ' ' +
-          Settings.excludeTags
-              .where((e) => e.trim() != '')
-              .map((e) => '-$e')
-              .join(' ')
-              .trim());
-
-      const int itemsPerPage = 500;
-      var queryResult = (await (await DataBaseManager.getInstance()).query(
-              "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
-          .map((e) => QueryResult(result: e))
-          .toList();
-      print(queryResult[0].id());
-      return Tuple2<List<QueryResult>, int>(
-          queryResult, queryResult.length >= itemsPerPage ? offset + 1 : -1);
+      return await _dbSearch(what, offset);
     }
     // is web search?
     else {
-      for (int i = 0; i < route.length; i++) {
-        print(route[i]);
-        try {
-          switch (route[i]) {
-            case 'EHentai':
-              var result = await _searchEHentai(what, offset.toString());
-              return Tuple2<List<QueryResult>, int>(
-                  result, result.length >= 25 ? offset + 1 : -1);
-            case 'ExHentai':
-              var result = await _searchEHentai(what, offset.toString(), true);
-              return Tuple2<List<QueryResult>, int>(
-                  result, result.length >= 25 ? offset + 1 : -1);
-              break;
-            case 'Hitomi':
-              // https://hiyobi.me/search/loli|sex
-              break;
-            case 'Hiyobi':
-              break;
-            case 'NHentai':
-              break;
-          }
-        } catch (e) {}
-      }
+      return await _networkSearch(what, offset);
+    }
+  }
+
+  static Future<Tuple2<List<QueryResult>, int>> _idSearch(String what,
+      [int offset = 0]) async {
+    final queryString = HitomiManager.translate2query(what);
+    var queryResult = (await (await DataBaseManager.getInstance())
+            .query("$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0"))
+        .map((e) => QueryResult(result: e))
+        .toList();
+    int no = int.tryParse(what);
+
+    if (queryResult != null && queryResult.length != 0) {
+      return Tuple2<List<QueryResult>, int>(queryResult, -1);
+    }
+
+    try {
+      var hh = await http.get('https://ltn.hitomi.la/galleryblock/${no}.html');
+      var article = await HitomiParser.parseGalleryBlock(hh.body);
+      var meta = {
+        'Id': no,
+        'Title': article['Title'],
+        'Artists': article['Artists'].join('|'),
+      };
+      return Tuple2<List<QueryResult>, int>([QueryResult(result: meta)], -1);
+    } catch (e) {}
+
+    return Tuple2<List<QueryResult>, int>([], -1);
+  }
+
+  static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
+      [int offset = 0]) async {
+    final queryString = HitomiManager.translate2query(Settings.includeTags +
+        ' ' +
+        Settings.excludeTags
+            .where((e) => e.trim() != '')
+            .map((e) => '-$e')
+            .join(' ')
+            .trim());
+
+    const int itemsPerPage = 500;
+    var queryResult = (await (await DataBaseManager.getInstance()).query(
+            "$queryString ORDER BY RANDOM() LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
+        .map((e) => QueryResult(result: e))
+        .toList();
+    return Tuple2<List<QueryResult>, int>(
+        queryResult, queryResult.length >= itemsPerPage ? offset + 1 : -1);
+  }
+
+  static Future<Tuple2<List<QueryResult>, int>> _dbSearch(String what,
+      [int offset = 0]) async {
+    final queryString = HitomiManager.translate2query(what +
+        ' ' +
+        Settings.includeTags +
+        ' ' +
+        Settings.excludeTags
+            .where((e) => e.trim() != '')
+            .map((e) => '-$e')
+            .join(' ')
+            .trim());
+
+    const int itemsPerPage = 500;
+    var queryResult = (await (await DataBaseManager.getInstance()).query(
+            "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
+        .map((e) => QueryResult(result: e))
+        .toList();
+    print(queryResult[0].id());
+    return Tuple2<List<QueryResult>, int>(
+        queryResult, queryResult.length >= itemsPerPage ? offset + 1 : -1);
+  }
+
+  static Future<Tuple2<List<QueryResult>, int>> _networkSearch(String what,
+      [int offset = 0]) async {
+    var route = Settings.searchRule;
+    for (int i = 0; i < route.length; i++) {
+      try {
+        switch (route[i]) {
+          case 'EHentai':
+            var result = await _searchEHentai(what, offset.toString());
+            return Tuple2<List<QueryResult>, int>(
+                result, result.length >= 25 ? offset + 1 : -1);
+          case 'ExHentai':
+            var result = await _searchEHentai(what, offset.toString(), true);
+            return Tuple2<List<QueryResult>, int>(
+                result, result.length >= 25 ? offset + 1 : -1);
+            break;
+          case 'Hitomi':
+            // https://hiyobi.me/search/loli|sex
+            break;
+          case 'Hiyobi':
+            break;
+          case 'NHentai':
+            break;
+        }
+      } catch (e) {}
     }
 
     // not taken
@@ -295,7 +313,7 @@ class HentaiManager {
 //    var url =
     //      'https://e${exh ? 'x' : '-'}hentai.org/?page=$page&f_cats=0&f_search=$what&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_spf=&f_spt=';
     var url =
-        'https://e${exh ? 'x' : '-'}hentai.org/?page=$page&f_cats=993&f_search=$what&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_spf=&f_spt=';
+        'https://e${exh ? 'x' : '-'}hentai.org/?page=$page&f_cats=993&f_search=$search&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_spf=&f_spt=';
 
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies') ?? '';
