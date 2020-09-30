@@ -5,7 +5,9 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
@@ -74,16 +76,19 @@ class RecordViewPage extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
                 child: FutureBuilder(
-                  future: QueryManager.query(
-                      "SELECT * FROM HitomiColumnModel WHERE Id=${snapshot.data[index].articleId()}"),
-                  builder: (context, AsyncSnapshot<QueryManager> snapshot) {
+                  // future: QueryManager.query(
+                  //     "SELECT * FROM HitomiColumnModel WHERE Id=${snapshot.data[index].articleId()}"),
+                  future:
+                      HentaiManager.idSearch(snapshot.data[index].articleId()),
+                  builder: (context,
+                      AsyncSnapshot<Tuple2<List<QueryResult>, int>> snapshot) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         snapshot.hasData
                             ? Provider<ArticleListItem>.value(
                                 value: ArticleListItem.fromArticleListItem(
-                                  queryResult: snapshot.data.results[0],
+                                  queryResult: snapshot.data.item1[0],
                                   showDetail: true,
                                   addBottomPadding: false,
                                   width: (width - 16),
