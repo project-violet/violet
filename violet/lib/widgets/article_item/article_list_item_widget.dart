@@ -510,9 +510,8 @@ class _DetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
+    return Container(
       margin: EdgeInsets.fromLTRB(8, 4, 4, 4),
-      duration: Duration(milliseconds: 300),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
