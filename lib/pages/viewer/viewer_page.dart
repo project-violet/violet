@@ -397,6 +397,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             ],
           ),
         ),
+        _verticalPageLabel(),
         _touchAreaMiddle(),
         !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
         !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
