@@ -26,8 +26,22 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 0),
+    version: '1.5 Minor Update <<= Latest',
+    isMinor: true,
+    contents: [
+      'add function to import bookmark from e/ex-hentai account',
+      'add precaching in horizontal viewer',
+      'add id search on web searching',
+      'add function to keep search text',
+      'fix bookmark not showing when article is not in database',
+      'fix default filter is not working on real-time best',
+      'remove search bar long press page',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 09, 26),
-    version: '1.4.1 Patch (HotFix) <<= Latest',
+    version: '1.4.1 Patch (HotFix)',
     contents: [
       'fix e/exhentai parsing error (images are doubled)',
     ],
