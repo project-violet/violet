@@ -21,6 +21,7 @@ import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/settings/device_type.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_filter_page.dart';
@@ -476,7 +477,7 @@ class _SearchPageState extends State<SearchPage>
               visibleFraction: 0.001,
               itemCount: filtered.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: mm,
+                crossAxisCount: Device.get().isTablet ? mm * 2 : mm,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
                 childAspectRatio: 3 / 4,
@@ -518,29 +519,68 @@ class _SearchPageState extends State<SearchPage>
             ));
       case 2:
       case 3:
-        return SliverList(
-          key: key,
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              return Align(
-                alignment: Alignment.center,
-                child: Provider<ArticleListItem>.value(
-                  value: ArticleListItem.fromArticleListItem(
-                    addBottomPadding: true,
-                    showDetail: Settings.searchResultType == 3,
-                    queryResult: filtered[index],
-                    width: windowWidth - 4.0,
-                    thumbnailTag: 'thumbnail' +
-                        filtered[index].id().toString() +
-                        datetime.toString(),
+        if (Device.get().isTablet ||
+            MediaQuery.of(context).orientation == Orientation.landscape) {
+          return SliverPadding(
+            padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+            sliver: LiveSliverGrid(
+              key: key,
+              controller: _scrollController,
+              showItemInterval: Duration(milliseconds: 50),
+              showItemDuration: Duration(milliseconds: 150),
+              visibleFraction: 0.001,
+              itemCount: filtered.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                childAspectRatio: (windowWidth / 2) / 130,
+              ),
+              itemBuilder: (context, index, animation) {
+                return Align(
+                  alignment: Alignment.center,
+                  child: Provider<ArticleListItem>.value(
+                    value: ArticleListItem.fromArticleListItem(
+                      addBottomPadding: true,
+                      showDetail: Settings.searchResultType == 3,
+                      queryResult: filtered[index],
+                      width: windowWidth - 4.0,
+                      thumbnailTag: 'thumbnail' +
+                          filtered[index].id().toString() +
+                          datetime.toString(),
+                    ),
+                    child: ArticleListItemVerySimpleWidget(),
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
-                ),
-              );
-            },
-            childCount: filtered.length,
-          ),
-        );
+                );
+              },
+            ),
+          );
+        } else {
+          return SliverList(
+            key: key,
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return Align(
+                  alignment: Alignment.center,
+                  child: Provider<ArticleListItem>.value(
+                    value: ArticleListItem.fromArticleListItem(
+                      addBottomPadding: true,
+                      showDetail: Settings.searchResultType == 3,
+                      queryResult: filtered[index],
+                      width: windowWidth - 4.0,
+                      thumbnailTag: 'thumbnail' +
+                          filtered[index].id().toString() +
+                          datetime.toString(),
+                    ),
+                    child: ArticleListItemVerySimpleWidget(),
+                  ),
+                );
+              },
+              childCount: filtered.length,
+            ),
+          );
+        }
+        break;
 
       default:
         return Container(
