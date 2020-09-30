@@ -7,6 +7,7 @@ import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/eh/eh_provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/hiyobi/hiyobi.dart';
 import 'package:violet/component/hiyobi/hiyobi_provider.dart';
@@ -41,8 +42,35 @@ class HentaiManager {
   static Future<Tuple2<List<QueryResult>, int>> search(String what,
       [int offset = 0]) async {
     var route = Settings.searchRule;
+    int no = int.tryParse(what);
+    // is Id Search?
+    if (no != null) {
+      final queryString = HitomiManager.translate2query(what);
+      var queryResult = (await (await DataBaseManager.getInstance())
+              .query("$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0"))
+          .map((e) => QueryResult(result: e))
+          .toList();
+
+      if (queryResult != null && queryResult.length != 0) {
+        return Tuple2<List<QueryResult>, int>(queryResult, -1);
+      }
+
+      try {
+        var hh =
+            await http.get('https://ltn.hitomi.la/galleryblock/${no}.html');
+        var article = await HitomiParser.parseGalleryBlock(hh.body);
+        var meta = {
+          'Id': no,
+          'Title': article['Title'],
+          'Artists': article['Artists'].join('|'),
+        };
+        return Tuple2<List<QueryResult>, int>([QueryResult(result: meta)], -1);
+      } catch (e) {}
+
+      return Tuple2<List<QueryResult>, int>([], -1);
+    }
     // is random pick?
-    if (what.trim() == 'random') {
+    else if (what.trim() == 'random') {
       final queryString = HitomiManager.translate2query(Settings.includeTags +
           ' ' +
           Settings.excludeTags
@@ -83,8 +111,6 @@ class HentaiManager {
     }
     // is web search?
     else {
-      int no = int.tryParse(what);
-      if (no != null) {}
       for (int i = 0; i < route.length; i++) {
         print(route[i]);
         try {
