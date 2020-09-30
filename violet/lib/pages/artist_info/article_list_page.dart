@@ -16,11 +16,8 @@ import 'package:violet/widgets/search_bar.dart';
 class ArticleListPage extends StatefulWidget {
   final List<QueryResult> cc;
   final String name;
-  String heroKey;
 
-  ArticleListPage({this.name, this.cc}) {
-    heroKey = Uuid().v4.toString();
-  }
+  ArticleListPage({this.name, this.cc});
 
   @override
   _ArticleListPageState createState() => _ArticleListPageState();
