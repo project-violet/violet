@@ -373,13 +373,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   color: Colors.black,
                 ),
                 pageController: _pageController,
-                onPageChanged: (page) {
+                onPageChanged: (page) async {
                   currentPage = page.toInt() + 1;
                   setState(() {
                     _prevPage = page.toInt() + 1;
                   });
-                  _precache(page.toInt() - 1);
-                  _precache(page.toInt() + 1);
+                  await _precache(page.toInt() - 1);
+                  await _precache(page.toInt() + 1);
                 },
                 scrollDirection:
                     Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
@@ -396,15 +396,47 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     );
   }
 
-  _precache(int index) {
-    if (index < 0 || _pageInfo.uris.length <= index) return;
-    precacheImage(
-      OptimizedCacheImageProvider(
-        _pageInfo.uris[index],
-        headers: _pageInfo.headers,
-      ),
-      context,
-    );
+  _precache(int index) async {
+    if (_pageInfo.useWeb) {
+      if (index < 0 || _pageInfo.uris.length <= index) return;
+      precacheImage(
+        OptimizedCacheImageProvider(
+          _pageInfo.uris[index],
+          headers: _pageInfo.headers,
+        ),
+        context,
+      );
+    } else if (_pageInfo.useProvider) {
+      if (index < 0 || _pageInfo.provider.length() <= index) return;
+      if (_headerCache == null) {
+        _headerCache =
+            List<Map<String, String>>.filled(_pageInfo.uris.length, null);
+        _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+      }
+      if (_height == null) {
+        _height = List<double>.filled(_pageInfo.uris.length, 0);
+        _keys = List<GlobalKey>.generate(
+            _pageInfo.uris.length, (index) => GlobalKey());
+      }
+
+      if (_headerCache[index] == null) {
+        var header = await _pageInfo.provider.getHeader(index);
+        _headerCache[index] = header;
+      }
+
+      if (_urlCache[index] == null) {
+        var url = await _pageInfo.provider.getImageUrl(index);
+        _urlCache[index] = url;
+      }
+
+      precacheImage(
+        OptimizedCacheImageProvider(
+          _urlCache[index],
+          headers: _headerCache[index],
+        ),
+        context,
+      );
+    }
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
