@@ -65,7 +65,12 @@ class BookmarkArtist {
 
   int id() => result['Id'];
   String artist() => result['Artist'];
-  int isGroup() => result['IsGroup'];
+  // 0: artist
+  // 1: group
+  // 2: uploader
+  // 3: series
+  // 4: character
+  int type() => result['IsGroup']; // backward compatibility
   String datetime() => result['DateTime'];
   int group() => result['GroupId'];
 
