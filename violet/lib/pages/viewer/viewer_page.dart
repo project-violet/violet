@@ -263,34 +263,41 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             }
           },
           itemBuilder: (context) => [
-            PopupMenuItem(
+            CheckedPopupMenuItem(
               value: _ViewAppBarAction.toggleViewer,
               child: Text('Toggle Viewer Style'),
+              checked: Settings.isHorizontal,
             ),
-            PopupMenuItem(
+            CheckedPopupMenuItem(
               value: _ViewAppBarAction.toggleRightToLeft,
               child: Text('Toggle Right To Left'),
+              checked: Settings.rightToLeft,
             ),
-            PopupMenuItem(
+            CheckedPopupMenuItem(
               value: _ViewAppBarAction.toggleScrollVertical,
               enabled: Settings.isHorizontal,
               child: Text('Toggle Scroll Vertical'),
+              checked: Settings.scrollVertical,
             ),
-            PopupMenuItem(
+            CheckedPopupMenuItem(
               value: _ViewAppBarAction.toggleAnimation,
               child: Text('Toggle Animation'),
+              checked: Settings.animation,
             ),
-            PopupMenuItem(
+            CheckedPopupMenuItem(
               value: _ViewAppBarAction.togglePadding,
               child: Text('Toggle Padding'),
+              checked: Settings.padding,
             ),
-            PopupMenuItem(
+            CheckedPopupMenuItem(
               value: _ViewAppBarAction.toggleOverlayButton,
               child: Text('Disable Overlay Buttons'),
+              checked: Settings.disableOverlayButton,
             ),
-            PopupMenuItem(
+            CheckedPopupMenuItem(
               value: _ViewAppBarAction.toggleFullScreen,
               child: Text('Disable Full Screen'),
+              checked: Settings.disableFullScreen,
             ),
           ],
         ),
@@ -399,13 +406,14 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   _precache(int index) async {
     if (_pageInfo.useWeb) {
       if (index < 0 || _pageInfo.uris.length <= index) return;
-      precacheImage(
+      await precacheImage(
         OptimizedCacheImageProvider(
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
         ),
         context,
       );
+      print(index);
     } else if (_pageInfo.useProvider) {
       if (index < 0 || _pageInfo.provider.length() <= index) return;
       if (_headerCache == null) {
@@ -429,7 +437,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         _urlCache[index] = url;
       }
 
-      precacheImage(
+      await precacheImage(
         OptimizedCacheImageProvider(
           _urlCache[index],
           headers: _headerCache[index],
@@ -460,12 +468,19 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     } else if (_pageInfo.useProvider) {
       return PhotoViewGalleryPageOptions.customChild(
         child: FutureBuilder(
-          future:
-              Future.delayed(Duration(milliseconds: 300)).then((value) async {
-            var header = await _pageInfo.provider.getHeader(index);
-            var url = await _pageInfo.provider.getImageUrl(index);
+          future: Future.sync(() async {
+            if (_headerCache[index] == null) {
+              var header = await _pageInfo.provider.getHeader(index);
+              _headerCache[index] = header;
+            }
 
-            return Tuple2<Map<String, String>, String>(header, url);
+            if (_urlCache[index] == null) {
+              var url = await _pageInfo.provider.getImageUrl(index);
+              _urlCache[index] = url;
+            }
+
+            return Tuple2<Map<String, String>, String>(
+                _headerCache[index], _urlCache[index]);
           }),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
