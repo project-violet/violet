@@ -48,45 +48,50 @@ class SimpleInfoWidget extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(5.0),
           child: GestureDetector(
-              onTap: () async {
-                Navigator.of(context).push(PageRouteBuilder(
-                  opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder: (BuildContext context,
-                      Animation<double> animation,
-                      Animation<double> secondaryAnimation,
-                      Widget wi) {
-                    return new FadeTransition(opacity: animation, child: wi);
-                  },
-                  pageBuilder: (_, __, ___) => ThumbnailViewPage(
-                    size: null,
-                    thumbnail: data.thumbnail,
-                    headers: data.headers,
-                    heroKey: data.heroKey,
-                  ),
-                ));
-              },
-              child: data.thumbnail != null
-                  ? CachedNetworkImage(
-                      imageUrl: data.thumbnail,
-                      fit: BoxFit.cover,
-                      httpHeaders: data.headers,
-                      height: 4 * 50.0,
-                      width: 3 * 50.0,
-                    )
-                  : SizedBox(
-                      height: 4 * 50.0,
-                      width: 3 * 50.0,
-                      child: FlareActor(
-                        "assets/flare/Loading2.flr",
-                        alignment: Alignment.center,
-                        fit: BoxFit.fitHeight,
-                        animation: "Alarm",
-                      ),
-                    )),
+            onTap: () => _thumbnailTapped(context, data),
+            child: _thumbnailImage(data),
+          ),
         ),
       ),
     );
+  }
+
+  void _thumbnailTapped(BuildContext context, ArticleInfo data) {
+    Navigator.of(context).push(PageRouteBuilder(
+      opaque: false,
+      transitionDuration: Duration(milliseconds: 500),
+      transitionsBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation, Widget wi) {
+        return new FadeTransition(opacity: animation, child: wi);
+      },
+      pageBuilder: (_, __, ___) => ThumbnailViewPage(
+        size: null,
+        thumbnail: data.thumbnail,
+        headers: data.headers,
+        heroKey: data.heroKey,
+      ),
+    ));
+  }
+
+  Widget _thumbnailImage(ArticleInfo data) {
+    return data.thumbnail != null
+        ? CachedNetworkImage(
+            imageUrl: data.thumbnail,
+            fit: BoxFit.cover,
+            httpHeaders: data.headers,
+            height: 4 * 50.0,
+            width: 3 * 50.0,
+          )
+        : SizedBox(
+            height: 4 * 50.0,
+            width: 3 * 50.0,
+            child: FlareActor(
+              "assets/flare/Loading2.flr",
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: "Alarm",
+            ),
+          );
   }
 
   Widget _bookmark(ArticleInfo data) {
