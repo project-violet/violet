@@ -378,6 +378,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   setState(() {
                     _prevPage = page.toInt() + 1;
                   });
+                  _precache(page.toInt() - 1);
+                  _precache(page.toInt() + 1);
                 },
                 scrollDirection:
                     Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
@@ -391,6 +393,17 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
         !_disableBottom ? _bottomAppBar() : Container(),
       ],
+    );
+  }
+
+  _precache(int index) {
+    if (index < 0 || _pageInfo.uris.length <= index) return;
+    precacheImage(
+      OptimizedCacheImageProvider(
+        _pageInfo.uris[index],
+        headers: _pageInfo.headers,
+      ),
+      context,
     );
   }
 
