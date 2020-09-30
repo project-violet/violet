@@ -647,7 +647,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   List<double> _height;
   List<GlobalKey> _keys;
   _networkImageItem(index) {
-    final width = MediaQuery.of(context).size.width;
+    final width =
+        MediaQuery.of(context).size.width - (Settings.padding ? 8 : 0);
     if (_height == null) {
       _height = List<double>.filled(_pageInfo.uris.length, 0);
       _keys = List<GlobalKey>.generate(
