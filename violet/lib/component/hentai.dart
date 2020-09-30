@@ -44,7 +44,7 @@ class HentaiManager {
     int no = int.tryParse(what);
     // is Id Search?
     if (no != null) {
-      return await _idSearch(what, offset);
+      return await idSearch(what, offset);
     }
     // is random pick?
     else if (what.trim() == 'random') {
@@ -60,7 +60,7 @@ class HentaiManager {
     }
   }
 
-  static Future<Tuple2<List<QueryResult>, int>> _idSearch(String what,
+  static Future<Tuple2<List<QueryResult>, int>> idSearch(String what,
       [int offset = 0]) async {
     final queryString = HitomiManager.translate2query(what);
     var queryResult = (await (await DataBaseManager.getInstance())
