@@ -30,6 +30,7 @@ final patches = [
     version: '1.5 Minor Update <<= Latest',
     isMinor: true,
     contents: [
+      'enhance horizontal viewer',
       'add function to import bookmark from e/ex-hentai account',
       'add precaching in horizontal viewer',
       'add id search on web searching',
