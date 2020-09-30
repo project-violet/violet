@@ -467,7 +467,7 @@ class _SearchPageState extends State<SearchPage>
       case 0:
       case 1:
         return SliverPadding(
-            padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: LiveSliverGrid(
               key: key,
               controller: _scrollController,
