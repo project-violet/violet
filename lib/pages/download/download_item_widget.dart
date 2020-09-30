@@ -24,7 +24,7 @@ import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/database/user/download.dart';
-import 'package:violet/widgets/article_item/thumbnail_manager.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
 class DownloadItemWidget extends StatefulWidget {

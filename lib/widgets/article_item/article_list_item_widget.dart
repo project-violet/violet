@@ -26,7 +26,7 @@ import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
-import 'package:violet/widgets/article_item/thumbnail_manager.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 typedef void BookmarkCallback(int article);
