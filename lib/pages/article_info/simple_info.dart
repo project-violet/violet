@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/model/article_info.dart';
-import 'package:violet/widgets/article_item/thumbnail_manager.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 class SimpleInfoWidget extends StatelessWidget {
