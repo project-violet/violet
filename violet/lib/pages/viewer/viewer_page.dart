@@ -19,6 +19,8 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/article_item/others/photo_view_gallery.dart';
+import 'package:violet/widgets/article_item/others/preload_page_view.dart';
 
 int currentPage = 0;
 
@@ -59,7 +61,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   int _prevPage = 1;
   double _opacity = 0.0;
   bool _disableBottom = false;
-  PageController _pageController = PageController();
+  PreloadPageController _pageController = PreloadPageController();
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
@@ -213,7 +215,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 Settings.setIsHorizontal(!Settings.isHorizontal);
                 if (Settings.isHorizontal) {
                   _pageController =
-                      new PageController(initialPage: _prevPage - 1);
+                      new PreloadPageController(initialPage: _prevPage - 1);
                 } else {
                   var npage = _prevPage;
                   _sliderOnChange = true;
@@ -372,8 +374,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           child: Stack(
             alignment: Alignment.bottomRight,
             children: <Widget>[
-              PhotoViewGallery.builder(
-                scrollPhysics: const BouncingScrollPhysics(),
+              VPhotoViewGallery.builder(
+                scrollPhysics: const AlwaysScrollableScrollPhysics(),
                 builder: _buildItem,
                 itemCount: _pageInfo.uris.length,
                 backgroundDecoration: const BoxDecoration(
@@ -469,6 +471,17 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       return PhotoViewGalleryPageOptions.customChild(
         child: FutureBuilder(
           future: Future.sync(() async {
+            if (_headerCache == null) {
+              _headerCache =
+                  List<Map<String, String>>.filled(_pageInfo.uris.length, null);
+              _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+            }
+            if (_height == null) {
+              _height = List<double>.filled(_pageInfo.uris.length, 0);
+              _keys = List<GlobalKey>.generate(
+                  _pageInfo.uris.length, (index) => GlobalKey());
+            }
+
             if (_headerCache[index] == null) {
               var header = await _pageInfo.provider.getHeader(index);
               _headerCache[index] = header;
@@ -483,23 +496,23 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 _headerCache[index], _urlCache[index]);
           }),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return SizedBox(
-                height: 300,
-                child: Center(
-                  child: SizedBox(
-                    child: CircularProgressIndicator(),
-                    width: 30,
-                    height: 30,
-                  ),
+            if (_urlCache[index] != null && _headerCache[index] != null) {
+              return PhotoView(
+                imageProvider: OptimizedCacheImageProvider(
+                  _urlCache[index],
+                  headers: _headerCache[index],
                 ),
               );
             }
 
-            return PhotoView(
-              imageProvider: OptimizedCacheImageProvider(
-                snapshot.data.item2,
-                headers: snapshot.data.item1,
+            return SizedBox(
+              height: 300,
+              child: Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 30,
+                  height: 30,
+                ),
               ),
             );
           },
