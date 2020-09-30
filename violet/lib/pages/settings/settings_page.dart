@@ -1027,6 +1027,12 @@ class _SettingsPageState extends State<SettingsPage>
                                 .setString('eh_cookies', ck);
                           }
                         }
+
+                        Settings.searchRule =
+                            'ExHentai|EHentai|Hitomi|Hiyobi|NHentai'.split('|');
+                        await (await SharedPreferences.getInstance()).setString(
+                            'searchrule',
+                            'ExHentai|EHentai|Hitomi|Hiyobi|NHentai');
                       },
                     ),
                     _buildDivider(),
