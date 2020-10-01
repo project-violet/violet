@@ -59,7 +59,7 @@
     "switching": "Switching",
     "syncmanual": "Sync Manually",
     "tagrebuild": "Tag Rebuild",
-    "component": "Component",
+    "component": "Componenti",
 
     "read": "Read",
     "artists": "Artists",
@@ -195,7 +195,7 @@
     "maindb": "Database",
     "mainread": "Read",
     "mainbookmark": "Boomkark",
-    "maindownload": "Donwload",
+    "maindownload": "Download",
     
     "usewebsearch": "Search on Web",
     "usevioletserver": "Use Violet Server",
