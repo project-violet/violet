@@ -416,7 +416,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         ),
         context,
       );
-      print(index);
     } else if (_pageInfo.useProvider) {
       if (index < 0 || _pageInfo.provider.length() <= index) return;
       if (_headerCache == null) {
