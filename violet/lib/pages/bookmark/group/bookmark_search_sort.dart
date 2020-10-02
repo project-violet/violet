@@ -114,8 +114,10 @@ class _BookmarkSearchSortState extends State<BookmarkSearchSort> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final height =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
+    final mediaQuery = MediaQuery.of(context);
+    final height = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        (mediaQuery.padding + mediaQuery.viewInsets).bottom;
     return WillPopScope(
       onWillPop: () {
         Navigator.pop(context, [
@@ -127,7 +129,9 @@ class _BookmarkSearchSortState extends State<BookmarkSearchSort> {
       },
       child: Container(
         color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+        padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top,
+            bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
