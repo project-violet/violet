@@ -18,6 +18,7 @@ class EHentaiImageProvider extends VioletImageProvider {
 
   @override
   Future<void> init() async {
+    if (initialized) return;
     urls = List<String>();
     for (int i = 0; i < pagesUrl.length; i++) {
       var phtml = await EHSession.requestString(pagesUrl[i]);
