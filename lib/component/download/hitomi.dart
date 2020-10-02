@@ -7,7 +7,7 @@ import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/downloadable.dart';
-import 'package:http/http.dart' as http;
+import 'package:violet/network/wrapper.dart' as http;
 import 'dart:convert';
 import 'package:path/path.dart' as path;
 import 'package:crypto/crypto.dart';

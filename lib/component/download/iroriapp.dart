@@ -4,7 +4,7 @@
 import 'dart:convert';
 
 import 'package:violet/component/downloadable.dart';
-import 'package:http/http.dart' as http;
+import 'package:violet/network/wrapper.dart' as http;
 
 class IroriAppManager extends Downloadable {
   RegExp urlMatcher;

@@ -3,8 +3,9 @@
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';
+
+import 'package:violet/network/wrapper.dart' as http;
 
 class UpdateSyncManager {
   static const String updateInfoURL =

@@ -3,7 +3,7 @@
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:tuple/tuple.dart';
 
 class HiyobiManager {

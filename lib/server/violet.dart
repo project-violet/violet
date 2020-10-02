@@ -4,9 +4,9 @@
 import 'dart:convert';
 
 import 'package:tuple/tuple.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:violet/server/salt.dart';
+
+import 'package:violet/network/wrapper.dart' as http;
 
 class VioletServer {
   static const protocol = 'https';
