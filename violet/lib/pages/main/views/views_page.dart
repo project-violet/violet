@@ -42,7 +42,6 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
 
     final mediaQuery = MediaQuery.of(context);
 
-    print((mediaQuery.padding + mediaQuery.viewInsets).top);
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
       child: Padding(
@@ -203,7 +202,6 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         queryRaw += '(' + value.map((e) => 'Id=${e.item1}').join(' OR ') + ')';
         var query = await QueryManager.query(queryRaw);
 
-        print(query.results.length);
         if (query.results.length == 0) return 901;
 
         var qr = Map<String, QueryResult>();

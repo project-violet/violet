@@ -1,6 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -13,6 +16,7 @@ class EHentaiImageProvider extends VioletImageProvider {
   String thumbnail;
   List<String> pagesUrl;
   List<String> urls;
+  List<String> imgUrls;
 
   EHentaiImageProvider({this.count, this.thumbnail, this.pagesUrl});
 
@@ -24,6 +28,7 @@ class EHentaiImageProvider extends VioletImageProvider {
       var phtml = await EHSession.requestString(pagesUrl[i]);
       urls.addAll(EHParser.getImagesUrl(phtml));
     }
+    imgUrls = List<String>.filled(urls.length, '');
     initialized = true;
   }
 
@@ -48,8 +53,11 @@ class EHentaiImageProvider extends VioletImageProvider {
 
   @override
   Future<String> getImageUrl(int page) async {
+    if (imgUrls[page] != '') {
+      return imgUrls[page];
+    }
     var img = await EHSession.requestString(urls[page]);
-    return EHParser.getImagesAddress(img);
+    return imgUrls[page] = EHParser.getImagesAddress(img);
   }
 
   @override

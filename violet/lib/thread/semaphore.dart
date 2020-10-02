@@ -18,8 +18,8 @@ class Semaphore {
 
   final Queue<Completer> _waitQueue = Queue<Completer>();
 
-  Future<int> acquire(int index) {
-    var completer = Completer<int>();
+  Future acquire() {
+    var completer = Completer();
 
     if (_currentCount + 1 <= maxCount) {
       _currentCount++;
@@ -35,7 +35,7 @@ class Semaphore {
     _waitQueue.clear();
   }
 
-  Future<void> release() async {
+  void release() {
     _currentCount--;
     if (_waitQueue.isNotEmpty) {
       _currentCount++;
