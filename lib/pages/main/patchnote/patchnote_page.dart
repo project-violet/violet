@@ -3,9 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:violet/other/dialogs.dart';
 
 class PatchModel {
   DateTime dateTime;
@@ -26,8 +24,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 2),
+    version: '1.5.1 Patch <<= Latest',
+    contents: [
+      'enhance e/ex-hentai image loading',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 0),
-    version: '1.5 Minor Update <<= Latest',
+    version: '1.5 Minor Update',
     isMinor: true,
     contents: [
       'enhance horizontal viewer',
