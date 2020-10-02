@@ -16,11 +16,11 @@ import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
+import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/widgets/article_item/others/photo_view_gallery.dart';
-import 'package:violet/widgets/article_item/others/preload_page_view.dart';
 
 int currentPage = 0;
 
