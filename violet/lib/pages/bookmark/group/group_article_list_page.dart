@@ -21,7 +21,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
 import 'package:violet/widgets/search_bar.dart';
-import 'package:http/http.dart' as http;
+import 'package:violet/network/wrapper.dart' as http;
 
 class GroupArticleListPage extends StatefulWidget {
   final String name;

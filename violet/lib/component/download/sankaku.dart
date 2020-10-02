@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
-import 'package:http/http.dart' as http;
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:violet/component/downloadable.dart';
 

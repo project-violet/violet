@@ -18,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'locale/locale.dart';
@@ -62,6 +63,7 @@ void main() async {
   await User.getInstance();
   await Variables.init();
   await HitomiIndexs.init();
+  await Logger.init();
   await warmupFlare();
 
   runApp(

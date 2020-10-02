@@ -1,8 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/network/wrapper.dart' as http;
 
 class EHSession {
   static EHSession tryLogin(String id, String pass) {

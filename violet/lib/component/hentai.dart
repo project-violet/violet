@@ -17,7 +17,7 @@ import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/settings/settings.dart';
 
-import 'package:http/http.dart' as http;
+import 'package:violet/network/wrapper.dart' as http;
 
 //
 // Hentai Component
