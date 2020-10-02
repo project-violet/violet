@@ -149,10 +149,16 @@ class EHParser {
     article.visible = nodeStatic[2].querySelector("td[class='gdt2']").text;
     article.language = nodeStatic[3].querySelector("td[class='gdt2']").text;
     article.fileSize = nodeStatic[4].querySelector("td[class='gdt2']").text;
-    article.length =
-        int.tryParse(nodeStatic[5].querySelector("td[class='gdt2']").text);
-    article.favorited =
-        int.tryParse(nodeStatic[6].querySelector("td[class='gdt2']").text);
+    article.length = int.tryParse(nodeStatic[5]
+        .querySelector("td[class='gdt2']")
+        .text
+        .replaceAll('pages', '')
+        .trim());
+    article.favorited = int.tryParse(nodeStatic[6]
+        .querySelector("td[class='gdt2']")
+        .text
+        .replaceAll('times', '')
+        .trim());
 
     var nodesData =
         doc.querySelectorAll("div[id='gmid'] div[id='taglist'] table tr");

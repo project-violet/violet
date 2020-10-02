@@ -9,6 +9,7 @@ import 'package:violet/component/image_provider.dart';
 class EHentaiImageProvider extends VioletImageProvider {
   // List<String> urls;
   int count;
+  bool initialized = false;
   String thumbnail;
   List<String> pagesUrl;
   List<String> urls;
@@ -17,10 +18,12 @@ class EHentaiImageProvider extends VioletImageProvider {
 
   @override
   Future<void> init() async {
+    urls = List<String>();
     for (int i = 0; i < pagesUrl.length; i++) {
       var phtml = await EHSession.requestString(pagesUrl[i]);
       urls.addAll(EHParser.getImagesUrl(phtml));
     }
+    initialized = true;
   }
 
   @override
