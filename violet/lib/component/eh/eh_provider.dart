@@ -7,9 +7,21 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/image_provider.dart';
 
 class EHentaiImageProvider extends VioletImageProvider {
+  // List<String> urls;
+  int count;
+  String thumbnail;
+  List<String> pagesUrl;
   List<String> urls;
 
-  EHentaiImageProvider(this.urls);
+  EHentaiImageProvider({this.count, this.thumbnail, this.pagesUrl});
+
+  @override
+  Future<void> init() async {
+    for (int i = 0; i < pagesUrl.length; i++) {
+      var phtml = await EHSession.requestString(pagesUrl[i]);
+      urls.addAll(EHParser.getImagesUrl(phtml));
+    }
+  }
 
   @override
   Future<List<String>> getSmallImagesUrl() async {
@@ -20,7 +32,7 @@ class EHentaiImageProvider extends VioletImageProvider {
 
   @override
   Future<String> getThumbnailUrl() async {
-    return await getImageUrl(0);
+    return thumbnail;
   }
 
   @override
@@ -38,6 +50,6 @@ class EHentaiImageProvider extends VioletImageProvider {
 
   @override
   int length() {
-    return urls.length;
+    return count;
   }
 }

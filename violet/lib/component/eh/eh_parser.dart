@@ -57,6 +57,9 @@ class EHResultArticle {
 // E-Hentai, EX-Hentai Parser
 // You can use both of the previous.
 class EHParser {
+  static RegExp _thumbnailPattern =
+      RegExp(r'https://(exhentai|ehgt).org/.*?(?=\))');
+
   // ex: https://exhentai.org/g/1212168/421ef300a8/
   static List<String> getImagesUrl(String html) {
     var doc = parse(html).querySelector("div[id='gdt']");
@@ -128,7 +131,7 @@ class EHParser {
     var h = parse(html);
     var doc = h.querySelector("div.gm");
 
-    article.thumbnail = RegExp(r'https://(exhentai|ehgt).org/.*?(?=\))')
+    article.thumbnail = _thumbnailPattern
         .stringMatch(
             doc.querySelector("div[id=gleft] div div").attributes['style'])
         .toString();
