@@ -199,7 +199,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     return AppBar(
       elevation: 0.0,
       backgroundColor: Colors.black.withOpacity(0.3),
-      title: Text('$_prevPage/${_pageInfo.uris.length}'),
+      // title: Text('$_prevPage/${_pageInfo.uris.length}'),
       leading: IconButton(
         icon: new Icon(Icons.arrow_back),
         onPressed: () {
