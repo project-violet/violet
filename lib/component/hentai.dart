@@ -172,28 +172,39 @@ class HentaiManager {
               print('https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
               var html = await EHSession.requestString(
                   'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
-              var pages = EHParser.getPagesUrl(html);
-              var urls = List<String>();
-              for (int i = 0; i < pages.length; i++) {
-                var phtml = await EHSession.requestString(pages[i]);
-                urls.addAll(EHParser.getImagesUrl(phtml));
-              }
-              if (urls.length == 0) break;
-              return EHentaiImageProvider(urls);
+              var article = EHParser.parseArticleData(html);
+              // var pages = EHParser.getPagesUrl(html);
+              // var urls = List<String>();
+              // for (int i = 0; i < pages.length; i++) {
+              //   var phtml = await EHSession.requestString(pages[i]);
+              //   urls.addAll(EHParser.getImagesUrl(phtml));
+              // }
+              // if (urls.length == 0) break;
+              return EHentaiImageProvider(
+                count: article.length,
+                thumbnail: article.thumbnail,
+                pagesUrl: EHParser.getPagesUrl(html),
+              );
             }
             break;
           case 'ExHentai':
             if (qr.ehash() != null) {
               var html = await EHSession.requestString(
                   'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/');
-              var pages = EHParser.getPagesUrl(html);
-              var urls = List<String>();
-              for (int i = 0; i < pages.length; i++) {
-                var phtml = await EHSession.requestString(pages[i]);
-                urls.addAll(EHParser.getImagesUrl(phtml));
-              }
-              if (urls.length == 0) break;
-              return EHentaiImageProvider(urls);
+              var article = EHParser.parseArticleData(html);
+              // var pages = EHParser.getPagesUrl(html);
+              // var urls = List<String>();
+              // for (int i = 0; i < pages.length; i++) {
+              //   var phtml = await EHSession.requestString(pages[i]);
+              //   urls.addAll(EHParser.getImagesUrl(phtml));
+              // }
+              // if (urls.length == 0) break;
+              // return EHentaiImageProvider(urls);
+              return EHentaiImageProvider(
+                count: article.length,
+                thumbnail: article.thumbnail,
+                pagesUrl: EHParser.getPagesUrl(html),
+              );
             }
             break;
           case 'Hitomi':

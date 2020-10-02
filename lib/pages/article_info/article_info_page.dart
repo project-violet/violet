@@ -278,6 +278,8 @@ class _InfoAreaWidget extends StatelessWidget {
                       if (!Settings.disableFullScreen)
                         SystemChrome.setEnabledSystemUIOverlays([]);
 
+                      await ProviderManager.get(queryResult.id()).init();
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(

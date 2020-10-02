@@ -10,6 +10,9 @@ class HitomiImageProvider extends VioletImageProvider {
   HitomiImageProvider(this.urls);
 
   @override
+  Future<void> init() async {}
+
+  @override
   Future<List<String>> getSmallImagesUrl() async {
     return urls.item3;
   }

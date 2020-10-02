@@ -10,6 +10,9 @@ class HiyobiImageProvider extends VioletImageProvider {
   HiyobiImageProvider(this.urls);
 
   @override
+  Future<void> init() async {}
+
+  @override
   Future<List<String>> getSmallImagesUrl() async {
     throw UnimplementedError();
   }
