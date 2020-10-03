@@ -72,14 +72,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   void initState() {
     super.initState();
 
-    _bottomSliderController = AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 200),
-        reverseDuration: Duration(milliseconds: 200));
-    _bottomSliderOffset =
-        Tween<Offset>(begin: Offset(0.0, 0.1), end: Offset.zero)
-            .animate(_bottomSliderController);
-
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
 
@@ -555,7 +547,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 _opacity = 1.0;
                 _disableBottom = false;
               });
-              _bottomSliderController.forward();
               if (!Settings.disableFullScreen) {
                 SystemChrome.setEnabledSystemUIOverlays(
                     [SystemUiOverlay.bottom, SystemUiOverlay.top]);
@@ -567,7 +558,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               if (!Settings.disableFullScreen) {
                 SystemChrome.setEnabledSystemUIOverlays([]);
               }
-              _bottomSliderController.reverse();
               Future.delayed(Duration(milliseconds: 300)).then((value) {
                 setState(() {
                   _disableBottom = true;
@@ -980,109 +970,104 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     // );
   }
 
-  Animation<Offset> _bottomSliderOffset;
-  AnimationController _bottomSliderController;
   _bottomAppBar() {
     final statusBarHeight =
         Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
     final height = MediaQuery.of(context).size.height;
-    final mediaQuery = MediaQuery.of(context);
     return AnimatedOpacity(
       opacity: _opacity,
       duration: Duration(milliseconds: 300),
       child: Stack(
         children: [
+          Settings.disableFullScreen
+              ? Padding(
+                  padding: EdgeInsets.only(top: statusBarHeight.toDouble()),
+                  child: Container(
+                    height: Variables.statusBarHeight,
+                    color: Colors.black,
+                  ),
+                )
+              : Container(),
           Padding(
-            padding: EdgeInsets.only(top: statusBarHeight.toDouble()),
+            // padding: EdgeInsets.only(
+            //     top: height -
+            //         (mediaQuery.padding + mediaQuery.viewInsets).bottom -
+            //         (48) -
+            //         statusBarHeight),
+            padding: EdgeInsets.only(
+                top: height -
+                    Variables.bottomBarHeight -
+                    (48) -
+                    statusBarHeight),
             child: Container(
-              height: Variables.statusBarHeight,
-              color: Colors.black,
-            ),
-          ),
-          SlideTransition(
-            position: _bottomSliderOffset,
-            child: Padding(
-              // padding: EdgeInsets.only(
-              //     top: height -
-              //         (mediaQuery.padding + mediaQuery.viewInsets).bottom -
-              //         (48) -
-              //         statusBarHeight),
-              padding: EdgeInsets.only(
-                  top: height -
-                      Variables.bottomBarHeight -
-                      (48) -
-                      statusBarHeight),
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                color: Colors.black.withOpacity(0.8),
-                height: 48 + Variables.bottomBarHeight,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Row(
-                      // mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 60,
-                        ),
-                        Text('$_prevPage',
-                            style: TextStyle(
-                                color: Colors.white70, fontSize: 16.0)),
-                        Container(
-                          width: 200,
-                          child: SliderTheme(
-                            data: SliderThemeData(
-                              activeTrackColor: Colors.blue,
-                              inactiveTrackColor: Color(0xffd0d2d3),
-                              trackHeight: 3,
-                              thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: 6.0),
-                              // thumbShape: SliderThumbShape(),
-                            ),
-                            child: Slider(
-                              value: _prevPage.toDouble() > 0
-                                  ? _prevPage.toDouble()
-                                  : 1,
-                              max: _pageInfo.uris.length.toDouble(),
-                              min: 1,
-                              label: _prevPage.toString(),
-                              divisions: _pageInfo.uris.length,
-                              inactiveColor:
-                                  Settings.majorColor.withOpacity(0.7),
-                              activeColor: Settings.majorColor,
-                              onChangeStart: (value) {
-                                _sliderOnChange = true;
-                              },
-                              onChangeEnd: (value) {
-                                _sliderOnChange = false;
-                              },
-                              onChanged: (value) {
-                                if (!Settings.isHorizontal) {
-                                  itemScrollController.jumpTo(
-                                      index: _prevPage - 1, alignment: 0.12);
-                                } else {
-                                  _pageController.jumpToPage(value.toInt() - 1);
-                                }
-                                currentPage = value.toInt();
-                                setState(() {
-                                  _prevPage = value.toInt();
-                                });
-                              },
-                            ),
+              alignment: Alignment.bottomCenter,
+              color: Colors.black.withOpacity(0.8),
+              height: 48 + Variables.bottomBarHeight,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 60,
+                      ),
+                      Text('$_prevPage',
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 16.0)),
+                      Container(
+                        width: 200,
+                        child: SliderTheme(
+                          data: SliderThemeData(
+                            activeTrackColor: Colors.blue,
+                            inactiveTrackColor: Color(0xffd0d2d3),
+                            trackHeight: 3,
+                            thumbShape:
+                                RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                            // thumbShape: SliderThumbShape(),
+                          ),
+                          child: Slider(
+                            value: _prevPage.toDouble() > 0
+                                ? _prevPage.toDouble()
+                                : 1,
+                            max: _pageInfo.uris.length.toDouble(),
+                            min: 1,
+                            label: _prevPage.toString(),
+                            divisions: _pageInfo.uris.length,
+                            inactiveColor: Settings.majorColor.withOpacity(0.7),
+                            activeColor: Settings.majorColor,
+                            onChangeStart: (value) {
+                              _sliderOnChange = true;
+                            },
+                            onChangeEnd: (value) {
+                              _sliderOnChange = false;
+                            },
+                            onChanged: (value) {
+                              if (!Settings.isHorizontal) {
+                                itemScrollController.jumpTo(
+                                    index: _prevPage - 1, alignment: 0.12);
+                              } else {
+                                _pageController.jumpToPage(value.toInt() - 1);
+                              }
+                              currentPage = value.toInt();
+                              setState(() {
+                                _prevPage = value.toInt();
+                              });
+                            },
                           ),
                         ),
-                        Text('${_pageInfo.uris.length}',
-                            style: TextStyle(
-                                color: Colors.white70, fontSize: 15.0)),
-                      ],
-                    ),
-                    Container(
-                      height: Variables.bottomBarHeight,
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
+                      ),
+                      Text('${_pageInfo.uris.length}',
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 15.0)),
+                    ],
+                  ),
+                  Container(
+                    height: Variables.bottomBarHeight,
+                    color: Colors.black,
+                  ),
+                ],
               ),
             ),
           ),
