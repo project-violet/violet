@@ -203,5 +203,13 @@
     "daily": "今日",
     "weekly": "毎週",
     "monthly": "月次",
-    "alltime": "常時"
+    "alltime": "常時",
+    
+    "toggleviewerstyle": "一枚ずつ表示",
+    "togglerighttoleft": "右から左にめくり",
+    "togglescrollvertical": "垂直にめくり",
+    "toggleanimatin": "ページ移動時のアニメーションを使用する",
+    "togglepadding": "ウェプトゥンビューアにパディング入れる",
+    "disableoverlaybuttons": "オーバーレイボタンの無効化",
+    "disablefullscreen": "全画面表示の無効化n"
 }

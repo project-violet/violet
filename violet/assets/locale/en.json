@@ -204,5 +204,14 @@
     "daily": "Today",
     "weekly": "Weekly",
     "monthly": "Monthly",
-    "alltime": "All Time"
+    "alltime": "All Time",
+    
+
+    "toggleviewerstyle": "View page by page",
+    "togglerighttoleft": "Right to Left",
+    "togglescrollvertical": "Flip Vertically",
+    "toggleanimatin": "Use Animation Moving Page",
+    "togglepadding": "Add Padding to Webtoon Viewer",
+    "disableoverlaybuttons": "Disable Overlay Buttons",
+    "disablefullscreen": "Disable Fullscreen"
 }

@@ -203,5 +203,13 @@
     "daily": "今天",
     "weekly": "每周",
     "monthly": "每月",
-    "alltime": "所有时间"
+    "alltime": "所有时间",
+
+    " toggleviewerstyle":"逐页查看",
+     " togglerighttoleft":"从右向左轻拂",
+     " togglescrollvertical":"垂直翻转",
+     " toggleanimatin":"移动页面时使用动画",
+     " togglepadding":"将填充添加到webtoon查看器",
+     " disableoverlaybuttons":"禁用叠加按钮",
+     " disablefullscreen":"禁用全屏"
 }
