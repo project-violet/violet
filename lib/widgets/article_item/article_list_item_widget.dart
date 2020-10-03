@@ -25,6 +25,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
@@ -301,7 +302,7 @@ class _ArticleListItemVerySimpleWidgetState
                   return DraggableScrollableSheet(
                     initialChildSize: 400 / height,
                     minChildSize: 400 / height,
-                    maxChildSize: 1.0,
+                    maxChildSize: 0.9,
                     expand: false,
                     builder: (_, controller) {
                       return Provider<ArticleInfo>.value(
