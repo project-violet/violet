@@ -434,7 +434,7 @@ class _ArticleListItemVerySimpleWidgetState
           color: data.showDetail
               ? Settings.themeWhat ? Colors.grey.shade800 : Colors.white70
               : Colors.grey.withOpacity(0.3),
-          borderRadius: BorderRadius.all(Radius.circular(5)),
+          borderRadius: BorderRadius.all(Radius.circular(3)),
           boxShadow: [
             BoxShadow(
               color: Settings.themeWhat

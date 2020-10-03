@@ -46,7 +46,7 @@ class SimpleInfoWidget extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(8),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(5.0),
+          borderRadius: BorderRadius.circular(3.0),
           child: GestureDetector(
             onTap: () => _thumbnailTapped(context, data),
             child: _thumbnailImage(data),
