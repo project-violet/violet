@@ -202,5 +202,13 @@
     "daily": "실시간",
     "weekly": "주간",
     "monthly": "월간",
-    "alltime": "전체"
+    "alltime": "전체",
+
+    "toggleviewerstyle": "한 장씩 보기",
+    "togglerighttoleft": "오른쪽에서 왼쪽으로 넘기기",
+    "togglescrollvertical": "수직으로 넘기기",
+    "toggleanimatin": "페이지 이동시 애니메이션 사용",
+    "togglepadding": "웹툰 뷰어에 패딩 넣기",
+    "disableoverlaybuttons": "오버레이 버튼 비활성화",
+    "disablefullscreen": "전체화면 비활성화"
 }

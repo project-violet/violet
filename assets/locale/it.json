@@ -203,5 +203,13 @@
     "daily": "Today",
     "weekly": "Settimanale",
     "monthly": "Mensile",
-    "alltime": "Tempo Totale"
+    "alltime": "Tempo Totale",
+
+    "toggleviewerstyle": "Visualizza pagina per pagina",
+    "togglerighttoleft": "Da destra a sinistra",
+    "togglescrollvertical": "Capovolgi verticalmente",
+    "toggleanimatin": "Usa pagina in movimento animazione",
+    "togglepadding": "Aggiungi padding a Webtoon Viewer",
+    "disableoverlaybuttons": "Disable Overlay Buttons",
+    "disablefullscreen": "Disattiva schermo intero"
 }

@@ -20,6 +20,7 @@ import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/pages/viewer/viewer_setting_panel.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
@@ -209,9 +210,39 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         },
       ),
       actions: [
-        PopupMenuButton<_ViewAppBarAction>(
+        new IconButton(
           icon: Icon(Icons.settings),
-          onSelected: (action) {
+          onPressed: () async {
+            await showModalBottomSheet(
+              context: context,
+              isScrollControlled: false,
+              builder: (context) => ViewerSettingPanel(
+                viewerStyleChangeEvent: () {
+                  if (Settings.isHorizontal) {
+                    _pageController =
+                        new PreloadPageController(initialPage: _prevPage - 1);
+                  } else {
+                    var npage = _prevPage;
+                    _sliderOnChange = true;
+                    Future.delayed(Duration(milliseconds: 100)).then((value) {
+                      itemScrollController.jumpTo(
+                          index: npage - 1, alignment: 0.12);
+                      _sliderOnChange = false;
+                    });
+                  }
+                  setState(() {});
+                },
+                setStateCallback: () {
+                  setState(() {});
+                },
+              ),
+            );
+            return;
+          },
+        ),
+        /*PopupMenuButton<_ViewAppBarAction>(
+          icon: Icon(Icons.settings),
+          onSelected: (action) async {
             switch (action) {
               case _ViewAppBarAction.toggleViewer:
                 Settings.setIsHorizontal(!Settings.isHorizontal);
@@ -304,7 +335,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               checked: Settings.disableFullScreen,
             ),
           ],
-        ),
+        ),*/
       ],
     );
   }
@@ -979,7 +1010,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       duration: Duration(milliseconds: 300),
       child: Stack(
         children: [
-          Settings.disableFullScreen
+          !Settings.disableFullScreen
               ? Padding(
                   padding: EdgeInsets.only(top: statusBarHeight.toDouble()),
                   child: Container(
@@ -1008,11 +1039,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Row(
-                    // mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 60,
-                      ),
+                      // Container(
+                      //   width: 60,
+                      // ),
                       Text('$_prevPage',
                           style:
                               TextStyle(color: Colors.white70, fontSize: 16.0)),
@@ -1063,10 +1094,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                               TextStyle(color: Colors.white70, fontSize: 15.0)),
                     ],
                   ),
-                  Container(
-                    height: Variables.bottomBarHeight,
-                    color: Colors.black,
-                  ),
+                  !Settings.disableFullScreen
+                      ? Container(
+                          height: Variables.bottomBarHeight,
+                          color: Colors.black,
+                        )
+                      : Container(),
                 ],
               ),
             ),

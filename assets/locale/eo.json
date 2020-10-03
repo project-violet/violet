@@ -204,5 +204,13 @@
     "daily": "Hoy",
     "weekly": "Semanal",
     "monthly": "Mensual",
-    "alltime": "Total"
+    "alltime": "Total",
+    
+    "toggleviewerstyle": "Ver página por página",
+    "togglerighttoleft": "De derecha a izquierda",
+    "togglescrollvertical": "Voltear verticalmente",
+    "toggleanimatin": "Usar página de animación en movimiento",
+    "togglepadding": "Agregar relleno al visor de Webtoon",
+    "disableoverlaybuttons": "Desactivar botones superpuestos",
+    "disablefullscreen": "Desactivar pantalla completa"
 }
