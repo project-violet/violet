@@ -14,6 +14,7 @@ import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 
 class AfterLoadingPage extends StatefulWidget {
@@ -63,6 +64,8 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
 
   _bottomNav() {
     final mediaQuery = MediaQuery.of(context);
+    Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
+        (mediaQuery.padding + mediaQuery.viewInsets).bottom);
     if (Platform.isAndroid) {
       return new Scaffold(
         key: scaffoldKey,

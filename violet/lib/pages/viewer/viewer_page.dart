@@ -21,6 +21,7 @@ import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/variables.dart';
 
 int currentPage = 0;
 
@@ -70,6 +71,14 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   @override
   void initState() {
     super.initState();
+
+    _bottomSliderController = AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 200),
+        reverseDuration: Duration(milliseconds: 200));
+    _bottomSliderOffset =
+        Tween<Offset>(begin: Offset(0.0, 0.1), end: Offset.zero)
+            .animate(_bottomSliderController);
 
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
@@ -198,7 +207,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   _appBar() {
     return AppBar(
       elevation: 0.0,
-      backgroundColor: Colors.black.withOpacity(0.3),
+      backgroundColor: Colors.black.withOpacity(0.8),
       // title: Text('$_prevPage/${_pageInfo.uris.length}'),
       leading: IconButton(
         icon: new Icon(Icons.arrow_back),
@@ -209,6 +218,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       ),
       actions: [
         PopupMenuButton<_ViewAppBarAction>(
+          icon: Icon(Icons.settings),
           onSelected: (action) {
             switch (action) {
               case _ViewAppBarAction.toggleViewer:
@@ -540,10 +550,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           onTap: () async {
             if (!_overlayOpend) {
               if (!Settings.isHorizontal) _prevPage = currentPage;
+              // setState(() {});
               setState(() {
                 _opacity = 1.0;
                 _disableBottom = false;
               });
+              _bottomSliderController.forward();
               if (!Settings.disableFullScreen) {
                 SystemChrome.setEnabledSystemUIOverlays(
                     [SystemUiOverlay.bottom, SystemUiOverlay.top]);
@@ -555,6 +567,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               if (!Settings.disableFullScreen) {
                 SystemChrome.setEnabledSystemUIOverlays([]);
               }
+              _bottomSliderController.reverse();
               Future.delayed(Duration(milliseconds: 300)).then((value) {
                 setState(() {
                   _disableBottom = true;
@@ -967,6 +980,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     // );
   }
 
+  Animation<Offset> _bottomSliderOffset;
+  AnimationController _bottomSliderController;
   _bottomAppBar() {
     final statusBarHeight =
         Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
@@ -975,50 +990,103 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     return AnimatedOpacity(
       opacity: _opacity,
       duration: Duration(milliseconds: 300),
-      child: Padding(
-        padding: EdgeInsets.only(
-            top: height -
-                (mediaQuery.padding + mediaQuery.viewInsets).bottom -
-                (48) -
-                statusBarHeight),
-        child: Container(
-          alignment: Alignment.bottomCenter,
-          color: Colors.black.withOpacity(0.2),
-          height: 48,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Slider(
-                value: _prevPage.toDouble() > 0 ? _prevPage.toDouble() : 1,
-                max: _pageInfo.uris.length.toDouble(),
-                min: 1,
-                label: _prevPage.toString(),
-                divisions: _pageInfo.uris.length,
-                inactiveColor: Settings.majorColor.withOpacity(0.7),
-                activeColor: Settings.majorColor,
-                onChangeStart: (value) {
-                  _sliderOnChange = true;
-                },
-                onChangeEnd: (value) {
-                  _sliderOnChange = false;
-                },
-                onChanged: (value) {
-                  if (!Settings.isHorizontal) {
-                    itemScrollController.jumpTo(
-                        index: _prevPage - 1, alignment: 0.12);
-                  } else {
-                    _pageController.jumpToPage(value.toInt() - 1);
-                  }
-                  currentPage = value.toInt();
-                  setState(() {
-                    _prevPage = value.toInt();
-                  });
-                },
-              ),
-            ],
+      child: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: statusBarHeight.toDouble()),
+            child: Container(
+              height: Variables.statusBarHeight,
+              color: Colors.black,
+            ),
           ),
-        ),
+          SlideTransition(
+            position: _bottomSliderOffset,
+            child: Padding(
+              // padding: EdgeInsets.only(
+              //     top: height -
+              //         (mediaQuery.padding + mediaQuery.viewInsets).bottom -
+              //         (48) -
+              //         statusBarHeight),
+              padding: EdgeInsets.only(
+                  top: height -
+                      Variables.bottomBarHeight -
+                      (48) -
+                      statusBarHeight),
+              child: Container(
+                alignment: Alignment.bottomCenter,
+                color: Colors.black.withOpacity(0.8),
+                height: 48 + Variables.bottomBarHeight,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 60,
+                        ),
+                        Text('$_prevPage',
+                            style: TextStyle(
+                                color: Colors.white70, fontSize: 16.0)),
+                        Container(
+                          width: 200,
+                          child: SliderTheme(
+                            data: SliderThemeData(
+                              activeTrackColor: Colors.blue,
+                              inactiveTrackColor: Color(0xffd0d2d3),
+                              trackHeight: 3,
+                              thumbShape: RoundSliderThumbShape(
+                                  enabledThumbRadius: 6.0),
+                              // thumbShape: SliderThumbShape(),
+                            ),
+                            child: Slider(
+                              value: _prevPage.toDouble() > 0
+                                  ? _prevPage.toDouble()
+                                  : 1,
+                              max: _pageInfo.uris.length.toDouble(),
+                              min: 1,
+                              label: _prevPage.toString(),
+                              divisions: _pageInfo.uris.length,
+                              inactiveColor:
+                                  Settings.majorColor.withOpacity(0.7),
+                              activeColor: Settings.majorColor,
+                              onChangeStart: (value) {
+                                _sliderOnChange = true;
+                              },
+                              onChangeEnd: (value) {
+                                _sliderOnChange = false;
+                              },
+                              onChanged: (value) {
+                                if (!Settings.isHorizontal) {
+                                  itemScrollController.jumpTo(
+                                      index: _prevPage - 1, alignment: 0.12);
+                                } else {
+                                  _pageController.jumpToPage(value.toInt() - 1);
+                                }
+                                currentPage = value.toInt();
+                                setState(() {
+                                  _prevPage = value.toInt();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Text('${_pageInfo.uris.length}',
+                            style: TextStyle(
+                                color: Colors.white70, fontSize: 15.0)),
+                      ],
+                    ),
+                    Container(
+                      height: Variables.bottomBarHeight,
+                      color: Colors.black,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
