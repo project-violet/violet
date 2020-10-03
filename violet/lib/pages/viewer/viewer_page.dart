@@ -41,16 +41,6 @@ class ViewerPage extends StatelessWidget {
   }
 }
 
-enum _ViewAppBarAction {
-  toggleViewer,
-  toggleRightToLeft,
-  toggleScrollVertical,
-  toggleAnimation,
-  togglePadding,
-  toggleOverlayButton,
-  toggleFullScreen,
-}
-
 class _VerticalImageViewer extends StatefulWidget {
   @override
   __VerticalImageViewerState createState() => __VerticalImageViewerState();
@@ -240,102 +230,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             return;
           },
         ),
-        /*PopupMenuButton<_ViewAppBarAction>(
-          icon: Icon(Icons.settings),
-          onSelected: (action) async {
-            switch (action) {
-              case _ViewAppBarAction.toggleViewer:
-                Settings.setIsHorizontal(!Settings.isHorizontal);
-                if (Settings.isHorizontal) {
-                  _pageController =
-                      new PreloadPageController(initialPage: _prevPage - 1);
-                } else {
-                  var npage = _prevPage;
-                  _sliderOnChange = true;
-                  Future.delayed(Duration(milliseconds: 100)).then((value) {
-                    itemScrollController.jumpTo(
-                        index: npage - 1, alignment: 0.12);
-                    _sliderOnChange = false;
-                  });
-                }
-                setState(() {});
-                break;
-
-              case _ViewAppBarAction.toggleRightToLeft:
-                Settings.setRightToLeft(!Settings.rightToLeft);
-                setState(() {});
-                break;
-
-              case _ViewAppBarAction.toggleScrollVertical:
-                Settings.setScrollVertical(!Settings.scrollVertical);
-                setState(() {});
-                break;
-
-              case _ViewAppBarAction.toggleAnimation:
-                Settings.setAnimation(!Settings.animation);
-                setState(() {});
-                break;
-
-              case _ViewAppBarAction.togglePadding:
-                Settings.setPadding(!Settings.padding);
-                setState(() {});
-                break;
-
-              case _ViewAppBarAction.toggleOverlayButton:
-                Settings.setDisableOverlayButton(
-                    !Settings.disableOverlayButton);
-                setState(() {});
-                break;
-
-              case _ViewAppBarAction.toggleFullScreen:
-                Settings.setDisableFullScreen(!Settings.disableFullScreen);
-                if (Settings.disableFullScreen) {
-                  SystemChrome.setEnabledSystemUIOverlays(
-                      [SystemUiOverlay.bottom, SystemUiOverlay.top]);
-                }
-                setState(() {});
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            CheckedPopupMenuItem(
-              value: _ViewAppBarAction.toggleViewer,
-              child: Text('Toggle Viewer Style'),
-              checked: Settings.isHorizontal,
-            ),
-            CheckedPopupMenuItem(
-              value: _ViewAppBarAction.toggleRightToLeft,
-              child: Text('Toggle Right To Left'),
-              checked: Settings.rightToLeft,
-            ),
-            CheckedPopupMenuItem(
-              value: _ViewAppBarAction.toggleScrollVertical,
-              enabled: Settings.isHorizontal,
-              child: Text('Toggle Scroll Vertical'),
-              checked: Settings.scrollVertical,
-            ),
-            CheckedPopupMenuItem(
-              value: _ViewAppBarAction.toggleAnimation,
-              child: Text('Toggle Animation'),
-              checked: Settings.animation,
-            ),
-            CheckedPopupMenuItem(
-              value: _ViewAppBarAction.togglePadding,
-              child: Text('Toggle Padding'),
-              checked: Settings.padding,
-            ),
-            CheckedPopupMenuItem(
-              value: _ViewAppBarAction.toggleOverlayButton,
-              child: Text('Disable Overlay Buttons'),
-              checked: Settings.disableOverlayButton,
-            ),
-            CheckedPopupMenuItem(
-              value: _ViewAppBarAction.toggleFullScreen,
-              child: Text('Disable Full Screen'),
-              checked: Settings.disableFullScreen,
-            ),
-          ],
-        ),*/
       ],
     );
   }
@@ -956,49 +850,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         );
       },
     );
-    // return FutureBuilder(
-    //   future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
-    //     var header = await _pageInfo.provider.getHeader(index);
-    //     var url = await _pageInfo.provider.getImageUrl(index);
-
-    //     return Tuple2<Map<String, String>, String>(header, url);
-    //   }),
-    //   builder: (context, snapshot) {
-    //     if (!snapshot.hasData) {
-    //       return SizedBox(
-    //         height: 300,
-    //         child: Center(
-    //           child: SizedBox(
-    //             child: CircularProgressIndicator(),
-    //             width: 30,
-    //             height: 30,
-    //           ),
-    //         ),
-    //       );
-    //     }
-
-    //     return OptimizedCacheImage(
-    //       imageUrl: snapshot.data.item2,
-    //       httpHeaders: snapshot.data.item1,
-    //       fit: BoxFit.cover,
-    //       fadeInDuration: Duration(microseconds: 500),
-    //       fadeInCurve: Curves.easeIn,
-    //       // memCacheWidth: width.toInt(),
-    //       progressIndicatorBuilder: (context, string, progress) {
-    //         return SizedBox(
-    //           height: 300,
-    //           child: Center(
-    //             child: SizedBox(
-    //               child: CircularProgressIndicator(value: progress.progress),
-    //               width: 30,
-    //               height: 30,
-    //             ),
-    //           ),
-    //         );
-    //       },
-    //     );
-    //   },
-    // );
   }
 
   _bottomAppBar() {
@@ -1020,11 +871,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 )
               : Container(),
           Padding(
-            // padding: EdgeInsets.only(
-            //     top: height -
-            //         (mediaQuery.padding + mediaQuery.viewInsets).bottom -
-            //         (48) -
-            //         statusBarHeight),
             padding: EdgeInsets.only(
                 top: height -
                     Variables.bottomBarHeight -
@@ -1041,9 +887,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Container(
-                      //   width: 60,
-                      // ),
                       Text('$_prevPage',
                           style:
                               TextStyle(color: Colors.white70, fontSize: 16.0)),

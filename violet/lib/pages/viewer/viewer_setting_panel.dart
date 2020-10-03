@@ -109,20 +109,11 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
     return ListTile(
       dense: true,
       enabled: enabled,
-      // contentPadding: EdgeInsets.zero,
-      // leading: Checkbox(
-      //   value: value,
-      //   onChanged: onChanged,
-      // ),
       trailing: Switch(
         onChanged: enabled ? onChanged : null,
         value: value,
       ),
       title: Text(title),
-      // Align(
-      //   child: new Text(title),
-      //   // alignment: Alignment(-1.1, 0),
-      // ),
       onTap: () => onChanged(value),
     );
   }
