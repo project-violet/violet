@@ -41,8 +41,8 @@ class ThumbnailWidget extends StatelessWidget {
       child: thumbnail != null
           ? ClipRRect(
               borderRadius: showDetail
-                  ? BorderRadius.horizontal(left: Radius.circular(5.0))
-                  : BorderRadius.circular(5.0),
+                  ? BorderRadius.horizontal(left: Radius.circular(3.0))
+                  : BorderRadius.circular(3.0),
               child: Stack(
                 children: <Widget>[
                   _thumbnailImage(),
