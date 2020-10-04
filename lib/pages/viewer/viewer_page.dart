@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -20,6 +21,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
+import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
 import 'package:violet/settings/settings.dart';
@@ -197,54 +199,90 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         child: Container(
           padding: EdgeInsets.only(top: Variables.statusBarHeight),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Expanded(
+                child: IconButton(
+                  alignment: Alignment.topLeft,
+                  icon: new Icon(Icons.arrow_back),
+                  onPressed: () {
+                    Navigator.pop(context, currentPage);
+                    return new Future(() => false);
+                  },
+                ),
+              ),
               IconButton(
-                icon: new Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context, currentPage);
-                  return new Future(() => false);
+                icon: Icon(MdiIcons.folderImage),
+                onPressed: () async {
+                  if (!Platform.isIOS) {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 500),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          var begin = Offset(0.0, 1.0);
+                          var end = Offset.zero;
+                          var curve = Curves.ease;
+
+                          var tween = Tween(begin: begin, end: end)
+                              .chain(CurveTween(curve: curve));
+
+                          return SlideTransition(
+                            position: animation.drive(tween),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (_, __, ___) =>
+                            Provider<ViewerPageProvider>.value(
+                          value: _pageInfo,
+                          child: ViewerGallery(),
+                        ),
+                      ),
+                    );
+                  } else {
+                    Navigator.of(context).push(
+                      CupertinoPageRoute(
+                        builder: (_) => Provider<ViewerPageProvider>.value(
+                          value: _pageInfo,
+                          child: ViewerGallery(),
+                        ),
+                      ),
+                    );
+                  }
                 },
               ),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    new IconButton(
-                        icon: Icon(MdiIcons.fileDownload),
-                        onPressed: () async {}),
-                    new IconButton(
-                      icon: Icon(Icons.settings),
-                      onPressed: () async {
-                        await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: false,
-                          builder: (context) => ViewerSettingPanel(
-                            viewerStyleChangeEvent: () {
-                              if (Settings.isHorizontal) {
-                                _pageController = new PreloadPageController(
-                                    initialPage: _prevPage - 1);
-                              } else {
-                                var npage = _prevPage;
-                                _sliderOnChange = true;
-                                Future.delayed(Duration(milliseconds: 100))
-                                    .then((value) {
-                                  itemScrollController.jumpTo(
-                                      index: npage - 1, alignment: 0.12);
-                                  _sliderOnChange = false;
-                                });
-                              }
-                              setState(() {});
-                            },
-                            setStateCallback: () {
-                              setState(() {});
-                            },
-                          ),
-                        );
-                        return;
+              IconButton(
+                  icon: Icon(MdiIcons.fileDownload), onPressed: () async {}),
+              IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () async {
+                  await showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: false,
+                    builder: (context) => ViewerSettingPanel(
+                      viewerStyleChangeEvent: () {
+                        if (Settings.isHorizontal) {
+                          _pageController = new PreloadPageController(
+                              initialPage: _prevPage - 1);
+                        } else {
+                          var npage = _prevPage;
+                          _sliderOnChange = true;
+                          Future.delayed(Duration(milliseconds: 100))
+                              .then((value) {
+                            itemScrollController.jumpTo(
+                                index: npage - 1, alignment: 0.12);
+                            _sliderOnChange = false;
+                          });
+                        }
+                        setState(() {});
+                      },
+                      setStateCallback: () {
+                        setState(() {});
                       },
                     ),
-                  ],
-                ),
+                  );
+                  return;
+                },
               ),
             ],
           ),

@@ -12,6 +12,7 @@ class ViewerPageProvider {
   final Map<String, String> headers;
   final VioletImageProvider provider;
   final int id;
+  final String title;
 
   ViewerPageProvider({
     this.useFileSystem = false,
@@ -19,6 +20,7 @@ class ViewerPageProvider {
     this.useProvider = false,
     @required this.uris,
     @required this.id,
+    @required this.title,
     this.provider,
     this.headers,
   });
