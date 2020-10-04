@@ -2,6 +2,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
+import 'package:violet/variables.dart';
 
 class ToastWrapper extends StatefulWidget {
   final bool isCheck;
@@ -57,35 +58,39 @@ class _ToastWrapperState extends State<ToastWrapper>
 
   @override
   Widget build(BuildContext context) {
-    return SlideTransition(
-      position: offset,
-      child: AnimatedOpacity(
-        duration: Duration(milliseconds: 500),
-        opacity: opacity,
-        curve: Curves.easeInOut,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(25.0),
-            color: widget.isCheck
-                ? Colors.greenAccent.withOpacity(0.8)
-                : widget.isWarning != null && widget.isWarning
-                    ? Colors.orangeAccent.withOpacity(0.8)
-                    : Colors.redAccent.withOpacity(0.8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(widget.isCheck
-                  ? Icons.check
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: Variables.bottomBarHeight.toDouble() + 6),
+      child: SlideTransition(
+        position: offset,
+        child: AnimatedOpacity(
+          duration: Duration(milliseconds: 500),
+          opacity: opacity,
+          curve: Curves.easeInOut,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0),
+              color: widget.isCheck
+                  ? Colors.greenAccent.withOpacity(0.8)
                   : widget.isWarning != null && widget.isWarning
-                      ? Icons.warning
-                      : Icons.cancel),
-              SizedBox(
-                width: 12.0,
-              ),
-              Text(widget.msg),
-            ],
+                      ? Colors.orangeAccent.withOpacity(0.8)
+                      : Colors.redAccent.withOpacity(0.8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(widget.isCheck
+                    ? Icons.check
+                    : widget.isWarning != null && widget.isWarning
+                        ? Icons.warning
+                        : Icons.cancel),
+                SizedBox(
+                  width: 12.0,
+                ),
+                Text(widget.msg),
+              ],
+            ),
           ),
         ),
       ),
