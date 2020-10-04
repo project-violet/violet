@@ -181,7 +181,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           backgroundColor: Colors.transparent,
           resizeToAvoidBottomInset: false,
           resizeToAvoidBottomPadding: false,
-          appBar: _opacity == 1.0 ? _appBar() : null,
+          // appBar: _opacity == 1.0 ? _appBar() : null,
           body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
         ),
       );
@@ -189,51 +189,67 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   _appBar() {
-    return AppBar(
-      elevation: 0.0,
-      backgroundColor: Colors.black.withOpacity(0.8),
-      // title: Text('$_prevPage/${_pageInfo.uris.length}'),
-      leading: IconButton(
-        icon: new Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.pop(context, currentPage);
-          return new Future(() => false);
-        },
-      ),
-      actions: [
-        new IconButton(
-            icon: Icon(MdiIcons.fileDownload), onPressed: () async {}),
-        new IconButton(
-          icon: Icon(Icons.settings),
-          onPressed: () async {
-            await showModalBottomSheet(
-              context: context,
-              isScrollControlled: false,
-              builder: (context) => ViewerSettingPanel(
-                viewerStyleChangeEvent: () {
-                  if (Settings.isHorizontal) {
-                    _pageController =
-                        new PreloadPageController(initialPage: _prevPage - 1);
-                  } else {
-                    var npage = _prevPage;
-                    _sliderOnChange = true;
-                    Future.delayed(Duration(milliseconds: 100)).then((value) {
-                      itemScrollController.jumpTo(
-                          index: npage - 1, alignment: 0.12);
-                      _sliderOnChange = false;
-                    });
-                  }
-                  setState(() {});
-                },
-                setStateCallback: () {
-                  setState(() {});
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: Duration(milliseconds: 300),
+      child: Material(
+        color: Colors.black.withOpacity(0.8),
+        child: Container(
+          padding: EdgeInsets.only(top: Variables.statusBarHeight),
+          child: Row(
+            children: [
+              IconButton(
+                icon: new Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context, currentPage);
+                  return new Future(() => false);
                 },
               ),
-            );
-            return;
-          },
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    new IconButton(
+                        icon: Icon(MdiIcons.fileDownload),
+                        onPressed: () async {}),
+                    new IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () async {
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: false,
+                          builder: (context) => ViewerSettingPanel(
+                            viewerStyleChangeEvent: () {
+                              if (Settings.isHorizontal) {
+                                _pageController = new PreloadPageController(
+                                    initialPage: _prevPage - 1);
+                              } else {
+                                var npage = _prevPage;
+                                _sliderOnChange = true;
+                                Future.delayed(Duration(milliseconds: 100))
+                                    .then((value) {
+                                  itemScrollController.jumpTo(
+                                      index: npage - 1, alignment: 0.12);
+                                  _sliderOnChange = false;
+                                });
+                              }
+                              setState(() {});
+                            },
+                            setStateCallback: () {
+                              setState(() {});
+                            },
+                          ),
+                        );
+                        return;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 
@@ -287,6 +303,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
         !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
         !_disableBottom ? _bottomAppBar() : Container(),
+        !_disableBottom ? _appBar() : Container(),
       ],
     );
   }
@@ -332,6 +349,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
         !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
         !_disableBottom ? _bottomAppBar() : Container(),
+        !_disableBottom ? _appBar() : Container(),
       ],
     );
   }
