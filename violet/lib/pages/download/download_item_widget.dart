@@ -216,6 +216,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                             .toList(),
                         useFileSystem: true,
                         id: widget.item.id(),
+                        title: widget.item.info(),
                       ),
                       child: ViewerPage());
                 },

@@ -194,6 +194,7 @@ class ArticleInfoPage extends StatelessWidget {
                 provider: ProviderManager.get(data.queryResult.id()),
                 headers: data.headers,
                 id: data.queryResult.id(),
+                title: data.queryResult.title(),
               ),
               child: ViewerPage());
         },
