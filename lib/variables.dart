@@ -16,7 +16,9 @@ class Variables {
   static double statusBarHeight = 0;
   static double bottomBarHeight = 0;
   static void updatePadding(double statusBar, double bottomBar) {
-    statusBarHeight = max(statusBarHeight, statusBar);
-    bottomBarHeight = max(bottomBarHeight, bottomBar);
+    if (statusBarHeight == 0 && statusBar > 0.1)
+      statusBarHeight = max(statusBarHeight, statusBar);
+    if (bottomBarHeight == 0 && bottomBar > 0.1)
+      bottomBarHeight = max(bottomBarHeight, bottomBar);
   }
 }
