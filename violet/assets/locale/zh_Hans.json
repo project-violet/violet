@@ -210,6 +210,6 @@
      " togglescrollvertical":"垂直翻转",
      " toggleanimatin":"移动页面时使用动画",
      " togglepadding":"将填充添加到webtoon查看器",
-     " disableoverlaybuttons":"禁用叠加按钮",
-     " disablefullscreen":"禁用全屏"
+     " disableoverlaybuttons":"启用叠加按钮",
+     " disablefullscreen":"启用全屏"
 }

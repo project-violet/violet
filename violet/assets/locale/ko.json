@@ -209,6 +209,6 @@
     "togglescrollvertical": "수직으로 넘기기",
     "toggleanimatin": "페이지 이동시 애니메이션 사용",
     "togglepadding": "웹툰 뷰어에 패딩 넣기",
-    "disableoverlaybuttons": "오버레이 버튼 비활성화",
-    "disablefullscreen": "전체화면 비활성화"
+    "disableoverlaybuttons": "오버레이 버튼 활성화",
+    "disablefullscreen": "전체화면 활성화"
 }
