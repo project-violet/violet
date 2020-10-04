@@ -472,54 +472,89 @@ class _SearchPageState extends State<SearchPage>
       case 1:
         return SliverPadding(
             padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
-            sliver: LiveSliverGrid(
+            sliver: SliverGrid(
               key: key,
-              controller: _scrollController,
-              showItemInterval: Duration(milliseconds: 50),
-              showItemDuration: Duration(milliseconds: 150),
-              visibleFraction: 0.001,
-              itemCount: filtered.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: Device.get().isTablet ? mm * 2 : mm,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
                 childAspectRatio: 3 / 4,
               ),
-              itemBuilder: (context, index, animation) {
-                return FadeTransition(
-                  opacity: Tween<double>(
-                    begin: 0,
-                    end: 1,
-                  ).animate(animation),
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: Offset(0, -0.1),
-                      end: Offset.zero,
-                    ).animate(animation),
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SizedBox(
-                          child: Provider<ArticleListItem>.value(
-                            value: ArticleListItem.fromArticleListItem(
-                              queryResult: filtered[index],
-                              showDetail: false,
-                              addBottomPadding: false,
-                              width: (windowWidth - 4.0) / mm,
-                              thumbnailTag: 'thumbnail' +
-                                  filtered[index].id().toString() +
-                                  datetime.toString(),
-                            ),
-                            child: ArticleListItemVerySimpleWidget(),
-                          ),
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return Padding(
+                  padding: EdgeInsets.zero,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      child: Provider<ArticleListItem>.value(
+                        value: ArticleListItem.fromArticleListItem(
+                          queryResult: filtered[index],
+                          showDetail: false,
+                          addBottomPadding: false,
+                          width: (windowWidth - 4.0) / mm,
+                          thumbnailTag: 'thumbnail' +
+                              filtered[index].id().toString() +
+                              datetime.toString(),
                         ),
+                        child: ArticleListItemVerySimpleWidget(),
                       ),
                     ),
                   ),
                 );
-              },
+              }, childCount: filtered.length),
             ));
+
+      // return SliverPadding(
+      //     padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+      //     sliver: LiveSliverGrid(
+      //       key: key,
+      //       controller: _scrollController,
+      //       showItemInterval: Duration(milliseconds: 50),
+      //       showItemDuration: Duration(milliseconds: 150),
+      //       visibleFraction: 0.001,
+      //       itemCount: filtered.length,
+      //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      //         crossAxisCount: Device.get().isTablet ? mm * 2 : mm,
+      //         crossAxisSpacing: 8,
+      //         mainAxisSpacing: 8,
+      //         childAspectRatio: 3 / 4,
+      //       ),
+      //       itemBuilder: (context, index, animation) {
+      //         return FadeTransition(
+      //           opacity: Tween<double>(
+      //             begin: 0,
+      //             end: 1,
+      //           ).animate(animation),
+      //           child: SlideTransition(
+      //             position: Tween<Offset>(
+      //               begin: Offset(0, -0.1),
+      //               end: Offset.zero,
+      //             ).animate(animation),
+      //             child: Padding(
+      //               padding: EdgeInsets.zero,
+      //               child: Align(
+      //                 alignment: Alignment.bottomCenter,
+      //                 child: SizedBox(
+      //                   child: Provider<ArticleListItem>.value(
+      //                     value: ArticleListItem.fromArticleListItem(
+      //                       queryResult: filtered[index],
+      //                       showDetail: false,
+      //                       addBottomPadding: false,
+      //                       width: (windowWidth - 4.0) / mm,
+      //                       thumbnailTag: 'thumbnail' +
+      //                           filtered[index].id().toString() +
+      //                           datetime.toString(),
+      //                     ),
+      //                     child: ArticleListItemVerySimpleWidget(),
+      //                   ),
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //         );
+      //       },
+      //     ));
       case 2:
       case 3:
         if (Device.get().isTablet ||
