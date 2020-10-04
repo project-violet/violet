@@ -18,6 +18,7 @@ import 'package:violet/component/downloadable.dart' as violetd;
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/downloader/native_downloader.dart';
+import 'package:violet/pages/download/download_routine.dart';
 import 'package:violet/pages/download/gallery/gallery_item.dart';
 import 'package:violet/pages/download/gallery/gallery_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
@@ -78,133 +79,34 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       if (once) return;
       once = true;
       // var downloader = await BuiltinDownloader.getInstance();
-      var downloader = await NativeDownloader.getInstance();
 
-      var result = Map<String, dynamic>.from(widget.item.result);
+      var routine = DownloadRoutine(widget.item, () => setState(() {}));
 
-      if (widget.item.state() != 1) {
-        if (widget.item.state() == 2 || widget.item.state() == 3) {
-          result['State'] = 6;
-          widget.item.result = result;
-          await widget.item.update();
-          setState(() {});
-          return;
-        }
+      if (!await routine.checkValidState() || !await routine.checkValidUrl())
         return;
-      }
 
-      // Check valid url
-      if (!ExtractorManager.instance.existsExtractor(widget.item.url())) {
-        result['State'] = 8;
-        widget.item.result = result;
-        await widget.item.update();
-        setState(() {});
-        return;
-      }
-
-      // Choose Extractor
-      var extractor = ExtractorManager.instance.getExtractor(widget.item.url());
-      result['State'] = 2;
-      result['Extractor'] = extractor.name();
-      widget.item.result = result;
-      await widget.item.update();
-      setState(() {});
+      await routine.selectExtractor();
 
       if (!widget.download) {
-        result['State'] = 6;
-        widget.item.result = result;
-        await widget.item.update();
-        setState(() {});
+        await routine.setToStop();
         return;
       }
 
-      // while (true) {
-      //   while (!downloader.hasDownloadSlot())
-      //     await Future.delayed(Duration(milliseconds: 500));
-      //   if (await downloader.ensureDownload()) break;
-      // }
+      if (!await routine.checkLoginRequire()) return;
 
-      // Login
-      if (extractor.loginRequire()) {
-        if (!extractor.logined()) {
-          if (!await extractor.tryLogin()) {
-            result['State'] = 9;
-            widget.item.result = result;
-            await widget.item.update();
-            setState(() {});
-            return;
-          }
-        }
-      }
+      await routine.createTasks(
+        progressCallback: (cur, max) async {
+          setState(() {
+            this.cur = cur;
+            if (this.max < max) this.max = max;
+          });
+        },
+      );
 
-      // Extractor
-      List<violetd.DownloadTask> tasks;
+      if (await routine.checkNothingToDownload()) return;
 
-      try {
-        tasks = await extractor.createTask(
-          widget.item.url(),
-          GeneralDownloadProgress(
-            simpleInfoCallback: (info) async {
-              result['Info'] = info;
-              widget.item.result = result;
-              await widget.item.update();
-              setState(() {});
-            },
-            thumbnailCallback: (url, header) async {
-              result['Thumbnail'] = url;
-              result['ThumbnailHeader'] = header;
-              widget.item.result = result;
-              await widget.item.update();
-              setState(() {});
-            },
-            progressCallback: (cur, max) async {
-              setState(() {
-                this.cur = cur;
-                if (this.max < max) this.max = max;
-              });
-            },
-          ),
-        );
-      } catch (e) {
-        result['State'] = 7;
-        widget.item.result = result;
-        await widget.item.update();
-        setState(() {});
-        return;
-      }
+      await routine.extractFilePath();
 
-      if (tasks == null || tasks.length == 0) {
-        result['State'] = 11;
-        widget.item.result = result;
-        await widget.item.update();
-        setState(() {});
-        return;
-      }
-
-      // Files and Path
-      var files = tasks
-          .map((e) => join(Settings.downloadBasePath,
-              e.format.formatting(extractor.defaultFormat())))
-          .toList();
-      result['Files'] = jsonEncode(files);
-      // Extract Super Path
-      var cp = dirname(files[0]).split('/');
-      var vp = cp.length;
-      for (int i = 1; i < files.length; i++) {
-        var tp = dirname(files[i]).split('/');
-        for (int i = 0; i < vp; i++) {
-          if (cp[i] != tp[i]) {
-            vp = i;
-            break;
-          }
-        }
-      }
-      var pp = cp.take(vp).join('/');
-      result['Path'] = pp;
-      widget.item.result = result;
-      await widget.item.update();
-
-      // Download
       var _timer =
           new Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
         setState(() {
@@ -216,34 +118,20 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           downloadSec = 0;
         });
       });
-      // var downloader = FlutterDonwloadDonwloader.getInstance();
-      await downloader.addTasks(tasks.map((e) {
-        e.downloadPath = join(Settings.downloadBasePath,
-            e.format.formatting(extractor.defaultFormat()));
 
-        e.startCallback = () {};
-        e.completeCallback = () {
+      await routine.appendDownloadTasks(
+        completeCallback: () {
           downloadedFileCount++;
-        };
-
-        e.sizeCallback = (byte) {};
-        e.downloadCallback = (byte) {
+        },
+        downloadCallback: (byte) {
           download += byte;
           downloadSec += byte;
-        };
-
-        e.errorCallback = (err) {
+        },
+        errorCallback: (err) {
           downloadedFileCount++;
           errorFileCount++;
-        };
-
-        return e;
-      }).toList());
-      downloadTotalFileCount = tasks.length;
-      result['State'] = 3;
-      widget.item.result = result;
-      await widget.item.update();
-      setState(() {});
+        },
+      );
 
       // Wait for download complete
       while (downloadTotalFileCount != downloadedFileCount) {
@@ -251,15 +139,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       }
       _timer.cancel();
 
-      // await (await BuiltinDownloader.getInstance()).returnDownload();
-
-      // Postprocess
-
-      // Complete!
-      result['State'] = 0;
-      widget.item.result = result;
-      await widget.item.update();
-      setState(() {});
+      await routine.setDownloadComplete();
     });
   }
 
