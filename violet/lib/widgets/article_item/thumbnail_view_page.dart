@@ -46,7 +46,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
               children: <Widget>[
                 Hero(
                   tag: widget.heroKey,
-                  child: OptimizedCacheImage(
+                  child: CachedNetworkImage(
                     imageUrl: widget.thumbnail,
                     fit: BoxFit.cover,
                     httpHeaders: widget.headers,

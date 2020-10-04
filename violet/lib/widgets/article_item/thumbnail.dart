@@ -64,7 +64,7 @@ class ThumbnailWidget extends StatelessWidget {
     // var headers = {"Referer": "https://hitomi.la/reader/${id}.html/"};
     return Hero(
       tag: thumbnailTag,
-      child: OptimizedCacheImage(
+      child: CachedNetworkImage(
         imageUrl: thumbnail,
         fit: BoxFit.cover,
         httpHeaders: headers,
