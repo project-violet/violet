@@ -204,6 +204,8 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
   _drawer() {
     print(_colorToString(Settings.majorColor));
     final mediaQuery = MediaQuery.of(context);
+    Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
+        (mediaQuery.padding + mediaQuery.viewInsets).bottom);
     if (Platform.isAndroid) {
       return new Scaffold(
         body: PageView(
