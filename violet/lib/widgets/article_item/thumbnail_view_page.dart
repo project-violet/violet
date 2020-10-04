@@ -4,6 +4,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:violet/settings/settings.dart';
 
 class ThumbnailViewPage extends StatefulWidget {
@@ -45,7 +46,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
               children: <Widget>[
                 Hero(
                   tag: widget.heroKey,
-                  child: CachedNetworkImage(
+                  child: OptimizedCacheImage(
                     imageUrl: widget.thumbnail,
                     fit: BoxFit.cover,
                     httpHeaders: widget.headers,
