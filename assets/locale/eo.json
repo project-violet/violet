@@ -211,6 +211,6 @@
     "togglescrollvertical": "Voltear verticalmente",
     "toggleanimatin": "Usar página de animación en movimiento",
     "togglepadding": "Agregar relleno al visor de Webtoon",
-    "disableoverlaybuttons": "Desactivar botones superpuestos",
-    "disablefullscreen": "Desactivar pantalla completa"
+    "disableoverlaybuttons": "Activar botones superpuestos",
+    "disablefullscreen": "Activar pantalla completa"
 }

@@ -210,6 +210,6 @@
     "togglescrollvertical": "垂直にめくり",
     "toggleanimatin": "ページ移動時のアニメーションを使用する",
     "togglepadding": "ウェプトゥンビューアにパディング入れる",
-    "disableoverlaybuttons": "オーバーレイボタンの無効化",
-    "disablefullscreen": "全画面表示の無効化n"
+    "disableoverlaybuttons": "オーバーレイボタンの有効化",
+    "disablefullscreen": "全画面を有効に"
 }

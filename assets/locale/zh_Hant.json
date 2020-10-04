@@ -201,6 +201,6 @@
     "togglescrollvertical": "Flip Vertically",
     "toggleanimatin": "Use Animation Moving Page",
     "togglepadding": "Add Padding to Webtoon Viewer",
-    "disableoverlaybuttons": "Disable Overlay Buttons",
-    "disablefullscreen": "Disable Fullscreen"
+    "disableoverlaybuttons": "Enable Overlay Buttons",
+    "disablefullscreen": "Enable Fullscreen"
 }

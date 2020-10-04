@@ -201,88 +201,95 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: IconButton(
-                  alignment: Alignment.topLeft,
-                  icon: new Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.pop(context, currentPage);
-                    return new Future(() => false);
-                  },
-                ),
-              ),
               IconButton(
-                icon: Icon(MdiIcons.folderImage),
-                onPressed: () async {
-                  if (!Platform.isIOS) {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        transitionDuration: Duration(milliseconds: 500),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          var begin = Offset(0.0, 1.0);
-                          var end = Offset.zero;
-                          var curve = Curves.ease;
-
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
-
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                        pageBuilder: (_, __, ___) =>
-                            Provider<ViewerPageProvider>.value(
-                          value: _pageInfo,
-                          child: ViewerGallery(),
-                        ),
-                      ),
-                    );
-                  } else {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (_) => Provider<ViewerPageProvider>.value(
-                          value: _pageInfo,
-                          child: ViewerGallery(),
-                        ),
-                      ),
-                    );
-                  }
+                alignment: Alignment.topLeft,
+                icon: new Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context, currentPage);
+                  return new Future(() => false);
                 },
               ),
-              IconButton(
-                  icon: Icon(MdiIcons.fileDownload), onPressed: () async {}),
-              IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: () async {
-                  await showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: false,
-                    builder: (context) => ViewerSettingPanel(
-                      viewerStyleChangeEvent: () {
-                        if (Settings.isHorizontal) {
-                          _pageController = new PreloadPageController(
-                              initialPage: _prevPage - 1);
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(MdiIcons.folderImage),
+                      onPressed: () async {
+                        if (!Platform.isIOS) {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              transitionDuration: Duration(milliseconds: 500),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                var begin = Offset(0.0, 1.0);
+                                var end = Offset.zero;
+                                var curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              },
+                              pageBuilder: (_, __, ___) =>
+                                  Provider<ViewerPageProvider>.value(
+                                value: _pageInfo,
+                                child: ViewerGallery(),
+                              ),
+                            ),
+                          );
                         } else {
-                          var npage = _prevPage;
-                          _sliderOnChange = true;
-                          Future.delayed(Duration(milliseconds: 100))
-                              .then((value) {
-                            itemScrollController.jumpTo(
-                                index: npage - 1, alignment: 0.12);
-                            _sliderOnChange = false;
-                          });
+                          Navigator.of(context).push(
+                            CupertinoPageRoute(
+                              builder: (_) =>
+                                  Provider<ViewerPageProvider>.value(
+                                value: _pageInfo,
+                                child: ViewerGallery(),
+                              ),
+                            ),
+                          );
                         }
-                        setState(() {});
-                      },
-                      setStateCallback: () {
-                        setState(() {});
                       },
                     ),
-                  );
-                  return;
-                },
+                    IconButton(
+                        icon: Icon(MdiIcons.fileDownload),
+                        onPressed: () async {}),
+                    IconButton(
+                      icon: Icon(Icons.settings),
+                      onPressed: () async {
+                        await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: false,
+                          builder: (context) => ViewerSettingPanel(
+                            viewerStyleChangeEvent: () {
+                              if (Settings.isHorizontal) {
+                                _pageController = new PreloadPageController(
+                                    initialPage: _prevPage - 1);
+                              } else {
+                                var npage = _prevPage;
+                                _sliderOnChange = true;
+                                Future.delayed(Duration(milliseconds: 100))
+                                    .then((value) {
+                                  itemScrollController.jumpTo(
+                                      index: npage - 1, alignment: 0.12);
+                                  _sliderOnChange = false;
+                                });
+                              }
+                              setState(() {});
+                            },
+                            setStateCallback: () {
+                              setState(() {});
+                            },
+                          ),
+                        );
+                        return;
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

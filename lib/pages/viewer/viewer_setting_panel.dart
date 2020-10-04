@@ -76,7 +76,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           ),
           _checkBox(
             title: Translations.of(context).trans('disableoverlaybuttons'),
-            value: Settings.disableOverlayButton,
+            value: !Settings.disableOverlayButton,
             onChanged: (value) {
               Settings.setDisableOverlayButton(!Settings.disableOverlayButton);
               widget.setStateCallback.call();
@@ -85,7 +85,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           ),
           _checkBox(
             title: Translations.of(context).trans('disablefullscreen'),
-            value: Settings.disableFullScreen,
+            value: !Settings.disableFullScreen,
             onChanged: (value) {
               Settings.setDisableFullScreen(!Settings.disableFullScreen);
               widget.setStateCallback.call();
