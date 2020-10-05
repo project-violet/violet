@@ -84,7 +84,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
 
       if (!await routine.checkValidState() || !await routine.checkValidUrl())
         return;
-
       await routine.selectExtractor();
 
       if (!widget.download) {
@@ -92,7 +91,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         return;
       }
 
-      if (!await routine.checkLoginRequire()) return;
+      if (await routine.checkLoginRequire()) return;
 
       await routine.createTasks(
         progressCallback: (cur, max) async {
@@ -104,6 +103,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       );
 
       if (await routine.checkNothingToDownload()) return;
+
+      downloadTotalFileCount = routine.tasks.length;
 
       await routine.extractFilePath();
 
