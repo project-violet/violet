@@ -81,14 +81,12 @@ class _MainPage2State extends State<MainPage2>
       child: Padding(
         padding: EdgeInsets.only(top: statusBarHeight),
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(height: 16),
-              _buildGroup('업데이트', _versionArea()),
-              Container(
-                height: 8,
-              ),
+              _buildGroup('사용자 통계', _statArea()),
               CarouselSlider(
                 options: CarouselOptions(
                   height: 70,
@@ -137,8 +135,8 @@ class _MainPage2State extends State<MainPage2>
                   );
                 }).toList(),
               ),
-              _buildGroup('데이터베이스', _databaseArea()),
-              _buildGroup('사용자 통계', _statArea()),
+              // _buildGroup('데이터베이스', _databaseArea()),
+              _buildGroup('버전관리', _versionArea()),
               _buildGroup('서비스', _serviceArea()),
               Container(height: 32)
             ],
@@ -290,6 +288,7 @@ class _MainPage2State extends State<MainPage2>
 
   _versionArea() {
     return [
+      // Version Info
       Row(
         children: [
           Column(
@@ -325,6 +324,71 @@ class _MainPage2State extends State<MainPage2>
           )
         ],
       ),
+      // Database
+      _buildDivider(),
+      Row(
+        children: [
+          Text('데이터베이스', style: TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(child: Container()),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('로컬', style: TextStyle(color: Colors.grey)),
+                  FutureBuilder(
+                      future: SharedPreferences.getInstance(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Text(' ??');
+                        }
+                        return Text(
+                          ' ' +
+                              DateFormat('yyyy.MM.dd').format(DateTime.parse(
+                                  snapshot.data.getString('databasesync'))),
+                        );
+                      }),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('최신', style: TextStyle(color: Colors.grey)),
+                  Text(
+                    ' ' +
+                        DateFormat('yyyy.MM.dd').format(UpdateSyncManager
+                            .rawlangDB[Settings.databaseType].item1),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      Container(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          RaisedButton(
+            color: Settings.majorColor.withAlpha(220),
+            onPressed: () {},
+            child: Text('    스위칭    '),
+            elevation: 3.0,
+          ),
+          Badge(
+            showBadge: _syncAvailable,
+            badgeContent: Text('N',
+                style: TextStyle(color: Colors.white, fontSize: 12.0)),
+            // badgeColor: Settings.majorAccentColor,
+            child: RaisedButton(
+              color: Settings.majorColor.withAlpha(220),
+              onPressed: () {},
+              child: Text('    동기화    '),
+              elevation: 3.0,
+            ),
+          ),
+        ],
+      )
     ];
   }
 
