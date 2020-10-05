@@ -19,7 +19,7 @@ class _DiscordCardState extends State<DiscordCard> {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     return SizedBox(
-      width: width - 16,
+      width: width - 64 + 8,
       height: 65,
       child: Parent(
         style: settingsItemStyle(pressed),

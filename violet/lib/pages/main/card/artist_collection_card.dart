@@ -111,19 +111,12 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                           //   //   size: 30,
                           //   // ),
                           // ),
-                          Transform.translate(
-                            // offset: Offset(-5, -0),
-                            offset: Offset(-0, -0),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Text(
-                                'Artists Collection!',
-                                style: TextStyle(
-                                    fontFamily: "Calibre-Semibold",
-                                    fontSize: 18,
-                                    color: Colors.white),
-                              ),
-                            ),
+                          Text(
+                            '아티스트 컬렉션',
+                            style: TextStyle(
+                                // fontFamily: "Calibre-Semibold",
+                                // fontSize: 18,
+                                color: Colors.white),
                           ),
                         ]),
                   ),
