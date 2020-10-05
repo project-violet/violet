@@ -94,15 +94,9 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Text(
-                              'Patch Notes',
-                              style: TextStyle(
-                                  fontFamily: "Calibre-Semibold",
-                                  fontSize: 18,
-                                  color: Colors.white),
-                            ),
+                          Text(
+                            '패치 노트',
+                            style: TextStyle(color: Colors.white),
                           ),
                         ]),
                   ),

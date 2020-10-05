@@ -19,6 +19,7 @@ class UpdateSyncManager {
   static const int patchVersion = 1;
 
   static bool updateRequire = false;
+  static String latestVersion = "";
   static String version = "";
   static String updateMessage = "";
   static String updateUrl = "";
@@ -48,6 +49,7 @@ class UpdateSyncManager {
       updateUrl = info["download_link"] as String;
       print(info);
     }
+    latestVersion = info["version"] as String;
 
     var rawdb = (info["rawdb2"] as List<dynamic>);
     rawlangDB = Map<String, Tuple2<DateTime, String>>();

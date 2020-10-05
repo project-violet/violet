@@ -119,19 +119,9 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                           //   //   size: 30,
                           //   // ),
                           // ),
-                          Transform.translate(
-                            // offset: Offset(-5, -0),
-                            offset: Offset(0, -0),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Text(
-                                'Real Time Best',
-                                style: TextStyle(
-                                    fontFamily: "Calibre-Semibold",
-                                    fontSize: 18,
-                                    color: Colors.white),
-                              ),
-                            ),
+                          Text(
+                            '실시간 베스트',
+                            style: TextStyle(color: Colors.white),
                           ),
                         ]),
                   ),

@@ -11,6 +11,7 @@ import 'package:violet/main.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/main_page.dart';
+import 'package:violet/pages/main/main_page2.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/settings/settings.dart';
@@ -128,7 +129,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             });
           },
           children: <Widget>[
-            MainPage(),
+            MainPage2(),
             SearchPage(),
             BookmarkPage(),
             DownloadPage(),
