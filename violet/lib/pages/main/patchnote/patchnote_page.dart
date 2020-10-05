@@ -24,6 +24,22 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 5),
+    version: '1.6 Minor Update',
+    isMinor: true,
+    contents: [
+      'enhance viewer, article info page',
+      'enhance tag filter, auto complete list',
+      'redesign main page',
+      'add database switcher',
+      'add faq page',
+      'add throttle manager for exhentai.org host',
+      'fix loading screen is displayed while zooming thumbnails',
+      'fix toast bottom padding',
+      'remove search page grid animation (for performance)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 2),
     version: '1.5.1 Patch <<= Latest',
     contents: [

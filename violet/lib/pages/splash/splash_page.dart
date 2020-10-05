@@ -66,7 +66,7 @@ class _SplashPageState extends State<SplashPage> {
         !widget.switching)
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     else {
-      await Future.delayed(Duration(milliseconds: 1400));
+      if (!widget.switching) await Future.delayed(Duration(milliseconds: 1400));
       setState(() {
         showFirst = true;
       });

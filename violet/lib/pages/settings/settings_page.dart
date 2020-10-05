@@ -541,10 +541,11 @@ class _SettingsPageState extends State<SettingsPage>
                     onTap: Variables.databaseDecompressed
                         ? null
                         : () async {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => SplashPage(
-                                      switching: true,
-                                    )));
+                            Navigator.of(context)
+                                .pushReplacement(MaterialPageRoute(
+                                    builder: (context) => SplashPage(
+                                          switching: true,
+                                        )));
                           },
                   ),
                   _buildDivider(),

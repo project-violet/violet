@@ -9,6 +9,7 @@ import 'dart:ui';
 
 import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -36,6 +37,7 @@ import 'package:violet/pages/main/card/github_card.dart';
 import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/main/card/update_log_card.dart';
 import 'package:violet/pages/main/card/views_card.dart';
+import 'package:violet/pages/main/faq/faq_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
@@ -396,7 +398,7 @@ class _MainPage2State extends State<MainPage2>
             onPressed: Variables.databaseDecompressed
                 ? null
                 : () {
-                    Navigator.of(context).push(MaterialPageRoute(
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
                         builder: (context) => SplashPage(
                               switching: true,
                             )));
@@ -410,12 +412,12 @@ class _MainPage2State extends State<MainPage2>
             badgeContent: Text('N',
                 style: TextStyle(color: Colors.white, fontSize: 12.0)),
             // badgeColor: Settings.majorAccentColor,
-            child: Variables.databaseDecompressed
-                ? null
-                : RaisedButton(
-                    color: Settings.majorColor.withAlpha(220),
-                    textColor: Colors.white,
-                    onPressed: () async {
+            child: RaisedButton(
+              color: Settings.majorColor.withAlpha(220),
+              textColor: Colors.white,
+              onPressed: Variables.databaseDecompressed
+                  ? null
+                  : () async {
                       var latestDB = UpdateSyncManager
                           .rawlangDB[Settings.databaseType].item1;
                       var lastDB = (await SharedPreferences.getInstance())
@@ -475,10 +477,9 @@ class _MainPage2State extends State<MainPage2>
                         );
                       });
                     },
-                    child: Text(
-                        '    ${Translations.of(context).trans('sync')}    '),
-                    elevation: 3.0,
-                  ),
+              child: Text('    ${Translations.of(context).trans('sync')}    '),
+              elevation: 3.0,
+            ),
           ),
         ],
       )
@@ -486,6 +487,7 @@ class _MainPage2State extends State<MainPage2>
   }
 
   _serviceArea() {
+    final double width = MediaQuery.of(context).size.width;
     return [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -501,7 +503,31 @@ class _MainPage2State extends State<MainPage2>
             width: 150,
           ),
         ],
-      )
+      ),
+      Container(height: 8),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Container(
+            child: RaisedButton(
+              color: Settings.majorColor.withAlpha(220),
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.of(context)
+                    .push(CupertinoPageRoute(builder: (_) => FAQPageKorean()));
+              },
+              child: Text('자주 묻는 질문들'),
+              elevation: 3.0,
+            ),
+            height: 40,
+            width: 145,
+          ),
+          Container(
+            height: 40,
+            width: 145,
+          ),
+        ],
+      ),
     ];
   }
 
