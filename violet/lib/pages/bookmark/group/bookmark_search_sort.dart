@@ -152,50 +152,56 @@ class _BookmarkSearchSortState extends State<BookmarkSearchSort> {
                         // mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Expanded(
-                            child: SingleChildScrollView(
-                              child: Wrap(
-                                  // alignment: WrapAlignment.center,
-                                  spacing: -7.0,
-                                  runSpacing: -13.0,
-                                  children: widget.tags
-                                      .where((element) =>
-                                          widget.groupStates[element.item1])
-                                      .take(100)
-                                      .map((element) {
-                                    return _Chip(
-                                      selected: widget.tagStates[
-                                          element.item1 + '|' + element.item2],
-                                      group: element.item1,
-                                      name: element.item2,
-                                      count: element.item3,
-                                      callback: (selected) {
-                                        widget.tagStates[element.item1 +
-                                            '|' +
-                                            element.item2] = selected;
-                                      },
-                                    );
-                                  }).toList()
-                                  // <Widget>[
-                                  //   RawChip(
-                                  //     selected: test,
-                                  //     labelPadding: EdgeInsets.all(0.0),
-                                  //     avatar: CircleAvatar(
-                                  //       backgroundColor: Colors.grey.shade600,
-                                  //       child: Text('A'),
-                                  //     ),
-                                  //     label: Text(' ASDF'),
-                                  //     backgroundColor: Colors.orange,
-                                  //     elevation: 6.0,
-                                  //     shadowColor: Colors.grey[60],
-                                  //     padding: EdgeInsets.all(6.0),
-                                  //     onSelected: (value) {
-                                  //       setState(() {
-                                  //         test = value;
-                                  //       });
-                                  //     },
-                                  //   )
-                                  // ],
-                                  ),
+                            child: ListView(
+                              padding: EdgeInsets.zero,
+                              physics: BouncingScrollPhysics(),
+                              children: [
+                                Wrap(
+                                    // alignment: WrapAlignment.center,
+                                    spacing: -7.0,
+                                    runSpacing: -13.0,
+                                    children: widget.tags
+                                        .where((element) =>
+                                            widget.groupStates[element.item1])
+                                        .take(100)
+                                        .map((element) {
+                                      return _Chip(
+                                        selected: widget.tagStates[
+                                            element.item1 +
+                                                '|' +
+                                                element.item2],
+                                        group: element.item1,
+                                        name: element.item2,
+                                        count: element.item3,
+                                        callback: (selected) {
+                                          widget.tagStates[element.item1 +
+                                              '|' +
+                                              element.item2] = selected;
+                                        },
+                                      );
+                                    }).toList()
+                                    // <Widget>[
+                                    //   RawChip(
+                                    //     selected: test,
+                                    //     labelPadding: EdgeInsets.all(0.0),
+                                    //     avatar: CircleAvatar(
+                                    //       backgroundColor: Colors.grey.shade600,
+                                    //       child: Text('A'),
+                                    //     ),
+                                    //     label: Text(' ASDF'),
+                                    //     backgroundColor: Colors.orange,
+                                    //     elevation: 6.0,
+                                    //     shadowColor: Colors.grey[60],
+                                    //     padding: EdgeInsets.all(6.0),
+                                    //     onSelected: (value) {
+                                    //       setState(() {
+                                    //         test = value;
+                                    //       });
+                                    //     },
+                                    //   )
+                                    // ],
+                                    ),
+                              ],
                             ),
                           ),
                           Wrap(

@@ -213,18 +213,18 @@ class _SearchBarPageState extends State<SearchBarPage>
                                         .trans('nosearchresult')
                                     : Translations.of(context)
                                         .trans('inputsearchtoken')))
-                            : Padding(
+                            : ListView(
                                 padding: EdgeInsets.symmetric(horizontal: 8),
-                                child: SingleChildScrollView(
-                                  controller: ScrollController(),
-                                  child: Wrap(
+                                physics: BouncingScrollPhysics(),
+                                children: [
+                                  Wrap(
                                     spacing: 4.0,
                                     runSpacing: -10.0,
                                     children: _searchLists
                                         .map((item) => chip(item))
                                         .toList(),
                                   ),
-                                ),
+                                ],
                               ),
                       ),
                       Padding(
