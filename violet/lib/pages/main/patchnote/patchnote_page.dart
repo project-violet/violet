@@ -24,6 +24,13 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 6),
+    version: '1.6.1 Patch (HotFix)',
+    contents: [
+      'fix downloader error',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 5),
     version: '1.6 Minor Update',
     isMinor: true,
@@ -41,7 +48,7 @@ final patches = [
   ),
   PatchModel(
     dateTime: DateTime(2020, 10, 2),
-    version: '1.5.1 Patch <<= Latest',
+    version: '1.5.1 Patch',
     contents: [
       'enhance e/ex-hentai image loading',
     ],
