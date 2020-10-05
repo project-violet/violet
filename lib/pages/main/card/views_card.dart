@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/card/update_card.dart';
@@ -120,7 +121,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                           //   // ),
                           // ),
                           Text(
-                            '실시간 베스트',
+                            Translations.of(context).trans('realtimebest'),
                             style: TextStyle(color: Colors.white),
                           ),
                         ]),

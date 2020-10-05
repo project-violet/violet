@@ -210,5 +210,19 @@
     "toggleanimatin": "페이지 이동시 애니메이션 사용",
     "togglepadding": "웹툰 뷰어에 패딩 넣기",
     "disableoverlaybuttons": "오버레이 버튼 활성화",
-    "disablefullscreen": "전체화면 활성화"
+    "disablefullscreen": "전체화면 활성화",
+
+    "userstat": "사용자 통계",
+    "versionmanagement": "버전관리",
+    "service": "서비스",
+    "readpresent": "읽음",
+    "curversion": "현재버전",
+    "latestversion": "최신버전",
+    "curlatestversion": "최신버전입니다",
+    "local": "로컬",
+    "latest": "최신",
+    "sync": "동기화",
+    "artistcollection": "아티스트 컬렉션",
+    "realtimebest": "실시간 베스트",
+    "patchnote": "패치 노트"
 }

@@ -211,5 +211,19 @@
     "toggleanimatin": "ページ移動時のアニメーションを使用する",
     "togglepadding": "ウェプトゥンビューアにパディング入れる",
     "disableoverlaybuttons": "オーバーレイボタンの有効化",
-    "disablefullscreen": "全画面を有効に"
+    "disablefullscreen": "全画面を有効に",
+    
+    "userstat": "ユーザーの統計情報",
+    "versionmanagement": "バージョン管理",
+    "service": "サービス",
+    "readpresent": "既読",
+    "curversion": "現在のバージョン",
+    "latestversion": "最新バージョン",
+    "curlatestversion": "最新バージョンです",
+    "local": "ローカル",
+    "latest": "最新",
+    "sync": "同期",
+    "artistcollection": "アーティストコレクション",
+    "realtimebest": "リアルタイムベスト",
+    "patchnote": "パッチノート"
 }

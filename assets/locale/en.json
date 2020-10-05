@@ -213,5 +213,19 @@
     "toggleanimatin": "Use Animation Moving Page",
     "togglepadding": "Add Padding to Webtoon Viewer",
     "disableoverlaybuttons": "Enable Overlay Buttons",
-    "disablefullscreen": "Enable Fullscreen"
+    "disablefullscreen": "Enable Fullscreen",
+    
+    "userstat": "User Statistics",
+    "versionmanagement": "Version Management",
+    "service": "Service",
+    "readpresent": "Read",
+    "curversion": "Current Version",
+    "latestversion": "Latest Version",
+    "curlatestversion": "This is the latest version.",
+    "local": "Local",
+    "latest": "Latest",
+    "sync": "Sync",
+    "artistcollection": "Artists Collection",
+    "realtimebest": "RealTime Best",
+    "patchnote": "Patch Note"
 }

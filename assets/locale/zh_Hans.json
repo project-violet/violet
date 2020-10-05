@@ -205,11 +205,25 @@
     "monthly": "每月",
     "alltime": "所有时间",
 
-    " toggleviewerstyle":"逐页查看",
-     " togglerighttoleft":"从右向左轻拂",
-     " togglescrollvertical":"垂直翻转",
-     " toggleanimatin":"移动页面时使用动画",
-     " togglepadding":"将填充添加到webtoon查看器",
-     " disableoverlaybuttons":"启用叠加按钮",
-     " disablefullscreen":"启用全屏"
+    "toggleviewerstyle":"逐页查看",
+    "togglerighttoleft":"从右向左轻拂",
+    "togglescrollvertical":"垂直翻转",
+    "toggleanimatin":"移动页面时使用动画",
+    "togglepadding":"将填充添加到webtoon查看器",
+    "disableoverlaybuttons":"启用叠加按钮",
+    "disablefullscreen":"启用全屏",
+
+    "userstat": "用户状态",
+    "versionmanagement": "版本管理",
+    "service": "服务",
+    "readpresent": "阅读",
+    "curversion": "当前版本",
+    "latestversion": "最新版本",
+    "curlatestversion": "这是最新版本",
+    "local": "Local",
+    "latest": "Latest",
+    "sync": "同步",
+    "artistcollection": "艺术家收藏",
+    "realtimebest": "实时最佳",
+    "patchnote": "补丁说明"
 }

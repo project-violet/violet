@@ -204,6 +204,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               IconButton(
                 alignment: Alignment.topLeft,
                 icon: new Icon(Icons.arrow_back),
+                color: Colors.white,
                 onPressed: () {
                   Navigator.pop(context, currentPage);
                   return new Future(() => false);
@@ -215,6 +216,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   children: [
                     IconButton(
                       icon: Icon(MdiIcons.folderImage),
+                      color: Colors.white,
                       onPressed: () async {
                         if (!Platform.isIOS) {
                           Navigator.of(context).push(
@@ -254,11 +256,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                         }
                       },
                     ),
-                    IconButton(
-                        icon: Icon(MdiIcons.fileDownload),
-                        onPressed: () async {}),
+                    // IconButton(
+                    //     icon: Icon(MdiIcons.fileDownload),
+                    //     color: Colors.white,
+                    //     onPressed: () async {}),
                     IconButton(
                       icon: Icon(Icons.settings),
+                      color: Colors.white,
                       onPressed: () async {
                         await showModalBottomSheet(
                           context: context,

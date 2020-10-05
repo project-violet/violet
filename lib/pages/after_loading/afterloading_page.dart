@@ -189,7 +189,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             });
           },
           children: <Widget>[
-            MainPage(),
+            MainPage2(),
             SearchPage(),
             BookmarkPage(),
             SettingsPage(),

@@ -10,7 +10,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -21,6 +23,10 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
 
 class SplashPage extends StatefulWidget {
+  final bool switching;
+
+  SplashPage({this.switching = false});
+
   @override
   _SplashPageState createState() => _SplashPageState();
 }
@@ -56,7 +62,8 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> navigationPage() async {
     await UpdateSyncManager.checkUpdateSync();
 
-    if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1)
+    if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
+        !widget.switching)
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     else {
       await Future.delayed(Duration(milliseconds: 1400));
@@ -143,7 +150,9 @@ class _SplashPageState extends State<SplashPage> {
                 padding: EdgeInsets.only(top: 140),
                 child: Card(
                   elevation: 100,
-                  color: Colors.purple.shade50,
+                  color: widget.switching
+                      ? Settings.majorColor.withAlpha(150)
+                      : Colors.purple.shade50,
                   child: AnimatedOpacity(
                     opacity: animateBox ? 1.0 : 0,
                     duration: Duration(milliseconds: 500),
@@ -168,17 +177,24 @@ class _SplashPageState extends State<SplashPage> {
                                 Icon(
                                   MdiIcons.database,
                                   size: 50,
-                                  color: Colors.grey,
+                                  color: widget.switching
+                                      ? Settings.majorAccentColor
+                                          .withOpacity(0.8)
+                                      : Colors.grey,
                                 ),
                                 Container(
                                   padding: EdgeInsets.all(4),
                                 ),
                                 Expanded(
                                     child: Text(
-                                  Translations.of(context).trans('welcome'),
+                                  widget.switching
+                                      ? '${Translations.of(context).trans('database')} ${Translations.of(context).trans('switching')}'
+                                      : Translations.of(context)
+                                          .trans('welcome'),
                                   maxLines: 4,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
                                 )),
                               ],
@@ -368,6 +384,19 @@ class _SplashPageState extends State<SplashPage> {
                                         return;
                                       }
                                     }
+                                    if (widget.switching) {
+                                      var dir =
+                                          await getApplicationDocumentsDirectory();
+                                      try {
+                                        await ((await openDatabase(
+                                                '${dir.path}/data/data.db'))
+                                            .close());
+                                        await deleteDatabase(
+                                            '${dir.path}/data/data.db');
+                                        await Directory('${dir.path}/data')
+                                            .delete(recursive: true);
+                                      } catch (e) {}
+                                    }
                                     print(Translations.of(context)
                                         .dbLanguageCode);
                                     Navigator.of(context).pushReplacement(
@@ -381,7 +410,9 @@ class _SplashPageState extends State<SplashPage> {
                                                   isExistsDataBase: false,
                                                 )));
                                   },
-                                  color: Colors.purple.shade400,
+                                  color: widget.switching
+                                      ? Settings.majorColor.withAlpha(200)
+                                      : Colors.purple.shade400,
                                 ),
                               ),
                             ),
@@ -405,7 +436,9 @@ class _SplashPageState extends State<SplashPage> {
                   child: SizedBox(
                     child: Text(Translations.of(context).trans('dbalready'),
                         style: TextStyle(
-                            color: Colors.purpleAccent.shade100,
+                            color: widget.switching
+                                ? Settings.majorAccentColor
+                                : Colors.purpleAccent.shade100,
                             fontSize: 12.0)),
                   ),
                   onTap: () async {
@@ -512,8 +545,9 @@ class _SplashPageState extends State<SplashPage> {
           ),
         ],
       ),
-      backgroundColor:
-          showFirst ? Color(0x7FB200ED) : Settings.majorColor.withAlpha(200),
+      backgroundColor: showFirst && !widget.switching
+          ? Color(0x7FB200ED)
+          : Settings.majorColor.withAlpha(200),
     );
   }
 
