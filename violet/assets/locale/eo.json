@@ -212,5 +212,19 @@
     "toggleanimatin": "Usar página de animación en movimiento",
     "togglepadding": "Agregar relleno al visor de Webtoon",
     "disableoverlaybuttons": "Activar botones superpuestos",
-    "disablefullscreen": "Activar pantalla completa"
+    "disablefullscreen": "Activar pantalla completa",
+
+    "userstat": "Estadísticas de usuario",
+    "versionmanagement": "Gestión de versiones",
+    "service": "Servicio",
+    "readpresent": "Leer",
+    "curversion": "Versión actual",
+    "latestversion": "Última versión",
+    "curlatestversion": "Esta es la última versión.",
+    "local": "Local",
+    "latest": "Latest",
+    "sync": "Sincronizar",
+    "artistcollection": "Colección de artistas",
+    "realtimebest": "RealTime Best",
+    "patchnote": "Nota de parche"
 }

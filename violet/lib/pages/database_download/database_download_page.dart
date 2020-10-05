@@ -20,6 +20,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:dio/dio.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/database_download/decompress.dart';
+import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
@@ -144,6 +145,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       if (await Directory("${dir.path}/data2").exists())
         await Directory("${dir.path}/data2").delete(recursive: true);
       await pp.decompress(["${dir.path}/db.sql.7z"], path: "${dir.path}/data2");
+      Variables.databaseDecompressed = true;
       if (await Directory('${dir.path}/data').exists())
         await Directory('${dir.path}/data').delete(recursive: true);
       await Directory("${dir.path}/data2").rename("${dir.path}/data");

@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
@@ -9,18 +11,24 @@ import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:vibration/vibration.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/main/card/artist_collection_card.dart';
 import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
@@ -28,8 +36,11 @@ import 'package:violet/pages/main/card/github_card.dart';
 import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/main/card/update_log_card.dart';
 import 'package:violet/pages/main/card/views_card.dart';
+import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
+import 'package:violet/widgets/toast.dart';
 
 class MainPage2 extends StatefulWidget {
   @override
@@ -86,7 +97,8 @@ class _MainPage2State extends State<MainPage2>
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(height: 16),
-              _buildGroup('사용자 통계', _statArea()),
+              _buildGroup(
+                  Translations.of(context).trans('userstat'), _statArea()),
               CarouselSlider(
                 options: CarouselOptions(
                   height: 70,
@@ -136,8 +148,10 @@ class _MainPage2State extends State<MainPage2>
                 }).toList(),
               ),
               // _buildGroup('데이터베이스', _databaseArea()),
-              _buildGroup('버전관리', _versionArea()),
-              _buildGroup('서비스', _serviceArea()),
+              _buildGroup(Translations.of(context).trans('versionmanagement'),
+                  _versionArea()),
+              _buildGroup(
+                  Translations.of(context).trans('service'), _serviceArea()),
               Container(height: 32)
             ],
           ),
@@ -146,74 +160,74 @@ class _MainPage2State extends State<MainPage2>
     );
   }
 
-  _databaseArea() {
-    return [
-      Row(
-        children: [
-          Text(Settings.databaseType.toUpperCase() + '언어 데이터베이스',
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Container()),
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('로컬', style: TextStyle(color: Colors.grey)),
-                  FutureBuilder(
-                      future: SharedPreferences.getInstance(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Text(' ??');
-                        }
-                        return Text(
-                          ' ' +
-                              DateFormat('yyyy.MM.dd').format(DateTime.parse(
-                                  snapshot.data.getString('databasesync'))),
-                        );
-                      }),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('최신', style: TextStyle(color: Colors.grey)),
-                  Text(
-                    ' ' +
-                        DateFormat('yyyy.MM.dd').format(UpdateSyncManager
-                            .rawlangDB[Settings.databaseType].item1),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-      _buildDivider(),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          RaisedButton(
-            color: Settings.majorColor.withAlpha(220),
-            onPressed: () {},
-            child: Text('    스위칭    '),
-            elevation: 3.0,
-          ),
-          Badge(
-            showBadge: _syncAvailable,
-            badgeContent: Text('N',
-                style: TextStyle(color: Colors.white, fontSize: 12.0)),
-            // badgeColor: Settings.majorAccentColor,
-            child: RaisedButton(
-              color: Settings.majorColor.withAlpha(220),
-              onPressed: () {},
-              child: Text('    동기화    '),
-              elevation: 3.0,
-            ),
-          ),
-        ],
-      )
-    ];
-  }
+  // _databaseArea() {
+  //   return [
+  //     Row(
+  //       children: [
+  //         Text(Settings.databaseType.toUpperCase() + '언어 데이터베이스',
+  //             style: TextStyle(fontWeight: FontWeight.bold)),
+  //         Expanded(child: Container()),
+  //         Column(
+  //           children: [
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text('로컬', style: TextStyle(color: Colors.grey)),
+  //                 FutureBuilder(
+  //                     future: SharedPreferences.getInstance(),
+  //                     builder: (context, snapshot) {
+  //                       if (!snapshot.hasData) {
+  //                         return Text(' ??');
+  //                       }
+  //                       return Text(
+  //                         ' ' +
+  //                             DateFormat('yyyy.MM.dd').format(DateTime.parse(
+  //                                 snapshot.data.getString('databasesync'))),
+  //                       );
+  //                     }),
+  //               ],
+  //             ),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text('최신', style: TextStyle(color: Colors.grey)),
+  //                 Text(
+  //                   ' ' +
+  //                       DateFormat('yyyy.MM.dd').format(UpdateSyncManager
+  //                           .rawlangDB[Settings.databaseType].item1),
+  //                 ),
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //     _buildDivider(),
+  //     Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         RaisedButton(
+  //           color: Settings.majorColor.withAlpha(220),
+  //           onPressed: () {},
+  //           child: Text('    스위칭    '),
+  //           elevation: 3.0,
+  //         ),
+  //         Badge(
+  //           showBadge: _syncAvailable,
+  //           badgeContent: Text('N',
+  //               style: TextStyle(color: Colors.white, fontSize: 12.0)),
+  //           // badgeColor: Settings.majorAccentColor,
+  //           child: RaisedButton(
+  //             color: Settings.majorColor.withAlpha(220),
+  //             onPressed: () {},
+  //             child: Text('    동기화    '),
+  //             elevation: 3.0,
+  //           ),
+  //         ),
+  //       ],
+  //     )
+  //   ];
+  // }
 
   _statArea() {
     return [
@@ -222,7 +236,7 @@ class _MainPage2State extends State<MainPage2>
         children: [
           Column(
             children: [
-              Text("읽음"),
+              Text(Translations.of(context).trans('readpresent')),
               Container(height: 8),
               FutureBuilder(future: Future.sync(
                 () async {
@@ -242,7 +256,7 @@ class _MainPage2State extends State<MainPage2>
           ),
           Column(
             children: [
-              Text("북마크"),
+              Text(Translations.of(context).trans('bookmark')),
               Container(height: 8),
               FutureBuilder(future: Future.sync(
                 () async {
@@ -262,7 +276,7 @@ class _MainPage2State extends State<MainPage2>
           ),
           Column(
             children: [
-              Text("다운로드"),
+              Text(Translations.of(context).trans('download')),
               Container(height: 8),
               FutureBuilder(future: Future.sync(
                 () async {
@@ -292,11 +306,12 @@ class _MainPage2State extends State<MainPage2>
       Row(
         children: [
           Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Text('현재버전', style: TextStyle(color: Colors.grey)),
+                  Text(Translations.of(context).trans('curversion'),
+                      style: TextStyle(color: Colors.grey)),
                   Text(
                       ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}'),
                 ],
@@ -305,13 +320,15 @@ class _MainPage2State extends State<MainPage2>
                       ' ${UpdateSyncManager.latestVersion}'
                   ? Row(
                       children: [
-                        Text('최신버전', style: TextStyle(color: Colors.grey)),
+                        Text(Translations.of(context).trans('latestversion'),
+                            style: TextStyle(color: Colors.grey)),
                         Text(' ${UpdateSyncManager.latestVersion}'),
                       ],
                     )
                   : Row(
                       children: [
-                        Text('최신버전입니다', style: TextStyle(color: Colors.grey)),
+                        Text(Translations.of(context).trans('curlatestversion'),
+                            style: TextStyle(color: Colors.grey)),
                       ],
                     ),
             ],
@@ -328,14 +345,17 @@ class _MainPage2State extends State<MainPage2>
       _buildDivider(),
       Row(
         children: [
-          Text('데이터베이스', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(Translations.of(context).trans('database'),
+              style: TextStyle(fontWeight: FontWeight.bold)),
           Expanded(child: Container()),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('로컬', style: TextStyle(color: Colors.grey)),
+                  Text(Translations.of(context).trans('local'),
+                      style: TextStyle(color: Colors.grey)),
                   FutureBuilder(
                       future: SharedPreferences.getInstance(),
                       builder: (context, snapshot) {
@@ -353,7 +373,8 @@ class _MainPage2State extends State<MainPage2>
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('최신', style: TextStyle(color: Colors.grey)),
+                  Text(Translations.of(context).trans('latest'),
+                      style: TextStyle(color: Colors.grey)),
                   Text(
                     ' ' +
                         DateFormat('yyyy.MM.dd').format(UpdateSyncManager
@@ -371,8 +392,17 @@ class _MainPage2State extends State<MainPage2>
         children: [
           RaisedButton(
             color: Settings.majorColor.withAlpha(220),
-            onPressed: () {},
-            child: Text('    스위칭    '),
+            textColor: Colors.white,
+            onPressed: Variables.databaseDecompressed
+                ? null
+                : () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SplashPage(
+                              switching: true,
+                            )));
+                  },
+            child:
+                Text('    ${Translations.of(context).trans('switching')}    '),
             elevation: 3.0,
           ),
           Badge(
@@ -380,12 +410,75 @@ class _MainPage2State extends State<MainPage2>
             badgeContent: Text('N',
                 style: TextStyle(color: Colors.white, fontSize: 12.0)),
             // badgeColor: Settings.majorAccentColor,
-            child: RaisedButton(
-              color: Settings.majorColor.withAlpha(220),
-              onPressed: () {},
-              child: Text('    동기화    '),
-              elevation: 3.0,
-            ),
+            child: Variables.databaseDecompressed
+                ? null
+                : RaisedButton(
+                    color: Settings.majorColor.withAlpha(220),
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      var latestDB = UpdateSyncManager
+                          .rawlangDB[Settings.databaseType].item1;
+                      var lastDB = (await SharedPreferences.getInstance())
+                          .getString('databasesync');
+
+                      if (lastDB != null &&
+                          latestDB.difference(DateTime.parse(lastDB)).inHours <
+                              1) {
+                        FlutterToast(context).showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: Translations.of(context)
+                                .trans('thisislatestbookmark'),
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                        return;
+                      }
+
+                      var dir = await getApplicationDocumentsDirectory();
+                      try {
+                        await ((await openDatabase('${dir.path}/data/data.db'))
+                            .close());
+                        await deleteDatabase('${dir.path}/data/data.db');
+                        await Directory('${dir.path}/data')
+                            .delete(recursive: true);
+                      } catch (e) {}
+
+                      setState(() {
+                        _syncAvailable = false;
+                      });
+
+                      await Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => DataBaseDownloadPage(
+                                    dbType: Settings.databaseType,
+                                    isExistsDataBase: false,
+                                    isSync: true,
+                                  )))
+                          .then((value) async {
+                        HitomiIndexs.init();
+                        final directory =
+                            await getApplicationDocumentsDirectory();
+                        final path = File('${directory.path}/data/index.json');
+                        final text = path.readAsStringSync();
+                        HitomiManager.tagmap = jsonDecode(text);
+                        await DataBaseManager.reloadInstance();
+
+                        FlutterToast(context).showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: Translations.of(context).trans('synccomplete'),
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                      });
+                    },
+                    child: Text(
+                        '    ${Translations.of(context).trans('sync')}    '),
+                    elevation: 3.0,
+                  ),
           ),
         ],
       )

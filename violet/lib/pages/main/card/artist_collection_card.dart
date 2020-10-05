@@ -12,6 +12,7 @@ import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:violet/component/hitomi/artists.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/card/update_card.dart';
 
@@ -112,7 +113,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                           //   // ),
                           // ),
                           Text(
-                            '아티스트 컬렉션',
+                            Translations.of(context).trans('artistcollection'),
                             style: TextStyle(
                                 // fontFamily: "Calibre-Semibold",
                                 // fontSize: 18,

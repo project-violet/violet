@@ -36,7 +36,9 @@ import 'package:violet/pages/settings/route.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/widgets/toast.dart';
@@ -536,7 +538,14 @@ class _SettingsPageState extends State<SettingsPage>
                       title: Text(Translations.of(context).trans('switching')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    onTap: () {},
+                    onTap: Variables.databaseDecompressed
+                        ? null
+                        : () async {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => SplashPage(
+                                      switching: true,
+                                    )));
+                          },
                   ),
                   _buildDivider(),
                   InkWell(
@@ -550,62 +559,69 @@ class _SettingsPageState extends State<SettingsPage>
                       title: Text(Translations.of(context).trans('syncmanual')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    onTap: () async {
-                      var latestDB = UpdateSyncManager
-                          .rawlangDB[Settings.databaseType].item1;
-                      var lastDB = (await SharedPreferences.getInstance())
-                          .getString('databasesync');
+                    onTap: Variables.databaseDecompressed
+                        ? null
+                        : () async {
+                            var latestDB = UpdateSyncManager
+                                .rawlangDB[Settings.databaseType].item1;
+                            var lastDB = (await SharedPreferences.getInstance())
+                                .getString('databasesync');
 
-                      if (lastDB != null &&
-                          latestDB.difference(DateTime.parse(lastDB)).inHours <
-                              1) {
-                        flutterToast.showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context)
-                                .trans('thisislatestbookmark'),
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
-                        return;
-                      }
+                            if (lastDB != null &&
+                                latestDB
+                                        .difference(DateTime.parse(lastDB))
+                                        .inHours <
+                                    1) {
+                              flutterToast.showToast(
+                                child: ToastWrapper(
+                                  isCheck: true,
+                                  msg: Translations.of(context)
+                                      .trans('thisislatestbookmark'),
+                                ),
+                                gravity: ToastGravity.BOTTOM,
+                                toastDuration: Duration(seconds: 4),
+                              );
+                              return;
+                            }
 
-                      var dir = await getApplicationDocumentsDirectory();
-                      try {
-                        await ((await openDatabase('${dir.path}/data/data.db'))
-                            .close());
-                        await deleteDatabase('${dir.path}/data/data.db');
-                        await Directory('${dir.path}/data')
-                            .delete(recursive: true);
-                      } catch (e) {}
+                            var dir = await getApplicationDocumentsDirectory();
+                            try {
+                              await ((await openDatabase(
+                                      '${dir.path}/data/data.db'))
+                                  .close());
+                              await deleteDatabase('${dir.path}/data/data.db');
+                              await Directory('${dir.path}/data')
+                                  .delete(recursive: true);
+                            } catch (e) {}
 
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(
-                              builder: (context) => DataBaseDownloadPage(
-                                    dbType: Settings.databaseType,
-                                    isExistsDataBase: false,
-                                    isSync: true,
-                                  )))
-                          .then((value) async {
-                        HitomiIndexs.init();
-                        final directory =
-                            await getApplicationDocumentsDirectory();
-                        final path = File('${directory.path}/data/index.json');
-                        final text = path.readAsStringSync();
-                        HitomiManager.tagmap = jsonDecode(text);
-                        await DataBaseManager.reloadInstance();
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(
+                                    builder: (context) => DataBaseDownloadPage(
+                                          dbType: Settings.databaseType,
+                                          isExistsDataBase: false,
+                                          isSync: true,
+                                        )))
+                                .then((value) async {
+                              HitomiIndexs.init();
+                              final directory =
+                                  await getApplicationDocumentsDirectory();
+                              final path =
+                                  File('${directory.path}/data/index.json');
+                              final text = path.readAsStringSync();
+                              HitomiManager.tagmap = jsonDecode(text);
+                              await DataBaseManager.reloadInstance();
 
-                        flutterToast.showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context).trans('synccomplete'),
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
-                      });
-                    },
+                              flutterToast.showToast(
+                                child: ToastWrapper(
+                                  isCheck: true,
+                                  msg: Translations.of(context)
+                                      .trans('synccomplete'),
+                                ),
+                                gravity: ToastGravity.BOTTOM,
+                                toastDuration: Duration(seconds: 4),
+                              );
+                            });
+                          },
                   ),
                 ]),
                 _buildGroup(Translations.of(context).trans('network')),

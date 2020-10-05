@@ -357,6 +357,7 @@ class ArticleInfoPage extends StatelessWidget {
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
             children: (snapshot.data as List<String>)
+                .take(30)
                 .map((e) => CachedNetworkImage(
                       imageUrl: e,
                     ))
