@@ -24,6 +24,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 8),
+    version: '1.6.2 Patch (HotFix) <== Latest',
+    contents: [
+      'fix viewer menu is not shown',
+      'fix image height is too loose in scroll viewer',
+      'fix new main page is not shown in drawer mode',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 6),
     version: '1.6.1 Patch (HotFix)',
     contents: [
