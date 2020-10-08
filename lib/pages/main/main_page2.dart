@@ -30,6 +30,7 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/card/artist_collection_card.dart';
 import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
@@ -38,6 +39,8 @@ import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/main/card/update_log_card.dart';
 import 'package:violet/pages/main/card/views_card.dart';
 import 'package:violet/pages/main/faq/faq_page.dart';
+import 'package:violet/pages/main/patchnote/patchnote_page.dart';
+import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
@@ -336,11 +339,46 @@ class _MainPage2State extends State<MainPage2>
             ],
           ),
           Expanded(child: Container()),
+          // Container(
+          //   child: UpdateLogCard(),
+          //   height: 50,
+          //   width: 100,
+          // )
           Container(
-            child: UpdateLogCard(),
-            height: 50,
+            child: RaisedButton(
+              color: Settings.majorColor.withAlpha(220),
+              textColor: Colors.white,
+              onPressed: () {
+                if (!Platform.isIOS) {
+                  Navigator.of(context).push(PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      var begin = Offset(0.0, 1.0);
+                      var end = Offset.zero;
+                      var curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                    pageBuilder: (_, __, ___) => PatchNotePage(),
+                  ));
+                } else {
+                  Navigator.of(context).push(
+                      CupertinoPageRoute(builder: (_) => PatchNotePage()));
+                }
+              },
+              child: Text(Translations.of(context).trans('patchnote')),
+              elevation: 3.0,
+            ),
+            height: 40,
             width: 100,
-          )
+          ),
         ],
       ),
       // Database
@@ -492,15 +530,88 @@ class _MainPage2State extends State<MainPage2>
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Container(
-            child: ArtistCollectionCard(),
-            height: 50,
-            width: 150,
+          // Container(
+          //   child: ArtistCollectionCard(),
+          //   height: 50,
+          //   width: 150,
+          // )
+          Badge(
+            badgeContent: Icon(Icons.star, size: 12.0),
+            child: Container(
+              child: RaisedButton(
+                color: Settings.majorColor.withAlpha(220),
+                textColor: Colors.white,
+                onPressed: () {
+                  if (!Platform.isIOS) {
+                    Navigator.of(context).push(PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        var begin = Offset(0.0, 1.0);
+                        var end = Offset.zero;
+                        var curve = Curves.ease;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+
+                        return SlideTransition(
+                          position: animation.drive(tween),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (_, __, ___) => ArtistCollectionPage(),
+                    ));
+                  } else {
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (_) => ArtistCollectionPage()));
+                  }
+                },
+                child: Text(Translations.of(context).trans('artistcollection')),
+                elevation: 3.0,
+              ),
+              height: 40,
+              width: 145,
+            ),
           ),
+          // Container(
+          //   child: ViewsCard(),
+          //   height: 50,
+          //   width: 150,
+          // ),
           Container(
-            child: ViewsCard(),
-            height: 50,
-            width: 150,
+            child: RaisedButton(
+              color: Settings.majorColor.withAlpha(220),
+              textColor: Colors.white,
+              onPressed: () {
+                if (!Platform.isIOS) {
+                  Navigator.of(context).push(PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      var begin = Offset(0.0, 1.0);
+                      var end = Offset.zero;
+                      var curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                    pageBuilder: (_, __, ___) => ViewsPage(),
+                  ));
+                } else {
+                  Navigator.of(context)
+                      .push(CupertinoPageRoute(builder: (_) => ViewsPage()));
+                }
+              },
+              child: Text(Translations.of(context).trans('realtimebest')),
+              elevation: 3.0,
+            ),
+            height: 40,
+            width: 145,
           ),
         ],
       ),
