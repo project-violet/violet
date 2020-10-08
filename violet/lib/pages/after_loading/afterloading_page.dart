@@ -214,7 +214,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           controller: _c,
           scrollDirection: Axis.vertical,
           children: <Widget>[
-            MainPage(),
+            MainPage2(),
             SearchPage(),
             BookmarkPage(),
             DownloadPage(),
