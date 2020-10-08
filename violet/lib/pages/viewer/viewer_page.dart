@@ -880,7 +880,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               );
             }
             return Container(
-              height: _height[index] != 0 ? _height[index] : 300,
+              height: _height[index] != 0 ? _height[index] : null,
               // constraints: BoxConstraints(
               //     minHeight: _height[index] != 0 ? _height[index] : 300),
               child: VOptimizedCacheImage(
@@ -977,7 +977,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                           ),
                           child: Slider(
                             value: _prevPage.toDouble() > 0
-                                ? _prevPage.toDouble()
+                                ? _prevPage <= _pageInfo.uris.length
+                                    ? _prevPage.toDouble()
+                                    : _pageInfo.uris.length.toDouble()
                                 : 1,
                             max: _pageInfo.uris.length.toDouble(),
                             min: 1,
