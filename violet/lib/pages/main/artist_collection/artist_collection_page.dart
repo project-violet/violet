@@ -131,8 +131,13 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                                 ),
                               ));
                             } else {
-                              Navigator.of(context).push(CupertinoPageRoute(
-                                  builder: (_) => ArtistListPage()));
+                              Navigator.of(context).push(
+                                CupertinoPageRoute(
+                                  builder: (_) => ArtistListPage(
+                                    aritsts: item.value,
+                                  ),
+                                ),
+                              );
                             }
                           },
                         ),
