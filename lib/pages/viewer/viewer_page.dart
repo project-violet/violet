@@ -165,7 +165,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: false,
         resizeToAvoidBottomPadding: false,
-        appBar: _opacity == 1.0 ? _appBar() : null,
+        // appBar: _opacity == 1.0
+        //     ? PreferredSize(
+        //         preferredSize: const Size.fromHeight(100), child: _appBar())
+        //     : null,
         body: Padding(
           padding: mediaQuery.padding + mediaQuery.viewInsets,
           child: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
@@ -197,7 +200,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       child: Material(
         color: Colors.black.withOpacity(0.8),
         child: Container(
-          padding: EdgeInsets.only(top: Variables.statusBarHeight),
+          padding: EdgeInsets.only(
+              top: !Settings.disableFullScreen
+                  ? Variables.statusBarHeight
+                  : 0.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
