@@ -880,8 +880,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               );
             }
             return Container(
-              constraints: BoxConstraints(
-                  minHeight: _height[index] != 0 ? _height[index] : 300),
+              height: _height[index] != 0 ? _height[index] : 300,
+              // constraints: BoxConstraints(
+              //     minHeight: _height[index] != 0 ? _height[index] : 300),
               child: VOptimizedCacheImage(
                 key: _keys[index],
                 imageUrl: _urlCache[index],
@@ -891,13 +892,16 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 fadeInCurve: Curves.easeIn,
                 imageBuilder: (context, imageProvider, child) {
                   if (_height[index] == 0 || _height[index] == 300) {
-                    try {
-                      final RenderBox renderBoxRed =
-                          _keys[index].currentContext.findRenderObject();
-                      final sizeRender = renderBoxRed.size;
-                      if (sizeRender.height != 300)
-                        _height[index] = width / sizeRender.aspectRatio;
-                    } catch (e) {}
+                    Future.delayed(Duration(milliseconds: 200)).then((value) {
+                      try {
+                        final RenderBox renderBoxRed =
+                            _keys[index].currentContext.findRenderObject();
+                        final sizeRender = renderBoxRed.size;
+                        if (sizeRender.height != 300) {
+                          _height[index] = width / sizeRender.aspectRatio;
+                        }
+                      } catch (e) {}
+                    });
                   }
                   return child;
                 },
