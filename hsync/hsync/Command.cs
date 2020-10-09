@@ -44,8 +44,8 @@ namespace hsync
             Info = "Character Test", Help = "use --character-tag-test <db file path> <threshold>")]
         public string[] CharacterTest;
 
-        [CommandLine("--series-test", CommandType.ARGUMENTS, ShortOption = "-p",
-            Info = "Series Test", Help = "use --series-tag-test <db file path>")]
+        [CommandLine("--series-test", CommandType.ARGUMENTS, ArgumentsCount = 2, ShortOption = "-p",
+            Info = "Series Test", Help = "use --series-tag-test <db file path> <threshold>")]
         public string[] SeriesTest;
 
         /// <summary>
@@ -64,6 +64,9 @@ namespace hsync
             Info = "Include ExHentai Database", Help = "use --include-exhentai")]
         public bool IncludeExHetaiData;
 
+        [CommandLine("--low-perf", CommandType.OPTION, ShortOption = "-l",
+            Info = "hsync run on low performance system", Help = "use --low-perf")]
+        public bool LowPerf;
     }
 
     public class Command
@@ -103,7 +106,7 @@ namespace hsync
             }
             else if (option.Start)
             {
-                ProcessStart(option.IncludeExHetaiData);
+                ProcessStart(option.IncludeExHetaiData, option.LowPerf);
             }
             else if (option.Compress)
             {
@@ -187,7 +190,7 @@ namespace hsync
             Console.WriteLine($"Build Date: " + Internals.GetBuildDate().ToLongDateString());
         }
 
-        static void ProcessStart(bool include_exhentai)
+        static void ProcessStart(bool include_exhentai, bool low_perf)
         {
             Console.Clear();
             Console.Title = "hsync";
@@ -197,46 +200,56 @@ namespace hsync
             Console.WriteLine($"Version: {Version.Text} (Build: {Internals.GetBuildDate().ToLongDateString()})");
             Console.WriteLine("");
 
-            if (!File.Exists("hiddendata.json"))
+            if (!low_perf)
             {
-                Logs.Instance.Push("Welcome to hsync!\r\n\tDownload the necessary data before running the program!");
-                download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/hiddendata.json", "hiddendata.json");
+                if (!File.Exists("hiddendata.json"))
+                {
+                    Logs.Instance.Push("Welcome to hsync!\r\n\tDownload the necessary data before running the program!");
+                    download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/hiddendata.json", "hiddendata.json");
+                }
+                if (!File.Exists("metadata.json"))
+                    download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/metadata.json", "metadata.json");
+                if (!File.Exists("ex-hentai-archive.json"))
+                    download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/ex-hentai-archive.json", "ex-hentai-archive.json");
+
+                var sync = new Syncronizer();
+                sync.SyncHitomi();
+                sync.SyncExHentai();
+
+                var dbc = new DataBaseCreator();
+                dbc.Integrate();
+                dbc.ExtractRawDatabase("rawdata", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete all!");
+                dbc.ExtractRawDatabase("rawdata-chinese", false, "chinese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete chinese!");
+                dbc.ExtractRawDatabase("rawdata-english", false, "english", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete english!");
+                dbc.ExtractRawDatabase("rawdata-japanese", false, "japanese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete japanese!");
+                dbc.ExtractRawDatabase("rawdata-korean", false, "korean", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete korean!");
+
+                //dbc.FilterOnlyNewed(sync);
+                //dbc.Integrate();
+                //var dt = DateTime.Now.ToString("yyyy-MM-dd hh-mm");
+                //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata", true);
+                //Console.WriteLine("Complete all!");
+                //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-chinese", true, "chinese");
+                //Console.WriteLine("Complete chinese!");
+                //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-english", true, "english");
+                //Console.WriteLine("Complete english!");
+                //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-japanese", true, "japanese");
+                //Console.WriteLine("Complete japanese!");
+                //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-korean", true, "korean");
+                //Console.WriteLine("Complete korean!");
             }
-            if (!File.Exists("metadata.json"))
-                download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/metadata.json", "metadata.json");
-            if (!File.Exists("ex-hentai-archive.json"))
-                download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/ex-hentai-archive.json", "ex-hentai-archive.json");
-
-            var sync = new Syncronizer();
-            sync.SyncHitomi();
-            sync.SyncExHentai();
-
-            var dbc = new DataBaseCreator();
-            dbc.Integrate();
-            dbc.ExtractRawDatabase("rawdata", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete all!");
-            dbc.ExtractRawDatabase("rawdata-chinese", false, "chinese", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete chinese!");
-            dbc.ExtractRawDatabase("rawdata-english", false, "english", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete english!");
-            dbc.ExtractRawDatabase("rawdata-japanese", false, "japanese", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete japanese!");
-            dbc.ExtractRawDatabase("rawdata-korean", false, "korean", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete korean!");
-
-            //dbc.FilterOnlyNewed(sync);
-            //dbc.Integrate();
-            //var dt = DateTime.Now.ToString("yyyy-MM-dd hh-mm");
-            //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata", true);
-            //Console.WriteLine("Complete all!");
-            //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-chinese", true, "chinese");
-            //Console.WriteLine("Complete chinese!");
-            //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-english", true, "english");
-            //Console.WriteLine("Complete english!");
-            //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-japanese", true, "japanese");
-            //Console.WriteLine("Complete japanese!");
-            //dbc.ExtractRawDatabase($"chunk/{dt}/rawdata-korean", true, "korean");
-            //Console.WriteLine("Complete korean!");
+            else
+            {
+                var sync = new SyncronizerLowPerf();
+                sync.SyncHitomi();
+                sync.SyncExHentai();
+                sync.FlushToMainDatabase();
+            }
         }
 
         static void ProcessCompress(bool include_exhentai)
