@@ -326,6 +326,7 @@ namespace hsync
             var result_series = new Dictionary<string, Dictionary<int, int>>();
             var result_character = new Dictionary<string, Dictionary<int, int>>();
             var result_characterseries = new Dictionary<string, Dictionary<string, int>>();
+            var result_seriescharacter = new Dictionary<string, Dictionary<string, int>>();
             var ff = new Dictionary<string, int>();
 
             foreach (var article in datas)
@@ -460,6 +461,21 @@ namespace hsync
                             result_characterseries[series][character] += 1;
                         }
                     }
+                    foreach (var character in article.Characters.Split('|'))
+                    {
+                        if (character == "")
+                            continue;
+                        if (!result_seriescharacter.ContainsKey(character))
+                            result_seriescharacter.Add(character, new Dictionary<string, int>());
+                        foreach (var series in article.Series.Split('|'))
+                        {
+                            if (series == "")
+                                continue;
+                            if (!result_seriescharacter[character].ContainsKey(series))
+                                result_seriescharacter[character].Add(series, 0);
+                            result_seriescharacter[character][series] += 1;
+                        }
+                    }
                 }
             }
 
@@ -471,6 +487,7 @@ namespace hsync
             File.WriteAllText(filename + "/tag-series.json", JsonConvert.SerializeObject(result_series));
             File.WriteAllText(filename + "/tag-character.json", JsonConvert.SerializeObject(result_character));
             File.WriteAllText(filename + "/character-series.json", JsonConvert.SerializeObject(result_characterseries));
+            File.WriteAllText(filename + "/series-character.json", JsonConvert.SerializeObject(result_seriescharacter));
         }
 
         class IndexData
