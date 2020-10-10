@@ -66,6 +66,7 @@ dependencies:
   fluttertoast:
   freezed_annotation:
   gradient_widgets:
+  hardware_buttons:
   html:
   html_unescape:
   http:
