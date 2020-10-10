@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hardware_buttons/hardware_buttons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -61,9 +62,18 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
   bool _sliderOnChange = false;
+  StreamSubscription _volumeButtonSubscription;
 
   @override
   void initState() {
+    _volumeButtonSubscription = volumeButtonEvents.listen((event) async {
+      print('event = $event');
+      if (event == VolumeButtonEvent.VOLUME_UP) {
+        await _rightButtonEvent();
+      } else if (event == VolumeButtonEvent.VOLUME_DOWN) {
+        await _leftButtonEvent();
+      }
+    });
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100))
@@ -116,6 +126,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     imageCache.clearLiveImages();
     imageCache.clear();
     super.dispose();
+    _volumeButtonSubscription?.cancel();
   }
 
   void _checkLatestRead() {
@@ -583,45 +594,47 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         height: height,
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () async {
-            var next = Settings.rightToLeft ^ Settings.isHorizontal
-                ? _prevPage - 1
-                : _prevPage + 1;
-            if (next < 1 || next > _pageInfo.uris.length) return;
-            if (!Settings.isHorizontal) {
-              if (!Settings.animation) {
-                itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
-              } else {
-                _sliderOnChange = true;
-                await itemScrollController.scrollTo(
-                  index: next - 1,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  alignment: 0.12,
-                );
-                Future.delayed(Duration(milliseconds: 300)).then((value) {
-                  _sliderOnChange = false;
-                });
-              }
-            } else {
-              if (!Settings.animation) {
-                _pageController.jumpToPage(next - 1);
-              } else {
-                _pageController.animateToPage(
-                  next - 1,
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                );
-              }
-            }
-            currentPage = next;
-            setState(() {
-              _prevPage = next;
-            });
-          },
+          onTap: _leftButtonEvent,
         ),
       ),
     );
+  }
+
+  _leftButtonEvent() async {
+    var next = Settings.rightToLeft ^ Settings.isHorizontal
+        ? _prevPage - 1
+        : _prevPage + 1;
+    if (next < 1 || next > _pageInfo.uris.length) return;
+    if (!Settings.isHorizontal) {
+      if (!Settings.animation) {
+        itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
+      } else {
+        _sliderOnChange = true;
+        await itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.12,
+        );
+        Future.delayed(Duration(milliseconds: 300)).then((value) {
+          _sliderOnChange = false;
+        });
+      }
+    } else {
+      if (!Settings.animation) {
+        _pageController.jumpToPage(next - 1);
+      } else {
+        _pageController.animateToPage(
+          next - 1,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+    currentPage = next;
+    setState(() {
+      _prevPage = next;
+    });
   }
 
   _touchAreaRight() {
@@ -635,45 +648,47 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         height: height,
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () async {
-            var next = Settings.rightToLeft ^ Settings.isHorizontal
-                ? _prevPage + 1
-                : _prevPage - 1;
-            if (next < 1 || next > _pageInfo.uris.length) return;
-            if (!Settings.isHorizontal) {
-              if (!Settings.animation) {
-                itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
-              } else {
-                _sliderOnChange = true;
-                await itemScrollController.scrollTo(
-                  index: next - 1,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  alignment: 0.12,
-                );
-                Future.delayed(Duration(milliseconds: 300)).then((value) {
-                  _sliderOnChange = false;
-                });
-              }
-            } else {
-              if (!Settings.animation) {
-                _pageController.jumpToPage(next - 1);
-              } else {
-                _pageController.animateToPage(
-                  next - 1,
-                  duration: Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                );
-              }
-            }
-            currentPage = next;
-            setState(() {
-              _prevPage = next;
-            });
-          },
+          onTap: _rightButtonEvent,
         ),
       ),
     );
+  }
+
+  _rightButtonEvent() async {
+    var next = Settings.rightToLeft ^ Settings.isHorizontal
+        ? _prevPage + 1
+        : _prevPage - 1;
+    if (next < 1 || next > _pageInfo.uris.length) return;
+    if (!Settings.isHorizontal) {
+      if (!Settings.animation) {
+        itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
+      } else {
+        _sliderOnChange = true;
+        await itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.12,
+        );
+        Future.delayed(Duration(milliseconds: 300)).then((value) {
+          _sliderOnChange = false;
+        });
+      }
+    } else {
+      if (!Settings.animation) {
+        _pageController.jumpToPage(next - 1);
+      } else {
+        _pageController.animateToPage(
+          next - 1,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+    currentPage = next;
+    setState(() {
+      _prevPage = next;
+    });
   }
 
   List<double> _height;
