@@ -56,7 +56,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   Timer _clearTimer;
   int _prevPage = 1;
   double _opacity = 0.0;
-  bool _disableBottom = false;
+  bool _disableBottom = true;
   PreloadPageController _pageController = PreloadPageController();
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
