@@ -44,11 +44,9 @@ Usage: ./hsync [OPTIONS...]
    -s, --start                 Starts hsync [use --start]
 ```
 
-Very fast metadata synchronizer!
+High-Performance E-Hentai/EX-Hentai/Hitomi Works Data Synchronizer
 
 ## How to use?
-
-### For Desktop
 
 At least 8 GB of memory is required.
 
