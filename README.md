@@ -48,6 +48,8 @@ Very fast metadata synchronizer!
 
 ## How to use?
 
+### For Desktop
+
 At least 8 GB of memory is required.
 
 ```
@@ -71,4 +73,37 @@ Download base database from https://github.com/project-violet/violet-server/rele
 5. Run ./hsync.exe
 
 6. Wait for complete
+```
+
+### (Option) For Server or Embedded System
+
+This option is implemented to run on low performance system.
+
+#### Linux x64
+
+```
+1. Install
+mkdir sync
+cd sync
+wget https://github.com/project-violet/hsync/releases/download/2020.10.11/hsync
+chmod 777 hsync
+wget https://github.com/project-violet/hsync/releases/download/2020.10.11/data.db
+mkdir runtimes
+cd runtimes
+wget https://github.com/project-violet/hsync/releases/download/2020.10.11/runtimes.zip
+unzip runtimes.zip
+cd ..
+
+2. Syncronize
+./hsync --start --low-perf
+```
+
+#### Customize Performance
+
+```
+1. Adjust NetQueue thread pool min threads count
+https://github.com/project-violet/hsync/blob/master/hsync/Network/NetQueue.cs#L30
+
+2. Adjust database query buffer size
+https://github.com/project-violet/hsync/blob/master/hsync/DataBaseCreatorLowPerf.cs#L62
 ```
