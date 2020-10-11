@@ -110,7 +110,7 @@ namespace hsync
             }
             else if (option.Compress)
             {
-                ProcessCompress(option.IncludeExHetaiData);
+                ProcessCompress(option.IncludeExHetaiData, option.LowPerf);
             }
             else if (option.Error)
             {
@@ -249,10 +249,22 @@ namespace hsync
                 sync.SyncHitomi();
                 sync.SyncExHentai();
                 sync.FlushToMainDatabase();
+
+                var dbc = new DataBaseCreatorLowPerf();
+                dbc.ExtractRawDatabase("rawdata", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete all!");
+                dbc.ExtractRawDatabase("rawdata-chinese", "chinese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete chinese!");
+                dbc.ExtractRawDatabase("rawdata-english", "english", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete english!");
+                dbc.ExtractRawDatabase("rawdata-japanese", "japanese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete japanese!");
+                dbc.ExtractRawDatabase("rawdata-korean", "korean", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete korean!");
             }
         }
 
-        static void ProcessCompress(bool include_exhentai)
+        static void ProcessCompress(bool include_exhentai, bool low_perf)
         {
             Console.Clear();
             Console.Title = "hsync";
@@ -262,18 +274,35 @@ namespace hsync
             Console.WriteLine($"Version: {Version.Text} (Build: {Internals.GetBuildDate().ToLongDateString()})");
             Console.WriteLine("");
 
-            var dbc = new DataBaseCreator();
-            dbc.Integrate();
-            dbc.ExtractRawDatabase("rawdata", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete all!");
-            dbc.ExtractRawDatabase("rawdata-chinese", false, "chinese", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete chinese!");
-            dbc.ExtractRawDatabase("rawdata-english", false, "english", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete english!");
-            dbc.ExtractRawDatabase("rawdata-japanese", false, "japanese", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete japanese!");
-            dbc.ExtractRawDatabase("rawdata-korean", false, "korean", include_exhentai: include_exhentai);
-            Console.WriteLine("Complete korean!");
+            if (!low_perf)
+            {
+                var dbc = new DataBaseCreator();
+                dbc.Integrate();
+                dbc.ExtractRawDatabase("rawdata", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete all!");
+                dbc.ExtractRawDatabase("rawdata-chinese", false, "chinese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete chinese!");
+                dbc.ExtractRawDatabase("rawdata-english", false, "english", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete english!");
+                dbc.ExtractRawDatabase("rawdata-japanese", false, "japanese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete japanese!");
+                dbc.ExtractRawDatabase("rawdata-korean", false, "korean", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete korean!");
+            }
+            else
+            {
+                var dbc = new DataBaseCreatorLowPerf();
+                dbc.ExtractRawDatabase("rawdata", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete all!");
+                dbc.ExtractRawDatabase("rawdata-chinese", "chinese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete chinese!");
+                dbc.ExtractRawDatabase("rawdata-english", "english", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete english!");
+                dbc.ExtractRawDatabase("rawdata-japanese", "japanese", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete japanese!");
+                dbc.ExtractRawDatabase("rawdata-korean", "korean", include_exhentai: include_exhentai);
+                Console.WriteLine("Complete korean!");
+            }
         }
 
         static void download_data(string url, string filename)

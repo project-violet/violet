@@ -403,9 +403,13 @@ namespace hsync
                 return result;
             });
 
-            db.CreateTable<HitomiColumnModel>();
             db.InsertAll(datas);
             db.Close();
+
+            var db2 = new SQLiteConnection($"data-{DateTime.Now.Ticks}.db");
+            db2.CreateTable<HitomiColumnModel>();
+            db2.InsertAll(datas);
+            db2.Close();
         }
     }
 }
