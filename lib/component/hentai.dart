@@ -203,11 +203,9 @@ class HentaiManager {
             return HitomiImageProvider(urls);
             break;
           case 'Hiyobi':
-            if (lang == 'korean') {
-              var urls = await HiyobiManager.getImageList(qr.id().toString());
-              if (urls.item2.length == 0) break;
-              return HiyobiImageProvider(urls);
-            }
+            var urls = await HiyobiManager.getImageList(qr.id().toString());
+            if (urls.item2.length == 0) break;
+            return HiyobiImageProvider(urls);
             break;
           case 'NHentai':
             if (lang == 'english' || lang == 'japanese' || lang == 'chinese') {
