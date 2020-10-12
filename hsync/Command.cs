@@ -67,6 +67,11 @@ namespace hsync
         [CommandLine("--low-perf", CommandType.OPTION, ShortOption = "-l",
             Info = "hsync run on low performance system", Help = "use --low-perf")]
         public bool LowPerf;
+
+        [CommandLine("--sync-only", CommandType.OPTION, ShortOption = "-n",
+            Info = "Sync only when start", Help = "use --sync-only")]
+        public bool SyncOnly;
+
     }
 
     public class Command
@@ -106,7 +111,7 @@ namespace hsync
             }
             else if (option.Start)
             {
-                ProcessStart(option.IncludeExHetaiData, option.LowPerf);
+                ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly);
             }
             else if (option.Compress)
             {
@@ -190,7 +195,7 @@ namespace hsync
             Console.WriteLine($"Build Date: " + Internals.GetBuildDate().ToLongDateString());
         }
 
-        static void ProcessStart(bool include_exhentai, bool low_perf)
+        static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only)
         {
             Console.Clear();
             Console.Title = "hsync";
@@ -215,6 +220,8 @@ namespace hsync
                 var sync = new Syncronizer();
                 sync.SyncHitomi();
                 sync.SyncExHentai();
+
+                if (sync_only) return;
 
                 var dbc = new DataBaseCreator();
                 dbc.Integrate();
@@ -249,6 +256,8 @@ namespace hsync
                 sync.SyncHitomi();
                 sync.SyncExHentai();
                 sync.FlushToMainDatabase();
+
+                if (sync_only) return;
 
                 var dbc = new DataBaseCreatorLowPerf();
                 dbc.ExtractRawDatabase("rawdata", include_exhentai: include_exhentai);
