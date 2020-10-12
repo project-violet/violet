@@ -25,6 +25,7 @@ def upload_chunk():
   timestamp = str(int(datetime.now().timestamp()))
   filename = os.listdir('chunk')[0]
   chunkfile = 'chunk/' + filename
+  size = os.path.getsize(chunkfile)
 
   process = Popen(['github-release',
     'upload', 
@@ -41,7 +42,7 @@ def upload_chunk():
 
   url = 'https://github.com/violet-dev/chunk/releases/download/'+timestamp+'/'+filename
   with open(dbmetapath, "a") as myfile:
-    myfile.write('chunk ' + timestamp + ' ' + url + '\n')
+    myfile.write('chunk ' + timestamp + ' ' + url + ' ' + str(size) + '\n')
   
 def release():
   #
