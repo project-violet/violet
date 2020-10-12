@@ -317,6 +317,110 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           ),
         ),
       );
+    } else if (Platform.isIOS) {
+      return new Scaffold(
+        body: PageView(
+          physics: new NeverScrollableScrollPhysics(),
+          controller: _c,
+          scrollDirection: Axis.vertical,
+          children: <Widget>[
+            MainPage2(),
+            SearchPage(),
+            BookmarkPage(),
+            SettingsPage(),
+          ],
+        ),
+        drawer: Container(
+          width: 220,
+          padding: mediaQuery.padding + mediaQuery.viewInsets,
+          child: Drawer(
+            child: Column(
+              children: <Widget>[
+                // DrawerHeader(
+                //   child: Text('Drawer Header'),
+                //   decoration: BoxDecoration(
+                //     color: Colors.blue,
+                //   ),
+                // ),
+                Container(
+                  margin: EdgeInsets.all(40),
+                  child: Center(
+                    child: Column(
+                      children: <Widget>[
+                        InkWell(
+                          child: Image.asset(
+                            'assets/images/logo-' +
+                                _colorToString(Settings.majorColor) +
+                                '.png',
+                            width: 100,
+                            height: 100,
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 12),
+                        ),
+                        Text(
+                          'Project Violet',
+                          style: TextStyle(
+                            color: Settings.themeWhat
+                                ? Colors.white
+                                : Colors.black87,
+                            fontSize: 18.0,
+                            fontFamily: "Calibre-Semibold",
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        Text(
+                            '${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
+                            style: TextStyle(
+                              fontFamily: "Calibre-Semibold",
+                              fontSize: 17,
+                              letterSpacing: 1.0,
+                            ))
+                      ],
+                    ),
+                  ),
+                ),
+                _drawerButton(
+                    MdiIcons.home,
+                    0,
+                    Translations.of(context).trans('main'),
+                    Settings.majorColor),
+                _drawerButton(
+                    Icons.search,
+                    1,
+                    Translations.of(context).trans('search'),
+                    Settings.majorColor),
+                _drawerButton(
+                    MdiIcons.bookmark,
+                    2,
+                    Translations.of(context).trans('bookmark'),
+                    Settings.majorColor),
+                _drawerButton(
+                    Icons.settings,
+                    4,
+                    Translations.of(context).trans('settings'),
+                    Settings.majorColor),
+                Expanded(
+                    child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    'Copyright (C) 2020\nby project-violet',
+                    style: TextStyle(
+                      color: Settings.themeWhat ? Colors.white : Colors.black87,
+                      fontSize: 12.0,
+                      fontFamily: "Calibre-Semibold",
+                      letterSpacing: 1.0,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                )),
+                Container(height: 16)
+              ],
+            ),
+          ),
+        ),
+      );
     }
   }
 
