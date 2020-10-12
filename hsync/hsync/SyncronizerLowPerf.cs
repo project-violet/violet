@@ -55,7 +55,6 @@ namespace hsync
         {
 
             var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
-            //var gburls = Enumerable.Range(1000, latestId + hitomiSyncRange / 2)
                 .Where(x => !existsHitomi.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
             var ecnt = 0;
@@ -106,20 +105,6 @@ namespace hsync
                 }
             Console.WriteLine("Complete");
 
-            //Console.Write("Check redirect gallery html... ");
-            //for (int i = 0; i < htmls2.Count; i++)
-            //{
-            //    if (htmls2[i] == null)
-            //        continue;
-            //    var node = htmls2[i].ToHtmlNode();
-            //    var title = node.SelectSingleNode("//title");
-            //    if (title != null && title.InnerText == "Redirect")
-            //    {
-            //        htmls2.RemoveAt(i--);
-            //    }
-            //}
-            //Console.WriteLine("Complete");
-
             hitomiArticles = new List<HitomiArticle>();
             for (int i = 0, j = 0; i < gburls.Count; i++)
             {
@@ -154,9 +139,6 @@ namespace hsync
                 j++;
             }
 
-            //Console.Write("Save to hiddendata.json... ");
-            //HitomiData.Instance.SaveWithNewData(result);
-            //Console.WriteLine("Complete");
         }
 
         public void SyncExHentai()
@@ -167,9 +149,6 @@ namespace hsync
             {
                 try
                 {
-                    //var task = NetTask.MakeDefault($"https://exhentai.org/?page={i}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&&f_cats=0&f_sname=on&f_stags=on&f_sh=on&advsearch=1&f_srdd=2&f_sname=on&f_stags=on&f_sdesc=on&f_sh=on");
-                    //task.Cookie = "igneous=30e0c0a66;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f;sl=dm_2";
-                    //var html = NetTools.DownloadString(task);
                     var url = $"https://exhentai.org/?page={i}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&&f_cats=0&f_sname=on&f_stags=on&f_sh=on&advsearch=1&f_srdd=2&f_sname=on&f_stags=on&f_sdesc=on&f_sh=on";
                     var wc = new WebClient();
                     wc.Encoding = Encoding.UTF8;
@@ -412,7 +391,9 @@ namespace hsync
             db.InsertAll(datas);
             db.Close();
 
-            var db2 = new SQLiteConnection($"data-{DateTime.Now.Ticks}.db");
+            if (!Directory.Exists("chunk"))
+                Directory.CreateDirectory("chunk");
+            var db2 = new SQLiteConnection($"chunk/data-{DateTime.Now.Ticks}.db");
             db2.CreateTable<HitomiColumnModel>();
             db2.InsertAll(datas);
             db2.Close();
