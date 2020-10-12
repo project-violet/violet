@@ -10,7 +10,7 @@ from subprocess import Popen, PIPE
 from datetime import datetime
 
 token = 'faketoken'
-dbmetapath = '/home/violet.dev.master/violet-server/frontend/public/version.txt'
+dbmetapath = '/home/violet.dev.master/violet-server/frontend/build/version.txt'
 
 def sync():
   #
@@ -23,7 +23,8 @@ def sync():
 def upload_chunk():
   # donot use utcnow()
   timestamp = str(int(datetime.now().timestamp()))
-  chunkfile = 'chunk/' + os.listdir('chunk')[0]
+  filename = os.listdir('chunk')[0]
+  chunkfile = 'chunk/' + filename
 
   process = Popen(['github-release',
     'upload', 
@@ -38,7 +39,7 @@ def upload_chunk():
   ])
   process.wait()
 
-  url = 'https://github.com/violet-dev/chunk/releases/download/'+timestamp+'/'+chunkfile
+  url = 'https://github.com/violet-dev/chunk/releases/download/'+timestamp+'/'+filename
   with open(dbmetapath, "a") as myfile:
     myfile.write('chunk ' + timestamp + ' ' + url + '\n')
   
