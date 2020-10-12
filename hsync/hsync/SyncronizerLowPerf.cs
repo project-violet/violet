@@ -24,7 +24,8 @@ namespace hsync
         int latestId;
         int hitomiSyncRange;
         SQLiteConnection db;
-        HashSet<int> exists;
+        //HashSet<int> exists;
+        HashSet<int> existsHitomi;
 
         public HashSet<int> newedDataHitomi;
         public HashSet<int> newedDataEH;
@@ -36,13 +37,16 @@ namespace hsync
         {
             db = new SQLiteConnection("data.db");
 
-            exists = new HashSet<int>();
-            foreach (var metadata in db.Query<HitomiColumnModel>("SELECT Id FROM HitomiColumnModel"))
-                exists.Add(metadata.Id);
+            //exists = new HashSet<int>();
+            //foreach (var metadata in db.Query<HitomiColumnModel>("SELECT Id FROM HitomiColumnModel"))
+            //    exists.Add(metadata.Id);
 
-            //HitomiData.Instance.Load();
+            existsHitomi = new HashSet<int>();
+            foreach (var metadata in db.Query<HitomiColumnModel>("SELECT Id FROM HitomiColumnModel WHERE ExistOnHitomi=1"))
+                existsHitomi.Add(metadata.Id);
+
             latestId = db.Query<HitomiColumnModel>("SELECT * FROM HitomiColumnModel WHERE Id = (SELECT MAX(Id)  FROM HitomiColumnModel);")[0].Id;
-            hitomiSyncRange = 2000;
+            hitomiSyncRange = 4000;
             newedDataHitomi = new HashSet<int>();
             newedDataEH = new HashSet<int>();
         }
@@ -52,7 +56,7 @@ namespace hsync
 
             var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
             //var gburls = Enumerable.Range(1000, latestId + hitomiSyncRange / 2)
-                .Where(x => !exists.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
+                .Where(x => !existsHitomi.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
             var ecnt = 0;
             Console.Write("Running galleryblock tester... ");
@@ -220,7 +224,7 @@ namespace hsync
                 articles.Add(n);
 
             var x = articles.ToList();
-            x.RemoveAll(x => exists.Contains(x));
+            x.RemoveAll(x => existsHitomi.Contains(x));
             x.Sort((x, y) => x.CompareTo(y));
 
             var onHitomi = new Dictionary<int, int>();
@@ -255,6 +259,8 @@ namespace hsync
                     continue;
                 onEH.Add(id, i);
             }
+
+            db.Execute($"DELETE FROM HitomiColumnModel WHERE Id IN ({string.Join(",", x)})");
 
             var datas = x.Select(id =>
             {
