@@ -24,7 +24,8 @@ namespace hsync
         int latestId;
         int hitomiSyncRange;
         SQLiteConnection db;
-        //HashSet<int> exists;
+        HashSet<int> existsBoth;
+        HashSet<int> existsEH;
         HashSet<int> existsHitomi;
 
         public HashSet<int> newedDataHitomi;
@@ -37,15 +38,19 @@ namespace hsync
         {
             db = new SQLiteConnection("data.db");
 
-            //exists = new HashSet<int>();
-            //foreach (var metadata in db.Query<HitomiColumnModel>("SELECT Id FROM HitomiColumnModel"))
-            //    exists.Add(metadata.Id);
-
             existsHitomi = new HashSet<int>();
             foreach (var metadata in db.Query<HitomiColumnModel>("SELECT Id FROM HitomiColumnModel WHERE ExistOnHitomi=1"))
                 existsHitomi.Add(metadata.Id);
 
-            latestId = db.Query<HitomiColumnModel>("SELECT * FROM HitomiColumnModel WHERE Id = (SELECT MAX(Id)  FROM HitomiColumnModel);")[0].Id;
+            existsEH = new HashSet<int>();
+            foreach (var metadata in db.Query<HitomiColumnModel>("SELECT Id FROM HitomiColumnModel WHERE EHash IS NOT NULL"))
+                existsEH.Add(metadata.Id);
+
+            existsBoth = new HashSet<int>();
+            foreach (var metadata in db.Query<HitomiColumnModel>("SELECT Id FROM HitomiColumnModel WHERE EHash IS NOT NULL AND ExistOnHitomi=1"))
+                existsBoth.Add(metadata.Id);
+
+            latestId = db.Query<HitomiColumnModel>("SELECT * FROM HitomiColumnModel WHERE Id = (SELECT MAX(Id) FROM HitomiColumnModel);")[0].Id;
             hitomiSyncRange = 4000;
             newedDataHitomi = new HashSet<int>();
             newedDataEH = new HashSet<int>();
@@ -203,7 +208,9 @@ namespace hsync
                 articles.Add(n);
 
             var x = articles.ToList();
-            x.RemoveAll(x => existsHitomi.Contains(x));
+            x.RemoveAll(x => existsBoth.Contains(x));
+            x.RemoveAll(x => newedDataEH.Contains(x) && existsEH.Contains(x) && !existsHitomi.Contains(x));
+            x.RemoveAll(x => newedDataHitomi.Contains(x) && existsHitomi.Contains(x) && !existsEH.Contains(x));
             x.Sort((x, y) => x.CompareTo(y));
 
             var onHitomi = new Dictionary<int, int>();
@@ -239,6 +246,15 @@ namespace hsync
                 onEH.Add(id, i);
             }
 
+            var exists = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel WHERE Id IN ({string.Join(",", x)})");
+            var onExists = new Dictionary<int, int>();
+            for (int i = 0; i < exists.Count; i++)
+            {
+                if (onExists.ContainsKey(exists[i].Id))
+                    continue;
+                onExists.Add(exists[i].Id, i);
+            }
+
             db.Execute($"DELETE FROM HitomiColumnModel WHERE Id IN ({string.Join(",", x)})");
 
             var datas = x.Select(id =>
@@ -247,6 +263,10 @@ namespace hsync
 
                 var oh = newedDataHitomi.Contains(id);
                 var oe = newedDataEH.Contains(id);
+                var ox = onExists.ContainsKey(id);
+
+                var ehh = existsHitomi.Contains(id);
+                var eeh = existsEH.Contains(id);
 
                 if (oh)
                 {
@@ -277,6 +297,14 @@ namespace hsync
                         {
                             result.Class = ii.Title.Split("(")[1].Split(")")[0];
                         }
+                    }
+                    else if (eeh)
+                    {
+                        var ii = exists[onExists[id]];
+                        result.EHash = ii.EHash;
+                        result.Uploader = ii.Uploader;
+                        result.Published = ii.Published;
+                        result.Class = ii.Class;
                     }
                     //else if (result.Published == null)
                     //    result.Published = mindd.AddMinutes(datetimeEstimator.Predict(md.ID));
@@ -376,7 +404,7 @@ namespace hsync
                         Tags = (tags.Count > 0 ? "|" + string.Join("|", tags) + "|" : null),
                         Type = ed.Type,
                         Language = lang,
-                        ExistOnHitomi = 0,
+                        ExistOnHitomi = ehh ? 1 : 0,
                         Uploader = ed.Uploader,
                         Published = DateTime.Parse(ed.Published),
                         EHash = ed.URL.Split('/')[5],
