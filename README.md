@@ -46,6 +46,11 @@ Usage: ./hsync [OPTIONS...]
 
 High-Performance E-Hentai/EX-Hentai/Hitomi Works Data Synchronizer
 
+## Public Sync Data
+
+You can see real-time synchronization information from https://koromo.xyz/version.txt
+See sync.py for more information.
+
 ## How to use?
 
 At least 8 GB of memory is required.
