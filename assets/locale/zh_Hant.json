@@ -123,14 +123,14 @@
     "notice3": "Any inquiries are welcome!",
     "notice4": "This app has nothing to do with",
     "notice5": "hitomi.la, e-hentai.org, exhentai.org.",
-    
+
     "locking": "Locking",
     "enable_locking": "Enable Locking",
     "network": "Networking",
     "routing_rule": "Routing Rule",
     "proxy": "Proxy",
-    
-    
+
+
     "selectall": "Select All",
     "deselectall": "DeSelect All",
     "inverse": "Invert Selections",
@@ -169,7 +169,7 @@
 
     "yes": "Yes",
     "no": "No",
-    
+
     "date": "Date",
     "complete": "Complete",
     "waitqueue": "Waiting queue...",
@@ -179,13 +179,14 @@
     "count": "%s",
     "stop": "Stopped",
     "unknownerr": "Unknown Error",
-    "urlnotsupport": "This URL does not support",
+    "urlnotsupport": "This URL is not supported",
     "tryagainlogin": "Try again, after login!",
     "dinfo": "Info",
     "state": "State",
     "addurl": "Add URL",
     "writeurl": "Write URL.",
     "nothingtodownload": "Nothing to download :(",
+
     
     "maindiscord": "Visit violet Discord Channel!",
     "maincontact": "Contact Developer",
@@ -194,8 +195,18 @@
     "maindb": "Database",
     "mainread": "Read",
     "mainbookmark": "Boomkark",
-    "maindownload": "Donwload",
+    "maindownload": "Download",
     
+    "usewebsearch": "Search on Web",
+    "usevioletserver": "Use Violet Server",
+    "wouldyouupdate": "Would you update?",
+    "violetservermsg": "Would you like to enable the Violet Server function? This function is a service that collects user behavior information and displays statistical information in real time. We do not collect any information that could identify you.",
+    "daily": "Today",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "alltime": "All Time",
+    
+
     "toggleviewerstyle": "View page by page",
     "togglerighttoleft": "Right to Left",
     "togglescrollvertical": "Flip Vertically",
@@ -203,18 +214,18 @@
     "togglepadding": "Add Padding to Webtoon Viewer",
     "disableoverlaybuttons": "Enable Overlay Buttons",
     "disablefullscreen": "Enable Fullscreen",
-
-    "userstat": "사용자 통계",
-    "versionmanagement": "버전관리",
-    "service": "서비스",
-    "readpresent": "읽음",
-    "curversion": "현재버전",
-    "latestversion": "최신버전",
-    "curlatestversion": "최신버전입니다",
-    "local": "로컬",
-    "latest": "최신",
-    "sync": "동기화",
-    "artistcollection": "아티스트 컬렉션",
-    "realtimebest": "실시간 베스트",
-    "patchnote": "패치 노트"
+    
+    "userstat": "User Statistics",
+    "versionmanagement": "Version Management",
+    "service": "Service",
+    "readpresent": "Read",
+    "curversion": "Current Version",
+    "latestversion": "Latest Version",
+    "curlatestversion": "This is the latest version.",
+    "local": "Local",
+    "latest": "Latest",
+    "sync": "Sync",
+    "artistcollection": "Artists Collection",
+    "realtimebest": "RealTime Best",
+    "patchnote": "Patch Note"
 }
