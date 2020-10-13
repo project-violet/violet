@@ -1,8 +1,8 @@
 # hsync
 
 ```
-hsync 2020.6.7
-Build Date: 2020년 6월 7일 일요일
+hsync 2020.10.13
+Build Date: Monday, 13 October 2020
                                          /T /I
                               / |/ | .-~/
                           T\ Y  I  |/  /  _
@@ -38,10 +38,17 @@ Build Date: 2020년 6월 7일 일요일
 
 Copyright (C) 2020. project violet-server.
 Usage: ./hsync [OPTIONS...]
-   --help
-   -v, --version               Show version information.
-   --recover-settings          Recover settings.json
+   --help                      
+   -v, --version               Show version information. 
+   --recover-settings          Recover settings.json 
+   -r, --related-tag-test      Related Tag Test [use --related-tag-test <db file path> <threshold>]
+   -h, --character-test        Character Test [use --character-tag-test <db file path> <threshold>]
+   -p, --series-test           Series Test [use --series-tag-test <db file path> <threshold>]
    -s, --start                 Starts hsync [use --start]
+   -c, --compress              Compress exists data [use --compress]
+   -x, --include-exhentai      Include ExHentai Database [use --include-exhentai]
+   -l, --low-perf              hsync run on low performance system [use --low-perf]
+   -n, --sync-only             Sync only when start [use --sync-only]
 ```
 
 High-Performance E-Hentai/EX-Hentai/Hitomi Works Data Synchronizer
