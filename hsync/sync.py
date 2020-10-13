@@ -16,7 +16,7 @@ def sync():
   #
   #   Sync (Low Performance Starting)
   #
-  shutil.rmtree('chunk')
+  shutil.rmtree('chunk', ignore_errors=True)
   process = Popen(['./hsync', '-ls', '--sync-only'])
   process.wait()
 
@@ -87,22 +87,26 @@ def release():
   process.wait()
 
   timestamp = str(int(datetime.now().timestamp()))
-  url = 'https://github.com/violet-dev/chunk/releases/download/'+date+'/rawdata'
+  url = 'https://github.com/violet-dev/db/releases/download/'+date+'/rawdata'
   with open(dbmetapath, "a") as myfile:
     myfile.write('db ' + timestamp + ' ' + url + '\n')
 
+def remove_exists(path):
+  if os.path.exists(path):
+    os.remove(path)
+
 def clean():
-  shutil.rmtree('rawdata')
-  shutil.rmtree('rawdata-chinese')
-  shutil.rmtree('rawdata-english')
-  shutil.rmtree('rawdata-japanese')
-  shutil.rmtree('rawdata-korean')
+  shutil.rmtree('rawdata', ignore_errors=True)
+  shutil.rmtree('rawdata-chinese', ignore_errors=True)
+  shutil.rmtree('rawdata-english', ignore_errors=True)
+  shutil.rmtree('rawdata-japanese', ignore_errors=True)
+  shutil.rmtree('rawdata-korean', ignore_errors=True)
   
-  os.remove('rawdata.7z')
-  os.remove('rawdata-chinese.7z')
-  os.remove('rawdata-english.7z')
-  os.remove('rawdata-japanese.7z')
-  os.remove('rawdata-korean.7z')
+  remove_exists('rawdata.7z')
+  remove_exists('rawdata-chinese.7z')
+  remove_exists('rawdata-english.7z')
+  remove_exists('rawdata-japanese.7z')
+  remove_exists('rawdata-korean.7z')
 
 latest_sync_date = ''
 
