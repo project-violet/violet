@@ -23,9 +23,12 @@ def sync():
 def upload_chunk():
   # donot use utcnow()
   timestamp = str(int(datetime.now().timestamp()))
-  filename = os.listdir('chunk')[0]
-  chunkfile = 'chunk/' + filename
-  size = os.path.getsize(chunkfile)
+  filename1 = os.listdir('chunk')[0]
+  filename2 = os.listdir('chunk')[1]
+  chunkfile1 = 'chunk/' + filename1
+  chunkfile2 = 'chunk/' + filename2
+  size1 = os.path.getsize(chunkfile1)
+  size2 = os.path.getsize(chunkfile2)
 
   process = Popen(['github-release',
     'upload', 
@@ -36,13 +39,18 @@ def upload_chunk():
     '--body=""',
     '--prerelease=false',
     '--token=' + token,
-    chunkfile,
+    chunkfile1,
+    chunkfile2,
   ])
   process.wait()
 
-  url = 'https://github.com/violet-dev/chunk/releases/download/'+timestamp+'/'+filename
+  url = 'https://github.com/violet-dev/chunk/releases/download/'+timestamp+'/'+filename1
   with open(dbmetapath, "a") as myfile:
-    myfile.write('chunk ' + timestamp + ' ' + url + ' ' + str(size) + '\n')
+    myfile.write('chunk ' + timestamp + ' ' + url + ' ' + str(size1) + '\n')
+
+  url = 'https://github.com/violet-dev/chunk/releases/download/'+timestamp+'/'+filename2
+  with open(dbmetapath, "a") as myfile:
+    myfile.write('chunkraw ' + timestamp + ' ' + url + ' ' + str(size2) + '\n')
   
 def release():
   #
