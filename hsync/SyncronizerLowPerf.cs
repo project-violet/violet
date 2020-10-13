@@ -422,10 +422,13 @@ namespace hsync
 
             if (!Directory.Exists("chunk"))
                 Directory.CreateDirectory("chunk");
-            var db2 = new SQLiteConnection($"chunk/data-{DateTime.Now.Ticks}.db");
+            var dt = DateTime.Now.Ticks;
+            var db2 = new SQLiteConnection($"chunk/data-{dt}.db");
             db2.CreateTable<HitomiColumnModel>();
             db2.InsertAll(datas);
             db2.Close();
+
+            File.WriteAllText($"chunk/data-{dt}.json", JsonConvert.SerializeObject(datas));
         }
     }
 }
