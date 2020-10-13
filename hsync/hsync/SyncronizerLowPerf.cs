@@ -58,7 +58,6 @@ namespace hsync
 
         public void SyncHitomi()
         {
-
             var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
                 .Where(x => !existsHitomi.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
@@ -168,8 +167,10 @@ namespace hsync
                         eHentaiResultArticles.AddRange(exh);
                         if (exh.Count != 25)
                             Logs.Instance.PushWarning("[Miss] " + url);
-                        if (i > 20 && exh.Min(x => x.URL.Split('/')[4].ToInt()) < latestId)
+                        if (i > 200 && exh.Min(x => x.URL.Split('/')[4].ToInt()) < latestId)
+                        {
                             break;
+                        }
                         Logs.Instance.Push("Parse exh page - " + i);
                     }
                     catch (Exception e)
