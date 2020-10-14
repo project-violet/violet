@@ -9,6 +9,8 @@ import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
+typedef DoubleIntCallback = Future Function(int, int);
+
 class SyncInfoRecord {
   final String type;
   final int timestamp;
@@ -67,8 +69,10 @@ class SyncManager {
     throw Exception('not reachable, check sync server');
   }
 
-  static Future<void> doChunkSync() async {
+  static Future<void> doChunkSync(DoubleIntCallback progressCallback) async {
     for (int i = 0; i < _rows.length; i++) {
+      await progressCallback(i + 1, _rows.length);
+
       // Larger timestamp, the more recent data is contained.
       // So, we need to update them in old order.
       var row = _rows[_rows.length - i - 1];
@@ -94,6 +98,9 @@ class SyncManager {
         await batch.commit();
       });
       await dbraw.close();
+
+      await (await SharedPreferences.getInstance())
+          .setInt('synclatest', row.timestamp);
     }
   }
 }
