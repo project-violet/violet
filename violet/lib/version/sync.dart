@@ -90,11 +90,12 @@ class SyncManager {
 
       // Last, append datas
       var dbraw = await openDatabase(db.dbPath);
-      for (int j = 0; j < quries.length; j++) {
-        // I think this is not a good way.
-        // I need to find a way to do all of the insert requests at once.
-        await dbraw.insert('HitomiColumnModel', quries[j].result);
-      }
+      await dbraw.transaction((txn) async {
+        final batch = txn.batch();
+        for (var query in quries)
+          batch.insert('HitomiColumnModel', query.result);
+        await batch.commit();
+      });
       await dbraw.close();
     }
   }
