@@ -83,17 +83,14 @@ class SyncManager {
           .map((e) => QueryResult(result: e as Map<String, dynamic>))
           .toList();
 
-      // Third, delete exists id
-      var db = await DataBaseManager.getInstance();
-      await db.delete('HitomiColumnModel',
-          'Id IN (${quries.map((e) => e.id() as String).join(',')})', []);
-
       // Last, append datas
+      var db = await DataBaseManager.getInstance();
       var dbraw = await openDatabase(db.dbPath);
       await dbraw.transaction((txn) async {
         final batch = txn.batch();
         for (var query in quries)
-          batch.insert('HitomiColumnModel', query.result);
+          batch.insert('HitomiColumnModel', query.result,
+              conflictAlgorithm: ConflictAlgorithm.replace);
         await batch.commit();
       });
       await dbraw.close();
