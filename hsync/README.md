@@ -1,8 +1,8 @@
 # hsync
 
 ```
-hsync 2020.10.13
-Build Date: Monday, 13 October 2020
+hsync 2020.10.15
+Build Date: Monday, 15 October 2020
                                          /T /I
                               / |/ | .-~/
                           T\ Y  I  |/  /  _
@@ -38,12 +38,14 @@ Build Date: Monday, 13 October 2020
 
 Copyright (C) 2020. project violet-server.
 Usage: ./hsync [OPTIONS...]
-   --help                      
-   -v, --version               Show version information. 
-   --recover-settings          Recover settings.json 
+   --help
+   -v, --version               Show version information.
+   --recover-settings          Recover settings.json
    -r, --related-tag-test      Related Tag Test [use --related-tag-test <db file path> <threshold>]
    -h, --character-test        Character Test [use --character-tag-test <db file path> <threshold>]
    -p, --series-test           Series Test [use --series-tag-test <db file path> <threshold>]
+   --create-ehentai-inv-table  create e/exhentai hash inverse table [use --create-ehentai-inv-table]
+   --create-datetime-estimator create datetime estimator [use --create-datetime-estimator]
    -s, --start                 Starts hsync [use --start]
    -c, --compress              Compress exists data [use --compress]
    -x, --include-exhentai      Include ExHentai Database [use --include-exhentai]
