@@ -32,6 +32,7 @@ class SyncInfoRecord {
 class SyncManager {
   static const String syncInfoURL = "https://koromo.xyz/version.txt";
 
+  static bool firstSync = false;
   static bool syncRequire = false; // database sync require
   static bool chunkRequire = false;
   static const ignoreUserAcceptThreshold = 1024 * 1024 * 10; // 10MB
@@ -48,7 +49,7 @@ class SyncManager {
         (await SharedPreferences.getInstance()).getString('databasesync');
 
     if (latest == null) {
-      syncRequire = true;
+      syncRequire = firstSync = true;
       latest = 0;
     } else if (DateTime.parse(lastDB).difference(DateTime.now()).inDays > 7) {
       syncRequire = true;
@@ -91,17 +92,25 @@ class SyncManager {
   }
 
   static Future<void> doChunkSync(DoubleIntCallback progressCallback) async {
-    for (int i = 0; i < _rows.length; i++) {
-      await progressCallback(i + 1, _rows.length);
+    // Only chunk
+    var filteredIter =
+        _rows.where((element) => element.type == 'chunk').toList();
+
+    // Download Jsons
+    var res = await Future.wait(filteredIter.map((e) => http.get(e.url)));
+    var jsons = res.map((e) => e.body).toList();
+
+    // Update Database
+    for (int i = 0; i < filteredIter.length; i++) {
+      await progressCallback(i + 1, filteredIter.length);
 
       // Larger timestamp, the more recent data is contained.
       // So, we need to update them in old order.
-      var row = _rows[_rows.length - i - 1];
+      var row = filteredIter[filteredIter.length - i - 1];
       if (row.type != 'chunk') continue;
 
-      // First, download json
-      var raw = (await http.get(row.url)).body;
-      var json = jsonDecode(raw);
+      // First, parse json
+      var json = jsonDecode(jsons[filteredIter.length - i - 1]);
 
       // Second, convert json to query
       var qlist = json as List<dynamic>;

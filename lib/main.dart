@@ -66,10 +66,8 @@ void main() async {
   await Variables.init();
   await HitomiIndexs.init();
   await Logger.init();
-  if (Platform.isAndroid) {
-    await SyncManager.checkSync();
-    await SyncManager.doChunkSync((_, __) async {});
-  }
+  if (Platform.isAndroid) await SyncManager.checkSync();
+
   await warmupFlare();
 
   runApp(
