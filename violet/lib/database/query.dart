@@ -33,6 +33,10 @@ class QueryResult {
       return null;
     }
 
+    if (int.tryParse(published()) == null) {
+      return DateTime.tryParse(published() as String);
+    }
+
     const epochTicks = 621355968000000000;
     const ticksPerMillisecond = 10000;
 
