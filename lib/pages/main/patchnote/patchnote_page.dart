@@ -24,8 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 16),
+    version: '1.6.3 Patch <== Latest',
+    contents: [
+      'add auto sync functions',
+      'add volume key viewer controller',
+      'fix hentai downloader',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 8),
-    version: '1.6.2 Patch (HotFix) <== Latest',
+    version: '1.6.2 Patch (HotFix)',
     contents: [
       'fix viewer menu is not shown',
       'fix image height is too loose in scroll viewer',
