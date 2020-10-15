@@ -18,6 +18,13 @@ class SyncInfoRecord {
   final int size;
 
   SyncInfoRecord({this.type, this.timestamp, this.url, this.size = 0});
+
+  String getDBDownloadUrl(String type) =>
+      url + SyncManager.createRawdbPostfix(type);
+
+  DateTime getDateTime() {
+    return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+  }
 }
 
 class SyncManager {
@@ -54,12 +61,18 @@ class SyncManager {
 
       // We require only json files when synchronize with chunk.
       if (type == 'chunk' && !url.endsWith('.json')) return;
-      if (timestamp <= latest) return;
+      if (type == 'chunk' && timestamp <= latest) return;
 
       requestSize += size;
       _rows.add(SyncInfoRecord(
-          type: type, timestamp: timestamp, url: url, size: size));
+        type: type,
+        timestamp: timestamp,
+        url: url,
+        size: size,
+      ));
     });
+
+    if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
   }
 
   static SyncInfoRecord getLatestDB() {
@@ -76,6 +89,7 @@ class SyncManager {
       // Larger timestamp, the more recent data is contained.
       // So, we need to update them in old order.
       var row = _rows[_rows.length - i - 1];
+      if (row.type != 'chunk') continue;
 
       // First, download json
       var raw = (await http.get(row.url)).body;
@@ -102,5 +116,22 @@ class SyncManager {
       await (await SharedPreferences.getInstance())
           .setInt('synclatest', row.timestamp);
     }
+  }
+
+  static String createRawdbPostfix(String lang) {
+    switch (lang) {
+      case 'global':
+        return '.7z';
+      case 'ko':
+        return '-korean.7z';
+      case 'zh':
+        return '-chinese.7z';
+      case 'ja':
+        return '-japanese.7z';
+      case 'en':
+        return '-english.7z';
+    }
+
+    throw Exception('not reachable');
   }
 }

@@ -21,6 +21,7 @@ import 'package:dio/dio.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/variables.dart';
+import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
@@ -116,7 +117,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                 _tlatest = _tnu;
                 _tnu = 0;
               }));
-      await dio.download(UpdateSyncManager.rawlangDB[widget.dbType].item2,
+      await dio.download(
+          SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType),
           "${dir.path}/db.sql.7z", onReceiveProgress: (rec, total) {
         _nu += rec - latest;
         _tnu += rec - latest;
@@ -159,8 +161,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           .setString('db_path', "${dir.path}/data/data.db");
       await (await SharedPreferences.getInstance())
           .setString('databasetype', widget.dbType);
-      await (await SharedPreferences.getInstance()).setString('databasesync',
-          UpdateSyncManager.rawlangDB[widget.dbType].item1.toString());
+      await (await SharedPreferences.getInstance()).setString(
+          'databasesync', SyncManager.getLatestDB().getDateTime().toString());
+      await (await SharedPreferences.getInstance())
+          .setInt('synclatest', SyncManager.getLatestDB().timestamp);
 
       // await indexing();
 

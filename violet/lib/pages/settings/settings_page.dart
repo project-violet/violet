@@ -39,6 +39,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
+import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/widgets/toast.dart';
@@ -563,8 +564,8 @@ class _SettingsPageState extends State<SettingsPage>
                     onTap: Variables.databaseDecompressed
                         ? null
                         : () async {
-                            var latestDB = UpdateSyncManager
-                                .rawlangDB[Settings.databaseType].item1;
+                            var latestDB =
+                                SyncManager.getLatestDB().getDateTime();
                             var lastDB = (await SharedPreferences.getInstance())
                                 .getString('databasesync');
 

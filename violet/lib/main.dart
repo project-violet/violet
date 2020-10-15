@@ -2,6 +2,7 @@
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -21,6 +22,7 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
+import 'package:violet/version/sync.dart';
 import 'locale/locale.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
@@ -64,6 +66,7 @@ void main() async {
   await Variables.init();
   await HitomiIndexs.init();
   await Logger.init();
+  if (Platform.isAndroid) await SyncManager.checkSync();
   await warmupFlare();
 
   runApp(
