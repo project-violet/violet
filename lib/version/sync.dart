@@ -50,7 +50,7 @@ class SyncManager {
     if (latest == null) {
       syncRequire = true;
       latest = 0;
-    } else if (DateTime.parse(lastDB).difference(DateTime.now()).inDays < 7) {
+    } else if (DateTime.parse(lastDB).difference(DateTime.now()).inDays > 7) {
       syncRequire = true;
     }
 
@@ -115,7 +115,7 @@ class SyncManager {
         quries = quries.where((element) {
           var ll = element.language() as String;
           return (ll == lang) || (ll == 'n/a');
-        });
+        }).toList();
       }
 
       // Last, append datas
