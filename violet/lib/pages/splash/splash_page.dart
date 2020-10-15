@@ -20,6 +20,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 
 class SplashPage extends StatefulWidget {
@@ -63,9 +64,13 @@ class _SplashPageState extends State<SplashPage> {
     await UpdateSyncManager.checkUpdateSync();
 
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
-        !widget.switching)
+        !widget.switching) {
+      if (Platform.isAndroid &&
+          !SyncManager.firstSync &&
+          SyncManager.chunkRequire)
+        await SyncManager.doChunkSync((_, __) async {});
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
-    else {
+    } else {
       if (!widget.switching) await Future.delayed(Duration(milliseconds: 1400));
       setState(() {
         showFirst = true;
