@@ -24,9 +24,9 @@ class UpdateSyncManager {
   static String updateMessage = "";
   static String updateUrl = "";
 
-  static bool syncRequire = false;
+  // static bool syncRequire = false;
 
-  static Map<String, Tuple2<DateTime, String>> rawlangDB;
+  // static Map<String, Tuple2<DateTime, String>> rawlangDB;
   static Map<String, Tuple2<DateTime, String>> rawlangDBIOS;
 
   static Future<void> checkUpdateSync() async {
@@ -52,7 +52,7 @@ class UpdateSyncManager {
     latestVersion = info["version"] as String;
 
     var rawdb = (info["rawdb2"] as List<dynamic>);
-    rawlangDB = Map<String, Tuple2<DateTime, String>>();
+    // rawlangDB = Map<String, Tuple2<DateTime, String>>();
     rawlangDBIOS = Map<String, Tuple2<DateTime, String>>();
     rawdb.forEach((element) {
       var lang = element['language'];
@@ -73,8 +73,8 @@ class UpdateSyncManager {
           lang = 'en';
           break;
       }
-      rawlangDB[lang] = Tuple2<DateTime, String>(
-          DateTime.parse(element['date']), element['chunk']);
+      // rawlangDB[lang] = Tuple2<DateTime, String>(
+      //     DateTime.parse(element['date']), element['chunk']);
       rawlangDBIOS[lang] = Tuple2<DateTime, String>(
           DateTime.parse(element['date']), element['raw']);
     });

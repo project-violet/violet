@@ -44,6 +44,7 @@ import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
+import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -67,18 +68,19 @@ class _MainPage2State extends State<MainPage2>
     updateCheckAndDownload();
 
     Future.delayed(Duration(milliseconds: 200)).then((value) async {
-      var latestDB = UpdateSyncManager.rawlangDB[Settings.databaseType].item1;
-      var lastDB =
-          (await SharedPreferences.getInstance()).getString('databasesync');
+      // var latestDB = SyncManager.getLatestDB().getDateTime();
+      // var lastDB =
+      //     (await SharedPreferences.getInstance()).getString('databasesync');
+      // if (lastDB != null &&
+      //     latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
+      //   return;
+      // }
 
-      if (lastDB != null &&
-          latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
-        return;
+      if (SyncManager.syncRequire) {
+        setState(() {
+          _syncAvailable = true;
+        });
       }
-
-      setState(() {
-        _syncAvailable = true;
-      });
     });
   }
 
@@ -417,8 +419,8 @@ class _MainPage2State extends State<MainPage2>
                       style: TextStyle(color: Colors.grey)),
                   Text(
                     ' ' +
-                        DateFormat('yyyy.MM.dd').format(UpdateSyncManager
-                            .rawlangDB[Settings.databaseType].item1),
+                        DateFormat('yyyy.MM.dd')
+                            .format(SyncManager.getLatestDB().getDateTime()),
                   ),
                 ],
               ),
@@ -456,8 +458,7 @@ class _MainPage2State extends State<MainPage2>
               onPressed: Variables.databaseDecompressed
                   ? null
                   : () async {
-                      var latestDB = UpdateSyncManager
-                          .rawlangDB[Settings.databaseType].item1;
+                      var latestDB = SyncManager.getLatestDB().getDateTime();
                       var lastDB = (await SharedPreferences.getInstance())
                           .getString('databasesync');
 
