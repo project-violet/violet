@@ -11,6 +11,7 @@ using hsync.Setting;
 using hsync.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,14 @@ namespace hsync
         [CommandLine("--series-test", CommandType.ARGUMENTS, ArgumentsCount = 2, ShortOption = "-p",
             Info = "Series Test", Help = "use --series-tag-test <db file path> <threshold>")]
         public string[] SeriesTest;
+
+        [CommandLine("--create-ehentai-inv-table", CommandType.OPTION,
+            Info = "create e/exhentai hash inverse table", Help = "use --create-ehentai-inv-table")]
+        public bool CreateEHentaiInverseTable;
+
+        [CommandLine("--create-datetime-estimator", CommandType.OPTION,
+            Info = "create datetime estimator", Help = "use --create-datetime-estimator")]
+        public bool CreateDateTimeEstimator;
 
         /// <summary>
         /// User Option
@@ -116,6 +125,14 @@ namespace hsync
             else if (option.Compress)
             {
                 ProcessCompress(option.IncludeExHetaiData, option.LowPerf);
+            }
+            else if (option.CreateEHentaiInverseTable)
+            {
+                ProcessCreateEHentaiInverseTable(option.LowPerf);
+            }
+            else if (option.CreateDateTimeEstimator)
+            {
+                ProcessCreateDateTimeEstimator(option.LowPerf);
             }
             else if (option.Error)
             {
@@ -373,6 +390,114 @@ namespace hsync
         {
             var rtt = new SeriesTest(args[0]);
             rtt.Start();
+        }
+
+        static void ProcessCreateEHentaiInverseTable(bool low_perf)
+        {
+            var index = new List<long>();
+
+            if (!low_perf)
+            {
+                var ehentaiArticles = JsonConvert.DeserializeObject<List<EHentaiResultArticle>>(File.ReadAllText("ex-hentai-archive.json"));
+
+                foreach (var per in ehentaiArticles)
+                {
+                    var url = per.URL;
+                    var xi = Convert.ToInt64(url.Split('/')[4]);
+                    var yi = Convert.ToInt64(url.Split('/')[5], 16);
+                    index.Add((xi << 40) + yi);
+                }
+            }
+            else
+            {
+                var db = new SQLiteConnection("data.db");
+                var count = db.ExecuteScalar<int>("SELECT COUNT(*) FROM HitomiColumnModel");
+                const int perLoop = 50000;
+
+                for (int i = 0; i < count; i += perLoop)
+                {
+                    var query = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel ORDER BY Id LIMIT {perLoop} OFFSET {i}");
+
+                    foreach (var article in query)
+                    {
+                        if (article.EHash == null) continue;
+                        var xi = (long)article.Id;
+                        var yi = Convert.ToInt64(article.EHash, 16);
+                        index.Add((xi << 40) + yi);
+                    }
+                }
+            }
+
+            if (File.Exists("invtable.json"))
+                File.Delete("invtable.json");
+            File.WriteAllText("invtable.json", JsonConvert.SerializeObject(index));
+        }
+
+        static void ProcessCreateDateTimeEstimator(bool low_perf)
+        {
+            PolynomialRegressionModel datetimeEstimator = null;
+            DateTime mindd;
+
+            var xx1 = new List<double>();
+            var yy1 = new List<double>();
+
+            if (!low_perf)
+            {
+                var ehentaiArticles = JsonConvert.DeserializeObject<List<EHentaiResultArticle>>(File.ReadAllText("ex-hentai-archive.json"));
+                mindd = ehentaiArticles.Min(x => DateTime.Parse(x.Published));
+
+                for (int i = 0; i < ehentaiArticles.Count; i++)
+                {
+                    xx1.Add(int.Parse(ehentaiArticles[i].URL.Split('/')[4]));
+                    yy1.Add((DateTime.Parse(ehentaiArticles[i].Published) - mindd).TotalMinutes);
+                }
+            }
+            else
+            {
+                var db = new SQLiteConnection("data.db");
+                var count = db.ExecuteScalar<int>("SELECT COUNT(*) FROM HitomiColumnModel");
+
+                const int perLoop = 50000;
+
+                var dts = new List<DateTime>();
+
+                for (int i = 0; i < count; i += perLoop)
+                {
+                    var query = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel ORDER BY Id LIMIT {perLoop} OFFSET {i}");
+
+                    foreach (var article in query)
+                    {
+                        if (article.Published.HasValue)
+                        {
+                            xx1.Add(article.Id);
+                            dts.Add(article.Published.Value);
+                        }
+                    }
+                }
+
+                mindd = dts.Min();
+
+                for (int i = 0; i < count; i++)
+                {
+                    yy1.Add((dts[i] - mindd).TotalMinutes);
+                }
+            }
+
+            datetimeEstimator = new PolynomialRegressionModel(Vector.Create(yy1.ToArray()), Vector.Create(xx1.ToArray()), 100);
+            datetimeEstimator.Fit();
+            var poly = datetimeEstimator.GetRegressionPolynomial();
+            var x = poly.Parameters.ToList();
+
+            var y = mindd.Subtract(
+                new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+
+            var jt = new JObject();
+            jt.Add("base", y);
+            jt.Add("coff", JToken.FromObject(x));
+
+            if (File.Exists("dt-coff.json"))
+                File.Delete("dt-coff.json");
+            File.WriteAllText("dt-coff.json", jt.ToString());
         }
     }
 
