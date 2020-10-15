@@ -33,7 +33,7 @@ class QueryResult {
       return null;
     }
 
-    if (int.tryParse(published()) == null) {
+    if (!(published() is int) && int.tryParse(published()) == null) {
       return DateTime.tryParse(published() as String);
     }
 
