@@ -159,9 +159,7 @@ class ArticleInfoPage extends StatelessWidget {
         );
         return;
       }
-      await DownloadPageManager.appendTask('https://hitomi.la/galleries/' +
-          data.queryResult.id().toString() +
-          '.html');
+      await DownloadPageManager.appendTask(data.queryResult.id().toString());
       Navigator.pop(context);
     }
   }
