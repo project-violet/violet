@@ -65,9 +65,7 @@ class _SplashPageState extends State<SplashPage> {
 
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
         !widget.switching) {
-      if (Platform.isAndroid &&
-          !SyncManager.firstSync &&
-          SyncManager.chunkRequire)
+      if (!SyncManager.firstSync && SyncManager.chunkRequire)
         await SyncManager.doChunkSync((_, __) async {});
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     } else {
