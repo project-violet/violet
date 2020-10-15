@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +9,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/settings/settings.dart';
 
 typedef DoubleIntCallback = Future Function(int, int);
 
@@ -30,7 +32,8 @@ class SyncInfoRecord {
 class SyncManager {
   static const String syncInfoURL = "https://koromo.xyz/version.txt";
 
-  static bool syncRequire = false;
+  static bool syncRequire = false; // database sync require
+  static bool chunkRequire = false;
   static const ignoreUserAcceptThreshold = 1024 * 1024 * 10; // 10MB
   static List<SyncInfoRecord> _rows;
   static int requestSize = 0;
@@ -41,10 +44,14 @@ class SyncManager {
     var lines = ls.convert(infoRaw);
 
     var latest = (await SharedPreferences.getInstance()).getInt('synclatest');
+    var lastDB =
+        (await SharedPreferences.getInstance()).getString('databasesync');
 
     if (latest == null) {
       syncRequire = true;
       latest = 0;
+    } else if (DateTime.parse(lastDB).difference(DateTime.now()).inDays < 7) {
+      syncRequire = true;
     }
 
     // lines: [old ... latest]
@@ -73,6 +80,7 @@ class SyncManager {
     });
 
     if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
+    if (_rows.any((element) => element.type == 'chunk')) chunkRequire = true;
   }
 
   static SyncInfoRecord getLatestDB() {
@@ -100,6 +108,15 @@ class SyncManager {
       var quries = qlist
           .map((e) => QueryResult(result: e as Map<String, dynamic>))
           .toList();
+
+      // Third, filtering records with language
+      var lang = translateToLanguage(Settings.databaseType);
+      if (lang != '') {
+        quries = quries.where((element) {
+          var ll = element.language() as String;
+          return (ll == lang) || (ll == 'n/a');
+        });
+      }
 
       // Last, append datas
       var db = await DataBaseManager.getInstance();
@@ -130,6 +147,23 @@ class SyncManager {
         return '-japanese.7z';
       case 'en':
         return '-english.7z';
+    }
+
+    throw Exception('not reachable');
+  }
+
+  static String translateToLanguage(String lang) {
+    switch (lang) {
+      case 'global':
+        return '';
+      case 'ko':
+        return 'korean';
+      case 'zh':
+        return 'chinese';
+      case 'ja':
+        return 'japanese';
+      case 'en':
+        return 'english';
     }
 
     throw Exception('not reachable');
