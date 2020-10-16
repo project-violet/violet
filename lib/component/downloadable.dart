@@ -4,6 +4,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:violet/component/download/gelbooru.dart';
+import 'package:violet/component/download/hentai.dart';
 import 'package:violet/component/download/hitomi.dart';
 import 'package:violet/component/download/instagram.dart';
 import 'package:violet/component/download/iroriapp.dart';
@@ -281,6 +282,7 @@ class ExtractorManager {
       GelbooruManager(),
       InstagramManager(),
       HitomiDonwloadManager(),
+      HentaiDonwloadManager(),
       IroriAppManager(),
       SankakuManager(),
     ];
