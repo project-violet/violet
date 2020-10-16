@@ -166,6 +166,7 @@ class Bookmark {
   Future<void> deleteGroup(BookmarkGroup group) async {
     var db = await CommonUserDatabase.getInstance();
     await db.delete('BookmarkArticle', 'GroupId=?', [group.id().toString()]);
+    await db.delete('BookmarkArtist', 'GroupId=?', [group.id().toString()]);
     await db.delete('BookmarkGroup', 'Id=?', [group.id().toString()]);
     bookmarkSet = null;
     //
@@ -274,5 +275,38 @@ class Bookmark {
     var db = await CommonUserDatabase.getInstance();
     await db.delete('BookmarkArticle', 'Article=?', [id.toString()]);
     bookmarkSet.remove(id);
+  }
+
+  Map<int, HashSet<String>> bookmarkArtistSet;
+  Future<bool> isBookmarkArtist(String name, int type) async {
+    await lock.synchronized(() async {
+      if (bookmarkArtistSet == null) {
+        var artist = await getArtist();
+        bookmarkArtistSet = Map<int, HashSet<String>>();
+        bookmarkArtistSet[0] = HashSet<String>();
+        bookmarkArtistSet[1] = HashSet<String>();
+        bookmarkArtistSet[2] = HashSet<String>();
+        bookmarkArtistSet[3] = HashSet<String>();
+        bookmarkArtistSet[4] = HashSet<String>();
+        artist.forEach((element) {
+          bookmarkArtistSet[element.type()].add(element.artist());
+        });
+      }
+    });
+
+    return bookmarkArtistSet[type].contains(name);
+  }
+
+  Future<void> bookmarkArtist(String name, int type) async {
+    if (await isBookmarkArtist(name, type)) return;
+    bookmarkArtistSet[type].add(name);
+    await insertArtist(name, type);
+  }
+
+  Future<void> unbookmarkArtist(String name, int type) async {
+    if (!await isBookmarkArtist(name, type)) return;
+    var db = await CommonUserDatabase.getInstance();
+    await db.delete('BookmarkArtist', 'Artist=? AND IsGroup=?', [name, type]);
+    bookmarkArtistSet[type].remove(name);
   }
 }
