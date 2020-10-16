@@ -8,7 +8,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hardware_buttons/hardware_buttons.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -62,18 +61,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
   bool _sliderOnChange = false;
-  StreamSubscription _volumeButtonSubscription;
 
   @override
   void initState() {
-    _volumeButtonSubscription = volumeButtonEvents.listen((event) async {
-      print('event = $event');
-      if (event == VolumeButtonEvent.VOLUME_UP) {
-        await _rightButtonEvent();
-      } else if (event == VolumeButtonEvent.VOLUME_DOWN) {
-        await _leftButtonEvent();
-      }
-    });
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100))
@@ -126,7 +116,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     imageCache.clearLiveImages();
     imageCache.clear();
     super.dispose();
-    _volumeButtonSubscription?.cancel();
   }
 
   void _checkLatestRead() {
