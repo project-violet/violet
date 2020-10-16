@@ -147,6 +147,7 @@ class Bookmark {
       'DateTime': datetime.toString(),
       'GroupId': group,
     });
+    bookmarkArtistSet[isgroup].add(artist);
   }
 
   Future<void> createGroup(String name, String description, Color color,
@@ -308,5 +309,7 @@ class Bookmark {
     var db = await CommonUserDatabase.getInstance();
     await db.delete('BookmarkArtist', 'Artist=? AND IsGroup=?', [name, type]);
     bookmarkArtistSet[type].remove(name);
+
+    print('delete $name, $type');
   }
 }

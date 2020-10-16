@@ -17,6 +17,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/bookmark/group/bookmark_search_sort.dart';
+import 'package:violet/pages/bookmark/group/group_artist_list.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
@@ -26,21 +27,28 @@ import 'package:violet/network/wrapper.dart' as http;
 class GroupArticleListPage extends StatefulWidget {
   final String name;
   final int groupId;
-  String heroKey;
 
-  GroupArticleListPage({this.name, this.groupId}) {
-    heroKey = Uuid().v4.toString();
-  }
+  GroupArticleListPage({this.name, this.groupId});
 
   @override
   _GroupArticleListPageState createState() => _GroupArticleListPageState();
 }
 
 class _GroupArticleListPageState extends State<GroupArticleListPage> {
+  PageController _controller = PageController(
+    initialPage: 0,
+  );
+
   @override
   void initState() {
     super.initState();
     refresh();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void refresh() {
@@ -144,40 +152,47 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               height: height -
                   16 -
                   (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-              child: Scaffold(
-                resizeToAvoidBottomInset: false,
-                resizeToAvoidBottomPadding: false,
-                floatingActionButton: Visibility(
-                  visible: checkMode,
-                  child: AnimatedOpacity(
-                    opacity: checkModePre ? 1.0 : 0.0,
-                    duration: Duration(milliseconds: 500),
-                    child: _floatingButton(),
-                  ),
-                ),
-                // floatingActionButton: Container(child: Text('asdf')),
-                body: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: <Widget>[
-                      SliverPersistentHeader(
-                        floating: true,
-                        delegate: AnimatedOpacitySliver(
-                          minExtent: 64 + 12.0,
-                          maxExtent: 64.0 + 12,
-                          searchBar: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Stack(children: <Widget>[
-                                _filter(),
-                                _title(),
-                              ])),
-                        ),
+              child: PageView(
+                controller: _controller,
+                children: [
+                  Scaffold(
+                    resizeToAvoidBottomInset: false,
+                    resizeToAvoidBottomPadding: false,
+                    floatingActionButton: Visibility(
+                      visible: checkMode,
+                      child: AnimatedOpacity(
+                        opacity: checkModePre ? 1.0 : 0.0,
+                        duration: Duration(milliseconds: 500),
+                        child: _floatingButton(),
                       ),
-                      buildList()
-                    ],
+                    ),
+                    // floatingActionButton: Container(child: Text('asdf')),
+                    body: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: CustomScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        slivers: <Widget>[
+                          SliverPersistentHeader(
+                            floating: true,
+                            delegate: AnimatedOpacitySliver(
+                              minExtent: 64 + 12.0,
+                              maxExtent: 64.0 + 12,
+                              searchBar: Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Stack(children: <Widget>[
+                                    _filter(),
+                                    _title(),
+                                  ])),
+                            ),
+                          ),
+                          buildList()
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  GroupArtistList(name: widget.name, groupId: widget.groupId),
+                ],
               ),
             ),
           ),
