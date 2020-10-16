@@ -6,8 +6,11 @@ import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -17,6 +20,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/title_cluster.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
@@ -25,6 +29,7 @@ import 'package:violet/pages/artist_info/similar_list_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/toast.dart';
 
 class ArtistInfoPage extends StatefulWidget {
   final String artist;
@@ -72,10 +77,27 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   // Title clustering
   List<List<int>> series;
 
+  bool isBookmarked = false;
+  FlareControls flareController = FlareControls();
+
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      //
+      // Check bookmark
+      //
+      var type = widget.isGroup
+          ? 1
+          : widget.isUploader
+              ? 2
+              : widget.isSeries ? 3 : widget.isCharacter ? 4 : 0;
+      isBookmarked = await (await Bookmark.getInstance())
+          .isBookmarkArtist(widget.artist, type);
+
+      //
+      //  Get query
+      //
       cc = await query([
         widget.artist,
         widget.isGroup,
@@ -307,20 +329,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                               Container(
                                 height: 16,
                               ),
-                              Text(
-                                  (widget.isGroup
-                                          ? 'Groups: '
-                                          : widget.isUploader
-                                              ? 'Uploader: '
-                                              : widget.isSeries
-                                                  ? 'Series: '
-                                                  : widget.isCharacter
-                                                      ? 'Character: '
-                                                      : 'Artist: ') +
-                                      widget.artist,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold)),
+                              nameArea(),
                               queryResult()
                             ],
                           ),
@@ -330,19 +339,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                             Container(
                               height: 16,
                             ),
-                            Text(
-                                (widget.isGroup
-                                        ? 'Groups: '
-                                        : widget.isUploader
-                                            ? 'Uploader: '
-                                            : widget.isSeries
-                                                ? 'Series: '
-                                                : widget.isCharacter
-                                                    ? 'Character: '
-                                                    : 'Artist: ') +
-                                    widget.artist,
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            nameArea(),
                             Expanded(
                               child: Align(
                                 alignment: Alignment.center,
@@ -361,6 +358,66 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget nameArea() {
+    return GestureDetector(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 28,
+            height: 28,
+            child: FlareActor(
+              'assets/flare/likeUtsua.flr',
+              animation: isBookmarked ? "Like" : "IdleUnlike",
+              controller: flareController,
+            ),
+          ),
+          Text(
+              (widget.isGroup
+                      ? 'Groups: '
+                      : widget.isUploader
+                          ? 'Uploader: '
+                          : widget.isSeries
+                              ? 'Series: '
+                              : widget.isCharacter
+                                  ? 'Character: '
+                                  : 'Artist: ') +
+                  widget.artist,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        ],
+      ),
+      onTap: () async {
+        isBookmarked = !isBookmarked;
+
+        var type = widget.isGroup
+            ? 1
+            : widget.isUploader
+                ? 2
+                : widget.isSeries ? 3 : widget.isCharacter ? 4 : 0;
+
+        FlutterToast(context).showToast(
+          child: ToastWrapper(
+            isCheck: true,
+            msg:
+                '${widget.artist}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
+          ),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: 4),
+        );
+
+        if (!isBookmarked) {
+          await (await Bookmark.getInstance())
+              .unbookmarkArtist(widget.artist, type);
+          flareController.play('Unlike');
+        } else {
+          await (await Bookmark.getInstance())
+              .bookmarkArtist(widget.artist, type);
+          flareController.play('Like');
+        }
+      },
     );
   }
 
