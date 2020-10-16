@@ -902,7 +902,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 fadeInCurve: Curves.easeIn,
                 imageBuilder: (context, imageProvider, child) {
                   if (_height[index] == 0 || _height[index] == 300) {
-                    Future.delayed(Duration(milliseconds: 200)).then((value) {
+                    Future.delayed(Duration(milliseconds: 50)).then((value) {
                       try {
                         final RenderBox renderBoxRed =
                             _keys[index].currentContext.findRenderObject();

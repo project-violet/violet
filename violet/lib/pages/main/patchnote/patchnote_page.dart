@@ -25,7 +25,14 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2020, 10, 16),
-    version: '1.6.3 Patch <== Latest',
+    version: '1.6.4 Patch (Rollback)',
+    contents: [
+      'rollback 1.6.3 viewer patch',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2020, 10, 16),
+    version: '1.6.3 Patch',
     contents: [
       'add auto sync functions',
       'add volume key viewer controller',
