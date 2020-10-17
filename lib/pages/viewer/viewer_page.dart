@@ -28,6 +28,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
 int currentPage = 0;
+const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
 class ViewerPage extends StatelessWidget {
   ViewerPage();
@@ -96,6 +97,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pageInfo = Provider.of<ViewerPageProvider>(context);
+    volumeKeyChannel.receiveBroadcastStream().listen((event) {
+      if (event as String == 'down') {
+        _rightButtonEvent();
+      } else if (event as String == 'up') {
+        _leftButtonEvent();
+      }
+    });
 
     // _pageInfo.uris.forEach((element) {
     //   print("'$element',");
