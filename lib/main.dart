@@ -66,8 +66,6 @@ void main() async {
   await Variables.init();
   await HitomiIndexs.init();
   await Logger.init();
-  await SyncManager.checkSync();
-  if (!Platform.isAndroid) SyncManager.syncRequire = false;
   await warmupFlare();
 
   runApp(

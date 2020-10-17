@@ -40,48 +40,52 @@ class SyncManager {
   static int requestSize = 0;
 
   static Future<void> checkSync() async {
-    var ls = new LineSplitter();
-    var infoRaw = (await http.get(syncInfoURL)).body;
-    var lines = ls.convert(infoRaw);
+    try {
+      var ls = new LineSplitter();
+      var infoRaw = (await http.get(syncInfoURL)).body;
+      var lines = ls.convert(infoRaw);
 
-    var latest = (await SharedPreferences.getInstance()).getInt('synclatest');
-    var lastDB =
-        (await SharedPreferences.getInstance()).getString('databasesync');
+      var latest = (await SharedPreferences.getInstance()).getInt('synclatest');
+      var lastDB =
+          (await SharedPreferences.getInstance()).getString('databasesync');
 
-    if (latest == null) {
-      syncRequire = firstSync = true;
-      latest = 0;
-    } else if (DateTime.parse(lastDB).difference(DateTime.now()).inDays > 7) {
-      syncRequire = true;
-    }
+      if (latest == null) {
+        syncRequire = firstSync = true;
+        latest = 0;
+      } else if (DateTime.parse(lastDB).difference(DateTime.now()).inDays > 7) {
+        syncRequire = true;
+      }
 
-    // lines: [old ... latest]
-    // _rows: [latest ... old]
-    _rows = List<SyncInfoRecord>();
+      // lines: [old ... latest]
+      // _rows: [latest ... old]
+      _rows = List<SyncInfoRecord>();
 
-    lines.reversed.forEach((element) {
-      var split = element.split(' ');
-      var type = split[0];
-      var timestamp = int.parse(split[1]);
-      var url = split[2];
-      var size = 0;
-      if (type == 'chunk') size = int.parse(split[3]);
+      lines.reversed.forEach((element) {
+        if (element.startsWith('#')) return;
 
-      // We require only json files when synchronize with chunk.
-      if (type == 'chunk' && !url.endsWith('.json')) return;
-      if (type == 'chunk' && timestamp <= latest) return;
+        var split = element.split(' ');
+        var type = split[0];
+        var timestamp = int.parse(split[1]);
+        var url = split[2];
+        var size = 0;
+        if (type == 'chunk') size = int.parse(split[3]);
 
-      requestSize += size;
-      _rows.add(SyncInfoRecord(
-        type: type,
-        timestamp: timestamp,
-        url: url,
-        size: size,
-      ));
-    });
+        // We require only json files when synchronize with chunk.
+        if (type == 'chunk' && !url.endsWith('.json')) return;
+        if (type == 'chunk' && timestamp <= latest) return;
 
-    if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
-    if (_rows.any((element) => element.type == 'chunk')) chunkRequire = true;
+        requestSize += size;
+        _rows.add(SyncInfoRecord(
+          type: type,
+          timestamp: timestamp,
+          url: url,
+          size: size,
+        ));
+      });
+
+      if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
+      if (_rows.any((element) => element.type == 'chunk')) chunkRequire = true;
+    } catch (e) {}
   }
 
   static SyncInfoRecord getLatestDB() {
