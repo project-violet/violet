@@ -98,7 +98,7 @@ class SyncManager {
 
     // Download Jsons
     var res = await Future.wait(filteredIter.map((e) => http.get(e.url)));
-    var jsons = res.map((e) => e.body).toList();
+    var jsons = res.map((e) => utf8.decode(e.bodyBytes)).toList();
 
     // Update Database
     for (int i = 0; i < filteredIter.length; i++) {
