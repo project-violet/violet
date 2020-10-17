@@ -24,6 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 17),
+    version: '1.7 Minor Update <== Latest',
+    contents: [
+      'add volume key viewer controller',
+      'add artist/group/uploader/series/character bookmark',
+      'fix hentai downloader viewer',
+      'fix autosync encoding error',
+      'modify viewer gesture detection strategy',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 16),
     version: '1.6.4 Patch (Rollback)',
     contents: [
