@@ -201,7 +201,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       },
       onTap: () async {
         if (widget.item.state() == 0 && widget.item.files() != null) {
-          if (['hitomi', 'ehentai', 'exhentai']
+          if (['hitomi', 'ehentai', 'exhentai', 'hentai']
               .contains(widget.item.extractor())) {
             SystemChrome.setEnabledSystemUIOverlays([]);
 
