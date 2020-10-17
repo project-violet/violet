@@ -30,53 +30,56 @@ class UpdateSyncManager {
   static Map<String, Tuple2<DateTime, String>> rawlangDBIOS;
 
   static Future<void> checkUpdateSync() async {
-    var infoJson = await http.get(updateInfoURL);
-    var info = jsonDecode(infoJson.body).cast<String, dynamic>();
+    try {
+      var infoJson = await http.get(updateInfoURL);
 
-    var ver = (info["version"] as String)
-        .split('.')
-        .map((e) => int.parse(e))
-        .toList();
-    if (majorVersion < ver[0] ||
-        (majorVersion == ver[0] && minorVersion < ver[1]) ||
-        (majorVersion == ver[0] &&
-            minorVersion == ver[1] &&
-            patchVersion < ver[2] &&
-            enableSensitiveUpdate)) {
-      updateRequire = true;
-      version = info["version"] as String;
-      updateMessage = info["message"] as String;
-      updateUrl = info["download_link"] as String;
-      print(info);
-    }
-    latestVersion = info["version"] as String;
+      var info = jsonDecode(infoJson.body).cast<String, dynamic>();
 
-    var rawdb = (info["rawdb2"] as List<dynamic>);
-    // rawlangDB = Map<String, Tuple2<DateTime, String>>();
-    rawlangDBIOS = Map<String, Tuple2<DateTime, String>>();
-    rawdb.forEach((element) {
-      var lang = element['language'];
-      switch (lang) {
-        case 'all':
-          lang = 'global';
-          break;
-        case 'korean':
-          lang = 'ko';
-          break;
-        case 'chinese':
-          lang = 'zh';
-          break;
-        case 'japanese':
-          lang = 'ja';
-          break;
-        case 'english':
-          lang = 'en';
-          break;
+      var ver = (info["version"] as String)
+          .split('.')
+          .map((e) => int.parse(e))
+          .toList();
+      if (majorVersion < ver[0] ||
+          (majorVersion == ver[0] && minorVersion < ver[1]) ||
+          (majorVersion == ver[0] &&
+              minorVersion == ver[1] &&
+              patchVersion < ver[2] &&
+              enableSensitiveUpdate)) {
+        updateRequire = true;
+        version = info["version"] as String;
+        updateMessage = info["message"] as String;
+        updateUrl = info["download_link"] as String;
+        print(info);
       }
-      // rawlangDB[lang] = Tuple2<DateTime, String>(
-      //     DateTime.parse(element['date']), element['chunk']);
-      rawlangDBIOS[lang] = Tuple2<DateTime, String>(
-          DateTime.parse(element['date']), element['raw']);
-    });
+      latestVersion = info["version"] as String;
+
+      var rawdb = (info["rawdb2"] as List<dynamic>);
+      // rawlangDB = Map<String, Tuple2<DateTime, String>>();
+      rawlangDBIOS = Map<String, Tuple2<DateTime, String>>();
+      rawdb.forEach((element) {
+        var lang = element['language'];
+        switch (lang) {
+          case 'all':
+            lang = 'global';
+            break;
+          case 'korean':
+            lang = 'ko';
+            break;
+          case 'chinese':
+            lang = 'zh';
+            break;
+          case 'japanese':
+            lang = 'ja';
+            break;
+          case 'english':
+            lang = 'en';
+            break;
+        }
+        // rawlangDB[lang] = Tuple2<DateTime, String>(
+        //     DateTime.parse(element['date']), element['chunk']);
+        rawlangDBIOS[lang] = Tuple2<DateTime, String>(
+            DateTime.parse(element['date']), element['raw']);
+      });
+    } catch (e) {}
   }
 }
