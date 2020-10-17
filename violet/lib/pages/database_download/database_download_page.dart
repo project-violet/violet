@@ -117,6 +117,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                 _tlatest = _tnu;
                 _tnu = 0;
               }));
+      await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType),
           "${dir.path}/db.sql.7z", onReceiveProgress: (rec, total) {
