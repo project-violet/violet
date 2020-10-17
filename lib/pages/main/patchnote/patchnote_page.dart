@@ -25,7 +25,14 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2020, 10, 17),
-    version: '1.7 Minor Update <== Latest',
+    version: '1.7.1 Patch (HotFix) <== Latest',
+    contents: [
+      'fix database downloading error when first start',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2020, 10, 17),
+    version: '1.7 Minor Update',
     contents: [
       'add volume key viewer controller',
       'add artist/group/uploader/series/character bookmark',
