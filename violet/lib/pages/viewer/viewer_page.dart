@@ -381,30 +381,25 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           constraints: BoxConstraints.expand(
             height: MediaQuery.of(context).size.height,
           ),
-          child: Stack(
-            alignment: Alignment.bottomRight,
-            children: <Widget>[
-              VPhotoViewGallery.builder(
-                scrollPhysics: const AlwaysScrollableScrollPhysics(),
-                builder: _buildItem,
-                itemCount: _pageInfo.uris.length,
-                backgroundDecoration: const BoxDecoration(
-                  color: Colors.black,
-                ),
-                pageController: _pageController,
-                onPageChanged: (page) async {
-                  currentPage = page.toInt() + 1;
-                  setState(() {
-                    _prevPage = page.toInt() + 1;
-                  });
-                  await _precache(page.toInt() - 1);
-                  await _precache(page.toInt() + 1);
-                },
-                scrollDirection:
-                    Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
-                reverse: Settings.rightToLeft,
-              ),
-            ],
+          child: VPhotoViewGallery.builder(
+            scrollPhysics: const AlwaysScrollableScrollPhysics(),
+            builder: _buildItem,
+            itemCount: _pageInfo.uris.length,
+            backgroundDecoration: const BoxDecoration(
+              color: Colors.black,
+            ),
+            pageController: _pageController,
+            onPageChanged: (page) async {
+              currentPage = page.toInt() + 1;
+              setState(() {
+                _prevPage = page.toInt() + 1;
+              });
+              await _precache(page.toInt() - 1);
+              await _precache(page.toInt() + 1);
+            },
+            scrollDirection:
+                Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
+            reverse: Settings.rightToLeft,
           ),
         ),
         _verticalPageLabel(),
@@ -513,6 +508,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   _urlCache[index],
                   headers: _headerCache[index],
                 ),
+                initialScale: PhotoViewComputedScale.contained,
+                minScale: PhotoViewComputedScale.contained * 1.0,
+                maxScale: PhotoViewComputedScale.contained * 5.0,
+                gestureDetectorBehavior: HitTestBehavior.opaque,
               );
             }
 
