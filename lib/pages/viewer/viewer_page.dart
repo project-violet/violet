@@ -897,9 +897,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               );
             }
             return Container(
-              height: _height[index] != 0 ? _height[index] : null,
-              // constraints: BoxConstraints(
-              //     minHeight: _height[index] != 0 ? _height[index] : 300),
+              // height: _height[index] != 0 ? _height[index] : null,
+              constraints: _height[index] != 0
+                  ? BoxConstraints(minHeight: _height[index])
+                  : null,
               child: VOptimizedCacheImage(
                 key: _keys[index],
                 imageUrl: _urlCache[index],
