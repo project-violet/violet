@@ -101,13 +101,15 @@ class SyncManager {
         _rows.where((element) => element.type == 'chunk').toList();
 
     // Download Jsons
-    var res = await Future.wait(filteredIter.map((e) => http.get(e.url)));
+    var res = await Future.wait(
+        filteredIter.map((e) => http.get(e.url).then((value) async {
+              await progressCallback(0, filteredIter.length);
+              return value;
+            })));
     var jsons = res.map((e) => utf8.decode(e.bodyBytes)).toList();
 
     // Update Database
     for (int i = 0; i < filteredIter.length; i++) {
-      await progressCallback(i + 1, filteredIter.length);
-
       // Larger timestamp, the more recent data is contained.
       // So, we need to update them in old order.
       var row = filteredIter[filteredIter.length - i - 1];

@@ -36,6 +36,9 @@ class _SplashPageState extends State<SplashPage> {
   bool showFirst = false;
   bool animateBox = false;
   bool languageBox = false;
+  bool showIndicator = false;
+  int chunkDownloadMax = 0;
+  int chunkDownloadProgress = 0;
 
   final imgSize = {
     'global': '320MB',
@@ -67,8 +70,17 @@ class _SplashPageState extends State<SplashPage> {
         !widget.switching) {
       await SyncManager.checkSync();
       if (!Platform.isAndroid) SyncManager.syncRequire = false;
-      if (!SyncManager.firstSync && SyncManager.chunkRequire)
-        await SyncManager.doChunkSync((_, __) async {});
+      if (!SyncManager.firstSync && SyncManager.chunkRequire) {
+        setState(() {
+          showIndicator = true;
+        });
+        await SyncManager.doChunkSync((_, len) async {
+          setState(() {
+            chunkDownloadMax = len;
+            chunkDownloadProgress++;
+          });
+        });
+      }
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     } else {
       if (!widget.switching) await Future.delayed(Duration(milliseconds: 1400));
@@ -145,6 +157,33 @@ class _SplashPageState extends State<SplashPage> {
                   '.png',
               width: 100,
               height: 100,
+            ),
+          ),
+          Visibility(
+            visible: showIndicator,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 120),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text('<< AutoSync >>'),
+                    Text(chunkDownloadProgress != chunkDownloadMax ||
+                            chunkDownloadMax == 0
+                        ? 'Chunk downloading...[$chunkDownloadProgress/$chunkDownloadMax]'
+                        : 'Extracting...'),
+                    Container(
+                      height: 16,
+                    ),
+                    SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: CircularProgressIndicator(),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           Visibility(
