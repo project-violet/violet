@@ -45,51 +45,13 @@ class _GroupArtistListState extends State<GroupArtistList>
   }
 
   Future<List<QueryResult>> _future(String e, int type) async {
-    var unescape = new HtmlUnescape();
     var postfix = e.toLowerCase().replaceAll(' ', '_');
     var queryString = HitomiManager.translate2query(
         '${['artist', 'group', 'uploader', 'series', 'character'][type]}:' +
-            postfix +
-            ' ' +
-            Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' '));
+            postfix);
     final qm = QueryManager.queryPagination(queryString);
-    qm.itemsPerPage = 10;
-
-    var x = await qm.next();
-    var y = [x[0]];
-
-    var titles = [unescape.convert((x[0].title() as String).trim())];
-    if (titles[0].contains('Ch.'))
-      titles[0] = titles[0].split('Ch.')[0];
-    else if (titles[0].contains('ch.')) titles[0] = titles[0].split('ch.')[0];
-
-    for (int i = 1; i < x.length; i++) {
-      var skip = false;
-      var ff = unescape.convert((x[i].title() as String).trim());
-      if (ff.contains('Ch.'))
-        ff = ff.split('Ch.')[0];
-      else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
-      for (int j = 0; j < titles.length; j++) {
-        var tt = titles[j];
-        if (Distance.levenshteinDistanceComparable(
-                tt.runes.map((e) => e.toString()).toList(),
-                ff.runes.map((e) => e.toString()).toList()) <
-            3) {
-          skip = true;
-          break;
-        }
-      }
-      if (skip) continue;
-      y.add(x[i]);
-      titles.add(ff.trim());
-    }
-
-    return y;
+    qm.itemsPerPage = 3;
+    return await qm.next();
   }
 
   Future<void> refresh() async {
