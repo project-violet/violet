@@ -164,11 +164,14 @@ class _SplashPageState extends State<SplashPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text('<< AutoSync >>'),
-                    Text(chunkDownloadProgress != chunkDownloadMax ||
-                            chunkDownloadMax == 0
-                        ? 'Chunk downloading...[$chunkDownloadProgress/$chunkDownloadMax]'
-                        : 'Extracting...'),
+                    Text('<< AutoSync >>',
+                        style: TextStyle(color: Colors.white)),
+                    Text(
+                        chunkDownloadProgress != chunkDownloadMax ||
+                                chunkDownloadMax == 0
+                            ? 'Chunk downloading...[$chunkDownloadProgress/$chunkDownloadMax]'
+                            : 'Extracting...',
+                        style: TextStyle(color: Colors.white)),
                     Container(
                       height: 16,
                     ),
