@@ -8,6 +8,7 @@ import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -58,50 +59,6 @@ class _SplashPageState extends State<SplashPage> {
     'zh': '9MB',
   };
 
-  startTime() async {
-    var _duration = new Duration(milliseconds: 600);
-    return new Timer(_duration, navigationPage);
-  }
-
-  Future<void> navigationPage() async {
-    await UpdateSyncManager.checkUpdateSync();
-
-    if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
-        !widget.switching) {
-      await SyncManager.checkSync();
-      if (!Platform.isAndroid) SyncManager.syncRequire = false;
-      if (!SyncManager.firstSync && SyncManager.chunkRequire) {
-        setState(() {
-          showIndicator = true;
-        });
-        await SyncManager.doChunkSync((_, len) async {
-          setState(() {
-            chunkDownloadMax = len;
-            chunkDownloadProgress++;
-          });
-        });
-      }
-      Navigator.of(context).pushReplacementNamed('/AfterLoading');
-    } else {
-      if (!widget.switching) await Future.delayed(Duration(milliseconds: 1400));
-      setState(() {
-        showFirst = true;
-      });
-      await Future.delayed(Duration(milliseconds: 400));
-      setState(() {
-        animateBox = true;
-      });
-      await Future.delayed(Duration(milliseconds: 200));
-      setState(() {
-        languageBox = true;
-      });
-      await Future.delayed(Duration(milliseconds: 500));
-      setState(() {
-        scale1 = 1.03;
-      });
-    }
-  }
-
   Future<void> checkAuth() async {
     if (await Permission.storage.isUndetermined) {
       if (await Permission.storage.request() == PermissionStatus.denied) {
@@ -113,7 +70,46 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    startTime();
+
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await UpdateSyncManager.checkUpdateSync();
+
+      if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
+          !widget.switching) {
+        await SyncManager.checkSync();
+        if (!Platform.isAndroid) SyncManager.syncRequire = false;
+        if (!SyncManager.firstSync && SyncManager.chunkRequire) {
+          setState(() {
+            showIndicator = true;
+          });
+          await SyncManager.doChunkSync((_, len) async {
+            setState(() {
+              chunkDownloadMax = len;
+              chunkDownloadProgress++;
+            });
+          });
+        }
+        Navigator.of(context).pushReplacementNamed('/AfterLoading');
+      } else {
+        if (!widget.switching)
+          await Future.delayed(Duration(milliseconds: 1400));
+        setState(() {
+          showFirst = true;
+        });
+        await Future.delayed(Duration(milliseconds: 400));
+        setState(() {
+          animateBox = true;
+        });
+        await Future.delayed(Duration(milliseconds: 200));
+        setState(() {
+          languageBox = true;
+        });
+        await Future.delayed(Duration(milliseconds: 500));
+        setState(() {
+          scale1 = 1.03;
+        });
+      }
+    });
   }
 
   Route _createRoute() {
