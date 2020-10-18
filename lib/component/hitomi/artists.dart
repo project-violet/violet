@@ -348,6 +348,7 @@ class Artists {
       'gujira',
       'hokuro ryuseigun',
       'yoshiie',
+      'tonikaku',
     ],
 
     //
