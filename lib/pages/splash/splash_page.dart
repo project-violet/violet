@@ -7,6 +7,7 @@ import 'package:circular_check_box/circular_check_box.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -76,19 +77,26 @@ class _SplashPageState extends State<SplashPage> {
 
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
           !widget.switching) {
-        await SyncManager.checkSync();
-        if (!Platform.isAndroid) SyncManager.syncRequire = false;
-        if (!SyncManager.firstSync && SyncManager.chunkRequire) {
-          setState(() {
-            showIndicator = true;
-          });
-          await SyncManager.doChunkSync((_, len) async {
+        try {
+          await SyncManager.checkSync();
+          if (!Platform.isAndroid) SyncManager.syncRequire = false;
+          if (!SyncManager.firstSync && SyncManager.chunkRequire) {
             setState(() {
-              chunkDownloadMax = len;
-              chunkDownloadProgress++;
+              showIndicator = true;
             });
-          });
+            await SyncManager.doChunkSync((_, len) async {
+              setState(() {
+                chunkDownloadMax = len;
+                chunkDownloadProgress++;
+              });
+            });
+          }
+        } catch (e, st) {
+          // If an error occurs, stops synchronization immediately.
+          Crashlytics.instance.recordError(e, st);
         }
+
+        // We must show main page to user anyway
         Navigator.of(context).pushReplacementNamed('/AfterLoading');
       } else {
         if (!widget.switching)
