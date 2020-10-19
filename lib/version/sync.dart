@@ -46,8 +46,7 @@ class SyncManager {
       var infoRaw = (await http.get(syncInfoURL)).body;
       var lines = ls.convert(infoRaw);
 
-      var latest =
-          1602817012; //(await SharedPreferences.getInstance()).getInt('synclatest');
+      var latest = (await SharedPreferences.getInstance()).getInt('synclatest');
       var lastDB =
           (await SharedPreferences.getInstance()).getString('databasesync');
 
@@ -91,13 +90,21 @@ class SyncManager {
   }
 
   static SyncInfoRecord getLatestDB() {
-    for (int i = 0; i < _rows.length; i++)
-      if (_rows[i].type == 'db') return _rows[i];
+    if (_rows != null) {
+      for (int i = 0; i < _rows.length; i++)
+        if (_rows[i].type == 'db') return _rows[i];
+    }
 
-    throw Exception('not reachable, check sync server');
+    return SyncInfoRecord(
+      type: 'db',
+      timestamp:
+          DateTime.fromMillisecondsSinceEpoch(0).millisecondsSinceEpoch ~/ 1000,
+      url: '',
+    );
   }
 
   static int getSyncRequiredChunkCount() {
+    if (_rows == null) return 0;
     return _rows.where((element) => element.type == 'chunk').toList().length;
   }
 
