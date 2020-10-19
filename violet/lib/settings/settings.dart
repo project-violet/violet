@@ -229,7 +229,7 @@ class Settings {
 
       if (downloadBasePath == join(path, 'Violet') &&
           (await SharedPreferences.getInstance())
-                  .getBool('downloadbasepathcc1') !=
+                  .getBool('downloadbasepathcc1') ==
               null) {
         downloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
