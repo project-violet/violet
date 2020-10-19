@@ -72,51 +72,53 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
 
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      await UpdateSyncManager.checkUpdateSync();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+        await UpdateSyncManager.checkUpdateSync();
 
-      if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
-          !widget.switching) {
-        try {
-          await SyncManager.checkSync();
-          if (!Platform.isAndroid) SyncManager.syncRequire = false;
-          if (!SyncManager.firstSync && SyncManager.chunkRequire) {
-            setState(() {
-              showIndicator = true;
-            });
-            await SyncManager.doChunkSync((_, len) async {
+        if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
+            !widget.switching) {
+          try {
+            await SyncManager.checkSync();
+            if (!Platform.isAndroid) SyncManager.syncRequire = false;
+            if (!SyncManager.firstSync && SyncManager.chunkRequire) {
               setState(() {
-                chunkDownloadMax = len;
-                chunkDownloadProgress++;
+                showIndicator = true;
               });
-            });
+              await SyncManager.doChunkSync((_, len) async {
+                setState(() {
+                  chunkDownloadMax = len;
+                  chunkDownloadProgress++;
+                });
+              });
+            }
+          } catch (e, st) {
+            // If an error occurs, stops synchronization immediately.
+            Crashlytics.instance.recordError(e, st);
           }
-        } catch (e, st) {
-          // If an error occurs, stops synchronization immediately.
-          Crashlytics.instance.recordError(e, st);
-        }
 
-        // We must show main page to user anyway
-        Navigator.of(context).pushReplacementNamed('/AfterLoading');
-      } else {
-        if (!widget.switching)
-          await Future.delayed(Duration(milliseconds: 1400));
-        setState(() {
-          showFirst = true;
-        });
-        await Future.delayed(Duration(milliseconds: 400));
-        setState(() {
-          animateBox = true;
-        });
-        await Future.delayed(Duration(milliseconds: 200));
-        setState(() {
-          languageBox = true;
-        });
-        await Future.delayed(Duration(milliseconds: 500));
-        setState(() {
-          scale1 = 1.03;
-        });
-      }
+          // We must show main page to user anyway
+          Navigator.of(context).pushReplacementNamed('/AfterLoading');
+        } else {
+          if (!widget.switching)
+            await Future.delayed(Duration(milliseconds: 1400));
+          setState(() {
+            showFirst = true;
+          });
+          await Future.delayed(Duration(milliseconds: 400));
+          setState(() {
+            animateBox = true;
+          });
+          await Future.delayed(Duration(milliseconds: 200));
+          setState(() {
+            languageBox = true;
+          });
+          await Future.delayed(Duration(milliseconds: 500));
+          setState(() {
+            scale1 = 1.03;
+          });
+        }
+      });
     });
   }
 
