@@ -210,8 +210,8 @@ namespace hsync
 
             var x = articles.ToList();
             x.RemoveAll(x => existsBoth.Contains(x));
-            x.RemoveAll(x => newedDataEH.Contains(x) && existsEH.Contains(x) && !existsHitomi.Contains(x));
-            x.RemoveAll(x => newedDataHitomi.Contains(x) && existsHitomi.Contains(x) && !existsEH.Contains(x));
+            x.RemoveAll(x => newedDataEH.Contains(x) && existsEH.Contains(x) && !existsHitomi.Contains(x) && !newedDataHitomi.Contains(x));
+            x.RemoveAll(x => newedDataHitomi.Contains(x) && existsHitomi.Contains(x) && !existsEH.Contains(x) && !newedDataEH.Contains(x));
             x.Sort((x, y) => x.CompareTo(y));
 
             var onHitomi = new Dictionary<int, int>();
