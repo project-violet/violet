@@ -379,7 +379,7 @@ class _MainPage2State extends State<MainPage2>
               elevation: 3.0,
             ),
             height: 40,
-            width: 100,
+            width: 105,
           ),
         ],
       ),
