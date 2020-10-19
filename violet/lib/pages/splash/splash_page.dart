@@ -177,7 +177,7 @@ class _SplashPageState extends State<SplashPage> {
                     Text(
                         chunkDownloadProgress != chunkDownloadMax ||
                                 chunkDownloadMax == 0
-                            ? 'Chunk downloading...[$chunkDownloadProgress/$chunkDownloadMax]'
+                            ? 'Chunk downloading...[$chunkDownloadProgress/${SyncManager.getSyncRequiredChunkCount()}]'
                             : 'Extracting...',
                         style: TextStyle(color: Colors.white)),
                     Container(

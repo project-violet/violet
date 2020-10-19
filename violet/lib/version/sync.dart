@@ -46,7 +46,8 @@ class SyncManager {
       var infoRaw = (await http.get(syncInfoURL)).body;
       var lines = ls.convert(infoRaw);
 
-      var latest = (await SharedPreferences.getInstance()).getInt('synclatest');
+      var latest =
+          1602817012; //(await SharedPreferences.getInstance()).getInt('synclatest');
       var lastDB =
           (await SharedPreferences.getInstance()).getString('databasesync');
 
@@ -94,6 +95,10 @@ class SyncManager {
       if (_rows[i].type == 'db') return _rows[i];
 
     throw Exception('not reachable, check sync server');
+  }
+
+  static int getSyncRequiredChunkCount() {
+    return _rows.where((element) => element.type == 'chunk').toList().length;
   }
 
   static Future<void> doChunkSync(DoubleIntCallback progressCallback) async {
