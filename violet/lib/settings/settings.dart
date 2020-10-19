@@ -51,7 +51,7 @@ class Settings {
 
   static bool useDrawer;
 
-  static Future<void> init() async {
+  static Future<void> initFirst() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
     var mac =
         (await SharedPreferences.getInstance()).getInt('majorAccentColor');
@@ -78,7 +78,9 @@ class Settings {
       themeColor = Colors.white;
     else
       themeColor = Colors.black;
+  }
 
+  static Future<void> init() async {
     searchResultType =
         (await SharedPreferences.getInstance()).getInt('searchResultType');
     if (searchResultType == null) {

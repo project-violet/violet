@@ -60,12 +60,7 @@ void main() async {
   }
   await analytics.setUserId(id);
 
-  await Settings.init();
-  await Bookmark.getInstance();
-  await User.getInstance();
-  await Variables.init();
-  await HitomiIndexs.init();
-  await Logger.init();
+  await Settings.initFirst();
   await warmupFlare();
 
   runApp(

@@ -76,6 +76,11 @@ class _MainPage2State extends State<MainPage2>
       //   return;
       // }
 
+      if (Platform.isAndroid) {
+        await UpdateSyncManager.checkUpdateSync();
+        setState(() {});
+      }
+
       if (SyncManager.syncRequire) {
         setState(() {
           _syncAvailable = true;

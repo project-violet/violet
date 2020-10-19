@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'package:circular_check_box/circular_check_box.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
@@ -15,13 +16,18 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 
@@ -68,58 +74,68 @@ class _SplashPageState extends State<SplashPage> {
     }
   }
 
+  startTime() async {
+    var _duration = new Duration(milliseconds: 100);
+    return new Timer(_duration, navigationPage);
+  }
+
+  Future<void> navigationPage() async {
+    await Settings.init();
+    await Bookmark.getInstance();
+    await User.getInstance();
+    await Variables.init();
+    await HitomiIndexs.init();
+    await Logger.init();
+
+    if (Platform.isIOS) await UpdateSyncManager.checkUpdateSync();
+
+    if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
+        !widget.switching) {
+      try {
+        await SyncManager.checkSync();
+        if (!Platform.isAndroid) SyncManager.syncRequire = false;
+        if (!SyncManager.firstSync && SyncManager.chunkRequire) {
+          setState(() {
+            showIndicator = true;
+          });
+          await SyncManager.doChunkSync((_, len) async {
+            setState(() {
+              chunkDownloadMax = len;
+              chunkDownloadProgress++;
+            });
+          });
+        }
+      } catch (e, st) {
+        // If an error occurs, stops synchronization immediately.
+        Crashlytics.instance.recordError(e, st);
+      }
+
+      // We must show main page to user anyway
+      Navigator.of(context).pushReplacementNamed('/AfterLoading');
+    } else {
+      if (!widget.switching) await Future.delayed(Duration(milliseconds: 1400));
+      setState(() {
+        showFirst = true;
+      });
+      await Future.delayed(Duration(milliseconds: 400));
+      setState(() {
+        animateBox = true;
+      });
+      await Future.delayed(Duration(milliseconds: 200));
+      setState(() {
+        languageBox = true;
+      });
+      await Future.delayed(Duration(milliseconds: 500));
+      setState(() {
+        scale1 = 1.03;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
-        await UpdateSyncManager.checkUpdateSync();
-
-        if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
-            !widget.switching) {
-          try {
-            await SyncManager.checkSync();
-            if (!Platform.isAndroid) SyncManager.syncRequire = false;
-            if (!SyncManager.firstSync && SyncManager.chunkRequire) {
-              setState(() {
-                showIndicator = true;
-              });
-              await SyncManager.doChunkSync((_, len) async {
-                setState(() {
-                  chunkDownloadMax = len;
-                  chunkDownloadProgress++;
-                });
-              });
-            }
-          } catch (e, st) {
-            // If an error occurs, stops synchronization immediately.
-            Crashlytics.instance.recordError(e, st);
-          }
-
-          // We must show main page to user anyway
-          Navigator.of(context).pushReplacementNamed('/AfterLoading');
-        } else {
-          if (!widget.switching)
-            await Future.delayed(Duration(milliseconds: 1400));
-          setState(() {
-            showFirst = true;
-          });
-          await Future.delayed(Duration(milliseconds: 400));
-          setState(() {
-            animateBox = true;
-          });
-          await Future.delayed(Duration(milliseconds: 200));
-          setState(() {
-            languageBox = true;
-          });
-          await Future.delayed(Duration(milliseconds: 500));
-          setState(() {
-            scale1 = 1.03;
-          });
-        }
-      });
-    });
+    startTime();
   }
 
   Route _createRoute() {
