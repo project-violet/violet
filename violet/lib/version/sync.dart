@@ -4,6 +4,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
@@ -109,44 +110,49 @@ class SyncManager {
     var jsons = res.map((e) => utf8.decode(e.bodyBytes)).toList();
 
     // Update Database
-    for (int i = 0; i < filteredIter.length; i++) {
-      // Larger timestamp, the more recent data is contained.
-      // So, we need to update them in old order.
-      var row = filteredIter[filteredIter.length - i - 1];
-      if (row.type != 'chunk') continue;
+    try {
+      for (int i = 0; i < filteredIter.length; i++) {
+        // Larger timestamp, the more recent data is contained.
+        // So, we need to update them in old order.
+        var row = filteredIter[filteredIter.length - i - 1];
+        if (row.type != 'chunk') continue;
 
-      // First, parse json
-      var json = jsonDecode(jsons[filteredIter.length - i - 1]);
+        // First, parse json
+        var json = jsonDecode(jsons[filteredIter.length - i - 1]);
 
-      // Second, convert json to query
-      var qlist = json as List<dynamic>;
-      var quries = qlist
-          .map((e) => QueryResult(result: e as Map<String, dynamic>))
-          .toList();
+        // Second, convert json to query
+        var qlist = json as List<dynamic>;
+        var quries = qlist
+            .map((e) => QueryResult(result: e as Map<String, dynamic>))
+            .toList();
 
-      // Third, filtering records with language
-      var lang = translateToLanguage(Settings.databaseType);
-      if (lang != '') {
-        quries = quries.where((element) {
-          var ll = element.language() as String;
-          return (ll == lang) || (ll == 'n/a');
-        }).toList();
+        // Third, filtering records with language
+        var lang = translateToLanguage(Settings.databaseType);
+        if (lang != '') {
+          quries = quries.where((element) {
+            var ll = element.language() as String;
+            return (ll == lang) || (ll == 'n/a');
+          }).toList();
+        }
+
+        // Last, append datas
+        var db = await DataBaseManager.getInstance();
+        var dbraw = await openDatabase(db.dbPath);
+        await dbraw.transaction((txn) async {
+          final batch = txn.batch();
+          for (var query in quries)
+            batch.insert('HitomiColumnModel', query.result,
+                conflictAlgorithm: ConflictAlgorithm.replace);
+          await batch.commit();
+        });
+        await dbraw.close();
+
+        await (await SharedPreferences.getInstance())
+            .setInt('synclatest', row.timestamp);
       }
-
-      // Last, append datas
-      var db = await DataBaseManager.getInstance();
-      var dbraw = await openDatabase(db.dbPath);
-      await dbraw.transaction((txn) async {
-        final batch = txn.batch();
-        for (var query in quries)
-          batch.insert('HitomiColumnModel', query.result,
-              conflictAlgorithm: ConflictAlgorithm.replace);
-        await batch.commit();
-      });
-      await dbraw.close();
-
-      await (await SharedPreferences.getInstance())
-          .setInt('synclatest', row.timestamp);
+    } catch (e, st) {
+      // If an error occurs, stops synchronization immediately.
+      Crashlytics.instance.recordError(e, st);
     }
   }
 
