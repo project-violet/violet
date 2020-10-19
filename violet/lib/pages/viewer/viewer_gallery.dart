@@ -292,14 +292,15 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                       filterQuality: FilterQuality.high,
                     ),
                     Align(
-                      alignment: Alignment.bottomCenter,
+                      alignment: Alignment.topCenter,
                       child: Container(
+                        padding: EdgeInsets.only(bottom: 1),
                         width: double.infinity,
-                        color: Colors.grey.withOpacity(0.7),
+                        color: Colors.black.withOpacity(0.7),
                         child: Text(
                           '${index + 1} page',
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 13),
+                          style: TextStyle(fontSize: 14, color: Colors.white),
                         ),
                       ),
                     ),
@@ -307,7 +308,11 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          onTap: () {},
+                          splashColor: Colors.black.withOpacity(0.4),
+                          highlightColor: Colors.black.withOpacity(0.1),
+                          onTap: () {
+                            Navigator.pop(context, index);
+                          },
                         ),
                       ),
                     )

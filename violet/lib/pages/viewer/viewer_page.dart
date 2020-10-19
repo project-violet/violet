@@ -233,7 +233,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       color: Colors.white,
                       onPressed: () async {
                         if (!Platform.isIOS) {
-                          Navigator.of(context).push(
+                          Navigator.of(context)
+                              .push(
                             PageRouteBuilder(
                               transitionDuration: Duration(milliseconds: 500),
                               transitionsBuilder: (context, animation,
@@ -256,9 +257,26 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                                 child: ViewerGallery(),
                               ),
                             ),
+                          )
+                              .then(
+                            (value) {
+                              if (value != null) {
+                                if (!Settings.isHorizontal) {
+                                  itemScrollController.jumpTo(
+                                      index: value, alignment: 0.12);
+                                } else {
+                                  _pageController.jumpToPage(value - 1);
+                                }
+                                currentPage = value;
+                                setState(() {
+                                  _prevPage = value;
+                                });
+                              }
+                            },
                           );
                         } else {
-                          Navigator.of(context).push(
+                          Navigator.of(context)
+                              .push(
                             CupertinoPageRoute(
                               builder: (_) =>
                                   Provider<ViewerPageProvider>.value(
@@ -266,6 +284,22 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                                 child: ViewerGallery(),
                               ),
                             ),
+                          )
+                              .then(
+                            (value) {
+                              if (value != null) {
+                                if (!Settings.isHorizontal) {
+                                  itemScrollController.jumpTo(
+                                      index: _prevPage - 1, alignment: 0.12);
+                                } else {
+                                  _pageController.jumpToPage(value - 1);
+                                }
+                                currentPage = value;
+                                setState(() {
+                                  _prevPage = value;
+                                });
+                              }
+                            },
                           );
                         }
                       },
@@ -1014,7 +1048,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                             onChanged: (value) {
                               if (!Settings.isHorizontal) {
                                 itemScrollController.jumpTo(
-                                    index: _prevPage - 1, alignment: 0.12);
+                                    index: value.toInt() - 1, alignment: 0.12);
                               } else {
                                 _pageController.jumpToPage(value.toInt() - 1);
                               }
