@@ -4,11 +4,14 @@
 import 'dart:io';
 
 import 'package:ext_storage/ext_storage.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/shielder.dart';
+import 'package:violet/database/user/download.dart';
 
 class Settings {
   // Color Settings
@@ -217,11 +220,46 @@ class Settings {
     if (Platform.isAndroid) {
       downloadBasePath =
           (await SharedPreferences.getInstance()).getString('downloadbasepath');
+      final String path = await ExtStorage.getExternalStorageDirectory();
       if (downloadBasePath == null) {
-        final String path = await ExtStorage.getExternalStorageDirectory();
-        downloadBasePath = join(path, 'Violet');
+        downloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
             .setString('downloadbasepath', downloadBasePath);
+      }
+
+      if (downloadBasePath == join(path, 'Violet') &&
+          (await SharedPreferences.getInstance())
+                  .getBool('downloadbasepathcc1') !=
+              null) {
+        downloadBasePath = join(path, '.violet');
+        await (await SharedPreferences.getInstance())
+            .setString('downloadbasepath', downloadBasePath);
+        await (await SharedPreferences.getInstance())
+            .setBool('downloadbasepathcc1', true);
+
+        try {
+          if (await Permission.storage.isGranted) {
+            var prevDir = Directory(join(path, 'Violet'));
+            if (await prevDir.exists()) {
+              await prevDir.rename(join(path, '.violet'));
+            }
+
+            var downloaded =
+                await (await Download.getInstance()).getDownloadItems();
+            for (var download in downloaded) {
+              Map<String, dynamic> result =
+                  Map<String, dynamic>.from(download.result);
+              result['Files'] =
+                  download.files().replaceAll('/Violet/', '/.violet/');
+              result['Path'] =
+                  download.path().replaceAll('/Violet/', '/.violet/');
+              download.result = result;
+              await download.update();
+            }
+          }
+        } catch (e, st) {
+          Crashlytics.instance.recordError(e, st);
+        }
       }
     }
 
