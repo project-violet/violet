@@ -200,7 +200,7 @@ class EHParser {
             .replaceAll('<br>', '\r\n'));
         comments.add(Tuple3<DateTime, String, String>(
             df.parse(date
-                .substring(0, date.indexOf(' UTC'))
+                .substring(0, date.indexOf(' by'))
                 .substring('Posted on '.length)),
             author,
             contents));
