@@ -251,10 +251,12 @@ class Settings {
             for (var download in downloaded) {
               Map<String, dynamic> result =
                   Map<String, dynamic>.from(download.result);
-              result['Files'] =
-                  download.files().replaceAll('/Violet/', '/.violet/');
-              result['Path'] =
-                  download.path().replaceAll('/Violet/', '/.violet/');
+              if (download.files() != null)
+                result['Files'] =
+                    download.files().replaceAll('/Violet/', '/.violet/');
+              if (download.path() != null)
+                result['Path'] =
+                    download.path().replaceAll('/Violet/', '/.violet/');
               download.result = result;
               await download.update();
             }
