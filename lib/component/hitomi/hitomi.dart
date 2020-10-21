@@ -33,6 +33,10 @@ class HitomiManager {
 
       var subdomainx = subdomain;
 
+      if (rr['haswebp'] == 0 || rr['haswebp'] == null) {
+        subdomainx = 'b';
+      }
+
       var x = int.tryParse('${postfix[0]}${postfix[1]}', radix: 16);
 
       if (x != null && !x.isNaN) {
@@ -44,7 +48,7 @@ class HitomiManager {
 
       if (rr['haswebp'] == 0 || rr['haswebp'] == null) {
         result.add(
-            'https://${subdomainx}a.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
+            'https://${subdomainx}b.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
       } else if (hash == "")
         result.add(
             'https://${subdomainx}a.hitomi.la/webp/${rr['name'] as String}.webp');
