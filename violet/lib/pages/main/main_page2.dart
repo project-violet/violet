@@ -65,7 +65,6 @@ class _MainPage2State extends State<MainPage2>
   @override
   void initState() {
     super.initState();
-    updateCheckAndDownload();
 
     Future.delayed(Duration(milliseconds: 200)).then((value) async {
       // var latestDB = SyncManager.getLatestDB().getDateTime();
@@ -80,6 +79,8 @@ class _MainPage2State extends State<MainPage2>
         await UpdateSyncManager.checkUpdateSync();
         setState(() {});
       }
+
+      updateCheckAndDownload();
 
       if (SyncManager.syncRequire) {
         setState(() {
