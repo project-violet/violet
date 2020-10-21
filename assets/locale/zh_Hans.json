@@ -60,6 +60,8 @@
   "syncmanual": "手动同步",
   "tagrebuild": "重建标签",
   "component": "零件",
+    "downloadpath": "下载目录",
+    "curdownloadpath": "当前目录",
 
   "read": "阅读",
   "artists": "作者",

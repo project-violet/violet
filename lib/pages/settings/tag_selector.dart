@@ -72,6 +72,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                   leading: Text('${Translations.of(context).trans('tag')}:'),
                   title: TextField(
                     controller: _searchController,
+                    minLines: 1,
+                    maxLines: 3,
                     onChanged: (String str) async {
                       await searchProcess(str, _searchController.selection);
                     },
