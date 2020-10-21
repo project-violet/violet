@@ -59,7 +59,10 @@
     "switching": "Switching",
     "syncmanual": "Sync Manually",
     "tagrebuild": "Tag Rebuild",
-    "component": "Componenti",
+    "component": "Component",
+    "downloadpath": "Download Path",
+    "curdownloadpath": "Current Path",
+
 
     "read": "Read",
     "artists": "Artists",

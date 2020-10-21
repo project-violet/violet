@@ -60,6 +60,8 @@
 "syncmanual": "Sincronización Manual",
 "tagrebuild": "Reconstruir Etiquetas",
     "component": "Component",
+    "downloadpath": "Ruta de descarga",
+    "curdownloadpath": "Ruta actual",
 
 "read": "Leer",
 "artists": "Artistas",

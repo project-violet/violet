@@ -60,6 +60,8 @@
     "syncmanual": "Sincronizza Manualmente",
     "tagrebuild": "Ricostruisci Tag",
     "component": "Component",
+    "downloadpath": "Download directory",
+     "curdownloadpath": "Directory corrente",
 
     "read": "Leggi",
     "artists": "Artisti",

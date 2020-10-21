@@ -60,6 +60,8 @@
     "syncmanual": "수동 동기화",
     "tagrebuild": "태그 리빌딩",
     "component": "컴포넌트",
+    "downloadpath": "다운로드 경로",
+    "curdownloadpath": "현재 경로",
 
     "read": "읽기",
     "artists": "작가",

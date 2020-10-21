@@ -57,6 +57,8 @@
   "syncmanual": "手動で同期",
   "tagrebuild": "タグリビルディン",
     "component": "コンポーネント",
+    "downloadpath": "ダウンロードディレクトリ",
+     "curdownloadpath": "現在のディレクトリ",
   
   "read": "読んで",
   "artists": "アーティスト",

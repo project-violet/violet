@@ -406,4 +406,10 @@ class Settings {
     useDrawer = nn;
     await (await SharedPreferences.getInstance()).setBool('usedrawer', nn);
   }
+
+  static Future<void> setBaseDownloadPath(String nn) async {
+    downloadBasePath = nn;
+    await (await SharedPreferences.getInstance())
+        .setString('downloadbasepath', nn);
+  }
 }
