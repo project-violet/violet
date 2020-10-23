@@ -27,6 +27,12 @@ class HitomiIndexs {
   // Character, <Series, Count>
   // Map<String, Map<String, int>>
   static Map<String, dynamic> seriesCharacter;
+  // Series, <Series, Count>
+  // Map<String, Map<String, int>>
+  static Map<String, dynamic> seriesSeries;
+  // Character, <Character, Count>
+  // Map<String, Map<String, int>>
+  static Map<String, dynamic> characterCharacter;
 
   static Future<void> init() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -51,6 +57,11 @@ class HitomiIndexs {
       characterSeries = jsonDecode(await path8.readAsString());
       final path9 = File('${directory.path}$subdir/series-character.json');
       seriesCharacter = jsonDecode(await path9.readAsString());
+
+      final path10 = File('${directory.path}$subdir/character-character.json');
+      characterCharacter = jsonDecode(await path10.readAsString());
+      final path11 = File('${directory.path}$subdir/series-series.json');
+      seriesSeries = jsonDecode(await path11.readAsString());
     } catch (e) {}
   }
 
@@ -96,16 +107,34 @@ class HitomiIndexs {
 
   static List<Tuple2<String, double>> calculateRelatedCharacterSeries(
       String series) {
-    return _calculateSimilars(characterSeries, series)
-        .where((element) => element.item2 >= 0.000001)
-        .toList();
+    if (seriesSeries == null)
+      return _calculateSimilars(characterSeries, series)
+          .where((element) => element.item2 >= 0.000001)
+          .toList();
+    else {
+      var ll = (seriesSeries[series] as Map<String, dynamic>)
+          .entries
+          .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+          .toList();
+      ll.sort((x, y) => y.item2.compareTo(x.item2));
+      return ll;
+    }
   }
 
   static List<Tuple2<String, double>> calculateRelatedSeriesCharacter(
       String character) {
-    return _calculateSimilars(seriesCharacter, character)
-        .where((element) => element.item2 >= 0.000001)
-        .toList();
+    if (characterCharacter == null)
+      return _calculateSimilars(seriesCharacter, character)
+          .where((element) => element.item2 >= 0.000001)
+          .toList();
+    else {
+      var ll = (characterCharacter[character] as Map<String, dynamic>)
+          .entries
+          .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+          .toList();
+      ll.sort((x, y) => y.item2.compareTo(x.item2));
+      return ll;
+    }
   }
 
   static List<Tuple2<String, double>> getRelatedCharacters(String series) {
