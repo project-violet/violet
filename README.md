@@ -1,8 +1,8 @@
 # hsync
 
 ```
-hsync 2020.10.15
-Build Date: Monday, 15 October 2020
+hsync 2020.10.23
+Build Date: Monday, 23 October 2020
                                          /T /I
                               / |/ | .-~/
                           T\ Y  I  |/  /  _
@@ -51,6 +51,9 @@ Usage: ./hsync [OPTIONS...]
    -x, --include-exhentai      Include ExHentai Database [use --include-exhentai]
    -l, --low-perf              hsync run on low performance system [use --low-perf]
    -n, --sync-only             Sync only when start [use --sync-only]
+   --hitomi-sync-range         Set lookup id range manually [use --hitomi-sync-range <start id> <end id>]
+   --hitomi-sync-lookup-range  Set hitomi id lookup range. (default: 4,000 [-4,000 ~ 4,000]) [use --hitomi-sync-lookup-range <count>]
+   --exhentai-lookup-page      Set exhentai lookup page. (default: 200) [use --exhentai-lookup-page <range>]
 ```
 
 High-Performance E-Hentai/EX-Hentai/Hitomi Works Data Synchronizer
