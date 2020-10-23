@@ -81,6 +81,16 @@ namespace hsync
             Info = "Sync only when start", Help = "use --sync-only")]
         public bool SyncOnly;
 
+        [CommandLine("--hitomi-sync-range", CommandType.ARGUMENTS, ArgumentsCount = 2,
+            Info = "Set lookup id range manually", Help = "use --hitomi-sync-range <start id> <end id>")]
+        public string[] HitomiSyncRange;
+        [CommandLine("--hitomi-sync-lookup-range", CommandType.ARGUMENTS,
+            Info = "Set hitomi id lookup range. (default: 4,000 [-4,000 ~ 4,000])", Help = "use --hitomi-sync-lookup-range <count>")]
+        public string[] HitomiSyncLookupRange;
+
+        [CommandLine("--exhentai-lookup-page", CommandType.ARGUMENTS,
+            Info = "Set exhentai lookup page. (default: 200)", Help = "use --exhentai-lookup-page <range>")]
+        public string[] ExHentaiLookupPage;
     }
 
     public class Command
@@ -120,7 +130,8 @@ namespace hsync
             }
             else if (option.Start)
             {
-                ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly);
+                ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly, 
+                    option.HitomiSyncRange, option.HitomiSyncLookupRange, option.ExHentaiLookupPage);
             }
             else if (option.Compress)
             {
@@ -212,7 +223,8 @@ namespace hsync
             Console.WriteLine($"Build Date: " + Internals.GetBuildDate().ToLongDateString());
         }
 
-        static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only)
+        static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only, 
+            string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page)
         {
             Console.Clear();
             Console.Title = "hsync";
@@ -234,7 +246,7 @@ namespace hsync
                 if (!File.Exists("ex-hentai-archive.json"))
                     download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/ex-hentai-archive.json", "ex-hentai-archive.json");
 
-                var sync = new Syncronizer();
+                var sync = new Syncronizer(hitomi_sync_range, hitomi_sync_lookup_range, exhentai_lookup_page);
                 sync.SyncHitomi();
                 sync.SyncExHentai();
 
@@ -269,7 +281,7 @@ namespace hsync
             }
             else
             {
-                var sync = new SyncronizerLowPerf();
+                var sync = new SyncronizerLowPerf(hitomi_sync_range, hitomi_sync_lookup_range, exhentai_lookup_page);
                 sync.SyncHitomi();
                 sync.SyncExHentai();
                 sync.FlushToMainDatabase();

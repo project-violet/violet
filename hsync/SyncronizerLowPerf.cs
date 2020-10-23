@@ -28,14 +28,29 @@ namespace hsync
         HashSet<int> existsEH;
         HashSet<int> existsHitomi;
 
+        int starts = 0, ends = 0;
+        bool useManualRange = false;
+        int exhentaiLookupPage;
+
         public HashSet<int> newedDataHitomi;
         public HashSet<int> newedDataEH;
 
         public List<HitomiArticle> hitomiArticles;
         public List<EHentaiResultArticle> eHentaiResultArticles;
 
-        public SyncronizerLowPerf()
+        public SyncronizerLowPerf(string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page)
         {
+            if (hitomi_sync_lookup_range == null || !int.TryParse(hitomi_sync_lookup_range[0], out hitomiSyncRange))
+                hitomiSyncRange = 4000;
+
+            if (hitomi_sync_range != null
+                && int.TryParse(hitomi_sync_range[0], out starts)
+                && int.TryParse(hitomi_sync_range[1], out ends))
+                useManualRange = true;
+
+            if (exhentai_lookup_page == null || !int.TryParse(exhentai_lookup_page[0], out exhentaiLookupPage))
+                exhentaiLookupPage = 200;
+
             db = new SQLiteConnection("data.db");
 
             existsHitomi = new HashSet<int>();
@@ -51,14 +66,13 @@ namespace hsync
                 existsBoth.Add(metadata.Id);
 
             latestId = db.Query<HitomiColumnModel>("SELECT * FROM HitomiColumnModel WHERE Id = (SELECT MAX(Id) FROM HitomiColumnModel);")[0].Id;
-            hitomiSyncRange = 4000;
             newedDataHitomi = new HashSet<int>();
             newedDataEH = new HashSet<int>();
         }
 
         public void SyncHitomi()
         {
-            var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
+            var gburls = Enumerable.Range(useManualRange ? starts : latestId - hitomiSyncRange, useManualRange ? ends - starts + 1 : hitomiSyncRange * 2)
                 .Where(x => !existsHitomi.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
             var ecnt = 0;
@@ -167,7 +181,7 @@ namespace hsync
                         eHentaiResultArticles.AddRange(exh);
                         if (exh.Count != 25)
                             Logs.Instance.PushWarning("[Miss] " + url);
-                        if (i > 200 && exh.Min(x => x.URL.Split('/')[4].ToInt()) < latestId)
+                        if (i > exhentaiLookupPage && exh.Min(x => x.URL.Split('/')[4].ToInt()) < latestId)
                         {
                             break;
                         }
