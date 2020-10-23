@@ -88,6 +88,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       if (selected != null && _prevPage != selected + 1) {
         setState(() {
           _prevPage = selected + 1;
+          currentPage = _prevPage;
         });
       }
     });
