@@ -23,14 +23,35 @@ namespace hsync
         int latestId;
         int hitomiSyncRange;
 
+        int starts=0, ends=0;
+        bool useManualRange = false;
+
+        int exhentaiLookupPage;
+
         public List<int> newedDataHitomi;
         public List<int> newedDataEH;
 
-        public Syncronizer()
+        public Syncronizer(string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page)
         {
             HitomiData.Instance.Load();
             latestId = HitomiData.Instance.metadata_collection.First().ID;
-            hitomiSyncRange = 2000;
+
+            int lookup_range;
+            if (hitomi_sync_lookup_range != null && int.TryParse(hitomi_sync_lookup_range[0], out lookup_range))
+                hitomiSyncRange = lookup_range;
+            else
+                hitomiSyncRange = 4000;
+
+            if (hitomi_sync_range != null 
+                && int.TryParse(hitomi_sync_range[0], out starts) 
+                && int.TryParse(hitomi_sync_range[1], out ends))
+                useManualRange = true;
+
+            if (exhentai_lookup_page != null && int.TryParse(exhentai_lookup_page[0], out exhentaiLookupPage))
+                ;
+            else
+                exhentaiLookupPage = 200;
+
             newedDataHitomi = new List<int>();
             newedDataEH = new List<int>();
         }
@@ -41,7 +62,7 @@ namespace hsync
             foreach (var metadata in HitomiData.Instance.metadata_collection)
                 exists.Add(metadata.ID);
 
-            var gburls = Enumerable.Range(latestId - hitomiSyncRange, hitomiSyncRange * 2)
+            var gburls = Enumerable.Range(useManualRange ? starts : latestId - hitomiSyncRange, useManualRange ? ends - starts + 1 : hitomiSyncRange * 2)
             //var gburls = Enumerable.Range(1000, latestId + hitomiSyncRange / 2)
                 .Where(x => !exists.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
@@ -171,7 +192,7 @@ namespace hsync
                         result.AddRange(exh);
                         if (exh.Count != 25)
                             Logs.Instance.PushWarning("[Miss] " + url);
-                        if (i > 300 && exh.Min(x => x.URL.Split('/')[4].ToInt()) < latestId)
+                        if (i > exhentaiLookupPage && exh.Min(x => x.URL.Split('/')[4].ToInt()) < latestId)
                             break;
                         Logs.Instance.Push("Parse exh page - " + i);
                     }
