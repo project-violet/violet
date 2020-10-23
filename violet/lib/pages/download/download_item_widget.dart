@@ -203,7 +203,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         if (widget.item.state() == 0 && widget.item.files() != null) {
           if (['hitomi', 'ehentai', 'exhentai', 'hentai']
               .contains(widget.item.extractor())) {
-            SystemChrome.setEnabledSystemUIOverlays([]);
+            if (!Settings.disableFullScreen)
+              SystemChrome.setEnabledSystemUIOverlays([]);
 
             Navigator.push(
               context,
