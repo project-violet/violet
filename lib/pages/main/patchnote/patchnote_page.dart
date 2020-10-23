@@ -24,8 +24,27 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 21),
+    version: '1.7.3 Patch (HotFix) <== Latest',
+    contents: [
+      'fix critical error related with app',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2020, 10, 21),
+    version: '1.7.2 Patch (E)',
+    contents: [
+      'fix hitomi subdomain error',
+      'fix e/ex-hentai comment parsing error',
+      'enhance startup time',
+      'enhance viewer gallery view',
+      'change default download directory (Violet => .violet)',
+      '(This patch was released earlier than scheduled due to critical errors.)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 17),
-    version: '1.7.1 Patch (HotFix) <== Latest',
+    version: '1.7.1 Patch (HotFix)',
     contents: [
       'fix database downloading error when first start',
     ],
