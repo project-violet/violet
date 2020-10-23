@@ -53,6 +53,8 @@ namespace hsync
             var result_character = new Dictionary<string, Dictionary<int, int>>();
             var result_characterseries = new Dictionary<string, Dictionary<string, int>>();
             var result_seriescharacter = new Dictionary<string, Dictionary<string, int>>();
+            var result_charactercharacter = new Dictionary<string, Dictionary<string, int>>();
+            var result_seriesseries = new Dictionary<string, Dictionary<string, int>>();
             var ff = new Dictionary<string, int>();
 
             var rdb = new SQLiteConnection(filename + "/data.db");
@@ -236,6 +238,36 @@ namespace hsync
                                 result_seriescharacter[character][series] += 1;
                             }
                         }
+                        foreach (var series in article.Series.Split('|'))
+                        {
+                            if (series == "")
+                                continue;
+                            if (!result_seriesseries.ContainsKey(series))
+                                result_seriesseries.Add(series, new Dictionary<string, int>());
+                            foreach (var series2 in article.Series.Split('|'))
+                            {
+                                if (series2 == "" || series == series2)
+                                    continue;
+                                if (!result_seriesseries[series].ContainsKey(series2))
+                                    result_seriesseries[series].Add(series2, 0);
+                                result_seriesseries[series][series2] += 1;
+                            }
+                        }
+                        foreach (var character in article.Characters.Split('|'))
+                        {
+                            if (character == "")
+                                continue;
+                            if (!result_charactercharacter.ContainsKey(character))
+                                result_charactercharacter.Add(character, new Dictionary<string, int>());
+                            foreach (var character2 in article.Characters.Split('|'))
+                            {
+                                if (character2 == "" || character == character2)
+                                    continue;
+                                if (!result_charactercharacter[character].ContainsKey(character2))
+                                    result_charactercharacter[character].Add(character2, 0);
+                                result_charactercharacter[character][character2] += 1;
+                            }
+                        }
                     }
                 }
             }
@@ -250,6 +282,8 @@ namespace hsync
             File.WriteAllText(filename + "/tag-character.json", JsonConvert.SerializeObject(result_character));
             File.WriteAllText(filename + "/character-series.json", JsonConvert.SerializeObject(result_characterseries));
             File.WriteAllText(filename + "/series-character.json", JsonConvert.SerializeObject(result_seriescharacter));
+            File.WriteAllText(filename + "/character-character.json", JsonConvert.SerializeObject(result_charactercharacter));
+            File.WriteAllText(filename + "/series-series.json", JsonConvert.SerializeObject(result_seriesseries));
         }
 
         class IndexData
