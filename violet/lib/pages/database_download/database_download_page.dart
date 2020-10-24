@@ -231,8 +231,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           .setString('db_path', "$dir/data.db");
       await (await SharedPreferences.getInstance())
           .setString('databasetype', widget.dbType);
-      await (await SharedPreferences.getInstance()).setString('databasesync',
-          UpdateSyncManager.rawlangDBIOS[widget.dbType].item1.toString());
+      await (await SharedPreferences.getInstance()).setString(
+          'databasesync', SyncManager.getLatestDB().getDateTime().toString());
+      await (await SharedPreferences.getInstance())
+          .setInt('synclatest', SyncManager.getLatestDB().timestamp);
 
       setState(() {
         downloading = false;
@@ -297,6 +299,14 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     var tagArtist = Map<String, Map<String, int>>();
     var tagGroup = Map<String, Map<String, int>>();
     var tagUploader = Map<String, Map<String, int>>();
+    var tagSeries = Map<String, Map<String, int>>();
+    var tagCharacter = Map<String, Map<String, int>>();
+
+    var seriesSeries = Map<String, Map<String, int>>();
+    var seriesCharacter = Map<String, Map<String, int>>();
+
+    var characterCharacter = Map<String, Map<String, int>>();
+    var characterSeries = Map<String, Map<String, int>>();
 
     int i = 0;
     while (true) {
@@ -364,6 +374,94 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             tagUploader[item.uploader()][index] += 1;
           }
         }
+
+        if (item.series() != null) {
+          for (var artist in item.series().split('|'))
+            if (artist != '') if (!tagSeries.containsKey(artist))
+              tagSeries[artist] = Map<String, int>();
+          for (var tag in item.tags().split('|')) {
+            if (tag == null || tag == '') continue;
+            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
+            var index = tagIndex[tag].toString();
+            for (var artist in item.series().split('|')) {
+              if (artist == '') continue;
+              if (!tagSeries[artist].containsKey(index))
+                tagSeries[artist][index] = 0;
+              tagSeries[artist][index] += 1;
+            }
+          }
+        }
+
+        if (item.characters() != null) {
+          for (var artist in item.characters().split('|'))
+            if (artist != '') if (!tagCharacter.containsKey(artist))
+              tagCharacter[artist] = Map<String, int>();
+          for (var tag in item.tags().split('|')) {
+            if (tag == null || tag == '') continue;
+            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
+            var index = tagIndex[tag].toString();
+            for (var artist in item.characters().split('|')) {
+              if (artist == '') continue;
+              if (!tagCharacter[artist].containsKey(index))
+                tagCharacter[artist][index] = 0;
+              tagCharacter[artist][index] += 1;
+            }
+          }
+        }
+
+        if (item.series() != null && item.characters() != null) {
+          for (var series in item.series().splite('|')) {
+            if (series == '') continue;
+            if (!characterSeries.containsKey(series))
+              characterSeries[series] = Map<String, int>();
+            for (var character in item.characters().split('|')) {
+              if (character == '') continue;
+              if (!characterSeries[series].containsKey(character))
+                characterSeries[series][character] = 0;
+              characterSeries[series][character] += 1;
+            }
+          }
+
+          for (var character in item.series().splite('|')) {
+            if (character == '') continue;
+            if (!seriesCharacter.containsKey(character))
+              seriesCharacter[character] = Map<String, int>();
+            for (var series in item.characters().split('|')) {
+              if (series == '') continue;
+              if (!seriesCharacter[character].containsKey(series))
+                seriesCharacter[character][series] = 0;
+              seriesCharacter[character][series] += 1;
+            }
+          }
+        }
+
+        if (item.series() != null) {
+          for (var series in item.series().splite('|')) {
+            if (series == '') continue;
+            if (!seriesSeries.containsKey(series))
+              seriesSeries[series] = Map<String, int>();
+            for (var series2 in item.series().split('|')) {
+              if (series2 == '' || series == series2) continue;
+              if (!seriesSeries[series].containsKey(series2))
+                seriesSeries[series][series2] = 0;
+              seriesSeries[series][series] += 1;
+            }
+          }
+        }
+
+        if (item.characters() != null) {
+          for (var character in item.characters().splite('|')) {
+            if (character == '') continue;
+            if (!characterCharacter.containsKey(character))
+              characterCharacter[character] = Map<String, int>();
+            for (var character2 in item.characters().split('|')) {
+              if (character2 == '' || series == character2) continue;
+              if (!characterCharacter[character].containsKey(character2))
+                characterCharacter[character][character2] = 0;
+              characterCharacter[character][character2] += 1;
+            }
+          }
+        }
       }
 
       if (ll.length == 0) {
@@ -391,6 +489,19 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         path4.writeAsString(jsonEncode(tagIndex));
         final path5 = File('${directory.path}/tag-uploader.json');
         path5.writeAsString(jsonEncode(tagUploader));
+        final path6 = File('${directory.path}/tag-series.json');
+        path6.writeAsString(jsonEncode(tagSeries));
+        final path7 = File('${directory.path}/tag-character.json');
+        path7.writeAsString(jsonEncode(tagCharacter));
+
+        final path8 = File('${directory.path}/character-series.json');
+        path8.writeAsString(jsonEncode(characterSeries));
+        final path9 = File('${directory.path}/series-character.json');
+        path9.writeAsString(jsonEncode(seriesCharacter));
+        final path10 = File('${directory.path}/character-character.json');
+        path10.writeAsString(jsonEncode(characterCharacter));
+        final path11 = File('${directory.path}/series-series.json');
+        path11.writeAsString(jsonEncode(seriesSeries));
 
         setState(() {
           baseString = Translations.instance.trans('dbdcomplete');
