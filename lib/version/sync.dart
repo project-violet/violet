@@ -24,6 +24,8 @@ class SyncInfoRecord {
 
   String getDBDownloadUrl(String type) =>
       url + SyncManager.createRawdbPostfix(type);
+  String getDBDownloadUrliOS(String type) =>
+      url + SyncManager.createRawdbPostfixiOS(type);
 
   DateTime getDateTime() {
     return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
@@ -180,6 +182,23 @@ class SyncManager {
         return '-japanese.7z';
       case 'en':
         return '-english.7z';
+    }
+
+    throw Exception('not reachable');
+  }
+
+  static String createRawdbPostfixiOS(String lang) {
+    switch (lang) {
+      case 'global':
+        return '.db';
+      case 'ko':
+        return '-korean.db';
+      case 'zh':
+        return '-chinese.db';
+      case 'ja':
+        return '-japanese.db';
+      case 'en':
+        return '-english.db';
     }
 
     throw Exception('not reachable');
