@@ -445,7 +445,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               if (series2 == '' || series == series2) continue;
               if (!seriesSeries[series].containsKey(series2))
                 seriesSeries[series][series2] = 0;
-              seriesSeries[series][series] += 1;
+              seriesSeries[series][series2] += 1;
             }
           }
         }
