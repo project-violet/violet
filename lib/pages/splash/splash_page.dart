@@ -87,8 +87,6 @@ class _SplashPageState extends State<SplashPage> {
     await HitomiIndexs.init();
     await Logger.init();
 
-    // if (Platform.isIOS) await UpdateSyncManager.checkUpdateSync();
-
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
         !widget.switching) {
       try {
