@@ -206,6 +206,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                 _tlatest = _tnu;
                 _tnu = 0;
               }));
+      await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType),
           "$dir/data.db", onReceiveProgress: (rec, total) {
