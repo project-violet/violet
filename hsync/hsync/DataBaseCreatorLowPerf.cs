@@ -238,6 +238,9 @@ namespace hsync
                                 result_seriescharacter[character][series] += 1;
                             }
                         }
+                    }
+                    if (article.Series != null)
+                    {
                         foreach (var series in article.Series.Split('|'))
                         {
                             if (series == "")
@@ -253,6 +256,9 @@ namespace hsync
                                 result_seriesseries[series][series2] += 1;
                             }
                         }
+                    }
+                    if (article.Characters != null)
+                    {
                         foreach (var character in article.Characters.Split('|'))
                         {
                             if (character == "")
