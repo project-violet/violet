@@ -411,7 +411,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         }
 
         if (item.series() != null && item.characters() != null) {
-          for (var series in item.series().splite('|')) {
+          for (var series in item.series().split('|')) {
             if (series == '') continue;
             if (!characterSeries.containsKey(series))
               characterSeries[series] = Map<String, int>();
@@ -423,7 +423,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             }
           }
 
-          for (var character in item.series().splite('|')) {
+          for (var character in item.series().split('|')) {
             if (character == '') continue;
             if (!seriesCharacter.containsKey(character))
               seriesCharacter[character] = Map<String, int>();
@@ -437,7 +437,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         }
 
         if (item.series() != null) {
-          for (var series in item.series().splite('|')) {
+          for (var series in item.series().split('|')) {
             if (series == '') continue;
             if (!seriesSeries.containsKey(series))
               seriesSeries[series] = Map<String, int>();
@@ -451,7 +451,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         }
 
         if (item.characters() != null) {
-          for (var character in item.characters().splite('|')) {
+          for (var character in item.characters().split('|')) {
             if (character == '') continue;
             if (!characterCharacter.containsKey(character))
               characterCharacter[character] = Map<String, int>();
