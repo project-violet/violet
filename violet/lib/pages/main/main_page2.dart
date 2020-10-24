@@ -75,12 +75,13 @@ class _MainPage2State extends State<MainPage2>
       //   return;
       // }
 
-      if (Platform.isAndroid) {
-        await UpdateSyncManager.checkUpdateSync();
-        setState(() {});
-      }
+      await UpdateSyncManager.checkUpdateSync();
+      setState(() {});
 
-      updateCheckAndDownload();
+      // Update is not available for iOS.
+      if (!Platform.isIOS) {
+        updateCheckAndDownload();
+      }
 
       if (SyncManager.syncRequire) {
         setState(() {
