@@ -24,8 +24,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 25),
+    version: '1.7.4 Patch (HotFix) <== Latest',
+    contents: [
+      'fix hiyobi routing error',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 21),
-    version: '1.7.3 Patch (HotFix) <== Latest',
+    version: '1.7.3 Patch',
     contents: [
       'fix critical error related with app',
     ],
