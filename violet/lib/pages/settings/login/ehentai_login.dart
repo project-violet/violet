@@ -66,10 +66,14 @@ class _LoginScreenState extends State<LoginScreen> {
     final cookies = parseCookies(cookieString);
     developer.log('Get cookies: $cookies');
 
-    if (cookies.containsKey('ipb_member_id')) {
+    if (cookies.containsKey('ipb_member_id') &&
+        cookies.containsKey('igneous') &&
+        cookies.containsKey('ipb_pass_hash')) {
       // await sessionStore.setSession(cookieString);
       // await _cookieManager.clearCookies();
       Navigator.pop(context, cookieString);
+    } else if (cookies.containsKey('ipb_member_id')) {
+      controller.loadUrl('https://exhentai.org');
     }
   }
 }
