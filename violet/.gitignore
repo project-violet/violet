@@ -45,3 +45,4 @@ android/app/google-services.json
 
 lib/server/salt.dart
 lib/game/*
+mySdCardFile.img
