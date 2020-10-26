@@ -24,8 +24,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2020, 10, 26),
+    version: '1.7.5 Patch <== Latest',
+    contents: [
+      'apply anti-aliasing to horizontal view (upscale filter quality)',
+      'change selected bookmark style',
+      'fix exhentai login error',
+      'fix intact bug artist bookmark'
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 25),
-    version: '1.7.4 Patch (HotFix) <== Latest',
+    version: '1.7.4 Patch (HotFix)',
     contents: [
       'fix hiyobi routing error',
     ],
@@ -59,6 +69,7 @@ final patches = [
   PatchModel(
     dateTime: DateTime(2020, 10, 17),
     version: '1.7 Minor Update',
+    isMinor: true,
     contents: [
       'add volume key viewer controller',
       'add artist/group/uploader/series/character bookmark',
