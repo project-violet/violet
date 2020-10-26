@@ -196,232 +196,235 @@ class _ArticleListItemVerySimpleWidgetState
     var headers = {
       "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
     };
-    return PimpedButton(
-        particle: Rectangle2DemoParticle(),
-        pimpedWidgetBuilder: (context, controller) {
-          return GestureDetector(
-            child: SizedBox(
-              width: ww,
-              height: hh,
-              child: AnimatedContainer(
-                // alignment: FractionalOffset.center,
-                curve: Curves.easeInOut,
-                duration: Duration(milliseconds: 300),
-                // padding: EdgeInsets.all(pad),
-                transform: Matrix4.identity()
-                  ..translate(ww / 2, hh / 2)
-                  ..scale(scale)
-                  ..translate(-ww / 2, -hh / 2),
-                child: buildBody(),
+    return Container(
+      color: widget.isChecked ? Colors.amber : Colors.transparent,
+      child: PimpedButton(
+          particle: Rectangle2DemoParticle(),
+          pimpedWidgetBuilder: (context, controller) {
+            return GestureDetector(
+              child: SizedBox(
+                width: ww,
+                height: hh,
+                child: AnimatedContainer(
+                  // alignment: FractionalOffset.center,
+                  curve: Curves.easeInOut,
+                  duration: Duration(milliseconds: 300),
+                  // padding: EdgeInsets.all(pad),
+                  transform: Matrix4.identity()
+                    ..translate(ww / 2, hh / 2)
+                    ..scale(scale)
+                    ..translate(-ww / 2, -hh / 2),
+                  child: buildBody(),
+                ),
               ),
-            ),
-            // onScaleStart: (detail) {
-            //   onScaling = true;
-            //   setState(() {
-            //     pad = 0;
-            //   });
-            // },
-            // onScaleUpdate: (detail) async {
-            //   if (detail.scale > 1.1 &&
-            //       !scaleAnimationController.isAnimating &&
-            //       !scaleAnimationController.isCompleted) {
-            //     scaleAnimationController.forward(from: 1.0);
-            //   }
-            //   if (detail.scale > 1.1 && !scaleAnimationController.isCompleted) {
-            //     var sz = await _calculateImageDimension(thumbnail);
-            //     Navigator.of(context).push(PageRouteBuilder(
-            //       opaque: false,
-            //       transitionDuration: Duration(milliseconds: 500),
-            //       pageBuilder: (_, __, ___) => ThumbnailViewPage(
-            //         size: sz,
-            //         thumbnail: thumbnail,
-            //         headers: headers,
-            //       ),
-            //     ));
-            //   }
-            // },
-            // onScaleEnd: (detail) {
-            //   onScaling = false;
-            //   scaleAnimationController.reverse();
-            // },
-            onTapDown: (detail) {
-              if (onScaling) return;
-              onScaling = true;
-              setState(() {
-                // pad = 10.0;
-                scale = 0.95;
-              });
-            },
-            onTapUp: (detail) {
-              // if (onScaling) return;
-              onScaling = false;
-              if (widget.isCheckMode) {
-                widget.isChecked = !widget.isChecked;
-                data.bookmarkCheckCallback(
-                    data.queryResult.id(), widget.isChecked);
+              // onScaleStart: (detail) {
+              //   onScaling = true;
+              //   setState(() {
+              //     pad = 0;
+              //   });
+              // },
+              // onScaleUpdate: (detail) async {
+              //   if (detail.scale > 1.1 &&
+              //       !scaleAnimationController.isAnimating &&
+              //       !scaleAnimationController.isCompleted) {
+              //     scaleAnimationController.forward(from: 1.0);
+              //   }
+              //   if (detail.scale > 1.1 && !scaleAnimationController.isCompleted) {
+              //     var sz = await _calculateImageDimension(thumbnail);
+              //     Navigator.of(context).push(PageRouteBuilder(
+              //       opaque: false,
+              //       transitionDuration: Duration(milliseconds: 500),
+              //       pageBuilder: (_, __, ___) => ThumbnailViewPage(
+              //         size: sz,
+              //         thumbnail: thumbnail,
+              //         headers: headers,
+              //       ),
+              //     ));
+              //   }
+              // },
+              // onScaleEnd: (detail) {
+              //   onScaling = false;
+              //   scaleAnimationController.reverse();
+              // },
+              onTapDown: (detail) {
+                if (onScaling) return;
+                onScaling = true;
                 setState(() {
-                  if (widget.isChecked)
-                    scale = 0.95;
-                  else
-                    scale = 1.0;
+                  // pad = 10.0;
+                  scale = 0.95;
                 });
-                return;
-              }
-              if (firstChecked) return;
-              setState(() {
-                // pad = 0;
-                scale = 1.0;
-              });
-
-              // Navigator.of(context).push(PageRouteBuilder(
-              //   // opaque: false,
-              //   transitionDuration: Duration(milliseconds: 500),
-              //   transitionsBuilder: (BuildContext context,
-              //       Animation<double> animation,
-              //       Animation<double> secondaryAnimation,
-              //       Widget wi) {
-              //     // return wi;
-              //     return new FadeTransition(opacity: animation, child: wi);
-              //   },
-              //   pageBuilder: (_, __, ___) => ArticleInfoPage(
-              //     queryResult: widget.queryResult,
-              //     thumbnail: thumbnail,
-              //     headers: headers,
-              //     heroKey: widget.thumbnailTag,
-              //     isBookmarked: isBookmarked,
-              //   ),
-              // ));
-              final mediaQuery = MediaQuery.of(context);
-              final pad = mediaQuery.padding + mediaQuery.viewInsets;
-              final height = MediaQuery.of(context).size.height;
-
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                builder: (_) {
-                  return DraggableScrollableSheet(
-                    initialChildSize: 400 / height,
-                    minChildSize: 400 / height,
-                    maxChildSize: 0.9,
-                    expand: false,
-                    builder: (_, controller) {
-                      return Provider<ArticleInfo>.value(
-                        child: ArticleInfoPage(
-                          key: ObjectKey('asdfasdf'),
-                        ),
-                        value: ArticleInfo.fromArticleInfo(
-                          queryResult: data.queryResult,
-                          thumbnail: thumbnail,
-                          headers: headers,
-                          heroKey: data.thumbnailTag,
-                          isBookmarked: isBookmarked,
-                          controller: controller,
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-            onLongPress: () async {
-              onScaling = false;
-              if (data.bookmarkMode) {
+              },
+              onTapUp: (detail) {
+                // if (onScaling) return;
+                onScaling = false;
                 if (widget.isCheckMode) {
                   widget.isChecked = !widget.isChecked;
+                  data.bookmarkCheckCallback(
+                      data.queryResult.id(), widget.isChecked);
                   setState(() {
-                    scale = 1.0;
+                    if (widget.isChecked)
+                      scale = 0.95;
+                    else
+                      scale = 1.0;
                   });
                   return;
                 }
-                widget.isChecked = true;
-                firstChecked = true;
+                if (firstChecked) return;
                 setState(() {
-                  scale = 0.95;
+                  // pad = 0;
+                  scale = 1.0;
                 });
-                data.bookmarkCallback(data.queryResult.id());
-                return;
-              }
 
-              if (isBookmarked) {
-                if (!await Dialogs.yesnoDialog(context, '북마크를 삭제할까요?', '북마크'))
+                // Navigator.of(context).push(PageRouteBuilder(
+                //   // opaque: false,
+                //   transitionDuration: Duration(milliseconds: 500),
+                //   transitionsBuilder: (BuildContext context,
+                //       Animation<double> animation,
+                //       Animation<double> secondaryAnimation,
+                //       Widget wi) {
+                //     // return wi;
+                //     return new FadeTransition(opacity: animation, child: wi);
+                //   },
+                //   pageBuilder: (_, __, ___) => ArticleInfoPage(
+                //     queryResult: widget.queryResult,
+                //     thumbnail: thumbnail,
+                //     headers: headers,
+                //     heroKey: widget.thumbnailTag,
+                //     isBookmarked: isBookmarked,
+                //   ),
+                // ));
+                final mediaQuery = MediaQuery.of(context);
+                final pad = mediaQuery.padding + mediaQuery.viewInsets;
+                final height = MediaQuery.of(context).size.height;
+
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) {
+                    return DraggableScrollableSheet(
+                      initialChildSize: 400 / height,
+                      minChildSize: 400 / height,
+                      maxChildSize: 0.9,
+                      expand: false,
+                      builder: (_, controller) {
+                        return Provider<ArticleInfo>.value(
+                          child: ArticleInfoPage(
+                            key: ObjectKey('asdfasdf'),
+                          ),
+                          value: ArticleInfo.fromArticleInfo(
+                            queryResult: data.queryResult,
+                            thumbnail: thumbnail,
+                            headers: headers,
+                            heroKey: data.thumbnailTag,
+                            isBookmarked: isBookmarked,
+                            controller: controller,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+              onLongPress: () async {
+                onScaling = false;
+                if (data.bookmarkMode) {
+                  if (widget.isCheckMode) {
+                    widget.isChecked = !widget.isChecked;
+                    setState(() {
+                      scale = 1.0;
+                    });
+                    return;
+                  }
+                  widget.isChecked = true;
+                  firstChecked = true;
+                  setState(() {
+                    scale = 0.95;
+                  });
+                  data.bookmarkCallback(data.queryResult.id());
                   return;
-              }
-              try {
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  duration: Duration(seconds: 2),
-                  content: new Text(
-                    isBookmarked
-                        ? '${data.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
-                        : '${data.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  backgroundColor: Colors.grey.shade800,
-                ));
-              } catch (e) {}
-              isBookmarked = !isBookmarked;
-              if (isBookmarked)
-                await (await Bookmark.getInstance())
-                    .bookmark(data.queryResult.id());
-              else
-                await (await Bookmark.getInstance())
-                    .unbookmark(data.queryResult.id());
-              if (!isBookmarked)
-                _flareController.play('Unlike');
-              else {
-                controller.forward(from: 0.0);
-                _flareController.play('Like');
-              }
-              await HapticFeedback.vibrate();
+                }
 
-              // await Vibration.vibrate(duration: 50, amplitude: 50);
-              setState(() {
-                pad = 0;
-                scale = 1.0;
-              });
-            },
-            onLongPressEnd: (detail) {
-              onScaling = false;
-              if (firstChecked) {
-                firstChecked = false;
-                return;
-              }
-              setState(() {
-                pad = 0;
-                scale = 1.0;
-              });
-            },
-            onTapCancel: () {
-              onScaling = false;
-              setState(() {
-                pad = 0;
-                scale = 1.0;
-              });
-            },
-            onDoubleTap: () async {
-              onScaling = false;
-              var sz = await _calculateImageDimension(thumbnail);
-              Navigator.of(context).push(PageRouteBuilder(
-                opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder: (BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                    Widget wi) {
-                  return new FadeTransition(opacity: animation, child: wi);
-                },
-                pageBuilder: (_, __, ___) => ThumbnailViewPage(
-                  size: sz,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: data.thumbnailTag,
-                ),
-              ));
-              setState(() {
-                pad = 0;
-              });
-            },
-          );
-        });
+                if (isBookmarked) {
+                  if (!await Dialogs.yesnoDialog(context, '북마크를 삭제할까요?', '북마크'))
+                    return;
+                }
+                try {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    duration: Duration(seconds: 2),
+                    content: new Text(
+                      isBookmarked
+                          ? '${data.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
+                          : '${data.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.grey.shade800,
+                  ));
+                } catch (e) {}
+                isBookmarked = !isBookmarked;
+                if (isBookmarked)
+                  await (await Bookmark.getInstance())
+                      .bookmark(data.queryResult.id());
+                else
+                  await (await Bookmark.getInstance())
+                      .unbookmark(data.queryResult.id());
+                if (!isBookmarked)
+                  _flareController.play('Unlike');
+                else {
+                  controller.forward(from: 0.0);
+                  _flareController.play('Like');
+                }
+                await HapticFeedback.vibrate();
+
+                // await Vibration.vibrate(duration: 50, amplitude: 50);
+                setState(() {
+                  pad = 0;
+                  scale = 1.0;
+                });
+              },
+              onLongPressEnd: (detail) {
+                onScaling = false;
+                if (firstChecked) {
+                  firstChecked = false;
+                  return;
+                }
+                setState(() {
+                  pad = 0;
+                  scale = 1.0;
+                });
+              },
+              onTapCancel: () {
+                onScaling = false;
+                setState(() {
+                  pad = 0;
+                  scale = 1.0;
+                });
+              },
+              onDoubleTap: () async {
+                onScaling = false;
+                var sz = await _calculateImageDimension(thumbnail);
+                Navigator.of(context).push(PageRouteBuilder(
+                  opaque: false,
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder: (BuildContext context,
+                      Animation<double> animation,
+                      Animation<double> secondaryAnimation,
+                      Widget wi) {
+                    return new FadeTransition(opacity: animation, child: wi);
+                  },
+                  pageBuilder: (_, __, ___) => ThumbnailViewPage(
+                    size: sz,
+                    thumbnail: thumbnail,
+                    headers: headers,
+                    heroKey: data.thumbnailTag,
+                  ),
+                ));
+                setState(() {
+                  pad = 0;
+                });
+              },
+            );
+          }),
+    );
   }
 
   Widget buildBody() {
