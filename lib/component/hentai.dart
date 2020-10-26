@@ -182,6 +182,7 @@ class HentaiManager {
                 count: article.length,
                 thumbnail: article.thumbnail,
                 pagesUrl: EHParser.getPagesUrl(html),
+                isEHentai: true,
               );
             }
             break;
@@ -194,6 +195,7 @@ class HentaiManager {
                 count: article.length,
                 thumbnail: article.thumbnail,
                 pagesUrl: EHParser.getPagesUrl(html),
+                isEHentai: false,
               );
             }
             break;
