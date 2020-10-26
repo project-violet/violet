@@ -16,6 +16,7 @@ class HttpWrapper {
   static String mobileUserAgent =
       "Mozilla/5.0 (Android 7.0; Mobile; rv:54.0) Gecko/54.0 Firefox/54.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/603.2.4";
   static Semaphore throttlerExHentai = Semaphore(maxCount: 1);
+  static Semaphore throttlerEHentai = Semaphore(maxCount: 4);
   static Map<String, http.Response> cacheResponse =
       Map<String, http.Response>();
 }
@@ -52,6 +53,39 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
       if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200)
         HttpWrapper.cacheResponse[url] = res;
       HttpWrapper.throttlerExHentai.release();
+      return res;
+    }
+  } else if (url.contains('e-hentai.org')) {
+    if (HttpWrapper.cacheResponse.containsKey(url))
+      return HttpWrapper.cacheResponse[url];
+    await HttpWrapper.throttlerEHentai.acquire();
+    if (HttpWrapper.cacheResponse.containsKey(url)) {
+      HttpWrapper.throttlerEHentai.release();
+      return HttpWrapper.cacheResponse[url];
+    }
+    Logger.info('[Http Request] GET: ' + url);
+    var retry = 0;
+    while (true) {
+      var res = await http
+          .get(url, headers: headers)
+          .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
+        return null;
+      });
+      retry++;
+      if (res == null) {
+        Logger.info('[Http Request] GETS: ' + url + ', $retry');
+        continue;
+      }
+      if (res.statusCode != 200) {
+        Logger.warning('[Http Response] CODE: ' +
+            res.statusCode.toString() +
+            ', GET: ' +
+            url);
+      }
+      Logger.info('[Http Request] GETS: ' + url);
+      if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200)
+        HttpWrapper.cacheResponse[url] = res;
+      HttpWrapper.throttlerEHentai.release();
       return res;
     }
   } else {

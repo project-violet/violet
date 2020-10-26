@@ -115,9 +115,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   void dispose() {
     if (_clearTimer != null) _clearTimer.cancel();
     PaintingBinding.instance.imageCache.clear();
-    _pageInfo.uris.forEach((element) async {
-      await CachedNetworkImageProvider(element).evict();
-    });
+    if (_pageInfo.useWeb)
+      _pageInfo.uris.forEach((element) async {
+        await CachedNetworkImageProvider(element).evict();
+      });
     SystemChrome.setEnabledSystemUIOverlays([
       SystemUiOverlay.top,
       SystemUiOverlay.bottom,
