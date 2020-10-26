@@ -97,6 +97,10 @@ class _GroupArtistListState extends State<GroupArtistList>
                       height: 195,
                     );
                   return Container(
+                    key: Key('group' +
+                        widget.groupId.toString() +
+                        '/' +
+                        e.id().toString()),
                     color: checkMode &&
                             checked
                                     .where((element) =>
