@@ -63,7 +63,6 @@ class EHentaiImageProvider extends VioletImageProvider {
     }
 
     await pageThrottler.acquire();
-    print(page);
 
     if (urls[page] == null) {
       // 20item per page
