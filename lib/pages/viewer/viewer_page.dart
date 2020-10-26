@@ -498,6 +498,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
         ),
+        filterQuality: FilterQuality.medium,
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -505,6 +506,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     else if (_pageInfo.useFileSystem) {
       return PhotoViewGalleryPageOptions(
         imageProvider: FileImage(File(_pageInfo.uris[index])),
+        filterQuality: FilterQuality.medium,
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -544,6 +546,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   _urlCache[index],
                   headers: _headerCache[index],
                 ),
+                filterQuality: FilterQuality.medium,
                 initialScale: PhotoViewComputedScale.contained,
                 minScale: PhotoViewComputedScale.contained * 1.0,
                 maxScale: PhotoViewComputedScale.contained * 5.0,
