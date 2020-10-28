@@ -97,10 +97,6 @@ class _GroupArtistListState extends State<GroupArtistList>
                       height: 195,
                     );
                   return Container(
-                    key: Key('group' +
-                        widget.groupId.toString() +
-                        '/' +
-                        e.id().toString()),
                     color: checkMode &&
                             checked
                                     .where((element) =>
@@ -236,6 +232,10 @@ class _GroupArtistListState extends State<GroupArtistList>
         flex: 1,
         child: qq.length > index
             ? Padding(
+                key: Key(qq[index].id().toString() +
+                    '/' +
+                    index.toString() +
+                    '_thumbnail_bookmark'),
                 padding: EdgeInsets.all(4),
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
@@ -436,7 +436,8 @@ class _GroupArtistListState extends State<GroupArtistList>
             checkMode = false;
           });
         });
-        refresh();
+        await refresh();
+        setState(() {});
       }
     } else {}
   }
