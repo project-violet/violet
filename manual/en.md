@@ -31,48 +31,48 @@ All functions are actively managed.
 
 ## 2. Database Search and Web Search
 
-`Violet`은 작품 검색을 위한 방법으로 데이터베이스 검색과 웹 검색을 지원합니다.
-데이터베이스 검색은 미리 크롤링된 데이터에서 검색하는 방식이며,
-웹 검색은 직접 각 웹사이트들에서 검색하는 방법과 완전 동일하게 검색합니다.
+`Violet` supports database search and web search as a way to search works.
+Database search is a method of searching from pre-crawled data.
+Web searches are exactly the same way they are searched directly on each website.
 
-데이터베이스 검색을 사용하는 이유는 빠른 검색(이하 쿼리)와 통계 정보 제공을 위함입니다.
-이 앱은 사용자 작품 열람 기록을 바탕으로 가장 비슷한 성향을 가진 작가/그룹/업로더들을 추천해주는 시스템이 구현되어있습니다.
-또한 어떤 작가/그룹/업로더와 비슷한 성향을 가진 작가/그룹/업로더들을 쉽게 탐색할 수 있는 방법을 제공합니다.
+The reason for using database search is to provide quick search (queries below) and statistical information.
+This app has a system that recommends writers/groups/uploaders with the most similar tendencies based on user reading records.
+It also provides an easy way to navigate to writers/groups/uploaders who have similar tendencies to any author/group/uploader.
 
-데이터베이스 검색 방식은 실시간으로 데이터가 업데이트되지 않는 단점이 있어서 실시간 검색을 지원하기 위해 
-웹 검색을 부가적인 검색 방법으로 도입했습니다.
-웹 검색만으로 쿼리 작업을 수행하기는 어렵기 때문에 검색 부분에서만
-웹 검색을 사용하며 나머지 모든 부분들에 대해선 데이터베이스 검색을 사용합니다.
+Database search has the disadvantage of not updating data in real time, so it's important to support real-time search.
+Web search has been introduced as an additional search method.
+Because it is difficult to perform queries with just web searches, only in the search section
+Use web search and use database search for all remaining parts.
 
-데이터베이스는 현재 수동으로 동기화하고 있으며 삼 일에 한 번 이상 업로드하도록 노력하고 있습니다.
+The database is currently being manually synchronized and is trying to upload it more than once every three days.
 
-## 3. 검색
+## 3. Searching
 
-데이터베이스 검색 모드와 웹 검색 모드 각각에서 검색 양식에 차이가 있습니다.
-데이터베이스 검색은 `Hitomi.la`의 검색방식을 기반으로 하며,
-웹 검색은 `E-Hentai` 검색 방식을 따릅니다.
+There are differences in the search form in each of the database search mode and web search mode.
+Database search is based on the search method of `Hitomi.la`,
+and web search follows the `E-Hentai` search method.
 
-### 3.1. 공통 검색 양식
+### 3.1. Common Search Form
 
-아무 단어나 검색한다면 제목에 해당 단어가 포함되어 있는지의 여부로 검색합니다.
+If you are searching for any word, the search is based on whether the title contains that word.
 
-작품의 상세검색을 위한 `female`와 `male`, `tag`, `lang`, `series`, `artist`, `group`, `uploader`, `character`, `type`, `class` 토큰들이 있습니다.
-이 토큰들은 검색하려는 작품들의 상세정보를 제한하고 싶을 때 사용할 수 있습니다.
-각 토큰들은 `female:blowjob`처럼 `:`의 앞에 쓰입니다. `:`의 뒤에 쓰이는건 각 토큰들의 집합 요소(태그)입니다.
-각 토큰들에 띄어쓰기가 포함된 태그가 있다면 띄어쓰기를 `_`로 바꿔써야 합니다.
+`female` and `male`, `tag`, `lang`, `series`, `artist`, `group`, ʻuploader`, `character`, `type`, and `class` tokens for detailed search of works There are.
+These tokens can be used when you want to limit the details of the works you want to search.
+Each token is written before `:` like `female:blowjob`. What follows the `:` is the set element (tag) of each token.
+If there is a tag with spaces in each token, the spaces must be replaced with `_`.
 
-`female:blowjob`로 검색하면 작품의 태그들 중 `female:blowjob`이 포함된 작품만 검색합니다.
-`-female:blowjob`로 검색하면 작품의 태그들 중 `female:blowjob`이 포함되지 않는 작품만 검색합니다.
+If you search for `female:blowjob`, only works that contain `female:blowjob` among the tags of the work are searched.
+If you search with `-female:blowjob`, only works that do not contain `female:blowjob` among the tags of the work are searched.
 
-모든 토큰들은 띄어쓰기로 `And` 결합시킬 수 있습니다.
-가령 `female:blowjob -female:footjob`로 검색하면 작품의 태그들 중 `female:blowjob`이 포함되어 있으며, `female:footjob`이 포함되지 않은 작품들을 검색합니다.
+All tokens can be combined ʻAnd` with spaces.
+For example, if you search for `female:blowjob -female:footjob`, among the tags of the work, `female:blowjob` is included and works that do not include `female:footjob` are searched.
 
-### 3.2. 데이터베이스 검색 양식
+### 3.2. Database Search Form
 
-공통 검색 양식에서 괄호와 `Or` 검색이 포함된 검색 방법을 사용합니다.
+Use a search method that includes parentheses and an `Or` search in the common search form.
 
-`(female:blowjob or female:footjob) -(male:yaoi male:males_only)`와 같이 검색할 수 있습니다.
-이 검색어의 의미는 작품의 태그들 중 `female:blowjob`또는 `female:footjob`이 포함되어있으며, `male:yaoi`과 `male:males_only`가 포함되지 않은 작품들을 검색합니다.
+You can search like `(female:blowjob or female:footjob) -(male:yaoi male:males_only)`.
+This is to search for works that contain `female:blowjob` or `female:footjob` among the tags of the work, and do not include `male:yaoi` and `male:males_only`.
 
 ### 3.3. 웹 검색 양식
 
