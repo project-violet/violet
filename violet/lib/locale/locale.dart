@@ -16,7 +16,11 @@ class Translations {
   static Translations instance;
 
   static Translations of(BuildContext context) {
-    return Localizations.of<Translations>(context, Translations);
+    var trans = Localizations.of<Translations>(context, Translations);
+    if (trans != null)
+      return Localizations.of<Translations>(context, Translations);
+    else
+      return instance;
   }
 
   Map<String, String> _sentences;
@@ -31,7 +35,6 @@ class Translations {
         if (locale.scriptCode != null && locale.scriptCode != '')
           code += '_' + this.locale.scriptCode;
       }
-      instance = this;
     } else if (code.contains('_')) {
       dbLanguageCode = code.split('_')[0];
     } else {
@@ -45,6 +48,8 @@ class Translations {
     _result.forEach((String key, dynamic value) {
       this._sentences[key] = value.toString();
     });
+
+    instance = this;
 
     return true;
   }
@@ -71,6 +76,10 @@ class TranslationsDelegate extends LocalizationsDelegate<Translations> {
   Future<Translations> load(Locale locale) async {
     Translations localizations = new Translations(locale);
     await localizations.load();
+
+    if (Translations.instance == null) {
+      await localizations.load('en');
+    }
 
     print("Load ${locale.languageCode}");
 

@@ -13,7 +13,7 @@
   "colorsetting":"Color Setting",
   "defaulttag":"Default Tag",
   "currenttag":"Current Tag: ",
-  "excludetag":"Exclusive Tags",
+  "excludetag":"Excluded Tags",
   "blurredtag":"Blurred Tags",
   "howtoshowsearchresult":"How To Display Search Results",
   "system": "System",
@@ -59,7 +59,10 @@
   "switching": "Switching",
   "syncmanual": "Sync Manually",
   "tagrebuild": "Tag Rebuild",
-    "component": "Component",
+  "component": "Component",
+  "downloadpath": "Download Path",
+  "curdownloadpath": "Current Path",
+
 
   "read": "Read",
   "artists": "Artists",
@@ -75,9 +78,12 @@
   "preview": "Preview",
   "articles": "Articles",
   "similar": "Similar",
+  "related": "Related",
   "iartists": "Artists",
   "igroups": "Groups",
   "iuploader": "Uploaders",
+  "iseries": "Series",
+  "icharacter": "Characters",
   "score": "Score",
   "more": "More...",
 
@@ -120,14 +126,14 @@
   "notice3": "Any inquiries are welcome!",
   "notice4": "This app has nothing to do with",
   "notice5": "hitomi.la, e-hentai.org, exhentai.org.",
-  
+
   "locking": "Locking",
   "enable_locking": "Enable Locking",
   "network": "Networking",
   "routing_rule": "Routing Rule",
   "proxy": "Proxy",
-  
-  
+
+
   "selectall": "Select All",
   "deselectall": "DeSelect All",
   "inverse": "Invert Selections",
@@ -166,7 +172,7 @@
 
   "yes": "Yes",
   "no": "No",
-  
+
   "date": "Date",
   "complete": "Complete",
   "waitqueue": "Waiting queue...",
@@ -176,29 +182,53 @@
   "count": "%s",
   "stop": "Stopped",
   "unknownerr": "Unknown Error",
-  "urlnotsupport": "This URL does not support",
+  "urlnotsupport": "This URL is not supported",
   "tryagainlogin": "Try again, after login!",
   "dinfo": "Info",
   "state": "State",
   "addurl": "Add URL",
   "writeurl": "Write URL.",
   "nothingtodownload": "Nothing to download :(",
+
   
-    "maindiscord": "Visit violet Discord Channel!",
-    "maincontact": "Contact Developer",
-    "maingithub": "Visit Github Project",
-    "mainversion": "Version",
-    "maindb": "Database",
-    "mainread": "Read",
-    "mainbookmark": "Boomkark",
-    "maindownload": "Donwload",
-    
-    "usewebsearch": "Search on Web",
-    "usevioletserver": "Use Violet Server",
-    "wouldyouupdate": "Would you update?",
-    "violetservermsg": "¿Le gustaría habilitar la función Violet Server? Esta función es un servicio que recopila información sobre el comportamiento del usuario y muestra información estadística en tiempo real. No recopilamos ninguna información que pueda identificarlo.",
-    "daily": "Today",
-    "weekly": "Weekly",
-    "monthly": "Monthly",
-    "alltime": "All Time"
+  "maindiscord": "Visit violet Discord Channel!",
+  "maincontact": "Contact Developer",
+  "maingithub": "Visit Github Project",
+  "mainversion": "Version",
+  "maindb": "Database",
+  "mainread": "Read",
+  "mainbookmark": "Boomkark",
+  "maindownload": "Download",
+  
+  "usewebsearch": "Search on Web",
+  "usevioletserver": "Use Violet Server",
+  "wouldyouupdate": "Would you update?",
+  "violetservermsg": "Would you like to enable the Violet Server function? This function is a service that collects user behavior information and displays statistical information in real time. We do not collect any information that could identify you.",
+  "daily": "Today",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "alltime": "All Time",
+  
+
+  "toggleviewerstyle": "View page by page",
+  "togglerighttoleft": "Right to Left",
+  "togglescrollvertical": "Flip Vertically",
+  "toggleanimatin": "Use Animation Moving Page",
+  "togglepadding": "Add Padding to Webtoon Viewer",
+  "disableoverlaybuttons": "Enable Overlay Buttons",
+  "disablefullscreen": "Enable Fullscreen",
+  
+  "userstat": "User Statistics",
+  "versionmanagement": "Version Management",
+  "service": "Service",
+  "readpresent": "Read",
+  "curversion": "Current Version",
+  "latestversion": "Latest Version",
+  "curlatestversion": "This is the latest version.",
+  "local": "Local",
+  "latest": "Latest",
+  "sync": "Sync",
+  "artistcollection": "Artists Collection",
+  "realtimebest": "RealTime Best",
+  "patchnote": "Patch Note"
 }
