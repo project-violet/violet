@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
 
@@ -213,8 +213,7 @@ class SimilarListPage extends StatelessWidget {
                                                                 e.item1)
                                                             .toString() +
                                                         ')',
-                                                    style: TextStyle(
-                                                        fontSize: 17)),
+                                                    style: TextStyle(fontSize: 17)),
                                                 Text(
                                                     '${Translations.of(context).trans('score')}: ' +
                                                         e.item2.toStringAsFixed(

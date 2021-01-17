@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:math';
 
@@ -41,7 +41,8 @@ class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
   OverScrollHeaderStretchConfiguration get stretchConfiguration => null;
 
   @override
-  PersistentHeaderShowOnScreenConfiguration get showOnScreenConfiguration => null;
+  PersistentHeaderShowOnScreenConfiguration get showOnScreenConfiguration =>
+      null;
 
   @override
   TickerProvider get vsync => null;

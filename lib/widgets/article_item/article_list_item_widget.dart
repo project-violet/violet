@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 import 'dart:ui';
@@ -191,7 +191,9 @@ class _ArticleListItemVerySimpleWidgetState
         : data.width - (data.addBottomPadding ? 100 : 0);
     double hh = data.showDetail
         ? 130.0
-        : data.addBottomPadding ? 500.0 : data.width * 4 / 3;
+        : data.addBottomPadding
+            ? 500.0
+            : data.width * 4 / 3;
 
     var headers = {
       "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
@@ -436,7 +438,9 @@ class _ArticleListItemVerySimpleWidgetState
             : EdgeInsets.zero,
         decoration: BoxDecoration(
           color: data.showDetail
-              ? Settings.themeWhat ? Colors.grey.shade800 : Colors.white70
+              ? Settings.themeWhat
+                  ? Colors.grey.shade800
+                  : Colors.white70
               : Colors.grey.withOpacity(0.3),
           borderRadius: BorderRadius.all(Radius.circular(3)),
           boxShadow: [
