@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
 import 'dart:math';
@@ -91,7 +91,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           ? 1
           : widget.isUploader
               ? 2
-              : widget.isSeries ? 3 : widget.isCharacter ? 4 : 0;
+              : widget.isSeries
+                  ? 3
+                  : widget.isCharacter
+                      ? 4
+                      : 0;
       isBookmarked = await (await Bookmark.getInstance())
           .isBookmarkArtist(widget.artist, type);
 
@@ -279,7 +283,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 ? 'uploader:'
                 : isSeries
                     ? 'series:'
-                    : isCharacter ? 'character:' : 'artist:') +
+                    : isCharacter
+                        ? 'character:'
+                        : 'artist:') +
         '${artist.replaceAll(' ', '_')} ' +
         Settings.includeTags +
         ' ' +
@@ -396,7 +402,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             ? 1
             : widget.isUploader
                 ? 2
-                : widget.isSeries ? 3 : widget.isCharacter ? 4 : 0;
+                : widget.isSeries
+                    ? 3
+                    : widget.isCharacter
+                        ? 4
+                        : 0;
 
         FlutterToast(context).showToast(
           child: ToastWrapper(

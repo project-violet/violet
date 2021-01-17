@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -9,8 +9,12 @@ import 'package:violet/settings/settings.dart';
 class SearchType2 extends StatelessWidget {
   Color getColor(int i) {
     return Settings.themeWhat
-        ? nowType == i ? Colors.grey.shade200 : Colors.grey.shade400
-        : nowType == i ? Colors.grey.shade900 : Colors.grey.shade400;
+        ? nowType == i
+            ? Colors.grey.shade200
+            : Colors.grey.shade400
+        : nowType == i
+            ? Colors.grey.shade900
+            : Colors.grey.shade400;
   }
 
   final int nowType;
