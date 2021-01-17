@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/server/salt.dart';
 
@@ -36,6 +37,7 @@ class VioletServer {
   static Future<void> view(int articleid) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
+    var userId = await getUserAppId();
 
     print(articleid);
 
@@ -47,10 +49,17 @@ class VioletServer {
                 'v-valid': vValid,
                 "Content-Type": "application/json"
               },
-              body: jsonEncode({'no': articleid.toString(), 'user': 'test'}))
+              body: jsonEncode({'no': articleid.toString(), 'user': userId}))
           .then((value) {
         print(value.statusCode);
       });
     } catch (e) {}
+  }
+
+  static String _userId;
+  static Future<String> getUserAppId() async {
+    if (_userId == null)
+      _userId = (await SharedPreferences.getInstance()).getString('fa_userid');
+    return _userId;
   }
 }
