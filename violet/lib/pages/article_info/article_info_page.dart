@@ -203,7 +203,7 @@ class ArticleInfoPage extends StatelessWidget {
           .updateUserLog(data.queryResult.id(), value as int);
       if (Settings.useVioletServer) {
         var endsTime = DateTime.now();
-        await VioletServer.viewClose(`
+        await VioletServer.viewClose(
             data.queryResult.id(), endsTime.difference(startsTime).inSeconds);
       }
       SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
