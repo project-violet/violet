@@ -301,7 +301,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                     child: Align(
                   alignment: Alignment.bottomCenter,
                   child: Text(
-                    'Copyright (C) 2020\nby project-violet',
+                    'Copyright (C) 2020-2021\nby project-violet',
                     style: TextStyle(
                       color: Settings.themeWhat ? Colors.white : Colors.black87,
                       fontSize: 12.0,
@@ -405,7 +405,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                     child: Align(
                   alignment: Alignment.bottomCenter,
                   child: Text(
-                    'Copyright (C) 2020\nby project-violet',
+                    'Copyright (C) 2020-2021\nby project-violet',
                     style: TextStyle(
                       color: Settings.themeWhat ? Colors.white : Colors.black87,
                       fontSize: 12.0,
