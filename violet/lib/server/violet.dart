@@ -56,6 +56,32 @@ class VioletServer {
     } catch (e) {}
   }
 
+  static Future<void> viewClose(int articleid, int readTime) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+    var userId = await getUserAppId();
+
+    print(articleid);
+
+    try {
+      await http
+          .post('$api/view_close',
+              headers: {
+                'v-token': vToken.toString(),
+                'v-valid': vValid,
+                "Content-Type": "application/json"
+              },
+              body: jsonEncode({
+                'no': articleid.toString(),
+                'user': userId,
+                'time': readTime
+              }))
+          .then((value) {
+        print(value.statusCode);
+      });
+    } catch (e) {}
+  }
+
   static String _userId;
   static Future<String> getUserAppId() async {
     if (_userId == null)
