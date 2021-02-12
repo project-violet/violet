@@ -50,7 +50,7 @@ class HentaiManager {
       return await idSearch(what, offset);
     }
     // is random pick?
-    else if (what.split(' ').any(x => x == 'random')) {
+    else if (what.split(' ').any((x) => x == 'random')) {
       return await _randomSearch(what, offset);
     }
     // is db search?
@@ -92,7 +92,7 @@ class HentaiManager {
 
   static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
       [int offset = 0]) async {
-    final wwhat = what.split(' ').where(x => x != 'random').join(' ');
+    final wwhat = what.split(' ').where((x) => x != 'random').join(' ');
     final queryString = HitomiManager.translate2query(wwhat +
         ' ' +
         Settings.includeTags +
