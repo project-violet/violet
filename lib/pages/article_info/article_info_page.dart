@@ -165,6 +165,7 @@ class ArticleInfoPage extends StatelessWidget {
   }
 
   _readButtonEvent(context, data) async {
+    var startsTime = DateTime.now();
     if (Settings.useVioletServer) {
       await VioletServer.view(data.queryResult.id());
     }
@@ -200,6 +201,11 @@ class ArticleInfoPage extends StatelessWidget {
     ).then((value) async {
       await (await User.getInstance())
           .updateUserLog(data.queryResult.id(), value as int);
+      if (Settings.useVioletServer) {
+        var endsTime = DateTime.now();
+        await VioletServer.viewClose(`
+            data.queryResult.id(), endsTime.difference(startsTime).inSeconds);
+      }
       SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     });
   }
