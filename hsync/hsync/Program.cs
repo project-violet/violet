@@ -1,5 +1,5 @@
 ﻿// This source code is a part of project violet-server.
-// Copyright (C) 2020. violet-team. Licensed under the MIT Licence.
+// Copyright (C)2020-2021. violet-team. Licensed under the MIT Licence.
 
 using hsync.Log;
 using System;
