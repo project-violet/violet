@@ -106,7 +106,7 @@ class Artists {
       "hinahara_emi",
     ],
     {'default': 'Loli', 'ko': '로리'}: [
-      'quzila',
+      'quzilax',
       'mochi',
       'asanagi',
       "tanabe kyou",
