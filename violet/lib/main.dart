@@ -20,6 +20,7 @@ import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -62,6 +63,7 @@ void main() async {
 
   await Settings.initFirst();
   await warmupFlare();
+  await VioletServer.uploadBookmark();
 
   runApp(
     DynamicTheme(
