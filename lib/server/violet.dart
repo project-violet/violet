@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/server/salt.dart';
 
 import 'package:violet/network/wrapper.dart' as http;
@@ -79,6 +81,57 @@ class VioletServer {
           .then((value) {
         print(value.statusCode);
       });
+    } catch (e) {}
+  }
+
+  static Future<void> uploadBookmark() async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+    var userId = await getUserAppId();
+    var upload = (await SharedPreferences.getInstance())
+        .getBool('upload_bookmark_178_test');
+    if (upload != null && upload != false) return;
+
+    /*
+      ArticleReadLog
+      BookmarkArticle
+      BookmarkArtist
+      BookmarkGroup
+    */
+
+    var user = await User.getInstance();
+    var db = await Bookmark.getInstance();
+
+    var record = await user.getUserLog();
+    var article = await db.getArticle();
+    var artist = await db.getArtist();
+    var group = await db.getGroup();
+
+    var uploadData = jsonEncode({
+      'record': record.map((e) => e.result).toList(),
+      'article': article.map((e) => e.result).toList(),
+      'artist': artist.map((e) => e.result).toList(),
+      'group': group.map((e) => e.result).toList(),
+    });
+
+    try {
+      await http
+          .post('$api/upload',
+              headers: {
+                'v-token': vToken.toString(),
+                'v-valid': vValid,
+                "Content-Type": "application/json"
+              },
+              body: jsonEncode({
+                'user': userId,
+                'data': uploadData,
+              }))
+          .then((value) {
+        print(value.statusCode);
+      });
+
+      await (await SharedPreferences.getInstance())
+          .setBool('upload_bookmark_178', true);
     } catch (e) {}
   }
 
