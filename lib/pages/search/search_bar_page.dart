@@ -71,6 +71,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       _searchLists.add(Tuple3<String, String, int>('prefix', 'type', 0));
       _searchLists.add(Tuple3<String, String, int>('prefix', 'class', 0));
       _searchLists.add(Tuple3<String, String, int>('prefix', 'recent', 0));
+      _searchLists.add(Tuple3<String, String, int>('prefix', 'random', 0));
     }
 
     return Container(
@@ -653,7 +654,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               extentOffset: offset + info.item2.length + 1,
             );
           } else {
-            _searchController.text = info.item2 + ': ';
+            _searchController.text = info.item2 + ':';
             _searchController.selection = TextSelection(
               baseOffset: info.item2.length + 1,
               extentOffset: info.item2.length + 1,
