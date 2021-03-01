@@ -646,7 +646,7 @@ class _SearchBarPageState extends State<SearchBarPage>
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
                 info.item2 +
-                ': ' +
+                (info.item2 == 'random' ? ' ' : ': ') +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
@@ -654,7 +654,8 @@ class _SearchBarPageState extends State<SearchBarPage>
               extentOffset: offset + info.item2.length + 1,
             );
           } else {
-            _searchController.text = info.item2 + ':';
+            _searchController.text =
+                info.item2 + (info.item2 == 'random' ? '' : ':');
             _searchController.selection = TextSelection(
               baseOffset: info.item2.length + 1,
               extentOffset: info.item2.length + 1,
