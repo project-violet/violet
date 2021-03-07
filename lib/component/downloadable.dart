@@ -237,6 +237,7 @@ class FileNameFormat {
     }
 
     var result = builder.toString().replaceAll('|', 'ㅣ');
+    result = builder.toString().replaceAll(new RegExp(r'[/\\?%*:|"<>]'), '');
 
     // var invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
     // foreach (char c in invalid) if (c != '/' && c!= '\\') result = result.Replace(c.ToString(), "");
