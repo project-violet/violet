@@ -703,10 +703,42 @@ class _SettingsPageState extends State<SettingsPage>
                 _buildItems([
                   InkWell(
                     customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10.0),
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.downloadLock,
+                        color: Settings.majorColor,
+                      ),
+                      title: Text(
+                          Translations.of(context).trans('useinnerstorage')),
+                      trailing: Switch(
+                        value: Settings.useInnerStorage,
+                        onChanged: (value) async {},
+                        activeTrackColor: Settings.majorColor,
+                        activeColor: Settings.majorAccentColor,
                       ),
                     ),
+                    onTap: Platform.isIOS
+                        ? null
+                        : () async {
+                            await Settings.setUserInnerStorage(
+                                !Settings.useInnerStorage);
+                            setState(() {});
+                          },
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    //   customBorder: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.all(
+                    //       Radius.circular(10.0),
+                    //     ),
+                    //   ),
                     child: ListTile(
                       leading: Icon(MdiIcons.folderDownload,
                           color: Settings.majorColor),
@@ -724,55 +756,60 @@ class _SettingsPageState extends State<SettingsPage>
                       ),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    onTap: () async {
-                      Widget yesButton = FlatButton(
-                        child: Text(Translations.of(context).trans('ok'),
-                            style: TextStyle(color: Settings.majorColor)),
-                        focusColor: Settings.majorColor,
-                        splashColor: Settings.majorColor.withOpacity(0.3),
-                        onPressed: () {
-                          Navigator.pop(context, true);
-                        },
-                      );
-                      Widget noButton = FlatButton(
-                        child: Text(Translations.of(context).trans('cancel'),
-                            style: TextStyle(color: Settings.majorColor)),
-                        focusColor: Settings.majorColor,
-                        splashColor: Settings.majorColor.withOpacity(0.3),
-                        onPressed: () {
-                          Navigator.pop(context, false);
-                        },
-                      );
-                      TextEditingController text = TextEditingController(
-                          text: Settings.downloadBasePath);
-                      var dialog = await showDialog(
-                        useRootNavigator: false,
-                        context: context,
-                        child: AlertDialog(
-                          contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                          title: Text(
-                              Translations.of(context).trans('downloadpath')),
-                          content: TextField(
-                            controller: text,
-                            autofocus: true,
-                            maxLines: 3,
-                          ),
-                          actions: [yesButton, noButton],
-                        ),
-                      );
-                      if (dialog != null && dialog == true) {
-                        try {
-                          if (await Permission.storage.isGranted) {
-                            var prevDir = Directory(Settings.downloadBasePath);
-                            if (await prevDir.exists()) {
-                              await prevDir.rename(text.text);
-                            }
-                          }
-                        } catch (e) {}
+                    onTap: Settings.useInnerStorage
+                        ? null
+                        : () async {
+                            Widget yesButton = FlatButton(
+                              child: Text(Translations.of(context).trans('ok'),
+                                  style: TextStyle(color: Settings.majorColor)),
+                              focusColor: Settings.majorColor,
+                              splashColor: Settings.majorColor.withOpacity(0.3),
+                              onPressed: () {
+                                Navigator.pop(context, true);
+                              },
+                            );
+                            Widget noButton = FlatButton(
+                              child: Text(
+                                  Translations.of(context).trans('cancel'),
+                                  style: TextStyle(color: Settings.majorColor)),
+                              focusColor: Settings.majorColor,
+                              splashColor: Settings.majorColor.withOpacity(0.3),
+                              onPressed: () {
+                                Navigator.pop(context, false);
+                              },
+                            );
+                            TextEditingController text = TextEditingController(
+                                text: Settings.downloadBasePath);
+                            var dialog = await showDialog(
+                              useRootNavigator: false,
+                              context: context,
+                              child: AlertDialog(
+                                contentPadding:
+                                    EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                title: Text(Translations.of(context)
+                                    .trans('downloadpath')),
+                                content: TextField(
+                                  controller: text,
+                                  autofocus: true,
+                                  maxLines: 3,
+                                ),
+                                actions: [yesButton, noButton],
+                              ),
+                            );
+                            if (dialog != null && dialog == true) {
+                              try {
+                                if (await Permission.storage.isGranted) {
+                                  var prevDir =
+                                      Directory(Settings.downloadBasePath);
+                                  if (await prevDir.exists()) {
+                                    await prevDir.rename(text.text);
+                                  }
+                                }
+                              } catch (e) {}
 
-                        await Settings.setBaseDownloadPath(text.text);
-                      }
-                    },
+                              await Settings.setBaseDownloadPath(text.text);
+                            }
+                          },
                   ),
                 ]),
                 _buildGroup(Translations.of(context).trans('bookmark')),

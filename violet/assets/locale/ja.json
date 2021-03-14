@@ -59,6 +59,7 @@
     "component": "コンポーネント",
     "downloadpath": "ダウンロードディレクトリ",
      "curdownloadpath": "現在のディレクトリ",
+     "useinnerstorage": "Use Inner Storage",
   
   "read": "読んで",
   "artists": "アーティスト",

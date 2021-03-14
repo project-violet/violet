@@ -62,6 +62,7 @@
   "component": "零件",
     "downloadpath": "下载目录",
     "curdownloadpath": "当前目录",
+    "useinnerstorage": "Use Inner Storage",
 
   "read": "阅读",
   "artists": "作者",
