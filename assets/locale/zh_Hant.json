@@ -62,6 +62,7 @@
     "component": "零件",
     "downloadpath": "Download directory",
     "curdownloadpath": "Current directory",
+    "useinnerstorage": "Use Inner Storage",
 
     "read": "Read",
     "artists": "Artists",

@@ -62,6 +62,7 @@
     "component": "컴포넌트",
     "downloadpath": "다운로드 경로",
     "curdownloadpath": "현재 경로",
+    "useinnerstorage": "내부 저장소 사용",
 
     "read": "읽기",
     "artists": "작가",

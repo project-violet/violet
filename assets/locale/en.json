@@ -62,6 +62,7 @@
     "component": "Component",
     "downloadpath": "Download Path",
     "curdownloadpath": "Current Path",
+    "useinnerstorage": "Use Inner Storage",
 
 
     "read": "Read",

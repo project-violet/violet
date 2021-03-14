@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/component/downloadable.dart' as violetd;
@@ -124,8 +125,11 @@ class DownloadRoutine {
   }) async {
     var downloader = await NativeDownloader.getInstance();
     // var downloader = FlutterDonwloadDonwloader.getInstance();
+    var basepath = Settings.downloadBasePath;
+    if (Settings.useInnerStorage)
+      basepath = (await getApplicationDocumentsDirectory()).path;
     await downloader.addTasks(tasks.map((e) {
-      e.downloadPath = join(Settings.downloadBasePath,
+      e.downloadPath = join(basepath,
           e.format.formatting(extractor.defaultFormat()));
 
       e.startCallback = () {};

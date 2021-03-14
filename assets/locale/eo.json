@@ -62,6 +62,7 @@
     "component": "Component",
     "downloadpath": "Ruta de descarga",
     "curdownloadpath": "Ruta actual",
+    "useinnerstorage": "Use Inner Storage",
 
 "read": "Leer",
 "artists": "Artistas",

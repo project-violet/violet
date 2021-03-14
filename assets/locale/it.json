@@ -62,6 +62,7 @@
     "component": "Component",
     "downloadpath": "Download directory",
      "curdownloadpath": "Directory corrente",
+     "useinnerstorage": "Use Inner Storage",
 
     "read": "Leggi",
     "artists": "Artisti",

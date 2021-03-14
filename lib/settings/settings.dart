@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:device_info/device_info.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class Settings {
   static bool disableFullScreen;
 
   // Download Options
+  static bool useInnerStorage;
   static String downloadBasePath;
 
   static bool useVioletServer;
@@ -217,6 +219,20 @@ class Settings {
       disableFullScreen = false;
       await (await SharedPreferences.getInstance())
           .setBool('disablefullscreen', disableFullScreen);
+    }
+
+    useInnerStorage =
+        (await SharedPreferences.getInstance()).getBool('userinnerstorage');
+    if (useInnerStorage == null) {
+      useInnerStorage = Platform.isIOS;
+      if (Platform.isAndroid) {
+        var deviceInfoPlugin = DeviceInfoPlugin();
+        final androidInfo = await deviceInfoPlugin.androidInfo;
+        if (androidInfo.version.sdkInt >= 30) useInnerStorage = true;
+      }
+
+      await (await SharedPreferences.getInstance())
+          .setBool('userinnerstorage', useInnerStorage);
     }
 
     if (Platform.isAndroid) {
@@ -411,5 +427,11 @@ class Settings {
     downloadBasePath = nn;
     await (await SharedPreferences.getInstance())
         .setString('downloadbasepath', nn);
+  }
+
+  static Future<void> setUserInnerStorage(bool nn) async {
+    useInnerStorage = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('useinnerstorage', nn);
   }
 }
