@@ -207,7 +207,7 @@ namespace hsync
         {
             PrintVersion();
             Console.WriteLine(Encoding.UTF8.GetString(CompressUtils.Decompress(art_console)));
-            Console.WriteLine($"Copyright (C) 2020. project violet-server.");
+            Console.WriteLine($"Copyright (C) 2020-2021. project violet-server.");
             Console.WriteLine("Usage: ./hsync [OPTIONS...]");
 
             var builder = new StringBuilder();
