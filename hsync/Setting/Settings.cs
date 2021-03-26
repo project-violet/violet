@@ -50,6 +50,11 @@ namespace hsync.Setting
         /// Parent Path for Downloading
         /// </summary>
         public string SuperPath;
+
+        /// <summary>
+        /// Server Connection String
+        /// </summary>
+        public string ServerConnection;
     }
 
     public class Settings : ILazy<Settings>
@@ -73,6 +78,7 @@ namespace hsync.Setting
                     ThreadCount = Environment.ProcessorCount * 6,
                     PostprocessorThreadCount = 3,
                     SuperPath = AppProvider.DefaultSuperPath,
+                    ServerConnection = "Server=localhost;Database=test;Uid=root;Pwd=123;",
 
                     HitomiSettings = new SettingModel.HitomiSetting
                     {
