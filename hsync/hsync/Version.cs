@@ -9,9 +9,9 @@ namespace hsync
 {
     public class Version
     {
-        public const int MajorVersion = 2020;
-        public const int MinorVersion = 10;
-        public const int BuildVersion = 23;
+        public const int MajorVersion = 2021;
+        public const int MinorVersion = 03;
+        public const int BuildVersion = 26;
 
         public const string Name = "hsync";
         public static string Text { get; } = $"{MajorVersion}.{MinorVersion}.{BuildVersion}";
