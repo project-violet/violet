@@ -9,6 +9,7 @@ using hsync.Log;
 using hsync.Network;
 using hsync.Setting;
 using hsync.Utils;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -57,6 +58,10 @@ namespace hsync
             Info = "create datetime estimator", Help = "use --create-datetime-estimator")]
         public bool CreateDateTimeEstimator;
 
+        [CommandLine("--init-server", CommandType.OPTION,
+            Info = "Upload all data to server database", Help = "use --init-server")]
+        public bool InitServer;
+
         /// <summary>
         /// User Option
         /// </summary>
@@ -91,6 +96,10 @@ namespace hsync
         [CommandLine("--exhentai-lookup-page", CommandType.ARGUMENTS,
             Info = "Set exhentai lookup page. (default: 200)", Help = "use --exhentai-lookup-page <range>")]
         public string[] ExHentaiLookupPage;
+
+        [CommandLine("--use-server", CommandType.OPTION, ShortOption = "-e",
+            Info = "Upload sync data to server database", Help = "use --use-server")]
+        public bool UseServer;
     }
 
     public class Command
@@ -130,7 +139,7 @@ namespace hsync
             }
             else if (option.Start)
             {
-                ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly, 
+                ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly, option.UseServer,
                     option.HitomiSyncRange, option.HitomiSyncLookupRange, option.ExHentaiLookupPage);
             }
             else if (option.Compress)
@@ -144,6 +153,10 @@ namespace hsync
             else if (option.CreateDateTimeEstimator)
             {
                 ProcessCreateDateTimeEstimator(option.LowPerf);
+            }
+            else if (option.InitServer)
+            {
+                ProcessInitServer(null);
             }
             else if (option.Error)
             {
@@ -223,7 +236,7 @@ namespace hsync
             Console.WriteLine($"Build Date: " + Internals.GetBuildDate().ToLongDateString());
         }
 
-        static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only, 
+        static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only, bool use_server,
             string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page)
         {
             Console.Clear();
@@ -285,6 +298,7 @@ namespace hsync
                 sync.SyncHitomi();
                 sync.SyncExHentai();
                 sync.FlushToMainDatabase();
+                if (use_server) sync.FlushToServerDatabase();
 
                 if (sync_only) return;
 
@@ -510,6 +524,45 @@ namespace hsync
             if (File.Exists("dt-coff.json"))
                 File.Delete("dt-coff.json");
             File.WriteAllText("dt-coff.json", jt.ToString());
+        }
+        
+        static void ProcessInitServer(string[] args)
+        {
+            var db = new SQLiteConnection("data.db");
+            var items = db.Query<HitomiColumnModel>("SELECT Id, Files FROM HitomiColumnModel");
+            
+            using (var conn = new MySqlConnection(Setting.Settings.Instance.Model.ServerConnection))
+            {
+                conn.Open();
+
+                var myCommand = conn.CreateCommand();
+                var transaction = conn.BeginTransaction();
+
+                myCommand.Transaction = transaction;
+                myCommand.Connection = conn;
+
+                try
+                {
+                    myCommand.CommandText = "INSERT INTO article_pages (Id, Pages) VALUES " +
+                        string.Join(',', items.Select(x => $"({x.Id}, {x.Files})"));
+                    myCommand.ExecuteNonQuery();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch (Exception e1)
+                    {
+                    }
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
         }
     }
 

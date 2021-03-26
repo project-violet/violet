@@ -5,11 +5,13 @@ using hsync.Component;
 using hsync.Log;
 using hsync.Network;
 using hsync.Utils;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SQLite;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -443,6 +445,71 @@ namespace hsync
             db2.Close();
 
             File.WriteAllText($"chunk/data-{dt}.json", JsonConvert.SerializeObject(datas));
+        }
+
+        public void FlushToServerDatabase()
+        {
+            using (var conn = new MySqlConnection(Setting.Settings.Instance.Model.ServerConnection))
+            {
+                conn.Open();
+                var myCommand = conn.CreateCommand();
+                var transaction = conn.BeginTransaction();
+
+                myCommand.Transaction = transaction;
+                myCommand.Connection = conn;
+
+                try
+                {
+                    var pairs = new List<string>();
+
+                    var articles = new HashSet<int>();
+
+                    foreach (var n in newedDataEH)
+                        articles.Add(n);
+                    foreach (var n in newedDataHitomi)
+                        articles.Add(n);
+
+                    var x = articles.ToList();
+
+                    var onEH = new Dictionary<int, int>();
+                    for (int i = 0; i < eHentaiResultArticles.Count; i++)
+                    {
+                        var id = int.Parse(eHentaiResultArticles[i].URL.Split('/')[4]);
+                        if (onEH.ContainsKey(id))
+                            continue;
+                        onEH.Add(id, i);
+                    }
+
+                    x.ForEach(id =>
+                    {
+                        var eeh = existsEH.Contains(id);
+
+                        if (!eeh) return;
+
+                        var ed = eHentaiResultArticles[onEH[id]];
+                        pairs.Add($"({id}, {ed.Files})");
+                    });
+
+                    myCommand.CommandText = "INSERT INTO article_pages (Id, Pages) VALUES " +
+                        string.Join(',', pairs);
+                    myCommand.ExecuteNonQuery();
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch (Exception e1)
+                    {
+                    }
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
         }
     }
 }
