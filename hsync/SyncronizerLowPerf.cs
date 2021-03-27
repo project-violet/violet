@@ -491,7 +491,7 @@ namespace hsync
                     });
 
                     myCommand.CommandText = "INSERT INTO article_pages (Id, Pages) VALUES " +
-                        string.Join(',', pairs);
+                        string.Join(',', pairs) + " ON DUPLICATE KEY UPDATE";
                     myCommand.ExecuteNonQuery();
                     transaction.Commit();
                 }
