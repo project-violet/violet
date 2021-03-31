@@ -525,12 +525,18 @@ namespace hsync
                 File.Delete("dt-coff.json");
             File.WriteAllText("dt-coff.json", jt.ToString());
         }
-        
+
         static void ProcessInitServer(string[] args)
+        {
+            _initServerArticlePages();
+            _initServerArticles();
+        }
+
+        static void _initServerArticlePages()
         {
             var db = new SQLiteConnection("data.db");
             var items = db.Query<HitomiColumnModel>("SELECT Id, Files FROM HitomiColumnModel");
-            
+
             using (var conn = new MySqlConnection(Setting.Settings.Instance.Model.ServerConnection))
             {
                 conn.Open();
@@ -561,6 +567,58 @@ namespace hsync
                 finally
                 {
                     conn.Close();
+                }
+            }
+        }
+
+        static void _initServerArticles()
+        {
+            var db = new SQLiteConnection("data.db");
+            var count = db.ExecuteScalar<int>("SELECT COUNT(*) FROM HitomiColumnModel");
+
+            const int perLoop = 50000;
+
+            using (var conn = new MySqlConnection(Setting.Settings.Instance.Model.ServerConnection))
+            {
+                conn.Open();
+
+                for (int i = 0; i < count; i += perLoop)
+                {
+                    var query = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel ORDER BY Id LIMIT {perLoop} OFFSET {i}");
+
+                    Console.WriteLine($"{i}/{count}");
+
+                    var myCommand = conn.CreateCommand();
+                    var transaction = conn.BeginTransaction();
+
+                    myCommand.Transaction = transaction;
+                    myCommand.Connection = conn;
+
+                    try
+                    {
+                        myCommand.CommandText = "INSERT INTO article_pages (Title, Id, " +
+                        "EHash, Type, Artists, Characters, Groups, Langauge, Series, " +
+                        "Tags, Uploader, Published, Files, Class, ExistsOnHitomi) VALUES " +
+                            string.Join(',', query.Select(x => $"({x.Title}, {x.Id}, " +
+                            $"{x.EHash}, {x.Type}, {x.Artists}, {x.Characters}, {x.Groups}, {x.Language}, {x.Series}"+
+                            $"{x.Tags}, {x.Uploader}, {x.Published}, {x.Files}, {x.Class}, {x.ExistOnHitomi})"));
+                        myCommand.ExecuteNonQuery();
+                        transaction.Commit();
+                    }
+                    catch (Exception e)
+                    {
+                        try
+                        {
+                            transaction.Rollback();
+                        }
+                        catch (Exception e1)
+                        {
+                        }
+                    }
+                    finally
+                    {
+                        conn.Close();
+                    }
                 }
             }
         }
