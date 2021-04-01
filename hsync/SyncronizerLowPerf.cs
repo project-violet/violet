@@ -215,8 +215,9 @@ namespace hsync
             }
         }
 
-        public void FlushToMainDatabase()
+        private IEnumerable<HitomiColumnModel> getNewedHitomiColumnModels()
         {
+
             var articles = new HashSet<int>();
 
             foreach (var n in newedDataEH)
@@ -433,8 +434,14 @@ namespace hsync
                 return result;
             });
 
+            return datas;
+        }
+
+        public void FlushToMainDatabase()
+        {
+            var datas = getNewedHitomiColumnModels();
+
             db.InsertAll(datas);
-            db.Close();
 
             if (!Directory.Exists("chunk"))
                 Directory.CreateDirectory("chunk");
@@ -460,38 +467,14 @@ namespace hsync
 
                 try
                 {
-                    var pairs = new List<string>();
+                    var datas = getNewedHitomiColumnModels();
 
-                    var articles = new HashSet<int>();
-
-                    foreach (var n in newedDataEH)
-                        articles.Add(n);
-                    foreach (var n in newedDataHitomi)
-                        articles.Add(n);
-
-                    var x = articles.ToList();
-
-                    var onEH = new Dictionary<int, int>();
-                    for (int i = 0; i < eHentaiResultArticles.Count; i++)
-                    {
-                        var id = int.Parse(eHentaiResultArticles[i].URL.Split('/')[4]);
-                        if (onEH.ContainsKey(id))
-                            continue;
-                        onEH.Add(id, i);
-                    }
-
-                    x.ForEach(id =>
-                    {
-                        var eeh = existsEH.Contains(id);
-
-                        if (!eeh) return;
-
-                        var ed = eHentaiResultArticles[onEH[id]];
-                        pairs.Add($"({id}, {ed.Files})");
-                    });
-
-                    myCommand.CommandText = "INSERT INTO article_pages (Id, Pages) VALUES " +
-                        string.Join(',', pairs) + " ON DUPLICATE KEY UPDATE";
+                    myCommand.CommandText = "INSERT INTO article_pages (Title, Id, " +
+                    "EHash, Type, Artists, Characters, Groups, Langauge, Series, " +
+                    "Tags, Uploader, Published, Files, Class, ExistsOnHitomi) VALUES " +
+                        string.Join(',', datas.Select(x => $"({x.Title}, {x.Id}, " +
+                        $"{x.EHash}, {x.Type}, {x.Artists}, {x.Characters}, {x.Groups}, {x.Language}, {x.Series}" +
+                        $"{x.Tags}, {x.Uploader}, {x.Published}, {x.Files}, {x.Class}, {x.ExistOnHitomi})"));
                     myCommand.ExecuteNonQuery();
                     transaction.Commit();
                 }
@@ -511,5 +494,7 @@ namespace hsync
                 }
             }
         }
+
+        public void Close() => db.Close();
     }
 }

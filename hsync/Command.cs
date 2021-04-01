@@ -299,6 +299,7 @@ namespace hsync
                 sync.SyncExHentai();
                 sync.FlushToMainDatabase();
                 if (use_server) sync.FlushToServerDatabase();
+                sync.Close();
 
                 if (sync_only) return;
 
