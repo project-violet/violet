@@ -597,7 +597,7 @@ namespace hsync
 
                     try
                     {
-                        myCommand.CommandText = "INSERT INTO article_pages (Title, Id, " +
+                        myCommand.CommandText = "INSERT INTO eharticles (Title, Id, " +
                         "EHash, Type, Artists, Characters, Groups, Langauge, Series, " +
                         "Tags, Uploader, Published, Files, Class, ExistsOnHitomi) VALUES " +
                             string.Join(',', query.Select(x => $"({x.Title}, {x.Id}, " +
