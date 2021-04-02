@@ -529,7 +529,7 @@ namespace hsync
 
         static void ProcessInitServer(string[] args)
         {
-            _initServerArticlePages();
+            // _initServerArticlePages();
             _initServerArticles();
         }
 
@@ -572,6 +572,11 @@ namespace hsync
             }
         }
 
+        static string _ggg(string nu) {
+            if (nu == null) return "";
+            return nu.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("＼","\\\\").Replace("＂","\\\"");
+        }
+
         static void _initServerArticles()
         {
             var db = new SQLiteConnection("data.db");
@@ -598,16 +603,22 @@ namespace hsync
                     try
                     {
                         myCommand.CommandText = "INSERT INTO eharticles (Title, Id, " +
-                        "EHash, Type, Artists, Characters, Groups, Langauge, Series, " +
-                        "Tags, Uploader, Published, Files, Class, ExistsOnHitomi) VALUES " +
-                            string.Join(',', query.Select(x => $"({x.Title}, {x.Id}, " +
-                            $"{x.EHash}, {x.Type}, {x.Artists}, {x.Characters}, {x.Groups}, {x.Language}, {x.Series}"+
-                            $"{x.Tags}, {x.Uploader}, {x.Published}, {x.Files}, {x.Class}, {x.ExistOnHitomi})"));
+                        "EHash, Type, Artists, Characters, Groups, Language, Series, " +
+                        "Tags, Uploader, Published, Files, Class, ExistOnHitomi) VALUES " +
+                            string.Join(',', query.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
+                            $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Artists)}\", \"{_ggg(x.Characters)}\", \"{_ggg(x.Groups)}\", \"{_ggg(x.Language)}\", \"{_ggg(x.Series)}\", " +
+                            $"\"{_ggg(x.Tags)}\", \"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", {x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})"));
                         myCommand.ExecuteNonQuery();
                         transaction.Commit();
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine(e.Message);
+                        Console.WriteLine(e.StackTrace);
+                        Console.WriteLine(string.Join("\n", query.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
+                            $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Artists)}\", \"{_ggg(x.Characters)}\", \"{_ggg(x.Groups)}\", \"{_ggg(x.Language)}\", \"{_ggg(x.Series)}\", " +
+                            $"\"{_ggg(x.Tags)}\", \"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", {x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})")));
+                        return;
                         try
                         {
                             transaction.Rollback();
@@ -618,9 +629,10 @@ namespace hsync
                     }
                     finally
                     {
-                        conn.Close();
                     }
                 }
+
+                conn.Close();
             }
         }
     }
