@@ -454,6 +454,12 @@ namespace hsync
             File.WriteAllText($"chunk/data-{dt}.json", JsonConvert.SerializeObject(datas));
         }
 
+        static string _ggg(string nu)
+        {
+            if (nu == null) return "";
+            return nu.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("＼", "\\\\").Replace("＂", "\\\"");
+        }
+
         public void FlushToServerDatabase()
         {
             using (var conn = new MySqlConnection(Setting.Settings.Instance.Model.ServerConnection))
@@ -469,12 +475,14 @@ namespace hsync
                 {
                     var datas = getNewedHitomiColumnModels();
 
+                    var values = string.Join(',', datas.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
+                        $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Artists)}\", \"{_ggg(x.Characters)}\", \"{_ggg(x.Groups)}\", \"{_ggg(x.Language)}\", \"{_ggg(x.Series)}\", " +
+                        $"\"{_ggg(x.Tags)}\", \"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", {x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})")+
+                        " ON DUPLICATE KEY UPDATE Title=Title, Id=Id, EHash=EHash, Type=Type, Artists=Artists, Published=Published, Files=Files, Class=Class, ExistOnHitomi=ExistOnHitomi");
                     myCommand.CommandText = "INSERT INTO eharticles (Title, Id, " +
-                    "EHash, Type, Artists, Characters, Groups, Langauge, Series, " +
-                    "Tags, Uploader, Published, Files, Class, ExistsOnHitomi) VALUES " +
-                        string.Join(',', datas.Select(x => $"(\"{x.Title.Replace("\"", "\\\"")}\", {x.Id}, " +
-                        $"\"{x.EHash}\", \"{x.Type}\", \"{x.Artists}\", \"{x.Characters}\", \"{x.Groups}\", \"{x.Language}\", \"{x.Series}\", " +
-                        $"\"{x.Tags}\", \"{x.Uploader}\", {x.Published}, {x.Files}, \"{x.Class}\", {x.ExistOnHitomi})"));
+                    "EHash, Type, Artists, Characters, Groups, Language, Series, " +
+                    "Tags, Uploader, Published, Files, Class, ExistOnHitomi) VALUES " +
+                       values;
                     myCommand.ExecuteNonQuery();
                     transaction.Commit();
                 }

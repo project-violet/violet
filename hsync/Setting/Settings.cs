@@ -78,7 +78,7 @@ namespace hsync.Setting
                     ThreadCount = Environment.ProcessorCount * 6,
                     PostprocessorThreadCount = 3,
                     SuperPath = AppProvider.DefaultSuperPath,
-                    ServerConnection = "Server=localhost;Database=test;Uid=root;Pwd=123;CharSet=utf8",
+                    ServerConnection = "Server=localhost;Database=test;Uid=root;Pwd=123;CharSet=utf8mb4",
 
                     HitomiSettings = new SettingModel.HitomiSetting
                     {

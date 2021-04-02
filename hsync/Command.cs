@@ -529,7 +529,7 @@ namespace hsync
 
         static void ProcessInitServer(string[] args)
         {
-            // _initServerArticlePages();
+            _initServerArticlePages();
             _initServerArticles();
         }
 
@@ -574,6 +574,7 @@ namespace hsync
 
         static string _ggg(string nu) {
             if (nu == null) return "";
+            nu = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(nu));
             return nu.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("＼","\\\\").Replace("＂","\\\"");
         }
 
