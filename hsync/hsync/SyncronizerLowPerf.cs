@@ -472,9 +472,9 @@ namespace hsync
                     myCommand.CommandText = "INSERT INTO eharticles (Title, Id, " +
                     "EHash, Type, Artists, Characters, Groups, Langauge, Series, " +
                     "Tags, Uploader, Published, Files, Class, ExistsOnHitomi) VALUES " +
-                        string.Join(',', datas.Select(x => $"({x.Title}, {x.Id}, " +
-                        $"{x.EHash}, {x.Type}, {x.Artists}, {x.Characters}, {x.Groups}, {x.Language}, {x.Series}" +
-                        $"{x.Tags}, {x.Uploader}, {x.Published}, {x.Files}, {x.Class}, {x.ExistOnHitomi})"));
+                        string.Join(',', datas.Select(x => $"(\"{x.Title.Replace("\"", "\\\"")}\", {x.Id}, " +
+                        $"\"{x.EHash}\", \"{x.Type}\", \"{x.Artists}\", \"{x.Characters}\", \"{x.Groups}\", \"{x.Language}\", \"{x.Series}\", " +
+                        $"\"{x.Tags}\", \"{x.Uploader}\", {x.Published}, {x.Files}, \"{x.Class}\", {x.ExistOnHitomi})"));
                     myCommand.ExecuteNonQuery();
                     transaction.Commit();
                 }

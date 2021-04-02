@@ -21,8 +21,8 @@ namespace hsync
 {
     public class AppProvider
     {
-        public static string ApplicationPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        public static string DefaultSuperPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string ApplicationPath =  Directory.GetCurrentDirectory();
+        public static string DefaultSuperPath =  Directory.GetCurrentDirectory();
 
         public static Dictionary<string, object> Instance =>
             InstanceMonitor.Instances;
