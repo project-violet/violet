@@ -572,10 +572,10 @@ namespace hsync
             }
         }
 
-        static string _ggg(string nu) {
+        static string _ggg(string nu)
+        {
             if (nu == null) return "";
-            nu = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(nu));
-            return nu.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("＼","\\\\").Replace("＂","\\\"");
+            return nu.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("＼", "\\\\").Replace("＂", "\\\"");
         }
 
         static void _initServerArticles()
@@ -584,6 +584,12 @@ namespace hsync
             var count = db.ExecuteScalar<int>("SELECT COUNT(*) FROM HitomiColumnModel");
 
             const int perLoop = 50000;
+
+            var index_artist = new Dictionary<string, int>();
+            var index_group = new Dictionary<string, int>();
+            var index_series = new Dictionary<string, int>();
+            var index_character = new Dictionary<string, int>();
+            var index_tag = new Dictionary<string, int>();
 
             using (var conn = new MySqlConnection(Setting.Settings.Instance.Model.ServerConnection))
             {
@@ -604,27 +610,98 @@ namespace hsync
                     try
                     {
                         myCommand.CommandText = "INSERT INTO eharticles (Title, Id, " +
-                        "EHash, Type, Artists, Characters, Groups, Language, Series, " +
-                        "Tags, Uploader, Published, Files, Class, ExistOnHitomi) VALUES " +
-                            string.Join(',', query.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
-                            $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Artists)}\", \"{_ggg(x.Characters)}\", \"{_ggg(x.Groups)}\", \"{_ggg(x.Language)}\", \"{_ggg(x.Series)}\", " +
-                            $"\"{_ggg(x.Tags)}\", \"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", {x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})"));
+                                                "EHash, Type, Language, " +
+                                                "Uploader, Published, Files, Class, ExistOnHitomi) VALUES " +
+                                                    string.Join(',', query.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
+                                                    $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Language)}\", " +
+                                                    $"\"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", " +
+                                                    $"{x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})"));
                         myCommand.ExecuteNonQuery();
+
+                        var new_index_artist = new List<(string, int)>();
+                        var new_index_group = new List<(string, int)>();
+                        var new_index_series = new List<(string, int)>();
+                        var new_index_character = new List<(string, int)>();
+                        var new_index_tag = new List<(string, int)>();
+
+                        var junction_artist = new List<(int, int)>();
+                        var junction_group = new List<(int, int)>();
+                        var junction_series = new List<(int, int)>();
+                        var junction_character = new List<(int, int)>();
+                        var junction_tag = new List<(int, int)>();
+
+                        foreach (var article in query)
+                        {
+                            Func<Dictionary<string, int>, string, List<(string, int)>> insertSingle = (map, qr) =>
+                            {
+                                if (qr == null || qr == "") return null;
+                                var x = new List<(string, int)>();
+                                foreach (var tag in qr.Split('|'))
+                                    if (tag != "" && !map.ContainsKey(tag))
+                                    {
+                                        x.Add((tag, map.Count));
+                                        map.Add(tag, map.Count);
+                                    }
+                                return x;
+                            };
+
+                            Action<string, List<(string, int)>, List<(int, int)>, Dictionary<string, int>>
+                                compileMetadata = (what, new_index, junction, index) =>
+                            {
+                                if (what != null && what != "")
+                                {
+                                    new_index.AddRange(insertSingle(index, what));
+                                    junction.AddRange(what.Split('|')
+                                        .Where(x => x != "")
+                                        .Select(x => (article.Id, index[x])));
+                                }
+                            };
+
+                            compileMetadata(article.Artists, new_index_artist, junction_artist, index_artist);
+                            compileMetadata(article.Groups, new_index_group, junction_group, index_group);
+                            compileMetadata(article.Series, new_index_series, junction_series, index_series);
+                            compileMetadata(article.Characters, new_index_character, junction_character, index_character);
+                            compileMetadata(article.Tags, new_index_tag, junction_tag, index_tag);
+                        }
+
+                        Action<List<(string, int)>, string, List<(int, int)>, string> insertNew =
+                            (new_index, tableName, junctions, junctionKeyword) =>
+                        {
+                            if (new_index.Count > 0)
+                            {
+                                myCommand.CommandText = $"INSERT IGNORE INTO {tableName} (Id, Name) VALUES " +
+                                     string.Join(',', new_index.Select(x => $"({x.Item2}, \"{_ggg(x.Item1)}\")"));
+                                myCommand.ExecuteNonQuery();
+                            }
+                            if (junctions.Count > 0)
+                            {
+                                myCommand.CommandText = $"INSERT IGNORE INTO {tableName}_junction (`Article`, `{junctionKeyword}`) VALUES " +
+                                     string.Join(',', junctions.Select(x => $"({x.Item1}, {x.Item2})"));
+                                myCommand.ExecuteNonQuery();
+                            }
+                        };
+
+                        insertNew(new_index_artist, "eharticles_artists", junction_artist, "Artist");
+                        insertNew(new_index_group, "eharticles_groups", junction_group, "Group");
+                        insertNew(new_index_series, "eharticles_series", junction_series, "Series");
+                        insertNew(new_index_character, "eharticles_characters", junction_character, "Character");
+                        insertNew(new_index_tag, "eharticles_tags", junction_tag, "Tag");
+
                         transaction.Commit();
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.Message);
-                        Console.WriteLine(e.StackTrace);
-                        Console.WriteLine(string.Join("\n", query.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
-                            $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Artists)}\", \"{_ggg(x.Characters)}\", \"{_ggg(x.Groups)}\", \"{_ggg(x.Language)}\", \"{_ggg(x.Series)}\", " +
-                            $"\"{_ggg(x.Tags)}\", \"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", {x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})")));
-                        return;
                         try
                         {
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine(e.StackTrace);
+                            Console.WriteLine(string.Join("\n", query.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
+                                $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Artists)}\", \"{_ggg(x.Characters)}\", \"{_ggg(x.Groups)}\", \"{_ggg(x.Language)}\", \"{_ggg(x.Series)}\", " +
+                                $"\"{_ggg(x.Tags)}\", \"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", {x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})")));
                             transaction.Rollback();
+                            break;
                         }
-                        catch (Exception e1)
+                        catch (Exception)
                         {
                         }
                     }

@@ -465,6 +465,7 @@ namespace hsync
             using (var conn = new MySqlConnection(Setting.Settings.Instance.Model.ServerConnection))
             {
                 conn.Open();
+
                 var myCommand = conn.CreateCommand();
                 var transaction = conn.BeginTransaction();
 
@@ -475,15 +476,108 @@ namespace hsync
                 {
                     var datas = getNewedHitomiColumnModels();
 
-                    var values = string.Join(',', datas.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
-                        $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Artists)}\", \"{_ggg(x.Characters)}\", \"{_ggg(x.Groups)}\", \"{_ggg(x.Language)}\", \"{_ggg(x.Series)}\", " +
-                        $"\"{_ggg(x.Tags)}\", \"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", {x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})")+
-                        " ON DUPLICATE KEY UPDATE Title=Title, Id=Id, EHash=EHash, Type=Type, Artists=Artists, Published=Published, Files=Files, Class=Class, ExistOnHitomi=ExistOnHitomi");
+                    var index_artist = new Dictionary<string, int>();
+                    var index_group = new Dictionary<string, int>();
+                    var index_series = new Dictionary<string, int>();
+                    var index_character = new Dictionary<string, int>();
+                    var index_tag = new Dictionary<string, int>();
+
+                    Action<string, Dictionary<string, int>> queryIndexs = (tableName, index) =>
+                    {
+                        myCommand.CommandText = "SELECT Id, Name FROM " + tableName;
+                        var reader = myCommand.ExecuteReader();
+                        while (reader.Read())
+                            index.Add(reader["Name"] as string, Convert.ToInt32(reader["Id"].ToString()));
+                        reader.Close();
+                    };
+
+                    queryIndexs("eharticles_artists", index_artist);
+                    queryIndexs("eharticles_groups", index_group);
+                    queryIndexs("eharticles_series", index_series);
+                    queryIndexs("eharticles_characters", index_character);
+                    queryIndexs("eharticles_tags", index_tag);
+
                     myCommand.CommandText = "INSERT INTO eharticles (Title, Id, " +
-                    "EHash, Type, Artists, Characters, Groups, Language, Series, " +
-                    "Tags, Uploader, Published, Files, Class, ExistOnHitomi) VALUES " +
-                       values;
+                                            "EHash, Type, Language, " +
+                                            "Uploader, Published, Files, Class, ExistOnHitomi) VALUES " +
+                                                string.Join(',', datas.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
+                                                $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Language)}\", " +
+                                                $"\"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", " +
+                                                $"{x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})")) + " " +
+                                            "ON DUPLICATE KEY UPDATE " +
+                                            "Title=VALUES(Title), EHash=VALUES(EHash), Type=VALUES(Type), Language=VALUES(Language)," +
+                                            "Uploader=VALUES(Uploader),Published=VALUES(Published),Files=VALUES(Files),Class=VALUES(Class),ExistOnHitomi=VALUES(ExistOnHitomi)";
                     myCommand.ExecuteNonQuery();
+
+                    var new_index_artist = new List<(string, int)>();
+                    var new_index_group = new List<(string, int)>();
+                    var new_index_series = new List<(string, int)>();
+                    var new_index_character = new List<(string, int)>();
+                    var new_index_tag = new List<(string, int)>();
+
+                    var junction_artist = new List<(int, int)>();
+                    var junction_group = new List<(int, int)>();
+                    var junction_series = new List<(int, int)>();
+                    var junction_character = new List<(int, int)>();
+                    var junction_tag = new List<(int, int)>();
+
+                    foreach (var article in datas)
+                    {
+                        Func<Dictionary<string, int>, string, List<(string, int)>> insertSingle = (map, qr) =>
+                        {
+                            if (qr == null || qr == "") return null;
+                            var x = new List<(string, int)>();
+                            foreach (var tag in qr.Split('|'))
+                                if (tag != "" && !map.ContainsKey(tag))
+                                {
+                                    x.Add((tag, map.Count));
+                                    map.Add(tag, map.Count);
+                                }
+                            return x;
+                        };
+
+                        Action<string, List<(string, int)>, List<(int, int)>, Dictionary<string, int>>
+                            compileMetadata = (what, new_index, junction, index) =>
+                        {
+                            if (what != null && what != "")
+                            {
+                                new_index.AddRange(insertSingle(index, what));
+                                junction.AddRange(what.Split('|')
+                                    .Where(x => x != "")
+                                    .Select(x => (article.Id, index[x])));
+                            }
+                        };
+
+                        compileMetadata(article.Artists, new_index_artist, junction_artist, index_artist);
+                        compileMetadata(article.Groups, new_index_group, junction_group, index_group);
+                        compileMetadata(article.Series, new_index_series, junction_series, index_series);
+                        compileMetadata(article.Characters, new_index_character, junction_character, index_character);
+                        compileMetadata(article.Tags, new_index_tag, junction_tag, index_tag);
+                    }
+
+                    Action<List<(string, int)>, string, List<(int, int)>, string> insertNew =
+                        (new_index, tableName, junctions, junctionKeyword) =>
+                    {
+                        if (new_index.Count > 0)
+                        {
+                            myCommand.CommandText = $"INSERT IGNORE INTO {tableName} (Id, Name) VALUES " +
+                                 string.Join(',', new_index.Select(x => $"({x.Item2}, \"{_ggg(x.Item1)}\")"));
+                            myCommand.ExecuteNonQuery();
+                        }
+                        if (junctions.Count > 0)
+                        {
+                            myCommand.CommandText = $"INSERT IGNORE INTO {tableName}_junction (`Article`, `{junctionKeyword}`) VALUES " +
+                                 string.Join(',', junctions.Select(x => $"({x.Item1}, {x.Item2})"));
+                            myCommand.ExecuteNonQuery();
+                        }
+                    };
+
+                    insertNew(new_index_artist, "eharticles_artists", junction_artist, "Artist");
+                    insertNew(new_index_group, "eharticles_groups", junction_group, "Group");
+                    insertNew(new_index_series, "eharticles_series", junction_series, "Series");
+                    insertNew(new_index_character, "eharticles_characters", junction_character, "Character");
+                    insertNew(new_index_tag, "eharticles_tags", junction_tag, "Tag");
+
                     transaction.Commit();
                 }
                 catch (Exception e)
