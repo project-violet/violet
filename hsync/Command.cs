@@ -70,6 +70,10 @@ namespace hsync
             Info = "Export database bulk datas for elastic-search to json", Help = "use --export-for-es")]
         public bool ExportForES;
 
+        [CommandLine("--export-for-es-range", CommandType.ARGUMENTS, ArgumentsCount = 2,
+            Info = "Export database bulk datas for elastic-search to json using id range", Help = "--export-for-es-range")]
+        public string[] ExportForESRange;
+
         /// <summary>
         /// User Option
         /// </summary>
@@ -177,6 +181,10 @@ namespace hsync
             else if (option.ExportForES)
             {
                 ProcessExportToES(null);
+            }
+            else if (option.ExportForESRange != null)
+            {
+                ProcessExportForESRange(option.ExportForESRange);
             }
             else if (option.Error)
             {
@@ -763,8 +771,8 @@ namespace hsync
                     ss.Add(JsonConvert.SerializeObject(article));
                 }
 
-      RETRY_PUSH:
-      
+            RETRY_PUSH:
+
                 var request = (HttpWebRequest)WebRequest.Create(Settings.Instance.Model.ElasticSearchHost);
 
                 request.Method = "POST";
@@ -772,7 +780,7 @@ namespace hsync
 
                 var request_stream = new StreamWriter(request.GetRequestStream());
 
-                request_stream.Write(string.Join("\n", ss)  + "\n");
+                request_stream.Write(string.Join("\n", ss) + "\n");
                 request_stream.Close();
 
                 try
@@ -781,14 +789,81 @@ namespace hsync
                     {
                     }
                 }
-                catch (WebException)
+                catch (WebException we)
                 {
+                    using (var stream = we.Response.GetResponseStream())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        Console.WriteLine(reader.ReadToEnd());
+                    }
                     Thread.Sleep(1000);
                     goto RETRY_PUSH;
                 }
                 Thread.Sleep(1000);
             }
+        }
 
+        static void ProcessExportForESRange(string[] args)
+        {
+            var arg1 = Convert.ToInt32(args[0]);
+            var arg2 = Convert.ToInt32(args[1]);
+
+            var db = new SQLiteConnection("data.db");
+            var count = db.ExecuteScalar<int>("SELECT COUNT(*) FROM HitomiColumnModel");
+
+            const int perLoop = 6000;
+
+            for (int i = 0; i < count; i += perLoop)
+            {
+                var query = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel ORDER BY Id LIMIT {perLoop} OFFSET {i}");
+                Console.WriteLine($"{i}/{count}");
+
+                query = query.Where(x => arg1 <= x.Id && x.Id <= arg2).ToList();
+
+                if (query.Count == 0) continue;
+
+                var ss = new List<string>();
+                foreach (var article in query)
+                {
+                    JObject id = new JObject();
+                    id.Add("_id", article.Id);
+                    JObject index = new JObject();
+                    index.Add("index", id);
+                    ss.Add(JsonConvert.SerializeObject(index));
+                    article.Thumbnail = null;
+                    ss.Add(JsonConvert.SerializeObject(article));
+                }
+
+            RETRY_PUSH:
+
+                var request = (HttpWebRequest)WebRequest.Create(Settings.Instance.Model.ElasticSearchHost);
+
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                var request_stream = new StreamWriter(request.GetRequestStream());
+
+                request_stream.Write(string.Join("\n", ss) + "\n");
+                request_stream.Close();
+
+                try
+                {
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    {
+                    }
+                }
+                catch (WebException we)
+                {
+                    using (var stream = we.Response.GetResponseStream())
+                    using (var reader = new StreamReader(stream))
+                    {
+                        Console.WriteLine(reader.ReadToEnd());
+                    }
+                    Thread.Sleep(1000);
+                    goto RETRY_PUSH;
+                }
+                Thread.Sleep(1000);
+            }
         }
     }
 
