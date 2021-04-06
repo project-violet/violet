@@ -62,6 +62,14 @@ namespace hsync
             Info = "Upload all data to server database", Help = "use --init-server")]
         public bool InitServer;
 
+        [CommandLine("--init-server-pages", CommandType.OPTION,
+            Info = "Upload all data to server article pages", Help = "use --init-server-pages")]
+        public bool InitServerPages;
+
+        [CommandLine("--export-for-es", CommandType.OPTION,
+            Info = "Export database bulk datas for elastic-search to json", Help = "use --export-for-es")]
+        public bool ExportForES;
+
         /// <summary>
         /// User Option
         /// </summary>
@@ -157,6 +165,14 @@ namespace hsync
             else if (option.InitServer)
             {
                 ProcessInitServer(null);
+            }
+            else if (option.InitServerPages)
+            {
+                ProcessInitServerPages(null);
+            }
+            else if (option.ExportForES)
+            {
+                ProcessExportToES(null);
             }
             else if (option.Error)
             {
@@ -529,8 +545,12 @@ namespace hsync
 
         static void ProcessInitServer(string[] args)
         {
-            _initServerArticlePages();
             _initServerArticles();
+        }
+
+        static void ProcessInitServerPages(string[] args)
+        {
+            _initServerArticlePages();
         }
 
         static void _initServerArticlePages()
@@ -712,6 +732,58 @@ namespace hsync
 
                 conn.Close();
             }
+        }
+
+        static void ProcessExportToES(string[] args)
+        {
+            var db = new SQLiteConnection("data.db");
+            var count = db.ExecuteScalar<int>("SELECT COUNT(*) FROM HitomiColumnModel");
+
+            const int perLoop = 6000;
+
+            for (int i = 0; i < count; i += perLoop)
+            {
+                var query = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel ORDER BY Id LIMIT {perLoop} OFFSET {i}");
+                Console.WriteLine($"{i}/{count}");
+
+                var ss = new List<string>();
+                foreach (var article in query)
+                {
+                    JObject id = new JObject();
+                    id.Add("_id", article.Id);
+                    JObject index = new JObject();
+                    index.Add("index", id);
+                    ss.Add(JsonConvert.SerializeObject(index));
+                    article.Thumbnail = null;
+                    ss.Add(JsonConvert.SerializeObject(article));
+                }
+
+      RETRY_PUSH:
+      
+                var request = (HttpWebRequest)WebRequest.Create(Settings.Instance.Model.ElasticSearchHost);
+
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                var request_stream = new StreamWriter(request.GetRequestStream());
+
+                request_stream.Write(string.Join("\n", ss)  + "\n");
+                request_stream.Close();
+
+                try
+                {
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    {
+                    }
+                }
+                catch (WebException)
+                {
+                    Thread.Sleep(1000);
+                    goto RETRY_PUSH;
+                }
+                Thread.Sleep(1000);
+            }
+
         }
     }
 
