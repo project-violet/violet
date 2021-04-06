@@ -108,6 +108,10 @@ namespace hsync
         [CommandLine("--use-server", CommandType.OPTION, ShortOption = "-e",
             Info = "Upload sync data to server database", Help = "use --use-server")]
         public bool UseServer;
+
+        [CommandLine("--use-elastic-search", CommandType.OPTION, ShortOption = "-a",
+            Info = "Upload sync data to elastic-search server", Help = "use --use-elastic-search")]
+        public bool UseElasticSearch;
     }
 
     public class Command
@@ -147,7 +151,7 @@ namespace hsync
             }
             else if (option.Start)
             {
-                ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly, option.UseServer,
+                ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly, option.UseServer, option.UseElasticSearch,
                     option.HitomiSyncRange, option.HitomiSyncLookupRange, option.ExHentaiLookupPage);
             }
             else if (option.Compress)
@@ -252,7 +256,7 @@ namespace hsync
             Console.WriteLine($"Build Date: " + Internals.GetBuildDate().ToLongDateString());
         }
 
-        static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only, bool use_server,
+        static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only, bool use_server, bool use_elasticsearch,
             string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page)
         {
             Console.Clear();
@@ -315,6 +319,7 @@ namespace hsync
                 sync.SyncExHentai();
                 sync.FlushToMainDatabase();
                 if (use_server) sync.FlushToServerDatabase();
+                if (use_elasticsearch) sync.FlushToElasticSearchServer();
                 sync.Close();
 
                 if (sync_only) return;

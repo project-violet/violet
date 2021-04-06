@@ -4,10 +4,12 @@
 using hsync.Component;
 using hsync.Log;
 using hsync.Network;
+using hsync.Setting;
 using hsync.Utils;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -594,6 +596,54 @@ namespace hsync
                 {
                     conn.Close();
                 }
+            }
+        }
+
+        public void FlushToElasticSearchServer()
+        {
+            try
+            {
+                var datas = getNewedHitomiColumnModels();
+
+                var ss = new List<string>();
+                foreach (var article in datas)
+                {
+                    JObject id = new JObject();
+                    id.Add("_id", article.Id);
+                    JObject index = new JObject();
+                    index.Add("index", id);
+                    ss.Add(JsonConvert.SerializeObject(index));
+                    article.Thumbnail = null;
+                    ss.Add(JsonConvert.SerializeObject(article));
+                }
+
+      RETRY_PUSH:
+      
+                var request = (HttpWebRequest)WebRequest.Create(Settings.Instance.Model.ElasticSearchHost);
+
+                request.Method = "POST";
+                request.ContentType = "application/json";
+
+                var request_stream = new StreamWriter(request.GetRequestStream());
+
+                request_stream.Write(string.Join("\n", ss)  + "\n");
+                request_stream.Close();
+
+                try
+                {
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    {
+                    }
+                }
+                catch (WebException)
+                {
+                    Thread.Sleep(1000);
+                    goto RETRY_PUSH;
+                }
+                Thread.Sleep(1000);
+            }
+            catch (Exception e)
+            {
             }
         }
 
