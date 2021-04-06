@@ -74,6 +74,10 @@ namespace hsync
             Info = "Export database bulk datas for elastic-search to json using id range", Help = "--export-for-es-range")]
         public string[] ExportForESRange;
 
+        [CommandLine("--export-for-db-range", CommandType.ARGUMENTS, ArgumentsCount = 2,
+            Info = "Upload data to server database by user range", Help = "--export-for-db-range")]
+        public string[] ExportForDBRange;
+
         /// <summary>
         /// User Option
         /// </summary>
@@ -177,6 +181,10 @@ namespace hsync
             else if (option.InitServerPages)
             {
                 ProcessInitServerPages(null);
+            }
+            else if (option.ExportForDBRange != null)
+            {
+                ProcessExportForDBRange(option.ExportForDBRange);
             }
             else if (option.ExportForES)
             {
@@ -558,12 +566,17 @@ namespace hsync
 
         static void ProcessInitServer(string[] args)
         {
-            _initServerArticles();
+            _uploadToServerArticlesData();
         }
 
         static void ProcessInitServerPages(string[] args)
         {
             _initServerArticlePages();
+        }
+
+        static void ProcessExportForDBRange(string[] args)
+        {
+            _uploadToServerArticlesData(Convert.ToInt32(args[0]), Convert.ToInt32(args[1]));
         }
 
         static void _initServerArticlePages()
@@ -611,7 +624,7 @@ namespace hsync
             return nu.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("＼", "\\\\").Replace("＂", "\\\"");
         }
 
-        static void _initServerArticles()
+        static void _uploadToServerArticlesData(int range1 = 0, int range2 = int.MaxValue)
         {
             var db = new SQLiteConnection("data.db");
             var count = db.ExecuteScalar<int>("SELECT COUNT(*) FROM HitomiColumnModel");
@@ -633,6 +646,10 @@ namespace hsync
                     var query = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel ORDER BY Id LIMIT {perLoop} OFFSET {i}");
 
                     Console.WriteLine($"{i}/{count}");
+
+                    query = query.Where(x => range1 <= x.Id && x.Id <= range2).ToList();
+
+                    if (query.Count == 0) continue;
 
                     var myCommand = conn.CreateCommand();
                     var transaction = conn.BeginTransaction();
