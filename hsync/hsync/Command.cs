@@ -665,7 +665,10 @@ namespace hsync
                                                     string.Join(',', query.Select(x => $"(\"{_ggg(x.Title)}\", {x.Id}, " +
                                                     $"\"{x.EHash}\", \"{_ggg(x.Type)}\", \"{_ggg(x.Language)}\", " +
                                                     $"\"{_ggg(x.Uploader)}\", \"{(x.Published.HasValue ? x.Published.Value.ToString("yyyy-MM-dd HH:mm:ss") : "")}\", " +
-                                                    $"{x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})"));
+                                                    $"{x.Files}, \"{_ggg(x.Class)}\", {x.ExistOnHitomi})")) + " " +
+                                                "ON DUPLICATE KEY UPDATE " +
+                                                "Title=VALUES(Title), EHash=VALUES(EHash), Type=VALUES(Type), Language=VALUES(Language)," +
+                                                "Uploader=VALUES(Uploader),Published=VALUES(Published),Files=VALUES(Files),Class=VALUES(Class),ExistOnHitomi=VALUES(ExistOnHitomi)";
                         myCommand.ExecuteNonQuery();
 
                         var new_index_artist = new List<(string, int)>();
