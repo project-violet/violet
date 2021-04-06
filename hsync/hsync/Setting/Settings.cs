@@ -55,6 +55,11 @@ namespace hsync.Setting
         /// Server Connection String
         /// </summary>
         public string ServerConnection;
+
+        /// <summary>
+        /// Elastic Search Server HostName
+        /// </summary>
+        public string ElasticSearchHost;
     }
 
     public class Settings : ILazy<Settings>
@@ -79,6 +84,7 @@ namespace hsync.Setting
                     PostprocessorThreadCount = 3,
                     SuperPath = AppProvider.DefaultSuperPath,
                     ServerConnection = "Server=localhost;Database=test;Uid=root;Pwd=123;CharSet=utf8mb4",
+                    ElasticSearchHost = "",
 
                     HitomiSettings = new SettingModel.HitomiSetting
                     {
