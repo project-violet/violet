@@ -281,6 +281,7 @@ namespace hsync
                 onExists.Add(exists[i].Id, i);
             }
 
+            // TODO: This code must be called only one!
             db.Execute($"DELETE FROM HitomiColumnModel WHERE Id IN ({string.Join(",", x)})");
 
             var datas = x.Select(id =>
