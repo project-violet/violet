@@ -72,6 +72,8 @@ namespace hsync
             latestId = db.Query<HitomiColumnModel>("SELECT * FROM HitomiColumnModel WHERE Id = (SELECT MAX(Id) FROM HitomiColumnModel);")[0].Id;
             newedDataHitomi = new HashSet<int>();
             newedDataEH = new HashSet<int>();
+
+            Console.WriteLine("latest_id: " + latestId);
         }
 
         public void SyncHitomi()
@@ -258,12 +260,15 @@ namespace hsync
             }
 
             var onEH = new Dictionary<int, int>();
-            for (int i = 0; i < eHentaiResultArticles.Count; i++)
+            if (eHentaiResultArticles != null)
             {
-                var id = int.Parse(eHentaiResultArticles[i].URL.Split('/')[4]);
-                if (onEH.ContainsKey(id))
-                    continue;
-                onEH.Add(id, i);
+                for (int i = 0; i < eHentaiResultArticles.Count; i++)
+                {
+                    var id = int.Parse(eHentaiResultArticles[i].URL.Split('/')[4]);
+                    if (onEH.ContainsKey(id))
+                        continue;
+                    onEH.Add(id, i);
+                }
             }
 
             var exists = db.Query<HitomiColumnModel>($"SELECT * FROM HitomiColumnModel WHERE Id IN ({string.Join(",", x)})");
@@ -444,6 +449,7 @@ namespace hsync
             var datas = getNewedHitomiColumnModels();
 
             db.InsertAll(datas);
+            db.Close();
 
             if (!Directory.Exists("chunk"))
                 Directory.CreateDirectory("chunk");
@@ -476,6 +482,7 @@ namespace hsync
 
                 try
                 {
+                    db = new SQLiteConnection("data.db");
                     var datas = getNewedHitomiColumnModels();
 
                     var index_artist = new Dictionary<string, int>();
@@ -603,6 +610,7 @@ namespace hsync
         {
             try
             {
+                db = new SQLiteConnection("data.db");
                 var datas = getNewedHitomiColumnModels();
 
                 var ss = new List<string>();
@@ -617,8 +625,8 @@ namespace hsync
                     ss.Add(JsonConvert.SerializeObject(article));
                 }
 
-      RETRY_PUSH:
-      
+            RETRY_PUSH:
+
                 var request = (HttpWebRequest)WebRequest.Create(Settings.Instance.Model.ElasticSearchHost);
 
                 request.Method = "POST";
@@ -626,7 +634,7 @@ namespace hsync
 
                 var request_stream = new StreamWriter(request.GetRequestStream());
 
-                request_stream.Write(string.Join("\n", ss)  + "\n");
+                request_stream.Write(string.Join("\n", ss) + "\n");
                 request_stream.Close();
 
                 try

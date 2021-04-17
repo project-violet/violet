@@ -120,6 +120,18 @@ namespace hsync
         [CommandLine("--use-elastic-search", CommandType.OPTION, ShortOption = "-a",
             Info = "Upload sync data to elastic-search server", Help = "use --use-elastic-search")]
         public bool UseElasticSearch;
+
+        [CommandLine("--sync-only-hitomi", CommandType.OPTION,
+            Info = "Sync only hitomi", Help = "use --sync-only-hitomi")]
+        public bool SyncOnlyHitomi;
+
+        /// <summary>
+        /// Test Option
+        /// </summary>
+
+        [CommandLine("--test", CommandType.ARGUMENTS, ArgumentsCount = 1, ShortOption = "-t",
+            Info = "hysnc test option", Help = "use --test <what>")]
+        public string[] Test;
     }
 
     public class Command
@@ -160,7 +172,7 @@ namespace hsync
             else if (option.Start)
             {
                 ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly, option.UseServer, option.UseElasticSearch,
-                    option.HitomiSyncRange, option.HitomiSyncLookupRange, option.ExHentaiLookupPage);
+                    option.HitomiSyncRange, option.HitomiSyncLookupRange, option.ExHentaiLookupPage, option.SyncOnlyHitomi);
             }
             else if (option.Compress)
             {
@@ -193,6 +205,10 @@ namespace hsync
             else if (option.ExportForESRange != null)
             {
                 ProcessExportForESRange(option.ExportForESRange);
+            }
+            else if (option.Test != null)
+            {
+                ProcessTest(option.Test);
             }
             else if (option.Error)
             {
@@ -273,7 +289,7 @@ namespace hsync
         }
 
         static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only, bool use_server, bool use_elasticsearch,
-            string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page)
+            string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page, bool sync_only_hitomi)
         {
             Console.Clear();
             Console.Title = "hsync";
@@ -297,7 +313,8 @@ namespace hsync
 
                 var sync = new Syncronizer(hitomi_sync_range, hitomi_sync_lookup_range, exhentai_lookup_page);
                 sync.SyncHitomi();
-                sync.SyncExHentai();
+                if (!sync_only_hitomi)
+                    sync.SyncExHentai();
 
                 if (sync_only) return;
 
@@ -332,11 +349,11 @@ namespace hsync
             {
                 var sync = new SyncronizerLowPerf(hitomi_sync_range, hitomi_sync_lookup_range, exhentai_lookup_page);
                 sync.SyncHitomi();
-                sync.SyncExHentai();
+                if (!sync_only_hitomi)
+                    sync.SyncExHentai();
                 sync.FlushToMainDatabase();
                 if (use_server) sync.FlushToServerDatabase();
                 if (use_elasticsearch) sync.FlushToElasticSearchServer();
-                sync.Close();
 
                 if (sync_only) return;
 
@@ -885,6 +902,25 @@ namespace hsync
                 Thread.Sleep(1000);
             }
         }
-    }
 
+        static void ProcessTest(string[] args)
+        {
+            switch (args[0])
+            {
+                case "help":
+                    Console.WriteLine("");
+                    break;
+
+                case "latestrows":
+                    var db = new SQLiteConnection("data.db");
+                    var rr = db.Query<HitomiColumnModel>("SELECT * FROM HitomiColumnModel WHERE Language='korean'" +
+                            " ORDER BY Id DESC LIMIT 10", new object[] { });
+                    foreach (var r in rr) {
+                        Console.WriteLine(JsonConvert.SerializeObject(r));
+                    }
+                    break;
+            }
+
+        }
+    }
 }
