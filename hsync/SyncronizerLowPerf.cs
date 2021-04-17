@@ -219,9 +219,10 @@ namespace hsync
             }
         }
 
+        IEnumerable<HitomiColumnModel> _newedCache;
         private IEnumerable<HitomiColumnModel> getNewedHitomiColumnModels()
         {
-
+            if (_newedCache != null) return _newedCache;
             var articles = new HashSet<int>();
 
             foreach (var n in newedDataEH)
@@ -441,7 +442,7 @@ namespace hsync
                 return result;
             });
 
-            return datas;
+            return _newedCache = datas;
         }
 
         public void FlushToMainDatabase()
