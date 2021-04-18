@@ -174,7 +174,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
         resizeToAvoidBottomInset: false,
-        resizeToAvoidBottomPadding: false,
+        // resizeToAvoidBottomPadding: false,
         // appBar: _opacity == 1.0
         //     ? PreferredSize(
         //         preferredSize: const Size.fromHeight(100), child: _appBar())
@@ -195,7 +195,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           extendBodyBehindAppBar: true,
           backgroundColor: Colors.transparent,
           resizeToAvoidBottomInset: false,
-          resizeToAvoidBottomPadding: false,
+          // resizeToAvoidBottomPadding: false,
           // appBar: _opacity == 1.0 ? _appBar() : null,
           body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
         ),

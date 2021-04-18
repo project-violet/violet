@@ -187,7 +187,7 @@ class _DownloadPageState extends State<DownloadPage>
                       var dialog = await showDialog(
                         useRootNavigator: false,
                         context: context,
-                        child: AlertDialog(
+                        builder: (BuildContext context) => AlertDialog(
                           contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                           title:
                               Text(Translations.of(context).trans('writeurl')),

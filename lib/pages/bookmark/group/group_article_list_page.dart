@@ -157,7 +157,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 children: [
                   Scaffold(
                     resizeToAvoidBottomInset: false,
-                    resizeToAvoidBottomPadding: false,
+                    // resizeToAvoidBottomPadding: false,
                     floatingActionButton: Visibility(
                       visible: checkMode,
                       child: AnimatedOpacity(
@@ -584,35 +584,35 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     int choose = -9999;
     if (await showDialog(
             context: context,
-            child: AlertDialog(
-              title: Text(Translations.of(context).trans('wheretomove')),
-              actions: <Widget>[
-                RaisedButton(
-                  color: Settings.majorColor,
-                  child: new Text(Translations.of(context).trans('cancel')),
-                  onPressed: () {
-                    Navigator.pop(context, 0);
-                  },
-                ),
-              ],
-              content: SizedBox(
-                width: 200,
-                height: 300,
-                child: ListView.builder(
-                  itemCount: groups.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(groups[index].name()),
-                      subtitle: Text(groups[index].description()),
-                      onTap: () {
-                        choose = index;
-                        Navigator.pop(context, 1);
+            builder: (BuildContext context) => AlertDialog(
+                  title: Text(Translations.of(context).trans('wheretomove')),
+                  actions: <Widget>[
+                    RaisedButton(
+                      color: Settings.majorColor,
+                      child: new Text(Translations.of(context).trans('cancel')),
+                      onPressed: () {
+                        Navigator.pop(context, 0);
                       },
-                    );
-                  },
-                ),
-              ),
-            )) ==
+                    ),
+                  ],
+                  content: SizedBox(
+                    width: 200,
+                    height: 300,
+                    child: ListView.builder(
+                      itemCount: groups.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(groups[index].name()),
+                          subtitle: Text(groups[index].description()),
+                          onTap: () {
+                            choose = index;
+                            Navigator.pop(context, 1);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                )) ==
         1) {
       if (await Dialogs.yesnoDialog(
           context,
