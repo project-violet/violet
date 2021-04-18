@@ -41,10 +41,36 @@ class _GroupArtistListState extends State<GroupArtistList>
 
   Future<List<BookmarkArtist>> _bookmark() async {
     await refresh();
+    await _sortByLatest();
     return artists;
   }
 
-  Future<void> _sortByLatest() async {}
+  Future<void> _sortByLatest() async {
+    var ids = <Tuple2<int, int>>[];
+    for (int i = 0; i < artists.length; i++) {
+      var postfix = artists[i].artist().toLowerCase().replaceAll(' ', '_');
+      var queryString = HitomiManager.translate2query('${[
+            'artist',
+            'group',
+            'uploader',
+            'series',
+            'character'
+          ][artists[i].type()]}:' +
+          postfix);
+      final qm = QueryManager.queryPagination(queryString);
+      qm.itemsPerPage = 1;
+      var query = (await qm.next())[0].id();
+      ids.add(Tuple2<int, int>(query, i));
+    }
+    ids.sort((e1, e2) => e1.item1.compareTo(e2.item1));
+
+    var newedList = <BookmarkArtist>[];
+    for (int i = 0; i < artists.length; i++) {
+      newedList.add(artists[ids[i].item2]);
+    }
+
+    artists = newedList;
+  }
 
   Future<List<QueryResult>> _future(String e, int type) async {
     var postfix = e.toLowerCase().replaceAll(' ', '_');
