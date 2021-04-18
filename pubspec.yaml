@@ -69,7 +69,7 @@ dependencies:
   html:
   html_unescape:
   http:
-  intl: ^0.16.0
+  intl: ^0.17.0
   kdtree:
   lottie:
   material_design_icons_flutter:
