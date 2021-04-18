@@ -277,7 +277,8 @@ class _SettingsPageState extends State<SettingsPage>
                     onTap: () async {
                       final vv = await showDialog(
                         context: context,
-                        child: TagSelectorDialog(what: 'include'),
+                        builder: (BuildContext context) =>
+                            TagSelectorDialog(what: 'include'),
                       );
 
                       if (vv != null && vv.item1 == 1) {
@@ -297,7 +298,8 @@ class _SettingsPageState extends State<SettingsPage>
                     onTap: () async {
                       final vv = await showDialog(
                         context: context,
-                        child: TagSelectorDialog(what: 'exclude'),
+                        builder: (BuildContext context) =>
+                            TagSelectorDialog(what: 'exclude'),
                       );
 
                       if (vv.item1 == 1) {
@@ -651,7 +653,7 @@ class _SettingsPageState extends State<SettingsPage>
                     onTap: () async {
                       await showDialog(
                         context: context,
-                        child: RouteDialog(),
+                        builder: (BuildContext context) => RouteDialog(),
                       );
                     },
                   ),
@@ -667,7 +669,7 @@ class _SettingsPageState extends State<SettingsPage>
                     onTap: () async {
                       await showDialog(
                         context: context,
-                        child: ImageRouteDialog(),
+                        builder: (BuildContext context) => ImageRouteDialog(),
                       );
                     },
                   ),
@@ -783,7 +785,7 @@ class _SettingsPageState extends State<SettingsPage>
                             var dialog = await showDialog(
                               useRootNavigator: false,
                               context: context,
-                              child: AlertDialog(
+                              builder: (BuildContext context) => AlertDialog(
                                 contentPadding:
                                     EdgeInsets.fromLTRB(12, 0, 12, 0),
                                 title: Text(Translations.of(context)
@@ -951,7 +953,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                       await showDialog(
                         context: context,
-                        child: ImportFromEHPage(),
+                        builder: (BuildContext context) => ImportFromEHPage(),
                       );
 
                       if (EHBookmark.bookmarkInfo == null) {
@@ -1083,7 +1085,7 @@ class _SettingsPageState extends State<SettingsPage>
                       onTap: () async {
                         var dialog = await showDialog(
                           context: context,
-                          child: AlertDialog(
+                          builder: (BuildContext context) => AlertDialog(
                             title: Text('E-Hentai Login'),
                             contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
                             content: Column(
@@ -1162,7 +1164,7 @@ class _SettingsPageState extends State<SettingsPage>
                           );
                           var dialog = await showDialog(
                             context: context,
-                            child: AlertDialog(
+                            builder: (BuildContext context) => AlertDialog(
                               actions: [yesButton, noButton],
                               title: Text('E-Hentai Login'),
                               contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
@@ -1274,7 +1276,7 @@ class _SettingsPageState extends State<SettingsPage>
                         );
                         var dialog = await showDialog(
                           context: context,
-                          child: AlertDialog(
+                          builder: (BuildContext context) => AlertDialog(
                             actions: [yesButton, noButton],
                             title: Text('Pixiv Login'),
                             contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),

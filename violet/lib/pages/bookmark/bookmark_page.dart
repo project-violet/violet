@@ -287,7 +287,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                     else {
                       var rr = await showDialog(
                         context: context,
-                        child: GroupModifyPage(
+                        builder: (BuildContext context) => GroupModifyPage(
                             name: name, desc: data.description()),
                       );
 
@@ -334,7 +334,7 @@ class _BookmarkPageState extends State<BookmarkPage>
 
   _buildRowItems(AsyncSnapshot<List<BookmarkGroup>> snapshot,
       [bool reorder = false]) {
-    var ll = List<Widget>();
+    var ll = <Widget>[];
     for (int index = 0; index <= snapshot.data.length; index++) {
       ll.add(_buildItem(
           index, index == 0 ? null : snapshot.data[index - 1], reorder));

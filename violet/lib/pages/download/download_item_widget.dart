@@ -172,7 +172,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
 
         var v = await showDialog(
           context: context,
-          child: DownloadImageMenu(),
+          builder: (BuildContext context) => DownloadImageMenu(),
         );
 
         if (v == -1) {
