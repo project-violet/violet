@@ -44,6 +44,8 @@ class _GroupArtistListState extends State<GroupArtistList>
     return artists;
   }
 
+  Future<void> _sortByLatest() async {}
+
   Future<List<QueryResult>> _future(String e, int type) async {
     var postfix = e.toLowerCase().replaceAll(' ', '_');
     var queryString = HitomiManager.translate2query(
@@ -96,133 +98,137 @@ class _GroupArtistListState extends State<GroupArtistList>
                     return Container(
                       height: 195,
                     );
-                  return Container(
-                    color: checkMode &&
-                            checked
-                                    .where((element) =>
-                                        element.item1 == e.type() &&
-                                        element.item2 == e.artist())
-                                    .length !=
-                                0
-                        ? Colors.amber
-                        : Colors.transparent,
-                    child: InkWell(
-                      onTap: () async {
-                        if (checkMode) {
-                          check(
-                              e.type(),
-                              e.artist(),
-                              checked
-                                      .where((element) =>
-                                          element.item1 == e.type() &&
-                                          element.item2 == e.artist())
-                                      .length ==
-                                  0);
-                          setState(() {});
-                          return;
-                        }
-
-                        if (!Platform.isIOS) {
-                          Navigator.of(context).push(PageRouteBuilder(
-                            // opaque: false,
-                            transitionDuration: Duration(milliseconds: 500),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              var begin = Offset(0.0, 1.0);
-                              var end = Offset.zero;
-                              var curve = Curves.ease;
-
-                              var tween = Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: curve));
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
-                            pageBuilder: (_, __, ___) => ArtistInfoPage(
-                              isGroup: e.type() == 1,
-                              isUploader: e.type() == 2,
-                              isSeries: e.type() == 3,
-                              isCharacter: e.type() == 4,
-                              artist: e.artist(),
-                            ),
-                          ));
-                        } else {
-                          Navigator.of(context).push(CupertinoPageRoute(
-                            builder: (_) => ArtistInfoPage(
-                              isGroup: e.type() == 1,
-                              isUploader: e.type() == 2,
-                              isSeries: e.type() == 3,
-                              isCharacter: e.type() == 4,
-                              artist: e.artist(),
-                            ),
-                          ));
-                        }
-                      },
-                      onLongPress: checkMode
-                          ? null
-                          : () {
-                              longpress(e.type(), e.artist());
-                            },
-                      child: SizedBox(
-                        height: 195,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(
-                                      ' ${[
-                                            'artist',
-                                            'group',
-                                            'uploader',
-                                            'series',
-                                            'character'
-                                          ][e.type()]}:' +
-                                          e.artist() +
-                                          ' (' +
-                                          HitomiManager.getArticleCount(
-                                                  [
-                                                    'artist',
-                                                    'group',
-                                                    'uploader',
-                                                    'series',
-                                                    'character'
-                                                  ][e.type()],
-                                                  e.artist())
-                                              .toString() +
-                                          ')',
-                                      style: TextStyle(fontSize: 17)),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 162,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    _image(qq, 0, windowWidth),
-                                    _image(qq, 1, windowWidth),
-                                    _image(qq, 2, windowWidth),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+                  return _listItem(context, e, qq);
                 },
               );
             },
           );
         },
+      ),
+    );
+  }
+
+  Widget _listItem(
+      BuildContext context, BookmarkArtist e, List<QueryResult> qq) {
+    var windowWidth = MediaQuery.of(context).size.width;
+    return Container(
+      color: checkMode &&
+              checked
+                      .where((element) =>
+                          element.item1 == e.type() &&
+                          element.item2 == e.artist())
+                      .length !=
+                  0
+          ? Colors.amber
+          : Colors.transparent,
+      child: InkWell(
+        onTap: () async {
+          if (checkMode) {
+            check(
+                e.type(),
+                e.artist(),
+                checked
+                        .where((element) =>
+                            element.item1 == e.type() &&
+                            element.item2 == e.artist())
+                        .length ==
+                    0);
+            setState(() {});
+            return;
+          }
+
+          if (!Platform.isIOS) {
+            Navigator.of(context).push(PageRouteBuilder(
+              // opaque: false,
+              transitionDuration: Duration(milliseconds: 500),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = Offset(0.0, 1.0);
+                var end = Offset.zero;
+                var curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+              pageBuilder: (_, __, ___) => ArtistInfoPage(
+                isGroup: e.type() == 1,
+                isUploader: e.type() == 2,
+                isSeries: e.type() == 3,
+                isCharacter: e.type() == 4,
+                artist: e.artist(),
+              ),
+            ));
+          } else {
+            Navigator.of(context).push(CupertinoPageRoute(
+              builder: (_) => ArtistInfoPage(
+                isGroup: e.type() == 1,
+                isUploader: e.type() == 2,
+                isSeries: e.type() == 3,
+                isCharacter: e.type() == 4,
+                artist: e.artist(),
+              ),
+            ));
+          }
+        },
+        onLongPress: checkMode
+            ? null
+            : () {
+                longpress(e.type(), e.artist());
+              },
+        child: SizedBox(
+          height: 195,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                        ' ${[
+                              'artist',
+                              'group',
+                              'uploader',
+                              'series',
+                              'character'
+                            ][e.type()]}:' +
+                            e.artist() +
+                            ' (' +
+                            HitomiManager.getArticleCount(
+                                    [
+                                      'artist',
+                                      'group',
+                                      'uploader',
+                                      'series',
+                                      'character'
+                                    ][e.type()],
+                                    e.artist())
+                                .toString() +
+                            ')',
+                        style: TextStyle(fontSize: 17)),
+                  ],
+                ),
+                SizedBox(
+                  height: 162,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      _image(qq, 0, windowWidth),
+                      _image(qq, 1, windowWidth),
+                      _image(qq, 2, windowWidth),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
