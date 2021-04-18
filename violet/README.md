@@ -15,6 +15,11 @@
   </p>
 </p>
 
+[![](https://discordapp.com/api/guilds/713749607472955445/widget.png?style=shield)](https://discord.gg/fqrtRxC)
+[![](https://img.shields.io/github/downloads/project-violet/violet/total.svg)](https://gitHub.com/project-violet/violet/releases)
+[![](https://img.shields.io/github/v/release/project-violet/violet)](https://github.com/project-violet/violet/releases/latest)
+![](https://img.shields.io/tokei/lines/github/project-violet/violet)
+
 ### Community
 
 Leave any questions on the github issue or on the Discord channel below.
