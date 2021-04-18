@@ -108,7 +108,7 @@ class NativeDownloader {
     Future.delayed(Duration(seconds: 1)).then((value) async {
       // int prev = 0;
       while (true) {
-        var x = Utf8.fromUtf8(downloaderStatus());
+        var x = downloaderStatus().toDartString();
         // var y = int.parse(x.split('|')[2]);
         // print(x + '       ' + ((y - prev) / 1024.0).toString() + ' KB/S');
         // prev = y;
@@ -130,9 +130,10 @@ class NativeDownloader {
   Future<void> addTask(DownloadTask task) async {
     await lock.synchronized(() {
       downloadTasks.add(task);
-      downloaderAppend(Utf8.toUtf8(
+      downloaderAppend(
           NativeDownloadTask.fromDownloadTask(downloadTasks.length, task)
-              .toString()));
+              .toString()
+              .toNativeUtf8());
     });
   }
 
@@ -140,9 +141,10 @@ class NativeDownloader {
     await lock.synchronized(() {
       tasks.forEach((task) {
         downloadTasks.add(task);
-        downloaderAppend(Utf8.toUtf8(
+        downloaderAppend(
             NativeDownloadTask.fromDownloadTask(downloadTasks.length - 1, task)
-                .toString()));
+                .toString()
+                .toNativeUtf8());
       });
     });
   }

@@ -40,7 +40,7 @@ void _shell(List argv) async {
 }
 
 Pointer<Int8> intListToArray(String list) {
-  final ptr = allocate<Int8>(count: list.length + 1);
+  final ptr = malloc.allocate<Int8>(list.length + 1);
   for (var i = 0; i < list.length; i++) {
     ptr.elementAt(i).value = list.codeUnitAt(i);
   }
