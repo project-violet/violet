@@ -424,7 +424,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         // final path = File('${cacheDir.path}/bookmark_cache+${Uuid().v4()}');
         // path.writeAsString(jsonEncode(checked));
 
-        for (var e in checked) {
+        for (var e in checked.reversed) {
           // 3. Delete source bookmarks
           await bm.unbookmarkArtist(e.item2, e.item1);
           // 4. Add src bookmarks with new groupid
