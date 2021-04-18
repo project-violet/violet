@@ -39,14 +39,16 @@ dependencies:
   charts_flutter:
   circular_check_box: ^1.0.1
   convert:
-  country_pickers:
+  country_pickers: ^2.0.0
   crypto:
   device_info:
   dio:
   division:
   draggable_scrollbar:
-  dynamic_theme: ^1.0.1
-  encrypt: ^4.0.1
+  # dynamic_theme: ^1.0.1
+  dynamic_theme:
+    git: https://github.com/Norbert515/dynamic_theme
+  encrypt: ^5.0.0
   expandable:
   ext_storage:
   ffi:
@@ -61,8 +63,8 @@ dependencies:
   flutter_reorderable_list:
   flutter_statusbar_manager:
   flutter_speed_dial:
-  flutter_staggered_animations: "^0.1.2"
-  flutter_svg:
+  flutter_staggered_animations: ^1.0.0
+  flutter_svg: ^0.21.0+1
   fluttertoast:
   freezed_annotation:
   gradient_widgets:
