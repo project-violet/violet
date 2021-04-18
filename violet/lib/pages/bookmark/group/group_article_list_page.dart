@@ -545,7 +545,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   bool checkMode = false;
   bool checkModePre = false;
-  HashSet<int> checked = HashSet<int>();
+  List<int> checked = List<int>();
 
   void longpress(int article) {
     print(article);
@@ -561,7 +561,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     if (check)
       checked.add(article);
     else {
-      checked.remove(article);
+      checked.removeWhere((element) => element == article);
       if (checked.length == 0) {
         setState(() {
           checkModePre = false;
@@ -638,7 +638,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         // final path = File('${cacheDir.path}/bookmark_cache+${Uuid().v4()}');
         // path.writeAsString(jsonEncode(checked));
 
-        for (var e in checked) {
+        for (var e in checked.reversed) {
           // 3. Delete source bookmarks
           await bm.unbookmark(e);
           // 4. Add src bookmarks with new groupid
