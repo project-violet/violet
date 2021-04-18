@@ -24,8 +24,40 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 4, 20),
+    version: '1.8 Patch <== Latest',
+    contents: [
+      'fix space character added when first lookup',
+      'add \'random\' lookup chip',
+      'remove illegal characters from a file name',
+      'implements download to inner storage option',
+      'fix bug that randomly moves when moving works/artists between bookmark lists'
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 3, 1),
+    version: '1.7.8 Patch',
+    contents: [
+      'update crashlytics plugin version',
+      'upload user bookmark database'
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 2, 12),
+    version: '1.7.7 Patch',
+    contents: ['?'],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 2, 12),
+    version: '1.7.6 Patch',
+    contents: [
+      'fix bookmark state not changed',
+      'searching random with conditions'
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2020, 10, 26),
-    version: '1.7.5 Patch <== Latest',
+    version: '1.7.5 Patch',
     contents: [
       'apply anti-aliasing to horizontal view (upscale filter quality)',
       'change selected bookmark style',
