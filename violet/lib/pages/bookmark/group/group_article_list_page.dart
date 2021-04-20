@@ -319,6 +319,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             },
             onLongPress: () {
               if (checkMode) return;
+              isFilterUsed = true;
               Navigator.of(context)
                   .push(PageRouteBuilder(
                 // opaque: false,
