@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
+import 'package:violet/pages/bookmark/group/bookmark_search_sort.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
@@ -134,6 +135,59 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 });
               });
             },
+            onLongPress: () {
+              isFilterUsed = true;
+              Navigator.of(context)
+                  .push(PageRouteBuilder(
+                // opaque: false,
+                transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder: (BuildContext context,
+                    Animation<double> animation,
+                    Animation<double> secondaryAnimation,
+                    Widget wi) {
+                  return new FadeTransition(opacity: animation, child: wi);
+                },
+                pageBuilder: (_, __, ___) => BookmarkSearchSort(
+                  queryResult: widget.cc,
+                  tagStates: tagStates,
+                  groupStates: groupStates,
+                  isOr: isOr,
+                ),
+              ))
+                  .then((value) async {
+                tagStates = value[0];
+                groupStates = value[1];
+                isOr = value[2];
+                var result = List<QueryResult>();
+                widget.cc.forEach((element) {
+                  var succ = !isOr;
+                  tagStates.forEach((key, value) {
+                    if (!value) return;
+                    if (succ == isOr) return;
+                    var split = key.split('|');
+                    var kk = prefix2Tag(split[0]);
+                    if (element.result[kk] == null && !isOr) {
+                      succ = false;
+                      return;
+                    }
+                    if (!isSingleTag(split[0])) {
+                      var tt = split[1];
+                      if (split[0] == 'female' || split[0] == 'male')
+                        tt = split[0] + ':' + split[1];
+                      if ((element.result[kk] as String)
+                              .contains('|' + tt + '|') ==
+                          isOr) succ = isOr;
+                    } else if ((element.result[kk] as String == split[1]) ==
+                        isOr) succ = isOr;
+                  });
+                  if (succ) result.add(element);
+                });
+                filterResult = result;
+                await Future.delayed(Duration(milliseconds: 50), () {
+                  setState(() {});
+                });
+              });
+            },
           ),
         ),
       ),
@@ -146,6 +200,64 @@ class _ArticleListPageState extends State<ArticleListPage> {
       child: Text(widget.name,
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
+  }
+
+  bool isFilterUsed = false;
+  bool isOr = false;
+  Map<String, bool> tagStates = Map<String, bool>();
+  Map<String, bool> groupStates = Map<String, bool>();
+
+  bool scaleOnce = false;
+  List<QueryResult> filterResult = List<QueryResult>();
+
+  static String prefix2Tag(String prefix) {
+    switch (prefix) {
+      case 'artist':
+        return 'Artists';
+      case 'group':
+        return 'Groups';
+      case 'language':
+        return 'Language';
+      case 'character':
+        return 'Characters';
+      case 'series':
+        return 'Series';
+      case 'class':
+        return 'Class';
+      case 'type':
+        return 'Type';
+      case 'uploader':
+        return 'Uploader';
+      case 'tag':
+      case 'female':
+      case 'male':
+        return 'Tags';
+    }
+    return '';
+  }
+
+  static bool isSingleTag(String prefix) {
+    switch (prefix) {
+      case 'language':
+      case 'series':
+      case 'class':
+      case 'type':
+      case 'uploader':
+        return true;
+      case 'artist':
+      case 'group':
+      case 'character':
+      case 'tag':
+      case 'female':
+      case 'male':
+        return false;
+    }
+    return null;
+  }
+
+  List<QueryResult> filter() {
+    if (!isFilterUsed) return widget.cc;
+    return filterResult;
   }
 
   int nowType = 0;
