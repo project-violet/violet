@@ -165,7 +165,7 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 ### 7.3. 북마크 백업
 
 `설정 -> 북마크 -> 북마크 내보내기`를 통해 북마크를 내보낼 수 있습니다.
-내보낸 북마크는 `Android/data/xyz.project.violet/files/bookmark.db`에서 찾을 수 있습니다.
+내보낸 북마크는 `Android/data/zyx.project.violet/files/bookmark.db`에서 찾을 수 있습니다.
 
 이 파일을 다른 기기로 옮겨서 `북마크 불러오기`를 통해 불러올 수 있습니다.
 
