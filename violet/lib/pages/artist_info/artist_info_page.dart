@@ -878,6 +878,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -899,6 +900,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -920,6 +922,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1029,6 +1032,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1050,6 +1054,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1071,6 +1076,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1203,6 +1209,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1224,6 +1231,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1245,6 +1253,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1382,6 +1391,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1403,6 +1413,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),
@@ -1424,6 +1435,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 (windowWidth - 16 - 4.0 - 1.0) /
                                                     3,
                                             thumbnailTag: Uuid().v4(),
+                                            disableFilter: true,
                                           ),
                                           child:
                                               ArticleListItemVerySimpleWidget(),

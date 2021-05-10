@@ -148,6 +148,7 @@ class SeriesListPage extends StatelessWidget {
                                                               1.0) /
                                                           3,
                                                       thumbnailTag: Uuid().v4(),
+                                                      disableFilter: true,
                                                     ),
                                                     child:
                                                         ArticleListItemVerySimpleWidget(),
@@ -172,6 +173,7 @@ class SeriesListPage extends StatelessWidget {
                                                               1.0) /
                                                           3,
                                                       thumbnailTag: Uuid().v4(),
+                                                      disableFilter: true,
                                                     ),
                                                     child:
                                                         ArticleListItemVerySimpleWidget(),
@@ -196,6 +198,7 @@ class SeriesListPage extends StatelessWidget {
                                                               1.0) /
                                                           3,
                                                       thumbnailTag: Uuid().v4(),
+                                                      disableFilter: true,
                                                     ),
                                                     child:
                                                         ArticleListItemVerySimpleWidget(),
