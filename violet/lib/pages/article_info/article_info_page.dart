@@ -52,15 +52,13 @@ class ArticleInfoPage extends StatelessWidget {
 
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
-      padding: EdgeInsets.only(
-          top: 0, bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
+      padding: EdgeInsets.only(top: 0, bottom: mediaQuery.padding.bottom),
       child: Card(
         elevation: 5,
         color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
         child: SizedBox(
           width: width - 16,
-          height:
-              height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+          height: height - 36 - mediaQuery.padding.bottom,
           child: Container(
             width: width,
             height: height,
