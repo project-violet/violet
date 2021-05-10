@@ -34,7 +34,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
     var retry = 0;
     while (true) {
       var res = await http
-          .get(Uri(host: url), headers: headers)
+          .get(Uri.parse(url), headers: headers)
           .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
         return null;
       });
@@ -67,7 +67,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
     var retry = 0;
     while (true) {
       var res = await http
-          .get(Uri(host: url), headers: headers)
+          .get(Uri.parse(url), headers: headers)
           .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
         return null;
       });
@@ -90,7 +90,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
     }
   } else {
     Logger.info('[Http Request] GET: ' + url);
-    var res = await http.get(Uri(host: url), headers: headers);
+    var res = await http.get(Uri.parse(url), headers: headers);
     if (res.statusCode != 200) {
       Logger.warning('[Http Response] CODE: ' +
           res.statusCode.toString() +
@@ -104,7 +104,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
 Future<http.Response> post(String url,
     {Map<String, String> headers, dynamic body, Encoding encoding}) async {
   Logger.info('[Http Request] POST: ' + url);
-  var res = await http.post(Uri(host: url),
+  var res = await http.post(Uri.parse(url),
       headers: headers, body: body, encoding: encoding);
   if (res.statusCode != 200) {
     Logger.warning('[Http Response] CODE: ' +
