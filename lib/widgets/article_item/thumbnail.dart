@@ -8,6 +8,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
+import 'package:violet/settings/settings.dart';
 
 class ThumbnailWidget extends StatelessWidget {
   final double pad;
@@ -19,6 +20,8 @@ class ThumbnailWidget extends StatelessWidget {
   final FlareControls flareController;
   final String id;
   final bool isBlurred;
+  final bool isLastestRead;
+  final int latestReadPage;
   final Map<String, String> headers;
 
   ThumbnailWidget({
@@ -32,11 +35,21 @@ class ThumbnailWidget extends StatelessWidget {
     this.id,
     this.isBlurred,
     this.headers,
+    this.isLastestRead,
+    this.latestReadPage,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      foregroundDecoration: isLastestRead && imageCount - latestReadPage <= 2
+          ? BoxDecoration(
+              color: Settings.themeWhat
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade300,
+              backgroundBlendMode: BlendMode.saturation,
+            )
+          : null,
       width: showDetail ? 100 - pad / 6 * 5 : null,
       child: thumbnail != null
           ? ClipRRect(
@@ -47,6 +60,7 @@ class ThumbnailWidget extends StatelessWidget {
                 children: <Widget>[
                   _thumbnailImage(),
                   _bookmarkIndicator(),
+                  _readProgress(),
                   _pages(),
                 ],
               ),
@@ -110,6 +124,29 @@ class ThumbnailWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _readProgress() {
+    return !isLastestRead
+        ? Container()
+        : Align(
+            alignment: FractionalOffset.topRight,
+            child: Container(
+              // margin: EdgeInsets.symmetric(vertical: 10),
+              margin: EdgeInsets.all(4),
+              width: 50,
+              height: 5,
+              color: Colors.transparent,
+              child: ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                child: LinearProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                  value: latestReadPage / imageCount,
+                  backgroundColor: Colors.grey.withAlpha(100),
+                ),
+              ),
+            ),
+          );
   }
 
   Widget _pages() {

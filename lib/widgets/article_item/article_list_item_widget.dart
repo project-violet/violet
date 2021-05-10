@@ -18,6 +18,7 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
@@ -78,6 +79,8 @@ class _ArticleListItemVerySimpleWidgetState
   bool disposed = false;
   bool isBookmarked = false;
   bool animating = false;
+  bool isLastestRead = false;
+  int latestReadPage = 0;
   Map<String, String> headers;
   final FlareControls _flareController = FlareControls();
 
@@ -121,6 +124,23 @@ class _ArticleListItemVerySimpleWidgetState
       isBookmarked = await value.isBookmark(data.queryResult.id());
       if (isBookmarked) setState(() {});
     });
+
+    User.getInstance().then((value) => value.getUserLog().then((value) async {
+          var x = value.where((e) =>
+              e.articleId() == data.queryResult.id().toString() &&
+              e.lastPage() != null &&
+              e.lastPage() > 1 &&
+              DateTime.parse(e.datetimeStart())
+                      .difference(DateTime.now())
+                      .inDays <
+                  31);
+          if (x.length == 0) return;
+          setState(() {
+            isLastestRead = true;
+            latestReadPage = x.first.lastPage();
+          });
+        }));
+
     artist = (data.queryResult.artists() as String)
         .split('|')
         .where((x) => x.length != 0)
@@ -476,6 +496,8 @@ class _ArticleListItemVerySimpleWidgetState
       pad: pad,
       isBlurred: isBlurred,
       headers: headers,
+      isLastestRead: isLastestRead,
+      latestReadPage: latestReadPage,
     );
   }
 
