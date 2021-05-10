@@ -18,6 +18,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/bookmark/group/bookmark_search_sort.dart';
+import 'package:violet/pages/bookmark/group/group_artist_article_list.dart';
 import 'package:violet/pages/bookmark/group/group_artist_list.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
@@ -266,6 +267,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                       ),
                       GroupArtistList(
                           name: widget.name, groupId: widget.groupId),
+                      GroupArtistArticleList(
+                          name: widget.name, groupId: widget.groupId),
                     ],
                   ),
                   new Positioned(
@@ -278,7 +281,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                       child: new Center(
                         child: new DotsIndicator(
                           controller: _controller,
-                          itemCount: 2,
+                          itemCount: 3,
                           onPageSelected: (int page) {
                             _controller.animateToPage(
                               page,
