@@ -86,9 +86,9 @@ class Settings {
     searchResultType =
         (await SharedPreferences.getInstance()).getInt('searchResultType');
     if (searchResultType == null) {
+      searchResultType = 0;
       await (await SharedPreferences.getInstance())
           .setInt('searchResultType', searchResultType);
-      searchResultType = 0;
     }
 
     language = (await SharedPreferences.getInstance()).getString('language');
