@@ -23,7 +23,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:violet/component/download/pixiv.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -1070,9 +1069,7 @@ class _SettingsPageState extends State<SettingsPage>
                   [
                     InkWell(
                       customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10.0),
-                            topRight: Radius.circular(10.0)),
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
                       ),
                       child: ListTile(
                         leading: CachedNetworkImage(
@@ -1215,7 +1212,6 @@ class _SettingsPageState extends State<SettingsPage>
                             'ExHentai|EHentai|Hitomi|Hiyobi|NHentai');
                       },
                     ),
-                    _buildDivider(),
                     // ListTile(
                     //   leading: ShaderMask(
                     //     shaderCallback: (bounds) => RadialGradient(
@@ -1238,104 +1234,104 @@ class _SettingsPageState extends State<SettingsPage>
                     //   // onTap: () {},
                     // ),
                     // _buildDivider(),
-                    InkWell(
-                      customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(10.0),
-                              bottomRight: Radius.circular(10.0))),
-                      child: ListTile(
-                        leading:
-                            Image.asset('assets/icons/pixiv.ico', width: 25),
-                        title: Text(Translations.of(context).trans('pixiv')),
-                        trailing: Icon(Icons.keyboard_arrow_right),
-                      ),
-                      onTap: () async {
-                        var nameController = TextEditingController(
-                            text: (await SharedPreferences.getInstance())
-                                .getString('pixiv_id'));
-                        var descController = TextEditingController(
-                            text: (await SharedPreferences.getInstance())
-                                .getString('pixiv_pwd'));
-                        Widget yesButton = FlatButton(
-                          child: Text(Translations.of(context).trans('ok'),
-                              style: TextStyle(color: Settings.majorColor)),
-                          focusColor: Settings.majorColor,
-                          splashColor: Settings.majorColor.withOpacity(0.3),
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                          },
-                        );
-                        Widget noButton = FlatButton(
-                          child: Text(Translations.of(context).trans('cancel'),
-                              style: TextStyle(color: Settings.majorColor)),
-                          focusColor: Settings.majorColor,
-                          splashColor: Settings.majorColor.withOpacity(0.3),
-                          onPressed: () {
-                            Navigator.pop(context, false);
-                          },
-                        );
-                        var dialog = await showDialog(
-                          context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                            actions: [yesButton, noButton],
-                            title: Text('Pixiv Login'),
-                            contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Row(children: [
-                                  Text('Id: '),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: nameController,
-                                    ),
-                                  ),
-                                ]),
-                                Row(children: [
-                                  Text('Pwd: '),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: descController,
-                                    ),
-                                  ),
-                                ]),
-                              ],
-                            ),
-                          ),
-                        );
-                        if (dialog) {
-                          var id = nameController.text.trim();
-                          var pwd = descController.text.trim();
-                          print(id);
-                          print(pwd);
-                          await (await SharedPreferences.getInstance())
-                              .setString('pixiv_id', id);
-                          await (await SharedPreferences.getInstance())
-                              .setString('pixiv_pwd', pwd);
-                          var accessToken =
-                              await PixivAPI.getAccessToken(id, pwd);
-                          if (accessToken == null || accessToken == '') {
-                            flutterToast.showToast(
-                              child: ToastWrapper(
-                                isCheck: false,
-                                msg: 'Login Fail. Try Again!',
-                              ),
-                              gravity: ToastGravity.BOTTOM,
-                              toastDuration: Duration(seconds: 4),
-                            );
-                          } else {
-                            flutterToast.showToast(
-                              child: ToastWrapper(
-                                isCheck: true,
-                                msg: 'Login Success!',
-                              ),
-                              gravity: ToastGravity.BOTTOM,
-                              toastDuration: Duration(seconds: 4),
-                            );
-                          }
-                        }
-                      },
-                    ),
+                    // InkWell(
+                    //   customBorder: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.only(
+                    //           bottomLeft: Radius.circular(10.0),
+                    //           bottomRight: Radius.circular(10.0))),
+                    //   child: ListTile(
+                    //     leading:
+                    //         Image.asset('assets/icons/pixiv.ico', width: 25),
+                    //     title: Text(Translations.of(context).trans('pixiv')),
+                    //     trailing: Icon(Icons.keyboard_arrow_right),
+                    //   ),
+                    //   onTap: () async {
+                    //     var nameController = TextEditingController(
+                    //         text: (await SharedPreferences.getInstance())
+                    //             .getString('pixiv_id'));
+                    //     var descController = TextEditingController(
+                    //         text: (await SharedPreferences.getInstance())
+                    //             .getString('pixiv_pwd'));
+                    //     Widget yesButton = FlatButton(
+                    //       child: Text(Translations.of(context).trans('ok'),
+                    //           style: TextStyle(color: Settings.majorColor)),
+                    //       focusColor: Settings.majorColor,
+                    //       splashColor: Settings.majorColor.withOpacity(0.3),
+                    //       onPressed: () {
+                    //         Navigator.pop(context, true);
+                    //       },
+                    //     );
+                    //     Widget noButton = FlatButton(
+                    //       child: Text(Translations.of(context).trans('cancel'),
+                    //           style: TextStyle(color: Settings.majorColor)),
+                    //       focusColor: Settings.majorColor,
+                    //       splashColor: Settings.majorColor.withOpacity(0.3),
+                    //       onPressed: () {
+                    //         Navigator.pop(context, false);
+                    //       },
+                    //     );
+                    //     var dialog = await showDialog(
+                    //       context: context,
+                    //       builder: (BuildContext context) => AlertDialog(
+                    //         actions: [yesButton, noButton],
+                    //         title: Text('Pixiv Login'),
+                    //         contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    //         content: Column(
+                    //           mainAxisSize: MainAxisSize.min,
+                    //           children: <Widget>[
+                    //             Row(children: [
+                    //               Text('Id: '),
+                    //               Expanded(
+                    //                 child: TextField(
+                    //                   controller: nameController,
+                    //                 ),
+                    //               ),
+                    //             ]),
+                    //             Row(children: [
+                    //               Text('Pwd: '),
+                    //               Expanded(
+                    //                 child: TextField(
+                    //                   controller: descController,
+                    //                 ),
+                    //               ),
+                    //             ]),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     );
+                    //     if (dialog) {
+                    //       var id = nameController.text.trim();
+                    //       var pwd = descController.text.trim();
+                    //       print(id);
+                    //       print(pwd);
+                    //       await (await SharedPreferences.getInstance())
+                    //           .setString('pixiv_id', id);
+                    //       await (await SharedPreferences.getInstance())
+                    //           .setString('pixiv_pwd', pwd);
+                    //       var accessToken =
+                    //           await PixivAPI.getAccessToken(id, pwd);
+                    //       if (accessToken == null || accessToken == '') {
+                    //         flutterToast.showToast(
+                    //           child: ToastWrapper(
+                    //             isCheck: false,
+                    //             msg: 'Login Fail. Try Again!',
+                    //           ),
+                    //           gravity: ToastGravity.BOTTOM,
+                    //           toastDuration: Duration(seconds: 4),
+                    //         );
+                    //       } else {
+                    //         flutterToast.showToast(
+                    //           child: ToastWrapper(
+                    //             isCheck: true,
+                    //             msg: 'Login Success!',
+                    //           ),
+                    //           gravity: ToastGravity.BOTTOM,
+                    //           toastDuration: Duration(seconds: 4),
+                    //         );
+                    //       }
+                    //     }
+                    //   },
+                    // ),
                   ],
                 ),
                 // _buildGroup(Translations.of(context).trans('cache')),
