@@ -141,7 +141,9 @@ class ThumbnailWidget extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 child: LinearProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                  value: latestReadPage / imageCount,
+                  value: isLastestRead && imageCount - latestReadPage <= 2
+                      ? 1.0
+                      : latestReadPage / imageCount,
                   backgroundColor: Colors.grey.withAlpha(100),
                 ),
               ),
