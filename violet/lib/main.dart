@@ -51,6 +51,12 @@ void main() async {
   Crashlytics.instance.enableInDevMode = true;
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
 
+  // FlutterError.onError = (FlutterErrorDetails details) async {
+  //   await Logger.init();
+  //   await Logger.error(details.exceptionAsString());
+  //   await Logger.exportLog();
+  // };
+
   var analytics = FirebaseAnalytics();
   var observer = FirebaseAnalyticsObserver(analytics: analytics);
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
