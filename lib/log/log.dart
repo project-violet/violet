@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart' as sync;
@@ -46,5 +47,12 @@ class Logger {
     (await logFile.readAsLines()).forEach((element) {
       print(element);
     });
+  }
+
+  static Future<void> exportLog() async {
+    final ext = await getExternalStorageDirectory();
+    final dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    final extpath = '${ext.path}/log-${dateFormat.format(DateTime.now())}.log';
+    await logFile.copy(extpath);
   }
 }
