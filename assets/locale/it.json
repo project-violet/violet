@@ -228,5 +228,7 @@
     "sync": "Sync",
     "artistcollection": "Artists Collection",
     "realtimebest": "RealTime Best",
-    "patchnote": "Nota sulla patch"
+    "patchnote": "Nota sulla patch",
+    "view": "View",
+    "showarticleprogress": "Show Article Progress"
 }

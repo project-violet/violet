@@ -1334,6 +1334,34 @@ class _SettingsPageState extends State<SettingsPage>
                     // ),
                   ],
                 ),
+                _buildGroup(Translations.of(context).trans('view')),
+                _buildItems([
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                    child: ListTile(
+                      leading: Icon(
+                        MdiIcons.progressClock,
+                        color: Settings.majorColor,
+                      ),
+                      title: Text(Translations.of(context)
+                          .trans('showarticleprogress')),
+                      trailing: Switch(
+                        value: Settings.showArticleProgress,
+                        onChanged: (value) async {},
+                        activeTrackColor: Settings.majorColor,
+                        activeColor: Settings.majorAccentColor,
+                      ),
+                    ),
+                    onTap: Platform.isIOS
+                        ? null
+                        : () async {
+                            await Settings.setShowArticleProgress(
+                                !Settings.showArticleProgress);
+                            setState(() {});
+                          },
+                  ),
+                ]),
                 // _buildGroup(Translations.of(context).trans('cache')),
                 // _buildItems([
                 //   ListTile(
