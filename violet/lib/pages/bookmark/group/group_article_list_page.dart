@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,73 @@ import 'package:violet/widgets/floating_button.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
+// https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
+class DotsIndicator extends AnimatedWidget {
+  DotsIndicator({
+    this.controller,
+    this.itemCount,
+    this.onPageSelected,
+    this.color: Colors.white,
+  }) : super(listenable: controller);
+
+  /// The PageController that this DotsIndicator is representing.
+  final PageController controller;
+
+  /// The number of items managed by the PageController
+  final int itemCount;
+
+  /// Called when a dot is tapped
+  final ValueChanged<int> onPageSelected;
+
+  /// The color of the dots.
+  ///
+  /// Defaults to `Colors.white`.
+  final Color color;
+
+  // The base size of the dots
+  static const double _kDotSize = 6.0;
+
+  // The increase in the size of the selected dot
+  static const double _kMaxZoom = 2.0;
+
+  // The distance between the center of each dot
+  static const double _kDotSpacing = 20.0;
+
+  Widget _buildDot(int index) {
+    double selectedness = Curves.easeOut.transform(
+      max(
+        0.0,
+        1.0 - ((controller.page ?? controller.initialPage) - index).abs(),
+      ),
+    );
+    double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness;
+    return new Container(
+      width: _kDotSpacing,
+      child: new Center(
+        child: new Material(
+          color: (Settings.themeWhat ? Colors.grey.shade100 : Color(0xFF353535))
+              .withAlpha((max(zoom - 1, 0.5) * 255).toInt()),
+          type: MaterialType.circle,
+          child: new Container(
+            width: _kDotSize * zoom,
+            height: _kDotSize * zoom,
+            child: new InkWell(
+              onTap: () => onPageSelected(index),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget build(BuildContext context) {
+    return new Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: new List<Widget>.generate(itemCount, _buildDot),
+    );
+  }
+}
+
 class GroupArticleListPage extends StatefulWidget {
   final String name;
   final int groupId;
@@ -38,6 +106,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   PageController _controller = PageController(
     initialPage: 0,
   );
+
+  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kCurve = Curves.ease;
 
   @override
   void initState() {
@@ -152,46 +223,73 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               height: height -
                   16 -
                   (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-              child: PageView(
-                controller: _controller,
+              child: Stack(
                 children: [
-                  Scaffold(
-                    resizeToAvoidBottomInset: false,
-                    // resizeToAvoidBottomPadding: false,
-                    floatingActionButton: Visibility(
-                      visible: checkMode,
-                      child: AnimatedOpacity(
-                        opacity: checkModePre ? 1.0 : 0.0,
-                        duration: Duration(milliseconds: 500),
-                        child: _floatingButton(),
-                      ),
-                    ),
-                    // floatingActionButton: Container(child: Text('asdf')),
-                    body: Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      child: CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        slivers: <Widget>[
-                          SliverPersistentHeader(
-                            floating: true,
-                            delegate: AnimatedOpacitySliver(
-                              minExtent: 64 + 12.0,
-                              maxExtent: 64.0 + 12,
-                              searchBar: Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: Stack(children: <Widget>[
-                                    _filter(),
-                                    _title(),
-                                  ])),
-                            ),
+                  PageView(
+                    controller: _controller,
+                    children: [
+                      Scaffold(
+                        resizeToAvoidBottomInset: false,
+                        // resizeToAvoidBottomPadding: false,
+                        floatingActionButton: Visibility(
+                          visible: checkMode,
+                          child: AnimatedOpacity(
+                            opacity: checkModePre ? 1.0 : 0.0,
+                            duration: Duration(milliseconds: 500),
+                            child: _floatingButton(),
                           ),
-                          buildList()
-                        ],
+                        ),
+                        // floatingActionButton: Container(child: Text('asdf')),
+                        body: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: CustomScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            slivers: <Widget>[
+                              SliverPersistentHeader(
+                                floating: true,
+                                delegate: AnimatedOpacitySliver(
+                                  minExtent: 64 + 12.0,
+                                  maxExtent: 64.0 + 12,
+                                  searchBar: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: Stack(children: <Widget>[
+                                        _filter(),
+                                        _title(),
+                                      ])),
+                                ),
+                              ),
+                              buildList()
+                            ],
+                          ),
+                        ),
+                      ),
+                      GroupArtistList(
+                          name: widget.name, groupId: widget.groupId),
+                    ],
+                  ),
+                  new Positioned(
+                    bottom: 0.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: new Container(
+                      color: null,
+                      padding: const EdgeInsets.all(20.0),
+                      child: new Center(
+                        child: new DotsIndicator(
+                          controller: _controller,
+                          itemCount: 3,
+                          onPageSelected: (int page) {
+                            _controller.animateToPage(
+                              page,
+                              duration: _kDuration,
+                              curve: _kCurve,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
-                  GroupArtistList(name: widget.name, groupId: widget.groupId),
                 ],
               ),
             ),

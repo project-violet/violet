@@ -22,6 +22,7 @@ import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
+import 'package:violet/widgets/search_bar.dart';
 
 class GroupArtistList extends StatefulWidget {
   final String name;
@@ -109,28 +110,91 @@ class _GroupArtistListState extends State<GroupArtistList>
         builder: (BuildContext context,
             AsyncSnapshot<List<BookmarkArtist>> snapshot) {
           if (!snapshot.hasData) return Container();
-          return ListView.builder(
-            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-            physics: ClampingScrollPhysics(),
-            itemCount: artists.length,
-            itemBuilder: (BuildContext ctxt, int index) {
-              var e = artists[index];
-              return FutureBuilder<List<QueryResult>>(
-                future: _future(e.artist(), e.type()),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<QueryResult>> snapshot) {
-                  var qq = snapshot.data;
-                  if (!snapshot.hasData)
-                    return Container(
-                      height: 195,
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: <Widget>[
+              SliverPersistentHeader(
+                floating: true,
+                delegate: AnimatedOpacitySliver(
+                  minExtent: 64 + 12.0,
+                  maxExtent: 64.0 + 12,
+                  searchBar: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Stack(children: <Widget>[
+                        _filter(),
+                        _title(),
+                      ])),
+                ),
+              ),
+              SliverList(
+                // padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    var e = artists[index];
+                    return FutureBuilder<List<QueryResult>>(
+                      future: _future(e.artist(), e.type()),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<QueryResult>> snapshot) {
+                        var qq = snapshot.data;
+                        if (!snapshot.hasData)
+                          return Container(
+                            height: 195,
+                          );
+                        return _listItem(context, e, qq);
+                      },
                     );
-                  return _listItem(context, e, qq);
-                },
-              );
-            },
+                  },
+                  childCount: artists.length,
+                ),
+              )
+            ],
           );
         },
       ),
+    );
+  }
+
+  Widget _filter() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Hero(
+        tag: "searchtype3",
+        child: Card(
+          color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+          ),
+          elevation: 100,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: InkWell(
+            child: SizedBox(
+              height: 48,
+              width: 48,
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Icon(
+                    MdiIcons.formatListText,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+            ),
+            onTap: () async {},
+            onLongPress: () {},
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _title() {
+    return Padding(
+      padding: EdgeInsets.only(top: 24, left: 12),
+      child: Text('Artists Collection',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
   }
 
