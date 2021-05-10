@@ -69,7 +69,7 @@ void main() async {
 
   await Settings.initFirst();
   await warmupFlare();
-  await VioletServer.uploadBookmark();
+  // await VioletServer.uploadBookmark();
 
   runApp(
     DynamicTheme(
