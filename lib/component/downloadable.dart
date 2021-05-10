@@ -3,13 +3,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:violet/component/download/gelbooru.dart';
 import 'package:violet/component/download/hentai.dart';
 import 'package:violet/component/download/hitomi.dart';
-import 'package:violet/component/download/instagram.dart';
-import 'package:violet/component/download/iroriapp.dart';
-import 'package:violet/component/download/pixiv.dart';
-import 'package:violet/component/download/sankaku.dart';
 
 enum DownloaderType {
   // Gelbooru, Danbooru, ...
@@ -279,13 +274,8 @@ class ExtractorManager {
 
   ExtractorManager() {
     _dl = [
-      PixivManager(),
-      GelbooruManager(),
-      InstagramManager(),
       HitomiDonwloadManager(),
       HentaiDonwloadManager(),
-      IroriAppManager(),
-      SankakuManager(),
     ];
   }
 
