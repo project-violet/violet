@@ -152,6 +152,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                   tagStates: tagStates,
                   groupStates: groupStates,
                   isOr: isOr,
+                  isSearch: isSearch,
                 ),
               ))
                   .then((value) async {
@@ -204,6 +205,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
   bool isFilterUsed = false;
   bool isOr = false;
+  bool isSearch = false;
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
 
