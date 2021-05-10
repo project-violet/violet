@@ -22,6 +22,7 @@ class ThumbnailWidget extends StatelessWidget {
   final bool isBlurred;
   final bool isLastestRead;
   final int latestReadPage;
+  final bool disableFiltering;
   final Map<String, String> headers;
 
   ThumbnailWidget({
@@ -37,12 +38,16 @@ class ThumbnailWidget extends StatelessWidget {
     this.headers,
     this.isLastestRead,
     this.latestReadPage,
+    this.disableFiltering,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      foregroundDecoration: isLastestRead && imageCount - latestReadPage <= 2
+      foregroundDecoration: isLastestRead &&
+              imageCount - latestReadPage <= 2 &&
+              !disableFiltering &&
+              Settings.showArticleProgress
           ? BoxDecoration(
               color: Settings.themeWhat
                   ? Colors.grey.shade800
@@ -127,7 +132,7 @@ class ThumbnailWidget extends StatelessWidget {
   }
 
   Widget _readProgress() {
-    return !isLastestRead
+    return !isLastestRead || !Settings.showArticleProgress
         ? Container()
         : Align(
             alignment: FractionalOffset.topRight,

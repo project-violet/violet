@@ -53,6 +53,9 @@ class Settings {
 
   static bool useDrawer;
 
+  // View Option
+  static bool showArticleProgress;
+
   static Future<void> initFirst() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
     var mac =
@@ -297,6 +300,14 @@ class Settings {
       await (await SharedPreferences.getInstance())
           .setBool('usedrawer', useDrawer);
     }
+
+    showArticleProgress =
+        (await SharedPreferences.getInstance()).getBool('showarticleprogress');
+    if (showArticleProgress == null) {
+      showArticleProgress = true;
+      await (await SharedPreferences.getInstance())
+          .setBool('showarticleprogress', showArticleProgress);
+    }
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -433,5 +444,11 @@ class Settings {
     useInnerStorage = nn;
     await (await SharedPreferences.getInstance())
         .setBool('useinnerstorage', nn);
+  }
+
+  static Future<void> setShowArticleProgress(bool nn) async {
+    showArticleProgress = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('showarticleprogress', nn);
   }
 }

@@ -228,5 +228,7 @@
     "sync": "同期",
     "artistcollection": "アーティストコレクション",
     "realtimebest": "リアルタイムベスト",
-    "patchnote": "パッチノート"
+    "patchnote": "パッチノート",
+    "view": "表示",
+    "showarticleprogress": "記事の進捗状況を表示する"
 }

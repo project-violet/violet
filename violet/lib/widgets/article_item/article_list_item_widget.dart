@@ -80,6 +80,7 @@ class _ArticleListItemVerySimpleWidgetState
   bool isBookmarked = false;
   bool animating = false;
   bool isLastestRead = false;
+  bool disableFiltering = false;
   int latestReadPage = 0;
   Map<String, String> headers;
   final FlareControls _flareController = FlareControls();
@@ -119,6 +120,7 @@ class _ArticleListItemVerySimpleWidgetState
         scale = scaleAnimationController.value;
       });
     });
+    disableFiltering = (data.disableFilter != null && data.disableFilter);
 
     Bookmark.getInstance().then((value) async {
       isBookmarked = await value.isBookmark(data.queryResult.id());
@@ -498,6 +500,7 @@ class _ArticleListItemVerySimpleWidgetState
       headers: headers,
       isLastestRead: isLastestRead,
       latestReadPage: latestReadPage,
+      disableFiltering: disableFiltering,
     );
   }
 

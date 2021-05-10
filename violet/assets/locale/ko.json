@@ -227,5 +227,7 @@
     "sync": "동기화",
     "artistcollection": "아티스트 컬렉션",
     "realtimebest": "실시간 베스트",
-    "patchnote": "패치 노트"
+    "patchnote": "패치 노트",
+    "view": "보기",
+    "showarticleprogress": "작품 진행도 표시"
 }

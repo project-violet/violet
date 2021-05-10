@@ -228,5 +228,7 @@
     "sync": "同步",
     "artistcollection": "艺术家收藏",
     "realtimebest": "实时最佳",
-    "patchnote": "补丁说明"
+    "patchnote": "补丁说明",
+    "view": "例子",
+    "showarticleprogress": "显示文章进度"
 }
