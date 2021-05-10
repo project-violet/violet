@@ -58,7 +58,8 @@ class ArticleInfoPage extends StatelessWidget {
         color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
         child: SizedBox(
           width: width - 16,
-          height: height - 36 - mediaQuery.padding.bottom,
+          height:
+              height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom,
           child: Container(
             width: width,
             height: height,
