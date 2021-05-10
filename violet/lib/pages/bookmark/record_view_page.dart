@@ -41,7 +41,7 @@ class RecordViewPage extends StatelessWidget {
                 height: height -
                     16 -
                     (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-                child: Container(child: future(width)),
+                child: Container(child: future(context, width)),
               ),
             ),
           ],
@@ -50,7 +50,8 @@ class RecordViewPage extends StatelessWidget {
     );
   }
 
-  Widget future(double width) {
+  Widget future(context, double width) {
+    var windowWidth = MediaQuery.of(context).size.width;
     return FutureBuilder(
       future:
           User.getInstance().then((value) => value.getUserLog().then((value) {
@@ -65,74 +66,145 @@ class RecordViewPage extends StatelessWidget {
               })),
       builder: (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
         if (!snapshot.hasData) return Container();
-        return ListView.builder(
-          physics: BouncingScrollPhysics(),
-          padding: EdgeInsets.all(0),
-          itemCount: snapshot.data.length,
-          itemBuilder: (context, index) {
-            var xx = snapshot.data[index];
-            return SizedBox(
-              height: 159,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                child: FutureBuilder(
-                  // future: QueryManager.query(
-                  //     "SELECT * FROM HitomiColumnModel WHERE Id=${snapshot.data[index].articleId()}"),
-                  future:
-                      HentaiManager.idSearch(snapshot.data[index].articleId()),
-                  builder: (context,
-                      AsyncSnapshot<Tuple2<List<QueryResult>, int>> snapshot) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        snapshot.hasData
-                            ? Provider<ArticleListItem>.value(
-                                value: ArticleListItem.fromArticleListItem(
-                                  queryResult: snapshot.data.item1[0],
-                                  showDetail: true,
-                                  addBottomPadding: false,
-                                  width: (width - 16),
-                                  thumbnailTag: Uuid().v4(),
-                                ),
-                                child: ArticleListItemVerySimpleWidget(),
-                              )
-                            : Container(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          // crossAxisAlignment: CrossAxisAlignment,
-                          children: <Widget>[
-                            // Flexible(
-                            //     child: Text(
-                            //         ' ' +
-                            //             unescape.convert(snapshot.hasData
-                            //                 ? snapshot.data.results[0].title()
-                            //                 : ''),
-                            //         style: TextStyle(fontSize: 17),
-                            //         overflow: TextOverflow.ellipsis)),
-                            Flexible(
-                              // child: Text(xx.datetimeStart().split(' ')[0]),
-                              child: Text(''),
-                            ),
-                            Text(
-                                xx.lastPage().toString() +
-                                    ' ${Translations.of(context).trans('readpage')} ',
-                                style: TextStyle(
-                                  color: Settings.themeWhat
-                                      ? Colors.grey.shade300
-                                      : Colors.grey.shade700,
-                                )),
-                          ],
+        return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: <Widget>[
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+              sliver: SliverGrid(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                  childAspectRatio: 3 / 4,
+                ),
+                delegate: SliverChildListDelegate(
+                  snapshot.data.map(
+                    (e) {
+                      return Padding(
+                        key: Key('record/' + e.id().toString()),
+                        padding: EdgeInsets.zero,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: FutureBuilder(
+                            // future: QueryManager.query(
+                            //     "SELECT * FROM HitomiColumnModel WHERE Id=${snapshot.data[index].articleId()}"),
+                            future: HentaiManager.idSearch(e.articleId()),
+                            builder: (context,
+                                AsyncSnapshot<Tuple2<List<QueryResult>, int>>
+                                    snapshot) {
+                              return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    snapshot.hasData
+                                        ? Provider<ArticleListItem>.value(
+                                            value: ArticleListItem
+                                                .fromArticleListItem(
+                                              queryResult:
+                                                  snapshot.data.item1[0],
+                                              addBottomPadding: false,
+                                              showDetail: false,
+                                              width:
+                                                  (windowWidth - 4.0 - 48) / 3,
+                                              thumbnailTag: Uuid().v4(),
+                                            ),
+                                            child:
+                                                ArticleListItemVerySimpleWidget(),
+                                          )
+                                        : Container()
+                                  ]);
+                            },
+                          ),
                         ),
-                      ],
-                    );
-                  },
+                      );
+                    },
+                  ).toList(),
                 ),
               ),
-            );
-            // return ListTile() Text(snapshot.data[index].articleId().toString());
-          },
+            ),
+          ],
         );
+        //       ListView.builder(
+        // itemCount: .length,
+        // itemBuilder: (context, index) {
+        //   var xx = snapshot.data[index];
+        //   return SizedBox(
+        //     height: 159,
+        //     child: Padding(
+        //       padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+        //       child: FutureBuilder(
+        //         // future: QueryManager.query(
+        //         //     "SELECT * FROM HitomiColumnModel WHERE Id=${snapshot.data[index].articleId()}"),
+        //         future:
+        //             HentaiManager.idSearch(snapshot.data[index].articleId()),
+        //         builder: (context,
+        //             AsyncSnapshot<Tuple2<List<QueryResult>, int>> snapshot) {
+        //           return Column(
+        //             crossAxisAlignment: CrossAxisAlignment.stretch,
+        //             children: <Widget>[
+        //               snapshot.hasData
+        //                   ? Provider<ArticleListItem>.value(
+        //                       value: ArticleListItem.fromArticleListItem(
+        //                         queryResult: snapshot.data.item1[0],
+        //                         addBottomPadding: false,
+        //                         width: (width - 16),
+        //                         thumbnailTag: Uuid().v4(),
+        //                       ),
+        //                       child: ArticleListItemVerySimpleWidget(),
+        //                     )
+        //                   : Container();
+        // return Column(
+        //   crossAxisAlignment: CrossAxisAlignment.stretch,
+        //   children: <Widget>[
+        //     snapshot.hasData
+        //         ? Provider<ArticleListItem>.value(
+        //             value: ArticleListItem.fromArticleListItem(
+        //               queryResult: snapshot.data.item1[0],
+        //               showDetail: true,
+        //               addBottomPadding: false,
+        //               width: (width - 16),
+        //               thumbnailTag: Uuid().v4(),
+        //             ),
+        //             child: ArticleListItemVerySimpleWidget(),
+        //           )
+        //         : Container(),
+        //     Row(
+        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //       // crossAxisAlignment: CrossAxisAlignment,
+        //       children: <Widget>[
+        //         // Flexible(
+        //         //     child: Text(
+        //         //         ' ' +
+        //         //             unescape.convert(snapshot.hasData
+        //         //                 ? snapshot.data.results[0].title()
+        //         //                 : ''),
+        //         //         style: TextStyle(fontSize: 17),
+        //         //         overflow: TextOverflow.ellipsis)),
+        //         Flexible(
+        //           // child: Text(xx.datetimeStart().split(' ')[0]),
+        //           child: Text(''),
+        //         ),
+        //         Text(
+        //             xx.lastPage().toString() +
+        //                 ' ${Translations.of(context).trans('readpage')} ',
+        //             style: TextStyle(
+        //               color: Settings.themeWhat
+        //                   ? Colors.grey.shade300
+        //                   : Colors.grey.shade700,
+        //             )),
+        //       ],
+        //     ),
+        //   ],
+        // );
+        //       },
+        //     ),
+        //   ),
+        // );
+        // return ListTile() Text(snapshot.data[index].articleId().toString());
       },
+      //   );
+      // },
     );
   }
 }
