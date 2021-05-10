@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
@@ -41,8 +42,7 @@ class _GroupArtistListState extends State<GroupArtistList>
   List<BookmarkArtist> artists;
 
   Future<List<BookmarkArtist>> _bookmark() async {
-    await refresh();
-    await _sortByLatest();
+    if (_filterLevel == 0) await refresh();
     return artists;
   }
 
@@ -63,7 +63,7 @@ class _GroupArtistListState extends State<GroupArtistList>
       var query = (await qm.next())[0].id();
       ids.add(Tuple2<int, int>(query, i));
     }
-    ids.sort((e1, e2) => e1.item1.compareTo(e2.item1));
+    ids.sort((e1, e2) => e2.item1.compareTo(e1.item1));
 
     var newedList = <BookmarkArtist>[];
     for (int i = 0; i < artists.length; i++) {
@@ -144,7 +144,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                       },
                     );
                   },
-                  childCount: artists.length,
+                  childCount: _progressingFilter ? 0 : artists.length,
                 ),
               )
             ],
@@ -154,6 +154,8 @@ class _GroupArtistListState extends State<GroupArtistList>
     );
   }
 
+  int _filterLevel = 0;
+  bool _progressingFilter = false;
   Widget _filter() {
     return Align(
       alignment: Alignment.centerRight,
@@ -175,15 +177,36 @@ class _GroupArtistListState extends State<GroupArtistList>
               child: Stack(
                 alignment: Alignment.center,
                 children: <Widget>[
-                  Icon(
-                    MdiIcons.formatListText,
-                    color: Colors.grey,
-                  ),
+                  _progressingFilter
+                      ? SizedBox(
+                          height: 30,
+                          width: 30,
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.grey),
+                          ))
+                      : Icon(
+                          [
+                            MdiIcons.formatListText,
+                            Mdi.sortClockDescendingOutline
+                          ][_filterLevel],
+                          color: Colors.grey,
+                        ),
                 ],
               ),
             ),
-            onTap: () async {},
-            onLongPress: () {},
+            onTap: _progressingFilter
+                ? null
+                : () async {
+                    setState(() {
+                      _progressingFilter = true;
+                    });
+                    await _sortByLatest();
+                    setState(() {
+                      _progressingFilter = false;
+                      _filterLevel = (_filterLevel + 1) % 2;
+                    });
+                  },
           ),
         ),
       ),
@@ -501,6 +524,13 @@ class _GroupArtistListState extends State<GroupArtistList>
         // I chose the latter to suit the user's intentions.
 
         // Atomic!!
+        // 0. Sort Checked
+        var invIdIndex = Map<String, int>();
+        for (int i = 0; i < artists.length; i++)
+          invIdIndex[artists[i].artist() + '|' + artists[i].type().toString()] =
+              i;
+        checked.sort((x, y) => invIdIndex[x.item2 + '|' + x.item1.toString()]
+            .compareTo(invIdIndex[y.item2 + '|' + y.item1.toString()]));
 
         // 1. Get bookmark articles on source groupid
         var bm = await Bookmark.getInstance();

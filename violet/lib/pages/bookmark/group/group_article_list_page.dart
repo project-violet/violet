@@ -278,7 +278,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                       child: new Center(
                         child: new DotsIndicator(
                           controller: _controller,
-                          itemCount: 3,
+                          itemCount: 2,
                           onPageSelected: (int page) {
                             _controller.animateToPage(
                               page,
@@ -726,6 +726,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         // I chose the latter to suit the user's intentions.
 
         // Atomic!!
+        // 0. Sort Checked
+        var invIdIndex = Map<int, int>();
+        for (int i = 0; i < queryResult.length; i++)
+          invIdIndex[queryResult[i].id()] = i;
+        checked.sort((x, y) => invIdIndex[x].compareTo(invIdIndex[y]));
 
         // 1. Get bookmark articles on source groupid
         var bm = await Bookmark.getInstance();
