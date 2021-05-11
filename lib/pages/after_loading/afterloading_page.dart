@@ -113,12 +113,12 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
               new BottomNavigationBarItem(
                   icon: new Icon(Icons.file_download),
                   title: new Text(Translations.of(context).trans('download'))),
-              new BottomNavigationBarItem(
-                  backgroundColor: Settings.themeWhat
-                      ? Colors.grey.shade900.withOpacity(0.90)
-                      : Colors.grey.shade50,
-                  icon: new Icon(MdiIcons.accountGroup),
-                  title: new Text(Translations.of(context).trans('community'))),
+              // new BottomNavigationBarItem(
+              //     backgroundColor: Settings.themeWhat
+              //         ? Colors.grey.shade900.withOpacity(0.90)
+              //         : Colors.grey.shade50,
+              //     icon: new Icon(MdiIcons.accountGroup),
+              //     title: new Text(Translations.of(context).trans('community'))),
               new BottomNavigationBarItem(
                   backgroundColor: Settings.themeWhat
                       ? Colors.grey.shade900.withOpacity(0.90)
@@ -140,7 +140,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             SearchPage(),
             BookmarkPage(),
             DownloadPage(),
-            CommunityPage(),
+            // CommunityPage(),
             SettingsPage(),
           ],
           // ),
@@ -181,12 +181,12 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                     : Colors.grey.shade50,
                 icon: new Icon(Icons.bookmark),
                 title: new Text(Translations.of(context).trans('bookmark'))),
-            new BottomNavigationBarItem(
-                backgroundColor: Settings.themeWhat
-                    ? Colors.grey.shade900.withOpacity(0.90)
-                    : Colors.grey.shade50,
-                icon: new Icon(MdiIcons.accountGroup),
-                title: new Text(Translations.of(context).trans('community'))),
+            // new BottomNavigationBarItem(
+            //     backgroundColor: Settings.themeWhat
+            //         ? Colors.grey.shade900.withOpacity(0.90)
+            //         : Colors.grey.shade50,
+            //     icon: new Icon(MdiIcons.accountGroup),
+            //     title: new Text(Translations.of(context).trans('community'))),
             new BottomNavigationBarItem(
                 backgroundColor: Settings.themeWhat
                     ? Colors.grey.shade900.withOpacity(0.90)
@@ -206,7 +206,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             MainPage2(),
             SearchPage(),
             BookmarkPage(),
-            CommunityPage(),
+            // CommunityPage(),
             SettingsPage(),
           ],
         ),
@@ -233,7 +233,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             SearchPage(),
             BookmarkPage(),
             DownloadPage(),
-            CommunityPage(),
+            // CommunityPage(),
             SettingsPage(),
           ],
         ),
@@ -308,14 +308,14 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                     3,
                     Translations.of(context).trans('download'),
                     Settings.majorColor),
-                _drawerButton(
-                    MdiIcons.accountGroup,
-                    4,
-                    Translations.of(context).trans('community'),
-                    Settings.majorColor),
+                // _drawerButton(
+                //     MdiIcons.accountGroup,
+                //     4,
+                //     Translations.of(context).trans('community'),
+                //     Settings.majorColor),
                 _drawerButton(
                     Icons.settings,
-                    5,
+                    4,
                     Translations.of(context).trans('settings'),
                     Settings.majorColor),
                 Expanded(
@@ -348,7 +348,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             MainPage2(),
             SearchPage(),
             BookmarkPage(),
-            CommunityPage(),
+            // CommunityPage(),
             SettingsPage(),
           ],
         ),
@@ -418,14 +418,14 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                     2,
                     Translations.of(context).trans('bookmark'),
                     Settings.majorColor),
-                _drawerButton(
-                    MdiIcons.accountGroup,
-                    3,
-                    Translations.of(context).trans('community'),
-                    Settings.majorColor),
+                // _drawerButton(
+                //     MdiIcons.accountGroup,
+                //     3,
+                //     Translations.of(context).trans('community'),
+                //     Settings.majorColor),
                 _drawerButton(
                     Icons.settings,
-                    4,
+                    3,
                     Translations.of(context).trans('settings'),
                     Settings.majorColor),
                 Expanded(

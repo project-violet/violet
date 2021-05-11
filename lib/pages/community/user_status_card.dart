@@ -13,20 +13,20 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/pages/community/signin_dialog.dart';
 import 'package:violet/pages/community/signup_dialog.dart';
 
-class CommunityPage extends StatefulWidget {
+class UserStatusCard extends StatefulWidget {
   @override
-  _CommunityPageState createState() => _CommunityPageState();
+  _UserStatusCardState createState() => _UserStatusCardState();
 }
 
-class _CommunityPageState extends State<CommunityPage>
-    with AutomaticKeepAliveClientMixin<CommunityPage> {
+class _UserStatusCardState extends State<UserStatusCard>
+    with AutomaticKeepAliveClientMixin<UserStatusCard> {
   @override
   bool get wantKeepAlive => true;
 
   VioletCommunitySession sess;
-  String _userId;
+  String _userId = 'None';
   String _userAppId;
-  String _userNickName;
+  String _userNickName = 'None';
   bool _logining = false;
 
   @override
@@ -40,7 +40,6 @@ class _CommunityPageState extends State<CommunityPage>
       var pw = (await SharedPreferences.getInstance())
           .getString('saved_community_pw');
 
-      _userId = id != null ? id : 'None';
       _userAppId =
           (await SharedPreferences.getInstance()).getString('fa_userid');
       setState(() {});
@@ -83,23 +82,6 @@ class _CommunityPageState extends State<CommunityPage>
 
   @override
   Widget build(BuildContext context) {
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
-    return Container(
-      padding: EdgeInsets.only(top: statusBarHeight),
-      child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(height: 16),
-            _userStatusCard(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  _userStatusCard() {
     return Column(
       children: [
         Container(
