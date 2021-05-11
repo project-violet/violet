@@ -8,6 +8,7 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
 
 class VioletCommunitySession {
+  static VioletCommunitySession lastSession;
   final String session;
   final String id;
 
@@ -27,7 +28,7 @@ class VioletCommunitySession {
           body: jsonEncode({'Id': id, 'Password': pw}));
       var bb = jsonDecode(res.body);
       if (bb['msg'] == 'success') {
-        return VioletCommunitySession(bb['session'], id);
+        return lastSession = VioletCommunitySession(bb['session'], id);
       }
     } catch (e) {}
     return null;

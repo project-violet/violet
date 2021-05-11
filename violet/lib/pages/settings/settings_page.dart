@@ -28,6 +28,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
@@ -136,7 +137,7 @@ class _SettingsPageState extends State<SettingsPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: AnimationConfiguration.toStaggeredList(
-              duration: const Duration(milliseconds: 375),
+              duration: const Duration(milliseconds: 0),
               childAnimationBuilder: (widget) => SlideAnimation(
                 horizontalOffset: 50.0,
                 child: FadeInAnimation(
@@ -248,6 +249,7 @@ class _SettingsPageState extends State<SettingsPage>
                     },
                   ),
                 ]),
+                UserStatusCard(),
                 _buildGroup(Translations.of(context).trans('search')),
                 _buildItems([
                   InkWell(
