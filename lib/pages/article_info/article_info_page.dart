@@ -5,6 +5,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:violet/component/hentai.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
@@ -470,8 +472,11 @@ class _InfoAreaWidget extends StatelessWidget {
 
   _InfoAreaWidget({@required this.queryResult, this.headers, this.comments});
 
+  BuildContext _context;
+
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return ExpandableNotifier(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -582,9 +587,62 @@ class _InfoAreaWidget extends StatelessWidget {
       );
 
   Future<void> openUrl(String url) async {
-    if (await canLaunch(url)) {
+    final ehPattern =
+        RegExp(r'^(https?://)?e(-|x)hentai.org/g/(?<id>\d+)/(?<hash>\w+)/?$');
+    if (ehPattern.stringMatch(url) == url) {
+      var match = ehPattern.allMatches(url);
+      var id = match.first.namedGroup('id').trim();
+      _showArticleInfo(int.parse(id));
+    } else if (await canLaunch(url)) {
       await launch(url);
     }
+  }
+
+  void _showArticleInfo(int id) async {
+    final mediaQuery = MediaQuery.of(_context);
+    final height = MediaQuery.of(_context).size.height;
+
+    final search = await HentaiManager.idSearch(id.toString());
+    if (search.item1.length != 1) return;
+
+    final qr = search.item1[0];
+
+    HentaiManager.getImageProvider(qr).then((value) async {
+      var thumbnail = await value.getThumbnailUrl();
+      var headers = await value.getHeader(0);
+      ProviderManager.insert(qr.id(), value);
+
+      var isBookmarked =
+          await (await Bookmark.getInstance()).isBookmark(qr.id());
+
+      showModalBottomSheet(
+        context: _context,
+        isScrollControlled: true,
+        builder: (_) {
+          return DraggableScrollableSheet(
+            initialChildSize: 400 / height,
+            minChildSize: 400 / height,
+            maxChildSize: 0.9,
+            expand: false,
+            builder: (_, controller) {
+              return Provider<ArticleInfo>.value(
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: qr,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'zxcvzxcvzxcv',
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                ),
+              );
+            },
+          );
+        },
+      );
+    });
   }
 
   List<InlineSpan> linkify(String text) {
