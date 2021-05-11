@@ -39,6 +39,8 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
             .reversed
             .toList();
 
+        if (artists.length == 0) return <QueryResult>[];
+
         var queryString = HitomiManager.translate2query(artists
             .map((e) =>
                 '${[
@@ -50,12 +52,17 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                 ][e.type()]}:' +
                 e.artist().toLowerCase().replaceAll(' ', '_'))
             .join(' or '));
+        print(queryString);
         final qm = QueryManager.queryPagination(queryString);
         qm.itemsPerPage = 100;
         return await qm.next();
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
-        if (!snapshot.hasData) return Container();
+        if (!snapshot.hasData)
+          return Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                  width: 64, height: 64, child: CircularProgressIndicator()));
         return CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
