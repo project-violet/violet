@@ -35,7 +35,7 @@ dependencies:
   bloc: ^6.0.0
   bubble_tab_indicator: "^0.1.4"
   cached_network_image:
-  carousel_slider:
+  carousel_slider: ^2.3.4
   charts_flutter:
   circular_check_box: ^1.0.1
   convert:
