@@ -1,0 +1,124 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2021. violet-team. Licensed under the Apache-2.0 License.
+
+import 'package:flutter/material.dart';
+import 'package:violet/log/log.dart';
+import 'package:violet/other/dialogs.dart';
+
+class LogPage extends StatefulWidget {
+  @override
+  _LogPageState createState() => _LogPageState();
+}
+
+class _LogPageState extends State<LogPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final mediaQuery = MediaQuery.of(context);
+
+    var errors = Logger.events.reversed.toList();
+
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.only(
+            top: statusBarHeight + 16, bottom: mediaQuery.padding.bottom),
+        child: Column(
+          children: [
+            Text(
+              'Log Record',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            Container(
+              height: 16,
+            ),
+            Expanded(
+              child: ListView.separated(
+                physics: BouncingScrollPhysics(),
+                padding: EdgeInsets.all(8),
+                // addAutomaticKeepAlives: false,
+                itemBuilder: (c, i) {
+                  var ii = errors[i];
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 12.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: ii.isError == false && ii.isWarning == false
+                          ? Colors.greenAccent.withOpacity(0.8)
+                          : ii.isWarning != null && ii.isWarning
+                              ? Colors.orangeAccent.withOpacity(0.8)
+                              : Colors.redAccent.withOpacity(0.8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(ii.isError == false && ii.isWarning == false
+                                ? Icons.check
+                                : ii.isWarning
+                                    ? Icons.warning
+                                    : Icons.cancel),
+                            SizedBox(
+                              width: 12.0,
+                            ),
+                            Text(
+                              ii.title,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 15),
+                            ),
+                            ii.detail != null
+                                ? Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: SizedBox(
+                                        height: 18.0,
+                                        width: 18.0,
+                                        child: IconButton(
+                                          padding: EdgeInsets.zero,
+                                          icon: Icon(
+                                            Icons.keyboard_arrow_right,
+                                            size: 24,
+                                          ),
+                                          onPressed: () async {
+                                            await Dialogs.okDialog(
+                                                context, ii.detail, '상세정보');
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : Container(),
+                          ],
+                        ),
+                        Container(height: 4),
+                        Text(ii.message),
+                      ],
+                    ),
+                  );
+                },
+                itemCount: errors.length,
+                separatorBuilder: (context, index) {
+                  // return Divider(
+                  //   height: 2,
+                  // );
+
+                  return Container(
+                    height: 8,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      // ),
+    );
+  }
+}

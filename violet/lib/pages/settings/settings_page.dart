@@ -32,6 +32,7 @@ import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
+import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/pages/settings/route.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
@@ -412,7 +413,31 @@ class _SettingsPageState extends State<SettingsPage>
                       title: Text(Translations.of(context).trans('logrecord')),
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
-                    onTap: () {},
+                    onTap: () {
+                      if (!Platform.isIOS) {
+                        Navigator.of(context).push(PageRouteBuilder(
+                          transitionDuration: Duration(milliseconds: 500),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            var begin = Offset(0.0, 1.0);
+                            var end = Offset.zero;
+                            var curve = Curves.ease;
+
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (_, __, ___) => LogPage(),
+                        ));
+                      } else {
+                        Navigator.of(context).push(
+                            CupertinoPageRoute(builder: (_) => LogPage()));
+                      }
+                    },
                   ),
                   _buildDivider(),
                   ListTile(
