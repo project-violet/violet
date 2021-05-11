@@ -50,7 +50,9 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                   'series',
                   'character'
                 ][e.type()]}:' +
-                e.artist().toLowerCase().replaceAll(' ', '_'))
+                e.artist().toLowerCase().replaceAll(' ', '_') +
+                ' ' +
+                Settings.includeTags)
             .join(' or '));
         print(queryString);
         final qm = QueryManager.queryPagination(queryString);

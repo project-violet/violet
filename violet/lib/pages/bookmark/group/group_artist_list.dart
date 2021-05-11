@@ -57,7 +57,9 @@ class _GroupArtistListState extends State<GroupArtistList>
             'series',
             'character'
           ][artists[i].type()]}:' +
-          postfix);
+          postfix +
+          ' ' +
+          Settings.includeTags);
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 1;
       var query = (await qm.next())[0].id();
@@ -77,7 +79,9 @@ class _GroupArtistListState extends State<GroupArtistList>
     var postfix = e.toLowerCase().replaceAll(' ', '_');
     var queryString = HitomiManager.translate2query(
         '${['artist', 'group', 'uploader', 'series', 'character'][type]}:' +
-            postfix);
+            postfix +
+            ' ' +
+            Settings.includeTags);
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 3;
     return await qm.next();
