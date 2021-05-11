@@ -14,4 +14,13 @@ class EHSession {
         (await SharedPreferences.getInstance()).getString('eh_cookies');
     return (await http.get(url, headers: {"Cookie": cookie})).body;
   }
+
+  static Future<String> postComment(String url, String content) async {
+    var cookie =
+        (await SharedPreferences.getInstance()).getString('eh_cookies');
+    return (await http.post(url,
+            headers: {"Cookie": cookie},
+            body: 'commenttext_new=' + Uri.encodeFull(content)))
+        .body;
+  }
 }
