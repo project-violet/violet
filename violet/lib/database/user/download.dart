@@ -3,6 +3,7 @@
 
 import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
+import 'package:violet/log/log.dart';
 
 class DownloadItemModel {
   Map<String, dynamic> result;
@@ -77,7 +78,12 @@ class Download {
               ThumbnailHeader text
               );
               ''');
-          } catch (e) {}
+          } catch (e, st) {
+            Logger.error('[Download-Instance] E: ' +
+                e.toString() +
+                '\n' +
+                st.toString());
+          }
         }
         _instance = new Download();
       }

@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
+import 'package:violet/log/log.dart';
 
 // This is used for estimation similiar Aritst/Group/Uplaoder with each others.
 class HitomiIndexs {
@@ -62,7 +63,9 @@ class HitomiIndexs {
       characterCharacter = jsonDecode(await path10.readAsString());
       final path11 = File('${directory.path}$subdir/series-series.json');
       seriesSeries = jsonDecode(await path11.readAsString());
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[Hitomi-Indexs] E: ' + e.toString() + '\n' + st.toString());
+    }
   }
 
   static List<Tuple2<String, double>> _calculateSimilars(

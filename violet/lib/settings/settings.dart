@@ -13,6 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/shielder.dart';
 import 'package:violet/database/user/download.dart';
+import 'package:violet/log/log.dart';
 
 class Settings {
   // Color Settings
@@ -281,6 +282,7 @@ class Settings {
             }
           }
         } catch (e, st) {
+          Logger.error('[Settings] E: ' + e.toString() + '\n' + st.toString());
           Crashlytics.instance.recordError(e, st);
         }
       }

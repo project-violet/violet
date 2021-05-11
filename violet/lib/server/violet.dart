@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/server/salt.dart';
 
 import 'package:violet/network/wrapper.dart' as http;
@@ -32,6 +33,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
+      Logger.error('[API-top] E: ' + e.toString() + '\n' + st.toString());
+
       return 900;
     }
   }
@@ -55,7 +58,9 @@ class VioletServer {
           .then((value) {
         print(value.statusCode);
       });
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-view] E: ' + e.toString() + '\n' + st.toString());
+    }
   }
 
   static Future<void> viewClose(int articleid, int readTime) async {
@@ -81,7 +86,9 @@ class VioletServer {
           .then((value) {
         print(value.statusCode);
       });
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-close] E: ' + e.toString() + '\n' + st.toString());
+    }
   }
 
   static Future<bool> uploadBookmark() async {
@@ -135,7 +142,9 @@ class VioletServer {
           .setBool('upload_bookmark_178', true);
 
       return res.statusCode == 200;
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-upload] E: ' + e.toString() + '\n' + st.toString());
+    }
     return false;
   }
 

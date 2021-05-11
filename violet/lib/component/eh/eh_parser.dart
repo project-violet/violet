@@ -8,6 +8,7 @@ import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/log/log.dart';
 
 class EHArticle {
   String thumbnail;
@@ -171,7 +172,9 @@ class EHParser {
             .querySelectorAll('div')
             .map((x) => x.querySelector('a').text)
             .toList();
-      } catch (e) {}
+      } catch (e, st) {
+        Logger.error('[eh-parser] E: ' + e.toString() + '\n' + st.toString());
+      }
     });
 
     if (info.containsKey("language:")) article.languages = info["language:"];

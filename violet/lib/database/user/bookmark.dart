@@ -6,6 +6,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
+import 'package:violet/log/log.dart';
 
 ////////////////////////////////////////////////////////////////////////
 ///
@@ -117,7 +118,12 @@ class Bookmark {
               'Color': Colors.grey.value,
               'Gorder': 1,
             });
-          } catch (e) {}
+          } catch (e, st) {
+            Logger.error('[Bookmark Instance] E: ' +
+                e.toString() +
+                '\n' +
+                st.toString());
+          }
         }
         _instance = new Bookmark();
       }

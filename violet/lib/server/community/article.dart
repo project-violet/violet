@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:violet/log/log.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
@@ -39,7 +40,9 @@ class VioletCommunityArticle {
           },
           body: jsonEncode(body));
       return res;
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-postv] E: ' + e.toString() + '\n' + st.toString());
+    }
     return null;
   }
 
