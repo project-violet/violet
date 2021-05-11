@@ -499,25 +499,32 @@ class _InfoAreaWidget extends StatelessWidget {
 
   Widget commentArea(BuildContext context) {
     if (comments.length == 0) {
-      return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Container(
-              // alignment: Alignment.center,
-              child: Align(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
                 // alignment: Alignment.center,
-                child: Text(
-                  'No Comments',
-                  textAlign: TextAlign.center,
+                child: Align(
+                  // alignment: Alignment.center,
+                  child: Text(
+                    'No Comments',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              ),
-              width: 100,
-              height: 100,
-            )
-          ]);
+                width: 100,
+                height: 100,
+              )
+            ],
+          ),
+          comment(context),
+        ],
+      );
     } else {
-      var children = comments.map((e) {
+      var children = List<Widget>.from(comments.map((e) {
         return InkWell(
           onTap: () async {
             // Dialogs.okDialog(context, e.item3, 'Comments');
@@ -553,7 +560,7 @@ class _InfoAreaWidget extends StatelessWidget {
             subtitle: buildTextWithLinks(e.item3),
           ),
         );
-      }).toList();
+      }));
 
       return Padding(
         padding: EdgeInsets.only(top: 8, bottom: 8),
@@ -568,10 +575,82 @@ class _InfoAreaWidget extends StatelessWidget {
             //             child: widget,
             //           ),
             //         ),
-            children: children),
+            children: children + [comment(context)]),
         // ),
       );
     }
+  }
+
+  Widget comment(context) {
+    return InkWell(
+      onTap: () async {
+        // check loginable
+
+        if (queryResult.ehash() == null) {
+          await Dialogs.okDialog(context, 'Cannot write comment!');
+          return;
+        }
+
+        var cookie =
+            (await SharedPreferences.getInstance()).getString('eh_cookies');
+        if (cookie == null || !cookie.contains('ipb_pass_hash')) {
+          await Dialogs.okDialog(context, 'Please, Login First!');
+          return;
+        }
+
+        TextEditingController text = TextEditingController();
+        Widget yesButton = FlatButton(
+          child: Text(Translations.of(context).trans('ok'),
+              style: TextStyle(color: Settings.majorColor)),
+          focusColor: Settings.majorColor,
+          splashColor: Settings.majorColor.withOpacity(0.3),
+          onPressed: () async {
+            if ((await EHSession.postComment(
+                        'https://exhentai.org/g/${queryResult.id()}/${queryResult.ehash()}',
+                        text.text))
+                    .trim() ==
+                '') {
+              await Dialogs.okDialog(
+                  context, 'Too short, or Not a valid session! Try Again!');
+              return;
+            }
+            Navigator.pop(context, true);
+          },
+        );
+        Widget noButton = FlatButton(
+          child: Text(Translations.of(context).trans('cancel'),
+              style: TextStyle(color: Settings.majorColor)),
+          focusColor: Settings.majorColor,
+          splashColor: Settings.majorColor.withOpacity(0.3),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+        );
+        var dialog = await showDialog(
+          useRootNavigator: false,
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+            title: Text('Write Comment'),
+            content: TextField(
+              controller: text,
+              autofocus: true,
+            ),
+            actions: [yesButton, noButton],
+          ),
+        );
+      },
+      splashColor: Colors.white,
+      child: ListTile(
+        // dense: true,
+        // contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+        title: Row(
+          children: [Text('Write Comment')],
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+        ),
+      ),
+    );
   }
 
   TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
