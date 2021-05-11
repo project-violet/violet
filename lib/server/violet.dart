@@ -84,13 +84,13 @@ class VioletServer {
     } catch (e) {}
   }
 
-  static Future<void> uploadBookmark() async {
+  static Future<bool> uploadBookmark() async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
     var userId = await getUserAppId();
     var upload = (await SharedPreferences.getInstance())
         .getBool('upload_bookmark_178_test');
-    if (upload != null && upload != false) return;
+    if (upload != null && upload != false) return false;
 
     /*
       ArticleReadLog
@@ -115,7 +115,7 @@ class VioletServer {
     });
 
     try {
-      await http
+      var res = await http
           .post('$api/upload',
               headers: {
                 'v-token': vToken.toString(),
@@ -128,11 +128,15 @@ class VioletServer {
               }))
           .then((value) {
         print(value.statusCode);
+        return value;
       });
 
       await (await SharedPreferences.getInstance())
           .setBool('upload_bookmark_178', true);
+
+      return res.statusCode == 200;
     } catch (e) {}
+    return false;
   }
 
   static String _userId;

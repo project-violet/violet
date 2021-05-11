@@ -30,7 +30,8 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
       HttpWrapper.throttlerExHentai.release();
       return HttpWrapper.cacheResponse[url];
     }
-    Logger.info('[Http Request] GET: ' + url);
+    Logger.info(
+        '[Http Request] GET: ' + url + '\nHEADERS: ' + jsonEncode(headers));
     var retry = 0;
     while (true) {
       var res = await http
@@ -103,7 +104,12 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
 
 Future<http.Response> post(String url,
     {Map<String, String> headers, dynamic body, Encoding encoding}) async {
-  Logger.info('[Http Request] POST: ' + url);
+  Logger.info('[Http Request] POST: ' +
+      url +
+      '\nHEADERS: ' +
+      jsonEncode(headers) +
+      '\nBODY: ' +
+      body);
   var res = await http.post(Uri.parse(url),
       headers: headers, body: body, encoding: encoding);
   if (res.statusCode != 200) {

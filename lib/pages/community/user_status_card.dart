@@ -3,6 +3,7 @@
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/other/dialogs.dart';
@@ -12,6 +13,7 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/pages/community/signin_dialog.dart';
 import 'package:violet/pages/community/signup_dialog.dart';
+import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
   @override
@@ -191,12 +193,43 @@ class _UserStatusCardState extends State<UserStatusCard>
                               child: Icon(
                                   sess == null
                                       ? MdiIcons.accountCancel
-                                      : MdiIcons.accountCheck,
+                                      : MdiIcons.cloudUpload,
                                   size: 30),
                             ),
                           ),
                           onTap: () async {
                             if (sess != null) {
+                              setState(() {
+                                _logining = true;
+                              });
+
+                              var resc = await VioletServer.uploadBookmark();
+
+                              setState(() {
+                                _logining = false;
+                              });
+
+                              if (resc) {
+                                FlutterToast(context).showToast(
+                                  child: ToastWrapper(
+                                    isCheck: true,
+                                    msg: 'Bookmark Backup Success!',
+                                  ),
+                                  gravity: ToastGravity.BOTTOM,
+                                  toastDuration: Duration(seconds: 4),
+                                );
+                              } else {
+                                FlutterToast(context).showToast(
+                                  child: ToastWrapper(
+                                    isCheck: false,
+                                    isWarning: false,
+                                    msg: 'Bookmark Backup Fail!',
+                                  ),
+                                  gravity: ToastGravity.BOTTOM,
+                                  toastDuration: Duration(seconds: 4),
+                                );
+                              }
+
                               return;
                             }
 
