@@ -135,7 +135,6 @@ class HentaiManager {
             "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
         .map((e) => QueryResult(result: e))
         .toList();
-    print(queryResult[0].id());
     return Tuple2<List<QueryResult>, int>(
         queryResult, queryResult.length >= itemsPerPage ? offset + 1 : -1);
   }
@@ -180,13 +179,10 @@ class HentaiManager {
     var route = Settings.routingRule;
 
     for (int i = 0; i < route.length; i++) {
-      print(route[i]);
-
       try {
         switch (route[i]) {
           case 'EHentai':
             if (qr.ehash() != null) {
-              print('https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
               var html = await EHSession.requestString(
                   'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
               var article = EHParser.parseArticleData(html);
@@ -228,12 +224,7 @@ class HentaiManager {
             }
             break;
         }
-      } catch (e, st) {
-        Logger.error('[hentai-getImageProvider] E: ' +
-            e.toString() +
-            '\n' +
-            st.toString());
-      }
+      } catch (e) {}
     }
 
     throw Exception('gallery not found');
