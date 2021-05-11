@@ -24,14 +24,24 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2021, 4, 20),
+    dateTime: DateTime(2021, 5, 11),
     version: '1.8 Patch <== Latest',
     contents: [
-      'fix space character added when first lookup',
+      'Code update for flutter-2.0',
       'add \'random\' lookup chip',
+      'add article when eh url clicked',
+      'add read page indicator',
+      'add download to inner storage option',
+      'add filter on bookmark group page',
+      'add artists article collections',
+      'add writing comment function',
+      'add log-record page',
+      'add community tab (move to settings page) with login, signup functions',
       'remove illegal characters from a file name',
-      'implements download to inner storage option',
-      'fix bug that randomly moves when moving works/artists between bookmark lists'
+      'fix space character added when first lookup',
+      'fix bug that randomly moves when moving works/artists between bookmark lists',
+      'fix bug that the order is reversed when moving a group',
+      'fix an error where more than 1000 bookmarks were not displayed',
     ],
   ),
   PatchModel(
