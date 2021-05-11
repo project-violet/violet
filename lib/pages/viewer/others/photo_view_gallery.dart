@@ -1,5 +1,6 @@
 // from https://github.com/fireslime/photo_view
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart'
     show
@@ -7,16 +8,17 @@ import 'package:photo_view/photo_view.dart'
         PhotoView,
         PhotoViewImageTapDownCallback,
         PhotoViewImageTapUpCallback,
+        PhotoViewImageScaleEndCallback,
         ScaleStateCycle;
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 
-// import 'package:photo_view/src/controller/photo_view_controller.dart';
-// import 'package:photo_view/src/controller/photo_view_scalestate_controller.dart';
-// import 'package:photo_view/src/core/photo_view_gesture_detector.dart';
-// import 'package:photo_view/src/photo_view_scale_state.dart';
-// import 'package:photo_view/src/utils/photo_view_hero_attributes.dart';
+import 'package:photo_view/src/controller/photo_view_controller.dart';
+import 'package:photo_view/src/controller/photo_view_scalestate_controller.dart';
+import 'package:photo_view/src/core/photo_view_gesture_detector.dart';
+import 'package:photo_view/src/photo_view_scale_state.dart';
+import 'package:photo_view/src/utils/photo_view_hero_attributes.dart';
 
 /// A type definition for a [Function] that receives a index after a page change in [PhotoViewGallery]
 typedef PhotoViewGalleryPageChangedCallback = void Function(int index);
@@ -27,7 +29,7 @@ typedef PhotoViewGalleryBuilder = PhotoViewGalleryPageOptions Function(
 
 /// A [StatefulWidget] that shows multiple [PhotoView] widgets in a [PageView]
 ///
-/// Some of [PhotoView] constructor options are passed direct to [PhotoViewGallery] cosntructor. Those options will affect the gallery in a whole.
+/// Some of [PhotoView] constructor options are passed direct to [PhotoViewGallery] constructor. Those options will affect the gallery in a whole.
 ///
 /// Some of the options may be defined to each image individually, such as `initialScale` or `heroAttributes`. Those must be passed via each [PhotoViewGalleryPageOptions].
 ///
@@ -104,10 +106,8 @@ class VPhotoViewGallery extends StatefulWidget {
   /// Construct a gallery with static items through a list of [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery({
     Key key,
-    @required this.pageOptions,
-    @Deprecated("Use loadingBuilder instead") this.loadingChild,
+    this.pageOptions,
     this.loadingBuilder,
-    this.loadFailedChild,
     this.backgroundDecoration,
     this.gaplessPlayback = false,
     this.reverse = false,
@@ -118,10 +118,8 @@ class VPhotoViewGallery extends StatefulWidget {
     this.scrollPhysics,
     this.scrollDirection = Axis.horizontal,
     this.customSize,
-  })  : _isBuilder = false,
-        itemCount = null,
+  })  : itemCount = null,
         builder = null,
-        assert(pageOptions != null),
         super(key: key);
 
   /// Construct a gallery with dynamic items.
@@ -129,11 +127,9 @@ class VPhotoViewGallery extends StatefulWidget {
   /// The builder must return a [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery.builder({
     Key key,
-    @required this.itemCount,
-    @required this.builder,
-    @Deprecated("Use loadingBuilder instead") this.loadingChild,
+    this.itemCount,
+    this.builder,
     this.loadingBuilder,
-    this.loadFailedChild,
     this.backgroundDecoration,
     this.gaplessPlayback = false,
     this.reverse = false,
@@ -144,8 +140,7 @@ class VPhotoViewGallery extends StatefulWidget {
     this.scrollPhysics,
     this.scrollDirection = Axis.horizontal,
     this.customSize,
-  })  : _isBuilder = true,
-        pageOptions = null,
+  })  : pageOptions = null,
         assert(itemCount != null),
         assert(builder != null),
         super(key: key);
@@ -165,14 +160,8 @@ class VPhotoViewGallery extends StatefulWidget {
   /// Mirror to [PhotoView.loadingBuilder]
   final LoadingBuilder loadingBuilder;
 
-  /// Mirror to [PhotoView.loadingchild]
-  final Widget loadingChild;
-
-  /// Mirror to [PhotoView.loadFailedChild]
-  final Widget loadFailedChild;
-
   /// Mirror to [PhotoView.backgroundDecoration]
-  final Decoration backgroundDecoration;
+  final BoxDecoration backgroundDecoration;
 
   /// Mirror to [PhotoView.gaplessPlayback]
   final bool gaplessPlayback;
@@ -198,7 +187,7 @@ class VPhotoViewGallery extends StatefulWidget {
   /// The axis along which the [PageView] scrolls. Mirror to [PageView.scrollDirection]
   final Axis scrollDirection;
 
-  final bool _isBuilder;
+  bool get _isBuilder => builder != null;
 
   @override
   State<StatefulWidget> createState() {
@@ -211,8 +200,8 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
 
   @override
   void initState() {
-    _controller = widget.pageController ?? PreloadPageController();
     super.initState();
+    _controller = widget.pageController ?? PreloadPageController();
   }
 
   void scaleStateChangedCallback(PhotoViewScaleState scaleState) {
@@ -276,13 +265,12 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             tightMode: pageOption.tightMode,
             filterQuality: pageOption.filterQuality,
             basePosition: pageOption.basePosition,
+            disableGestures: pageOption.disableGestures,
           )
         : PhotoView(
             key: ObjectKey(index),
             imageProvider: pageOption.imageProvider,
             loadingBuilder: widget.loadingBuilder,
-            // loadingChild: widget.loadingChild,
-            // loadFailedChild: widget.loadFailedChild,
             backgroundDecoration: widget.backgroundDecoration,
             controller: pageOption.controller,
             scaleStateController: pageOption.scaleStateController,
@@ -301,6 +289,8 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             tightMode: pageOption.tightMode,
             filterQuality: pageOption.filterQuality,
             basePosition: pageOption.basePosition,
+            disableGestures: pageOption.disableGestures,
+            errorBuilder: pageOption.errorBuilder,
           );
 
     return ClipRect(
