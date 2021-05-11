@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
@@ -30,7 +31,9 @@ class VioletCommunitySession {
       if (bb['msg'] == 'success') {
         return lastSession = VioletCommunitySession(bb['session'], id);
       }
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-signin] E: ' + e.toString() + '\n' + st.toString());
+    }
     return null;
   }
 
@@ -49,7 +52,9 @@ class VioletCommunitySession {
               body: jsonEncode({'Id': id}));
       var bb = jsonDecode(res.body);
       return bb['msg'];
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-checkid] E: ' + e.toString() + '\n' + st.toString());
+    }
     return null;
   }
 
@@ -68,7 +73,10 @@ class VioletCommunitySession {
           body: jsonEncode({'UserAppId': userAppId}));
       var bb = jsonDecode(res.body);
       return bb['msg'];
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error(
+          '[API-checkuserappid] E: ' + e.toString() + '\n' + st.toString());
+    }
     return null;
   }
 
@@ -87,7 +95,10 @@ class VioletCommunitySession {
           body: jsonEncode({'NickName': nickName}));
       var bb = jsonDecode(res.body);
       return bb['msg'];
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error(
+          '[API-checknickname] E: ' + e.toString() + '\n' + st.toString());
+    }
     return null;
   }
 
@@ -112,7 +123,9 @@ class VioletCommunitySession {
           }));
       var bb = jsonDecode(res.body);
       return bb['msg'];
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-signup] E: ' + e.toString() + '\n' + st.toString());
+    }
     return null;
   }
 
@@ -131,7 +144,9 @@ class VioletCommunitySession {
       );
       var bb = jsonDecode(res.body);
       return bb['result'];
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[API-userinfo] E: ' + e.toString() + '\n' + st.toString());
+    }
     return null;
   }
 }

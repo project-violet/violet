@@ -19,6 +19,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
@@ -383,7 +384,12 @@ class _ArticleListItemVerySimpleWidgetState
                     ),
                     backgroundColor: Colors.grey.shade800,
                   ));
-                } catch (e) {}
+                } catch (e, st) {
+                  Logger.error('[ArticleList-LongPress] E: ' +
+                      e.toString() +
+                      '\n' +
+                      st.toString());
+                }
                 isBookmarked = !isBookmarked;
                 if (isBookmarked)
                   await (await Bookmark.getInstance())

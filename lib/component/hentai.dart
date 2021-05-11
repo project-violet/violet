@@ -18,6 +18,7 @@ import 'package:violet/component/image_provider.dart';
 import 'package:violet/component/nhentai/nhentai.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
 
 import 'package:violet/network/wrapper.dart' as http;
@@ -85,7 +86,10 @@ class HentaiManager {
         'Artists': article['Artists'].join('|'),
       };
       return Tuple2<List<QueryResult>, int>([QueryResult(result: meta)], -1);
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error(
+          '[hentai-idSearch] E: ' + e.toString() + '\n' + st.toString());
+    }
 
     return Tuple2<List<QueryResult>, int>([], -1);
   }
@@ -159,7 +163,12 @@ class HentaiManager {
           case 'NHentai':
             break;
         }
-      } catch (e) {}
+      } catch (e, st) {
+        Logger.error('[hentai-_networkSearch] E: ' +
+            e.toString() +
+            '\n' +
+            st.toString());
+      }
     }
 
     // not taken
@@ -220,8 +229,10 @@ class HentaiManager {
             break;
         }
       } catch (e, st) {
-        print(e);
-        print(st);
+        Logger.error('[hentai-getImageProvider] E: ' +
+            e.toString() +
+            '\n' +
+            st.toString());
       }
     }
 

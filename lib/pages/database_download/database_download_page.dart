@@ -16,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:dio/dio.dart';
 import 'package:violet/locale/locale.dart';
@@ -66,7 +67,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (await Directory('${dir.path}/data').exists())
           await Directory('${dir.path}/data').delete(recursive: true);
       }
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error(
+          '[DBDownload-Check] E: ' + e.toString() + '\n' + st.toString());
+    }
 
     if (Platform.isAndroid) {
       if (widget.isExistsDataBase) {
@@ -177,8 +181,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         });
 
       return;
-    } catch (e) {
-      print(e);
+    } catch (e, st) {
+      Logger.error('[DBDownload] E: ' + e.toString() + '\n' + st.toString());
     }
 
     setState(() {
@@ -251,8 +255,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         });
 
       return;
-    } catch (e) {
-      print(e);
+    } catch (e, st) {
+      Logger.error('[DBDownload] E: ' + e.toString() + '\n' + st.toString());
     }
 
     setState(() {

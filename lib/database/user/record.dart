@@ -3,6 +3,7 @@
 
 import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
+import 'package:violet/log/log.dart';
 
 ////////////////////////////////////////////////////////////////////////
 ///
@@ -72,7 +73,10 @@ class User {
               LastPage integer,
               Type integer);
               ''');
-          } catch (e) {}
+          } catch (e, st) {
+            Logger.error(
+                '[Record-Instance] E: ' + e.toString() + '\n' + st.toString());
+          }
         }
         _instance = new User();
       }

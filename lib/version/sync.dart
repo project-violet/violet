@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/settings/settings.dart';
 
@@ -88,7 +89,9 @@ class SyncManager {
 
       if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
       if (_rows.any((element) => element.type == 'chunk')) chunkRequire = true;
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[Sync-check] E: ' + e.toString() + '\n' + st.toString());
+    }
   }
 
   static SyncInfoRecord getLatestDB() {
@@ -166,6 +169,7 @@ class SyncManager {
       }
     } catch (e, st) {
       // If an error occurs, stops synchronization immediately.
+      Logger.error('[Sync-chunk] E: ' + e.toString() + '\n' + st.toString());
       Crashlytics.instance.recordError(e, st);
     }
   }

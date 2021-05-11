@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:tuple/tuple.dart';
+import 'package:violet/log/log.dart';
 
 import 'package:violet/network/wrapper.dart' as http;
 
@@ -47,6 +48,8 @@ class UpdateSyncManager {
         print(info);
       }
       latestVersion = info["version"] as String;
-    } catch (e) {}
+    } catch (e, st) {
+      Logger.error('[Update-check] E: ' + e.toString() + '\n' + st.toString());
+    }
   }
 }
