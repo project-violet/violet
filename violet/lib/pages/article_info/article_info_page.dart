@@ -608,7 +608,7 @@ class _InfoAreaWidget extends StatelessWidget {
             if ((await EHSession.postComment(
                         'https://exhentai.org/g/${queryResult.id()}/${queryResult.ehash()}',
                         text.text))
-                    .trim() ==
+                    .trim() !=
                 '') {
               await Dialogs.okDialog(
                   context, 'Too short, or Not a valid session! Try Again!');
