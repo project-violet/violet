@@ -244,13 +244,30 @@ class Settings {
       downloadBasePath =
           (await SharedPreferences.getInstance()).getString('downloadbasepath');
       final String path = await ExtStorage.getExternalStorageDirectory();
+
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      var sdkInt = androidInfo.version.sdkInt;
+
+      if (sdkInt >= 30 &&
+          (await SharedPreferences.getInstance())
+                  .getBool('android30downpath') ==
+              null) {
+        await (await SharedPreferences.getInstance())
+            .setBool('android30downpath', true);
+        var ext = await getExternalStorageDirectory();
+        downloadBasePath = ext.path;
+        await (await SharedPreferences.getInstance())
+            .setString('downloadbasepath', downloadBasePath);
+      }
+
       if (downloadBasePath == null) {
         downloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
             .setString('downloadbasepath', downloadBasePath);
       }
 
-      if (downloadBasePath == join(path, 'Violet') &&
+      if (sdkInt < 30 &&
+          downloadBasePath == join(path, 'Violet') &&
           (await SharedPreferences.getInstance())
                   .getBool('downloadbasepathcc1') ==
               null) {
@@ -452,8 +469,7 @@ class Settings {
 
   static Future<void> setDownloadRule(String nn) async {
     downloadRule = nn;
-    await (await SharedPreferences.getInstance())
-        .setString('downloadrule', nn);
+    await (await SharedPreferences.getInstance()).setString('downloadrule', nn);
   }
 
   static Future<void> setUserInnerStorage(bool nn) async {
