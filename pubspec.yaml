@@ -41,7 +41,7 @@ dependencies:
   convert:
   country_pickers: ^2.0.0
   crypto:
-  device_info:
+  device_info: ^2.0.0
   dio:
   division:
   draggable_scrollbar:
@@ -52,7 +52,7 @@ dependencies:
   expandable:
   ext_storage:
   ffi:
-  file_picker:
+  file_picker: ^1.9.0+1
   firebase_analytics:
   firebase_crashlytics:
   flare_dart:
@@ -61,7 +61,7 @@ dependencies:
   flutter_downloader:
   flutter_mobx:
   flutter_reorderable_list:
-  flutter_statusbar_manager:
+  flutter_statusbar_manager: ^2.0.0
   flutter_speed_dial:
   flutter_staggered_animations: ^1.0.0
   flutter_svg: ^0.21.0+1
@@ -76,12 +76,12 @@ dependencies:
   lottie:
   material_design_icons_flutter:
   mdi:
-  open_file:
-  optimized_cached_image:
+  open_file: ^3.2.1
+  optimized_cached_image: ^2.0.1
   path:
   path_provider:
-  permission_handler:
-  photo_view:
+  permission_handler: ^7.1.0
+  photo_view: ^0.11.1
   pimp_my_button: ^1.0.0
   provider:
   scrollable_positioned_list:
@@ -134,7 +134,7 @@ dev_dependencies:
   build_runner: ^1.0.0
   json_serializable: ^3.2.0
   freezed: ^0.12.1
-  moor_flutter: ^3.1.0
+  moor_flutter: ^4.0.0
 
 
 # For information on the generic Dart part of this file, see the

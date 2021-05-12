@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/other/dialogs.dart';
@@ -157,7 +158,11 @@ class _DownloadPageState extends State<DownloadPage>
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: () async {
-                      if (await Permission.storage.isUndetermined) {
+                      if ((await SharedPreferences.getInstance())
+                              .getBool('checkauthalready') ==
+                          null) {
+                        await (await SharedPreferences.getInstance())
+                            .setBool('checkauthalready', true);
                         if (await Permission.storage.request() ==
                             PermissionStatus.denied) {
                           await Dialogs.okDialog(context,
