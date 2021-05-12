@@ -230,5 +230,7 @@
     "realtimebest": "リアルタイムベスト",
     "patchnote": "パッチノート",
     "view": "表示",
-    "showarticleprogress": "記事の進捗状況を表示する"
+    "showarticleprogress": "記事の進捗状況を表示する",
+    "downloadrule": "ダウンロードルール",
+    "curdownloadrule": "現在のルール"
 }

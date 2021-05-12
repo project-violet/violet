@@ -229,5 +229,7 @@
     "realtimebest": "실시간 베스트",
     "patchnote": "패치 노트",
     "view": "보기",
-    "showarticleprogress": "작품 진행도 표시"
+    "showarticleprogress": "작품 진행도 표시",
+    "downloadrule": "다운로드 규칙",
+    "curdownloadrule": "현재 규칙",
 }

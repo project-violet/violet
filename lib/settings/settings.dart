@@ -49,6 +49,7 @@ class Settings {
   // Download Options
   static bool useInnerStorage;
   static String downloadBasePath;
+  static String downloadRule;
 
   static bool useVioletServer;
 
@@ -288,6 +289,13 @@ class Settings {
       }
     }
 
+    downloadRule =
+        (await SharedPreferences.getInstance()).getString('downloadrule');
+    if (downloadRule == null) {
+      await (await SharedPreferences.getInstance()).setString(
+          'downloadrule', "%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s");
+    }
+
     useVioletServer =
         (await SharedPreferences.getInstance()).getBool('usevioletserver');
     if (useVioletServer == null) {
@@ -440,6 +448,12 @@ class Settings {
     downloadBasePath = nn;
     await (await SharedPreferences.getInstance())
         .setString('downloadbasepath', nn);
+  }
+
+  static Future<void> setDownloadRule(String nn) async {
+    downloadRule = nn;
+    await (await SharedPreferences.getInstance())
+        .setString('downloadrule', nn);
   }
 
   static Future<void> setUserInnerStorage(bool nn) async {
