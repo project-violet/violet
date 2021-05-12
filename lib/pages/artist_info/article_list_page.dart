@@ -276,7 +276,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
             showItemInterval: Duration(milliseconds: 50),
             showItemDuration: Duration(milliseconds: 150),
             visibleFraction: 0.001,
-            itemCount: widget.cc.length,
+            itemCount: filter().length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: mm,
               crossAxisSpacing: 8,
@@ -301,7 +301,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                       child: SizedBox(
                         child: Provider<ArticleListItem>.value(
                           value: ArticleListItem.fromArticleListItem(
-                            queryResult: widget.cc[index],
+                            queryResult: filter()[index],
                             showDetail: false,
                             addBottomPadding: false,
                             width: (windowWidth - 4.0) / mm,
@@ -323,7 +323,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverList(
-            itemCount: widget.cc.length,
+            itemCount: filter().length,
             itemBuilder: (context, index, animation) {
               return Align(
                 alignment: Alignment.center,
@@ -331,7 +331,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                   value: ArticleListItem.fromArticleListItem(
                     addBottomPadding: true,
                     showDetail: nowType == 3,
-                    queryResult: widget.cc[index],
+                    queryResult: filter()[index],
                     width: windowWidth - 4.0,
                     thumbnailTag: Uuid().v4(),
                   ),
