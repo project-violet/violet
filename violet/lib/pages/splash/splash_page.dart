@@ -67,7 +67,10 @@ class _SplashPageState extends State<SplashPage> {
   };
 
   Future<void> checkAuth() async {
-    if (await Permission.storage.isUndetermined) {
+    if ((await SharedPreferences.getInstance()).getBool('checkauthalready') ==
+        null) {
+      await (await SharedPreferences.getInstance())
+          .setBool('checkauthalready', true);
       if (await Permission.storage.request() == PermissionStatus.denied) {
         await Dialogs.okDialog(context, "파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.");
       }
