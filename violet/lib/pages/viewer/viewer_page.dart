@@ -20,6 +20,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
+import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
@@ -452,7 +453,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     if (_pageInfo.useWeb) {
       if (index < 0 || _pageInfo.uris.length <= index) return;
       await precacheImage(
-        OptimizedCacheImageProvider(
+        CachedNetworkImageProvider(
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
         ),
@@ -482,7 +483,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       }
 
       await precacheImage(
-        OptimizedCacheImageProvider(
+        CachedNetworkImageProvider(
           _urlCache[index],
           headers: _headerCache[index],
         ),
@@ -494,7 +495,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
     if (_pageInfo.useWeb)
       return PhotoViewGalleryPageOptions(
-        imageProvider: OptimizedCacheImageProvider(
+        imageProvider: CachedNetworkImageProvider(
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
         ),
@@ -542,7 +543,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           builder: (context, snapshot) {
             if (_urlCache[index] != null && _headerCache[index] != null) {
               return PhotoView(
-                imageProvider: OptimizedCacheImageProvider(
+                imageProvider: CachedNetworkImageProvider(
                   _urlCache[index],
                   headers: _headerCache[index],
                 ),
@@ -758,7 +759,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         return Container(
           constraints: BoxConstraints(
               minHeight: _height[index] != 0 ? _height[index] : 300),
-          child: VOptimizedCacheImage(
+          child: VCachedNetworkImage(
             key: _keys[index],
             imageUrl: _pageInfo.uris[index],
             httpHeaders: _pageInfo.headers,
@@ -940,7 +941,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               constraints: _height[index] != 0
                   ? BoxConstraints(minHeight: _height[index])
                   : null,
-              child: VOptimizedCacheImage(
+              child: VCachedNetworkImage(
                 key: _keys[index],
                 imageUrl: _urlCache[index],
                 httpHeaders: _headerCache[index],
