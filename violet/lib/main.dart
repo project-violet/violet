@@ -8,6 +8,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/material.dart';
@@ -48,8 +49,8 @@ void main() async {
   await FlutterDownloader.initialize();
   FlareCache.doesPrune = false;
 
-  Crashlytics.instance.enableInDevMode = true;
-  FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  await Firebase.initializeApp();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
   // FlutterError.onError = (FlutterErrorDetails details) async {
   //   await Logger.init();

@@ -107,7 +107,7 @@ class _SplashPageState extends State<SplashPage> {
         }
       } catch (e, st) {
         // If an error occurs, stops synchronization immediately.
-        Crashlytics.instance.recordError(e, st);
+        FirebaseCrashlytics.instance.recordError(e, st);
         Logger.error(
             '[Splash-Navigation] E: ' + e.toString() + '\n' + st.toString());
       }
