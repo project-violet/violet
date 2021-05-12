@@ -769,79 +769,6 @@ class _SettingsPageState extends State<SettingsPage>
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(Translations.of(context).trans('downloadrule')),
-                          Text(
-                            Translations.of(context).trans('curdownloadrule') +
-                                ': ' +
-                                Settings.downloadRule,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                      trailing: Icon(Icons.keyboard_arrow_right),
-                    ),
-                    onTap: Settings.useInnerStorage
-                        ? null
-                        : () async {
-                            Widget yesButton = FlatButton(
-                              child: Text(Translations.of(context).trans('ok'),
-                                  style: TextStyle(color: Settings.majorColor)),
-                              focusColor: Settings.majorColor,
-                              splashColor: Settings.majorColor.withOpacity(0.3),
-                              onPressed: () {
-                                Navigator.pop(context, true);
-                              },
-                            );
-                            Widget noButton = FlatButton(
-                              child: Text(
-                                  Translations.of(context).trans('cancel'),
-                                  style: TextStyle(color: Settings.majorColor)),
-                              focusColor: Settings.majorColor,
-                              splashColor: Settings.majorColor.withOpacity(0.3),
-                              onPressed: () {
-                                Navigator.pop(context, false);
-                              },
-                            );
-                            TextEditingController text = TextEditingController(
-                                text: Settings.downloadBasePath);
-                            var dialog = await showDialog(
-                              useRootNavigator: false,
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                contentPadding:
-                                    EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                title: Text(Translations.of(context)
-                                    .trans('downloadrule')),
-                                content: TextField(
-                                  controller: text,
-                                  autofocus: true,
-                                  maxLines: 3,
-                                ),
-                                actions: [yesButton, noButton],
-                              ),
-                            );
-                            if (dialog != null && dialog == true) {
-                              await Settings.setBaseDownloadPath(text.text);
-                            }
-                          },
-                  ),
-                  _buildDivider(),
-                  InkWell(
-                    customBorder: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10.0),
-                            bottomRight: Radius.circular(10.0))),
-                    //   customBorder: RoundedRectangleBorder(
-                    //     borderRadius: BorderRadius.all(
-                    //       Radius.circular(10.0),
-                    //     ),
-                    //   ),
-                    child: ListTile(
-                      leading: Icon(MdiIcons.folderDownload,
-                          color: Settings.majorColor),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
                           Text(Translations.of(context).trans('downloadpath')),
                           Text(
                             Translations.of(context).trans('curdownloadpath') +
@@ -907,6 +834,75 @@ class _SettingsPageState extends State<SettingsPage>
                               await Settings.setBaseDownloadPath(text.text);
                             }
                           },
+                  ),
+                  _buildDivider(),
+                  InkWell(
+                    customBorder: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0))),
+                    //   customBorder: RoundedRectangleBorder(
+                    //     borderRadius: BorderRadius.all(
+                    //       Radius.circular(10.0),
+                    //     ),
+                    //   ),
+                    child: ListTile(
+                      leading: Icon(MdiIcons.folderTable,
+                          color: Settings.majorColor),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(Translations.of(context).trans('downloadrule')),
+                          Text(
+                            Translations.of(context).trans('curdownloadrule') +
+                                ': ' +
+                                Settings.downloadRule,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                      trailing: Icon(Icons.keyboard_arrow_right),
+                    ),
+                    onTap: () async {
+                      Widget yesButton = FlatButton(
+                        child: Text(Translations.of(context).trans('ok'),
+                            style: TextStyle(color: Settings.majorColor)),
+                        focusColor: Settings.majorColor,
+                        splashColor: Settings.majorColor.withOpacity(0.3),
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                      );
+                      Widget noButton = FlatButton(
+                        child: Text(Translations.of(context).trans('cancel'),
+                            style: TextStyle(color: Settings.majorColor)),
+                        focusColor: Settings.majorColor,
+                        splashColor: Settings.majorColor.withOpacity(0.3),
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                      );
+                      TextEditingController text =
+                          TextEditingController(text: Settings.downloadRule);
+                      var dialog = await showDialog(
+                        useRootNavigator: false,
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                          title: Text(
+                              Translations.of(context).trans('downloadrule')),
+                          content: TextField(
+                            controller: text,
+                            autofocus: true,
+                            maxLines: 3,
+                          ),
+                          actions: [yesButton, noButton],
+                        ),
+                      );
+                      if (dialog != null && dialog == true) {
+                        await Settings.setDownloadRule(text.text);
+                      }
+                    },
                   ),
                 ]),
                 _buildGroup(Translations.of(context).trans('bookmark')),

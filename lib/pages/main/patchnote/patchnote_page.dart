@@ -24,8 +24,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 5, 12),
+    version: '1.8.1 Patch <== Latest',
+    contents: [
+      'Code update for flutter-2.0',
+      'optimize viewer memory usage',
+      'fix download path invalid over android 30',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 11),
-    version: '1.8 Patch <== Latest',
+    version: '1.8 Minor Update',
+    isMinor: true,
     contents: [
       'Code update for flutter-2.0',
       'add \'random\' lookup chip',
