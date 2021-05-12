@@ -232,5 +232,8 @@
   "artistcollection": "Artists Collection",
   "realtimebest": "RealTime Best",
   "patchnote": "Patch Note",
-  "view": "View"
+  "view": "View",
+  "showarticleprogress": "Show Article Progress",
+  "downloadrule": "Download Rule",
+  "curdownloadrule": "Current Rule"
 }

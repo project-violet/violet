@@ -16,6 +16,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/settings/settings.dart';
 
 class HentaiDonwloadManager extends Downloadable {
   RegExp urlMatcher;
@@ -31,7 +32,8 @@ class HentaiDonwloadManager extends Downloadable {
 
   @override
   String defaultFormat() {
-    return "%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s";
+    //return "%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s";
+    return Settings.downloadRule;
   }
 
   @override

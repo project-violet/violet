@@ -230,5 +230,7 @@
     "realtimebest": "RealTime Best",
     "patchnote": "Nota sulla patch",
     "view": "View",
-    "showarticleprogress": "Show Article Progress"
+    "showarticleprogress": "Show Article Progress",
+    "downloadrule": "Download Rule",
+    "curdownloadrule": "Current Rule"
 }
