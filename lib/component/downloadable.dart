@@ -211,9 +211,15 @@ class FileNameFormat {
 
         if (type == 's') {
           if (pptk != "")
-            builder.write(literal.substring(0, int.parse(pptk)));
+            builder.write(literal
+                .substring(0, int.parse(pptk))
+                .replaceAll('|', 'ㅣ')
+                .replaceAll(new RegExp(r'[/\\?%*:|"<>]'), ''));
           else
-            builder.write(literal.toString());
+            builder.write(literal
+                .toString()
+                .replaceAll('|', 'ㅣ')
+                .replaceAll(new RegExp(r'[/\\?%*:|"<>]'), ''));
         }
         // else if (type == 'd')
         // {
@@ -231,8 +237,7 @@ class FileNameFormat {
         builder.write(raw[i]);
     }
 
-    var result = builder.toString().replaceAll('|', 'ㅣ');
-    result = builder.toString().replaceAll(new RegExp(r'[/\\?%*:|"<>]'), '');
+    var result = builder.toString();
 
     // var invalid = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
     // foreach (char c in invalid) if (c != '/' && c!= '\\') result = result.Replace(c.ToString(), "");
