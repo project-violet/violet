@@ -392,12 +392,10 @@ class _PatchNotePageState extends State<PatchNotePage> {
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final mediaQuery = MediaQuery.of(context);
 
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.only(
-            top: statusBarHeight + 16, bottom: mediaQuery.padding.bottom),
+        padding: EdgeInsets.only(top: statusBarHeight + 16),
         child: Column(
           children: [
             Text(
