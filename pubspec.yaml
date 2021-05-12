@@ -34,7 +34,7 @@ dependencies:
   badges:
   bloc: ^6.0.0
   bubble_tab_indicator: "^0.1.4"
-  cached_network_image:
+  cached_network_image: ^3.0.0
   carousel_slider: ^2.3.4
   charts_flutter:
   circular_check_box: ^1.0.1
@@ -53,8 +53,9 @@ dependencies:
   ext_storage:
   ffi:
   file_picker: ^1.9.0+1
-  firebase_analytics:
-  firebase_crashlytics:
+  firebase_core : ^1.1.1
+  firebase_analytics: ^8.0.4
+  firebase_crashlytics: ^2.0.3
   flare_dart:
   flare_flutter: ^1.8.3
   flutter_colorpicker:

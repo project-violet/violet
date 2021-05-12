@@ -170,7 +170,7 @@ class SyncManager {
     } catch (e, st) {
       // If an error occurs, stops synchronization immediately.
       Logger.error('[Sync-chunk] E: ' + e.toString() + '\n' + st.toString());
-      Crashlytics.instance.recordError(e, st);
+      FirebaseCrashlytics.instance.recordError(e, st);
     }
   }
 

@@ -283,7 +283,7 @@ class Settings {
           }
         } catch (e, st) {
           Logger.error('[Settings] E: ' + e.toString() + '\n' + st.toString());
-          Crashlytics.instance.recordError(e, st);
+          FirebaseCrashlytics.instance.recordError(e, st);
         }
       }
     }
