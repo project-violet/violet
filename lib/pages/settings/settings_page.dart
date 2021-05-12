@@ -35,6 +35,7 @@ import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/pages/settings/route.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
+import 'package:violet/pages/settings/test_page.dart';
 import 'package:violet/pages/settings/version_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/pages/splash/splash_page.dart';
@@ -540,17 +541,12 @@ class _SettingsPageState extends State<SettingsPage>
                       trailing: Icon(Icons.keyboard_arrow_right),
                     ),
                     onTap: () async {
-                      if (kDebugMode) {
-                        // Navigator.push(
-                        //   context,
-                        //   CupertinoPageRoute(
-                        //     builder: (context) => TestPage(),
-                        //   ),
-                        // );
-                      } else {
-                        await Dialogs.okDialog(context,
-                            'Developer tools can only be run in debug mode.');
-                      }
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => TestPage(),
+                        ),
+                      );
                     },
                   ),
                 ]),
