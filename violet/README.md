@@ -42,6 +42,12 @@ However, unlike the Android version, 7z decompression and downloader are omitted
 Install `flutter` and `Xcode` and make the following changes:
 
 ```
+1. Paste ios/GoogleService-Info.plist to Runner->Runner
+2. Copy REVERSED_CLINED_ID
+3. Paste Runner->Info tab->URL Types->+->URL Schems paste
+```
+
+```
 1. Remove 'firebase_*' and 'flutter_downloader' packages
 2. Remove validator on lib/server/violet.dart
 3. Run 'flutter run --release' command
