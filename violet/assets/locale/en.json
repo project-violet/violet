@@ -237,5 +237,5 @@
     "downloadrule": "Download Rule",
     "curdownloadrule": "Current Rule",
     "dbrebuild": "Database Rebuilding",
-    "dbrebuildmsg": "* WARNING * Be sure to use this function with a complete understanding of it. Developers are not responsible for any problems caused by user negligence. Continue?"
+    "dbrebuildmsg": "Database rebuilding is a process of resetting the entire database according to user settings. When this function is performed, it is processed into a database optimized for the user setting environment, providing a very fast search and indexing environment. After executing this function, run the tag rebuild."
 }
