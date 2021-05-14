@@ -260,27 +260,35 @@ class _SearchBarPageState extends State<SearchBarPage>
                                 _searchHistory(),
                               ],
                             ),
-                            new Positioned(
-                              bottom: 0.0,
-                              left: 0.0,
-                              right: 0.0,
-                              child: new Container(
-                                color: null,
-                                padding: const EdgeInsets.all(20.0),
-                                child: new Center(
-                                  child: new DotsIndicator(
-                                    controller: _controller,
-                                    itemCount: 2,
-                                    onPageSelected: (int page) {
-                                      _controller.animateToPage(
-                                        page,
-                                        duration: _kDuration,
-                                        curve: _kCurve,
+                            FutureBuilder(
+                              future: Future.value(1),
+                              builder: (context, snapshot) {
+                                print(snapshot.hasData);
+                                return !snapshot.hasData
+                                    ? Container()
+                                    : new Positioned(
+                                        bottom: 0.0,
+                                        left: 0.0,
+                                        right: 0.0,
+                                        child: new Container(
+                                          color: null,
+                                          padding: const EdgeInsets.all(20.0),
+                                          child: new Center(
+                                            child: new DotsIndicator(
+                                              controller: _controller,
+                                              itemCount: 2,
+                                              onPageSelected: (int page) {
+                                                _controller.animateToPage(
+                                                  page,
+                                                  duration: _kDuration,
+                                                  curve: _kCurve,
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
                                       );
-                                    },
-                                  ),
-                                ),
-                              ),
+                              },
                             ),
                           ],
                         ),
@@ -319,14 +327,15 @@ class _SearchBarPageState extends State<SearchBarPage>
                         Text(Translations.of(context).trans('tagtranslation')),
                     trailing: Switch(
                       value: _tagTranslation,
-                      onChanged: (value) {
-                        setState(() {
-                          _tagTranslation = value;
-                        });
-                      },
+                      onChanged: (value) {},
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
+                    onTap: () {
+                      setState(() {
+                        _tagTranslation = !_tagTranslation;
+                      });
+                    },
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(
@@ -341,14 +350,14 @@ class _SearchBarPageState extends State<SearchBarPage>
                     title: Text(Translations.of(context).trans('showcount')),
                     trailing: Switch(
                       value: _showCount,
-                      onChanged: (value) {
-                        setState(() {
-                          _showCount = value;
-                        });
-                      },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
+                    onTap: () {
+                      setState(() {
+                        _showCount = !_showCount;
+                      });
+                    },
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(
@@ -364,14 +373,15 @@ class _SearchBarPageState extends State<SearchBarPage>
                     title: Text(Translations.of(context).trans('fuzzysearch')),
                     trailing: Switch(
                       value: useFuzzy,
-                      onChanged: (value) {
-                        setState(() {
-                          useFuzzy = value;
-                        });
-                      },
+                      onChanged: (value) {},
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
+                    onTap: () {
+                      setState(() {
+                        useFuzzy = !useFuzzy;
+                      });
+                    },
                   ),
                   // Container(
                   //   margin: const EdgeInsets.symmetric(
