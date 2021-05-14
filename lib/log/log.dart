@@ -26,6 +26,15 @@ class LogEvent {
   }) {
     dateTime ??= DateTime.now();
   }
+
+  LogEvent copy() => LogEvent(
+        dateTime: dateTime,
+        isError: isError,
+        isWarning: isWarning,
+        title: title,
+        message: message,
+        detail: detail,
+      );
 }
 
 class Logger {
