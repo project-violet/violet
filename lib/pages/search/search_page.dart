@@ -22,6 +22,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/settings/device_type.dart';
+import 'package:violet/thread/semaphore.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_filter_page.dart';
@@ -396,15 +397,21 @@ class _SearchPageState extends State<SearchPage>
   ObjectKey key = ObjectKey(Uuid().v4());
 
   bool queryEnd = false;
+  Semaphore _querySem = Semaphore(maxCount: 1);
 
   Future<void> loadNextQuery() async {
-    if (queryEnd) return;
-    if (latestQuery.item1 != null && latestQuery.item1.item2 == -1) return;
+    await _querySem.acquire();
+    if (queryEnd ||
+        (latestQuery.item1 != null && latestQuery.item1.item2 == -1)) {
+      _querySem.release();
+      return;
+    }
     var next = await HentaiManager.search(latestQuery.item2,
         latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
 
     latestQuery =
         Tuple2<Tuple2<List<QueryResult>, int>, String>(next, latestQuery.item2);
+    _querySem.release();
     if (next.item1.length == 0) {
       queryEnd = true;
       return;
