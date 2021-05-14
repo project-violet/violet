@@ -25,7 +25,17 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2021, 5, 14),
-    version: '1.8.2 Patch <== Latest',
+    version: '1.8.3 Patch <== Latest',
+    contents: [
+      'add series article viewer',
+      'add tag-rebuild function',
+      'add database-rebuild function',
+      'add database-opt function',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 5, 14),
+    version: '1.8.2 Patch',
     contents: [
       'add search log',
       'add search filter to search filter page',
