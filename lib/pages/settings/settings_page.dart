@@ -34,6 +34,7 @@ import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/pages/settings/route.dart';
+import 'package:violet/pages/settings/tag_rebuild_page.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -387,7 +388,23 @@ class _SettingsPageState extends State<SettingsPage>
                   context,
                   Translations.of(context).trans('tagrebuildmsg'),
                   Translations.of(context).trans('tagrebuild'))) {
-                await Dialogs.okDialog(context, 'TODO: Implementation');
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) => TagRebuildPage(),
+                );
+
+                await HitomiIndexs.init();
+                HitomiManager.reloadIndex();
+
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('tagrebuild') +
+                        Translations.of(context).trans('complete'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: Duration(seconds: 4),
+                );
               }
             },
           ),

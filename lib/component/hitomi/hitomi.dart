@@ -79,6 +79,14 @@ class HitomiManager {
     return tagmap[classification][name];
   }
 
+  static void reloadIndex() {
+    final subdir = Platform.isAndroid ? '/data' : '';
+    final path =
+        File('${Variables.applicationDocumentsDirectory}$subdir/index.json');
+    final text = path.readAsStringSync();
+    tagmap = jsonDecode(text);
+  }
+
   static Map<String, dynamic> tagmap;
   static Future<List<Tuple3<String, String, int>>> queryAutoComplete(
       String prefix) async {
