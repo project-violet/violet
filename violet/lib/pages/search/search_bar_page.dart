@@ -10,8 +10,10 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/flare_artboard.dart';
+import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/settings/settings.dart';
 
 class SearchBarPage extends StatefulWidget {
@@ -28,6 +30,12 @@ class SearchBarPage extends StatefulWidget {
 
 class _SearchBarPageState extends State<SearchBarPage>
     with SingleTickerProviderStateMixin {
+  PageController _controller = PageController(
+    initialPage: 0,
+  );
+  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kCurve = Curves.ease;
+
   AnimationController controller;
   List<Tuple3<String, String, int>> _searchLists =
       List<Tuple3<String, String, int>>();
@@ -50,6 +58,12 @@ class _SearchBarPageState extends State<SearchBarPage>
       reverseDuration: Duration(milliseconds: 400),
     );
     _searchController = TextEditingController(text: widget.initText ?? '');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -237,175 +251,38 @@ class _SearchBarPageState extends State<SearchBarPage>
                         ),
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
-                          child: LayoutBuilder(builder: (BuildContext context,
-                              BoxConstraints constraints) {
-                            return SingleChildScrollView(
-                              controller: ScrollController(),
-                              child: ConstrainedBox(
-                                constraints: constraints.copyWith(
-                                  minHeight: constraints.maxHeight,
-                                  maxHeight: double.infinity,
-                                ),
-                                child: IntrinsicHeight(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: <Widget>[
-                                      ListTile(
-                                        leading: Icon(Icons.translate,
-                                            color: Settings.majorColor),
-                                        title: Text(Translations.of(context)
-                                            .trans('tagtranslation')),
-                                        trailing: Switch(
-                                          value: _tagTranslation,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _tagTranslation = value;
-                                            });
-                                          },
-                                          activeTrackColor: Settings.majorColor,
-                                          activeColor:
-                                              Settings.majorAccentColor,
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                        ),
-                                        width: double.infinity,
-                                        height: 1.0,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                      ListTile(
-                                        leading: Icon(MdiIcons.counter,
-                                            color: Settings.majorColor),
-                                        title: Text(Translations.of(context)
-                                            .trans('showcount')),
-                                        trailing: Switch(
-                                          value: _showCount,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _showCount = value;
-                                            });
-                                          },
-                                          activeTrackColor: Settings.majorColor,
-                                          activeColor:
-                                              Settings.majorAccentColor,
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                        ),
-                                        width: double.infinity,
-                                        height: 1.0,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                      ListTile(
-                                        leading: Icon(MdiIcons.chartBubble,
-                                            color: Settings.majorColor),
-                                        title: Text(Translations.of(context)
-                                            .trans('fuzzysearch')),
-                                        trailing: Switch(
-                                          value: useFuzzy,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              useFuzzy = value;
-                                            });
-                                          },
-                                          activeTrackColor: Settings.majorColor,
-                                          activeColor:
-                                              Settings.majorAccentColor,
-                                        ),
-                                      ),
-                                      // Container(
-                                      //   margin: const EdgeInsets.symmetric(
-                                      //     horizontal: 8.0,
-                                      //   ),
-                                      //   width: double.infinity,
-                                      //   height: 1.0,
-                                      //   color: Colors.grey.shade400,
-                                      // ),
-                                      // ListTile(
-                                      //   leading: Icon(
-                                      //       MdiIcons.viewGridPlusOutline,
-                                      //       color: Settings.majorColor),
-                                      //   title: Slider(
-                                      //     activeColor: Settings.majorColor,
-                                      //     inactiveColor: Settings.majorColor
-                                      //         .withOpacity(0.2),
-                                      //     min: 60.0,
-                                      //     max: 2000.0,
-                                      //     divisions: (2000 - 60) ~/ 30,
-                                      //     label:
-                                      //         '$_searchResultMaximum${Translations.of(context).trans('tagdisplay')}',
-                                      //     onChanged: (double value) {
-                                      //       setState(() {
-                                      //         _searchResultMaximum =
-                                      //             value.toInt();
-                                      //       });
-                                      //     },
-                                      //     value:
-                                      //         _searchResultMaximum.toDouble(),
-                                      //   ),
-                                      // ),
-
-                                      // GradientRangeSlider(),
-                                      Expanded(
-                                        child: Align(
-                                          alignment: Alignment.bottomLeft,
-                                          child: Container(
-                                            margin: const EdgeInsets.symmetric(
-                                              horizontal: 2,
-                                              vertical: 8,
-                                            ),
-                                            width: double.infinity,
-                                            height: 60,
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.stretch,
-                                              children: <Widget>[
-                                                Expanded(
-                                                  child: RaisedButton(
-                                                    color: Settings.themeWhat
-                                                        ? Colors.grey.shade800
-                                                        : Colors.grey,
-                                                    child: Icon(MdiIcons
-                                                        .keyboardBackspace),
-                                                    onPressed: () {
-                                                      deleteProcess();
-                                                    },
-                                                  ),
-                                                ),
-                                                Container(
-                                                  width: 8,
-                                                ),
-                                                Expanded(
-                                                  child: RaisedButton(
-                                                    color: Settings.themeWhat
-                                                        ? Colors.grey.shade800
-                                                        : Colors.grey,
-                                                    child: Icon(
-                                                        MdiIcons.keyboardSpace),
-                                                    onPressed: () {
-                                                      spaceProcess();
-                                                    },
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                        child: Stack(
+                          children: [
+                            PageView(
+                              controller: _controller,
+                              children: [
+                                _searchOptionPage(),
+                                _searchHistory(),
+                              ],
+                            ),
+                            new Positioned(
+                              bottom: 0.0,
+                              left: 0.0,
+                              right: 0.0,
+                              child: new Container(
+                                color: null,
+                                padding: const EdgeInsets.all(20.0),
+                                child: new Center(
+                                  child: new DotsIndicator(
+                                    controller: _controller,
+                                    itemCount: 2,
+                                    onPageSelected: (int page) {
+                                      _controller.animateToPage(
+                                        page,
+                                        duration: _kDuration,
+                                        curve: _kCurve,
+                                      );
+                                    },
                                   ),
                                 ),
                               ),
-                            );
-                          }),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -416,6 +293,238 @@ class _SearchBarPageState extends State<SearchBarPage>
           ),
         ],
       ),
+    );
+  }
+
+  _searchOptionPage() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+      child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+        return SingleChildScrollView(
+          controller: ScrollController(),
+          child: ConstrainedBox(
+            constraints: constraints.copyWith(
+              minHeight: constraints.maxHeight,
+              maxHeight: double.infinity,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  ListTile(
+                    leading: Icon(Icons.translate, color: Settings.majorColor),
+                    title:
+                        Text(Translations.of(context).trans('tagtranslation')),
+                    trailing: Switch(
+                      value: _tagTranslation,
+                      onChanged: (value) {
+                        setState(() {
+                          _tagTranslation = value;
+                        });
+                      },
+                      activeTrackColor: Settings.majorColor,
+                      activeColor: Settings.majorAccentColor,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                    ),
+                    width: double.infinity,
+                    height: 1.0,
+                    color: Colors.grey.shade400,
+                  ),
+                  ListTile(
+                    leading: Icon(MdiIcons.counter, color: Settings.majorColor),
+                    title: Text(Translations.of(context).trans('showcount')),
+                    trailing: Switch(
+                      value: _showCount,
+                      onChanged: (value) {
+                        setState(() {
+                          _showCount = value;
+                        });
+                      },
+                      activeTrackColor: Settings.majorColor,
+                      activeColor: Settings.majorAccentColor,
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                    ),
+                    width: double.infinity,
+                    height: 1.0,
+                    color: Colors.grey.shade400,
+                  ),
+                  ListTile(
+                    leading:
+                        Icon(MdiIcons.chartBubble, color: Settings.majorColor),
+                    title: Text(Translations.of(context).trans('fuzzysearch')),
+                    trailing: Switch(
+                      value: useFuzzy,
+                      onChanged: (value) {
+                        setState(() {
+                          useFuzzy = value;
+                        });
+                      },
+                      activeTrackColor: Settings.majorColor,
+                      activeColor: Settings.majorAccentColor,
+                    ),
+                  ),
+                  // Container(
+                  //   margin: const EdgeInsets.symmetric(
+                  //     horizontal: 8.0,
+                  //   ),
+                  //   width: double.infinity,
+                  //   height: 1.0,
+                  //   color: Colors.grey.shade400,
+                  // ),
+                  // ListTile(
+                  //   leading: Icon(
+                  //       MdiIcons.viewGridPlusOutline,
+                  //       color: Settings.majorColor),
+                  //   title: Slider(
+                  //     activeColor: Settings.majorColor,
+                  //     inactiveColor: Settings.majorColor
+                  //         .withOpacity(0.2),
+                  //     min: 60.0,
+                  //     max: 2000.0,
+                  //     divisions: (2000 - 60) ~/ 30,
+                  //     label:
+                  //         '$_searchResultMaximum${Translations.of(context).trans('tagdisplay')}',
+                  //     onChanged: (double value) {
+                  //       setState(() {
+                  //         _searchResultMaximum =
+                  //             value.toInt();
+                  //       });
+                  //     },
+                  //     value:
+                  //         _searchResultMaximum.toDouble(),
+                  //   ),
+                  // ),
+
+                  // GradientRangeSlider(),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 2,
+                          vertical: 8,
+                        ),
+                        width: double.infinity,
+                        height: 60,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Expanded(
+                              child: RaisedButton(
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade800
+                                    : Colors.grey,
+                                child: Icon(MdiIcons.keyboardBackspace),
+                                onPressed: () {
+                                  deleteProcess();
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: RaisedButton(
+                                color: Settings.themeWhat
+                                    ? Colors.grey.shade800
+                                    : Colors.grey,
+                                child: Icon(MdiIcons.keyboardSpace),
+                                onPressed: () {
+                                  spaceProcess();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  _searchHistory() {
+    return FutureBuilder(
+      future: SearchLogDatabase.getInstance()
+          .then((value) async => await value.getSearchLog()),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return Container();
+        var logs = (snapshot.data as List<SearchLog>)
+            .where((element) => element.searchWhat() != null)
+            .toList();
+        return ListView.builder(
+          padding: EdgeInsets.zero,
+          itemExtent: 50.0,
+          itemBuilder: (context, index) {
+            // return ListTile(
+            //   contentPadding: EdgeInsets.zero,
+            //   title: Text(snapshot.data[index].searchWhat()),
+            //   subtitle: Text(snapshot.data[index].datetime().toString()),
+            //   // dense: true,
+            //   onTap: () {
+            //     setState(() {
+            //       _searchController.text = snapshot.data[index].searchWhat();
+            //     });
+            //   },
+            // );
+            if (index == 0)
+              return Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Search Log',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              );
+            return InkWell(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        logs[index - 1].searchWhat(),
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      logs[index - 1].datetime().toString(),
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                setState(() {
+                  _searchController.text = logs[index - 1].searchWhat();
+                });
+              },
+            );
+          },
+          itemCount: logs.length + 1,
+        );
+      },
     );
   }
 

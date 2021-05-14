@@ -18,6 +18,7 @@ import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
@@ -219,6 +220,8 @@ class _SearchPageState extends State<SearchPage>
                               fullscreenDialog: true,
                             ),
                           ).then((value) async {
+                            await (await SearchLogDatabase.getInstance())
+                                .insertSearchLog(value);
                             setState(() {
                               heroFlareControls.play('close2search');
                             });
