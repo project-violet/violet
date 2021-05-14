@@ -232,5 +232,7 @@
     "view": "例子",
     "showarticleprogress": "显示文章进度",
     "downloadrule": "下载规则",
-    "curdownloadrule": "当前规则"
+    "curdownloadrule": "当前规则",
+    "dbrebuild": "Database Rebuilding",
+    "dbrebuildmsg": "* WARNING * Be sure to use this function with a complete understanding of it. Developers are not responsible for any problems caused by user negligence. Continue?"
 }

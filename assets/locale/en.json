@@ -235,5 +235,7 @@
     "view": "View",
     "showarticleprogress": "Show Article Progress",
     "downloadrule": "Download Rule",
-    "curdownloadrule": "Current Rule"
+    "curdownloadrule": "Current Rule",
+    "dbrebuild": "Database Rebuilding",
+    "dbrebuildmsg": "* WARNING * Be sure to use this function with a complete understanding of it. Developers are not responsible for any problems caused by user negligence. Continue?"
 }
