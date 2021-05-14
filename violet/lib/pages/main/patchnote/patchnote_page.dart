@@ -24,8 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 5, 14),
+    version: '1.8.2 Patch <== Latest',
+    contents: [
+      'add search log',
+      'add search filter to search filter page',
+      'enhance log view'
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 12),
-    version: '1.8.1 Patch <== Latest',
+    version: '1.8.1 Patch',
     contents: [
       'Code update for flutter-2.0',
       'optimize viewer memory usage',
