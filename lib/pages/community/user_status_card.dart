@@ -84,6 +84,7 @@ class _UserStatusCardState extends State<UserStatusCard>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: [
         Container(

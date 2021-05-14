@@ -56,6 +56,7 @@ class _DownloadPageState extends State<DownloadPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     var windowWidth = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;

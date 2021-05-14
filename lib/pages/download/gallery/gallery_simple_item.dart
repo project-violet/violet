@@ -28,6 +28,7 @@ class _GallerySimpleItemState extends State<GallerySimpleItem>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       width: double.infinity,
       height: double.infinity,
