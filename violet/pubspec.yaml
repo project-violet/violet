@@ -59,7 +59,6 @@ dependencies:
   flare_dart:
   flare_flutter: ^1.8.3
   flutter_colorpicker:
-  flutter_downloader:
   flutter_mobx:
   flutter_reorderable_list:
   flutter_statusbar_manager: ^2.0.0
@@ -92,7 +91,6 @@ dependencies:
   tuple:
   url_launcher:
   uuid:
-  vibration: ^1.4.0
   webview_flutter:
   # archive:
   # chunked_stream:

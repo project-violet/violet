@@ -20,7 +20,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:vibration/vibration.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
