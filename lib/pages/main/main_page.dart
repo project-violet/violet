@@ -14,7 +14,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vibration/vibration.dart';
+// import 'package:vibration/vibration.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
