@@ -29,6 +29,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/community/user_status_card.dart';
+import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
@@ -400,6 +401,7 @@ class _SettingsPageState extends State<SettingsPage>
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('tagrebuild') +
+                        ' ' +
                         Translations.of(context).trans('complete'),
                   ),
                   gravity: ToastGravity.BOTTOM,
@@ -616,6 +618,39 @@ class _SettingsPageState extends State<SettingsPage>
                               switching: true,
                             )));
                   },
+          ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(
+                MdiIcons.databaseEdit,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('dbrebuild')),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
+            onTap: () async {
+              if (await Dialogs.yesnoDialog(
+                  context,
+                  Translations.of(context).trans('dbrebuildmsg'),
+                  Translations.of(context).trans('dbrebuild'))) {
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) => DBRebuildPage(),
+                );
+
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('dbrebuild') +
+                        ' ' +
+                        Translations.of(context).trans('complete'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: Duration(seconds: 4),
+                );
+              }
+            },
           ),
           _buildDivider(),
           InkWell(
