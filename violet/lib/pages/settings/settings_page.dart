@@ -654,6 +654,27 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
+            child: ListTile(
+              leading: Icon(
+                MdiIcons.vectorIntersection,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('dbopt')),
+              trailing: Switch(
+                value: Settings.useOptimizeDatabase,
+                onChanged: (value) async {},
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setUseOptimizeDatabase(
+                  !Settings.useOptimizeDatabase);
+              setState(() {});
+            },
+          ),
+          _buildDivider(),
+          InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(10.0),

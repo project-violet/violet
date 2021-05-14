@@ -55,6 +55,8 @@ class Settings {
 
   static bool useDrawer;
 
+  static bool useOptimizeDatabase;
+
   // View Option
   static bool showArticleProgress;
 
@@ -336,6 +338,14 @@ class Settings {
       await (await SharedPreferences.getInstance())
           .setBool('showarticleprogress', showArticleProgress);
     }
+
+    useOptimizeDatabase =
+        (await SharedPreferences.getInstance()).getBool('useoptimizedatabase');
+    if (useOptimizeDatabase == null) {
+      useOptimizeDatabase = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('useoptimizedatabase', useOptimizeDatabase);
+    }
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -483,5 +493,11 @@ class Settings {
     showArticleProgress = nn;
     await (await SharedPreferences.getInstance())
         .setBool('showarticleprogress', nn);
+  }
+
+  static Future<void> setUseOptimizeDatabase(bool nn) async {
+    useOptimizeDatabase = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('useoptimizedatabase', nn);
   }
 }
