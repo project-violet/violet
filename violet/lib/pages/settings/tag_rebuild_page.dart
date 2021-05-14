@@ -264,7 +264,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
             if (character == '') continue;
             if (!seriesCharacter.containsKey(character))
               seriesCharacter[character] = Map<String, int>();
-            for (var series in item.characters().split('|')) {
+            for (var series in item.series().split('|')) {
               if (series == '') continue;
               if (!seriesCharacter[character].containsKey(series))
                 seriesCharacter[character][series] = 0;
