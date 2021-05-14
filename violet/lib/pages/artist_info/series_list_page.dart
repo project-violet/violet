@@ -1,12 +1,16 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
@@ -69,6 +73,33 @@ class SeriesListPage extends StatelessWidget {
                       var e = series[index];
                       return InkWell(
                         onTap: () async {
+                          var page = ArticleListPage(
+                              cc: e.map((e) => cc[e]).toList(), name: 'Series');
+
+                          if (!Platform.isIOS) {
+                            Navigator.of(context).push(PageRouteBuilder(
+                              opaque: false,
+                              transitionDuration: Duration(milliseconds: 500),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                var begin = Offset(0.0, 1.0);
+                                var end = Offset.zero;
+                                var curve = Curves.ease;
+
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              },
+                              pageBuilder: (_, __, ___) => page,
+                            ));
+                          } else {
+                            Navigator.of(context)
+                                .push(CupertinoPageRoute(builder: (_) => page));
+                          }
                           // Navigator.of(context).push(PageRouteBuilder(
                           //   // opaque: false,
                           //   transitionDuration: Duration(milliseconds: 500),
