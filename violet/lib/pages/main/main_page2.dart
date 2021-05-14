@@ -15,6 +15,8 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -543,107 +545,96 @@ class _MainPage2State extends State<MainPage2>
           //   height: 50,
           //   width: 150,
           // )
-          Badge(
-            badgeContent: Icon(Icons.star, size: 12.0),
-            child: Container(
-              child: RaisedButton(
-                color: Settings.majorColor.withAlpha(220),
-                textColor: Colors.white,
-                onPressed: () {
-                  if (!Platform.isIOS) {
-                    Navigator.of(context).push(PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        var begin = Offset(0.0, 1.0);
-                        var end = Offset.zero;
-                        var curve = Curves.ease;
+          MaterialButton(
+            color: Settings.majorColor.withAlpha(220),
+            textColor: Colors.white,
+            onPressed: () {
+              if (!Platform.isIOS) {
+                Navigator.of(context).push(PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    var begin = Offset(0.0, 1.0);
+                    var end = Offset.zero;
+                    var curve = Curves.ease;
 
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
 
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (_, __, ___) => ArtistCollectionPage(),
-                    ));
-                  } else {
-                    Navigator.of(context).push(CupertinoPageRoute(
-                        builder: (_) => ArtistCollectionPage()));
-                  }
-                },
-                child: Text(Translations.of(context).trans('artistcollection')),
-                elevation: 3.0,
-              ),
-              height: 40,
-              width: 145,
-            ),
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (_, __, ___) => ArtistCollectionPage(),
+                ));
+              } else {
+                Navigator.of(context).push(
+                    CupertinoPageRoute(builder: (_) => ArtistCollectionPage()));
+              }
+            },
+            // child: Text(Translations.of(context).trans('artistcollection')),
+            child: Icon(MdiIcons.star),
+            elevation: 3.0,
+            minWidth: 30,
+            padding: EdgeInsets.all(16),
+            shape: CircleBorder(),
           ),
           // Container(
           //   child: ViewsCard(),
           //   height: 50,
           //   width: 150,
           // ),
-          Container(
-            child: RaisedButton(
-              color: Settings.majorColor.withAlpha(220),
-              textColor: Colors.white,
-              onPressed: () {
-                if (!Platform.isIOS) {
-                  Navigator.of(context).push(PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      var begin = Offset(0.0, 1.0);
-                      var end = Offset.zero;
-                      var curve = Curves.ease;
 
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
+          MaterialButton(
+            color: Settings.majorColor.withAlpha(220),
+            textColor: Colors.white,
+            onPressed: () {
+              if (!Platform.isIOS) {
+                Navigator.of(context).push(PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    var begin = Offset(0.0, 1.0);
+                    var end = Offset.zero;
+                    var curve = Curves.ease;
 
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
-                    pageBuilder: (_, __, ___) => ViewsPage(),
-                  ));
-                } else {
-                  Navigator.of(context)
-                      .push(CupertinoPageRoute(builder: (_) => ViewsPage()));
-                }
-              },
-              child: Text(Translations.of(context).trans('realtimebest')),
-              elevation: 3.0,
-            ),
-            height: 40,
-            width: 145,
-          ),
-        ],
-      ),
-      Container(height: 8),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Container(
-            child: RaisedButton(
-              color: Settings.majorColor.withAlpha(220),
-              textColor: Colors.white,
-              onPressed: () {
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (_, __, ___) => ViewsPage(),
+                ));
+              } else {
                 Navigator.of(context)
-                    .push(CupertinoPageRoute(builder: (_) => FAQPageKorean()));
-              },
-              child: Text('자주 묻는 질문들'),
-              elevation: 3.0,
-            ),
-            height: 40,
-            width: 145,
+                    .push(CupertinoPageRoute(builder: (_) => ViewsPage()));
+              }
+            },
+            // child: Text(Translations.of(context).trans('realtimebest')),
+            // child: Icon(MdiIcons.artstation),
+            child: Icon(MdiIcons.starShooting),
+            elevation: 3.0,
+            minWidth: 30,
+            padding: EdgeInsets.all(16),
+            shape: CircleBorder(),
           ),
-          Container(
-            height: 40,
-            width: 145,
+          MaterialButton(
+            color: Settings.majorColor.withAlpha(220),
+            textColor: Colors.white,
+            onPressed: () {
+              Navigator.of(context)
+                  .push(CupertinoPageRoute(builder: (_) => FAQPageKorean()));
+            },
+            // child: Text('자주 묻는 질문들'),
+            child: Icon(Icons.question_answer),
+            elevation: 3.0,
+            minWidth: 30,
+            padding: EdgeInsets.all(16),
+            shape: CircleBorder(),
           ),
         ],
       ),
