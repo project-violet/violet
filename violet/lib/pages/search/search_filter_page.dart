@@ -13,6 +13,7 @@ class SearchFilter extends StatefulWidget {
   bool ignoreBookmark;
   bool blurred;
   bool isOr;
+  bool isSearch;
   List<Tuple3<String, String, int>> tags = List<Tuple3<String, String, int>>();
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
@@ -27,6 +28,7 @@ class SearchFilter extends StatefulWidget {
     this.tagStates,
     this.groupStates,
     this.isOr,
+    this.isSearch,
   });
 
   @override
@@ -34,6 +36,8 @@ class SearchFilter extends StatefulWidget {
 }
 
 class _SearchFilterState extends State<SearchFilter> {
+  TextEditingController _searchController = TextEditingController();
+
   bool test = false;
 
   @override
@@ -154,6 +158,59 @@ class _SearchFilterState extends State<SearchFilter> {
                       child: Column(
                         // mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          // Expanded(
+                          //   child: ListView(
+                          //     padding: EdgeInsets.zero,
+                          //     physics: BouncingScrollPhysics(),
+                          //     children: [
+                          //       Wrap(
+                          //           // alignment: WrapAlignment.center,
+                          //           spacing: -7.0,
+                          //           runSpacing: -13.0,
+                          //           children: widget.tags
+                          //               .where((element) =>
+                          //                   widget.groupStates[element.item1])
+                          //               .take(100)
+                          //               .map((element) {
+                          //             return _Chip(
+                          //               selected: widget.tagStates[
+                          //                   element.item1 +
+                          //                       '|' +
+                          //                       element.item2],
+                          //               group: element.item1,
+                          //               name: element.item2,
+                          //               count: element.item3,
+                          //               callback: (selected) {
+                          //                 widget.tagStates[element.item1 +
+                          //                     '|' +
+                          //                     element.item2] = selected;
+                          //               },
+                          //             );
+                          //           }).toList()
+                          //           // <Widget>[
+                          //           //   RawChip(
+                          //           //     selected: test,
+                          //           //     labelPadding: EdgeInsets.all(0.0),
+                          //           //     avatar: CircleAvatar(
+                          //           //       backgroundColor: Colors.grey.shade600,
+                          //           //       child: Text('A'),
+                          //           //     ),
+                          //           //     label: Text(' ASDF'),
+                          //           //     backgroundColor: Colors.orange,
+                          //           //     elevation: 6.0,
+                          //           //     shadowColor: Colors.grey[60],
+                          //           //     padding: EdgeInsets.all(6.0),
+                          //           //     onSelected: (value) {
+                          //           //       setState(() {
+                          //           //         test = value;
+                          //           //       });
+                          //           //     },
+                          //           //   )
+                          //           // ],
+                          //           ),
+                          //     ],
+                          //   ),
+                          // ),
                           Expanded(
                             child: ListView(
                               padding: EdgeInsets.zero,
@@ -163,9 +220,30 @@ class _SearchFilterState extends State<SearchFilter> {
                                     // alignment: WrapAlignment.center,
                                     spacing: -7.0,
                                     runSpacing: -13.0,
-                                    children: widget.tags
-                                        .where((element) =>
-                                            widget.groupStates[element.item1])
+                                    children: (
+                                            // selected
+                                            widget.tags
+                                                    .where((element) =>
+                                                        widget.tagStates[
+                                                            element.item1 +
+                                                                '|' +
+                                                                element.item2])
+                                                    .toList() +
+                                                // searched or filtered
+                                                (widget.isSearch
+                                                    ? widget.tags
+                                                        .where((element) =>
+                                                            (element.item1 + ':' + element.item2).contains(_searchController.text) &&
+                                                            !widget.tagStates[element
+                                                                    .item1 +
+                                                                '|' +
+                                                                element.item2])
+                                                        .toList()
+                                                    : widget.tags
+                                                        .where((element) =>
+                                                            widget.groupStates[element.item1] &&
+                                                            !widget.tagStates[element.item1 + '|' + element.item2])
+                                                        .toList()))
                                         .take(100)
                                         .map((element) {
                                       return _Chip(
@@ -207,81 +285,104 @@ class _SearchFilterState extends State<SearchFilter> {
                               ],
                             ),
                           ),
-                          Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: -7.0,
-                              runSpacing: -13.0,
-                              children: widget.groups
-                                  .map((element) => _Chip(
-                                        count: element.item2,
-                                        group: element.item1,
-                                        name: element.item1,
-                                        selected:
-                                            widget.groupStates[element.item1],
-                                        callback: (value) {
-                                          widget.groupStates[element.item1] =
-                                              value;
-                                          setState(() {});
-                                        },
-                                      ))
-                                  .toList()),
-                          Wrap(
-                            alignment: WrapAlignment.center,
-                            spacing: 4.0,
-                            runSpacing: -10.0,
-                            children: <Widget>[
-                              FilterChip(
-                                label: Text(Translations.of(context)
-                                    .trans('selectall')),
-                                // selected: widget.ignoreBookmark,
-                                onSelected: (bool value) {
-                                  widget.tags
-                                      .where((element) =>
-                                          widget.groupStates[element.item1])
-                                      .forEach((element) {
-                                    widget.tagStates[element.item1 +
-                                        '|' +
-                                        element.item2] = true;
-                                  });
-                                  setState(() {});
-                                },
-                              ),
-                              FilterChip(
-                                label: Text(Translations.of(context)
-                                    .trans('deselectall')),
-                                // selected: widget.blurred,
-                                onSelected: (bool value) {
-                                  widget.tags
-                                      .where((element) =>
-                                          widget.groupStates[element.item1])
-                                      .forEach((element) {
-                                    widget.tagStates[element.item1 +
-                                        '|' +
-                                        element.item2] = false;
-                                  });
-                                  setState(() {});
-                                },
-                              ),
-                              FilterChip(
-                                label: Text(
-                                    Translations.of(context).trans('inverse')),
-                                // selected: widget.blurred,
-                                onSelected: (bool value) {
-                                  widget.tags
-                                      .where((element) =>
-                                          widget.groupStates[element.item1])
-                                      .forEach((element) {
-                                    widget.tagStates[
-                                        element.item1 +
-                                            '|' +
-                                            element.item2] = !widget.tagStates[
-                                        element.item1 + '|' + element.item2];
-                                  });
-                                  setState(() {});
-                                },
-                              ),
-                            ],
-                          ),
+                          // Wrap(
+                          //     alignment: WrapAlignment.center,
+                          //     spacing: -7.0,
+                          //     runSpacing: -13.0,
+                          //     children: widget.groups
+                          //         .map((element) => _Chip(
+                          //               count: element.item2,
+                          //               group: element.item1,
+                          //               name: element.item1,
+                          //               selected:
+                          //                   widget.groupStates[element.item1],
+                          //               callback: (value) {
+                          //                 widget.groupStates[element.item1] =
+                          //                     value;
+                          //                 setState(() {});
+                          //               },
+                          //             ))
+                          //         .toList()),
+                          // Wrap(
+                          //   alignment: WrapAlignment.center,
+                          //   spacing: 4.0,
+                          //   runSpacing: -10.0,
+                          //   children: <Widget>[
+                          //     FilterChip(
+                          //       label: Text(Translations.of(context)
+                          //           .trans('selectall')),
+                          //       // selected: widget.ignoreBookmark,
+                          //       onSelected: (bool value) {
+                          //         widget.tags
+                          //             .where((element) =>
+                          //                 widget.groupStates[element.item1])
+                          //             .forEach((element) {
+                          //           widget.tagStates[element.item1 +
+                          //               '|' +
+                          //               element.item2] = true;
+                          //         });
+                          //         setState(() {});
+                          //       },
+                          //     ),
+                          //     FilterChip(
+                          //       label: Text(Translations.of(context)
+                          //           .trans('deselectall')),
+                          //       // selected: widget.blurred,
+                          //       onSelected: (bool value) {
+                          //         widget.tags
+                          //             .where((element) =>
+                          //                 widget.groupStates[element.item1])
+                          //             .forEach((element) {
+                          //           widget.tagStates[element.item1 +
+                          //               '|' +
+                          //               element.item2] = false;
+                          //         });
+                          //         setState(() {});
+                          //       },
+                          //     ),
+                          //     FilterChip(
+                          //       label: Text(
+                          //           Translations.of(context).trans('inverse')),
+                          //       // selected: widget.blurred,
+                          //       onSelected: (bool value) {
+                          //         widget.tags
+                          //             .where((element) =>
+                          //                 widget.groupStates[element.item1])
+                          //             .forEach((element) {
+                          //           widget.tagStates[
+                          //               element.item1 +
+                          //                   '|' +
+                          //                   element.item2] = !widget.tagStates[
+                          //               element.item1 + '|' + element.item2];
+                          //         });
+                          //         setState(() {});
+                          //       },
+                          //     ),
+                          //   ],
+                          // ),
+                          widget.isSearch
+                              ? _buildSelectedPanel()
+                              : Wrap(
+                                  alignment: WrapAlignment.center,
+                                  spacing: -7.0,
+                                  runSpacing: -13.0,
+                                  children: widget.groups
+                                      .map((element) => _Chip(
+                                            count: element.item2,
+                                            group: element.item1,
+                                            name: element.item1,
+                                            selected: widget
+                                                .groupStates[element.item1],
+                                            callback: (value) {
+                                              widget.groupStates[
+                                                  element.item1] = value;
+                                              setState(() {});
+                                            },
+                                          ))
+                                      .toList()),
+                          widget.isSearch
+                              ? _buildSearchControlPanel()
+                              : _buildSelectControlPanel(),
                           Wrap(
                             alignment: WrapAlignment.center,
                             spacing: 4.0,
@@ -316,6 +417,15 @@ class _SearchFilterState extends State<SearchFilter> {
                               //     });
                               //   },
                               // ),
+                              FilterChip(
+                                label: Text("Search"),
+                                selected: widget.isSearch,
+                                onSelected: (bool value) {
+                                  setState(() {
+                                    widget.isSearch = value;
+                                  });
+                                },
+                              ),
                             ],
                           ),
                         ],
@@ -341,6 +451,87 @@ class _SearchFilterState extends State<SearchFilter> {
         //   ],
         // ),
       ),
+    );
+  }
+
+  _buildSelectedPanel() {
+    return Container();
+  }
+
+  _buildSearchControlPanel() {
+    return TextFormField(
+      cursorColor: Colors.black,
+      onChanged: (String str) async {
+        // await searchProcess(str, _searchController.selection);
+        setState(() {});
+      },
+      controller: _searchController,
+      decoration: new InputDecoration(
+        border: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        suffixIcon: IconButton(
+          onPressed: () async {
+            _searchController.clear();
+            _searchController.selection =
+                TextSelection(baseOffset: 0, extentOffset: 0);
+            // await searchProcess('', _searchController.selection);
+          },
+          icon: Icon(Icons.clear),
+        ),
+        contentPadding:
+            EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+        hintText: Translations.of(context).trans('search'),
+      ),
+    );
+  }
+
+  _buildSelectControlPanel() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 4.0,
+      runSpacing: -10.0,
+      children: <Widget>[
+        FilterChip(
+          label: Text(Translations.of(context).trans('selectall')),
+          // selected: widget.ignoreBookmark,
+          onSelected: (bool value) {
+            widget.tags
+                .where((element) => widget.groupStates[element.item1])
+                .forEach((element) {
+              widget.tagStates[element.item1 + '|' + element.item2] = true;
+            });
+            setState(() {});
+          },
+        ),
+        FilterChip(
+          label: Text(Translations.of(context).trans('deselectall')),
+          // selected: widget.blurred,
+          onSelected: (bool value) {
+            widget.tags
+                .where((element) => widget.groupStates[element.item1])
+                .forEach((element) {
+              widget.tagStates[element.item1 + '|' + element.item2] = false;
+            });
+            setState(() {});
+          },
+        ),
+        FilterChip(
+          label: Text(Translations.of(context).trans('inverse')),
+          // selected: widget.blurred,
+          onSelected: (bool value) {
+            widget.tags
+                .where((element) => widget.groupStates[element.item1])
+                .forEach((element) {
+              widget.tagStates[element.item1 + '|' + element.item2] =
+                  !widget.tagStates[element.item1 + '|' + element.item2];
+            });
+            setState(() {});
+          },
+        ),
+      ],
     );
   }
 }
