@@ -34,6 +34,7 @@ class _BookmarkPageState extends State<BookmarkPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
       body: FutureBuilder(

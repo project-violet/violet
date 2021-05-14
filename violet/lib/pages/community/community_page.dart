@@ -83,6 +83,7 @@ class _CommunityPageState extends State<CommunityPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),

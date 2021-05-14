@@ -146,6 +146,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     double ww = widget.width - 16;
     double hh = 130.0;
 

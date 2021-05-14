@@ -183,6 +183,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return FutureBuilder(
       future: VioletServer.top(
               0, 600, ['daily', 'week', 'month', 'alltime'][widget.index])

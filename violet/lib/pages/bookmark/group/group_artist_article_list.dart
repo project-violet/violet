@@ -30,6 +30,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var windowWidth = MediaQuery.of(context).size.width;
     return FutureBuilder(
       future: Future.delayed(Duration(milliseconds: 1)).then((value) async {

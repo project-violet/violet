@@ -97,6 +97,7 @@ class _GroupArtistListState extends State<GroupArtistList>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     var windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,

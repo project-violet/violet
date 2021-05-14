@@ -93,6 +93,7 @@ class _MainPage2State extends State<MainPage2>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     final double width = MediaQuery.of(context).size.width;
 

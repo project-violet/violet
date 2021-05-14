@@ -112,6 +112,7 @@ class _SearchPageState extends State<SearchPage>
   // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Container(
