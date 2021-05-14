@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/log/log.dart';
@@ -166,6 +167,18 @@ class SyncManager {
 
         await (await SharedPreferences.getInstance())
             .setInt('synclatest', row.timestamp);
+      }
+
+      if (filteredIter.length > 0) {
+        var sql = HitomiManager.translate2query(Settings.includeTags +
+            ' ' +
+            Settings.excludeTags
+                .where((e) => e.trim() != '')
+                .map((e) => '-$e')
+                .join(' '));
+
+        await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
+            'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
       }
     } catch (e, st) {
       // If an error occurs, stops synchronization immediately.
