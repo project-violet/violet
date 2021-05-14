@@ -21,7 +21,21 @@ class _LogPageState extends State<LogPage> {
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
 
-    var errors = Logger.events.reversed.toList();
+    var errors = Logger.events.reversed.map((e) => e.copy()).toList();
+
+    // Merge Simple Errors
+    for (var i = 0; i < errors.length; i++) {
+      if (errors[i].detail != null || !errors[i].message.startsWith('GET:'))
+        continue;
+      for (var j = i + 1; j < errors.length; j++) {
+        if (errors[i].title != errors[j].title ||
+            !errors[j].message.startsWith('GET:')) break;
+        if (errors[j].message.length < 200) {
+          errors[i].message += '\n' + errors[j].message;
+          errors.removeAt(j--);
+        }
+      }
+    }
 
     return Scaffold(
       body: Padding(
