@@ -145,7 +145,7 @@ class _SettingsPageState extends State<SettingsPage>
               ..addAll(_systemGroup())
               ..addAll(_databaseGroup())
               ..addAll(_networkingGroup())
-              ..addAll(_downloadGroup())
+              ..addAll(Platform.isAndroid ? _downloadGroup() : [])
               ..addAll(_bookmarkGroup())
               ..addAll(_componetGroup())
               ..addAll(_viewGroup())
@@ -1302,13 +1302,11 @@ class _SettingsPageState extends State<SettingsPage>
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: Platform.isIOS
-                ? null
-                : () async {
-                    await Settings.setShowArticleProgress(
-                        !Settings.showArticleProgress);
-                    setState(() {});
-                  },
+            onTap: () async {
+              await Settings.setShowArticleProgress(
+                  !Settings.showArticleProgress);
+              setState(() {});
+            },
           ),
         ],
       ),
