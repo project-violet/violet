@@ -96,8 +96,10 @@ class DownloadRoutine {
   }
 
   Future<void> extractFilePath() async {
+    var inner = (await getApplicationDocumentsDirectory()).path;
     var files = tasks
-        .map((e) => join(Settings.downloadBasePath,
+        .map((e) => join(
+            Settings.useInnerStorage ? inner : Settings.downloadBasePath,
             e.format.formatting(extractor.defaultFormat())))
         .toList();
     result['Files'] = jsonEncode(files);
@@ -129,8 +131,8 @@ class DownloadRoutine {
     if (Settings.useInnerStorage)
       basepath = (await getApplicationDocumentsDirectory()).path;
     await downloader.addTasks(tasks.map((e) {
-      e.downloadPath = join(basepath,
-          e.format.formatting(extractor.defaultFormat()));
+      e.downloadPath =
+          join(basepath, e.format.formatting(extractor.defaultFormat()));
 
       e.startCallback = () {};
       e.completeCallback = completeCallback;
