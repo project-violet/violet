@@ -24,8 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 5, 15),
+    version: '1.8.4 Patch (HotFix) <== Latest',
+    contents: [
+      'fix bug that seriesCharacter inner loop use mismatched list during tag rebuilding',
+      'fix an issue where the actual images storage path and the path recorded in the DB did not match',
+      'fix an error where the innerstorage option is initialized every time the app is started.'
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 14),
-    version: '1.8.3 Patch <== Latest',
+    version: '1.8.3 Patch',
     contents: [
       'add series article viewer',
       'add tag-rebuild function',
