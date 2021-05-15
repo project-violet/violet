@@ -229,7 +229,7 @@ class Settings {
     }
 
     useInnerStorage =
-        (await SharedPreferences.getInstance()).getBool('userinnerstorage');
+        (await SharedPreferences.getInstance()).getBool('useinnerstorage');
     if (useInnerStorage == null) {
       useInnerStorage = Platform.isIOS;
       if (Platform.isAndroid) {
