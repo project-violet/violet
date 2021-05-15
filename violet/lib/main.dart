@@ -18,6 +18,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/series_finder.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
@@ -51,6 +52,8 @@ void main() async {
 
   await Firebase.initializeApp();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+  // await SeriesFinder.doFind2();
 
   // FlutterError.onError = (FlutterErrorDetails details) async {
   //   await Logger.init();

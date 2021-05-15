@@ -64,7 +64,9 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                             .split('_')[0]];
                       }
 
-                      var artists = (item.value as List<String>).join(', ');
+                      var artists = (item.value as List<String>)
+                          .map((e) => e.trim())
+                          .join(', ');
 
                       // https://imgur.com/a/dA2j0Za
                       var images = [
@@ -85,6 +87,7 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                         'https://i.imgur.com/wYIS5qC.png', // 야오이
                         'https://i.imgur.com/zcniemz.png', // 후타나리
                         'https://i.imgur.com/YHhu46pg.jpg', // 씨지
+                        'https://i.imgur.com/XUcQAQl.png', // 페페
                       ];
 
                       return Card(
@@ -127,14 +130,30 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                                   );
                                 },
                                 pageBuilder: (_, __, ___) => ArtistListPage(
-                                  aritsts: item.value,
+                                  aritsts: (item.value as List<String>)
+                                      .map((e) => e.trim())
+                                      .toList(),
+                                  isLast: index ==
+                                      Artists.collection.entries
+                                              .where((element) =>
+                                                  element.value.length > 0)
+                                              .length -
+                                          1,
                                 ),
                               ));
                             } else {
                               Navigator.of(context).push(
                                 CupertinoPageRoute(
                                   builder: (_) => ArtistListPage(
-                                    aritsts: item.value,
+                                    aritsts: (item.value as List<String>)
+                                        .map((e) => e.trim())
+                                        .toList(),
+                                    isLast: index ==
+                                        Artists.collection.entries
+                                                .where((element) =>
+                                                    element.value.length > 0)
+                                                .length -
+                                            1,
                                   ),
                                 ),
                               );
