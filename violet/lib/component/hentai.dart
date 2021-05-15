@@ -128,7 +128,7 @@ class HentaiManager {
             .join(' ')
             .trim());
 
-    log(queryString);
+    print(queryString);
 
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
