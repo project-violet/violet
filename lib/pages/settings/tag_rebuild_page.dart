@@ -260,7 +260,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
             }
           }
 
-          for (var character in item.series().split('|')) {
+          for (var character in item.characters().split('|')) {
             if (character == '') continue;
             if (!seriesCharacter.containsKey(character))
               seriesCharacter[character] = Map<String, int>();
@@ -293,7 +293,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
             if (!characterCharacter.containsKey(character))
               characterCharacter[character] = Map<String, int>();
             for (var character2 in item.characters().split('|')) {
-              if (character2 == '' || series == character2) continue;
+              if (character2 == '' || character == character2) continue;
               if (!characterCharacter[character].containsKey(character2))
                 characterCharacter[character][character2] = 0;
               characterCharacter[character][character2] += 1;
