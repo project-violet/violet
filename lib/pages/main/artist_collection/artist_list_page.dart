@@ -20,12 +20,14 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ArtistListPage extends StatelessWidget {
   final List<String> aritsts;
-  ArtistListPage({this.aritsts});
+  final bool isLast;
+
+  ArtistListPage({this.aritsts, this.isLast});
 
   Future<List<QueryResult>> _future(String e) async {
     var unescape = new HtmlUnescape();
-    var postfix = e.toLowerCase().replaceAll(' ', '_');
-    var queryString = HitomiManager.translate2query('artist:' +
+    var postfix = e.trim().toLowerCase().replaceAll(' ', '_');
+    var queryString = HitomiManager.translate2query((isLast ? '' : 'artist:') +
         postfix +
         ' ' +
         Settings.includeTags +
@@ -134,9 +136,12 @@ class ArtistListPage extends StatelessWidget {
                                         },
                                         pageBuilder: (_, __, ___) =>
                                             ArtistInfoPage(
-                                          isGroup: false,
+                                          isGroup: isLast
+                                              ? e.startsWith('group:')
+                                              : false,
                                           isUploader: false,
-                                          artist: e,
+                                          artist:
+                                              isLast ? e.split(':').last : e,
                                         ),
                                       ));
                                     } else {
@@ -168,9 +173,19 @@ class ArtistListPage extends StatelessWidget {
                                                     ' ' +
                                                         e +
                                                         ' (' +
-                                                        HitomiManager
-                                                                .getArticleCount(
-                                                                    'artist', e)
+                                                        HitomiManager.getArticleCount(
+                                                                isLast
+                                                                    ? e
+                                                                        .split(
+                                                                            ':')
+                                                                        .first
+                                                                    : 'artist',
+                                                                isLast
+                                                                    ? e
+                                                                        .split(
+                                                                            ':')
+                                                                        .last
+                                                                    : e)
                                                             .toString() +
                                                         ')',
                                                     style: TextStyle(
