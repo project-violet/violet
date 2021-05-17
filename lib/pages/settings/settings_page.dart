@@ -174,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   Padding _buildGroup(String name) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 2),
+      padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
