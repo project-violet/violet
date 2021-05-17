@@ -24,8 +24,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 5, 17),
+    version: '1.8.5 Patch <== Latest',
+    contents: [
+      'add series to artists collection (series finder)',
+      'add double tap zoom on viewer',
+      'add importing bookmark from hiyobi',
+      'fix record view request too much database connection',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 15),
-    version: '1.8.4 Patch (HotFix) <== Latest',
+    version: '1.8.4 Patch (HotFix)',
     contents: [
       'fix bug that seriesCharacter inner loop use mismatched list during tag rebuilding',
       'fix an issue where the actual images storage path and the path recorded in the DB did not match',
