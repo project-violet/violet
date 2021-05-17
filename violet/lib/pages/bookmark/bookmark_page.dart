@@ -77,15 +77,23 @@ class _BookmarkPageState extends State<BookmarkPage>
           var _rows = _buildRowItems(snapshot, reorder);
 
           return reorder
-              ? ReorderableListView(
-                  padding: EdgeInsets.fromLTRB(4, statusBarHeight + 8, 4, 8),
-                  scrollDirection: Axis.vertical,
-                  scrollController: _scrollController,
-                  children: _rows,
-                  onReorder: _onReorder,
+              ? Theme(
+                  data: Theme.of(context).copyWith(
+                    // https://github.com/flutter/flutter/issues/45799#issuecomment-770692808
+                    // Fuck you!!
+                    canvasColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                  ),
+                  child: ReorderableListView(
+                    padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
+                    scrollDirection: Axis.vertical,
+                    scrollController: _scrollController,
+                    children: _rows,
+                    onReorder: _onReorder,
+                  ),
                 )
               : ListView.builder(
-                  padding: EdgeInsets.fromLTRB(4, statusBarHeight + 8, 4, 8),
+                  padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
                   physics: BouncingScrollPhysics(),
                   controller: _scrollController,
                   itemCount: snapshot.data.length + 1,
@@ -233,101 +241,129 @@ class _BookmarkPageState extends State<BookmarkPage>
         duration: Duration(milliseconds: 300 + _random.nextInt(50)),
         shakeAngle: Rotation.deg(z: 0.8),
         curve: Curves.linear,
-        child: Card(
-          elevation: 8.0,
-          child: reorder
-              ? ListTile(
-                  title: Text(name, style: TextStyle(fontSize: 16.0)),
-                  subtitle: Text(desc),
-                  trailing: Text(date),
-                )
-              : ListTile(
-                  onTap: () {
-                    if (!Platform.isIOS) {
-                      Navigator.of(context).push(PageRouteBuilder(
-                          opaque: false,
-                          transitionDuration: Duration(milliseconds: 500),
-                          // transitionsBuilder: (BuildContext context,
-                          //     Animation<double> animation,
-                          //     Animation<double> secondaryAnimation,
-                          //     Widget wi) {
-                          //   // return wi;
-                          //   return new FadeTransition(opacity: animation, child: wi);
-                          // },
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            var begin = Offset(0.0, 1.0);
-                            var end = Offset.zero;
-                            var curve = Curves.ease;
+        child: Container(
+          margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Settings.themeWhat ? Colors.black26 : Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+                bottomLeft: Radius.circular(8),
+                bottomRight: Radius.circular(8)),
+            boxShadow: [
+              BoxShadow(
+                color: Settings.themeWhat
+                    ? Colors.black26
+                    : Colors.grey.withOpacity(0.1),
+                spreadRadius: Settings.themeWhat ? 0 : 5,
+                blurRadius: 7,
+                offset: Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Material(
+              color: Settings.themeWhat ? Colors.black38 : Colors.white,
+              child: reorder
+                  ? ListTile(
+                      title: Text(name, style: TextStyle(fontSize: 16.0)),
+                      subtitle: Text(desc),
+                      trailing: Text(date),
+                    )
+                  : ListTile(
+                      onTap: () {
+                        if (!Platform.isIOS) {
+                          Navigator.of(context).push(PageRouteBuilder(
+                              opaque: false,
+                              transitionDuration: Duration(milliseconds: 500),
+                              // transitionsBuilder: (BuildContext context,
+                              //     Animation<double> animation,
+                              //     Animation<double> secondaryAnimation,
+                              //     Widget wi) {
+                              //   // return wi;
+                              //   return new FadeTransition(opacity: animation, child: wi);
+                              // },
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                var begin = Offset(0.0, 1.0);
+                                var end = Offset.zero;
+                                var curve = Curves.ease;
 
-                            var tween = Tween(begin: begin, end: end)
-                                .chain(CurveTween(curve: curve));
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
 
-                            return SlideTransition(
-                              position: animation.drive(tween),
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (_, __, ___) => id == -1
-                              ? RecordViewPage()
-                              : GroupArticleListPage(groupId: id, name: name)));
-                    } else {
-                      Navigator.of(context).push(CupertinoPageRoute(
-                          builder: (_) => id == -1
-                              ? RecordViewPage()
-                              : GroupArticleListPage(groupId: id, name: name)));
-                    }
-                  },
-                  onLongPress: () async {
-                    if (index == -1 || oname == 'violet_default')
-                      await Dialogs.okDialog(
-                          context,
-                          Translations.of(context)
-                              .trans('cannotmodifydefaultgroup'),
-                          Translations.of(context).trans('bookmark'));
-                    else {
-                      var rr = await showDialog(
-                        context: context,
-                        builder: (BuildContext context) => GroupModifyPage(
-                            name: name, desc: data.description()),
-                      );
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              },
+                              pageBuilder: (_, __, ___) => id == -1
+                                  ? RecordViewPage()
+                                  : GroupArticleListPage(
+                                      groupId: id, name: name)));
+                        } else {
+                          Navigator.of(context).push(CupertinoPageRoute(
+                              builder: (_) => id == -1
+                                  ? RecordViewPage()
+                                  : GroupArticleListPage(
+                                      groupId: id, name: name)));
+                        }
+                      },
+                      onLongPress: () async {
+                        if (index == -1 || oname == 'violet_default')
+                          await Dialogs.okDialog(
+                              context,
+                              Translations.of(context)
+                                  .trans('cannotmodifydefaultgroup'),
+                              Translations.of(context).trans('bookmark'));
+                        else {
+                          var rr = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) => GroupModifyPage(
+                                name: name, desc: data.description()),
+                          );
 
-                      if (rr == null) return;
+                          if (rr == null) return;
 
-                      if (rr[0] == 2) {
-                        await (await Bookmark.getInstance()).deleteGroup(data);
-                        setState(() {});
-                      } else if (rr[0] == 1) {
-                        var nname = rr[1] as String;
-                        var ndesc = rr[2] as String;
+                          if (rr[0] == 2) {
+                            await (await Bookmark.getInstance())
+                                .deleteGroup(data);
+                            setState(() {});
+                          } else if (rr[0] == 1) {
+                            var nname = rr[1] as String;
+                            var ndesc = rr[2] as String;
 
-                        var rrt = Map<String, dynamic>.from(data.result);
+                            var rrt = Map<String, dynamic>.from(data.result);
 
-                        rrt['Name'] = nname;
-                        rrt['Description'] = ndesc;
+                            rrt['Name'] = nname;
+                            rrt['Description'] = ndesc;
 
-                        await (await Bookmark.getInstance())
-                            .modfiyGroup(BookmarkGroup(result: rrt));
-                        setState(() {});
-                      }
-                    }
-                    // Navigator.of(context).push(PageRouteBuilder(
-                    //     opaque: false,
-                    //     transitionDuration: Duration(milliseconds: 500),
-                    //     transitionsBuilder: (BuildContext context,
-                    //         Animation<double> animation,
-                    //         Animation<double> secondaryAnimation,
-                    //         Widget wi) {
-                    //       // return wi;
-                    //       return new FadeTransition(
-                    //           opacity: animation, child: wi);
-                    //     },
-                    //     pageBuilder: (_, __, ___) => GroupModifyPage()));
-                  },
-                  title: Text(name, style: TextStyle(fontSize: 16.0)),
-                  subtitle: Text(desc),
-                  trailing: Text(date),
-                ),
+                            await (await Bookmark.getInstance())
+                                .modfiyGroup(BookmarkGroup(result: rrt));
+                            setState(() {});
+                          }
+                        }
+                        // Navigator.of(context).push(PageRouteBuilder(
+                        //     opaque: false,
+                        //     transitionDuration: Duration(milliseconds: 500),
+                        //     transitionsBuilder: (BuildContext context,
+                        //         Animation<double> animation,
+                        //         Animation<double> secondaryAnimation,
+                        //         Widget wi) {
+                        //       // return wi;
+                        //       return new FadeTransition(
+                        //           opacity: animation, child: wi);
+                        //     },
+                        //     pageBuilder: (_, __, ___) => GroupModifyPage()));
+                      },
+                      title: Text(name, style: TextStyle(fontSize: 16.0)),
+                      subtitle: Text(desc),
+                      trailing: Text(date),
+                    ),
+            ),
+          ),
         ),
       ),
     );
