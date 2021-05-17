@@ -358,7 +358,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
     return Stack(
       children: <Widget>[
-        PhotoView.customChild(
+        // PhotoView.customChild(
+        InteractiveViewer(
           minScale: 1.0,
           child: Container(
             color: const Color(0xff444444),
