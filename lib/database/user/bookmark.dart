@@ -304,10 +304,10 @@ class Bookmark {
     return bookmarkArtistSet[type].contains(name);
   }
 
-  Future<void> bookmarkArtist(String name, int type) async {
+  Future<void> bookmarkArtist(String name, int type, [int group = 1]) async {
     if (await isBookmarkArtist(name, type)) return;
     bookmarkArtistSet[type].add(name);
-    await insertArtist(name, type);
+    await insertArtist(name, type, null, group);
   }
 
   Future<void> unbookmarkArtist(String name, int type) async {

@@ -26,6 +26,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/community/user_status_card.dart';
@@ -1129,11 +1130,6 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10.0),
-                  bottomRight: Radius.circular(10.0)),
-            ),
             child: ListTile(
               leading: Icon(
                 MdiIcons.cloudSearchOutline,
@@ -1209,6 +1205,119 @@ class _SettingsPageState extends State<SettingsPage>
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
                 );
+              }
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10.0),
+                  bottomRight: Radius.circular(10.0)),
+            ),
+            child: ListTile(
+              leading: Icon(
+                MdiIcons.cloudSearchOutline,
+                color: Settings.majorColor,
+              ),
+              title: Text('Import From Hiyobi'),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
+            onTap: () async {
+              TextEditingController textController = TextEditingController();
+
+              Widget yesButton = FlatButton(
+                child: Text('Import',
+                    style: TextStyle(color: Settings.majorColor)),
+                focusColor: Settings.majorColor,
+                splashColor: Settings.majorColor.withOpacity(0.3),
+                onPressed: () async {
+                  Navigator.pop(context, textController.text);
+                },
+              );
+              Widget noButton = FlatButton(
+                child: Text('Cancel',
+                    style: TextStyle(color: Settings.majorColor)),
+                focusColor: Settings.majorColor,
+                splashColor: Settings.majorColor.withOpacity(0.3),
+                onPressed: () {
+                  Navigator.pop(context, null);
+                },
+              );
+
+              final text = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Import From Hiyobi'),
+                    contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    actions: [
+                      yesButton,
+                      noButton,
+                    ],
+                    content: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      reverse: true,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Paste your bookmark text!'),
+                          Row(
+                            children: [
+                              Text('JSON: '),
+                              Expanded(
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText:
+                                          'Paste Here! ex: ["1207894", "artist:michiking", ...]'),
+                                  controller: textController,
+                                  keyboardType: TextInputType.multiline,
+                                  minLines: null,
+                                  maxLines: null,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+
+              if (text == null) return;
+
+              try {
+                var json = jsonDecode(text) as List<dynamic>;
+
+                var bookmark = await Bookmark.getInstance();
+                await bookmark.createGroup('Hiyobi', '', Colors.black);
+                var group = (await bookmark.getGroup())
+                    .where((element) => element.name() == 'Hiyobi')
+                    .first
+                    .id();
+                for (int j = 0; j < json.length; j++) {
+                  var tar = json.elementAt(j).toString();
+                  if (int.tryParse(tar) != null)
+                    await bookmark.insertArticle(tar, DateTime.now(), group);
+                  else if (tar.contains(':') &&
+                      ['artist', 'group'].contains(tar.split(':')[0])) {
+                    await bookmark.bookmarkArtist(tar.split(':')[1],
+                        tar.split(':')[0] == 'artist' ? 0 : 1, group);
+                  }
+                }
+
+                await Dialogs.okDialog(context, 'Success!');
+              } catch (e, st) {
+                Logger.error('[Import from hiyobi] ' +
+                    e.toString() +
+                    '\n' +
+                    st.toString());
+
+                await Dialogs.okDialog(context,
+                    'Bookmark format is not correct. Please refer to Log Record for details.');
               }
             },
           ),
