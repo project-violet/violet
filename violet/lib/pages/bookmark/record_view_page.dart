@@ -53,18 +53,25 @@ class RecordViewPage extends StatelessWidget {
   Widget future(context, double width) {
     var windowWidth = MediaQuery.of(context).size.width;
     return FutureBuilder(
-      future:
-          User.getInstance().then((value) => value.getUserLog().then((value) {
+      future: User.getInstance()
+          .then((value) => value.getUserLog().then((value) async {
                 var overap = HashSet<String>();
-                var rr = List<ArticleReadLog>();
+                var rr = <ArticleReadLog>[];
                 value.forEach((element) {
                   if (overap.contains(element.articleId())) return;
                   rr.add(element);
                   overap.add(element.articleId());
                 });
-                return rr;
+
+                var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+
+                queryRaw +=
+                    'Id IN (' + rr.map((e) => e.articleId()).join(',') + ')';
+                var qr =
+                    await QueryManager.query(queryRaw + ' AND ExistOnHitomi=1');
+                return qr.results;
               })),
-      builder: (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
+      builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData) return Container();
         return CustomScrollView(
           physics: const BouncingScrollPhysics(),
@@ -86,35 +93,23 @@ class RecordViewPage extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         child: Align(
                           alignment: Alignment.bottomCenter,
-                          child: FutureBuilder(
-                            // future: QueryManager.query(
-                            //     "SELECT * FROM HitomiColumnModel WHERE Id=${snapshot.data[index].articleId()}"),
-                            future: HentaiManager.idSearch(e.articleId()),
-                            builder: (context,
-                                AsyncSnapshot<Tuple2<List<QueryResult>, int>>
-                                    snapshot) {
-                              return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    snapshot.hasData
-                                        ? Provider<ArticleListItem>.value(
-                                            value: ArticleListItem
-                                                .fromArticleListItem(
-                                              queryResult:
-                                                  snapshot.data.item1[0],
-                                              addBottomPadding: false,
-                                              showDetail: false,
-                                              width:
-                                                  (windowWidth - 4.0 - 48) / 3,
-                                              thumbnailTag: Uuid().v4(),
-                                            ),
-                                            child:
-                                                ArticleListItemVerySimpleWidget(),
-                                          )
-                                        : Container()
-                                  ]);
-                            },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: <Widget>[
+                              snapshot.hasData
+                                  ? Provider<ArticleListItem>.value(
+                                      value:
+                                          ArticleListItem.fromArticleListItem(
+                                        queryResult: e,
+                                        addBottomPadding: false,
+                                        showDetail: false,
+                                        width: (windowWidth - 4.0 - 48) / 3,
+                                        thumbnailTag: Uuid().v4(),
+                                      ),
+                                      child: ArticleListItemVerySimpleWidget(),
+                                    )
+                                  : Container()
+                            ],
                           ),
                         ),
                       );
