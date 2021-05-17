@@ -240,7 +240,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                alignment: Alignment.topLeft,
                 icon: new Icon(Icons.arrow_back),
                 color: Colors.white,
                 onPressed: () {
@@ -249,123 +248,135 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 },
               ),
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: Icon(MdiIcons.folderImage),
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    _pageInfo.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
                       color: Colors.white,
-                      onPressed: () async {
-                        if (!Platform.isIOS) {
-                          Navigator.of(context)
-                              .push(
-                            PageRouteBuilder(
-                              transitionDuration: Duration(milliseconds: 500),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = Offset(0.0, 1.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
-
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
-                              pageBuilder: (_, __, ___) =>
-                                  Provider<ViewerPageProvider>.value(
-                                value: _pageInfo,
-                                child: ViewerGallery(),
-                              ),
-                            ),
-                          )
-                              .then(
-                            (value) {
-                              if (value != null) {
-                                if (!Settings.isHorizontal) {
-                                  itemScrollController.jumpTo(
-                                      index: value, alignment: 0.12);
-                                } else {
-                                  _pageController.jumpToPage(value - 1);
-                                }
-                                currentPage = value;
-                                setState(() {
-                                  _prevPage = value;
-                                });
-                              }
-                            },
-                          );
-                        } else {
-                          Navigator.of(context)
-                              .push(
-                            CupertinoPageRoute(
-                              builder: (_) =>
-                                  Provider<ViewerPageProvider>.value(
-                                value: _pageInfo,
-                                child: ViewerGallery(),
-                              ),
-                            ),
-                          )
-                              .then(
-                            (value) {
-                              if (value != null) {
-                                if (!Settings.isHorizontal) {
-                                  itemScrollController.jumpTo(
-                                      index: _prevPage - 1, alignment: 0.12);
-                                } else {
-                                  _pageController.jumpToPage(value - 1);
-                                }
-                                currentPage = value;
-                                setState(() {
-                                  _prevPage = value;
-                                });
-                              }
-                            },
-                          );
-                        }
-                      },
+                      fontSize: 20,
                     ),
-                    // IconButton(
-                    //     icon: Icon(MdiIcons.fileDownload),
-                    //     color: Colors.white,
-                    //     onPressed: () async {}),
-                    IconButton(
-                      icon: Icon(Icons.settings),
-                      color: Colors.white,
-                      onPressed: () async {
-                        await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: false,
-                          builder: (context) => ViewerSettingPanel(
-                            viewerStyleChangeEvent: () {
-                              if (Settings.isHorizontal) {
-                                _pageController = new PreloadPageController(
-                                    initialPage: _prevPage - 1);
-                              } else {
-                                var npage = _prevPage;
-                                _sliderOnChange = true;
-                                Future.delayed(Duration(milliseconds: 100))
-                                    .then((value) {
-                                  itemScrollController.jumpTo(
-                                      index: npage - 1, alignment: 0.12);
-                                  _sliderOnChange = false;
-                                });
-                              }
-                              setState(() {});
-                            },
-                            setStateCallback: () {
-                              setState(() {});
-                            },
-                          ),
-                        );
-                        return;
-                      },
-                    ),
-                  ],
+                  ),
+                  onTap: () {},
                 ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(MdiIcons.folderImage),
+                    color: Colors.white,
+                    onPressed: () async {
+                      if (!Platform.isIOS) {
+                        Navigator.of(context)
+                            .push(
+                          PageRouteBuilder(
+                            transitionDuration: Duration(milliseconds: 500),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              var begin = Offset(0.0, 1.0);
+                              var end = Offset.zero;
+                              var curve = Curves.ease;
+
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
+
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            },
+                            pageBuilder: (_, __, ___) =>
+                                Provider<ViewerPageProvider>.value(
+                              value: _pageInfo,
+                              child: ViewerGallery(),
+                            ),
+                          ),
+                        )
+                            .then(
+                          (value) {
+                            if (value != null) {
+                              if (!Settings.isHorizontal) {
+                                itemScrollController.jumpTo(
+                                    index: value, alignment: 0.12);
+                              } else {
+                                _pageController.jumpToPage(value - 1);
+                              }
+                              currentPage = value;
+                              setState(() {
+                                _prevPage = value;
+                              });
+                            }
+                          },
+                        );
+                      } else {
+                        Navigator.of(context)
+                            .push(
+                          CupertinoPageRoute(
+                            builder: (_) => Provider<ViewerPageProvider>.value(
+                              value: _pageInfo,
+                              child: ViewerGallery(),
+                            ),
+                          ),
+                        )
+                            .then(
+                          (value) {
+                            if (value != null) {
+                              if (!Settings.isHorizontal) {
+                                itemScrollController.jumpTo(
+                                    index: _prevPage - 1, alignment: 0.12);
+                              } else {
+                                _pageController.jumpToPage(value - 1);
+                              }
+                              currentPage = value;
+                              setState(() {
+                                _prevPage = value;
+                              });
+                            }
+                          },
+                        );
+                      }
+                    },
+                  ),
+                  // IconButton(
+                  //     icon: Icon(MdiIcons.fileDownload),
+                  //     color: Colors.white,
+                  //     onPressed: () async {}),
+                  IconButton(
+                    icon: Icon(Icons.settings),
+                    color: Colors.white,
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: false,
+                        builder: (context) => ViewerSettingPanel(
+                          viewerStyleChangeEvent: () {
+                            if (Settings.isHorizontal) {
+                              _pageController = new PreloadPageController(
+                                  initialPage: _prevPage - 1);
+                            } else {
+                              var npage = _prevPage;
+                              _sliderOnChange = true;
+                              Future.delayed(Duration(milliseconds: 100))
+                                  .then((value) {
+                                itemScrollController.jumpTo(
+                                    index: npage - 1, alignment: 0.12);
+                                _sliderOnChange = false;
+                              });
+                            }
+                            setState(() {});
+                          },
+                          setStateCallback: () {
+                            setState(() {});
+                          },
+                        ),
+                      );
+                      return;
+                    },
+                  ),
+                ],
               ),
             ],
           ),
