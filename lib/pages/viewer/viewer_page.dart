@@ -19,10 +19,10 @@ import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
-import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
@@ -31,54 +31,6 @@ import 'package:violet/variables.dart';
 
 int currentPage = 0;
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
-
-typedef MultiTouchGestureRecognizerCallback = void Function(
-    bool correctNumberOfTouches);
-
-class MultiTouchGestureRecognizer extends MultiTapGestureRecognizer {
-  MultiTouchGestureRecognizerCallback onMultiTap;
-  var numberOfTouches = 0;
-  int minNumberOfTouches = 0;
-
-  MultiTouchGestureRecognizer() {
-    super.onTapDown = (pointer, details) => this.addTouch(pointer, details);
-    super.onTapUp = (pointer, details) => this.removeTouch(pointer, details);
-    super.onTapCancel = (pointer) => this.cancelTouch(pointer);
-    super.onTap = (pointer) => this.captureDefaultTap(pointer);
-  }
-
-  void addTouch(int pointer, TapDownDetails details) {
-    this.numberOfTouches++;
-  }
-
-  void removeTouch(int pointer, TapUpDetails details) {
-    if (this.numberOfTouches == this.minNumberOfTouches) {
-      this.onMultiTap(true);
-    } else if (this.numberOfTouches != 0) {
-      this.onMultiTap(false);
-    }
-
-    this.numberOfTouches = 0;
-  }
-
-  void cancelTouch(int pointer) {
-    this.numberOfTouches = 0;
-  }
-
-  void captureDefaultTap(int pointer) {}
-
-  @override
-  set onTapDown(_onTapDown) {}
-
-  @override
-  set onTapUp(_onTapUp) {}
-
-  @override
-  set onTapCancel(_onTapCancel) {}
-
-  @override
-  set onTap(_onTap) {}
-}
 
 class ViewerPage extends StatelessWidget {
   ViewerPage();
@@ -112,6 +64,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
   bool _sliderOnChange = false;
+  TapDownDetails _doubleTapDetails;
+  TransformationController _transformationController =
+      TransformationController();
+  bool scrollListEnable = true;
+  int _mpPoints = 0;
+  AnimationController _animationController;
+  Animation<Matrix4> _animation;
 
   @override
   void initState() {
@@ -149,6 +108,11 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         });
       }
     });
+
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+        resumeCallBack: () async => setState(() {
+              _mpPoints = 0;
+            })));
   }
 
   @override
@@ -410,13 +374,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     );
   }
 
-  TapDownDetails _doubleTapDetails;
-  TransformationController _transformationController =
-      TransformationController();
-  bool scrollListEnable = true;
-  int _mpPoints = 0;
-  AnimationController _animationController;
-  Animation<Matrix4> _animation;
   _bodyVertical() {
     final height = MediaQuery.of(context).size.height;
 
