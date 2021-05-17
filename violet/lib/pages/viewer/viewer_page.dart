@@ -555,8 +555,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       _endMatrix = Matrix4.identity();
     } else {
       _endMatrix = Matrix4.identity()
-        ..translate(-_position.dx * 2, -_position.dy * 2)
-        ..scale(3.0);
+        ..translate(-_position.dx * 1, -_position.dy * 1)
+        ..scale(2.0);
     }
 
     _animation = Matrix4Tween(
