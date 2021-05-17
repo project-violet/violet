@@ -213,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage>
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.circular(8.0),
         child: Material(
           color: Settings.themeWhat ? Colors.black38 : Colors.white,
           child: Column(children: items),
@@ -232,8 +232,8 @@ class _SettingsPageState extends State<SettingsPage>
         InkWell(
           customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10.0),
-                  topRight: Radius.circular(10.0))),
+                  topLeft: Radius.circular(8.0),
+                  topRight: Radius.circular(8.0))),
           child: ListTile(
             leading: ShaderMask(
               shaderCallback: (bounds) => RadialGradient(
@@ -309,8 +309,8 @@ class _SettingsPageState extends State<SettingsPage>
         InkWell(
           customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10.0),
-                  bottomRight: Radius.circular(10.0))),
+                  bottomLeft: Radius.circular(8.0),
+                  bottomRight: Radius.circular(8.0))),
           child: ListTile(
             leading: Icon(MdiIcons.cellphoneText, color: Settings.majorColor),
             title: Text('Drawer 사용'),
@@ -338,8 +338,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0))),
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
                 MdiIcons.tagHeartOutline,
@@ -430,8 +430,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0))),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
                 MdiIcons.searchWeb,
@@ -463,8 +463,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0))),
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(Icons.receipt, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('logrecord')),
@@ -584,8 +584,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0))),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(Icons.developer_mode, color: Colors.orange),
               title: Text(Translations.of(context).trans('devtool')),
@@ -618,8 +618,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0))),
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               leading:
                   Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
@@ -693,8 +693,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0))),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('syncmanual')),
@@ -773,8 +773,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0))),
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
               title: Text('VPN'),
@@ -817,8 +817,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0))),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Image.asset(
                 'assets/images/logo.png',
@@ -851,8 +851,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0))),
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
                 MdiIcons.downloadLock,
@@ -878,7 +878,7 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             //   customBorder: RoundedRectangleBorder(
             //     borderRadius: BorderRadius.all(
-            //       Radius.circular(10.0),
+            //       Radius.circular(8.0),
             //     ),
             //   ),
             child: ListTile(
@@ -954,11 +954,11 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0))),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
             //   customBorder: RoundedRectangleBorder(
             //     borderRadius: BorderRadius.all(
-            //       Radius.circular(10.0),
+            //       Radius.circular(8.0),
             //     ),
             //   ),
             child: ListTile(
@@ -1030,8 +1030,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0))),
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(MdiIcons.import, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('importingbookmark')),
@@ -1212,8 +1212,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(10.0),
-                  bottomRight: Radius.circular(10.0)),
+                  bottomLeft: Radius.circular(8.0),
+                  bottomRight: Radius.circular(8.0)),
             ),
             child: ListTile(
               leading: Icon(
@@ -1333,7 +1333,7 @@ class _SettingsPageState extends State<SettingsPage>
         [
           InkWell(
             customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             child: ListTile(
               leading: CachedNetworkImage(
@@ -1484,7 +1484,7 @@ class _SettingsPageState extends State<SettingsPage>
         [
           InkWell(
             customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
                 MdiIcons.progressClock,
@@ -1517,10 +1517,10 @@ class _SettingsPageState extends State<SettingsPage>
         [
           InkWell(
             customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
+              borderRadius: BorderRadius.circular(8.0),
             ),
             child: ListTile(
-              // borderRadius: BorderRadius.circular(10.0),
+              // borderRadius: BorderRadius.circular(8.0),
               leading: Icon(
                 Icons.update,
                 color: Settings.majorColor,
@@ -1567,8 +1567,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10.0),
-                    topRight: Radius.circular(10.0))),
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
                 MdiIcons.discord,
@@ -1653,8 +1653,8 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10.0),
-                    bottomRight: Radius.circular(10.0))),
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
                 MdiIcons.library,
@@ -1686,7 +1686,7 @@ class _SettingsPageState extends State<SettingsPage>
             // Card(
             //   elevation: 5,
             //   shape: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.circular(10.0),
+            //     borderRadius: BorderRadius.circular(8.0),
             //   ),
             //   child:
             InkWell(
