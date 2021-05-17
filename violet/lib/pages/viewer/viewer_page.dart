@@ -23,6 +23,7 @@ import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
+import 'package:violet/pages/viewer/view_record_panel.dart';
 import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
@@ -259,7 +260,28 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       fontSize: 20,
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: false,
+                      builder: (context) => ViewRecordPanel(
+                        articleId: _pageInfo.id,
+                      ),
+                    ).then((value) {
+                      if (value != null) {
+                        if (!Settings.isHorizontal) {
+                          itemScrollController.jumpTo(
+                              index: value, alignment: 0.12);
+                        } else {
+                          _pageController.jumpToPage(value - 1);
+                        }
+                        currentPage = value;
+                        setState(() {
+                          _prevPage = value;
+                        });
+                      }
+                    });
+                  },
                 ),
               ),
               Row(

@@ -62,7 +62,7 @@ class RecordViewPage extends StatelessWidget {
                   rr.add(element);
                   overap.add(element.articleId());
                 });
-                return rr.take(100).toList();
+                return rr;
               })),
       builder: (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
         if (!snapshot.hasData) return Container();
