@@ -17,6 +17,7 @@ class CommonUserDatabase extends DataBaseManager {
     if (_instance == null) {
       var dir = await getApplicationDocumentsDirectory();
       _instance = DataBaseManager.create('${dir.path}/user.db');
+      await _instance.open();
     }
     return _instance;
   }
