@@ -138,7 +138,7 @@
     "inverse": "선택 반전",
 
     "readrecord": "열람 기록",
-    "readrecorddesc": "한 번 이상 열람했던 작품/작가들이 기록됩니다.",
+    "readrecorddesc": "한 번 이상 열람했던 작품들이 기록됩니다.",
     "unclassified": "미분류",
     "unclassifieddesc": "분류가 없는 북마크",
     "cannotmodifydefaultgroup": "기본 그룹은 수정할 수 없습니다.",

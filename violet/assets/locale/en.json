@@ -140,7 +140,7 @@
     "inverse": "Invert Selections",
 
     "readrecord": "Read Record",
-    "readrecorddesc": "Viewed more than once articles are recorded.",
+    "readrecorddesc": "Viewed articles are recorded.",
     "unclassified": "Unclassified",
     "unclassifieddesc": "Unclassified bookmarks",
     "cannotmodifydefaultgroup": "The default group cannot be modified.",
