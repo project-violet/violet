@@ -19,6 +19,8 @@ class ViewerSettingPanel extends StatefulWidget {
 }
 
 class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
+  double _timerValue = 1;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,6 +29,47 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         shrinkWrap: true,
         children: [
+          ListTile(
+            dense: true,
+            title: Row(
+              children: [
+                Text(Translations.instance.trans('timersetting') +
+                    ' (' +
+                    Settings.timerTick.toStringAsFixed(1) +
+                    Translations.instance.trans('second') +
+                    ')'),
+                Expanded(
+                  child: Align(
+                    child: SliderTheme(
+                      data: SliderThemeData(
+                        activeTrackColor: Colors.blue,
+                        inactiveTrackColor: Color(0xffd0d2d3),
+                        trackHeight: 3,
+                        thumbShape:
+                            RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                      ),
+                      child: Slider(
+                        value: Settings.timerTick,
+                        max: 20,
+                        min: 1,
+                        divisions: (20 - 1) * 2,
+                        inactiveColor: Settings.majorColor.withOpacity(0.7),
+                        activeColor: Settings.majorColor,
+                        onChangeEnd: (value) async {
+                          await Settings.setTimerTick(value);
+                        },
+                        onChanged: (value) {
+                          setState(() {
+                            Settings.timerTick = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           _checkBox(
             value: Settings.isHorizontal,
             title: Translations.of(context).trans('toggleviewerstyle'),

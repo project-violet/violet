@@ -45,6 +45,8 @@ class Settings {
   static bool padding;
   static bool disableOverlayButton;
   static bool disableFullScreen;
+  static bool enableTimer;
+  static double timerTick;
 
   // Download Options
   static bool useInnerStorage;
@@ -226,6 +228,21 @@ class Settings {
       disableFullScreen = false;
       await (await SharedPreferences.getInstance())
           .setBool('disablefullscreen', disableFullScreen);
+    }
+
+    enableTimer =
+        (await SharedPreferences.getInstance()).getBool('enabletimer');
+    if (enableTimer == null) {
+      enableTimer = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('enabletimer', enableTimer);
+    }
+
+    timerTick = (await SharedPreferences.getInstance()).getDouble('timertick');
+    if (timerTick == null) {
+      timerTick = 1.0;
+      await (await SharedPreferences.getInstance())
+          .setDouble('timertick', timerTick);
     }
 
     useInnerStorage =
@@ -454,6 +471,18 @@ class Settings {
     disableFullScreen = nn;
     await (await SharedPreferences.getInstance())
         .setBool('disablefullscreen', disableFullScreen);
+  }
+
+  static Future<void> setEnableTimer(bool nn) async {
+    enableTimer = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('enabletimer', enableTimer);
+  }
+
+  static Future<void> setTimerTick(double nn) async {
+    timerTick = nn;
+    await (await SharedPreferences.getInstance())
+        .setDouble('timertick', timerTick);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {
