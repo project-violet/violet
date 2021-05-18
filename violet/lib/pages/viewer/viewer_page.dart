@@ -90,6 +90,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
     itemPositionsListener.itemPositions.addListener(() {
       if (_sliderOnChange) return;
+
       var v = itemPositionsListener.itemPositions.value.toList();
       var selected;
 
@@ -102,6 +103,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           break;
         }
       }
+
+      _getLatestHeight();
 
       if (selected != null && _prevPage != selected + 1) {
         setState(() {
@@ -1103,6 +1106,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   List<Map<String, String>> _headerCache;
   List<String> _urlCache;
+  int _latestIndex = 0;
+  double _latestAlign = 0;
   _providerImageItem(index) {
     if (_headerCache == null) {
       _headerCache =
@@ -1185,6 +1190,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                         if (sizeRender.height != 300) {
                           _height[index] = width / sizeRender.aspectRatio;
                         }
+
+                        if (_latestIndex >= index)
+                          _patchHeightForDynamicLoadedImage();
                       } catch (e) {}
                     });
                   }
@@ -1209,6 +1217,31 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         );
       },
     );
+  }
+
+  _getLatestHeight() {
+    var v = itemPositionsListener.itemPositions.value.toList();
+    var selected;
+    var selectede;
+
+    v.sort((x, y) => y.itemLeadingEdge.compareTo(x.itemLeadingEdge));
+
+    for (var e in v) {
+      if (e.itemLeadingEdge >= 0.0) {
+        selected = e.index;
+        selectede = e;
+      } else {
+        break;
+      }
+    }
+
+    _latestIndex = selected;
+    _latestAlign = selectede.itemLeadingEdge;
+  }
+
+  _patchHeightForDynamicLoadedImage() {
+    if (_sliderOnChange) return;
+    itemScrollController.jumpTo(index: _latestIndex, alignment: _latestAlign);
   }
 
   _bottomAppBar() {
