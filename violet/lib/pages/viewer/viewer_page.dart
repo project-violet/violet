@@ -72,6 +72,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   int _mpPoints = 0;
   AnimationController _animationController;
   Animation<Matrix4> _animation;
+  Timer _nextPageTimer;
 
   @override
   void initState() {
@@ -114,6 +115,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         resumeCallBack: () async => setState(() {
               _mpPoints = 0;
             })));
+
+    startTimer();
   }
 
   @override
@@ -136,6 +139,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   @override
   void dispose() {
     if (_clearTimer != null) _clearTimer.cancel();
+    if (_nextPageTimer != null) _nextPageTimer.cancel();
     PaintingBinding.instance.imageCache.clear();
     if (_pageInfo.useWeb)
       _pageInfo.uris.forEach((element) async {
@@ -149,6 +153,61 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     imageCache.clear();
     _animationController.dispose();
     super.dispose();
+  }
+
+  void startTimer() {
+    if (_nextPageTimer != null) {
+      _nextPageTimer.cancel();
+      _nextPageTimer = null;
+    }
+    if (Settings.enableTimer) {
+      _nextPageTimer = Timer.periodic(
+        Duration(milliseconds: (Settings.timerTick * 1000).toInt()),
+        nextPageTimerCallback,
+      );
+    }
+  }
+
+  void stopTimer() {
+    if (_nextPageTimer != null) {
+      _nextPageTimer.cancel();
+      _nextPageTimer = null;
+    }
+  }
+
+  Future<void> nextPageTimerCallback(timer) async {
+    var next = _prevPage + 1;
+    if (next < 1 || next > _pageInfo.uris.length) return;
+    if (!Settings.isHorizontal) {
+      if (!Settings.animation) {
+        itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
+      } else {
+        _sliderOnChange = true;
+        await itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          alignment: 0.12,
+        );
+        Future.delayed(Duration(milliseconds: 300)).then((value) {
+          _sliderOnChange = false;
+        });
+      }
+    } else {
+      if (!Settings.animation) {
+        _pageController.jumpToPage(next - 1);
+      } else {
+        _pageController.animateToPage(
+          next - 1,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
+    currentPage = next;
+    setState(() {
+      _prevPage = next;
+    });
   }
 
   void _checkLatestRead() {
@@ -260,8 +319,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       fontSize: 20,
                     ),
                   ),
-                  onTap: () {
-                    showModalBottomSheet(
+                  onTap: () async {
+                    stopTimer();
+                    await showModalBottomSheet(
                       context: context,
                       isScrollControlled: false,
                       builder: (context) => ViewRecordPanel(
@@ -281,6 +341,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                         });
                       }
                     });
+                    startTimer();
                   },
                 ),
               ),
@@ -288,9 +349,22 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
+                    icon: Icon(Settings.enableTimer
+                        ? MdiIcons.timer
+                        : MdiIcons.timerOff),
+                    color: Colors.white,
+                    onPressed: () async {
+                      setState(() {
+                        Settings.setEnableTimer(!Settings.enableTimer);
+                      });
+                      startTimer();
+                    },
+                  ),
+                  IconButton(
                     icon: Icon(MdiIcons.folderImage),
                     color: Colors.white,
                     onPressed: () async {
+                      stopTimer();
                       if (!Platform.isIOS) {
                         Navigator.of(context)
                             .push(
@@ -360,6 +434,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                           },
                         );
                       }
+                      startTimer();
                     },
                   ),
                   // IconButton(
@@ -370,6 +445,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                     icon: Icon(Icons.settings),
                     color: Colors.white,
                     onPressed: () async {
+                      stopTimer();
                       await showModalBottomSheet(
                         context: context,
                         isScrollControlled: false,
@@ -395,6 +471,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                           },
                         ),
                       );
+                      startTimer();
                       return;
                     },
                   ),
