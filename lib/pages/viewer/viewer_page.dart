@@ -511,93 +511,102 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             minScale: 1.0,
             child: Container(
               color: const Color(0xff444444),
-              child: ScrollablePositionedList.builder(
-                physics: scrollListEnable
-                    ? AlwaysScrollableScrollPhysics()
-                    : NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                itemCount: _pageInfo.uris.length,
-                itemScrollController: itemScrollController,
-                itemPositionsListener: itemPositionsListener,
-                minCacheExtent: height * 3.0,
-                itemBuilder: (context, index) {
-                  Widget image;
-                  if (!Settings.padding) {
-                    if (_pageInfo.useWeb)
-                      image = _networkImageItem(index);
-                    else if (_pageInfo.useFileSystem)
-                      image = _storageImageItem(index);
-                    else if (_pageInfo.useProvider)
-                      image = _providerImageItem(index);
-                  } else {
-                    if (_pageInfo.useWeb)
-                      image = Padding(
-                        child: _networkImageItem(index),
-                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
-                      );
-                    else if (_pageInfo.useFileSystem)
-                      image = Padding(
-                        child: _storageImageItem(index),
-                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
-                      );
-                    else if (_pageInfo.useProvider)
-                      image = Padding(
-                        child: _providerImageItem(index),
-                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
-                      );
-                  }
+              child: NotificationListener(
+                child: ScrollablePositionedList.builder(
+                  physics: scrollListEnable
+                      ? AlwaysScrollableScrollPhysics()
+                      : NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  itemCount: _pageInfo.uris.length,
+                  itemScrollController: itemScrollController,
+                  itemPositionsListener: itemPositionsListener,
+                  minCacheExtent: height * 3.0,
+                  itemBuilder: (context, index) {
+                    Widget image;
+                    if (!Settings.padding) {
+                      if (_pageInfo.useWeb)
+                        image = _networkImageItem(index);
+                      else if (_pageInfo.useFileSystem)
+                        image = _storageImageItem(index);
+                      else if (_pageInfo.useProvider)
+                        image = _providerImageItem(index);
+                    } else {
+                      if (_pageInfo.useWeb)
+                        image = Padding(
+                          child: _networkImageItem(index),
+                          padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        );
+                      else if (_pageInfo.useFileSystem)
+                        image = Padding(
+                          child: _storageImageItem(index),
+                          padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        );
+                      else if (_pageInfo.useProvider)
+                        image = Padding(
+                          child: _providerImageItem(index),
+                          padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        );
+                    }
 
-                  if (image == null) throw new Exception('Dead Reaching');
+                    if (image == null) throw new Exception('Dead Reaching');
 
-                  // return RawGestureDetector(
-                  //   gestures: {
-                  //     MultiTouchGestureRecognizer:
-                  //         GestureRecognizerFactoryWithHandlers<
-                  //             MultiTouchGestureRecognizer>(
-                  //       () => MultiTouchGestureRecognizer(),
-                  //       (MultiTouchGestureRecognizer instance) {
-                  //         instance.minNumberOfTouches = 2;
-                  //         instance.onMultiTap = (correctNumberOfTouches) {
-                  //           if (correctNumberOfTouches) {
-                  //             if (scrollListEnable) {
-                  //               setState(() {
-                  //                 scrollListEnable = false;
-                  //               });
-                  //             }
-                  //           } else {
-                  //             setState(() {
-                  //               scrollListEnable = true;
-                  //             });
-                  //           }
-                  //         };
-                  //       },
-                  //     ),
-                  //   },
-                  //   child: image,
-                  // );
+                    // return RawGestureDetector(
+                    //   gestures: {
+                    //     MultiTouchGestureRecognizer:
+                    //         GestureRecognizerFactoryWithHandlers<
+                    //             MultiTouchGestureRecognizer>(
+                    //       () => MultiTouchGestureRecognizer(),
+                    //       (MultiTouchGestureRecognizer instance) {
+                    //         instance.minNumberOfTouches = 2;
+                    //         instance.onMultiTap = (correctNumberOfTouches) {
+                    //           if (correctNumberOfTouches) {
+                    //             if (scrollListEnable) {
+                    //               setState(() {
+                    //                 scrollListEnable = false;
+                    //               });
+                    //             }
+                    //           } else {
+                    //             setState(() {
+                    //               scrollListEnable = true;
+                    //             });
+                    //           }
+                    //         };
+                    //       },
+                    //     ),
+                    //   },
+                    //   child: image,
+                    // );
 
-                  return Listener(
-                      onPointerDown: (event) {
-                        _mpPoints++;
-                        if (_mpPoints >= 2) {
-                          if (scrollListEnable) {
+                    return Listener(
+                        onPointerDown: (event) {
+                          _mpPoints++;
+                          if (_mpPoints >= 2) {
+                            if (scrollListEnable) {
+                              setState(() {
+                                scrollListEnable = false;
+                              });
+                            }
+                          }
+                        },
+                        onPointerUp: (event) {
+                          _mpPoints--;
+                          if (_mpPoints < 1) {
                             setState(() {
-                              scrollListEnable = false;
+                              scrollListEnable = true;
                             });
                           }
-                        }
-                      },
-                      onPointerUp: (event) {
-                        _mpPoints--;
-                        if (_mpPoints < 1) {
-                          setState(() {
-                            scrollListEnable = true;
-                          });
-                        }
-                      },
-                      // onPointerMove: (event) {
-                      // },
-                      child: image);
+                        },
+                        // onPointerMove: (event) {
+                        // },
+                        child: image);
+                  },
+                ),
+                onNotification: (t) {
+                  if (t is ScrollStartNotification) {
+                    _onScroll = true;
+                  } else if (t is ScrollEndNotification) {
+                    _onScroll = false;
+                  }
                 },
               ),
             ),
@@ -1108,6 +1117,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   List<String> _urlCache;
   int _latestIndex = 0;
   double _latestAlign = 0;
+  bool _onScroll = false;
   _providerImageItem(index) {
     if (_headerCache == null) {
       _headerCache =
@@ -1191,7 +1201,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                           _height[index] = width / sizeRender.aspectRatio;
                         }
 
-                        if (_latestIndex >= index)
+                        if (_latestIndex >= index && !_onScroll)
                           _patchHeightForDynamicLoadedImage();
                       } catch (e) {}
                     });
