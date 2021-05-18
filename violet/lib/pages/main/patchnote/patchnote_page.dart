@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 5, 18),
+    version: '1.8.6 Patch <== Latest',
+    contents: [
+      'add viewer timer',
+      'redesign info page (faq, manual, etc...)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 17),
-    version: '1.8.5 Patch <== Latest',
+    version: '1.8.5 Patch',
     contents: [
       'add series to artists collection (series finder)',
       'add double tap zoom on viewer',
