@@ -40,6 +40,7 @@ import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/main/card/update_log_card.dart';
 import 'package:violet/pages/main/card/views_card.dart';
 import 'package:violet/pages/main/faq/faq_page.dart';
+import 'package:violet/pages/main/info/info_page.dart';
 import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
@@ -626,11 +627,32 @@ class _MainPage2State extends State<MainPage2>
             color: Settings.majorColor.withAlpha(220),
             textColor: Colors.white,
             onPressed: () {
-              Navigator.of(context)
-                  .push(CupertinoPageRoute(builder: (_) => FAQPageKorean()));
+              if (!Platform.isIOS) {
+                Navigator.of(context).push(PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    var begin = Offset(0.0, 1.0);
+                    var end = Offset.zero;
+                    var curve = Curves.ease;
+
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (_, __, ___) => InfoPage(),
+                ));
+              } else {
+                Navigator.of(context)
+                    .push(CupertinoPageRoute(builder: (_) => InfoPage()));
+              }
             },
             // child: Text('자주 묻는 질문들'),
-            child: Icon(Icons.question_answer),
+            child: Icon(MdiIcons.heart),
             elevation: 3.0,
             minWidth: 30,
             padding: EdgeInsets.all(16),
