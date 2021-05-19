@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 5, 19),
+    version: '1.8.7 Patch <== Latest',
+    contents: [
+      'fix bug in which the visible area images are pushed down due to the top postloaded image in the vertical scroll viewer',
+      'fix bug in which the page was not displayed properly when the viewer page was inactive, and the time of the inactive state was added to violet-server view_close api',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 18),
-    version: '1.8.6 Patch <== Latest',
+    version: '1.8.6 Patch',
     contents: [
       'add viewer timer',
       'redesign info page (faq, manual, etc...)',
