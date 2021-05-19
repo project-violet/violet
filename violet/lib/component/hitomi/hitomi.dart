@@ -407,10 +407,11 @@ class HitomiManager {
         if (prefix == '') return '';
         if (postfix == '') postfix = ss[1].replaceAll('_', ' ');
 
-        if (negative)
-          where += "$prefix NOT LIKE '%$postfix%'";
-        else
-          where += "$prefix LIKE '%$postfix%'";
+        if (negative) where += "(";
+
+        where += "$prefix LIKE '%$postfix%'";
+
+        if (negative) where += ") IS NOT 1";
 
         if (prefix == 'Uploader') where += ' COLLATE NOCASE';
       } else if ('=<>()'.contains(split[i])) {
