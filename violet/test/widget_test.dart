@@ -7,19 +7,17 @@
 
 // import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:violet/component/download/gelbooru.dart';
 import 'package:violet/component/download/hitomi.dart';
-import 'package:violet/component/download/instagram.dart';
 import 'package:http/http.dart' as http;
 
 // import 'package:violet/main.dart';
-import 'package:violet/component/download/pixiv.dart';
-import 'package:violet/component/download/twitter.dart';
+// import 'package:violet/component/download/twitter.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/server/community/session.dart';
 import 'package:violet/server/violet.dart';
 
 void main() {
@@ -134,6 +132,12 @@ void main() {
   //   // });
   // });
 
+  test("Violet Server", () async {
+    // print(await VioletCommunitySession.checkUserAppId('asdf'));
+    print(HitomiManager.translate2query(
+        'female:loli (lang:korean) -group:zenmmai_courasi -artist:loli'));
+  });
+
   test("EHentai Test", () async {
     // var what = 'ahegao';
 
@@ -158,7 +162,7 @@ void main() {
     //   print(element.title);
     // });
 
-    var page = 0;
+    /*var page = 0;
     var search = Uri.encodeComponent('ahegao');
     var url =
         'https://e-hentai.org/?inline_set=dm_e&page=$page&f_doujinshi=1&f_manga=1&f_artistcg=1&f_gamecg=1&f_western=1&f_non-h=1&f_imageset=1&f_cosplay=1&f_asianporn=1&f_misc=1&f_search=$search&page=0&f_apply=Apply+Filter&advsearch=1&f_sname=on&f_stags=on&f_sh=on&f_srdd=2';
@@ -214,7 +218,15 @@ void main() {
 
     x.forEach((element) {
       print(element);
-    });
+    });*/
+
+    // print(HitomiManager.translate2query(
+    //     'artist:sody (lang:korean or lang:n/a) ' +
+    //         ['female:loli', 'artist:michiking']
+    //             .where((e) => e.trim() != '')
+    //             .map((e) => '-$e')
+    //             .join(' ')
+    //             .trim()));
 
     // var x = result.map((element) {
     //   var tag = List<String>();

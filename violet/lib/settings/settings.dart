@@ -140,14 +140,19 @@ class Settings {
         (await SharedPreferences.getInstance()).getBool('searchnetwork');
 
     if (routingrule == null) {
-      routingrule = 'Hitomi|EHentai|ExHentai|Hiyobi|NHentai';
+      routingrule = 'Hitomi|EHentai|ExHentai|NHentai';
 
       await (await SharedPreferences.getInstance())
           .setString('routingrule', routingrule);
     }
     routingRule = routingrule.split('|');
+    if (routingRule.contains('Hiyobi')) {
+      routingRule.removeWhere((element) => element == 'Hiyobi');
+      await (await SharedPreferences.getInstance())
+          .setString('routingrule', routingRule.join('|'));
+    }
     if (searchrule == null) {
-      searchrule = 'Hitomi|EHentai|ExHentai|Hiyobi|NHentai';
+      searchrule = 'Hitomi|EHentai|ExHentai|NHentai';
 
       await (await SharedPreferences.getInstance())
           .setString('searchrule', searchrule);

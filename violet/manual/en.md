@@ -1,7 +1,7 @@
 # Violet Manual [WIP]
 
 The `Violet` application is a program designed to make it easy to access comic providing websites 
-such as `E-Hentai`, `Ex-Hentai`, `Hitomi.la`, `Hiyobi.me` and `nhentai`.
+such as `E-Hentai`, `Ex-Hentai`, `Hitomi.la` and `nhentai`.
 
 In this manual, we have tried to include all the descriptions of this project and app in as much detail as possible.
 There is a lot of information that users may not need, so find only what you need.

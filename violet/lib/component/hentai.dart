@@ -12,8 +12,6 @@ import 'package:violet/component/eh/eh_provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
-import 'package:violet/component/hiyobi/hiyobi.dart';
-import 'package:violet/component/hiyobi/hiyobi_provider.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/component/nhentai/nhentai.dart';
 import 'package:violet/database/database.dart';
@@ -157,8 +155,6 @@ class HentaiManager {
           case 'Hitomi':
             // https://hiyobi.me/search/loli|sex
             break;
-          case 'Hiyobi':
-            break;
           case 'NHentai':
             break;
         }
@@ -211,11 +207,6 @@ class HentaiManager {
             var urls = await HitomiManager.getImageList(qr.id().toString());
             if (urls.item1.length == 0 || urls.item2.length == 0) break;
             return HitomiImageProvider(urls);
-            break;
-          case 'Hiyobi':
-            var urls = await HiyobiManager.getImageList(qr.id().toString());
-            if (urls.item2.length == 0) break;
-            return HiyobiImageProvider(urls);
             break;
           case 'NHentai':
             if (lang == 'english' || lang == 'japanese' || lang == 'chinese') {
