@@ -834,7 +834,8 @@ class _Chip extends StatelessWidget {
       avatar = Icon(MdiIcons.accountGroup, size: 15.0);
 
     var fc = Transform.scale(
-        scale: 0.95,
+      scale: 0.95,
+      child: GestureDetector(
         child: RawChip(
           labelPadding: EdgeInsets.all(0.0),
           avatar: CircleAvatar(
@@ -851,60 +852,75 @@ class _Chip extends StatelessWidget {
           elevation: 6.0,
           // shadowColor: Colors.grey[60],
           padding: EdgeInsets.all(6.0),
-          onPressed: () async {
-            if ((group == 'groups' ||
-                    group == 'artists' ||
-                    group == 'uploader' ||
-                    group == 'series' ||
-                    group == 'character') &&
-                name.toLowerCase() != 'n/a') {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  // opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  // transitionsBuilder: (BuildContext context,
-                  //     Animation<double> animation,
-                  //     Animation<double> secondaryAnimation,
-                  //     Widget wi) {
-                  //   // return wi;
-                  //   return new FadeTransition(opacity: animation, child: wi);
-                  // },
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => ArtistInfoPage(
-                    isGroup: group == 'groups',
-                    isUploader: group == 'uploader',
-                    isCharacter: group == 'character',
-                    isSeries: group == 'series',
-                    artist: name,
-                  ),
-                ));
-              } else {
-                Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (_) => ArtistInfoPage(
-                    isGroup: group == 'groups',
-                    isUploader: group == 'uploader',
-                    isCharacter: group == 'character',
-                    isSeries: group == 'series',
-                    artist: name,
-                  ),
-                ));
-              }
+        ),
+        onLongPress: () async {
+          if (!Settings.excludeTags
+              .contains('$group:${name.replaceAll(' ', '_')}')) {
+            var yn = await Dialogs.yesnoDialog(context, '이 태그를 제외태그에 추가할까요?');
+            if (yn != null && yn) {
+              Settings.excludeTags.add('$group:${name.replaceAll(' ', '_')}');
+              await Settings.setExcludeTags(Settings.excludeTags.join(' '));
+              await Dialogs.okDialog(context, '제외태그에 성공적으로 추가했습니다!');
             }
-          },
-        ));
+          } else {
+            await Dialogs.okDialog(context, '이미 제외태그에 추가된 항목입니다!');
+          }
+        },
+        onTap: () async {
+          if ((group == 'groups' ||
+                  group == 'artists' ||
+                  group == 'uploader' ||
+                  group == 'series' ||
+                  group == 'character') &&
+              name.toLowerCase() != 'n/a') {
+            if (!Platform.isIOS) {
+              Navigator.of(context).push(PageRouteBuilder(
+                // opaque: false,
+                transitionDuration: Duration(milliseconds: 500),
+                // transitionsBuilder: (BuildContext context,
+                //     Animation<double> animation,
+                //     Animation<double> secondaryAnimation,
+                //     Widget wi) {
+                //   // return wi;
+                //   return new FadeTransition(opacity: animation, child: wi);
+                // },
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  var begin = Offset(0.0, 1.0);
+                  var end = Offset.zero;
+                  var curve = Curves.ease;
+
+                  var tween = Tween(begin: begin, end: end)
+                      .chain(CurveTween(curve: curve));
+
+                  return SlideTransition(
+                    position: animation.drive(tween),
+                    child: child,
+                  );
+                },
+                pageBuilder: (_, __, ___) => ArtistInfoPage(
+                  isGroup: group == 'groups',
+                  isUploader: group == 'uploader',
+                  isCharacter: group == 'character',
+                  isSeries: group == 'series',
+                  artist: name,
+                ),
+              ));
+            } else {
+              Navigator.of(context).push(CupertinoPageRoute(
+                builder: (_) => ArtistInfoPage(
+                  isGroup: group == 'groups',
+                  isUploader: group == 'uploader',
+                  isCharacter: group == 'character',
+                  isSeries: group == 'series',
+                  artist: name,
+                ),
+              ));
+            }
+          }
+        },
+      ),
+    );
     return fc;
   }
 }
