@@ -201,11 +201,9 @@ class ArticleInfoPage extends StatelessWidget {
       ),
     ).then((value) async {
       await (await User.getInstance())
-          .updateUserLog(data.queryResult.id(), value as int);
+          .updateUserLog(data.queryResult.id(), value[0] as int);
       if (Settings.useVioletServer) {
-        var endsTime = DateTime.now();
-        await VioletServer.viewClose(
-            data.queryResult.id(), endsTime.difference(startsTime).inSeconds);
+        await VioletServer.viewClose(data.queryResult.id(), value[1] as int);
       }
       SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     });
