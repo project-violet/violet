@@ -3,6 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:violet/component/image_provider.dart';
+import 'package:violet/database/query.dart';
 
 class ViewerPageProvider {
   final bool useFileSystem;
@@ -13,6 +14,7 @@ class ViewerPageProvider {
   final VioletImageProvider provider;
   final int id;
   final String title;
+  final List<QueryResult> usableTabList;
 
   ViewerPageProvider({
     this.useFileSystem = false,
@@ -23,5 +25,6 @@ class ViewerPageProvider {
     @required this.title,
     this.provider,
     this.headers,
+    this.usableTabList,
   });
 }

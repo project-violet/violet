@@ -6,6 +6,7 @@ import 'package:html_unescape/html_unescape_small.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 
+typedef void SelectCallback();
 typedef void BookmarkCallback(int article);
 typedef void BookmarkCheckCallback(int article, bool check);
 
@@ -20,6 +21,9 @@ class ArticleListItem {
   final BookmarkCheckCallback bookmarkCheckCallback;
   final int viewed;
   final bool disableFilter;
+  final List<QueryResult> usableTabList;
+  final bool selectMode;
+  final SelectCallback selectCallback;
   // final bool isCheckMode;
   // bool isChecked;
 
@@ -34,6 +38,9 @@ class ArticleListItem {
     @required this.bookmarkCheckCallback,
     @required this.viewed,
     @required this.disableFilter,
+    this.usableTabList,
+    this.selectMode = false,
+    this.selectCallback,
     // @required this.isChecked,
     // @required this.isCheckMode,
   });
@@ -49,6 +56,9 @@ class ArticleListItem {
     BookmarkCheckCallback bookmarkCheckCallback,
     int viewed,
     bool disableFilter,
+    List<QueryResult> usableTabList,
+    bool selectMode = false,
+    SelectCallback selectCallback,
     // bool isCheckMode = false,
     // bool isChecked = false,
   }) {
@@ -63,6 +73,9 @@ class ArticleListItem {
       bookmarkCheckCallback: bookmarkCheckCallback,
       viewed: viewed,
       disableFilter: disableFilter,
+      usableTabList: usableTabList,
+      selectMode: selectMode,
+      selectCallback: selectCallback,
       // isCheckMode: isCheckMode,
       // isChecked: isChecked,
     );

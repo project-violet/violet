@@ -195,16 +195,17 @@ class ArticleInfoPage extends StatelessWidget {
                 headers: data.headers,
                 id: data.queryResult.id(),
                 title: data.queryResult.title(),
+                usableTabList: data.usableTabList,
               ),
               child: ViewerPage());
         },
       ),
     ).then((value) async {
-      await (await User.getInstance())
-          .updateUserLog(data.queryResult.id(), value[0] as int);
-      if (Settings.useVioletServer) {
-        await VioletServer.viewClose(data.queryResult.id(), value[1] as int);
-      }
+      // await (await User.getInstance())
+      //     .updateUserLog(data.queryResult.id(), value[0] as int);
+      // if (Settings.useVioletServer) {
+      //   await VioletServer.viewClose(data.queryResult.id(), value[1] as int);
+      // }
       SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     });
   }

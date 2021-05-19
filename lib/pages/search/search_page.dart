@@ -509,6 +509,7 @@ class _SearchPageState extends State<SearchPage>
                           thumbnailTag: 'thumbnail' +
                               filtered[index].id().toString() +
                               datetime.toString(),
+                          usableTabList: filtered,
                         ),
                         child: ArticleListItemVerySimpleWidget(),
                       ),
@@ -599,6 +600,7 @@ class _SearchPageState extends State<SearchPage>
                       thumbnailTag: 'thumbnail' +
                           filtered[index].id().toString() +
                           datetime.toString(),
+                      usableTabList: filtered,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
@@ -622,6 +624,7 @@ class _SearchPageState extends State<SearchPage>
                       thumbnailTag: 'thumbnail' +
                           filtered[index].id().toString() +
                           datetime.toString(),
+                      usableTabList: filtered,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),

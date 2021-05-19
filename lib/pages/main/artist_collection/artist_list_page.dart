@@ -231,6 +231,7 @@ class ArtistListPage extends StatelessWidget {
                     width: (windowWidth - 16 - 4.0 - 16.0) / 3,
                     thumbnailTag: Uuid().v4(),
                     disableFilter: true,
+                    usableTabList: qq,
                   ),
                   child: ArticleListItemVerySimpleWidget(),
                 ),

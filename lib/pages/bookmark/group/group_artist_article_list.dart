@@ -112,6 +112,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                                         showDetail: false,
                                         width: (windowWidth - 4.0 - 52) / 3,
                                         thumbnailTag: Uuid().v4(),
+                                        usableTabList: snapshot.data,
                                       ),
                                       child: ArticleListItemVerySimpleWidget(),
                                     )
