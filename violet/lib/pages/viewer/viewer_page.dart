@@ -16,44 +16,30 @@ import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tuple/tuple.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
+import 'package:violet/pages/viewer/tab_panel.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/pages/viewer/view_record_panel.dart';
 import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
-int currentPage = 0;
-DateTime _startsTime;
-int _inactivateSeconds = 0;
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
 class ViewerPage extends StatelessWidget {
-  ViewerPage() {
-    currentPage = 0;
-    _startsTime = DateTime.now();
-    _inactivateSeconds = 0;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pop(context, [
-          currentPage,
-          DateTime.now().difference(_startsTime).inSeconds - _inactivateSeconds
-        ]);
-        return new Future(() => false);
-      },
-      child: _VerticalImageViewer(),
-    );
+    return _VerticalImageViewer();
   }
 }
 
@@ -84,6 +70,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   Timer _nextPageTimer;
   LifecycleEventHandler _lifecycleEventHandler;
   DateTime _inactivateTime;
+  int currentPage = 0;
+  DateTime _startsTime;
+  int _inactivateSeconds = 0;
 
   @override
   void initState() {
@@ -142,13 +131,15 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
     WidgetsBinding.instance.addObserver(_lifecycleEventHandler);
 
+    _startsTime = DateTime.now();
+
     startTimer();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _pageInfo = Provider.of<ViewerPageProvider>(context);
+    if (_pageInfo == null) _pageInfo = Provider.of<ViewerPageProvider>(context);
     volumeKeyChannel.receiveBroadcastStream().listen((event) {
       if (event as String == 'down') {
         _rightButtonEvent();
@@ -180,6 +171,16 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     _animationController.dispose();
     WidgetsBinding.instance.removeObserver(_lifecycleEventHandler);
     super.dispose();
+  }
+
+  Future<void> _savePageRead() async {
+    await (await User.getInstance()).updateUserLog(_pageInfo.id, currentPage);
+    if (Settings.useVioletServer) {
+      await VioletServer.viewClose(
+          _pageInfo.id,
+          DateTime.now().difference(_startsTime).inSeconds -
+              _inactivateSeconds);
+    }
   }
 
   void startTimer() {
@@ -237,7 +238,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     });
   }
 
-  void _checkLatestRead() {
+  void _checkLatestRead([bool moveAnywhere = false]) {
     User.getInstance().then((value) => value.getUserLog().then((value) async {
           var x = value.where((e) => e.articleId() == _pageInfo.id.toString());
           if (x.length < 2) return;
@@ -248,12 +249,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       .difference(DateTime.now())
                       .inDays <
                   7) {
-            if (await Dialogs.yesnoDialog(
-                context,
-                Translations.of(context)
-                    .trans('recordmessage')
-                    .replaceAll('%s', e.lastPage().toString()),
-                Translations.of(context).trans('record'))) {
+            if (moveAnywhere ||
+                await Dialogs.yesnoDialog(
+                    context,
+                    Translations.of(context)
+                        .trans('recordmessage')
+                        .replaceAll('%s', e.lastPage().toString()),
+                    Translations.of(context).trans('record'))) {
               if (!Settings.isHorizontal) {
                 // _scroll.jumpTo(page2Offset(e.lastPage() - 1));
                 itemScrollController.jumpTo(
@@ -278,38 +280,48 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     }
     // return Container(
     //   padding: EdgeInsets.only(top: statusBarHeight),
-    if (Settings.disableFullScreen) {
-      return Scaffold(
-        extendBodyBehindAppBar: true,
-        backgroundColor: Colors.transparent,
-        resizeToAvoidBottomInset: false,
-        // resizeToAvoidBottomPadding: false,
-        // appBar: _opacity == 1.0
-        //     ? PreferredSize(
-        //         preferredSize: const Size.fromHeight(100), child: _appBar())
-        //     : null,
-        body: Padding(
-          padding: mediaQuery.padding + mediaQuery.viewInsets,
-          child: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
-        ),
-      );
-    } else {
-      return AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: Colors.transparent,
-          systemNavigationBarColor: Colors.transparent,
-        ),
-        sized: false,
-        child: Scaffold(
-          extendBodyBehindAppBar: true,
-          backgroundColor: Colors.transparent,
-          resizeToAvoidBottomInset: false,
-          // resizeToAvoidBottomPadding: false,
-          // appBar: _opacity == 1.0 ? _appBar() : null,
-          body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
-        ),
-      );
-    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        await _savePageRead();
+        return new Future(() => true);
+      },
+      child: () {
+        if (Settings.disableFullScreen) {
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            backgroundColor: Colors.transparent,
+            resizeToAvoidBottomInset: false,
+            // resizeToAvoidBottomPadding: false,
+            // appBar: _opacity == 1.0
+            //     ? PreferredSize(
+            //         preferredSize: const Size.fromHeight(100), child: _appBar())
+            //     : null,
+            body: Padding(
+              padding: mediaQuery.padding + mediaQuery.viewInsets,
+              child:
+                  Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
+            ),
+          );
+        } else {
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: Colors.transparent,
+            ),
+            sized: false,
+            child: Scaffold(
+              extendBodyBehindAppBar: true,
+              backgroundColor: Colors.transparent,
+              resizeToAvoidBottomInset: false,
+              // resizeToAvoidBottomPadding: false,
+              // appBar: _opacity == 1.0 ? _appBar() : null,
+              body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
+            ),
+          );
+        }
+      }(),
+    );
   }
 
   _appBar() {
@@ -335,46 +347,133 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 },
               ),
               Expanded(
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    _pageInfo.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
+                child: Text(
+                  _pageInfo.id.toString(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 19,
                   ),
-                  onTap: () async {
-                    stopTimer();
-                    await showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: false,
-                      builder: (context) => ViewRecordPanel(
-                        articleId: _pageInfo.id,
-                      ),
-                    ).then((value) {
-                      if (value != null) {
-                        if (!Settings.isHorizontal) {
-                          itemScrollController.jumpTo(
-                              index: value, alignment: 0.12);
-                        } else {
-                          _pageController.jumpToPage(value - 1);
-                        }
-                        currentPage = value;
-                        setState(() {
-                          _prevPage = value;
-                        });
-                      }
-                    });
-                    startTimer();
-                  },
+                  // onTap: () async {
+                  //   stopTimer();
+                  //   await showModalBottomSheet(
+                  //     context: context,
+                  //     isScrollControlled: false,
+                  //     builder: (context) => ViewRecordPanel(
+                  //       articleId: _pageInfo.id,
+                  //     ),
+                  //   ).then((value) {
+                  //     if (value != null) {
+                  //       if (!Settings.isHorizontal) {
+                  //         itemScrollController.jumpTo(
+                  //             index: value, alignment: 0.12);
+                  //       } else {
+                  //         _pageController.jumpToPage(value - 1);
+                  //       }
+                  //       currentPage = value;
+                  //       setState(() {
+                  //         _prevPage = value;
+                  //       });
+                  //     }
+                  //   });
+                  //   startTimer();
+                  // },
                 ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  IconButton(
+                    icon: Icon(MdiIcons.tab),
+                    color: Colors.white,
+                    onPressed: () async {
+                      stopTimer();
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: false,
+                        builder: (context) => TabPanel(
+                          articleId: _pageInfo.id,
+                          usableTabList: _pageInfo.usableTabList,
+                        ),
+                      ).then((value) async {
+                        if (value == null) return;
+
+                        await _savePageRead();
+
+                        await (await User.getInstance())
+                            .insertUserLog(value.id(), 0);
+
+                        _inactivateSeconds = 0;
+                        _startsTime = DateTime.now();
+
+                        if (!Settings.isHorizontal) {
+                          itemScrollController.jumpTo(
+                              index: 0, alignment: 0.12);
+                        } else {
+                          _pageController.jumpToPage(0);
+                        }
+                        currentPage = 0;
+                        setState(() {
+                          _prevPage = 0;
+                        });
+
+                        _pageInfo = ViewerPageProvider(
+                          uris: List<String>.filled(
+                              ProviderManager.get(value.id()).length(), null),
+                          useProvider: true,
+                          provider: ProviderManager.get(value.id()),
+                          headers: await ProviderManager.get(value.id())
+                              .getHeader(0),
+                          id: value.id(),
+                          title: value.title(),
+                          usableTabList: _pageInfo.usableTabList,
+                        );
+
+                        _headerCache = List<Map<String, String>>.filled(
+                            _pageInfo.uris.length, null);
+                        _urlCache =
+                            List<String>.filled(_pageInfo.uris.length, null);
+                        _height = List<double>.filled(_pageInfo.uris.length, 0);
+                        _keys = List<GlobalKey>.generate(
+                            _pageInfo.uris.length, (index) => GlobalKey());
+
+                        setState(() {});
+
+                        Future.delayed(Duration(milliseconds: 300))
+                            .then((value) => _checkLatestRead(true));
+                      });
+                      startTimer();
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(MdiIcons.history),
+                    color: Colors.white,
+                    onPressed: () async {
+                      stopTimer();
+                      await showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: false,
+                        builder: (context) => ViewRecordPanel(
+                          articleId: _pageInfo.id,
+                        ),
+                      ).then((value) {
+                        if (value != null) {
+                          if (!Settings.isHorizontal) {
+                            itemScrollController.jumpTo(
+                                index: value, alignment: 0.12);
+                          } else {
+                            _pageController.jumpToPage(value - 1);
+                          }
+                          currentPage = value;
+                          setState(() {
+                            _prevPage = value;
+                          });
+                        }
+                      });
+                      startTimer();
+                    },
+                  ),
                   IconButton(
                     icon: Icon(Settings.enableTimer
                         ? MdiIcons.timer

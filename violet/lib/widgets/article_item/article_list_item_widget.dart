@@ -281,6 +281,10 @@ class _ArticleListItemVerySimpleWidgetState
               },
               onTapUp: (detail) {
                 // if (onScaling) return;
+                if (data.selectMode) {
+                  data.selectCallback();
+                  return;
+                }
                 onScaling = false;
                 if (widget.isCheckMode) {
                   widget.isChecked = !widget.isChecked;
@@ -343,6 +347,7 @@ class _ArticleListItemVerySimpleWidgetState
                             heroKey: data.thumbnailTag,
                             isBookmarked: isBookmarked,
                             controller: controller,
+                            usableTabList: data.usableTabList,
                           ),
                         );
                       },

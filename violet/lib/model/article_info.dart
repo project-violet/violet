@@ -14,6 +14,7 @@ class ArticleInfo {
   final ScrollController controller;
   final String title;
   final String artist;
+  final List<QueryResult> usableTabList;
   bool isBookmarked;
 
   ArticleInfo({
@@ -25,6 +26,7 @@ class ArticleInfo {
     @required this.controller,
     @required this.title,
     @required this.artist,
+    this.usableTabList,
   });
 
   factory ArticleInfo.fromArticleInfo({
@@ -34,6 +36,7 @@ class ArticleInfo {
     Map<String, String> headers,
     bool isBookmarked,
     ScrollController controller,
+    List<QueryResult> usableTabList,
   }) {
     var artist = (queryResult.artists() as String)
         .split('|')
@@ -58,6 +61,7 @@ class ArticleInfo {
       headers: headers,
       isBookmarked: isBookmarked,
       controller: controller,
+      usableTabList: usableTabList,
     );
   }
 

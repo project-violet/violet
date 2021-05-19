@@ -744,6 +744,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       addBottomPadding: false,
                       width: (windowWidth - 4.0) / 3,
                       thumbnailTag: Uuid().v4(),
+                      usableTabList: cc,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),

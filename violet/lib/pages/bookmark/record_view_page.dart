@@ -113,6 +113,7 @@ class RecordViewPage extends StatelessWidget {
                                         showDetail: false,
                                         width: (windowWidth - 4.0 - 48) / 3,
                                         thumbnailTag: Uuid().v4(),
+                                        usableTabList: snapshot.data,
                                       ),
                                       child: ArticleListItemVerySimpleWidget(),
                                     )
