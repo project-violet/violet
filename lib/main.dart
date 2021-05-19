@@ -17,8 +17,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/series_finder.dart';
+import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
@@ -43,6 +45,23 @@ Future<void> warmupFlare() async {
   for (final filename in _filesToWarmup) {
     await cachedActor(rootBundle, filename);
   }
+}
+
+Future<void> _sqlIntegrityTest() async {
+  var sql1 =
+      HitomiManager.translate2query('(lang:english) -group:zenmai_kourogi');
+  var query1 = await (await DataBaseManager.getInstance()).query(sql1);
+  print(sql1);
+  print(query1.length);
+  var sql2 = HitomiManager.translate2query('(lang:english)');
+  var query2 = await (await DataBaseManager.getInstance()).query(sql2);
+  print(sql2);
+  print(query2.length);
+  var sql3 =
+      HitomiManager.translate2query('group:zenmai_kourogi (lang:english)');
+  var query3 = await (await DataBaseManager.getInstance()).query(sql3);
+  print(sql3);
+  print(query3.length);
 }
 
 void main() async {
@@ -74,6 +93,8 @@ void main() async {
   await Settings.initFirst();
   await warmupFlare();
   // await VioletServer.uploadBookmark();
+
+  // await _sqlIntegrityTest();
 
   runApp(
     DynamicTheme(
