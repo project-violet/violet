@@ -25,7 +25,15 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2021, 5, 19),
-    version: '1.8.8 Patch (HotFix) <== Latest',
+    version: '1.9 Minor Update <== Latest',
+    isMinor: true,
+    contents: [
+      'add view tabs',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 5, 19),
+    version: '1.8.8 Patch (HotFix)',
     contents: [
       'add tag long press to add exclude tag',
       'fix excluded tag not working issue (bug in which the sql syntax does not recognize null)',

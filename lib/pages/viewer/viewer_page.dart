@@ -176,7 +176,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   Future<void> _savePageRead() async {
     await (await User.getInstance()).updateUserLog(_pageInfo.id, currentPage);
     if (Settings.useVioletServer) {
-      await VioletServer.viewClose(
+      VioletServer.viewClose(
           _pageInfo.id,
           DateTime.now().difference(_startsTime).inSeconds -
               _inactivateSeconds);
