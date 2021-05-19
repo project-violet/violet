@@ -25,7 +25,15 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2021, 5, 19),
-    version: '1.8.7 Patch <== Latest',
+    version: '1.8.8 Patch (HotFix) <== Latest',
+    contents: [
+      'add tag long press to add exclude tag',
+      'fix excluded tag not working issue (bug in which the sql syntax does not recognize null)',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 5, 19),
+    version: '1.8.7 Patch',
     contents: [
       'fix bug in which the visible area images are pushed down due to the top postloaded image in the vertical scroll viewer',
       'fix bug in which the page was not displayed properly when the viewer page was inactive, and the time of the inactive state was added to violet-server view_close api',
