@@ -316,7 +316,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               resizeToAvoidBottomInset: false,
               // resizeToAvoidBottomPadding: false,
               // appBar: _opacity == 1.0 ? _appBar() : null,
-              body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
+              body: Padding(
+                padding: Platform.isIOS && _disableBottom
+                    ? EdgeInsets.only(top: Variables.statusBarHeight)
+                    : EdgeInsets.zero,
+                child:
+                    Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
+              ),
             ),
           );
         }
