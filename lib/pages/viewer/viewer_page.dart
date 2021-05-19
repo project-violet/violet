@@ -31,16 +31,25 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
 int currentPage = 0;
+DateTime _startsTime;
+int _inactivateSeconds = 0;
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
 class ViewerPage extends StatelessWidget {
-  ViewerPage();
+  ViewerPage() {
+    currentPage = 0;
+    _startsTime = DateTime.now();
+    _inactivateSeconds = 0;
+  }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        Navigator.pop(context, currentPage);
+        Navigator.pop(context, [
+          currentPage,
+          DateTime.now().difference(_startsTime).inSeconds - _inactivateSeconds
+        ]);
         return new Future(() => false);
       },
       child: _VerticalImageViewer(),
@@ -73,6 +82,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   AnimationController _animationController;
   Animation<Matrix4> _animation;
   Timer _nextPageTimer;
+  LifecycleEventHandler _lifecycleEventHandler;
+  DateTime _inactivateTime;
 
   @override
   void initState() {
@@ -114,10 +125,22 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       }
     });
 
-    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
-        resumeCallBack: () async => setState(() {
-              _mpPoints = 0;
-            })));
+    _lifecycleEventHandler = LifecycleEventHandler(
+      inactiveCallBack: () async {
+        _inactivateTime = DateTime.now();
+        await (await User.getInstance())
+            .updateUserLog(_pageInfo.id, currentPage);
+      },
+      resumeCallBack: () async {
+        _inactivateSeconds +=
+            DateTime.now().difference(_inactivateTime).inSeconds;
+        setState(() {
+          _mpPoints = 0;
+        });
+      },
+    );
+
+    WidgetsBinding.instance.addObserver(_lifecycleEventHandler);
 
     startTimer();
   }
@@ -155,6 +178,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     imageCache.clearLiveImages();
     imageCache.clear();
     _animationController.dispose();
+    WidgetsBinding.instance.removeObserver(_lifecycleEventHandler);
     super.dispose();
   }
 
