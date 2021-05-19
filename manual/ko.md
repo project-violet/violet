@@ -1,6 +1,6 @@
 # Violet 메뉴얼
 
-`Violet` 어플은 `E-Hentai`와 `Ex-Hentai`, `Hitomi.la`, `Hiyobi.me`, `nhentai` 등의
+`Violet` 어플은 `E-Hentai`와 `Ex-Hentai`, `Hitomi.la`, `nhentai` 등의
 만화제공 웹사이트를 쉽게 접근할 수 있게 만들어진 프로그램입니다.
 
 이 메뉴얼에는 이 프로젝트와 앱에 관한 모든 설명들을 최대한 자세하게 담으려고 노력했습니다.
@@ -165,7 +165,7 @@ https://play.google.com/store/apps/details?id=xyz.violet.communitydownloader
 ### 7.3. 북마크 백업
 
 `설정 -> 북마크 -> 북마크 내보내기`를 통해 북마크를 내보낼 수 있습니다.
-내보낸 북마크는 `Android/data/zyx.project.violet/files/bookmark.db`에서 찾을 수 있습니다.
+내보낸 북마크는 `Android/data/xyz.project.violet/files/bookmark.db`에서 찾을 수 있습니다.
 
 이 파일을 다른 기기로 옮겨서 `북마크 불러오기`를 통해 불러올 수 있습니다.
 
