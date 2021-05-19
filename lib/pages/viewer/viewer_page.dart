@@ -341,7 +341,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               IconButton(
                 icon: new Icon(Icons.arrow_back),
                 color: Colors.white,
-                onPressed: () {
+                onPressed: () async {
+                  await _savePageRead();
                   Navigator.pop(context, currentPage);
                   return new Future(() => false);
                 },
