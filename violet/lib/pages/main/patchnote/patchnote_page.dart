@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 5, 20),
+    version: '1.9.1 Patch <== Latest',
+    contents: [
+      'add bookmark and info button to viewer-page',
+      'enhace viewer-page tab button',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 19),
-    version: '1.9 Minor Update <== Latest',
+    version: '1.9 Minor Update',
     isMinor: true,
     contents: [
       'add view tabs',
