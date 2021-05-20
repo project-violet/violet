@@ -131,7 +131,9 @@ class ArticleInfoPage extends StatelessWidget {
                 ),
               ),
               color: Settings.majorColor,
-              onPressed: () async => await _readButtonEvent(context, data),
+              onPressed: data.lockRead
+                  ? null
+                  : () async => await _readButtonEvent(context, data),
             ),
           ),
         ),
