@@ -28,6 +28,7 @@ final patches = [
     version: '1.9.1 Patch <== Latest',
     contents: [
       'add bookmark and info button to viewer-page',
+      'add move to appbar to bottom option',
       'enhace viewer-page tab button',
     ],
   ),
