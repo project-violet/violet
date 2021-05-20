@@ -25,8 +25,9 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
   Widget build(BuildContext context) {
     return Container(
       // color: Colors.black,
+      padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
       child: ListView(
-        padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         children: [
           ListTile(
@@ -122,6 +123,15 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             value: !Settings.disableOverlayButton,
             onChanged: (value) {
               Settings.setDisableOverlayButton(!Settings.disableOverlayButton);
+              widget.setStateCallback.call();
+              setState(() {});
+            },
+          ),
+          _checkBox(
+            value: Settings.moveToAppBarToBottom,
+            title: Translations.of(context).trans('movetoappbartobottom'),
+            onChanged: (value) {
+              Settings.setMoveToAppBarToBottom(!Settings.moveToAppBarToBottom);
               widget.setStateCallback.call();
               setState(() {});
             },

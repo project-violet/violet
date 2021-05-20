@@ -47,6 +47,7 @@ class Settings {
   static bool disableFullScreen;
   static bool enableTimer;
   static double timerTick;
+  static bool moveToAppBarToBottom;
 
   // Download Options
   static bool useInnerStorage;
@@ -248,6 +249,14 @@ class Settings {
       timerTick = 1.0;
       await (await SharedPreferences.getInstance())
           .setDouble('timertick', timerTick);
+    }
+
+    moveToAppBarToBottom =
+        (await SharedPreferences.getInstance()).getBool('movetoappbartobottom');
+    if (moveToAppBarToBottom == null) {
+      moveToAppBarToBottom = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('movetoappbartobottom', moveToAppBarToBottom);
     }
 
     useInnerStorage =
@@ -488,6 +497,12 @@ class Settings {
     timerTick = nn;
     await (await SharedPreferences.getInstance())
         .setDouble('timertick', timerTick);
+  }
+
+  static Future<void> setMoveToAppBarToBottom(bool nn) async {
+    moveToAppBarToBottom = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('movetoappbartobottom', nn);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {

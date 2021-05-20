@@ -240,5 +240,6 @@
   "dbrebuildmsg": "* WARNING * Be sure to use this function with a complete understanding of it. Developers are not responsible for any problems caused by user negligence. Continue?",
   "dbopt": "Optimize Database",
   "timersetting": "Timer Tick",
-  "second": "sec"
+  "second": "sec",
+  "movetoappbartobottom": "Move Buttons To Bottom"
 }
