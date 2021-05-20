@@ -44,22 +44,23 @@ class _TabPanelState extends State<TabPanel> {
     widget.usableTabList
         .forEach((element) => itemKeys[element.id()] = GlobalKey());
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) {
+    Future.value(1).then((value) {
       var row = widget.usableTabList
               .indexWhere((element) => element.id() == widget.articleId) ~/
           3;
       if (row == 0) return;
-      _scrollController.animateTo(
-          row *
-                  ((itemKeys[widget.usableTabList.first.id()]
-                              .currentContext
-                              .findRenderObject() as RenderBox)
-                          .size
-                          .height +
-                      8) -
-              100,
-          duration: _kDuration,
-          curve: _kCurve);
+      _scrollController.jumpTo(
+        row *
+                ((itemKeys[widget.usableTabList.first.id()]
+                            .currentContext
+                            .findRenderObject() as RenderBox)
+                        .size
+                        .height +
+                    8) -
+            100,
+        // duration: _kDuration,
+        // curve: _kCurve
+      );
     });
     // Scrollable.ensureVisible(itemKeys[widget.articleId].currentContext,
     //     duration: _kDuration, curve: _kCurve, alignment: 0.5));

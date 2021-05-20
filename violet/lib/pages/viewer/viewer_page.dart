@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -17,9 +18,12 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tuple/tuple.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
@@ -33,6 +37,7 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
+import 'package:violet/widgets/toast.dart';
 
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
@@ -73,6 +78,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   int currentPage = 0;
   DateTime _startsTime;
   int _inactivateSeconds = 0;
+  bool isBookmarked = false;
 
   @override
   void initState() {
@@ -80,6 +86,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
+
+    Future.delayed(Duration(milliseconds: 100)).then((value) async =>
+        isBookmarked =
+            await (await Bookmark.getInstance()).isBookmark(_pageInfo.id));
 
     _animationController = AnimationController(
       vsync: this,
@@ -354,40 +364,132 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 },
               ),
               Expanded(
-                child: Text(
-                  _pageInfo.id.toString(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 19,
-                  ),
-                  // onTap: () async {
-                  //   stopTimer();
-                  //   await showModalBottomSheet(
-                  //     context: context,
-                  //     isScrollControlled: false,
-                  //     builder: (context) => ViewRecordPanel(
-                  //       articleId: _pageInfo.id,
-                  //     ),
-                  //   ).then((value) {
-                  //     if (value != null) {
-                  //       if (!Settings.isHorizontal) {
-                  //         itemScrollController.jumpTo(
-                  //             index: value, alignment: 0.12);
-                  //       } else {
-                  //         _pageController.jumpToPage(value - 1);
-                  //       }
-                  //       currentPage = value;
-                  //       setState(() {
-                  //         _prevPage = value;
-                  //       });
-                  //     }
-                  //   });
-                  //   startTimer();
-                  // },
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(isBookmarked
+                          ? MdiIcons.heart
+                          : MdiIcons.heartOutline),
+                      color: Colors.white,
+                      onPressed: () async {
+                        isBookmarked = await (await Bookmark.getInstance())
+                            .isBookmark(_pageInfo.id);
+
+                        if (isBookmarked) {
+                          if (!await Dialogs.yesnoDialog(
+                              context, '북마크를 삭제할까요?', '북마크')) return;
+                        }
+
+                        FlutterToast(context).showToast(
+                          child: ToastWrapper(
+                            isCheck: !isBookmarked,
+                            isWarning: false,
+                            msg:
+                                '${_pageInfo.id}${Translations.of(context).trans(!isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+
+                        isBookmarked = !isBookmarked;
+                        if (isBookmarked)
+                          await (await Bookmark.getInstance())
+                              .bookmark(_pageInfo.id);
+                        else
+                          await (await Bookmark.getInstance())
+                              .unbookmark(_pageInfo.id);
+
+                        setState(() {});
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(MdiIcons.information),
+                      color: Colors.white,
+                      onPressed: () async {
+                        final height = MediaQuery.of(context).size.height;
+
+                        final search = await HentaiManager.idSearch(
+                            _pageInfo.id.toString());
+                        if (search.item1.length != 1) return;
+
+                        final qr = search.item1[0];
+
+                        var prov = ProviderManager.get(_pageInfo.id);
+                        var thumbnail = await prov.getThumbnailUrl();
+                        var headers = await prov.getHeader(0);
+                        ProviderManager.insert(qr.id(), prov);
+
+                        var isBookmarked = await (await Bookmark.getInstance())
+                            .isBookmark(qr.id());
+
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) {
+                            return DraggableScrollableSheet(
+                              initialChildSize: 400 / height,
+                              minChildSize: 400 / height,
+                              maxChildSize: 0.9,
+                              expand: false,
+                              builder: (_, controller) {
+                                return Provider<ArticleInfo>.value(
+                                  child: ArticleInfoPage(
+                                    key: ObjectKey('asdfasdf'),
+                                  ),
+                                  value: ArticleInfo.fromArticleInfo(
+                                    queryResult: qr,
+                                    thumbnail: thumbnail,
+                                    headers: headers,
+                                    heroKey: 'zxcvzxcvzxcv',
+                                    isBookmarked: isBookmarked,
+                                    controller: controller,
+                                    lockRead: true,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
+              // Expanded(
+              //   child: Text(
+              //     _pageInfo.id.toString(),
+              //     maxLines: 1,
+              //     overflow: TextOverflow.ellipsis,
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 19,
+              //     ),
+              // onTap: () async {
+              //   stopTimer();
+              //   await showModalBottomSheet(
+              //     context: context,
+              //     isScrollControlled: false,
+              //     builder: (context) => ViewRecordPanel(
+              //       articleId: _pageInfo.id,
+              //     ),
+              //   ).then((value) {
+              //     if (value != null) {
+              //       if (!Settings.isHorizontal) {
+              //         itemScrollController.jumpTo(
+              //             index: value, alignment: 0.12);
+              //       } else {
+              //         _pageController.jumpToPage(value - 1);
+              //       }
+              //       currentPage = value;
+              //       setState(() {
+              //         _prevPage = value;
+              //       });
+              //     }
+              //   });
+              //   startTimer();
+              // },
+              //   ),
+              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
