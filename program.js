@@ -13,11 +13,20 @@ const a_syncdatabase = require('./api/syncdatabase');
 const path = require('path');
 const fs = require('fs');
 
+const d_kor_series = require('./dict/kor-series');
+const d_kor_tag = require('./dict/kor-tag');
+
 const _tagList = [
   ['eharticles_tags', 'Tag'],
   ['eharticles_series', 'Series'],
   ['eharticles_characters', 'Character'],
 ];
+
+function _transKor(tar) {
+  if (tar in d_kor_series) return d_kor_series[tar];
+  if (tar in d_kor_tag) return d_kor_tag[tar];
+  return '';
+}
 
 async function _buildSortWithCount(dbPrefix) {
   const conn = a_syncdatabase();
@@ -33,32 +42,35 @@ from ` +
 
   console.log(data.length);
 
-  fs.writeFile(
-      dataPath, JSON.stringify(data.map(x => x.Name), null, 4), function(err) {
-        console.log(err);
-      });
+  var result = {};
+  data.forEach(x => result[x.Name] = {'korean': _transKor(x.Name), 'link': ''});
+
+  fs.writeFile(dataPath, JSON.stringify(result, null, 4), function(err) {
+    console.log(err);
+  });
 }
 
 async function _buildSortWithNewest(dbPrefix) {
-    const conn = a_syncdatabase();
-    const data = conn.query(
-        'select Name from ' + dbPrefix[0] + ' order by Id desc');
-    const dataPath =
-        path.resolve(__dirname, 'result-newest-' + dbPrefix[1].toLowerCase() + '.json');
-  
-    console.log(data.length);
-  
-    fs.writeFile(
-        dataPath, JSON.stringify(data.map(x => x.Name), null, 4), function(err) {
-          console.log(err);
-        });
-  }
-  
+  const conn = a_syncdatabase();
+  const data =
+      conn.query('select Name from ' + dbPrefix[0] + ' order by Id desc');
+  const dataPath = path.resolve(
+      __dirname, 'result-newest-' + dbPrefix[1].toLowerCase() + '.json');
+
+  console.log(data.length);
+
+  var result = {};
+  data.forEach(x => result[x.Name] = {'korean': _transKor(x.Name), 'link': ''});
+
+  fs.writeFile(dataPath, JSON.stringify(result, null, 4), function(err) {
+    console.log(err);
+  });
+}
 
 async function _test() {
   for (var i = 0; i < _tagList.length; i++) {
     await _buildSortWithCount(_tagList[i]);
-    await _buildSortWithNewest(_tagList[i]);
+    // await _buildSortWithNewest(_tagList[i]);
   }
 }
 

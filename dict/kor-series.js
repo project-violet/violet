@@ -596,3 +596,5 @@ const kor_series = {
   'kaichou wa maid-sama': '회장님은 메이드 사마',
   'dangaioh': '당가이오',
 };
+
+module.exports = kor_series;

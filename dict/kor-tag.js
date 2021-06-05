@@ -773,3 +773,5 @@ const kor_tag = {
   'male:gaping': 'male:섹스 후 질 또는 항문이 늘어나 있는 모습',
   'male:impregnation': 'male:수정',
 };
+
+module.exports = kor_tag;
