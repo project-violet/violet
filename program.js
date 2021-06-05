@@ -28,7 +28,7 @@ function _transKor(tar) {
   return '';
 }
 
-async function _buildSortWithCount(dbPrefix) {
+async function _buildSortWithCountKorean(dbPrefix) {
   const conn = a_syncdatabase();
   const data = conn.query(
       `
@@ -38,29 +38,29 @@ from ` +
       ' as a left join ' + dbPrefix[0] + ' as b on a.' + dbPrefix[1] +
       '=b.Id group by a.' + dbPrefix[1] + ' order by c desc) as a');
   const dataPath =
-      path.resolve(__dirname, 'result-' + dbPrefix[1].toLowerCase() + '.json');
+      path.resolve(__dirname, 'result-korean-' + dbPrefix[1].toLowerCase() + '.json');
 
   console.log(data.length);
 
   var result = {};
-  data.forEach(x => result[x.Name] = {'korean': _transKor(x.Name), 'link': ''});
+  data.forEach(x => result[x.Name] = _transKor(x.Name));
 
   fs.writeFile(dataPath, JSON.stringify(result, null, 4), function(err) {
     console.log(err);
   });
 }
 
-async function _buildSortWithNewest(dbPrefix) {
+async function _buildSortWithNewestKorean(dbPrefix) {
   const conn = a_syncdatabase();
   const data =
       conn.query('select Name from ' + dbPrefix[0] + ' order by Id desc');
   const dataPath = path.resolve(
-      __dirname, 'result-newest-' + dbPrefix[1].toLowerCase() + '.json');
+      __dirname, 'result-korean-newest-' + dbPrefix[1].toLowerCase() + '.json');
 
   console.log(data.length);
 
   var result = {};
-  data.forEach(x => result[x.Name] = {'korean': _transKor(x.Name), 'link': ''});
+  data.forEach(x => result[x.Name] = _transKor(x.Name));
 
   fs.writeFile(dataPath, JSON.stringify(result, null, 4), function(err) {
     console.log(err);
@@ -69,7 +69,7 @@ async function _buildSortWithNewest(dbPrefix) {
 
 async function _test() {
   for (var i = 0; i < _tagList.length; i++) {
-    await _buildSortWithCount(_tagList[i]);
+    await _buildSortWithCountKorean(_tagList[i]);
     // await _buildSortWithNewest(_tagList[i]);
   }
 }
