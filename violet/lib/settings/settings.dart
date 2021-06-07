@@ -22,6 +22,7 @@ class Settings {
   static Color majorColor; // default purple
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
+  static bool themeFlat;
 
   // Tag Settings
   static String includeTags;
@@ -90,6 +91,13 @@ class Settings {
       themeColor = Colors.white;
     else
       themeColor = Colors.black;
+
+    themeFlat =
+        (await SharedPreferences.getInstance()).getBool('thethemeFlatmeColor');
+    if (themeWhat == null) {
+      await (await SharedPreferences.getInstance()).setBool('themeFlat', false);
+      themeFlat = false;
+    }
   }
 
   static Future<void> init() async {
