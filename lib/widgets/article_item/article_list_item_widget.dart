@@ -109,7 +109,18 @@ class _ArticleListItemVerySimpleWidgetState
   _init() {
     if (_inited) return;
     _inited = true;
+
     data = Provider.of<ArticleListItem>(context);
+    disableFiltering = (data.disableFilter != null && data.disableFilter);
+
+    _initAnimations();
+    _checkIsBookmarked();
+    _checkLastRead();
+    _initTexts();
+    _setProvider();
+  }
+
+  _initAnimations() {
     scaleAnimationController = AnimationController(
       vsync: this,
       lowerBound: 1.0,
@@ -121,13 +132,16 @@ class _ArticleListItemVerySimpleWidgetState
         scale = scaleAnimationController.value;
       });
     });
-    disableFiltering = (data.disableFilter != null && data.disableFilter);
+  }
 
+  _checkIsBookmarked() {
     Bookmark.getInstance().then((value) async {
       isBookmarked = await value.isBookmark(data.queryResult.id());
       if (isBookmarked) setState(() {});
     });
+  }
 
+  _checkLastRead() {
     User.getInstance().then((value) => value.getUserLog().then((value) async {
           var x = value.where((e) =>
               e.articleId() == data.queryResult.id().toString() &&
@@ -143,7 +157,9 @@ class _ArticleListItemVerySimpleWidgetState
             latestReadPage = x.first.lastPage();
           });
         }));
+  }
 
+  _initTexts() {
     artist = (data.queryResult.artists() as String)
         .split('|')
         .where((x) => x.length != 0)
@@ -159,6 +175,9 @@ class _ArticleListItemVerySimpleWidgetState
     dateTime = data.queryResult.getDateTime() != null
         ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime())
         : '';
+  }
+
+  _setProvider() {
     if (!ProviderManager.isExists(data.queryResult.id())) {
       // HitomiManager.getImageList(data.queryResult.id().toString())
       //     .then((images) {
@@ -469,24 +488,26 @@ class _ArticleListItemVerySimpleWidgetState
                 ? EdgeInsets.only(bottom: 6)
                 : EdgeInsets.only(bottom: 50)
             : EdgeInsets.zero,
-        decoration: BoxDecoration(
-          color: data.showDetail
-              ? Settings.themeWhat
-                  ? Colors.grey.shade800
-                  : Colors.white70
-              : Colors.grey.withOpacity(0.3),
-          borderRadius: BorderRadius.all(Radius.circular(3)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.grey.withOpacity(0.08)
-                  : Colors.grey.withOpacity(0.4),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
+        decoration: !Settings.themeFlat
+            ? BoxDecoration(
+                color: data.showDetail
+                    ? Settings.themeWhat
+                        ? Colors.grey.shade800
+                        : Colors.white70
+                    : Colors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.all(Radius.circular(3)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Settings.themeWhat
+                        ? Colors.grey.withOpacity(0.08)
+                        : Colors.grey.withOpacity(0.4),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3), // changes position of shadow
+                  ),
+                ],
+              )
+            : null,
         child: data.showDetail
             ? Row(
                 children: <Widget>[
