@@ -293,7 +293,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
     return WillPopScope(
       onWillPop: () async {
-        await _savePageRead();
+        if (!_pageInfo.useFileSystem) await _savePageRead();
         return new Future(() => true);
       },
       child: () {
