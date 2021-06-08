@@ -237,5 +237,6 @@
     "dbopt": "데이터베이스 최적화",
     "timersetting": "타이머 설정",
     "second": "초",
-    "movetoappbartobottom": "버튼 밑으로 내리기"
+    "movetoappbartobottom": "버튼 밑으로 내리기",
+    "showslider": "슬라이더 보여주기"
 }

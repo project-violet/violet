@@ -49,6 +49,7 @@ class Settings {
   static bool enableTimer;
   static double timerTick;
   static bool moveToAppBarToBottom;
+  static bool showSlider;
 
   // Download Options
   static bool useInnerStorage;
@@ -265,6 +266,13 @@ class Settings {
       moveToAppBarToBottom = false;
       await (await SharedPreferences.getInstance())
           .setBool('movetoappbartobottom', moveToAppBarToBottom);
+    }
+
+    showSlider = (await SharedPreferences.getInstance()).getBool('showslider');
+    if (showSlider == null) {
+      showSlider = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('showslider', showSlider);
     }
 
     useInnerStorage =
@@ -511,6 +519,11 @@ class Settings {
     moveToAppBarToBottom = nn;
     await (await SharedPreferences.getInstance())
         .setBool('movetoappbartobottom', nn);
+  }
+
+  static Future<void> setShowSlider(bool nn) async {
+    showSlider = nn;
+    await (await SharedPreferences.getInstance()).setBool('showslider', nn);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {
