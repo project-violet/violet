@@ -32,6 +32,7 @@ import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/pages/viewer/view_record_panel.dart';
 import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/pages/viewer/viewer_report.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
@@ -79,6 +80,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   DateTime _startsTime;
   int _inactivateSeconds = 0;
   bool isBookmarked = false;
+  ViewerReport _report;
+  List<int> _100msPerPages;
+  bool _isInactivated = false;
 
   @override
   void initState() {
@@ -127,12 +131,14 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     _lifecycleEventHandler = LifecycleEventHandler(
       inactiveCallBack: () async {
         _inactivateTime = DateTime.now();
+        _isInactivated = true;
         await (await User.getInstance())
             .updateUserLog(_pageInfo.id, currentPage);
       },
       resumeCallBack: () async {
         _inactivateSeconds +=
             DateTime.now().difference(_inactivateTime).inSeconds;
+        _isInactivated = false;
         setState(() {
           _mpPoints = 0;
         });
@@ -149,7 +155,20 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_pageInfo == null) _pageInfo = Provider.of<ViewerPageProvider>(context);
+    if (_pageInfo == null) {
+      _pageInfo = Provider.of<ViewerPageProvider>(context);
+      _report = ViewerReport(
+        id: _pageInfo.id,
+        pages: _pageInfo.uris.length,
+        startsTime: DateTime.now(),
+      );
+      _100msPerPages = List.filled(_pageInfo.uris.length, 0);
+
+      Timer.periodic(
+        Duration(milliseconds: 100),
+        pageReadTimerCallback,
+      );
+    }
     volumeKeyChannel.receiveBroadcastStream().listen((event) {
       if (event as String == 'down') {
         _rightButtonEvent();
@@ -186,11 +205,25 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   Future<void> _savePageRead() async {
     await (await User.getInstance()).updateUserLog(_pageInfo.id, currentPage);
     if (Settings.useVioletServer) {
+      _report.endsTime = DateTime.now();
+      _report.validSeconds =
+          DateTime.now().difference(_startsTime).inSeconds - _inactivateSeconds;
+      _report.lastPage = currentPage;
+      _report.msPerPages = _100msPerPages;
+
       VioletServer.viewClose(
           _pageInfo.id,
           DateTime.now().difference(_startsTime).inSeconds -
               _inactivateSeconds);
     }
+  }
+
+  Future<void> pageReadTimerCallback(timer) async {
+    _100msPerPages[currentPage < 0
+        ? 0
+        : currentPage >= _pageInfo.uris.length
+            ? _pageInfo.uris.length - 1
+            : currentPage] += 1;
   }
 
   void startTimer() {
