@@ -415,373 +415,28 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: new Icon(Icons.arrow_back),
-                        color: Colors.white,
-                        onPressed: () async {
-                          await _savePageRead();
-                          Navigator.pop(context, currentPage);
-                          return new Future(() => false);
-                        },
-                      ),
+                      _appBarBack(),
                       Expanded(
                         child: Row(
                           children: [
-                            IconButton(
-                              icon: Icon(isBookmarked
-                                  ? MdiIcons.heart
-                                  : MdiIcons.heartOutline),
-                              color: Colors.white,
-                              onPressed: () async {
-                                isBookmarked =
-                                    await (await Bookmark.getInstance())
-                                        .isBookmark(_pageInfo.id);
-
-                                if (isBookmarked) {
-                                  if (!await Dialogs.yesnoDialog(
-                                      context, '북마크를 삭제할까요?', '북마크')) return;
-                                }
-
-                                FlutterToast(context).showToast(
-                                  child: ToastWrapper(
-                                    isCheck: !isBookmarked,
-                                    isWarning: false,
-                                    msg:
-                                        '${_pageInfo.id}${Translations.of(context).trans(!isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
-                                  ),
-                                  gravity: ToastGravity.BOTTOM,
-                                  toastDuration: Duration(seconds: 4),
-                                );
-
-                                isBookmarked = !isBookmarked;
-                                if (isBookmarked)
-                                  await (await Bookmark.getInstance())
-                                      .bookmark(_pageInfo.id);
-                                else
-                                  await (await Bookmark.getInstance())
-                                      .unbookmark(_pageInfo.id);
-
-                                setState(() {});
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(MdiIcons.information),
-                              color: Colors.white,
-                              onPressed: () async {
-                                final height =
-                                    MediaQuery.of(context).size.height;
-
-                                final search = await HentaiManager.idSearch(
-                                    _pageInfo.id.toString());
-                                if (search.item1.length != 1) return;
-
-                                final qr = search.item1[0];
-
-                                var prov = ProviderManager.get(_pageInfo.id);
-                                var thumbnail = await prov.getThumbnailUrl();
-                                var headers = await prov.getHeader(0);
-                                ProviderManager.insert(qr.id(), prov);
-
-                                var isBookmarked =
-                                    await (await Bookmark.getInstance())
-                                        .isBookmark(qr.id());
-
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  builder: (_) {
-                                    return DraggableScrollableSheet(
-                                      initialChildSize: 400 / height,
-                                      minChildSize: 400 / height,
-                                      maxChildSize: 0.9,
-                                      expand: false,
-                                      builder: (_, controller) {
-                                        return Provider<ArticleInfo>.value(
-                                          child: ArticleInfoPage(
-                                            key: ObjectKey('asdfasdf'),
-                                          ),
-                                          value: ArticleInfo.fromArticleInfo(
-                                            queryResult: qr,
-                                            thumbnail: thumbnail,
-                                            headers: headers,
-                                            heroKey: 'zxcvzxcvzxcv',
-                                            isBookmarked: isBookmarked,
-                                            controller: controller,
-                                            lockRead: true,
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                            ),
+                            _appBarBookmark(),
+                            _appBarInfo(),
                           ],
                         ),
                       ),
-                      // Expanded(
-                      //   child: Text(
-                      //     _pageInfo.id.toString(),
-                      //     maxLines: 1,
-                      //     overflow: TextOverflow.ellipsis,
-                      //     style: TextStyle(
-                      //       color: Colors.white,
-                      //       fontSize: 19,
-                      //     ),
-                      // onTap: () async {
-                      //   stopTimer();
-                      //   await showModalBottomSheet(
-                      //     context: context,
-                      //     isScrollControlled: false,
-                      //     builder: (context) => ViewRecordPanel(
-                      //       articleId: _pageInfo.id,
-                      //     ),
-                      //   ).then((value) {
-                      //     if (value != null) {
-                      //       if (!Settings.isHorizontal) {
-                      //         itemScrollController.jumpTo(
-                      //             index: value, alignment: 0.12);
-                      //       } else {
-                      //         _pageController.jumpToPage(value - 1);
-                      //       }
-                      //       currentPage = value;
-                      //       setState(() {
-                      //         _prevPage = value;
-                      //       });
-                      //     }
-                      //   });
-                      //   startTimer();
-                      // },
-                      //   ),
-                      // ),
+                      // _appBarPageInfo(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          IconButton(
-                            icon: Icon(MdiIcons.tab),
-                            color: Colors.white,
-                            onPressed: () async {
-                              stopTimer();
-                              await showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: false,
-                                builder: (context) => TabPanel(
-                                  articleId: _pageInfo.id,
-                                  usableTabList: _pageInfo.usableTabList,
-                                ),
-                              ).then((value) async {
-                                if (value == null) return;
-
-                                await _savePageRead();
-
-                                await (await User.getInstance())
-                                    .insertUserLog(value.id(), 0);
-
-                                _inactivateSeconds = 0;
-                                _startsTime = DateTime.now();
-
-                                if (!Settings.isHorizontal) {
-                                  itemScrollController.jumpTo(
-                                      index: 0, alignment: 0.12);
-                                } else {
-                                  _pageController.jumpToPage(0);
-                                }
-                                currentPage = 0;
-                                setState(() {
-                                  _prevPage = 0;
-                                });
-
-                                _pageInfo = ViewerPageProvider(
-                                  uris: List<String>.filled(
-                                      ProviderManager.get(value.id()).length(),
-                                      null),
-                                  useProvider: true,
-                                  provider: ProviderManager.get(value.id()),
-                                  headers: await ProviderManager.get(value.id())
-                                      .getHeader(0),
-                                  id: value.id(),
-                                  title: value.title(),
-                                  usableTabList: _pageInfo.usableTabList,
-                                );
-
-                                _headerCache = List<Map<String, String>>.filled(
-                                    _pageInfo.uris.length, null);
-                                _urlCache = List<String>.filled(
-                                    _pageInfo.uris.length, null);
-                                _height = List<double>.filled(
-                                    _pageInfo.uris.length, 0);
-                                _keys = List<GlobalKey>.generate(
-                                    _pageInfo.uris.length,
-                                    (index) => GlobalKey());
-
-                                setState(() {});
-
-                                Future.delayed(Duration(milliseconds: 300))
-                                    .then((value) => _checkLatestRead(true));
-                              });
-                              startTimer();
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(MdiIcons.history),
-                            color: Colors.white,
-                            onPressed: () async {
-                              stopTimer();
-                              await showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: false,
-                                builder: (context) => ViewRecordPanel(
-                                  articleId: _pageInfo.id,
-                                ),
-                              ).then((value) {
-                                if (value != null) {
-                                  if (!Settings.isHorizontal) {
-                                    itemScrollController.jumpTo(
-                                        index: value, alignment: 0.12);
-                                  } else {
-                                    _pageController.jumpToPage(value - 1);
-                                  }
-                                  currentPage = value;
-                                  setState(() {
-                                    _prevPage = value;
-                                  });
-                                }
-                              });
-                              startTimer();
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(Settings.enableTimer
-                                ? MdiIcons.timer
-                                : MdiIcons.timerOff),
-                            color: Colors.white,
-                            onPressed: () async {
-                              setState(() {
-                                Settings.setEnableTimer(!Settings.enableTimer);
-                              });
-                              startTimer();
-                            },
-                          ),
-                          IconButton(
-                            icon: Icon(MdiIcons.folderImage),
-                            color: Colors.white,
-                            onPressed: () async {
-                              stopTimer();
-                              if (!Platform.isIOS) {
-                                Navigator.of(context)
-                                    .push(
-                                  PageRouteBuilder(
-                                    transitionDuration:
-                                        Duration(milliseconds: 500),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      var begin = Offset(0.0, 1.0);
-                                      var end = Offset.zero;
-                                      var curve = Curves.ease;
-
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-
-                                      return SlideTransition(
-                                        position: animation.drive(tween),
-                                        child: child,
-                                      );
-                                    },
-                                    pageBuilder: (_, __, ___) =>
-                                        Provider<ViewerPageProvider>.value(
-                                      value: _pageInfo,
-                                      child: ViewerGallery(),
-                                    ),
-                                  ),
-                                )
-                                    .then(
-                                  (value) {
-                                    if (value != null) {
-                                      if (!Settings.isHorizontal) {
-                                        itemScrollController.jumpTo(
-                                            index: value, alignment: 0.12);
-                                      } else {
-                                        _pageController.jumpToPage(value - 1);
-                                      }
-                                      currentPage = value;
-                                      setState(() {
-                                        _prevPage = value;
-                                      });
-                                    }
-                                  },
-                                );
-                              } else {
-                                Navigator.of(context)
-                                    .push(
-                                  CupertinoPageRoute(
-                                    builder: (_) =>
-                                        Provider<ViewerPageProvider>.value(
-                                      value: _pageInfo,
-                                      child: ViewerGallery(),
-                                    ),
-                                  ),
-                                )
-                                    .then(
-                                  (value) {
-                                    if (value != null) {
-                                      if (!Settings.isHorizontal) {
-                                        itemScrollController.jumpTo(
-                                            index: _prevPage - 1,
-                                            alignment: 0.12);
-                                      } else {
-                                        _pageController.jumpToPage(value - 1);
-                                      }
-                                      currentPage = value;
-                                      setState(() {
-                                        _prevPage = value;
-                                      });
-                                    }
-                                  },
-                                );
-                              }
-                              startTimer();
-                            },
-                          ),
+                          _appBarTab(),
+                          _appBarHistory(),
+                          _appBarTimer(),
+                          _appBarGallery(),
                           // IconButton(
                           //     icon: Icon(MdiIcons.fileDownload),
                           //     color: Colors.white,
                           //     onPressed: () async {}),
-                          IconButton(
-                            icon: Icon(Icons.settings),
-                            color: Colors.white,
-                            onPressed: () async {
-                              stopTimer();
-                              await showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: false,
-                                builder: (context) => ViewerSettingPanel(
-                                  viewerStyleChangeEvent: () {
-                                    if (Settings.isHorizontal) {
-                                      _pageController =
-                                          new PreloadPageController(
-                                              initialPage: _prevPage - 1);
-                                    } else {
-                                      var npage = _prevPage;
-                                      _sliderOnChange = true;
-                                      Future.delayed(
-                                              Duration(milliseconds: 100))
-                                          .then((value) {
-                                        itemScrollController.jumpTo(
-                                            index: npage - 1, alignment: 0.12);
-                                        _sliderOnChange = false;
-                                      });
-                                    }
-                                    setState(() {});
-                                  },
-                                  setStateCallback: () {
-                                    setState(() {});
-                                  },
-                                ),
-                              );
-                              startTimer();
-                              return;
-                            },
-                          ),
+                          _appBarSettings(),
                         ],
                       ),
                     ],
@@ -800,6 +455,359 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       ),
     );
   }
+
+  _appBarBack() {
+    return IconButton(
+      icon: new Icon(Icons.arrow_back),
+      color: Colors.white,
+      onPressed: () async {
+        await _savePageRead();
+        Navigator.pop(context, currentPage);
+        return new Future(() => false);
+      },
+    );
+  }
+
+  _appBarBookmark() {
+    return IconButton(
+      icon: Icon(isBookmarked ? MdiIcons.heart : MdiIcons.heartOutline),
+      color: Colors.white,
+      onPressed: () async {
+        isBookmarked =
+            await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
+
+        if (isBookmarked) {
+          if (!await Dialogs.yesnoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
+        }
+
+        FlutterToast(context).showToast(
+          child: ToastWrapper(
+            isCheck: !isBookmarked,
+            isWarning: false,
+            msg:
+                '${_pageInfo.id}${Translations.of(context).trans(!isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
+          ),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: 4),
+        );
+
+        isBookmarked = !isBookmarked;
+        if (isBookmarked)
+          await (await Bookmark.getInstance()).bookmark(_pageInfo.id);
+        else
+          await (await Bookmark.getInstance()).unbookmark(_pageInfo.id);
+
+        setState(() {});
+      },
+    );
+  }
+
+  _appBarInfo() {
+    return IconButton(
+      icon: Icon(MdiIcons.information),
+      color: Colors.white,
+      onPressed: () async {
+        final height = MediaQuery.of(context).size.height;
+
+        final search = await HentaiManager.idSearch(_pageInfo.id.toString());
+        if (search.item1.length != 1) return;
+
+        final qr = search.item1[0];
+
+        var prov = ProviderManager.get(_pageInfo.id);
+        var thumbnail = await prov.getThumbnailUrl();
+        var headers = await prov.getHeader(0);
+        ProviderManager.insert(qr.id(), prov);
+
+        var isBookmarked =
+            await (await Bookmark.getInstance()).isBookmark(qr.id());
+
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (_) {
+            return DraggableScrollableSheet(
+              initialChildSize: 400 / height,
+              minChildSize: 400 / height,
+              maxChildSize: 0.9,
+              expand: false,
+              builder: (_, controller) {
+                return Provider<ArticleInfo>.value(
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
+                  ),
+                  value: ArticleInfo.fromArticleInfo(
+                    queryResult: qr,
+                    thumbnail: thumbnail,
+                    headers: headers,
+                    heroKey: 'zxcvzxcvzxcv',
+                    isBookmarked: isBookmarked,
+                    controller: controller,
+                    lockRead: true,
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  _appBarTab() {
+    return IconButton(
+      icon: Icon(MdiIcons.tab),
+      color: Colors.white,
+      onPressed: () async {
+        stopTimer();
+        await showModalBottomSheet(
+          context: context,
+          isScrollControlled: false,
+          builder: (context) => TabPanel(
+            articleId: _pageInfo.id,
+            usableTabList: _pageInfo.usableTabList,
+          ),
+        ).then((value) async {
+          if (value == null) return;
+
+          await _savePageRead();
+
+          await (await User.getInstance()).insertUserLog(value.id(), 0);
+
+          _inactivateSeconds = 0;
+          _startsTime = DateTime.now();
+
+          if (!Settings.isHorizontal) {
+            itemScrollController.jumpTo(index: 0, alignment: 0.12);
+          } else {
+            _pageController.jumpToPage(0);
+          }
+          currentPage = 0;
+          setState(() {
+            _prevPage = 0;
+          });
+
+          _pageInfo = ViewerPageProvider(
+            uris: List<String>.filled(
+                ProviderManager.get(value.id()).length(), null),
+            useProvider: true,
+            provider: ProviderManager.get(value.id()),
+            headers: await ProviderManager.get(value.id()).getHeader(0),
+            id: value.id(),
+            title: value.title(),
+            usableTabList: _pageInfo.usableTabList,
+          );
+
+          _headerCache =
+              List<Map<String, String>>.filled(_pageInfo.uris.length, null);
+          _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+          _height = List<double>.filled(_pageInfo.uris.length, 0);
+          _keys = List<GlobalKey>.generate(
+              _pageInfo.uris.length, (index) => GlobalKey());
+
+          setState(() {});
+
+          Future.delayed(Duration(milliseconds: 300))
+              .then((value) => _checkLatestRead(true));
+        });
+        startTimer();
+      },
+    );
+  }
+
+  _appBarHistory() {
+    return IconButton(
+      icon: Icon(MdiIcons.history),
+      color: Colors.white,
+      onPressed: () async {
+        stopTimer();
+        await showModalBottomSheet(
+          context: context,
+          isScrollControlled: false,
+          builder: (context) => ViewRecordPanel(
+            articleId: _pageInfo.id,
+          ),
+        ).then((value) {
+          if (value != null) {
+            if (!Settings.isHorizontal) {
+              itemScrollController.jumpTo(index: value, alignment: 0.12);
+            } else {
+              _pageController.jumpToPage(value - 1);
+            }
+            currentPage = value;
+            setState(() {
+              _prevPage = value;
+            });
+          }
+        });
+        startTimer();
+      },
+    );
+  }
+
+  _appBarTimer() {
+    return IconButton(
+      icon: Icon(Settings.enableTimer ? MdiIcons.timer : MdiIcons.timerOff),
+      color: Colors.white,
+      onPressed: () async {
+        setState(() {
+          Settings.setEnableTimer(!Settings.enableTimer);
+        });
+        startTimer();
+      },
+    );
+  }
+
+  _appBarGallery() {
+    return IconButton(
+      icon: Icon(MdiIcons.folderImage),
+      color: Colors.white,
+      onPressed: () async {
+        stopTimer();
+        if (!Platform.isIOS) {
+          Navigator.of(context)
+              .push(
+            PageRouteBuilder(
+              transitionDuration: Duration(milliseconds: 500),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = Offset(0.0, 1.0);
+                var end = Offset.zero;
+                var curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+              pageBuilder: (_, __, ___) => Provider<ViewerPageProvider>.value(
+                value: _pageInfo,
+                child: ViewerGallery(),
+              ),
+            ),
+          )
+              .then(
+            (value) {
+              if (value != null) {
+                if (!Settings.isHorizontal) {
+                  itemScrollController.jumpTo(index: value, alignment: 0.12);
+                } else {
+                  _pageController.jumpToPage(value - 1);
+                }
+                currentPage = value;
+                setState(() {
+                  _prevPage = value;
+                });
+              }
+            },
+          );
+        } else {
+          Navigator.of(context)
+              .push(
+            CupertinoPageRoute(
+              builder: (_) => Provider<ViewerPageProvider>.value(
+                value: _pageInfo,
+                child: ViewerGallery(),
+              ),
+            ),
+          )
+              .then(
+            (value) {
+              if (value != null) {
+                if (!Settings.isHorizontal) {
+                  itemScrollController.jumpTo(
+                      index: _prevPage - 1, alignment: 0.12);
+                } else {
+                  _pageController.jumpToPage(value - 1);
+                }
+                currentPage = value;
+                setState(() {
+                  _prevPage = value;
+                });
+              }
+            },
+          );
+        }
+        startTimer();
+      },
+    );
+  }
+
+  _appBarSettings() {
+    return IconButton(
+      icon: Icon(Icons.settings),
+      color: Colors.white,
+      onPressed: () async {
+        stopTimer();
+        await showModalBottomSheet(
+          context: context,
+          isScrollControlled: false,
+          builder: (context) => ViewerSettingPanel(
+            viewerStyleChangeEvent: () {
+              if (Settings.isHorizontal) {
+                _pageController =
+                    new PreloadPageController(initialPage: _prevPage - 1);
+              } else {
+                var npage = _prevPage;
+                _sliderOnChange = true;
+                Future.delayed(Duration(milliseconds: 100)).then((value) {
+                  itemScrollController.jumpTo(
+                      index: npage - 1, alignment: 0.12);
+                  _sliderOnChange = false;
+                });
+              }
+              setState(() {});
+            },
+            setStateCallback: () {
+              setState(() {});
+            },
+          ),
+        );
+        startTimer();
+        return;
+      },
+    );
+  }
+
+  // _appBarPageInfo() {
+  //   return Expanded(
+  //     child: Text(
+  //       _pageInfo.id.toString(),
+  //       maxLines: 1,
+  //       overflow: TextOverflow.ellipsis,
+  //       style: TextStyle(
+  //         color: Colors.white,
+  //         fontSize: 19,
+  //       ),
+  //       onTap: () async {
+  //         stopTimer();
+  //         await showModalBottomSheet(
+  //           context: context,
+  //           isScrollControlled: false,
+  //           builder: (context) => ViewRecordPanel(
+  //             articleId: _pageInfo.id,
+  //           ),
+  //         ).then((value) {
+  //           if (value != null) {
+  //             if (!Settings.isHorizontal) {
+  //               itemScrollController.jumpTo(index: value, alignment: 0.12);
+  //             } else {
+  //               _pageController.jumpToPage(value - 1);
+  //             }
+  //             currentPage = value;
+  //             setState(() {
+  //               _prevPage = value;
+  //             });
+  //           }
+  //         });
+  //         startTimer();
+  //       },
+  //     ),
+  //   );
+  // }
 
   _bodyVertical() {
     final height = MediaQuery.of(context).size.height;
