@@ -508,6 +508,11 @@ class _ArticleListItemVerySimpleWidgetState
                 ],
               )
             : null,
+        color: !Settings.themeFlat || !data.showDetail
+            ? null
+            : Settings.themeWhat
+                ? Colors.black26
+                : Colors.white,
         child: data.showDetail
             ? Row(
                 children: <Widget>[
