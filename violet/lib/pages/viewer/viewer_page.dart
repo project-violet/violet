@@ -442,9 +442,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                     ],
                   ),
                 ),
-                !Settings.disableFullScreen &&
-                        Settings.moveToAppBarToBottom &&
-                        !Settings.showSlider
+                !Settings.disableFullScreen && Settings.moveToAppBarToBottom
                     ? Container(
                         height: Variables.bottomBarHeight,
                         color: Colors.black,
@@ -1678,12 +1676,15 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                               TextStyle(color: Colors.white70, fontSize: 15.0)),
                     ],
                   ),
-                  !Settings.disableFullScreen
+                  !Settings.disableFullScreen && !Settings.moveToAppBarToBottom
                       ? Container(
                           height: Variables.bottomBarHeight,
                           color: Colors.black,
                         )
-                      : Container(),
+                      : Container(
+                          height: Settings.moveToAppBarToBottom
+                              ? Variables.bottomBarHeight
+                              : 0),
                 ],
               ),
             ),
