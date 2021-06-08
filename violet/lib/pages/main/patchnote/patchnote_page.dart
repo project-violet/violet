@@ -24,8 +24,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 6, 8),
+    version: '1.9.2 Patch <== Latest',
+    contents: [
+      'fix hitomi image rule',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 5, 20),
-    version: '1.9.1 Patch <== Latest',
+    version: '1.9.1 Patch',
     contents: [
       'add bookmark and info button to viewer-page',
       'add move to appbar to bottom option',
