@@ -238,5 +238,6 @@
     "dbopt": "优化数据库",
     "timersetting": "Timer Tick",
     "second": "sec",
-    "movetoappbartobottom": "Move Buttons To Bottom"
+    "movetoappbartobottom": "Move Buttons To Bottom",
+    "showslider": "Show Slider"
 }

@@ -137,6 +137,16 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             },
           ),
           _checkBox(
+            value: Settings.showSlider,
+            title: Translations.of(context).trans('showslider'),
+            enabled: Settings.moveToAppBarToBottom,
+            onChanged: (value) {
+              Settings.setShowSlider(!Settings.showSlider);
+              widget.setStateCallback.call();
+              setState(() {});
+            },
+          ),
+          _checkBox(
             title: Translations.of(context).trans('disablefullscreen'),
             value: !Settings.disableFullScreen,
             onChanged: (value) {

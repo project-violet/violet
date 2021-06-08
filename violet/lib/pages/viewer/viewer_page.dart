@@ -442,7 +442,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                     ],
                   ),
                 ),
-                !Settings.disableFullScreen && Settings.moveToAppBarToBottom
+                !Settings.disableFullScreen &&
+                        Settings.moveToAppBarToBottom &&
+                        !Settings.showSlider
                     ? Container(
                         height: Variables.bottomBarHeight,
                         color: Colors.black,
@@ -938,7 +940,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         _touchAreaMiddle(),
         !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
         !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
-        !_disableBottom && !Settings.moveToAppBarToBottom
+        !_disableBottom &&
+                (!Settings.moveToAppBarToBottom || Settings.showSlider)
             ? _bottomAppBar()
             : Container(),
         !_disableBottom ? _appBar() : Container(),
@@ -1006,7 +1009,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         _touchAreaMiddle(),
         !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
         !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
-        !_disableBottom && !Settings.moveToAppBarToBottom
+        !_disableBottom &&
+                (!Settings.moveToAppBarToBottom || Settings.showSlider)
             ? _bottomAppBar()
             : Container(),
         !_disableBottom ? _appBar() : Container(),
@@ -1589,7 +1593,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       duration: Duration(milliseconds: 300),
       child: Stack(
         children: [
-          !Settings.disableFullScreen
+          !Settings.disableFullScreen && !Settings.moveToAppBarToBottom
               ? Padding(
                   padding: EdgeInsets.only(top: statusBarHeight.toDouble()),
                   child: Container(
@@ -1599,11 +1603,18 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 )
               : Container(),
           Padding(
-            padding: EdgeInsets.only(
-                top: height -
-                    Variables.bottomBarHeight -
-                    (48) -
-                    statusBarHeight),
+            padding: !Settings.moveToAppBarToBottom
+                ? EdgeInsets.only(
+                    top: height -
+                        Variables.bottomBarHeight -
+                        (48) -
+                        statusBarHeight)
+                : EdgeInsets.only(
+                    top: height -
+                        Variables.bottomBarHeight -
+                        (48) -
+                        statusBarHeight -
+                        48),
             child: Container(
               alignment: Alignment.bottomCenter,
               color: Colors.black.withOpacity(0.8),
