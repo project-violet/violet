@@ -158,7 +158,7 @@ class _SearchPageState extends State<SearchPage>
                   Radius.circular(4.0),
                 ),
               ),
-              elevation: 100,
+              elevation: !Settings.themeFlat ? 100 : 0,
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: Stack(
                 children: <Widget>[
@@ -282,7 +282,7 @@ class _SearchPageState extends State<SearchPage>
                 Radius.circular(4.0),
               ),
             ),
-            elevation: 100,
+            elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
               child: SizedBox(

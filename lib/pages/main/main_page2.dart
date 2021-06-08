@@ -683,25 +683,32 @@ class _MainPage2State extends State<MainPage2>
           // margin: EdgeInsets.only(left: 30, top: 100, right: 30, bottom: 50),
           // height: double.infinity,
           width: double.infinity,
-          decoration: BoxDecoration(
-            // color: Colors.white,
-            color: Settings.themeWhat ? Colors.black26 : Colors.white,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-                bottomLeft: Radius.circular(8),
-                bottomRight: Radius.circular(8)),
-            boxShadow: [
-              BoxShadow(
-                color: Settings.themeWhat
-                    ? Colors.black26
-                    : Colors.grey.withOpacity(0.1),
-                spreadRadius: Settings.themeWhat ? 0 : 5,
-                blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
-              ),
-            ],
-          ),
+          decoration: !Settings.themeFlat
+              ? BoxDecoration(
+                  // color: Colors.white,
+                  color: Settings.themeWhat ? Colors.black26 : Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                      bottomLeft: Radius.circular(8),
+                      bottomRight: Radius.circular(8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Settings.themeWhat
+                          ? Colors.black26
+                          : Colors.grey.withOpacity(0.1),
+                      spreadRadius: Settings.themeWhat ? 0 : 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                )
+              : null,
+          color: !Settings.themeFlat
+              ? null
+              : Settings.themeWhat
+                  ? Colors.black26
+                  : Colors.white,
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: Column(children: content),

@@ -378,7 +378,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               Radius.circular(8.0),
             ),
           ),
-          elevation: 100,
+          elevation: !Settings.themeFlat ? 100 : 0,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: InkWell(
             child: SizedBox(
