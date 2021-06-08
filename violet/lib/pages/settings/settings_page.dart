@@ -214,6 +214,11 @@ class _SettingsPageState extends State<SettingsPage>
               ],
             )
           : null,
+      color: !Settings.themeFlat
+          ? null
+          : Settings.themeWhat
+              ? Colors.black26
+              : Colors.white,
       child: !Settings.themeFlat
           ? ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
@@ -309,6 +314,23 @@ class _SettingsPageState extends State<SettingsPage>
                 );
               },
             );
+          },
+        ),
+        _buildDivider(),
+        InkWell(
+          child: ListTile(
+            leading: Icon(MdiIcons.buffer, color: Settings.majorColor),
+            title: Text('Flat 테마 사용'),
+            trailing: Switch(
+              value: Settings.themeFlat,
+              onChanged: (value) async {},
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+          ),
+          onTap: () async {
+            await Settings.setThemeFlat(!Settings.themeFlat);
+            setState(() {});
           },
         ),
         _buildDivider(),

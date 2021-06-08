@@ -93,8 +93,7 @@ class Settings {
     else
       themeColor = Colors.black;
 
-    themeFlat =
-        (await SharedPreferences.getInstance()).getBool('thethemeFlatmeColor');
+    themeFlat = (await SharedPreferences.getInstance()).getBool('themeFlat');
     if (themeWhat == null) {
       await (await SharedPreferences.getInstance()).setBool('themeFlat', false);
       themeFlat = false;
@@ -401,7 +400,13 @@ class Settings {
       themeColor = Colors.white;
     else
       themeColor = Colors.black;
-    (await SharedPreferences.getInstance()).setBool('themeColor', themeWhat);
+    await (await SharedPreferences.getInstance())
+        .setBool('themeColor', themeWhat);
+  }
+
+  static Future<void> setThemeFlat(bool nn) async {
+    themeFlat = nn;
+    await (await SharedPreferences.getInstance()).setBool('themeFlat', nn);
   }
 
   static Future<void> setMajorColor(Color color) async {
