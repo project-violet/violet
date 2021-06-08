@@ -1601,22 +1601,19 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 )
               : Container(),
           Padding(
-            padding: !Settings.moveToAppBarToBottom
-                ? EdgeInsets.only(
-                    top: height -
-                        Variables.bottomBarHeight -
-                        (48) -
-                        statusBarHeight)
-                : EdgeInsets.only(
-                    top: height -
-                        Variables.bottomBarHeight -
-                        (48) -
-                        statusBarHeight -
-                        48),
+            padding: EdgeInsets.only(
+                top: height -
+                    Variables.bottomBarHeight -
+                    (48) -
+                    statusBarHeight -
+                    (Settings.moveToAppBarToBottom ? 48 : 0)),
             child: Container(
               alignment: Alignment.bottomCenter,
               color: Colors.black.withOpacity(0.8),
-              height: 48 + Variables.bottomBarHeight,
+              height: Variables.bottomBarHeight +
+                  (!Settings.moveToAppBarToBottom ? 48 : 0),
+              padding: EdgeInsets.only(
+                  bottom: Settings.moveToAppBarToBottom ? 48 : 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -1684,7 +1681,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       : Container(
                           height: Settings.moveToAppBarToBottom
                               ? Variables.bottomBarHeight
-                              : 0),
+                              : 0,
+                          color: Colors.transparent,
+                        ),
                 ],
               ),
             ),
