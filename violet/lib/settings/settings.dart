@@ -94,7 +94,7 @@ class Settings {
       themeColor = Colors.black;
 
     themeFlat = (await SharedPreferences.getInstance()).getBool('themeFlat');
-    if (themeWhat == null) {
+    if (themeFlat == null) {
       await (await SharedPreferences.getInstance()).setBool('themeFlat', false);
       themeFlat = false;
     }
