@@ -226,10 +226,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.themeWhat ? Colors.black38 : Colors.white,
                 child: Column(children: items),
               ))
-          : Card(
-              child: Column(children: items),
-              elevation: 0.0,
-            ),
+          : Column(children: items),
     );
   }
 

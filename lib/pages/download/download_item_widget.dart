@@ -273,20 +273,27 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
   Widget buildBody() {
     return Container(
       margin: EdgeInsets.only(bottom: 6),
-      decoration: !Settings.themeFlat ? BoxDecoration(
-        color: Settings.themeWhat ? Colors.grey.shade800 : Colors.white70,
-        borderRadius: BorderRadius.all(Radius.circular(5)),
-        boxShadow: [
-          BoxShadow(
-            color: Settings.themeWhat
-                ? Colors.grey.withOpacity(0.08)
-                : Colors.grey.withOpacity(0.4),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ) : null,
+      decoration: !Settings.themeFlat
+          ? BoxDecoration(
+              color: Settings.themeWhat ? Colors.grey.shade800 : Colors.white70,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+              boxShadow: [
+                BoxShadow(
+                  color: Settings.themeWhat
+                      ? Colors.grey.withOpacity(0.08)
+                      : Colors.grey.withOpacity(0.4),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            )
+          : null,
+      color: !Settings.themeFlat
+          ? null
+          : Settings.themeWhat
+              ? Colors.black26
+              : Colors.white,
       child: Row(
         children: <Widget>[
           buildThumbnail(),
