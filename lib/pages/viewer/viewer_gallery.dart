@@ -300,7 +300,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                         child: Text(
                           '${index + 1} page',
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 14, color: Colors.white),
+                          style: TextStyle(fontSize: 11, color: Colors.white),
                         ),
                       ),
                     ),
