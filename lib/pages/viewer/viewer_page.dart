@@ -1612,8 +1612,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               color: Colors.black.withOpacity(0.8),
               height: Variables.bottomBarHeight +
                   (!Settings.moveToAppBarToBottom ? 48 : 0),
-              padding: EdgeInsets.only(
-                  bottom: Settings.moveToAppBarToBottom ? 48 : 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.end,
