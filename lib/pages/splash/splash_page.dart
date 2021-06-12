@@ -3,14 +3,12 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
-import 'package:circular_check_box/circular_check_box.dart';
+
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,7 +27,93 @@ import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
-import 'package:violet/version/update_sync.dart';
+
+class RadioTile<T> extends StatefulWidget {
+  RadioTile({
+    Key key,
+    this.value,
+    this.groupValue,
+    this.setGroupValue,
+    this.title,
+    this.subtitle,
+    this.onLongPress,
+  }) : super(key: key);
+
+  final T value;
+  final T groupValue;
+  final void Function(T) setGroupValue;
+  final Widget title;
+  final Widget subtitle;
+  final void Function() onLongPress;
+
+  @override
+  _RadioTileState<T> createState() => _RadioTileState<T>();
+}
+
+class _RadioTileState<T> extends State<RadioTile<T>> {
+  bool _longPressing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    bool selected = widget.value == widget.groupValue;
+
+    return AnimatedContainer(
+      transform: Matrix4.identity()
+        ..translate(300 / 2, 50 / 2)
+        ..scale(_longPressing ? 0.95 : (selected ? 1.03 : 1.0))
+        ..translate(-300 / 2, -50 / 2),
+      duration: const Duration(milliseconds: 300),
+      child: Card(
+        elevation: 4,
+        child: InkWell(
+          customBorder: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(3.0))),
+          child: ListTile(
+            leading: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 44,
+                minHeight: 44,
+                maxWidth: 44,
+                maxHeight: 44,
+              ),
+              child: Radio(
+                value: widget.value,
+                groupValue: widget.groupValue,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                onChanged: (selected) {
+                  setState(() {
+                    _longPressing = false;
+                    widget.setGroupValue(selected);
+                  });
+                },
+              ),
+            ),
+            title: widget.title,
+            subtitle: widget.subtitle,
+            dense: true,
+          ),
+          onTapDown: (details) {
+            setState(() {
+              _longPressing = true;
+            });
+          },
+          onTap: () {
+            setState(() {
+              _longPressing = false;
+              widget.setGroupValue(widget.value);
+            });
+          },
+          onLongPress: () {
+            setState(() {
+              _longPressing = false;
+              widget.onLongPress();
+            });
+          },
+        ),
+      ),
+    );
+  }
+}
 
 class SplashPage extends StatefulWidget {
   final bool switching;
@@ -39,6 +123,8 @@ class SplashPage extends StatefulWidget {
   @override
   _SplashPageState createState() => _SplashPageState();
 }
+
+enum Database { userLanguage, all }
 
 class _SplashPageState extends State<SplashPage> {
   bool showFirst = false;
@@ -129,7 +215,7 @@ class _SplashPageState extends State<SplashPage> {
       });
       await Future.delayed(Duration(milliseconds: 500));
       setState(() {
-        scale1 = 1.03;
+        _database = Database.userLanguage;
       });
     }
   }
@@ -158,15 +244,21 @@ class _SplashPageState extends State<SplashPage> {
     );
   }
 
-  bool userlangCheck = true;
-  bool globalCheck = false;
-  double scale1 = 1.0;
-  double scale2 = 1.0;
+  Database _database;
+
+  void _setDatabase(Database database) {
+    setState(() {
+      _database = database;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
+
+    final translations = Translations.of(context);
+
     return new Scaffold(
       body: Stack(
         children: <Widget>[
@@ -273,157 +365,48 @@ class _SplashPageState extends State<SplashPage> {
                             Container(
                               padding: EdgeInsets.symmetric(vertical: 4.0),
                             ),
-                            AnimatedContainer(
-                              transform: Matrix4.identity()
-                                ..translate(300 / 2, 50 / 2)
-                                ..scale(scale1)
-                                ..translate(-300 / 2, -50 / 2),
-                              duration: Duration(milliseconds: 300),
-                              child: Card(
-                                elevation: 4,
-                                child: InkWell(
-                                  customBorder: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(3.0))),
-                                  child: ListTile(
-                                    leading: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        minWidth: 44,
-                                        minHeight: 44,
-                                        maxWidth: 44,
-                                        maxHeight: 44,
-                                      ),
-                                      child: CircularCheckBox(
-                                        value: userlangCheck,
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.padded,
-                                        onChanged: (bool value) {
-                                          setState(() {
-                                            scale1 = 1.03;
-                                            scale2 = 1.0;
-                                            if (userlangCheck) return;
-                                            userlangCheck = !userlangCheck;
-                                            globalCheck = false;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    dense: true,
-                                    title: Text(
-                                        Translations.of(context)
-                                            .trans('dbuser'),
-                                        style: TextStyle(fontSize: 14)),
-                                    subtitle: Text(
-                                        '${imgZipSize['ko']}${Translations.of(context).trans('dbdownloadsize')}',
-                                        style: TextStyle(fontSize: 12)),
-                                  ),
-                                  onTapDown: (detail) {
-                                    setState(() {
-                                      scale1 = 0.95;
-                                    });
-                                  },
-                                  onTap: () {
-                                    setState(() {
-                                      scale1 = 1.03;
-                                      scale2 = 1.0;
-                                      if (userlangCheck) return;
-                                      userlangCheck = !userlangCheck;
-                                      globalCheck = false;
-                                    });
-                                  },
-                                  onLongPress: () async {
-                                    setState(() {
-                                      if (userlangCheck)
-                                        scale1 = 1.03;
-                                      else
-                                        scale1 = 1.0;
-                                    });
-                                    await Dialogs.okDialog(
-                                        context,
-                                        Translations.of(context)
-                                            .trans('dbusermsg')
-                                            .replaceFirst(
-                                                '%s',
-                                                imgSize[Translations.of(context)
-                                                    .dbLanguageCode]));
-                                  },
-                                ),
+                            RadioTile(
+                              value: Database.userLanguage,
+                              groupValue: _database,
+                              setGroupValue: _setDatabase,
+                              title: Text(
+                                translations.trans('dbuser'),
+                                style: TextStyle(fontSize: 14),
                               ),
+                              subtitle: Text(
+                                '${imgZipSize['ko']}${translations.trans('dbdownloadsize')}',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              onLongPress: () {
+                                Dialogs.okDialog(
+                                    context,
+                                    translations
+                                        .trans('dbusermsg')
+                                        .replaceFirst(
+                                            '%s',
+                                            imgSize[
+                                                translations.dbLanguageCode]));
+                              },
                             ),
-                            AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              transform: Matrix4.identity()
-                                ..translate(300 / 2, 50 / 2)
-                                ..scale(scale2)
-                                ..translate(-300 / 2, -50 / 2),
-                              child: Card(
-                                elevation: 4,
-                                child: InkWell(
-                                  customBorder: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(3.0))),
-                                  child: ListTile(
-                                    leading: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        minWidth: 44,
-                                        minHeight: 44,
-                                        maxWidth: 44,
-                                        maxHeight: 44,
-                                      ),
-                                      child: CircularCheckBox(
-                                        value: globalCheck,
-                                        materialTapTargetSize:
-                                            MaterialTapTargetSize.padded,
-                                        onChanged: (bool value) {
-                                          setState(() {
-                                            scale2 = 1.03;
-                                            scale1 = 1.0;
-                                            if (globalCheck) return;
-                                            globalCheck = !globalCheck;
-                                            userlangCheck = false;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    dense: true,
-                                    title: Text(
-                                        Translations.of(context)
-                                            .trans('dballname'),
-                                        style: TextStyle(fontSize: 14)),
-                                    subtitle: Text(
-                                        '${imgZipSize['global']}${Translations.of(context).trans('dbdownloadsize')}',
-                                        style: TextStyle(fontSize: 12)),
-                                  ),
-                                  onTapDown: (detail) {
-                                    setState(() {
-                                      scale2 = 0.95;
-                                    });
-                                  },
-                                  onTap: () {
-                                    setState(() {
-                                      scale2 = 1.03;
-                                      scale1 = 1.0;
-                                      if (globalCheck) return;
-                                      globalCheck = !globalCheck;
-                                      userlangCheck = false;
-                                    });
-                                  },
-                                  onLongPress: () async {
-                                    setState(() {
-                                      if (globalCheck)
-                                        scale2 = 1.03;
-                                      else
-                                        scale2 = 1.0;
-                                    });
-                                    await Dialogs.okDialog(
-                                        context,
-                                        Translations.of(context)
-                                            .trans('dballmsg')
-                                            .replaceFirst(
-                                                '%s', imgSize['global']));
-                                  },
-                                ),
+                            RadioTile(
+                              value: Database.all,
+                              groupValue: _database,
+                              setGroupValue: _setDatabase,
+                              title: Text(
+                                translations.trans('dballname'),
+                                style: TextStyle(fontSize: 14),
                               ),
+                              subtitle: Text(
+                                '${imgZipSize['global']}${translations.trans('dbdownloadsize')}',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              onLongPress: () {
+                                Dialogs.okDialog(
+                                    context,
+                                    translations
+                                        .trans('dballmsg')
+                                        .replaceFirst('%s', imgSize['global']));
+                              },
                             ),
                             Align(
                               alignment: Alignment.bottomRight,
@@ -445,7 +428,7 @@ class _SplashPageState extends State<SplashPage> {
                                     ),
                                   ),
                                   onPressed: () async {
-                                    if (globalCheck) {
+                                    if (_database == Database.all) {
                                       if (!await Dialogs.yesnoDialog(
                                           context,
                                           Translations.of(context)
@@ -474,7 +457,7 @@ class _SplashPageState extends State<SplashPage> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 DataBaseDownloadPage(
-                                                  dbType: globalCheck
+                                                  dbType: _database == Database.all
                                                       ? 'global'
                                                       : Translations.of(context)
                                                           .dbLanguageCode,
@@ -518,7 +501,7 @@ class _SplashPageState extends State<SplashPage> {
                     if (path == '') return;
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => DataBaseDownloadPage(
-                              dbType: globalCheck
+                              dbType: _database == Database.all
                                   ? 'global'
                                   : Translations.of(context)
                                       .locale

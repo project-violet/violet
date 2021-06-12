@@ -37,7 +37,6 @@ dependencies:
   cached_network_image: ^3.0.0
   carousel_slider: ^2.3.4
   charts_flutter:
-  circular_check_box: ^1.0.4
   convert:
   country_pickers: ^2.0.0
   crypto:
