@@ -4,7 +4,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-import 'package:circular_check_box/circular_check_box.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
@@ -293,7 +292,7 @@ class _SplashPageState extends State<SplashPage> {
                                         maxWidth: 44,
                                         maxHeight: 44,
                                       ),
-                                      child: CircularCheckBox(
+                                      child: Checkbox(
                                         value: userlangCheck,
                                         materialTapTargetSize:
                                             MaterialTapTargetSize.padded,
@@ -370,7 +369,7 @@ class _SplashPageState extends State<SplashPage> {
                                         maxWidth: 44,
                                         maxHeight: 44,
                                       ),
-                                      child: CircularCheckBox(
+                                      child: Checkbox(
                                         value: globalCheck,
                                         materialTapTargetSize:
                                             MaterialTapTargetSize.padded,
