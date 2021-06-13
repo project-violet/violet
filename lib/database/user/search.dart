@@ -41,7 +41,7 @@ class SearchLogDatabase {
                 '[Record-Instance] E: ' + e.toString() + '\n' + st.toString());
           }
         }
-        _instance = new SearchLogDatabase();
+        _instance = SearchLogDatabase();
       }
     });
     return _instance;

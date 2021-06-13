@@ -55,7 +55,7 @@ class GroupModifyPage extends StatelessWidget {
                     minWidth: 50,
                     child: RaisedButton(
                       color: Colors.red,
-                      child: new Text(Translations.of(context).trans('delete')),
+                      child: Text(Translations.of(context).trans('delete')),
                       onPressed: () async {
                         if (await Dialogs.yesnoDialog(
                             context,
@@ -71,7 +71,7 @@ class GroupModifyPage extends StatelessWidget {
                 minWidth: 50,
                 child: RaisedButton(
                   color: Settings.majorColor,
-                  child: new Text(Translations.of(context).trans('ok')),
+                  child: Text(Translations.of(context).trans('ok')),
                   onPressed: () {
                     Navigator.pop(context, [
                       1,
@@ -88,7 +88,7 @@ class GroupModifyPage extends StatelessWidget {
                 minWidth: 50,
                 child: RaisedButton(
                   color: Settings.majorColor,
-                  child: new Text(Translations.of(context).trans('cancel')),
+                  child: Text(Translations.of(context).trans('cancel')),
                   onPressed: () {
                     Navigator.pop(context, [0]);
                   },

@@ -125,7 +125,7 @@ class _FilterPageState extends State<FilterPage> {
           c.groupStates,
           c.isOr,
         ]);
-        return new Future(() => false);
+        return Future(() => false);
       },
       child: Container(
         color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
@@ -271,7 +271,7 @@ class _FilterPageState extends State<FilterPage> {
         setState(() {});
       },
       controller: _searchController,
-      decoration: new InputDecoration(
+      decoration: InputDecoration(
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,

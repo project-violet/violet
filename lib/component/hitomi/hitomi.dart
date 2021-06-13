@@ -120,7 +120,7 @@ class HitomiManager {
         pp = 'character';
       else if (pp == 'classes') pp = 'class';
 
-      var results = new List<Tuple3<String, String, int>>();
+      var results = List<Tuple3<String, String, int>>();
       if (!tagmap.containsKey(pp)) return results;
 
       final ch = tagmap[pp];
@@ -152,7 +152,7 @@ class HitomiManager {
       results.sort((a, b) => b.item3.compareTo(a.item3));
       return results;
     } else {
-      var results = new List<Tuple3<String, String, int>>();
+      var results = List<Tuple3<String, String, int>>();
       tagmap.forEach((key1, value) {
         if (key1 == 'tag') {
           value.forEach((key2, value2) {
@@ -212,7 +212,7 @@ class HitomiManager {
         pp = 'character';
       else if (pp == 'classes') pp = 'class';
 
-      var results = new List<Tuple4<String, String, int, int>>();
+      var results = List<Tuple4<String, String, int, int>>();
       if (!tagmap.containsKey(pp)) return List<Tuple3<String, String, int>>();
 
       final ch = tagmap[pp];
@@ -263,7 +263,7 @@ class HitomiManager {
           .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
           .toList();
     } else {
-      var results = new List<Tuple4<String, String, int, int>>();
+      var results = List<Tuple4<String, String, int, int>>();
       tagmap.forEach((key1, value) {
         if (key1 == 'tag') {
           value.forEach((key2, value2) {

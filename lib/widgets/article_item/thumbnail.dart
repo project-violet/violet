@@ -93,10 +93,10 @@ class ThumbnailWidget extends StatelessWidget {
           ),
           child: isBlurred
               ? BackdropFilter(
-                  filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                  child: new Container(
+                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                  child: Container(
                     decoration:
-                        new BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                        BoxDecoration(color: Colors.white.withOpacity(0.0)),
                   ),
                 )
               : Container(),
@@ -117,7 +117,7 @@ class ThumbnailWidget extends StatelessWidget {
     return Align(
       alignment: FractionalOffset.topLeft,
       child: Transform(
-        transform: new Matrix4.identity()..scale(0.9),
+        transform: Matrix4.identity()..scale(0.9),
         child: SizedBox(
           width: 35,
           height: 35,
@@ -162,7 +162,7 @@ class ThumbnailWidget extends StatelessWidget {
       child: Align(
         alignment: FractionalOffset.bottomRight,
         child: Transform(
-          transform: new Matrix4.identity()..scale(0.9),
+          transform: Matrix4.identity()..scale(0.9),
           child: Theme(
             data: ThemeData(canvasColor: Colors.transparent),
             child: RawChip(

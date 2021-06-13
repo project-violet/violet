@@ -495,7 +495,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                   actions: <Widget>[
                     RaisedButton(
                       color: Settings.majorColor,
-                      child: new Text(Translations.of(context).trans('cancel')),
+                      child: Text(Translations.of(context).trans('cancel')),
                       onPressed: () {
                         Navigator.pop(context, 0);
                       },
