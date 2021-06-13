@@ -24,6 +24,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/viewer/others/instantly_getsure_detector.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
@@ -815,129 +816,116 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     return Stack(
       children: <Widget>[
         // PhotoView.customChild(
-        GestureDetector(
-          onDoubleTapDown: _handleDoubleTapDown,
-          onDoubleTap: _handleDoubleTap,
-          // onTapUp: (TapUpDetails details) {
-          //   _transformationController.toScene(
-          //     details.localPosition,
-          //   );
-          // },
-          // onDoubleTapDown: (details) {
-          //   _transformationController.toScene(
-          //     details.localPosition,
-          //   );
-          // },
-          child: InteractiveViewer(
-            transformationController: _transformationController,
-            minScale: 1.0,
-            child: Container(
-              color: const Color(0xff444444),
-              child: NotificationListener(
-                child: ScrollablePositionedList.builder(
-                  physics: scrollListEnable
-                      ? AlwaysScrollableScrollPhysics()
-                      : NeverScrollableScrollPhysics(),
-                  padding: EdgeInsets.zero,
-                  itemCount: _pageInfo.uris.length,
-                  itemScrollController: itemScrollController,
-                  itemPositionsListener: itemPositionsListener,
-                  minCacheExtent: height * 3.0,
-                  itemBuilder: (context, index) {
-                    Widget image;
-                    if (!Settings.padding) {
-                      if (_pageInfo.useWeb)
-                        image = _networkImageItem(index);
-                      else if (_pageInfo.useFileSystem)
-                        image = _storageImageItem(index);
-                      else if (_pageInfo.useProvider)
-                        image = _providerImageItem(index);
-                    } else {
-                      if (_pageInfo.useWeb)
-                        image = Padding(
-                          child: _networkImageItem(index),
-                          padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
-                        );
-                      else if (_pageInfo.useFileSystem)
-                        image = Padding(
-                          child: _storageImageItem(index),
-                          padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
-                        );
-                      else if (_pageInfo.useProvider)
-                        image = Padding(
-                          child: _providerImageItem(index),
-                          padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
-                        );
-                    }
+        InteractiveViewer(
+          transformationController: _transformationController,
+          minScale: 1.0,
+          child: Container(
+            color: const Color(0xff444444),
+            child: NotificationListener(
+              child: ScrollablePositionedList.builder(
+                physics: scrollListEnable
+                    ? AlwaysScrollableScrollPhysics()
+                    : NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: _pageInfo.uris.length,
+                itemScrollController: itemScrollController,
+                itemPositionsListener: itemPositionsListener,
+                minCacheExtent: height * 3.0,
+                itemBuilder: (context, index) {
+                  Widget image;
+                  if (!Settings.padding) {
+                    if (_pageInfo.useWeb)
+                      image = _networkImageItem(index);
+                    else if (_pageInfo.useFileSystem)
+                      image = _storageImageItem(index);
+                    else if (_pageInfo.useProvider)
+                      image = _providerImageItem(index);
+                  } else {
+                    if (_pageInfo.useWeb)
+                      image = Padding(
+                        child: _networkImageItem(index),
+                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                      );
+                    else if (_pageInfo.useFileSystem)
+                      image = Padding(
+                        child: _storageImageItem(index),
+                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                      );
+                    else if (_pageInfo.useProvider)
+                      image = Padding(
+                        child: _providerImageItem(index),
+                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                      );
+                  }
 
-                    if (image == null) throw new Exception('Dead Reaching');
+                  if (image == null) throw new Exception('Dead Reaching');
 
-                    // return RawGestureDetector(
-                    //   gestures: {
-                    //     MultiTouchGestureRecognizer:
-                    //         GestureRecognizerFactoryWithHandlers<
-                    //             MultiTouchGestureRecognizer>(
-                    //       () => MultiTouchGestureRecognizer(),
-                    //       (MultiTouchGestureRecognizer instance) {
-                    //         instance.minNumberOfTouches = 2;
-                    //         instance.onMultiTap = (correctNumberOfTouches) {
-                    //           if (correctNumberOfTouches) {
-                    //             if (scrollListEnable) {
-                    //               setState(() {
-                    //                 scrollListEnable = false;
-                    //               });
-                    //             }
-                    //           } else {
-                    //             setState(() {
-                    //               scrollListEnable = true;
-                    //             });
-                    //           }
-                    //         };
-                    //       },
-                    //     ),
-                    //   },
-                    //   child: image,
-                    // );
+                  // return RawGestureDetector(
+                  //   gestures: {
+                  //     MultiTouchGestureRecognizer:
+                  //         GestureRecognizerFactoryWithHandlers<
+                  //             MultiTouchGestureRecognizer>(
+                  //       () => MultiTouchGestureRecognizer(),
+                  //       (MultiTouchGestureRecognizer instance) {
+                  //         instance.minNumberOfTouches = 2;
+                  //         instance.onMultiTap = (correctNumberOfTouches) {
+                  //           if (correctNumberOfTouches) {
+                  //             if (scrollListEnable) {
+                  //               setState(() {
+                  //                 scrollListEnable = false;
+                  //               });
+                  //             }
+                  //           } else {
+                  //             setState(() {
+                  //               scrollListEnable = true;
+                  //             });
+                  //           }
+                  //         };
+                  //       },
+                  //     ),
+                  //   },
+                  //   child: image,
+                  // );
 
-                    return Listener(
-                        onPointerDown: (event) {
-                          _mpPoints++;
-                          if (_mpPoints >= 2) {
-                            if (scrollListEnable) {
-                              setState(() {
-                                scrollListEnable = false;
-                              });
-                            }
-                          }
-                        },
-                        onPointerUp: (event) {
-                          _mpPoints--;
-                          if (_mpPoints < 1) {
+                  return Listener(
+                      onPointerDown: (event) {
+                        _mpPoints++;
+                        if (_mpPoints >= 2) {
+                          if (scrollListEnable) {
                             setState(() {
-                              scrollListEnable = true;
+                              scrollListEnable = false;
                             });
                           }
-                        },
-                        // onPointerMove: (event) {
-                        // },
-                        child: image);
-                  },
-                ),
-                onNotification: (t) {
-                  if (t is ScrollStartNotification) {
-                    _onScroll = true;
-                  } else if (t is ScrollEndNotification) {
-                    _onScroll = false;
-                  }
+                        }
+                      },
+                      onPointerUp: (event) {
+                        _mpPoints--;
+                        if (_mpPoints < 1) {
+                          setState(() {
+                            scrollListEnable = true;
+                          });
+                        }
+                      },
+                      // onPointerMove: (event) {
+                      // },
+                      child: image);
                 },
               ),
+              onNotification: (t) {
+                if (t is ScrollStartNotification) {
+                  _onScroll = true;
+                } else if (t is ScrollEndNotification) {
+                  _onScroll = false;
+                }
+              },
             ),
           ),
         ),
         _verticalPageLabel(),
-        _touchAreaMiddle(),
-        !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
-        !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
+        _touchAreaDoubleTap(),
+        // _touchAreaMiddle(),
+        // !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
+        // !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
         !_disableBottom &&
                 (!Settings.moveToAppBarToBottom || Settings.showSlider)
             ? _bottomAppBar()
@@ -945,31 +933,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         !_disableBottom ? _appBar() : Container(),
       ],
     );
-  }
-
-  void _handleDoubleTapDown(TapDownDetails details) {
-    _doubleTapDetails = details;
-  }
-
-  void _handleDoubleTap() {
-    Matrix4 _endMatrix;
-    Offset _position = _doubleTapDetails.localPosition;
-
-    if (_transformationController.value != Matrix4.identity()) {
-      _endMatrix = Matrix4.identity();
-    } else {
-      _endMatrix = Matrix4.identity()
-        ..translate(-_position.dx * 1, -_position.dy * 1)
-        ..scale(2.0);
-    }
-
-    _animation = Matrix4Tween(
-      begin: _transformationController.value,
-      end: _endMatrix,
-    ).animate(
-      CurveTween(curve: Curves.easeOut).animate(_animationController),
-    );
-    _animationController.forward(from: 0);
   }
 
   _bodyHorizontal() {
@@ -1142,6 +1105,65 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     throw new Exception('Dead Reaching');
   }
 
+  bool isPressed = false;
+  bool isSingleTap = false;
+  bool isDoubleTap = false;
+  Timer doubleTapTimer;
+
+  _touchAreaDoubleTap() {
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+    return Container(
+      color: null,
+      width: width,
+      height: height,
+      child: InstantlyGestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onDoubleTap: _handleDoubleTap,
+        onTap: () {
+          _handleTap();
+        },
+        onTapDown: (TapDownDetails details) {
+          _doubleTapDetails = details;
+        },
+      ),
+    );
+  }
+
+  void _handleTap() {
+    final width = MediaQuery.of(context).size.width;
+    if (_doubleTapDetails.localPosition.dx < width / 3 &&
+        !Settings.disableOverlayButton) {
+      _leftButtonEvent();
+    } else if (width / 3 * 2 < _doubleTapDetails.localPosition.dx &&
+        !Settings.disableOverlayButton) {
+      _rightButtonEvent();
+    } else {
+      _middleButtonEvent();
+    }
+  }
+
+  void _handleDoubleTap() {
+    Matrix4 _endMatrix;
+    Offset _position = _doubleTapDetails.localPosition;
+
+    if (_transformationController.value != Matrix4.identity()) {
+      _endMatrix = Matrix4.identity();
+    } else {
+      _endMatrix = Matrix4.identity()
+        ..translate(-_position.dx * 1, -_position.dy * 1)
+        ..scale(2.0);
+    }
+
+    _animation = Matrix4Tween(
+      begin: _transformationController.value,
+      end: _endMatrix,
+    ).animate(
+      CurveTween(curve: Curves.easeOut).animate(_animationController),
+    );
+    _animationController.forward(from: 0);
+  }
+
   bool _overlayOpend = false;
   _touchAreaMiddle() {
     final height = MediaQuery.of(context).size.height;
@@ -1154,36 +1176,38 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         height: height,
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () async {
-            if (!_overlayOpend) {
-              if (!Settings.isHorizontal) _prevPage = currentPage;
-              // setState(() {});
-              setState(() {
-                _opacity = 1.0;
-                _disableBottom = false;
-              });
-              if (!Settings.disableFullScreen) {
-                SystemChrome.setEnabledSystemUIOverlays(
-                    [SystemUiOverlay.bottom, SystemUiOverlay.top]);
-              }
-            } else {
-              setState(() {
-                _opacity = 0.0;
-              });
-              if (!Settings.disableFullScreen) {
-                SystemChrome.setEnabledSystemUIOverlays([]);
-              }
-              Future.delayed(Duration(milliseconds: 300)).then((value) {
-                setState(() {
-                  _disableBottom = true;
-                });
-              });
-            }
-            _overlayOpend = !_overlayOpend;
-          },
+          onTap: _middleButtonEvent,
         ),
       ),
     );
+  }
+
+  _middleButtonEvent() async {
+    if (!_overlayOpend) {
+      if (!Settings.isHorizontal) _prevPage = currentPage;
+      // setState(() {});
+      setState(() {
+        _opacity = 1.0;
+        _disableBottom = false;
+      });
+      if (!Settings.disableFullScreen) {
+        SystemChrome.setEnabledSystemUIOverlays(
+            [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+      }
+    } else {
+      setState(() {
+        _opacity = 0.0;
+      });
+      if (!Settings.disableFullScreen) {
+        SystemChrome.setEnabledSystemUIOverlays([]);
+      }
+      Future.delayed(Duration(milliseconds: 300)).then((value) {
+        setState(() {
+          _disableBottom = true;
+        });
+      });
+    }
+    _overlayOpend = !_overlayOpend;
   }
 
   _touchAreaLeft() {
