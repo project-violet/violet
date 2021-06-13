@@ -54,7 +54,7 @@ class QueryManager {
   int itemsPerPage = 500;
 
   static Future<QueryManager> query(String rawQuery) async {
-    QueryManager qm = new QueryManager();
+    QueryManager qm = QueryManager();
     qm.queryString = rawQuery;
     qm.results = (await (await DataBaseManager.getInstance()).query(rawQuery))
         .map((e) => QueryResult(result: e))
@@ -63,7 +63,7 @@ class QueryManager {
   }
 
   static QueryManager queryPagination(String rawQuery) {
-    QueryManager qm = new QueryManager();
+    QueryManager qm = QueryManager();
     qm.isPagination = true;
     qm.curPage = 0;
     qm.queryString = rawQuery;

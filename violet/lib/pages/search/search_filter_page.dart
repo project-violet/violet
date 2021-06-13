@@ -132,7 +132,7 @@ class _SearchFilterState extends State<SearchFilter> {
           widget.groupStates,
           widget.isOr,
         ]);
-        return new Future(() => false);
+        return Future(() => false);
       },
       child: Container(
         color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
@@ -466,7 +466,7 @@ class _SearchFilterState extends State<SearchFilter> {
         setState(() {});
       },
       controller: _searchController,
-      decoration: new InputDecoration(
+      decoration: InputDecoration(
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,

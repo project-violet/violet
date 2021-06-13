@@ -175,7 +175,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   String numberWithComma(int param) {
-    return new NumberFormat('###,###,###,###')
+    return NumberFormat('###,###,###,###')
         .format(param)
         .replaceAll(' ', '');
   }

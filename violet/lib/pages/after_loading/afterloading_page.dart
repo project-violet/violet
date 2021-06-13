@@ -21,7 +21,7 @@ import 'package:violet/version/update_sync.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   @override
-  _AfterLoadingPageState createState() => new _AfterLoadingPageState();
+  _AfterLoadingPageState createState() => _AfterLoadingPageState();
 }
 
 class _AfterLoadingPageState extends State<AfterLoadingPage>
@@ -32,7 +32,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
 
   @override
   void initState() {
-    _c = new PageController(
+    _c = PageController(
       initialPage: _page,
     );
     super.initState();
@@ -69,7 +69,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
     Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
         (mediaQuery.padding + mediaQuery.viewInsets).bottom);
     if (Platform.isAndroid) {
-      return new Scaffold(
+      return Scaffold(
         key: scaffoldKey,
         bottomNavigationBar: MediaQuery(
           data: mediaQuery.copyWith(
@@ -92,43 +92,43 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                   curve: Curves.easeInOut);
             },
             items: <BottomNavigationBarItem>[
-              new BottomNavigationBarItem(
+              BottomNavigationBarItem(
                   backgroundColor: Settings.themeWhat
                       ? Colors.grey.shade900.withOpacity(0.90)
                       : Colors.grey.shade50,
-                  icon: new Icon(MdiIcons.home),
-                  title: new Text(Translations.of(context).trans('main'))),
-              new BottomNavigationBarItem(
+                  icon: Icon(MdiIcons.home),
+                  title: Text(Translations.of(context).trans('main'))),
+              BottomNavigationBarItem(
                   backgroundColor: Settings.themeWhat
                       ? Colors.grey.shade900.withOpacity(0.90)
                       : Colors.grey.shade50,
-                  icon: new Icon(Icons.search),
-                  title: new Text(Translations.of(context).trans('search'))),
-              new BottomNavigationBarItem(
+                  icon: Icon(Icons.search),
+                  title: Text(Translations.of(context).trans('search'))),
+              BottomNavigationBarItem(
                   backgroundColor: Settings.themeWhat
                       ? Colors.grey.shade900.withOpacity(0.90)
                       : Colors.grey.shade50,
-                  icon: new Icon(Icons.bookmark),
-                  title: new Text(Translations.of(context).trans('bookmark'))),
-              new BottomNavigationBarItem(
-                  icon: new Icon(Icons.file_download),
-                  title: new Text(Translations.of(context).trans('download'))),
-              // new BottomNavigationBarItem(
+                  icon: Icon(Icons.bookmark),
+                  title: Text(Translations.of(context).trans('bookmark'))),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.file_download),
+                  title: Text(Translations.of(context).trans('download'))),
+              // BottomNavigationBarItem(
               //     backgroundColor: Settings.themeWhat
               //         ? Colors.grey.shade900.withOpacity(0.90)
               //         : Colors.grey.shade50,
-              //     icon: new Icon(MdiIcons.accountGroup),
-              //     title: new Text(Translations.of(context).trans('community'))),
-              new BottomNavigationBarItem(
+              //     icon: Icon(MdiIcons.accountGroup),
+              //     title: Text(Translations.of(context).trans('community'))),
+              BottomNavigationBarItem(
                   backgroundColor: Settings.themeWhat
                       ? Colors.grey.shade900.withOpacity(0.90)
                       : Colors.grey.shade50,
-                  icon: new Icon(Icons.settings),
-                  title: new Text(Translations.of(context).trans('settings'))),
+                  icon: Icon(Icons.settings),
+                  title: Text(Translations.of(context).trans('settings'))),
             ],
           ),
         ),
-        body: new PageView(
+        body: PageView(
           controller: _c,
           onPageChanged: (newPage) {
             setState(() {
@@ -147,7 +147,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         ),
       );
     } else if (Platform.isIOS) {
-      return new Scaffold(
+      return Scaffold(
         key: scaffoldKey,
         bottomNavigationBar: BottomNavigationBar(
           elevation: 9,
@@ -163,39 +163,39 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
                 curve: Curves.easeInOut);
           },
           items: <BottomNavigationBarItem>[
-            new BottomNavigationBarItem(
+            BottomNavigationBarItem(
                 backgroundColor: Settings.themeWhat
                     ? Colors.grey.shade900.withOpacity(0.90)
                     : Colors.grey.shade50,
-                icon: new Icon(MdiIcons.home),
-                title: new Text(Translations.of(context).trans('main'))),
-            new BottomNavigationBarItem(
+                icon: Icon(MdiIcons.home),
+                title: Text(Translations.of(context).trans('main'))),
+            BottomNavigationBarItem(
                 backgroundColor: Settings.themeWhat
                     ? Colors.grey.shade900.withOpacity(0.90)
                     : Colors.grey.shade50,
-                icon: new Icon(Icons.search),
-                title: new Text(Translations.of(context).trans('search'))),
-            new BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                title: Text(Translations.of(context).trans('search'))),
+            BottomNavigationBarItem(
                 backgroundColor: Settings.themeWhat
                     ? Colors.grey.shade900.withOpacity(0.90)
                     : Colors.grey.shade50,
-                icon: new Icon(Icons.bookmark),
-                title: new Text(Translations.of(context).trans('bookmark'))),
-            // new BottomNavigationBarItem(
+                icon: Icon(Icons.bookmark),
+                title: Text(Translations.of(context).trans('bookmark'))),
+            // BottomNavigationBarItem(
             //     backgroundColor: Settings.themeWhat
             //         ? Colors.grey.shade900.withOpacity(0.90)
             //         : Colors.grey.shade50,
-            //     icon: new Icon(MdiIcons.accountGroup),
-            //     title: new Text(Translations.of(context).trans('community'))),
-            new BottomNavigationBarItem(
+            //     icon: Icon(MdiIcons.accountGroup),
+            //     title: Text(Translations.of(context).trans('community'))),
+            BottomNavigationBarItem(
                 backgroundColor: Settings.themeWhat
                     ? Colors.grey.shade900.withOpacity(0.90)
                     : Colors.grey.shade50,
-                icon: new Icon(Icons.settings),
-                title: new Text(Translations.of(context).trans('settings'))),
+                icon: Icon(Icons.settings),
+                title: Text(Translations.of(context).trans('settings'))),
           ],
         ),
-        body: new PageView(
+        body: PageView(
           controller: _c,
           onPageChanged: (newPage) {
             setState(() {
@@ -213,7 +213,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         // ),
       );
     }
-    throw new Exception('not implemented');
+    throw Exception('not implemented');
   }
 
   int page = 0;
@@ -223,9 +223,9 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
     Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
         (mediaQuery.padding + mediaQuery.viewInsets).bottom);
     if (Platform.isAndroid) {
-      return new Scaffold(
+      return Scaffold(
         body: PageView(
-          physics: new NeverScrollableScrollPhysics(),
+          physics: NeverScrollableScrollPhysics(),
           controller: _c,
           scrollDirection: Axis.vertical,
           children: <Widget>[
@@ -339,9 +339,9 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         ),
       );
     } else if (Platform.isIOS) {
-      return new Scaffold(
+      return Scaffold(
         body: PageView(
-          physics: new NeverScrollableScrollPhysics(),
+          physics: NeverScrollableScrollPhysics(),
           controller: _c,
           scrollDirection: Axis.vertical,
           children: <Widget>[

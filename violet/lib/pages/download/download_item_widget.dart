@@ -109,7 +109,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       await routine.extractFilePath();
 
       var _timer =
-          new Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
+          Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
         setState(() {
           if (downloadSec / 1024 < 500.0)
             downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";
@@ -180,7 +180,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           await widget.item.delete();
           widget.refeshCallback();
         } else if (v == 2) {
-          Clipboard.setData(new ClipboardData(text: widget.item.url()));
+          Clipboard.setData(ClipboardData(text: widget.item.url()));
           FlutterToast(context).showToast(
             child: ToastWrapper(
               isCheck: true,

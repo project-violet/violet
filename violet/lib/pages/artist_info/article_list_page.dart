@@ -121,7 +121,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
                     Widget wi) {
-                  return new FadeTransition(opacity: animation, child: wi);
+                  return FadeTransition(opacity: animation, child: wi);
                 },
                 pageBuilder: (_, __, ___) => SearchType2(
                   nowType: nowType,
@@ -145,7 +145,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
                     Widget wi) {
-                  return new FadeTransition(opacity: animation, child: wi);
+                  return FadeTransition(opacity: animation, child: wi);
                 },
                 pageBuilder: (_, __, ___) => BookmarkSearchSort(
                   queryResult: widget.cc,

@@ -44,7 +44,7 @@ class Translations {
     String data = await rootBundle.loadString('assets/locale/$code.json');
     Map<String, dynamic> _result = json.decode(data);
 
-    this._sentences = new Map();
+    this._sentences = Map();
     _result.forEach((String key, dynamic value) {
       this._sentences[key] = value.toString();
     });
@@ -74,7 +74,7 @@ class TranslationsDelegate extends LocalizationsDelegate<Translations> {
 
   @override
   Future<Translations> load(Locale locale) async {
-    Translations localizations = new Translations(locale);
+    Translations localizations = Translations(locale);
     await localizations.load();
 
     if (Translations.instance == null) {

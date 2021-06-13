@@ -67,7 +67,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                     children: <Widget>[
                       TabBar(
                         indicatorSize: TabBarIndicatorSize.tab,
-                        indicator: new BubbleTabIndicator(
+                        indicator: BubbleTabIndicator(
                           indicatorHeight: 40.0,
                           indicatorColor: Settings.majorColor,
                           tabBarIndicatorSize: TabBarIndicatorSize.tab,
@@ -146,7 +146,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                         ],
                       ),
                       Expanded(
-                        child: new TabBarView(
+                        child: TabBarView(
                           // controller: _tabController,
                           children: [
                             _Tab(0),

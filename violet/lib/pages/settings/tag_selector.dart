@@ -110,17 +110,17 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         ],
       ),
       actions: <Widget>[
-        new RaisedButton(
+        RaisedButton(
           color: Settings.majorColor,
-          child: new Text(Translations.of(context).trans('ok')),
+          child: Text(Translations.of(context).trans('ok')),
           onPressed: () {
             Navigator.pop(
                 context, Tuple2<int, String>(1, _searchController.text));
           },
         ),
-        new RaisedButton(
+        RaisedButton(
           color: Settings.majorColor,
-          child: new Text(Translations.of(context).trans('cancel')),
+          child: Text(Translations.of(context).trans('cancel')),
           onPressed: () {
             Navigator.pop(
                 context, Tuple2<int, String>(0, _searchController.text));
