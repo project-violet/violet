@@ -922,10 +922,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           ),
         ),
         _verticalPageLabel(),
-        _touchAreaDoubleTap(),
-        // _touchAreaMiddle(),
-        // !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
-        // !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
+        _touchArea(),
         !_disableBottom &&
                 (!Settings.moveToAppBarToBottom || Settings.showSlider)
             ? _bottomAppBar()
@@ -1105,24 +1102,20 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     throw new Exception('Dead Reaching');
   }
 
-  bool isPressed = false;
-  bool isSingleTap = false;
-  bool isDoubleTap = false;
-  Timer doubleTapTimer;
-
-  _touchAreaDoubleTap() {
+  _touchArea() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Container(
       color: null,
       width: width,
       height: height,
-      child: InstantlyGestureDetector(
+      child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onDoubleTap: _handleDoubleTap,
-        onTap: () {
-          _handleTap();
+        onDoubleTapDown: (TapDownDetails details) {
+          _doubleTapDetails = details;
         },
+        onDoubleTap: _handleDoubleTap,
+        onTap: _handleTap,
         onTapDown: (TapDownDetails details) {
           _doubleTapDetails = details;
         },
