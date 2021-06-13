@@ -754,7 +754,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               } else {
                 var npage = _prevPage;
                 _sliderOnChange = true;
-                Future.delayed(Duration(milliseconds: 100)).then((value) {
+                Future.delayed(Duration(milliseconds: 180)).then((value) {
                   itemScrollController.jumpTo(
                       index: npage - 1, alignment: 0.12);
                   _sliderOnChange = false;
@@ -1102,6 +1102,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     throw new Exception('Dead Reaching');
   }
 
+  Timer _doubleTapCheckTimer;
+  bool isPressed = false;
+  bool isDoubleTap = false;
+  bool isSingleTap = false;
   _touchArea() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -1111,19 +1115,54 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       height: height,
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onDoubleTapDown: (TapDownDetails details) {
-          _doubleTapDetails = details;
-        },
-        onDoubleTap: _handleDoubleTap,
+        // onDoubleTapDown: (TapDownDetails details) {
+        //   _doubleTapDetails = details;
+        // },
+        // onDoubleTap: _handleDoubleTap,
         onTap: _handleTap,
         onTapDown: (TapDownDetails details) {
           _doubleTapDetails = details;
+
+          isPressed = true;
+          if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
+            isDoubleTap = true;
+            _doubleTapCheckTimer.cancel();
+          } else {
+            _doubleTapCheckTimer = Timer(
+                const Duration(milliseconds: 200), _doubleTapTimerElapsed);
+          }
+        },
+        onTapCancel: () {
+          isPressed = isSingleTap = isDoubleTap = false;
+          if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
+            _doubleTapCheckTimer.cancel();
+          }
         },
       ),
     );
   }
 
+  void _doubleTapTimerElapsed() {
+    if (isPressed) {
+      isSingleTap = true;
+    } else {
+      _touchEvent();
+    }
+  }
+
   void _handleTap() {
+    isPressed = false;
+    if (isSingleTap) {
+      isSingleTap = false;
+      _touchEvent();
+    }
+    if (isDoubleTap) {
+      isDoubleTap = false;
+      _doubleTapEvent();
+    }
+  }
+
+  void _touchEvent() {
     final width = MediaQuery.of(context).size.width;
     if (_doubleTapDetails.localPosition.dx < width / 3 &&
         !Settings.disableOverlayButton) {
@@ -1136,7 +1175,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     }
   }
 
-  void _handleDoubleTap() {
+  void _doubleTapEvent() {
     Matrix4 _endMatrix;
     Offset _position = _doubleTapDetails.localPosition;
 
