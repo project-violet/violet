@@ -24,7 +24,6 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
-import 'package:violet/pages/viewer/others/instantly_getsure_detector.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
@@ -177,10 +176,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         _leftButtonEvent();
       }
     });
-
-    // _pageInfo.uris.forEach((element) {
-    //   print("'$element',");
-    // });
   }
 
   @override
@@ -301,7 +296,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                         .replaceAll('%s', e.lastPage().toString()),
                     Translations.of(context).trans('record'))) {
               if (!Settings.isHorizontal) {
-                // _scroll.jumpTo(page2Offset(e.lastPage() - 1));
                 itemScrollController.jumpTo(
                     index: e.lastPage() - 1, alignment: 0.12);
               } else {
@@ -316,14 +310,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   Widget build(BuildContext context) {
     ImageCache _imageCache = PaintingBinding.instance.imageCache;
     final mediaQuery = MediaQuery.of(context);
-    if (_imageCache.currentSizeBytes >= (1024 + 256) << 20
-        // || _imageCache.currentSize >= 50
-        ) {
+    if (_imageCache.currentSizeBytes >= (1024 + 256) << 20) {
       _imageCache.clear();
       _imageCache.clearLiveImages();
     }
-    // return Container(
-    //   padding: EdgeInsets.only(top: statusBarHeight),
 
     return WillPopScope(
       onWillPop: () async {
@@ -336,11 +326,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             extendBodyBehindAppBar: true,
             backgroundColor: Colors.transparent,
             resizeToAvoidBottomInset: false,
-            // resizeToAvoidBottomPadding: false,
-            // appBar: _opacity == 1.0
-            //     ? PreferredSize(
-            //         preferredSize: const Size.fromHeight(100), child: _appBar())
-            //     : null,
             body: Padding(
               padding: mediaQuery.padding + mediaQuery.viewInsets,
               child:
@@ -358,8 +343,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               extendBodyBehindAppBar: true,
               backgroundColor: Colors.transparent,
               resizeToAvoidBottomInset: false,
-              // resizeToAvoidBottomPadding: false,
-              // appBar: _opacity == 1.0 ? _appBar() : null,
               body: Padding(
                 padding: Platform.isIOS && _disableBottom
                     ? EdgeInsets.only(top: Variables.statusBarHeight)
@@ -393,8 +376,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 )
               : Container(),
           Container(
-            // alignment: Alignment.bottomCenter,
-            // color: Colors.black.withOpacity(0.8),
             padding: !Settings.moveToAppBarToBottom
                 ? EdgeInsets.only(
                     top: !Settings.disableFullScreen
@@ -425,7 +406,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                           ],
                         ),
                       ),
-                      // _appBarPageInfo(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -433,10 +413,6 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                           _appBarHistory(),
                           _appBarTimer(),
                           _appBarGallery(),
-                          // IconButton(
-                          //     icon: Icon(MdiIcons.fileDownload),
-                          //     color: Colors.white,
-                          //     onPressed: () async {}),
                           _appBarSettings(),
                         ],
                       ),
@@ -860,55 +836,27 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
                   if (image == null) throw new Exception('Dead Reaching');
 
-                  // return RawGestureDetector(
-                  //   gestures: {
-                  //     MultiTouchGestureRecognizer:
-                  //         GestureRecognizerFactoryWithHandlers<
-                  //             MultiTouchGestureRecognizer>(
-                  //       () => MultiTouchGestureRecognizer(),
-                  //       (MultiTouchGestureRecognizer instance) {
-                  //         instance.minNumberOfTouches = 2;
-                  //         instance.onMultiTap = (correctNumberOfTouches) {
-                  //           if (correctNumberOfTouches) {
-                  //             if (scrollListEnable) {
-                  //               setState(() {
-                  //                 scrollListEnable = false;
-                  //               });
-                  //             }
-                  //           } else {
-                  //             setState(() {
-                  //               scrollListEnable = true;
-                  //             });
-                  //           }
-                  //         };
-                  //       },
-                  //     ),
-                  //   },
-                  //   child: image,
-                  // );
-
                   return Listener(
-                      onPointerDown: (event) {
-                        _mpPoints++;
-                        if (_mpPoints >= 2) {
-                          if (scrollListEnable) {
-                            setState(() {
-                              scrollListEnable = false;
-                            });
-                          }
-                        }
-                      },
-                      onPointerUp: (event) {
-                        _mpPoints--;
-                        if (_mpPoints < 1) {
+                    onPointerDown: (event) {
+                      _mpPoints++;
+                      if (_mpPoints >= 2) {
+                        if (scrollListEnable) {
                           setState(() {
-                            scrollListEnable = true;
+                            scrollListEnable = false;
                           });
                         }
-                      },
-                      // onPointerMove: (event) {
-                      // },
-                      child: image);
+                      }
+                    },
+                    onPointerUp: (event) {
+                      _mpPoints--;
+                      if (_mpPoints < 1) {
+                        setState(() {
+                          scrollListEnable = true;
+                        });
+                      }
+                    },
+                    child: image,
+                  );
                 },
               ),
               onNotification: (t) {
