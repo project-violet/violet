@@ -1615,7 +1615,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.github,
               color: Colors.black,
             ),
-            title: Text("Github " + Translations.of(context).trans('project')),
+            title: Text("GitHub " + Translations.of(context).trans('project')),
             trailing: Icon(Icons.open_in_new),
             onTap: () async {
               const url = 'https://github.com/project-violet/';
