@@ -36,7 +36,7 @@ class SimilarListPage extends StatelessWidget {
   });
 
   Future<List<QueryResult>> _future(String e) async {
-    var unescape = new HtmlUnescape();
+    var unescape = HtmlUnescape();
     var postfix = e.toLowerCase().replaceAll(' ', '_');
     if (isUploader) postfix = e;
     var queryString = HitomiManager.translate2query(prefix +

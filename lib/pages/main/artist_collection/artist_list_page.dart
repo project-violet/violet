@@ -25,7 +25,7 @@ class ArtistListPage extends StatelessWidget {
   ArtistListPage({this.aritsts, this.isLast});
 
   Future<List<QueryResult>> _future(String e) async {
-    var unescape = new HtmlUnescape();
+    var unescape = HtmlUnescape();
     var postfix = e.trim().toLowerCase().replaceAll(' ', '_');
     var queryString = HitomiManager.translate2query((isLast ? '' : 'artist:') +
         postfix +

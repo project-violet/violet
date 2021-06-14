@@ -46,7 +46,7 @@ class SyncManager {
 
   static Future<void> checkSync() async {
     try {
-      var ls = new LineSplitter();
+      var ls = LineSplitter();
       var infoRaw = (await http.get(syncInfoURL)).body;
       var lines = ls.convert(infoRaw);
 

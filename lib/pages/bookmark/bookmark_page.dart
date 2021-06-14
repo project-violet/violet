@@ -232,7 +232,7 @@ class _BookmarkPageState extends State<BookmarkPage>
       desc = Translations.of(context).trans('unclassifieddesc');
     }
 
-    var _random = new Random();
+    var _random = Random();
 
     return Container(
       key: Key("bookmark_group_" + id.toString()),
@@ -283,7 +283,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                               //     Animation<double> secondaryAnimation,
                               //     Widget wi) {
                               //   // return wi;
-                              //   return new FadeTransition(opacity: animation, child: wi);
+                              //   return FadeTransition(opacity: animation, child: wi);
                               // },
                               transitionsBuilder: (context, animation,
                                   secondaryAnimation, child) {
@@ -353,7 +353,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                         //         Animation<double> secondaryAnimation,
                         //         Widget wi) {
                         //       // return wi;
-                        //       return new FadeTransition(
+                        //       return FadeTransition(
                         //           opacity: animation, child: wi);
                         //     },
                         //     pageBuilder: (_, __, ___) => GroupModifyPage()));

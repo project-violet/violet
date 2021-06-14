@@ -78,7 +78,7 @@ class User {
                 '[Record-Instance] E: ' + e.toString() + '\n' + st.toString());
           }
         }
-        _instance = new User();
+        _instance = User();
       }
     });
     return _instance;

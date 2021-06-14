@@ -728,7 +728,7 @@ class _MainPage2State extends State<MainPage2>
   }
 
   String numberWithComma(int param) {
-    return new NumberFormat('###,###,###,###')
+    return NumberFormat('###,###,###,###')
         .format(param)
         .replaceAll(' ', '');
   }
