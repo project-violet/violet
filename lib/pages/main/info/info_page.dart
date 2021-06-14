@@ -124,9 +124,9 @@ class _InfoPageState extends State<InfoPage> {
                         ),
                         _buildItem(
                           Icon(MdiIcons.github, size: 40, color: Colors.black),
-                          // 'Github Repository',
+                          // 'GitHub Repository',
                           // 'Contribute to the project',
-                          'Github 저장소',
+                          'GitHub 저장소',
                           '프로젝트에 기여해보세요!',
                           null,
                           () async {
