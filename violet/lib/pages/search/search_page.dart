@@ -171,7 +171,7 @@ class _SearchPageState extends State<SearchPage>
                         child: ListTile(
                           title: TextFormField(
                             cursorColor: Colors.black,
-                            decoration: new InputDecoration(
+                            decoration: InputDecoration(
                                 border: InputBorder.none,
                                 focusedBorder: InputBorder.none,
                                 enabledBorder: InputBorder.none,
@@ -209,7 +209,7 @@ class _SearchPageState extends State<SearchPage>
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return new SearchBarPage(
+                                return SearchBarPage(
                                   artboard: artboard,
                                   initText: latestQuery != null
                                       ? latestQuery.item2
@@ -307,7 +307,7 @@ class _SearchPageState extends State<SearchPage>
                       Animation<double> animation,
                       Animation<double> secondaryAnimation,
                       Widget wi) {
-                    return new FadeTransition(opacity: animation, child: wi);
+                    return FadeTransition(opacity: animation, child: wi);
                   },
                   pageBuilder: (_, __, ___) => SearchType(),
                 ))
@@ -327,7 +327,7 @@ class _SearchPageState extends State<SearchPage>
                         Animation<double> animation,
                         Animation<double> secondaryAnimation,
                         Widget wi) {
-                      return new FadeTransition(opacity: animation, child: wi);
+                      return FadeTransition(opacity: animation, child: wi);
                     },
                     pageBuilder: (_, __, ___) => SearchFilter(
                       ignoreBookmark: ignoreBookmark,

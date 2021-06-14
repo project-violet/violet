@@ -34,7 +34,7 @@ import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 
 DateTime currentBackPressTime;
-final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 const _filesToWarmup = [
   'assets/flare/Loading2.flr',
@@ -99,7 +99,7 @@ void main() async {
   runApp(
     DynamicTheme(
       defaultBrightness: Brightness.light,
-      data: (brightness) => new ThemeData(
+      data: (brightness) => ThemeData(
         accentColor: Settings.majorColor,
         // primaryColor: Settings.majorColor,
         // primarySwatch: Settings.majorColor,
@@ -122,16 +122,16 @@ void main() async {
           ],
           routes: <String, WidgetBuilder>{
             '/AfterLoading': (BuildContext context) => WillPopScope(
-                  child: new AfterLoadingPage(),
+                  child: AfterLoadingPage(),
                   onWillPop: () {
                     DateTime now = DateTime.now();
                     if (currentBackPressTime == null ||
                         now.difference(currentBackPressTime) >
                             Duration(seconds: 2)) {
                       currentBackPressTime = now;
-                      scaffoldKey.currentState.showSnackBar(new SnackBar(
+                      scaffoldKey.currentState.showSnackBar(SnackBar(
                         duration: Duration(seconds: 2),
-                        content: new Text(
+                        content: Text(
                           Translations.of(context).trans('closedoubletap'),
                           style: TextStyle(color: Colors.white),
                         ),
@@ -143,7 +143,7 @@ void main() async {
                   },
                 ),
             '/DatabaseDownload': (BuildContext context) =>
-                new DataBaseDownloadPage(),
+                DataBaseDownloadPage(),
           },
           localizationsDelegates: [
             const TranslationsDelegate(),

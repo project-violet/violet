@@ -163,7 +163,7 @@ class FileNameFormat {
       "laugage": laugage,
     };
 
-    var builder = new StringBuffer();
+    var builder = StringBuffer();
 
     for (int i = 0; i < raw.length; i++) {
       if (raw[i] == '%') {
@@ -175,9 +175,9 @@ class FileNameFormat {
         }
 
         if (raw[i++] != '(')
-          throw new Exception("Filename formatting error! pos=" + i.toString());
+          throw Exception("Filename formatting error! pos=" + i.toString());
 
-        var tokenb = new StringBuffer();
+        var tokenb = StringBuffer();
 
         for (; i < raw.length; i++) {
           if (raw[i] == ')') {
@@ -193,7 +193,7 @@ class FileNameFormat {
 
         if (format.containsKey(token)) literal = format[token];
 
-        var pp = new StringBuffer();
+        var pp = StringBuffer();
         var type = 's';
 
         for (; i < raw.length; i++) {
@@ -214,12 +214,12 @@ class FileNameFormat {
             builder.write(literal
                 .substring(0, int.parse(pptk))
                 .replaceAll('|', 'ㅣ')
-                .replaceAll(new RegExp(r'[/\\?%*:|"<>]'), ''));
+                .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
           else
             builder.write(literal
                 .toString()
                 .replaceAll('|', 'ㅣ')
-                .replaceAll(new RegExp(r'[/\\?%*:|"<>]'), ''));
+                .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
         }
         // else if (type == 'd')
         // {

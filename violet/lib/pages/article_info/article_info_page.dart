@@ -885,7 +885,7 @@ class _Chip extends StatelessWidget {
                 //     Animation<double> secondaryAnimation,
                 //     Widget wi) {
                 //   // return wi;
-                //   return new FadeTransition(opacity: animation, child: wi);
+                //   return FadeTransition(opacity: animation, child: wi);
                 // },
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {

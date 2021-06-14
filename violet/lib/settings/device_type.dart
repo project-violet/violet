@@ -10,7 +10,7 @@ class Device {
   static double height = size.height;
   static double screenWidth = width / devicePixelRatio;
   static double screenHeight = height / devicePixelRatio;
-  static ui.Size screenSize = new ui.Size(screenWidth, screenHeight);
+  static ui.Size screenSize = ui.Size(screenWidth, screenHeight);
   final bool isTablet, isPhone, isIos, isAndroid, isIphoneX;
   static Device _device;
 
@@ -47,7 +47,7 @@ class Device {
             screenHeight == 896 ||
             screenWidth == 896)) isIphoneX = true;
 
-    return _device = new Device(
+    return _device = Device(
         isTablet: isTablet,
         isPhone: isPhone,
         isAndroid: isAndroid,
