@@ -26,6 +26,8 @@ void main() {
     await TagTranslate.init();
     print(
         TagTranslate.containsFuzzingTotal('그날그쪽에핀꽃은아무도모른다').reversed.toList());
+
+    print(await HitomiManager.queryAutoComplete('tndua', true));
   });
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
