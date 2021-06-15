@@ -200,6 +200,8 @@ class HitomiManager {
         return results;
       } else {
         var results = TagTranslate.containsTotal(prefix)
+            .where((e) => tagmap[e.item1.split(':')[0]]
+                .containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
             .map((e) => Tuple3<String, String, int>(
                 e.item1.split(':')[0],
                 e.item1.substring(e.item1.indexOf(':') + 1) +
