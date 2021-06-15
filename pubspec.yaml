@@ -162,6 +162,7 @@ flutter:
     - assets/locale/zh_Hans.json
     - assets/locale/it.json
     - assets/locale/eo.json
+    - assets/locale/tag/korean.json
     # - assets/images/loading.gif
 
     # - assets/test/001.jpg

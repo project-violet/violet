@@ -4,50 +4,32 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:get/get_connect/http/src/utils/utils.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/variables.dart';
 
 class TagTranslate {
   static const defaultLanguage = 'korean';
+  // <Origin, Translated>
   static Map<String, String> _translateMap;
+  // <Translated-Andro, Origin>
+  static Map<String, String> _reverseAndroMap;
 
   static Future<void> init() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final subdir = Platform.isAndroid ? '/data' : '';
-
-    final path1 =
-        File('${directory.path}$subdir/result-$defaultLanguage-tag.json');
-    final path2 =
-        File('${directory.path}$subdir/result-$defaultLanguage-series.json');
-    final path3 =
-        File('${directory.path}$subdir/result-$defaultLanguage-character.json');
-    if (!await path1.exists() || !await path2.exists() || !await path3.exists())
-      return;
-
-    var tag = jsonDecode(await path1.readAsString()) as Map<String, dynamic>;
-    var series = jsonDecode(await path2.readAsString()) as Map<String, dynamic>;
-    var character =
-        jsonDecode(await path3.readAsString()) as Map<String, dynamic>;
+    String data =
+        await rootBundle.loadString('assets/locale/$defaultLanguage.json');
+    Map<String, dynamic> _result = json.decode(data);
 
     _translateMap = Map<String, String>();
+    _reverseAndroMap = Map<String, String>();
 
-    tag.entries.forEach((element) {
+    _result.entries.forEach((element) {
       if (element.value.toString().trim() == '') return;
       if (_translateMap.containsKey(element.key)) return;
       _translateMap[element.key] = element.value as String;
-    });
-
-    series.entries.forEach((element) {
-      if (element.value.toString().trim() == '') return;
-      if (_translateMap.containsKey(element.key)) return;
-      _translateMap[element.key] = element.value as String;
-    });
-
-    character.entries.forEach((element) {
-      if (element.value.toString().trim() == '') return;
-      if (_translateMap.containsKey(element.key)) return;
-      _translateMap[element.key] = element.value as String;
+      _reverseAndroMap[disassembly((element.value as String)
+          .replaceAll('female:', '')
+          .replaceAll('male:', ''))] = element.key;
     });
   }
 
@@ -112,7 +94,7 @@ class TagTranslate {
     return 0x1100 <= ch && ch <= 0x11ff;
   }
 
-  static String _disassembly(int ch) {
+  static String disassemblyCharacter(int ch) {
     if (checkLetter(ch)) {
       var jamo = distortion(ch);
       return index_initial_2[jamo['initial']] +
@@ -129,7 +111,7 @@ class TagTranslate {
   static String disassembly(String str) {
     var tstr = '';
     for (var i = 0; i < str.length; i++) {
-      tstr += _disassembly(str.codeUnitAt(i));
+      tstr += disassemblyCharacter(str.codeUnitAt(i));
     }
     return tstr;
   }
