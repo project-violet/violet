@@ -23,7 +23,9 @@ import 'package:violet/server/violet.dart';
 
 void main() {
   test("Test Translated", () async {
-    print(TagTranslate.disassembly('가난한 도라에몽'));
+    await TagTranslate.init();
+    print(
+        TagTranslate.containsFuzzingTotal('그날그쪽에핀꽃은아무도모른다').reversed.toList());
   });
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
