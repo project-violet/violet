@@ -125,7 +125,7 @@ class Bookmark {
                 st.toString());
           }
         }
-        _instance = new Bookmark();
+        _instance = Bookmark();
       }
     });
     return _instance;

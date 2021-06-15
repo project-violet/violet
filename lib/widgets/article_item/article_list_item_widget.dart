@@ -331,7 +331,7 @@ class _ArticleListItemVerySimpleWidgetState
                 //       Animation<double> secondaryAnimation,
                 //       Widget wi) {
                 //     // return wi;
-                //     return new FadeTransition(opacity: animation, child: wi);
+                //     return FadeTransition(opacity: animation, child: wi);
                 //   },
                 //   pageBuilder: (_, __, ___) => ArticleInfoPage(
                 //     queryResult: widget.queryResult,
@@ -400,7 +400,7 @@ class _ArticleListItemVerySimpleWidgetState
                 try {
                   Scaffold.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 2),
-                    content: new Text(
+                    content: Text(
                       isBookmarked
                           ? '${data.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
                           : '${data.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
@@ -463,7 +463,7 @@ class _ArticleListItemVerySimpleWidgetState
                       Animation<double> animation,
                       Animation<double> secondaryAnimation,
                       Widget wi) {
-                    return new FadeTransition(opacity: animation, child: wi);
+                    return FadeTransition(opacity: animation, child: wi);
                   },
                   pageBuilder: (_, __, ___) => ThumbnailViewPage(
                     size: sz,
@@ -553,7 +553,7 @@ class _ArticleListItemVerySimpleWidgetState
 
   Future<Size> _calculateImageDimension(String url) {
     Completer<Size> completer = Completer();
-    Image image = new Image(image: CachedNetworkImageProvider(url));
+    Image image = Image(image: CachedNetworkImageProvider(url));
     image.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {

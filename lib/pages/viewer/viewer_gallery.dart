@@ -61,7 +61,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                           minExtent: 64 + 12.0,
                           maxExtent: 64.0 + 12,
                           searchBar: Container(
-                            decoration: new BoxDecoration(
+                            decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(10.0),
                                   bottomRight: Radius.circular(10.0)),

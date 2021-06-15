@@ -62,7 +62,7 @@ class SimpleInfoWidget extends StatelessWidget {
       transitionDuration: Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
-        return new FadeTransition(opacity: animation, child: wi);
+        return FadeTransition(opacity: animation, child: wi);
       },
       pageBuilder: (_, __, ___) => ThumbnailViewPage(
         size: null,
@@ -99,7 +99,7 @@ class SimpleInfoWidget extends StatelessWidget {
       padding: EdgeInsets.all(8),
       child: GestureDetector(
         child: Transform(
-          transform: new Matrix4.identity()..scale(1.0),
+          transform: Matrix4.identity()..scale(1.0),
           child: SizedBox(
             width: 40,
             height: 40,

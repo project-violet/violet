@@ -318,7 +318,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     return WillPopScope(
       onWillPop: () async {
         if (!_pageInfo.useFileSystem) await _savePageRead();
-        return new Future(() => true);
+        return Future(() => true);
       },
       child: () {
         if (Settings.disableFullScreen) {
@@ -435,12 +435,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   _appBarBack() {
     return IconButton(
-      icon: new Icon(Icons.arrow_back),
+      icon: Icon(Icons.arrow_back),
       color: Colors.white,
       onPressed: () async {
         await _savePageRead();
         Navigator.pop(context, currentPage);
-        return new Future(() => false);
+        return Future(() => false);
       },
     );
   }
@@ -726,7 +726,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             viewerStyleChangeEvent: () {
               if (Settings.isHorizontal) {
                 _pageController =
-                    new PreloadPageController(initialPage: _prevPage - 1);
+                    PreloadPageController(initialPage: _prevPage - 1);
               } else {
                 var npage = _prevPage;
                 _sliderOnChange = true;
@@ -834,7 +834,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       );
                   }
 
-                  if (image == null) throw new Exception('Dead Reaching');
+                  if (image == null) throw Exception('Dead Reaching');
 
                   return Listener(
                     onPointerDown: (event) {
@@ -1047,7 +1047,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         maxScale: PhotoViewComputedScale.contained * 5.0,
       );
     }
-    throw new Exception('Dead Reaching');
+    throw Exception('Dead Reaching');
   }
 
   Timer _doubleTapCheckTimer;
@@ -1431,7 +1431,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   Future<Size> _calculateNetworkImageDimension(String uri) async {
     Completer<Size> completer = Completer();
-    Image image = new Image(
+    Image image = Image(
         image: OptimizedCacheImageProvider(uri, headers: _pageInfo.headers));
     image.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener(
