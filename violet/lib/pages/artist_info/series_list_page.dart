@@ -27,7 +27,7 @@ class SeriesListPage extends StatelessWidget {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    var unescape = new HtmlUnescape();
+    var unescape = HtmlUnescape();
     // // if (similarsAll == null) return Text('asdf');
     // return Padding(
     //   // padding: EdgeInsets.all(0),

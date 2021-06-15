@@ -113,7 +113,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                                   str, _searchController.selection);
                             },
                             controller: _searchController,
-                            decoration: new InputDecoration(
+                            decoration: InputDecoration(
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
                               enabledBorder: InputBorder.none,
@@ -266,15 +266,15 @@ class _SearchBarPageState extends State<SearchBarPage>
                                 print(snapshot.hasData);
                                 return !snapshot.hasData
                                     ? Container()
-                                    : new Positioned(
+                                    : Positioned(
                                         bottom: 0.0,
                                         left: 0.0,
                                         right: 0.0,
-                                        child: new Container(
+                                        child: Container(
                                           color: null,
                                           padding: const EdgeInsets.all(20.0),
-                                          child: new Center(
-                                            child: new DotsIndicator(
+                                          child: Center(
+                                            child: DotsIndicator(
                                               controller: _controller,
                                               itemCount: 2,
                                               onPageSelected: (int page) {
@@ -666,18 +666,18 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     if (!useFuzzy && latestToken != '' && tagRaw.contains(latestToken)) {
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: Colors.white,
           ),
           text: tagRaw.split(latestToken)[0]));
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: accColor,
             fontWeight: FontWeight.bold,
           ),
           text: latestToken));
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: Colors.white,
           ),
           text: tagRaw.split(latestToken)[1]));
@@ -686,24 +686,24 @@ class _SearchBarPageState extends State<SearchBarPage>
         latestToken.split(':')[1] != '' &&
         tagRaw.contains(latestToken.split(':')[1])) {
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: Colors.white,
           ),
           text: tagRaw.split(latestToken.split(':')[1])[0]));
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: accColor,
             fontWeight: FontWeight.bold,
           ),
           text: latestToken.split(':')[1]));
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: Colors.white,
           ),
           text: tagRaw.split(latestToken.split(':')[1])[1]));
     } else if (!useFuzzy) {
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: Colors.white,
           ),
           text: tagRaw));
@@ -712,7 +712,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           tagRaw.runes.toList(), latestToken.runes.toList());
       for (int i = 0; i < tagRaw.length; i++) {
         ts.add(TextSpan(
-            style: new TextStyle(
+            style: TextStyle(
               color: route[i + 1] == 1 ? accColor : Colors.white,
               fontWeight:
                   route[i + 1] == 1 ? FontWeight.bold : FontWeight.normal,
@@ -721,7 +721,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       }
     } else {
       ts.add(TextSpan(
-          style: new TextStyle(
+          style: TextStyle(
             color: Colors.white,
           ),
           text: tagRaw));
@@ -734,14 +734,14 @@ class _SearchBarPageState extends State<SearchBarPage>
         child: Text(info.item1[0].toUpperCase()),
       ),
       label: RichText(
-          text: new TextSpan(
-              style: new TextStyle(
+          text: TextSpan(
+              style: TextStyle(
                 color: Colors.white,
               ),
               children: [
-            new TextSpan(text: ' '),
-            new TextSpan(children: ts),
-            new TextSpan(text: count),
+            TextSpan(text: ' '),
+            TextSpan(children: ts),
+            TextSpan(text: count),
           ])),
       backgroundColor: color,
       elevation: 6.0,

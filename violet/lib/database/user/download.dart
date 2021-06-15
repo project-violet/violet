@@ -85,7 +85,7 @@ class Download {
                 st.toString());
           }
         }
-        _instance = new Download();
+        _instance = Download();
       }
     });
     return _instance;

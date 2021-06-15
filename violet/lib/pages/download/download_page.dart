@@ -131,7 +131,7 @@ class _DownloadPageState extends State<DownloadPage>
                     child: ListTile(
                       title: TextFormField(
                         cursorColor: Colors.black,
-                        decoration: new InputDecoration(
+                        decoration: InputDecoration(
                             border: InputBorder.none,
                             focusedBorder: InputBorder.none,
                             enabledBorder: InputBorder.none,

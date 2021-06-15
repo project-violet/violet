@@ -36,7 +36,7 @@ class DataBaseDownloadPage extends StatefulWidget {
 
   @override
   DataBaseDownloadPagepState createState() {
-    return new DataBaseDownloadPagepState();
+    return DataBaseDownloadPagepState();
   }
 }
 
@@ -114,7 +114,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       var dir = await getApplicationDocumentsDirectory();
       if (await File("${dir.path}/db.sql.7z").exists())
         await File("${dir.path}/db.sql.7z").delete();
-      Timer _timer = new Timer.periodic(
+      Timer _timer = Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
                 speedString = (_tlatest / 1024).toString() + " KB/S";
@@ -148,7 +148,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         downloading = false;
       });
 
-      var pp = new P7zip();
+      var pp = P7zip();
       if (await Directory("${dir.path}/data2").exists())
         await Directory("${dir.path}/data2").delete(recursive: true);
       await pp.decompress(["${dir.path}/db.sql.7z"], path: "${dir.path}/data2");
@@ -203,7 +203,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       var dir = await getDatabasesPath();
       if (await File("$dir/data.db").exists())
         await File("$dir/data.db").delete();
-      Timer _timer = new Timer.periodic(
+      Timer _timer = Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
                 speedString = (_tlatest / 1024).toString() + " KB/S";
@@ -518,7 +518,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   }
 
   String numberWithComma(int param) {
-    return new NumberFormat('###,###,###,###')
+    return NumberFormat('###,###,###,###')
         .format(param)
         .replaceAll(' ', '');
   }

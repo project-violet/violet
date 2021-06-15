@@ -218,7 +218,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Future<void> querySimilars(List<Tuple2<String, double>> similars,
       String prefix, List<List<QueryResult>> qrs) async {
-    var unescape = new HtmlUnescape();
+    var unescape = HtmlUnescape();
     for (int i = 0; i < similars.length; i++) {
       var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
       var queryString = HitomiManager.translate2query(prefix +
@@ -489,7 +489,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     : lff.length * 22.0 + 10,
                 child: charts.BarChart(
                   [
-                    new charts.Series<Tuple2<String, int>, String>(
+                    charts.Series<Tuple2<String, int>, String>(
                         id: 'Sales',
                         data: lff,
                         domainFn: (Tuple2<String, int> sales, f) =>
@@ -946,7 +946,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   Widget seriesArea() {
-    var unescape = new HtmlUnescape();
+    var unescape = HtmlUnescape();
     var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
         padding: EdgeInsets.all(0),

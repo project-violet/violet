@@ -15,7 +15,7 @@ class DataBaseManager {
   DataBaseManager({this.dbPath});
 
   static DataBaseManager create(String dbPath) {
-    return new DataBaseManager(dbPath: dbPath);
+    return DataBaseManager(dbPath: dbPath);
   }
 
   @protected

@@ -66,17 +66,17 @@ class DotsIndicator extends AnimatedWidget {
       ),
     );
     double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness;
-    return new Container(
+    return Container(
       width: _kDotSpacing,
-      child: new Center(
-        child: new Material(
+      child: Center(
+        child: Material(
           color: (Settings.themeWhat ? Colors.grey.shade100 : Color(0xFF353535))
               .withAlpha((max(zoom - 1, 0.5) * 255).toInt()),
           type: MaterialType.circle,
-          child: new Container(
+          child: Container(
             width: _kDotSize * zoom,
             height: _kDotSize * zoom,
-            child: new InkWell(
+            child: InkWell(
               onTap: () => onPageSelected(index),
             ),
           ),
@@ -86,9 +86,9 @@ class DotsIndicator extends AnimatedWidget {
   }
 
   Widget build(BuildContext context) {
-    return new Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: new List<Widget>.generate(itemCount, _buildDot),
+      children: List<Widget>.generate(itemCount, _buildDot),
     );
   }
 }
@@ -273,15 +273,15 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                           name: widget.name, groupId: widget.groupId),
                     ],
                   ),
-                  new Positioned(
+                  Positioned(
                     bottom: 0.0,
                     left: 0.0,
                     right: 0.0,
-                    child: new Container(
+                    child: Container(
                       color: null,
                       padding: const EdgeInsets.all(20.0),
-                      child: new Center(
-                        child: new DotsIndicator(
+                      child: Center(
+                        child: DotsIndicator(
                           controller: _controller,
                           itemCount: 3,
                           onPageSelected: (int page) {
@@ -404,7 +404,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
                     Widget wi) {
-                  return new FadeTransition(opacity: animation, child: wi);
+                  return FadeTransition(opacity: animation, child: wi);
                 },
                 pageBuilder: (_, __, ___) => SearchType2(
                   nowType: nowType,
@@ -431,7 +431,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
                     Widget wi) {
-                  return new FadeTransition(opacity: animation, child: wi);
+                  return FadeTransition(opacity: animation, child: wi);
                 },
                 pageBuilder: (_, __, ___) => BookmarkSearchSort(
                   queryResult: queryResult,
@@ -697,7 +697,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   actions: <Widget>[
                     RaisedButton(
                       color: Settings.majorColor,
-                      child: new Text(Translations.of(context).trans('cancel')),
+                      child: Text(Translations.of(context).trans('cancel')),
                       onPressed: () {
                         Navigator.pop(context, 0);
                       },

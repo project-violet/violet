@@ -143,7 +143,7 @@ class HitomiDonwloadManager extends Downloadable {
     var str = i.toString();
     var paddingToAdd = pad - str.length;
     return (paddingToAdd > 0)
-        ? "${new List.filled(paddingToAdd, '0').join('')}$i"
+        ? "${List.filled(paddingToAdd, '0').join('')}$i"
         : str;
   }
 }

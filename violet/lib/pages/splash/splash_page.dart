@@ -164,8 +164,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   startTime() async {
-    var _duration = new Duration(milliseconds: 100);
-    return new Timer(_duration, navigationPage);
+    var _duration = Duration(milliseconds: 100);
+    return Timer(_duration, navigationPage);
   }
 
   Future<void> navigationPage() async {
@@ -259,7 +259,7 @@ class _SplashPageState extends State<SplashPage> {
 
     final translations = Translations.of(context);
 
-    return new Scaffold(
+    return Scaffold(
       body: Stack(
         children: <Widget>[
           AnimatedPositioned(
@@ -267,7 +267,7 @@ class _SplashPageState extends State<SplashPage> {
             curve: Curves.ease,
             top: showFirst ? 130 : height / 2 - 50,
             left: width / 2 - 50,
-            child: new Image.asset(
+            child: Image.asset(
               'assets/images/logo-' +
                   _colorToString(Settings.majorColor) +
                   '.png',
