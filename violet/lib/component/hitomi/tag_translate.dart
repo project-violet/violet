@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/variables.dart';
 
@@ -17,8 +18,13 @@ class TagTranslate {
   static Map<String, String> _reverseAndroMap;
 
   static Future<void> init() async {
-    String data =
-        await rootBundle.loadString('assets/locale/$defaultLanguage.json');
+    String data;
+
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      var file = File('/home/ubuntu/violet/assets/locale/tag/korean.json');
+      data = await file.readAsString();
+    } else
+      data = await rootBundle.loadString('assets/locale/$defaultLanguage.json');
     Map<String, dynamic> _result = json.decode(data);
 
     _translateMap = Map<String, String>();
@@ -43,18 +49,69 @@ class TagTranslate {
 
   // [<Origin, Translated>]
   static List<Tuple2<String, String>> contains(String part) {
+    part = part.replaceAll(' ', '');
     return _translateMap.entries
-        .where((element) => element.value.contains(part))
+        .where((element) => element.value.replaceAll(' ', '').contains(part))
         .map((e) => Tuple2<String, String>(e.key, e.value))
         .toList();
   }
 
   // [<Origin, Translated>]
   static List<Tuple2<String, String>> containsAndro(String part) {
+    part = disassembly(part.replaceAll(' ', ''));
     return _reverseAndroMap.entries
-        .where((element) => element.key.contains(part))
+        .where((element) => element.key.replaceAll(' ', '').contains(part))
         .map((e) => Tuple2<String, String>(e.value, _translateMap[e.value]))
         .toList();
+  }
+
+  // [<Origin, Translated>]
+  static List<Tuple2<String, String>> containsTotal(String part) {
+    return contains(part) + containsAndro(part);
+  }
+
+  // [<Origin, Translated>]
+  static List<Tuple3<String, String, int>> containsFuzzing(String part) {
+    part = part.replaceAll(' ', '');
+    var result = _translateMap.entries
+        .map((e) => Tuple3<String, String, int>(
+            e.key,
+            e.value.split('|')[0],
+            Distance.levenshteinDistance(
+                e.value.replaceAll(' ', '').split('|')[0].runes.toList(),
+                part.runes.toList())))
+        .toList();
+    result.sort((x, y) => x.item3.compareTo(y.item3));
+    return result;
+  }
+
+  // [<Origin, Translated>]
+  static List<Tuple3<String, String, int>> containsFuzzingAndro(String part) {
+    part = disassembly(part.replaceAll(' ', ''));
+    var result = _reverseAndroMap.entries
+        .map((e) => Tuple3<String, String, int>(
+            e.value,
+            _translateMap[e.value].split('|')[0],
+            Distance.levenshteinDistance(
+                e.key.replaceAll(' ', '').split('|')[0].runes.toList(),
+                part.runes.toList())))
+        .toList();
+    result.sort((x, y) => x.item3.compareTo(y.item3));
+    return result;
+  }
+
+  // [<Origin, Translated>]
+  static List<Tuple3<String, String, int>> containsFuzzingTotal(String part) {
+    var result = containsFuzzing(part) + containsFuzzingAndro(part);
+    result.sort((x, y) => x.item3.compareTo(y.item3));
+    var overlap = Set<String>();
+    var rresult = <Tuple3<String, String, int>>[];
+    result.forEach((element) {
+      if (overlap.contains(element.item1)) return;
+      overlap.add(element.item1);
+      rresult.add(element);
+    });
+    return rresult;
   }
 
   static const index_letter_2 = [
