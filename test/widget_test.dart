@@ -16,11 +16,16 @@ import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/server/violet.dart';
 
 void main() {
+  test("Test Translated", () async {
+    print(TagTranslate.disassembly('가난한 도라에몽'));
+  });
+
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
   //   // Build our app and trigger a frame.
   //   // await tester.pumpWidget(MyApp());
@@ -132,11 +137,11 @@ void main() {
   //   // });
   // });
 
-  test("Violet Server", () async {
-    // print(await VioletCommunitySession.checkUserAppId('asdf'));
-    print(HitomiManager.translate2query(
-        'female:loli (lang:korean) -group:zenmmai_courasi -artist:loli'));
-  });
+  // test("Violet Server", () async {
+  //   // print(await VioletCommunitySession.checkUserAppId('asdf'));
+  //   print(HitomiManager.translate2query(
+  //       'female:loli (lang:korean) -group:zenmmai_courasi -artist:loli'));
+  // });
 
   test("EHentai Test", () async {
     // var what = 'ahegao';
