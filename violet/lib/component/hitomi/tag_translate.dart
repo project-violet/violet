@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/tag_translated_regacy.dart';
 import 'package:violet/variables.dart';
 
 class TagTranslate {
@@ -44,7 +45,8 @@ class TagTranslate {
     if (_translateMap.containsKey(classification + ':' + key))
       return _translateMap[classification + ':' + key];
 
-    return HitomiManager.mapSeries2Kor(HitomiManager.mapTag2Kor(key));
+    return TagTranslatedRegacy.mapSeries2Kor(
+        TagTranslatedRegacy.mapTag2Kor(key));
   }
 
   // [<Origin, Translated>]
@@ -67,7 +69,15 @@ class TagTranslate {
 
   // [<Origin, Translated>]
   static List<Tuple2<String, String>> containsTotal(String part) {
-    return contains(part) + containsAndro(part);
+    var result = contains(part) + containsAndro(part);
+    var overlap = Set<String>();
+    var rresult = <Tuple2<String, String>>[];
+    result.forEach((element) {
+      if (overlap.contains(element.item1)) return;
+      overlap.add(element.item1);
+      rresult.add(element);
+    });
+    return rresult;
   }
 
   // [<Origin, Translated>]

@@ -9,6 +9,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/tag_translated_regacy.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
@@ -648,8 +649,8 @@ class _SearchBarPageState extends State<SearchBarPage>
     var color = Colors.grey;
 
     if (_tagTranslation) // Korean
-      tagRaw =
-          HitomiManager.mapSeries2Kor(HitomiManager.mapTag2Kor(info.item2));
+      tagRaw = TagTranslatedRegacy.mapSeries2Kor(
+          TagTranslatedRegacy.mapTag2Kor(info.item2));
 
     if (info.item3 > 0 && _showCount) count = ' (${info.item3})';
 
