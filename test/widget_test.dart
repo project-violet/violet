@@ -26,8 +26,15 @@ void main() {
     await TagTranslate.init();
     print(
         TagTranslate.containsFuzzingTotal('그날그쪽에핀꽃은아무도모른다').reversed.toList());
+    print(TagTranslate.containsFuzzingTotal('잃어버린 시간을 찾아서').reversed.toList());
 
-    print(await HitomiManager.queryAutoComplete('tndua', true));
+    print(TagTranslate.disassembly('몸부안꽉'));
+    print(await HitomiManager.queryAutoComplete('ahaqndks', true));
+    print(await HitomiManager.queryAutoComplete('아카메가', true));
+    print(await HitomiManager.queryAutoComplete('청춘', true));
+
+    print(TagTranslate.disassembly('청춘'));
+    print(TagTranslate.disassembly('변덕스러운 오렌지로드'));
   });
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {

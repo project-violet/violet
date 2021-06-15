@@ -140,7 +140,7 @@ class TagTranslate {
   ];
   static const index_initial_2 = [
     "r", "R", "s", "e", "E", "f", "a", "q", //
-    "Q", "t", "T", "d", "w", "W", "", "z", //
+    "Q", "t", "T", "d", "w", "W", "c", "z", //
     "x", "v", "g" //
   ];
   static const index_medial_2 = [
