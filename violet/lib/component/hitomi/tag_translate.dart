@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/variables.dart';
 
@@ -33,10 +34,27 @@ class TagTranslate {
     });
   }
 
-  static String of(String key) {
-    if (_translateMap.containsKey(key)) return _translateMap[key];
+  static String of(String classification, String key) {
+    if (_translateMap.containsKey(classification + ':' + key))
+      return _translateMap[classification + ':' + key];
 
     return HitomiManager.mapSeries2Kor(HitomiManager.mapTag2Kor(key));
+  }
+
+  // [<Origin, Translated>]
+  static List<Tuple2<String, String>> contains(String part) {
+    return _translateMap.entries
+        .where((element) => element.value.contains(part))
+        .map((e) => Tuple2<String, String>(e.key, e.value))
+        .toList();
+  }
+
+  // [<Origin, Translated>]
+  static List<Tuple2<String, String>> containsAndro(String part) {
+    return _reverseAndroMap.entries
+        .where((element) => element.key.contains(part))
+        .map((e) => Tuple2<String, String>(e.value, _translateMap[e.value]))
+        .toList();
   }
 
   static const index_letter_2 = [
