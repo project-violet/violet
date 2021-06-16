@@ -257,8 +257,6 @@ class _SplashPageState extends State<SplashPage> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
 
-    final translations = Translations.of(context);
-
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -275,333 +273,339 @@ class _SplashPageState extends State<SplashPage> {
               height: 100,
             ),
           ),
-          Visibility(
-            visible: showIndicator,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(bottom: 120),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text('<< AutoSync >>',
-                        style: TextStyle(color: Colors.white)),
-                    Text(
-                        chunkDownloadProgress != chunkDownloadMax ||
-                                chunkDownloadMax == 0
-                            ? 'Chunk downloading...[$chunkDownloadProgress/${SyncManager.getSyncRequiredChunkCount()}]'
-                            : 'Extracting...',
-                        style: TextStyle(color: Colors.white)),
-                    Container(
-                      height: 16,
-                    ),
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: CircularProgressIndicator(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: showFirst,
-            child: Align(
-              alignment: Alignment.center,
-              child: Padding(
-                padding: EdgeInsets.only(top: 140),
-                child: Card(
-                  elevation: 100,
-                  color: widget.switching
-                      ? Settings.majorColor.withAlpha(150)
-                      : Colors.purple.shade50,
-                  child: AnimatedOpacity(
-                    opacity: animateBox ? 1.0 : 0,
-                    duration: Duration(milliseconds: 500),
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.ease,
-                      width: animateBox ? 300 : 300,
-                      height: animateBox ? 300 : 0,
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        children: AnimationConfiguration.toStaggeredList(
-                          duration: const Duration(milliseconds: 900),
-                          childAnimationBuilder: (widget) => SlideAnimation(
-                            horizontalOffset: 50.0,
-                            child: FadeInAnimation(
-                              child: widget,
-                            ),
-                          ),
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Icon(
-                                  MdiIcons.database,
-                                  size: 50,
-                                  color: widget.switching
-                                      ? Settings.majorAccentColor
-                                          .withOpacity(0.8)
-                                      : Colors.grey,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(4),
-                                ),
-                                Expanded(
-                                    child: Text(
-                                  widget.switching
-                                      ? '${Translations.of(context).trans('database')} ${Translations.of(context).trans('switching')}'
-                                      : Translations.of(context)
-                                          .trans('welcome'),
-                                  maxLines: 4,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                )),
-                              ],
-                            ),
-                            Container(
-                              padding: EdgeInsets.symmetric(vertical: 4.0),
-                            ),
-                            RadioTile(
-                              value: Database.userLanguage,
-                              groupValue: _database,
-                              setGroupValue: _setDatabase,
-                              title: Text(
-                                translations.trans('dbuser'),
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              subtitle: Text(
-                                '${imgZipSize['ko']}${translations.trans('dbdownloadsize')}',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              onLongPress: () {
-                                Dialogs.okDialog(
-                                    context,
-                                    translations
-                                        .trans('dbusermsg')
-                                        .replaceFirst(
-                                            '%s',
-                                            imgSize[
-                                                translations.dbLanguageCode]));
-                              },
-                            ),
-                            RadioTile(
-                              value: Database.all,
-                              groupValue: _database,
-                              setGroupValue: _setDatabase,
-                              title: Text(
-                                translations.trans('dballname'),
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              subtitle: Text(
-                                '${imgZipSize['global']}${translations.trans('dbdownloadsize')}',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              onLongPress: () {
-                                Dialogs.okDialog(
-                                    context,
-                                    translations
-                                        .trans('dballmsg')
-                                        .replaceFirst('%s', imgSize['global']));
-                              },
-                            ),
-                            Align(
-                              alignment: Alignment.bottomRight,
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
-                                child: RaisedButton(
-                                  textColor: Colors.white,
-                                  child: SizedBox(
-                                    width: 90,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(Translations.of(context)
-                                            .trans('download')),
-                                        Icon(Icons.keyboard_arrow_right),
-                                      ],
-                                    ),
-                                  ),
-                                  onPressed: () async {
-                                    if (_database == Database.all) {
-                                      if (!await Dialogs.yesnoDialog(
-                                          context,
-                                          Translations.of(context)
-                                              .trans('dbwarn'),
-                                          Translations.of(context)
-                                              .trans('warning'))) {
-                                        return;
-                                      }
-                                    }
-                                    if (widget.switching) {
-                                      var dir =
-                                          await getApplicationDocumentsDirectory();
-                                      try {
-                                        await ((await openDatabase(
-                                                '${dir.path}/data/data.db'))
-                                            .close());
-                                        await deleteDatabase(
-                                            '${dir.path}/data/data.db');
-                                        await Directory('${dir.path}/data')
-                                            .delete(recursive: true);
-                                      } catch (e) {}
-                                    }
-                                    print(Translations.of(context)
-                                        .dbLanguageCode);
-                                    Navigator.of(context).pushReplacement(
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DataBaseDownloadPage(
-                                                  dbType: _database == Database.all
-                                                      ? 'global'
-                                                      : Translations.of(context)
-                                                          .dbLanguageCode,
-                                                  isExistsDataBase: false,
-                                                )));
-                                  },
-                                  color: widget.switching
-                                      ? Settings.majorColor.withAlpha(200)
-                                      : Colors.purple.shade400,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          AnimatedOpacity(
-            opacity: languageBox ? 1.0 : 0.0,
-            duration: Duration(milliseconds: 700),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 100),
-                child: GestureDetector(
-                  child: SizedBox(
-                    child: Text(Translations.of(context).trans('dbalready'),
-                        style: TextStyle(
-                            color: widget.switching
-                                ? Settings.majorAccentColor
-                                : Colors.purpleAccent.shade100,
-                            fontSize: 12.0)),
-                  ),
-                  onTap: () async {
-                    var path = await getFile();
-
-                    if (path == '') return;
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => DataBaseDownloadPage(
-                              dbType: _database == Database.all
-                                  ? 'global'
-                                  : Translations.of(context)
-                                      .locale
-                                      .languageCode,
-                              isExistsDataBase: true,
-                              dbPath: path,
-                            )));
-                  },
-                ),
-              ),
-            ),
-          ),
-          AnimatedOpacity(
-            opacity: languageBox ? 1.0 : 0.0,
-            duration: Duration(milliseconds: 700),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
-                child: InkWell(
-                  customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                  child: SizedBox(
-                    width: 150,
-                    height: 50,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.language,
-                          size: 35,
-                          color: Colors.white70,
-                        ),
-                        Text('  Language',
-                            style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => Theme(
-                          data: Theme.of(context)
-                              .copyWith(primaryColor: Colors.pink),
-                          child: CountryPickerDialog(
-                              titlePadding: EdgeInsets.symmetric(vertical: 16),
-                              // searchCursorColor: Colors.pinkAccent,
-                              // searchInputDecoration:
-                              //     InputDecoration(hintText: 'Search...'),
-                              // isSearchable: true,
-                              title: Text('Select Language'),
-                              onValuePicked: (Country country) async {
-                                var exc = country as ExCountry;
-                                await Translations.of(context)
-                                    .load(exc.toString());
-                                await Settings.setLanguage(exc.toString());
-                                setState(() {});
-                              },
-                              itemFilter: (c) => [].contains(c.isoCode),
-                              priorityList: [
-                                ExCountry.create('US'),
-                                ExCountry.create('KR'),
-                                ExCountry.create('JP'),
-                                ExCountry.create('CN', script: 'Hant'),
-                                ExCountry.create('CN', script: 'Hans'),
-                                // ExCountry.create('IT'),
-                                // ExCountry.create('ES'),
-                                // CountryPickerUtils.getCountryByIsoCode('RU'),
-                              ],
-                              itemBuilder: (Country country) {
-                                return Container(
-                                  child: Row(
-                                    children: <Widget>[
-                                      CountryPickerUtils.getDefaultFlagImage(
-                                          country),
-                                      SizedBox(
-                                        width: 8.0,
-                                        height: 30,
-                                      ),
-                                      Text(
-                                          "${(country as ExCountry).getDisplayLanguage()}"),
-                                    ],
-                                  ),
-                                );
-                              })),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
+          _chunkDownload(),
+          _firstPage(),
+          _dbSelector(),
+          _languageSelector(),
         ],
       ),
       backgroundColor: showFirst && !widget.switching
           ? Color(0x7FB200ED)
           : Settings.majorColor.withAlpha(200),
+    );
+  }
+
+  _chunkDownload() {
+    return Visibility(
+      visible: showIndicator,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 120),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text('<< AutoSync >>', style: TextStyle(color: Colors.white)),
+              Text(
+                  chunkDownloadProgress != chunkDownloadMax ||
+                          chunkDownloadMax == 0
+                      ? 'Chunk downloading...[$chunkDownloadProgress/${SyncManager.getSyncRequiredChunkCount()}]'
+                      : 'Extracting...',
+                  style: TextStyle(color: Colors.white)),
+              Container(
+                height: 16,
+              ),
+              SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _firstPage() {
+    final translations = Translations.of(context);
+
+    return Visibility(
+      visible: showFirst,
+      child: Align(
+        alignment: Alignment.center,
+        child: Padding(
+          padding: EdgeInsets.only(top: 140),
+          child: Card(
+            elevation: 100,
+            color: widget.switching
+                ? Settings.majorColor.withAlpha(150)
+                : Colors.purple.shade50,
+            child: AnimatedOpacity(
+              opacity: animateBox ? 1.0 : 0,
+              duration: Duration(milliseconds: 500),
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 500),
+                curve: Curves.ease,
+                width: animateBox ? 300 : 300,
+                height: animateBox ? 300 : 0,
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: AnimationConfiguration.toStaggeredList(
+                    duration: const Duration(milliseconds: 900),
+                    childAnimationBuilder: (widget) => SlideAnimation(
+                      horizontalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: widget,
+                      ),
+                    ),
+                    children: <Widget>[
+                      _welcomeMessage(),
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 4.0),
+                      ),
+                      RadioTile(
+                        value: Database.userLanguage,
+                        groupValue: _database,
+                        setGroupValue: _setDatabase,
+                        title: Text(
+                          translations.trans('dbuser'),
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        subtitle: Text(
+                          '${imgZipSize['ko']}${translations.trans('dbdownloadsize')}',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        onLongPress: () {
+                          Dialogs.okDialog(
+                              context,
+                              translations.trans('dbusermsg').replaceFirst(
+                                  '%s', imgSize[translations.dbLanguageCode]));
+                        },
+                      ),
+                      RadioTile(
+                        value: Database.all,
+                        groupValue: _database,
+                        setGroupValue: _setDatabase,
+                        title: Text(
+                          translations.trans('dballname'),
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        subtitle: Text(
+                          '${imgZipSize['global']}${translations.trans('dbdownloadsize')}',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        onLongPress: () {
+                          Dialogs.okDialog(
+                              context,
+                              translations
+                                  .trans('dballmsg')
+                                  .replaceFirst('%s', imgSize['global']));
+                        },
+                      ),
+                      _downloadButton(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _welcomeMessage() {
+    return Row(
+      children: <Widget>[
+        Icon(
+          MdiIcons.database,
+          size: 50,
+          color: widget.switching
+              ? Settings.majorAccentColor.withOpacity(0.8)
+              : Colors.grey,
+        ),
+        Container(
+          padding: EdgeInsets.all(4),
+        ),
+        Expanded(
+          child: Text(
+            widget.switching
+                ? '${Translations.of(context).trans('database')} ${Translations.of(context).trans('switching')}'
+                : Translations.of(context).trans('welcome'),
+            maxLines: 4,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _downloadButton() {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
+        child: RaisedButton(
+          textColor: Colors.white,
+          child: SizedBox(
+            width: 90,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text(Translations.of(context).trans('download')),
+                Icon(Icons.keyboard_arrow_right),
+              ],
+            ),
+          ),
+          onPressed: _onDownloadButtonPressed,
+          color: widget.switching
+              ? Settings.majorColor.withAlpha(200)
+              : Colors.purple.shade400,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onDownloadButtonPressed() async {
+    if (_database == Database.all) {
+      if (!await Dialogs.yesnoDialog(
+          context,
+          Translations.of(context).trans('dbwarn'),
+          Translations.of(context).trans('warning'))) {
+        return;
+      }
+    }
+    if (widget.switching) {
+      var dir = await getApplicationDocumentsDirectory();
+      try {
+        await ((await openDatabase('${dir.path}/data/data.db')).close());
+        await deleteDatabase('${dir.path}/data/data.db');
+        await Directory('${dir.path}/data').delete(recursive: true);
+      } catch (e) {}
+    }
+    print(Translations.of(context).dbLanguageCode);
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => DataBaseDownloadPage(
+              dbType: _database == Database.all
+                  ? 'global'
+                  : Translations.of(context).dbLanguageCode,
+              isExistsDataBase: false,
+            )));
+  }
+
+  _dbSelector() {
+    return AnimatedOpacity(
+      opacity: languageBox ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 700),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 100),
+          child: GestureDetector(
+            child: SizedBox(
+              child: Text(Translations.of(context).trans('dbalready'),
+                  style: TextStyle(
+                      color: widget.switching
+                          ? Settings.majorAccentColor
+                          : Colors.purpleAccent.shade100,
+                      fontSize: 12.0)),
+            ),
+            onTap: () async {
+              var path = await getFile();
+
+              if (path == '') return;
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => DataBaseDownloadPage(
+                        dbType: _database == Database.all
+                            ? 'global'
+                            : Translations.of(context).locale.languageCode,
+                        isExistsDataBase: true,
+                        dbPath: path,
+                      )));
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  _languageSelector() {
+    return AnimatedOpacity(
+      opacity: languageBox ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 700),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
+          child: InkWell(
+            customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            child: SizedBox(
+              width: 150,
+              height: 50,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(
+                    Icons.language,
+                    size: 35,
+                    color: Colors.white70,
+                  ),
+                  Text('  Language',
+                      style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold))
+                ],
+              ),
+            ),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => Theme(
+                  data: Theme.of(context).copyWith(primaryColor: Colors.pink),
+                  child: CountryPickerDialog(
+                    titlePadding: EdgeInsets.symmetric(vertical: 16),
+                    // searchCursorColor: Colors.pinkAccent,
+                    // searchInputDecoration:
+                    //     InputDecoration(hintText: 'Search...'),
+                    // isSearchable: true,
+                    title: Text('Select Language'),
+                    onValuePicked: (Country country) async {
+                      var exc = country as ExCountry;
+                      await Translations.of(context).load(exc.toString());
+                      await Settings.setLanguage(exc.toString());
+                      setState(() {});
+                    },
+                    itemFilter: (c) => [].contains(c.isoCode),
+                    priorityList: [
+                      ExCountry.create('US'),
+                      ExCountry.create('KR'),
+                      ExCountry.create('JP'),
+                      ExCountry.create('CN', script: 'Hant'),
+                      ExCountry.create('CN', script: 'Hans'),
+                      // ExCountry.create('IT'),
+                      // ExCountry.create('ES'),
+                      // CountryPickerUtils.getCountryByIsoCode('RU'),
+                    ],
+                    itemBuilder: (Country country) {
+                      return Container(
+                        child: Row(
+                          children: <Widget>[
+                            CountryPickerUtils.getDefaultFlagImage(country),
+                            SizedBox(
+                              width: 8.0,
+                              height: 30,
+                            ),
+                            Text(
+                                "${(country as ExCountry).getDisplayLanguage()}"),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 
