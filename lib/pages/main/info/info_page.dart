@@ -93,6 +93,19 @@ class _InfoPageState extends State<InfoPage> {
                           FAQPageKorean(),
                         ),
                         _buildItem(
+                          Icon(MdiIcons.routes, size: 40, color: Colors.yellow),
+                          'Violet WalkRoad',
+                          '바이올렛의 향후 동향과 역사를 살펴보세요!',
+                          null,
+                          () async {
+                            const url =
+                                'https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45';
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            }
+                          },
+                        ),
+                        _buildItem(
                           Icon(MdiIcons.gmail,
                               size: 40, color: Colors.redAccent),
                           'Gmail',
