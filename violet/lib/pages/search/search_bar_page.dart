@@ -675,10 +675,20 @@ class _SearchBarPageState extends State<SearchBarPage>
   Widget chip(Tuple3<String, String, int> info) {
     if (info.item2.startsWith('female:'))
       info = Tuple3<String, String, int>(
-          'female', info.item2.split(':').last, info.item3);
+          'female',
+          (_useTranslated
+                  ? info.item2.split('|').first.split(':').last + '|'
+                  : '') +
+              info.item2.split(':').last,
+          info.item3);
     else if (info.item2.startsWith('male:'))
       info = Tuple3<String, String, int>(
-          'male', info.item2.split(':').last, info.item3);
+          'male',
+          (_useTranslated
+                  ? info.item2.split('|').first.split(':').last + '|'
+                  : '') +
+              info.item2.split(':').last,
+          info.item3);
 
     var tagDisplayed = info.item2;
     var count = '';

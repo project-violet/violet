@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
@@ -811,9 +812,10 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var tagRaw = name;
-    var count = '';
+    var tagDisplayed = name;
     var color = Colors.grey;
+
+    if (Settings.translateTags) tagDisplayed = TagTranslate.ofAny(tagDisplayed);
 
     if (group == 'female')
       color = Colors.pink;
@@ -846,7 +848,7 @@ class _Chip extends StatelessWidget {
             child: avatar,
           ),
           label: Text(
-            ' ' + tagRaw + count,
+            ' ' + tagDisplayed,
             style: TextStyle(
               color: Colors.white,
             ),

@@ -29,6 +29,7 @@ class Settings {
   static List<String> excludeTags;
   static List<String> blurredTags;
   static String language; // System Language
+  static bool translateTags;
 
   // Like this Hitomi.la => e-hentai => exhentai => nhentai
   static List<String> routingRule; // image routing rule
@@ -140,6 +141,14 @@ class Settings {
     excludeTags = excludetags.split('|').toList();
     blurredTags =
         blurredtags != null ? blurredtags.split(' ').toList() : List<String>();
+
+    translateTags =
+        (await SharedPreferences.getInstance()).getBool('translatetags');
+    if (translateTags == null) {
+      translateTags = false;
+      await (await SharedPreferences.getInstance())
+          .setBool('translatetags', scrollVertical);
+    }
 
     var routingrule =
         (await SharedPreferences.getInstance()).getString('routingrule');
@@ -465,6 +474,12 @@ class Settings {
     blurredTags = nn.split(' ').toList();
     await (await SharedPreferences.getInstance())
         .setString('blurredtags', blurredTags.join('|'));
+  }
+
+  static Future<void> setTranslateTags(bool nn) async {
+    translateTags = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('translatetags', translateTags);
   }
 
   static Future<void> setRightToLeft(bool nn) async {
