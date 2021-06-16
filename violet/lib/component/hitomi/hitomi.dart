@@ -159,7 +159,9 @@ class HitomiManager {
         var po = prefix.split(':').last;
         var results = TagTranslate.containsTotal(po)
             .where((e) =>
-                e.item1.contains(opp + ':') &&
+                e.item1.contains(opp != 'female' && opp != 'male'
+                    ? opp + ':'
+                    : 'tag:' + opp + ':') &&
                 ch.containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
             .map((e) => Tuple3<String, String, int>(
                 pp,
@@ -312,7 +314,9 @@ class HitomiManager {
         var po = prefix.split(':').last;
         var results = TagTranslate.containsFuzzingTotal(po)
             .where((e) =>
-                e.item1.contains(opp + ':') &&
+                e.item1.contains(opp != 'female' && opp != 'male'
+                    ? opp + ':'
+                    : 'tag:' + opp + ':') &&
                 ch.containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
             .map((e) => Tuple4<String, String, int, int>(
                 pp,
