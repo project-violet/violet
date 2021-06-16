@@ -167,6 +167,10 @@ class HitomiManager {
                     '|' +
                     e.item2.split('|')[0],
                 ch[e.item1.substring(e.item1.indexOf(':') + 1)]))
+            .where((e) => opp == 'tag'
+                ? !(e.item2.startsWith('female:') ||
+                    e.item2.startsWith('male:'))
+                : true)
             .toList();
         results.sort((a, b) => b.item3.compareTo(a.item3));
         return results;
@@ -317,6 +321,10 @@ class HitomiManager {
                     e.item2.split('|')[0],
                 ch[e.item1.substring(e.item1.indexOf(':') + 1)],
                 e.item3))
+            .where((e) => opp == 'tag'
+                ? !(e.item2.startsWith('female:') ||
+                    e.item2.startsWith('male:'))
+                : true)
             .toList();
         results.sort((a, b) => a.item4.compareTo(b.item4));
         return results
