@@ -47,6 +47,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   bool _nothing = false;
   bool _onChip = false;
   bool _tagTranslation = false;
+  bool _useTranslated = false;
   bool _showCount = true;
   int _searchResultMaximum = 60;
 
@@ -338,6 +339,22 @@ class _SearchBarPageState extends State<SearchBarPage>
                       });
                     },
                   ),
+                  ListTile(
+                    leading:
+                        Icon(MdiIcons.layersSearch, color: Settings.majorColor),
+                    title: Text('한글 검색'),
+                    trailing: Switch(
+                      value: _useTranslated,
+                      onChanged: (value) {},
+                      activeTrackColor: Settings.majorColor,
+                      activeColor: Settings.majorAccentColor,
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _useTranslated = !_useTranslated;
+                      });
+                    },
+                  ),
                   Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 8.0,
@@ -351,6 +368,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                     title: Text(Translations.of(context).trans('showcount')),
                     trailing: Switch(
                       value: _showCount,
+                      onChanged: (value) {},
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
@@ -577,17 +595,19 @@ class _SearchBarPageState extends State<SearchBarPage>
     _searchText = target;
     latestToken = token;
     if (!useFuzzy) {
-      final result = (await HitomiManager.queryAutoComplete(token))
-          .take(_searchResultMaximum)
-          .toList();
+      final result =
+          (await HitomiManager.queryAutoComplete(token, _useTranslated))
+              .take(_searchResultMaximum)
+              .toList();
       if (result.length == 0) _nothing = true;
       setState(() {
         _searchLists = result;
       });
     } else {
-      final result = (await HitomiManager.queryAutoCompleteFuzzy(token))
-          .take(_searchResultMaximum)
-          .toList();
+      final result =
+          (await HitomiManager.queryAutoCompleteFuzzy(token, _useTranslated))
+              .take(_searchResultMaximum)
+              .toList();
       if (result.length == 0) _nothing = true;
       setState(() {
         _searchLists = result;
@@ -644,13 +664,14 @@ class _SearchBarPageState extends State<SearchBarPage>
   // Create tag-chip
   // group, name, counts
   Widget chip(Tuple3<String, String, int> info) {
-    var tagRaw = info.item2;
+    var tagDisplayed = info.item2;
     var count = '';
     var color = Colors.grey;
 
-    if (_tagTranslation) // Korean
-      tagRaw = TagTranslatedRegacy.mapSeries2Kor(
+    if (_tagTranslation && !_useTranslated)
+      tagDisplayed = TagTranslatedRegacy.mapSeries2Kor(
           TagTranslatedRegacy.mapTag2Kor(info.item2));
+    else if (_useTranslated) tagDisplayed = info.item2.split('|').last;
 
     if (info.item3 > 0 && _showCount) count = ' (${info.item3})';
 
@@ -665,12 +686,12 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     if (color == Colors.pink) accColor = Colors.orange;
 
-    if (!useFuzzy && latestToken != '' && tagRaw.contains(latestToken)) {
+    if (!useFuzzy && latestToken != '' && tagDisplayed.contains(latestToken)) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
           ),
-          text: tagRaw.split(latestToken)[0]));
+          text: tagDisplayed.split(latestToken)[0]));
       ts.add(TextSpan(
           style: TextStyle(
             color: accColor,
@@ -681,16 +702,16 @@ class _SearchBarPageState extends State<SearchBarPage>
           style: TextStyle(
             color: Colors.white,
           ),
-          text: tagRaw.split(latestToken)[1]));
+          text: tagDisplayed.split(latestToken)[1]));
     } else if (!useFuzzy &&
         latestToken.contains(':') &&
         latestToken.split(':')[1] != '' &&
-        tagRaw.contains(latestToken.split(':')[1])) {
+        tagDisplayed.contains(latestToken.split(':')[1])) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
           ),
-          text: tagRaw.split(latestToken.split(':')[1])[0]));
+          text: tagDisplayed.split(latestToken.split(':')[1])[0]));
       ts.add(TextSpan(
           style: TextStyle(
             color: accColor,
@@ -701,31 +722,31 @@ class _SearchBarPageState extends State<SearchBarPage>
           style: TextStyle(
             color: Colors.white,
           ),
-          text: tagRaw.split(latestToken.split(':')[1])[1]));
+          text: tagDisplayed.split(latestToken.split(':')[1])[1]));
     } else if (!useFuzzy) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
           ),
-          text: tagRaw));
+          text: tagDisplayed));
     } else if (latestToken != '') {
       var route = Distance.levenshteinDistanceRoute(
-          tagRaw.runes.toList(), latestToken.runes.toList());
-      for (int i = 0; i < tagRaw.length; i++) {
+          tagDisplayed.runes.toList(), latestToken.runes.toList());
+      for (int i = 0; i < tagDisplayed.length; i++) {
         ts.add(TextSpan(
             style: TextStyle(
               color: route[i + 1] == 1 ? accColor : Colors.white,
               fontWeight:
                   route[i + 1] == 1 ? FontWeight.bold : FontWeight.normal,
             ),
-            text: tagRaw[i]));
+            text: tagDisplayed[i]));
       }
     } else {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
           ),
-          text: tagRaw));
+          text: tagDisplayed));
     }
 
     var fc = RawChip(
@@ -751,7 +772,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1 != 'prefix') {
-          var insert = info.item2.replaceAll(' ', '_');
+          var insert = info.item2.split('|')[0].replaceAll(' ', '_');
           if (info.item1 != 'female' && info.item1 != 'male')
             insert = info.item1 + ':' + insert;
 
@@ -768,20 +789,20 @@ class _SearchBarPageState extends State<SearchBarPage>
           if (offset != -1) {
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
-                info.item2 +
-                (info.item2 == 'random' ? ' ' : ': ') +
+                info.item2.split('|')[0] +
+                (info.item2 == 'random' ? ' ' : ':') +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item2.length + 1,
-              extentOffset: offset + info.item2.length + 1,
+              baseOffset: offset + info.item2.split('|')[0].length + 1,
+              extentOffset: offset + info.item2.split('|')[0].length + 1,
             );
           } else {
             _searchController.text =
-                info.item2 + (info.item2 == 'random' ? '' : ':');
+                info.item2.split('|')[0] + (info.item2 == 'random' ? '' : ':');
             _searchController.selection = TextSelection(
-              baseOffset: info.item2.length + 1,
-              extentOffset: info.item2.length + 1,
+              baseOffset: info.item2.split('|')[0].length + 1,
+              extentOffset: info.item2.split('|')[0].length + 1,
             );
           }
           _onChip = true;
