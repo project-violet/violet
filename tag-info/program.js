@@ -15,6 +15,7 @@ const fs = require('fs');
 
 const d_kor_series = require('./dict/kor-series');
 const d_kor_tag = require('./dict/kor-tag');
+const d_kor_character = require('./dict/kor-character');
 
 const _tagList = [
   ['eharticles_tags', 'Tag'],
@@ -25,6 +26,7 @@ const _tagList = [
 function _transKor(tar) {
   if (tar in d_kor_series) return d_kor_series[tar];
   if (tar in d_kor_tag) return d_kor_tag[tar];
+  if (tar in d_kor_character) return d_kor_character[tar];
   return '';
 }
 
@@ -68,6 +70,7 @@ async function _buildSortWithNewestKorean(dbPrefix) {
 }
 
 async function _test() {
+  //await _buildSortWithCountKorean(_tagList[1]);
   for (var i = 0; i < _tagList.length; i++) {
     await _buildSortWithCountKorean(_tagList[i]);
     // await _buildSortWithNewest(_tagList[i]);
