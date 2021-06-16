@@ -64,13 +64,22 @@ Future<void> _sqlIntegrityTest() async {
   print(query3.length);
 }
 
+Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
+  Logger.error('[unhandled-error] E: ' +
+      flutterErrorDetails.exceptionAsString() +
+      '\n' +
+      flutterErrorDetails.stack.toString());
+
+  await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
   FlareCache.doesPrune = false;
 
   await Firebase.initializeApp();
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  FlutterError.onError = recordFlutterError;
 
   // await SeriesFinder.doFind2();
 
