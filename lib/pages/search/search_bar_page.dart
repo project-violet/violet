@@ -330,7 +330,11 @@ class _SearchBarPageState extends State<SearchBarPage>
                         Text(Translations.of(context).trans('tagtranslation')),
                     trailing: Switch(
                       value: _tagTranslation,
-                      onChanged: (value) {},
+                      onChanged: (newValue) {
+                        setState(() {
+                          _tagTranslation = newValue;
+                        });
+                      },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
@@ -354,7 +358,11 @@ class _SearchBarPageState extends State<SearchBarPage>
                     title: Text('한글 검색'),
                     trailing: Switch(
                       value: _useTranslated,
-                      onChanged: (value) {},
+                      onChanged: (newValue) {
+                        setState(() {
+                          _useTranslated = newValue;
+                        });
+                      },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
@@ -377,7 +385,11 @@ class _SearchBarPageState extends State<SearchBarPage>
                     title: Text(Translations.of(context).trans('showcount')),
                     trailing: Switch(
                       value: _showCount,
-                      onChanged: (value) {},
+                      onChanged: (newValue) {
+                        setState(() {
+                          _showCount = newValue;
+                        });
+                      },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
@@ -401,7 +413,11 @@ class _SearchBarPageState extends State<SearchBarPage>
                     title: Text(Translations.of(context).trans('fuzzysearch')),
                     trailing: Switch(
                       value: useFuzzy,
-                      onChanged: (value) {},
+                      onChanged: (newValue) {
+                        setState(() {
+                          useFuzzy = newValue;
+                        });
+                      },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
