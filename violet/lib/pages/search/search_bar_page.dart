@@ -768,7 +768,7 @@ class _SearchBarPageState extends State<SearchBarPage>
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken.split(':')[1])[1]));
-    } else if (!useFuzzy) {
+    } else if (!useFuzzy && !_useTranslated) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
