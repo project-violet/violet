@@ -675,10 +675,10 @@ class _SearchBarPageState extends State<SearchBarPage>
   Widget chip(Tuple3<String, String, int> info) {
     if (info.item2.startsWith('female:'))
       info = Tuple3<String, String, int>(
-          'female', info.item2.split(':')[1], info.item3);
+          'female', info.item2.split(':').last, info.item3);
     else if (info.item2.startsWith('male:'))
       info = Tuple3<String, String, int>(
-          'male', info.item2.split(':')[1], info.item3);
+          'male', info.item2.split(':').last, info.item3);
 
     var tagDisplayed = info.item2;
     var count = '';
@@ -792,8 +792,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         // Insert text to cursor.
         if (info.item1 != 'prefix') {
           var insert = info.item2.split('|')[0].replaceAll(' ', '_');
-          if (info.item1 != 'female' && info.item1 != 'male')
-            insert = info.item1 + ':' + insert;
+          insert = info.item1 + ':' + insert;
 
           _searchController.text = _searchText.substring(0, _insertPos) +
               insert +
