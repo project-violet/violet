@@ -667,7 +667,7 @@ const kor_series2 = {
     "promare": "프로메어",
     "the owl house": "아울 하우스",
     "hypnosis mic": "",
-    "halo": "",
+    "halo": "헤일로",
     "yama no susume": "",
     "doki doki literature club": "Doki Doki Literature Club!",
     "qualidea code": "",
