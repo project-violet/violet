@@ -49,6 +49,22 @@ class TagTranslate {
         TagTranslatedRegacy.mapTag2Kor(key));
   }
 
+  static String ofAny(String key) {
+    if (_translateMap.containsKey('series:' + key))
+      return _translateMap['series:' + key];
+    if (_translateMap.containsKey('character:' + key))
+      return _translateMap['character:' + key];
+    if (_translateMap.containsKey('tag:female:' + key))
+      return _translateMap['tag:' + key];
+    if (_translateMap.containsKey('tag:male:' + key))
+      return _translateMap['tag:' + key];
+    if (_translateMap.containsKey('tag:' + key))
+      return _translateMap['tag:' + key];
+
+    return TagTranslatedRegacy.mapSeries2Kor(
+        TagTranslatedRegacy.mapTag2Kor(key));
+  }
+
   // [<Origin, Translated>]
   static List<Tuple2<String, String>> contains(String part) {
     part = part.replaceAll(' ', '');
