@@ -673,16 +673,16 @@ class _SearchBarPageState extends State<SearchBarPage>
   // Create tag-chip
   // group, name, counts
   Widget chip(Tuple3<String, String, int> info) {
-    var tagDisplayed = info.item2;
-    var count = '';
-    var color = Colors.grey;
-
     if (info.item2.startsWith('female:'))
       info = Tuple3<String, String, int>(
           'female', info.item2.split(':')[1], info.item3);
     else if (info.item2.startsWith('male:'))
       info = Tuple3<String, String, int>(
           'male', info.item2.split(':')[1], info.item3);
+
+    var tagDisplayed = info.item2;
+    var count = '';
+    var color = Colors.grey;
 
     if (_tagTranslation && !_useTranslated)
       tagDisplayed =
