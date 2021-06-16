@@ -13,17 +13,41 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/search_bar.dart';
 
 class ViewerGallery extends StatefulWidget {
+  final int viewedPage;
+
+  ViewerGallery({this.viewedPage});
+
   @override
   _ViewerGalleryState createState() => _ViewerGalleryState();
 }
 
 class _ViewerGalleryState extends State<ViewerGallery> {
   ViewerPageProvider _pageInfo;
+  ScrollController _scrollController = ScrollController();
+  List<GlobalKey> itemKeys = <GlobalKey>[];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pageInfo = Provider.of<ViewerPageProvider>(context);
+    List.generate(_pageInfo.uris.length, (index) => index).forEach((element) {
+      itemKeys.add(GlobalKey());
+    });
+
+    Future.value(1).then((value) {
+      var row = widget.viewedPage ~/ 4;
+      if (row == 0) return;
+      _scrollController.jumpTo(
+        row *
+                ((itemKeys[0].currentContext.findRenderObject() as RenderBox)
+                        .size
+                        .height +
+                    2) -
+            100,
+        // duration: _kDuration,
+        // curve: _kCurve
+      );
+    });
   }
 
   @override
@@ -53,6 +77,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                 height: height - 16,
                 child: Container(
                   child: CustomScrollView(
+                    controller: _scrollController,
                     physics: const BouncingScrollPhysics(),
                     slivers: [
                       SliverPersistentHeader(
@@ -169,6 +194,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
           return Container(
+            key: itemKeys[index],
             width: double.infinity,
             height: double.infinity,
             child: Stack(
@@ -212,6 +238,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
           return Container(
+            key: itemKeys[index],
             width: double.infinity,
             height: double.infinity,
             child: Stack(
@@ -278,6 +305,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
               return Container(
+                key: itemKeys[index],
                 width: double.infinity,
                 height: double.infinity,
                 child: Stack(
