@@ -1115,9 +1115,9 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   void _touchEvent() {
     final width = MediaQuery.of(context).size.width;
     if (_doubleTapDetails.localPosition.dx < width / 3) {
-      if (Settings.disableOverlayButton) _leftButtonEvent();
+      if (!Settings.disableOverlayButton) _leftButtonEvent();
     } else if (width / 3 * 2 < _doubleTapDetails.localPosition.dx) {
-      if (Settings.disableOverlayButton) _rightButtonEvent();
+      if (!Settings.disableOverlayButton) _rightButtonEvent();
     } else {
       _middleButtonEvent();
     }
