@@ -220,11 +220,16 @@ class HitomiManager {
       String prefix,
       [bool useTranslated = false]) async {
     if (tagmap == null) {
-      final subdir = Platform.isAndroid ? '/data' : '';
-      final directory = await getApplicationDocumentsDirectory();
-      final path = File('${directory.path}$subdir/index.json');
-      final text = path.readAsStringSync();
-      tagmap = jsonDecode(text);
+      if (Platform.environment.containsKey('FLUTTER_TEST')) {
+        var file = File('/home/ubuntu/violet/index.json');
+        tagmap = jsonDecode(await file.readAsString());
+      } else {
+        final subdir = Platform.isAndroid ? '/data' : '';
+        final directory = await getApplicationDocumentsDirectory();
+        final path = File('${directory.path}$subdir/index.json');
+        final text = path.readAsStringSync();
+        tagmap = jsonDecode(text);
+      }
     }
 
     prefix = prefix.toLowerCase().replaceAll('_', ' ');
@@ -253,95 +258,134 @@ class HitomiManager {
       if (!tagmap.containsKey(pp)) return <Tuple3<String, String, int>>[];
 
       final ch = tagmap[pp];
-      if (opp == 'female' || opp == 'male') {
-        ch.forEach((key, value) {
-          if (key.toLowerCase().startsWith(opp + ':')
-              // &&
-              // key.toLowerCase().contains(prefix)
-              )
+      if (!useTranslated) {
+        if (opp == 'female' || opp == 'male') {
+          ch.forEach((key, value) {
+            if (key.toLowerCase().startsWith(opp + ':')
+                // &&
+                // key.toLowerCase().contains(prefix)
+                )
+              results.add(Tuple4<String, String, int, int>(
+                  opp,
+                  key,
+                  Distance.levenshteinDistance(
+                      prefix.runes.toList(), key.runes.toList()),
+                  value));
+          });
+        } else if (opp == 'tag') {
+          var po = prefix.split(':')[1];
+          ch.forEach((key, value) {
+            if (!key.toLowerCase().startsWith('female:') &&
+                    !key.toLowerCase().startsWith('male:')
+                // &&
+                // key.toLowerCase().contains(po)
+                )
+              results.add(Tuple4<String, String, int, int>(
+                  opp,
+                  key,
+                  Distance.levenshteinDistance(
+                      po.runes.toList(), key.runes.toList()),
+                  value));
+          });
+        } else {
+          var po = prefix.split(':')[1];
+
+          ch.forEach((key, value) {
+            // if (key.toLowerCase().contains(po))
             results.add(Tuple4<String, String, int, int>(
-                opp,
-                key,
-                Distance.levenshteinDistance(
-                    prefix.runes.toList(), key.runes.toList()),
-                value));
-        });
-      } else if (opp == 'tag') {
-        var po = prefix.split(':')[1];
-        ch.forEach((key, value) {
-          if (!key.toLowerCase().startsWith('female:') &&
-                  !key.toLowerCase().startsWith('male:')
-              // &&
-              // key.toLowerCase().contains(po)
-              )
-            results.add(Tuple4<String, String, int, int>(
-                opp,
+                pp,
                 key,
                 Distance.levenshteinDistance(
                     po.runes.toList(), key.runes.toList()),
                 value));
-        });
+          });
+        }
+        results.sort((a, b) => a.item3.compareTo(b.item3));
+        return results
+            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
+            .toList();
       } else {
-        var po = prefix.split(':')[1];
-
-        ch.forEach((key, value) {
-          // if (key.toLowerCase().contains(po))
-          results.add(Tuple4<String, String, int, int>(
-              pp,
-              key,
-              Distance.levenshteinDistance(
-                  po.runes.toList(), key.runes.toList()),
-              value));
-        });
+        var po = prefix.split(':').last;
+        var results = TagTranslate.containsFuzzingTotal(po)
+            .where((e) =>
+                e.item1.contains(opp + ':') &&
+                ch.containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
+            .map((e) => Tuple4<String, String, int, int>(
+                pp,
+                e.item1.substring(e.item1.indexOf(':') + 1) +
+                    '|' +
+                    e.item2.split('|')[0],
+                ch[e.item1.substring(e.item1.indexOf(':') + 1)],
+                e.item3))
+            .toList();
+        results.sort((a, b) => a.item4.compareTo(b.item4));
+        return results
+            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item3))
+            .toList();
       }
-      results.sort((a, b) => a.item3.compareTo(b.item3));
-      return results
-          .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
-          .toList();
     } else {
-      var results = <Tuple4<String, String, int, int>>[];
-      tagmap.forEach((key1, value) {
-        if (key1 == 'tag') {
-          value.forEach((key2, value2) {
-            if (key2.contains(':')) {
-              results.add(Tuple4<String, String, int, int>(
-                  key2.split(':')[0],
-                  key2,
-                  Distance.levenshteinDistance(
-                      prefix.runes.toList(), key2.runes.toList()),
-                  value2));
-            } else {
-              if (key2.contains(':'))
+      if (!useTranslated) {
+        var results = <Tuple4<String, String, int, int>>[];
+        tagmap.forEach((key1, value) {
+          if (key1 == 'tag') {
+            value.forEach((key2, value2) {
+              if (key2.contains(':')) {
                 results.add(Tuple4<String, String, int, int>(
                     key2.split(':')[0],
                     key2,
                     Distance.levenshteinDistance(
                         prefix.runes.toList(), key2.runes.toList()),
                     value2));
-              else
-                results.add(Tuple4<String, String, int, int>(
-                    'tag',
-                    key2,
-                    Distance.levenshteinDistance(
-                        prefix.runes.toList(), key2.runes.toList()),
-                    value2));
-            }
-          });
-        } else {
-          value.forEach((key2, value2) {
-            results.add(Tuple4<String, String, int, int>(
-                key1,
-                key2,
-                Distance.levenshteinDistance(
-                    prefix.runes.toList(), key2.runes.toList()),
-                value2));
-          });
-        }
-      });
-      results.sort((a, b) => a.item3.compareTo(b.item3));
-      return results
-          .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
-          .toList();
+              } else {
+                if (key2.contains(':'))
+                  results.add(Tuple4<String, String, int, int>(
+                      key2.split(':')[0],
+                      key2,
+                      Distance.levenshteinDistance(
+                          prefix.runes.toList(), key2.runes.toList()),
+                      value2));
+                else
+                  results.add(Tuple4<String, String, int, int>(
+                      'tag',
+                      key2,
+                      Distance.levenshteinDistance(
+                          prefix.runes.toList(), key2.runes.toList()),
+                      value2));
+              }
+            });
+          } else {
+            value.forEach((key2, value2) {
+              results.add(Tuple4<String, String, int, int>(
+                  key1,
+                  key2,
+                  Distance.levenshteinDistance(
+                      prefix.runes.toList(), key2.runes.toList()),
+                  value2));
+            });
+          }
+        });
+        results.sort((a, b) => a.item3.compareTo(b.item3));
+        return results
+            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
+            .toList();
+      } else {
+        var results = TagTranslate.containsFuzzingTotal(prefix)
+            .where((e) => tagmap[e.item1.split(':')[0]]
+                .containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
+            .map((e) => Tuple4<String, String, int, int>(
+                e.item1.split(':')[0],
+                e.item1.substring(e.item1.indexOf(':') + 1) +
+                    '|' +
+                    e.item2.split('|')[0],
+                tagmap[e.item1.split(':')[0]]
+                    [e.item1.substring(e.item1.indexOf(':') + 1)],
+                e.item3))
+            .toList();
+        results.sort((a, b) => a.item4.compareTo(b.item4));
+        return results
+            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item3))
+            .toList();
+      }
     }
   }
 
