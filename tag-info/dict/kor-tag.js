@@ -75,7 +75,7 @@ const kor_tag = {
   'female:femdom': 'female:펨돔',
   'female:tentacles': 'female:촉수',
   'female:impregnation': 'female:수정',
-  'female:sister': 'female:자매',
+  'female:sister': 'female:여동생',
   'female:netorare': 'female:네토라레',
   'female:pregnant': 'female:임신',
   'female:pantyhose': 'female:팬티 스타킹',
