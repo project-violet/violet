@@ -340,6 +340,14 @@ class _SearchBarPageState extends State<SearchBarPage>
                       });
                     },
                   ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                    ),
+                    width: double.infinity,
+                    height: 1.0,
+                    color: Colors.grey.shade400,
+                  ),
                   ListTile(
                     leading:
                         Icon(MdiIcons.layersSearch, color: Settings.majorColor),
@@ -670,8 +678,10 @@ class _SearchBarPageState extends State<SearchBarPage>
     var color = Colors.grey;
 
     if (_tagTranslation && !_useTranslated)
-      tagDisplayed = TagTranslate.ofAny(info.item2);
-    else if (_useTranslated) tagDisplayed = info.item2.split('|').last;
+      tagDisplayed =
+          TagTranslate.ofAny(info.item2).split('|').last.split(':').last;
+    else if (_useTranslated)
+      tagDisplayed = info.item2.split('|').last.split(':').last;
 
     if (info.item3 > 0 && _showCount) count = ' (${info.item3})';
 

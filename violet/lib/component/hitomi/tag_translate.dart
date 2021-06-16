@@ -25,7 +25,8 @@ class TagTranslate {
       var file = File('/home/ubuntu/violet/assets/locale/tag/korean.json');
       data = await file.readAsString();
     } else
-      data = await rootBundle.loadString('assets/locale/$defaultLanguage.json');
+      data = await rootBundle
+          .loadString('assets/locale/tag/$defaultLanguage.json');
     Map<String, dynamic> _result = json.decode(data);
 
     _translateMap = Map<String, String>();
@@ -55,9 +56,9 @@ class TagTranslate {
     if (_translateMap.containsKey('character:' + key))
       return _translateMap['character:' + key];
     if (_translateMap.containsKey('tag:female:' + key))
-      return _translateMap['tag:' + key];
+      return _translateMap['tag:female:' + key];
     if (_translateMap.containsKey('tag:male:' + key))
-      return _translateMap['tag:' + key];
+      return _translateMap['tag:male:' + key];
     if (_translateMap.containsKey('tag:' + key))
       return _translateMap['tag:' + key];
 
