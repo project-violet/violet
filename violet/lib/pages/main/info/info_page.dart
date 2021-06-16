@@ -95,7 +95,7 @@ class _InfoPageState extends State<InfoPage> {
                         _buildItem(
                           Icon(MdiIcons.routes, size: 40, color: Colors.yellow),
                           'Violet WalkRoad',
-                          '바이올렛의 향후 동향과 역사를 살펴보세요!',
+                          '향후 동향과 역사를 살펴보세요!',
                           null,
                           () async {
                             const url =
