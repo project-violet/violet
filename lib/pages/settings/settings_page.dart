@@ -575,6 +575,21 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
+            leading: Icon(Icons.translate, color: Settings.majorColor),
+            title: Text('태그 번역'),
+            trailing: Switch(
+              value: Settings.translateTags,
+              onChanged: (value) async {},
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+            onTap: () async {
+              await Settings.setTranslateTags(!Settings.translateTags);
+              setState(() {});
+            },
+          ),
+          _buildDivider(),
+          ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
             trailing: Icon(Icons.keyboard_arrow_right),
