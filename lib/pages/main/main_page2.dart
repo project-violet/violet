@@ -728,9 +728,7 @@ class _MainPage2State extends State<MainPage2>
   }
 
   String numberWithComma(int param) {
-    return NumberFormat('###,###,###,###')
-        .format(param)
-        .replaceAll(' ', '');
+    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
   }
 
   ReceivePort _port = ReceivePort();
@@ -798,7 +796,11 @@ class _MainPage2State extends State<MainPage2>
 
       var bb = await Dialogs.yesnoDialog(
           context, Translations.of(context).trans('violetservermsg'));
-      if (bb == null || bb == false) return;
+      if (bb == null || bb == false) {
+        await (await SharedPreferences.getInstance())
+            .setBool('usevioletserver_check', false);
+        return;
+      }
 
       await Settings.setUseVioletServer(true);
       await (await SharedPreferences.getInstance())
