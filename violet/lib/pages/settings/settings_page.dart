@@ -320,7 +320,10 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text('Flat 테마 사용'),
             trailing: Switch(
               value: Settings.themeFlat,
-              onChanged: (value) async {},
+              onChanged: (newValue) async {
+                await Settings.setThemeFlat(newValue);
+                setState(() {});
+              },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
             ),
@@ -341,7 +344,10 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text('Drawer 사용'),
             trailing: Switch(
               value: Settings.useDrawer,
-              onChanged: (value) async {},
+              onChanged: (newValue) async {
+                await Settings.setUseDrawer(newValue);
+                setState(() {});
+              },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
             ),
@@ -465,7 +471,10 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('usewebsearch')),
               trailing: Switch(
                 value: Settings.searchNetwork,
-                onChanged: (value) async {},
+                onChanged: (newValue) async {
+                  await Settings.setSearchOnWeb(newValue);
+                  setState(() {});
+                },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
@@ -579,7 +588,10 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text('태그 번역'),
             trailing: Switch(
               value: Settings.translateTags,
-              onChanged: (value) async {},
+              onChanged: (newValue) async {
+                await Settings.setTranslateTags(newValue);
+                setState(() {});
+              },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
             ),
@@ -718,7 +730,10 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('dbopt')),
               trailing: Switch(
                 value: Settings.useOptimizeDatabase,
-                onChanged: (value) async {},
+                onChanged: (newValue) async {
+                  await Settings.setUseOptimizeDatabase(newValue);
+                  setState(() {});
+                },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
@@ -868,7 +883,10 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('usevioletserver')),
               trailing: Switch(
                 value: Settings.useVioletServer,
-                onChanged: (value) async {},
+                onChanged: (newValue) async {
+                  await Settings.setUseVioletServer(newValue);
+                  setState(() {});
+                },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
@@ -901,7 +919,10 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('useinnerstorage')),
               trailing: Switch(
                 value: Settings.useInnerStorage,
-                onChanged: (value) async {},
+                onChanged: Platform.isIOS ? null : (newValue) async {
+                  await Settings.setUserInnerStorage(newValue);
+                  setState(() {});
+                },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
@@ -1534,7 +1555,10 @@ class _SettingsPageState extends State<SettingsPage>
                   Text(Translations.of(context).trans('showarticleprogress')),
               trailing: Switch(
                 value: Settings.showArticleProgress,
-                onChanged: (value) async {},
+                onChanged: (newValue) async {
+                  await Settings.setShowArticleProgress(newValue);
+                  setState(() {});
+                },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
