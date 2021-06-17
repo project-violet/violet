@@ -19,7 +19,7 @@ class SeriesListPage extends StatelessWidget {
   final List<List<int>> series;
   final List<QueryResult> cc;
 
-  SeriesListPage({this.prefix, this.series, this.cc}) {}
+  SeriesListPage({this.prefix, this.series, this.cc});
 
   @override
   Widget build(BuildContext context) {
