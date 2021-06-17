@@ -25,8 +25,7 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2021, 6, 18),
-    version: '1.10.1 Minor Update <== Latest',
-    isMinor: true,
+    version: '1.10.1 Patch Update <== Latest',
     contents: [
       'fix hitomi get image list method',
     ],
