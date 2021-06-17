@@ -61,7 +61,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   // Artist Articles
   List<QueryResult> cc;
   // Chart component lists
-  List<Tuple2<String, int>> lff = List<Tuple2<String, int>>();
+  List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
   List<Tuple2<String, int>> lffOrigin;
   // Similar Aritsts Info
   List<Tuple2<String, double>> similars;
@@ -235,7 +235,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
       var x = await qm.next();
       if (x == null || x.length == 0) {
-        qrs.add(List<QueryResult>());
+        qrs.add(<QueryResult>[]);
         continue;
       }
       var y = [x[0]];

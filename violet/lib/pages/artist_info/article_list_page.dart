@@ -159,7 +159,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 tagStates = value[0];
                 groupStates = value[1];
                 isOr = value[2];
-                var result = List<QueryResult>();
+                var result = <QueryResult>[];
                 widget.cc.forEach((element) {
                   var succ = !isOr;
                   tagStates.forEach((key, value) {

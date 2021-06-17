@@ -49,7 +49,7 @@ class HitomiTitleCluster {
 
   // This function compares and clusters the similarity of titles.
   static List<List<int>> doClustering(List<String> titles) {
-    var ctitles = List<Map<String, Idata>>();
+    var ctitles = <Map<String, Idata>>[];
 
     for (int i = 0; i < titles.length; i++) {
       var mm = Map<String, Idata>();
@@ -62,11 +62,11 @@ class HitomiTitleCluster {
 
     if (maxnode > 100) maxnode = 100;
 
-    var groups = List<List<int>>();
+    var groups = <List<int>>[];
     ctitles.forEach((element) {
       var near = tree.nearest(element, maxnode, 8);
 
-      var rr = List<int>();
+      var rr = <int>[];
       near.forEach((element) {
         rr.add(element[0]['t'].index);
       });
@@ -90,7 +90,7 @@ class HitomiTitleCluster {
     var join = Map<int, List<int>>();
     for (int i = 0; i < titles.length; i++) {
       var v = ds.find(i);
-      if (!join.containsKey(v)) join[v] = List<int>();
+      if (!join.containsKey(v)) join[v] = <int>[];
       join[v].add(i);
     }
 
