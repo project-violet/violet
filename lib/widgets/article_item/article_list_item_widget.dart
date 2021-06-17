@@ -545,9 +545,9 @@ class _ArticleListItemVerySimpleWidgetState
     return _DetailWidget(
       artist: artist,
       title: title,
-      imageCount: imageCount.toString(),
+      imageCount: imageCount,
       dateTime: dateTime,
-      viewed: (data.viewed == null) ? null : data.viewed.toString(),
+      viewed: data.viewed,
     );
   }
 
@@ -571,9 +571,9 @@ class _ArticleListItemVerySimpleWidgetState
 class _DetailWidget extends StatelessWidget {
   final String title;
   final String artist;
-  final String imageCount;
+  final int imageCount;
   final String dateTime;
-  final String viewed;
+  final int viewed;
 
   _DetailWidget(
       {this.title, this.artist, this.imageCount, this.dateTime, this.viewed});
@@ -581,53 +581,50 @@ class _DetailWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.fromLTRB(8, 4, 4, 4),
+      margin: const EdgeInsets.fromLTRB(8, 4, 4, 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+          Text(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
           Text(
             artist,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomLeft,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(children: <Widget>[
-                    Icon(
-                      Icons.photo,
-                      size: 18,
-                    ),
-                    Text(' ' + imageCount.toString() + ' Page',
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w500)),
-                    Container(width: 4, height: 0),
-                    viewed != null
-                        ? Icon(
-                            MdiIcons.eyeOutline,
-                            size: 18,
-                          )
-                        : Container(height: 0),
-                    viewed != null
-                        ? Text(' ' + viewed.toString() + ' Viewed',
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w500))
-                        : Container(height: 0)
-                  ]),
-                  Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
-                      child: Text(dateTime, style: TextStyle(fontSize: 13))),
-                ],
+          const Spacer(),
+          Row(
+            children: [
+              const Icon(Icons.date_range, size: 18),
+              Text(
+                ' ${dateTime}',
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
-            ),
+            ],
+          ),
+          const SizedBox(height: 2.0),
+          Row(
+            children: [
+              const Icon(Icons.photo, size: 18),
+              Text(
+                ' ${imageCount} Page',
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(width: 4.0),
+              if (viewed != null) const Icon(MdiIcons.eyeOutline, size: 18),
+              if (viewed != null)
+                Text(
+                  ' ${viewed} Viewed',
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w500),
+                ),
+            ],
           ),
         ],
       ),
