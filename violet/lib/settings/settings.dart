@@ -147,7 +147,7 @@ class Settings {
     if (translateTags == null) {
       translateTags = false;
       await (await SharedPreferences.getInstance())
-          .setBool('translatetags', scrollVertical);
+          .setBool('translatetags', translateTags);
     }
 
     var routingrule =
