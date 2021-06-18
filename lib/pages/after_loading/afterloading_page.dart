@@ -21,20 +21,20 @@ import 'package:violet/version/update_sync.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   @override
-  _AfterLoadingPageState createState() => _AfterLoadingPageState();
+  AfterLoadingPageState createState() => AfterLoadingPageState();
 }
 
-class _AfterLoadingPageState extends State<AfterLoadingPage>
+class AfterLoadingPageState extends State<AfterLoadingPage>
     with WidgetsBindingObserver {
-  int _page = 0;
-  PageController _c;
+  static int defaultInitialPage = 0;
+
+  PageController _c = PageController(initialPage: defaultInitialPage);
+  int get _currentPage => _c.hasClients ? _c.page.round() : defaultInitialPage;
+
   bool isBlurred = false;
 
   @override
   void initState() {
-    _c = PageController(
-      initialPage: _page,
-    );
     super.initState();
     WidgetsBinding.instance.addObserver(this);
   }
@@ -85,7 +85,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             unselectedItemColor: Settings.themeWhat
                 ? Colors.white
                 : Colors.black, //Colors.black,
-            currentIndex: _page,
+            currentIndex: _currentPage,
             onTap: (index) {
               this._c.animateToPage(index,
                   duration: const Duration(milliseconds: 250),
@@ -131,9 +131,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         body: PageView(
           controller: _c,
           onPageChanged: (newPage) {
-            setState(() {
-              this._page = newPage;
-            });
+            setState(() {});
           },
           children: <Widget>[
             MainPage2(),
@@ -156,7 +154,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
           fixedColor: Settings.majorColor,
           unselectedItemColor:
               Settings.themeWhat ? Colors.white : Colors.black, //Colors.black,
-          currentIndex: _page,
+          currentIndex: _currentPage,
           onTap: (index) {
             this._c.animateToPage(index,
                 duration: const Duration(milliseconds: 250),
@@ -198,9 +196,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         body: PageView(
           controller: _c,
           onPageChanged: (newPage) {
-            setState(() {
-              this._page = newPage;
-            });
+            setState(() {});
           },
           children: <Widget>[
             MainPage2(),
@@ -216,7 +212,6 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
     throw Exception('not implemented');
   }
 
-  int page = 0;
   _drawer() {
     print(_colorToString(Settings.majorColor));
     final mediaQuery = MediaQuery.of(context);
@@ -224,6 +219,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
         (mediaQuery.padding + mediaQuery.viewInsets).bottom);
     if (Platform.isAndroid) {
       return Scaffold(
+        key: scaffoldKey,
         body: PageView(
           physics: NeverScrollableScrollPhysics(),
           controller: _c,
@@ -340,6 +336,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
       );
     } else if (Platform.isIOS) {
       return Scaffold(
+        key: scaffoldKey,
         body: PageView(
           physics: NeverScrollableScrollPhysics(),
           controller: _c,
@@ -481,7 +478,7 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
       child: Container(
         // color: ,
         decoration: BoxDecoration(
-            color: this.page == page ? color.withOpacity(0.4) : null,
+            color: page == _currentPage ? color.withOpacity(0.4) : null,
             borderRadius: BorderRadius.all(Radius.circular(10))),
         child: InkWell(
           customBorder: RoundedRectangleBorder(
@@ -504,7 +501,6 @@ class _AfterLoadingPageState extends State<AfterLoadingPage>
             ],
           ),
           onTap: () {
-            this.page = page;
             Navigator.pop(context);
             setState(() {});
             // this._c.animateToPage(page,
