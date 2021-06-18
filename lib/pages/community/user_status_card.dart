@@ -119,18 +119,14 @@ class _UserStatusCardState extends State<UserStatusCard>
                   : Colors.white,
           // decoration:
           child: Ink(
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: !Settings.themeFlat
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Material(
-                        color:
-                            Settings.themeWhat ? Colors.black38 : Colors.white,
-                        child: _statusCardContent(),
-                      ))
-                  : _statusCardContent(),
-            ),
+            child: !Settings.themeFlat
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Material(
+                      color: Settings.themeWhat ? Colors.black38 : Colors.white,
+                      child: _statusCardContent(),
+                    ))
+                : _statusCardContent(),
           ),
         ),
       ],
