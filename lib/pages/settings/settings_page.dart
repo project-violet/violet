@@ -919,10 +919,12 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('useinnerstorage')),
               trailing: Switch(
                 value: Settings.useInnerStorage,
-                onChanged: Platform.isIOS ? null : (newValue) async {
-                  await Settings.setUserInnerStorage(newValue);
-                  setState(() {});
-                },
+                onChanged: Platform.isIOS
+                    ? null
+                    : (newValue) async {
+                        await Settings.setUserInnerStorage(newValue);
+                        setState(() {});
+                      },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
