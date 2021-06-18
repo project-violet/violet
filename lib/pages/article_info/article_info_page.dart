@@ -36,6 +36,7 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -55,7 +56,7 @@ class ArticleInfoPage extends StatelessWidget {
 
     return Container(
       color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
-      padding: EdgeInsets.only(top: 0, bottom: mediaQuery.padding.bottom),
+      padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
       child: Card(
         elevation: 5,
         color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
