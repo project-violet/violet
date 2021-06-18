@@ -260,26 +260,28 @@ class _SplashPageState extends State<SplashPage> {
     var width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          AnimatedPositioned(
-            duration: Duration(milliseconds: 1000),
-            curve: Curves.ease,
-            top: showFirst ? 130 : height / 2 - 50,
-            left: width / 2 - 50,
-            child: Image.asset(
-              'assets/images/logo-' +
-                  _colorToString(Settings.majorColor) +
-                  '.png',
-              width: 100,
-              height: 100,
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.ease,
+              top: showFirst ? 130 : height / 2 - 50,
+              left: width / 2 - 50,
+              child: Image.asset(
+                'assets/images/logo-' +
+                    _colorToString(Settings.majorColor) +
+                    '.png',
+                width: 100,
+                height: 100,
+              ),
             ),
-          ),
-          _chunkDownload(),
-          _firstPage(),
-          _dbSelector(),
-          _languageSelector(),
-        ],
+            _chunkDownload(),
+            _firstPage(),
+            _dbSelector(),
+            _languageSelector(),
+          ],
+        ),
       ),
       backgroundColor: showFirst && !widget.switching
           ? Color(0x7FB200ED)
