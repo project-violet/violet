@@ -93,24 +93,19 @@ class _TabPanelState extends State<TabPanel> {
                       padding: EdgeInsets.zero,
                       child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Provider<ArticleListItem>.value(
-                              value: ArticleListItem.fromArticleListItem(
-                                queryResult: e,
-                                addBottomPadding: false,
-                                showDetail: false,
-                                width: (windowWidth - 4.0 - 48) / 3,
-                                thumbnailTag: Uuid().v4(),
-                                selectMode: true,
-                                selectCallback: () {
-                                  Navigator.pop(context, e);
-                                },
-                              ),
-                              child: ArticleListItemVerySimpleWidget(),
-                            )
-                          ],
+                        child: Provider<ArticleListItem>.value(
+                          value: ArticleListItem.fromArticleListItem(
+                            queryResult: e,
+                            addBottomPadding: false,
+                            showDetail: false,
+                            width: (windowWidth - 4.0) / 3.0,
+                            thumbnailTag: Uuid().v4(),
+                            selectMode: true,
+                            selectCallback: () {
+                              Navigator.pop(context, e);
+                            },
+                          ),
+                          child: ArticleListItemVerySimpleWidget(),
                         ),
                       ),
                     );
