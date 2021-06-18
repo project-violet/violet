@@ -29,6 +29,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
@@ -347,6 +348,10 @@ class _SettingsPageState extends State<SettingsPage>
               onChanged: (newValue) async {
                 await Settings.setUseDrawer(newValue);
                 setState(() {});
+
+                final afterLoadingPageState =
+                    context.findAncestorStateOfType<AfterLoadingPageState>();
+                afterLoadingPageState.setState(() {});
               },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
@@ -355,6 +360,10 @@ class _SettingsPageState extends State<SettingsPage>
           onTap: () async {
             await Settings.setUseDrawer(!Settings.useDrawer);
             setState(() {});
+
+            final afterLoadingPageState =
+                context.findAncestorStateOfType<AfterLoadingPageState>();
+            afterLoadingPageState.setState(() {});
           },
         ),
       ])
