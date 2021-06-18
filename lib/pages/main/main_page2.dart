@@ -535,128 +535,80 @@ class _MainPage2State extends State<MainPage2>
     ];
   }
 
+  _buildServicePageRoute(Widget Function() builder) {
+    if (Platform.isIOS) {
+      return CupertinoPageRoute(builder: (context) => builder());
+    }
+
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 500),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final begin = const Offset(0.0, 1.0);
+        final end = Offset.zero;
+        final curve = Curves.ease;
+
+        final tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(
+          curve: curve,
+        ));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+      pageBuilder: (context, animation, secondaryAnimation) => builder(),
+    );
+  }
+
   _serviceArea() {
-    final double width = MediaQuery.of(context).size.width;
+    final buttonStyle = ElevatedButton.styleFrom(
+      primary: Settings.majorColor.withAlpha(220),
+      onPrimary: Colors.white,
+      elevation: 3.0,
+      minimumSize: const Size(30.0, 30.0),
+      shape: const CircleBorder(),
+      padding: const EdgeInsets.all(16),
+    );
+
     return [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // Container(
-          //   child: ArtistCollectionCard(),
-          //   height: 50,
-          //   width: 150,
-          // )
-          MaterialButton(
-            color: Settings.majorColor.withAlpha(220),
-            textColor: Colors.white,
-            onPressed: () {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => ArtistCollectionPage(),
-                ));
-              } else {
-                Navigator.of(context).push(
-                    CupertinoPageRoute(builder: (_) => ArtistCollectionPage()));
-              }
-            },
-            // child: Text(Translations.of(context).trans('artistcollection')),
-            child: Icon(MdiIcons.star),
-            elevation: 3.0,
-            minWidth: 30,
-            padding: EdgeInsets.all(16),
-            shape: CircleBorder(),
-          ),
-          // Container(
-          //   child: ViewsCard(),
-          //   height: 50,
-          //   width: 150,
-          // ),
-
-          MaterialButton(
-            color: Settings.majorColor.withAlpha(220),
-            textColor: Colors.white,
-            onPressed: () {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => ViewsPage(),
-                ));
-              } else {
+          Tooltip(
+            message: '작가별 모음',
+            child: ElevatedButton(
+              style: buttonStyle,
+              onPressed: () {
                 Navigator.of(context)
-                    .push(CupertinoPageRoute(builder: (_) => ViewsPage()));
-              }
-            },
-            // child: Text(Translations.of(context).trans('realtimebest')),
-            // child: Icon(MdiIcons.artstation),
-            child: Icon(MdiIcons.starShooting),
-            elevation: 3.0,
-            minWidth: 30,
-            padding: EdgeInsets.all(16),
-            shape: CircleBorder(),
+                    .push(_buildServicePageRoute(() => ArtistCollectionPage()));
+              },
+              child: const Icon(MdiIcons.star),
+            ),
           ),
-          MaterialButton(
-            color: Settings.majorColor.withAlpha(220),
-            textColor: Colors.white,
-            onPressed: () {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => InfoPage(),
-                ));
-              } else {
+          Tooltip(
+            message: '조회수 베스트',
+            child: ElevatedButton(
+              style: buttonStyle,
+              onPressed: () {
                 Navigator.of(context)
-                    .push(CupertinoPageRoute(builder: (_) => InfoPage()));
-              }
-            },
-            // child: Text('자주 묻는 질문들'),
-            child: Icon(MdiIcons.heart),
-            elevation: 3.0,
-            minWidth: 30,
-            padding: EdgeInsets.all(16),
-            shape: CircleBorder(),
+                    .push(_buildServicePageRoute(() => ViewsPage()));
+              },
+              child: const Icon(MdiIcons.starShooting),
+            ),
+          ),
+          Tooltip(
+            message: '정보',
+            child: ElevatedButton(
+              style: buttonStyle,
+              onPressed: () {
+                Navigator.of(context)
+                    .push(_buildServicePageRoute(() => InfoPage()));
+              },
+              child: const Icon(MdiIcons.heart),
+            ),
           ),
         ],
       ),
