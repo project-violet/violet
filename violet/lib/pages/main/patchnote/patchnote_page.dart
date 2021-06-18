@@ -25,7 +25,14 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2021, 6, 18),
-    version: '1.10.1 Patch Update <== Latest',
+    version: '1.10.2 Patch Update <== Latest',
+    contents: [
+      'fix article info paddings error',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 6, 18),
+    version: '1.10.1 Patch Update',
     contents: [
       'fix hitomi get image list method',
     ],

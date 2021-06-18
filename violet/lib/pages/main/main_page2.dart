@@ -711,7 +711,14 @@ class _MainPage2State extends State<MainPage2>
                   : Colors.white,
           child: Padding(
             padding: EdgeInsets.all(20.0),
-            child: Column(children: content),
+            child: !Settings.themeFlat
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Material(
+                      color: Settings.themeWhat ? Colors.black38 : Colors.white,
+                      child: Column(children: content),
+                    ))
+                : Column(children: content),
           ),
         ),
       ],
