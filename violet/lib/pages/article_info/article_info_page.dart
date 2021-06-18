@@ -815,7 +815,9 @@ class _Chip extends StatelessWidget {
     var tagDisplayed = name;
     var color = Colors.grey;
 
-    if (Settings.translateTags) tagDisplayed = TagTranslate.ofAny(tagDisplayed);
+    if (Settings.translateTags)
+      tagDisplayed =
+          TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
 
     if (group == 'female')
       color = Colors.pink;

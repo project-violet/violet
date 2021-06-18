@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
@@ -402,9 +403,13 @@ class _Chip extends StatefulWidget {
 class __ChipState extends State<_Chip> {
   @override
   Widget build(BuildContext context) {
-    var tagRaw = widget.name;
+    var tagDisplayed = widget.name;
     var group = widget.group;
     Color color = Colors.grey;
+
+    if (Settings.translateTags)
+      tagDisplayed =
+          TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
 
     if (group == 'female')
       color = Colors.pink;
@@ -445,7 +450,7 @@ class __ChipState extends State<_Chip> {
           ),
           label: Text(
             ' ' +
-                HtmlUnescape().convert(tagRaw) +
+                HtmlUnescape().convert(tagDisplayed) +
                 ' (' +
                 widget.count.toString() +
                 ')',
