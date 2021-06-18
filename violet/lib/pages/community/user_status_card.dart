@@ -91,34 +91,34 @@ class _UserStatusCardState extends State<UserStatusCard>
           margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
           alignment: Alignment.centerLeft,
           height: 80,
+          decoration: !Settings.themeFlat
+              ? BoxDecoration(
+                  // color: Colors.white,
+                  color: Settings.themeWhat ? Colors.black26 : Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                      bottomLeft: Radius.circular(8),
+                      bottomRight: Radius.circular(8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Settings.themeWhat
+                          ? Colors.black26
+                          : Colors.grey.withOpacity(0.1),
+                      spreadRadius: Settings.themeWhat ? 0 : 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                )
+              : null,
+          color: !Settings.themeFlat
+              ? null
+              : Settings.themeWhat
+                  ? Colors.black26
+                  : Colors.white,
           // decoration:
           child: Ink(
-            decoration: !Settings.themeFlat
-                ? BoxDecoration(
-                    // color: Colors.white,
-                    color: Settings.themeWhat ? Colors.black26 : Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(8),
-                        topRight: Radius.circular(8),
-                        bottomLeft: Radius.circular(8),
-                        bottomRight: Radius.circular(8)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Settings.themeWhat
-                            ? Colors.black26
-                            : Colors.grey.withOpacity(0.1),
-                        spreadRadius: Settings.themeWhat ? 0 : 5,
-                        blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
-                      ),
-                    ],
-                  )
-                : null,
-            color: !Settings.themeFlat
-                ? null
-                : Settings.themeWhat
-                    ? Colors.black26
-                    : Colors.white,
             child: Padding(
               padding: EdgeInsets.all(20.0),
               child: !Settings.themeFlat
@@ -127,9 +127,9 @@ class _UserStatusCardState extends State<UserStatusCard>
                       child: Material(
                         color:
                             Settings.themeWhat ? Colors.black38 : Colors.white,
-                        child: Column(children: _statusCardContent()),
+                        child: _statusCardContent(),
                       ))
-                  : Column(children: _statusCardContent()),
+                  : _statusCardContent(),
             ),
           ),
         ),
