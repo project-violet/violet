@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -11,6 +12,7 @@ import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -205,7 +207,7 @@ class _SearchPageState extends State<SearchPage>
                         onTap: () async {
                           await Future.delayed(Duration(milliseconds: 200));
                           heroFlareControls.play('search2close');
-                          await Navigator.push(
+                          final query = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) {
@@ -219,26 +221,23 @@ class _SearchPageState extends State<SearchPage>
                               },
                               fullscreenDialog: true,
                             ),
-                          ).then((value) async {
-                            await (await SearchLogDatabase.getInstance())
-                                .insertSearchLog(value);
-                            setState(() {
-                              heroFlareControls.play('close2search');
-                            });
-                            if (value == null) return;
-                            // latestQuery = value;
-                            latestQuery =
-                                Tuple2<Tuple2<List<QueryResult>, int>, String>(
-                                    null, value);
-                            queryResult = List<QueryResult>();
-                            isFilterUsed = false;
-                            isOr = false;
-                            tagStates = Map<String, bool>();
-                            groupStates = Map<String, bool>();
-                            queryEnd = false;
-                            await loadNextQuery();
+                          );
+                          final db = await SearchLogDatabase.getInstance();
+                          await db.insertSearchLog(query);
+                          setState(() {
+                            heroFlareControls.play('close2search');
                           });
-                          // print(latestQuery);
+                          if (query == null) return;
+                          latestQuery =
+                              Tuple2<Tuple2<List<QueryResult>, int>, String>(
+                                  null, query);
+                          queryResult = [];
+                          isFilterUsed = false;
+                          isOr = false;
+                          tagStates = <String, bool>{};
+                          groupStates = <String, bool>{};
+                          queryEnd = false;
+                          await loadNextQuery();
                         },
                         onDoubleTap: () async {
                           // latestQuery = value;
@@ -405,25 +404,52 @@ class _SearchPageState extends State<SearchPage>
   Semaphore _querySem = Semaphore(maxCount: 1);
 
   Future<void> loadNextQuery() async {
-    await _querySem.acquire();
-    if (queryEnd ||
-        (latestQuery.item1 != null && latestQuery.item1.item2 == -1)) {
-      _querySem.release();
-      return;
-    }
-    var next = await HentaiManager.search(latestQuery.item2,
-        latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
+    print('* loadNextQuery start');
 
-    latestQuery =
-        Tuple2<Tuple2<List<QueryResult>, int>, String>(next, latestQuery.item2);
-    _querySem.release();
-    if (next.item1.length == 0) {
-      queryEnd = true;
-      return;
+    await _querySem.acquire().timeout(
+      const Duration(seconds: 5),
+      onTimeout: () {
+        print('* loadNextQuery sem acquire timeout');
+
+        FlutterToast(context).showToast(
+          child: Text('Semaphore acquisition failed'),
+        );
+
+        throw TimeoutException('Failed to acquire the query semaphore');
+      },
+    );
+
+    print('* loadNextQuery sem acquired');
+
+    try {
+      if (queryEnd ||
+          (latestQuery.item1 != null && latestQuery.item1.item2 == -1)) {
+        return;
+      }
+
+      var next = await HentaiManager.search(latestQuery.item2,
+          latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
+
+      latestQuery =
+          Tuple2<Tuple2<List<QueryResult>, int>, String>(
+              next, latestQuery.item2);
+
+      if (next.item1.length == 0) {
+        queryEnd = true;
+        return;
+      }
+
+      setState(() {
+        queryResult.addAll(next.item1);
+      });
+    } catch (e, stackTrace) {
+      print('* loadNextQuery failed');
+      print('Exception: $e');
+      print('Stack trace: $stackTrace');
+      rethrow;
+    } finally {
+      _querySem.release();
     }
-    setState(() {
-      queryResult.addAll(next.item1);
-    });
   }
 
   static String prefix2Tag(String prefix) {
