@@ -12621,19 +12621,19 @@ const kor_series4 = {
 module.exports = function () {
     var x = {};
     Object.keys(kor_series).forEach(function(key) {
-        if (kor_series[key] != '')
+        if (kor_series[key] != '' && !(key in x))
             x[key] = kor_series[key];
     });
     Object.keys(kor_series2).forEach(function(key) {
-        if (kor_series2[key] != '')
+        if (kor_series2[key] != '' && !(key in x))
             x[key] = kor_series2[key];
     });
     Object.keys(kor_series3).forEach(function(key) {
-        if (kor_series3[key] != '')
+        if (kor_series3[key] != '' && !(key in x))
             x[key] = kor_series3[key];
     });
     Object.keys(kor_series4).forEach(function(key) {
-        if (kor_series4[key] != '')
+        if (kor_series4[key] != '' && !(key in x))
             x[key] = kor_series4[key];
     });
     return x;
