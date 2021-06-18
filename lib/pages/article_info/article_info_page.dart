@@ -65,8 +65,8 @@ class ArticleInfoPage extends StatelessWidget {
           height:
               height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom,
           child: Container(
-            width: width,
-            height: height,
+            // width: width,
+            // height: height,
             color: Settings.themeWhat
                 ? Colors.black.withOpacity(0.9)
                 : Colors.white.withOpacity(0.97),
