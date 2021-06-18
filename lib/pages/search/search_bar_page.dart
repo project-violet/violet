@@ -724,7 +724,15 @@ class _SearchBarPageState extends State<SearchBarPage>
     else if (info.item1 == 'male' ||
         (info.item1 == 'tag' && info.item2.startsWith('male:')))
       color = Colors.blue;
-    else if (info.item1 == 'prefix') color = Colors.orange;
+    else if (info.item1 == 'prefix')
+      color = Colors.orange;
+    else if (info.item1 == 'language')
+      color = Colors.teal;
+    else if (info.item1 == 'series')
+      color = Colors.cyan;
+    else if (info.item1 == 'artist' || info.item1 == 'group')
+      color = Colors.green.withOpacity(0.6);
+    else if (info.item1 == 'type') color = Colors.orange;
 
     var ts = List<TextSpan>();
     var accColor = Colors.pink;
