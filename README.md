@@ -1,8 +1,8 @@
 # hsync
 
 ```
-hsync 2020.10.23
-Build Date: Monday, 23 October 2020
+hsync 2021.4.16
+Build Date: Saturday, 17 April 2021
                                          /T /I
                               / |/ | .-~/
                           T\ Y  I  |/  /  _
@@ -36,16 +36,21 @@ Build Date: Monday, 23 October 2020
                (_/  /   | | j-"          ~^
                  ~-<_(_.^-~"
 
-Copyright (C) 2020. project violet-server.
+Copyright (C) 2020-2021. project violet-server.
 Usage: ./hsync [OPTIONS...]
-   --help
-   -v, --version               Show version information.
-   --recover-settings          Recover settings.json
+   --help                      
+   -v, --version               Show version information. 
+   --recover-settings          Recover settings.json 
    -r, --related-tag-test      Related Tag Test [use --related-tag-test <db file path> <threshold>]
    -h, --character-test        Character Test [use --character-tag-test <db file path> <threshold>]
    -p, --series-test           Series Test [use --series-tag-test <db file path> <threshold>]
    --create-ehentai-inv-table  create e/exhentai hash inverse table [use --create-ehentai-inv-table]
    --create-datetime-estimator create datetime estimator [use --create-datetime-estimator]
+   --init-server               Upload all data to server database [use --init-server]
+   --init-server-pages         Upload all data to server article pages [use --init-server-pages]
+   --export-for-es             Export database bulk datas for elastic-search to json [use --export-for-es]
+   --export-for-es-range       Export database bulk datas for elastic-search to json using id range [--export-for-es-range]
+   --export-for-db-range       Upload data to server database by user range [--export-for-db-range]
    -s, --start                 Starts hsync [use --start]
    -c, --compress              Compress exists data [use --compress]
    -x, --include-exhentai      Include ExHentai Database [use --include-exhentai]
@@ -54,6 +59,10 @@ Usage: ./hsync [OPTIONS...]
    --hitomi-sync-range         Set lookup id range manually [use --hitomi-sync-range <start id> <end id>]
    --hitomi-sync-lookup-range  Set hitomi id lookup range. (default: 4,000 [-4,000 ~ 4,000]) [use --hitomi-sync-lookup-range <count>]
    --exhentai-lookup-page      Set exhentai lookup page. (default: 200) [use --exhentai-lookup-page <range>]
+   -e, --use-server            Upload sync data to server database [use --use-server]
+   -a, --use-elastic-search    Upload sync data to elastic-search server [use --use-elastic-search]
+   --sync-only-hitomi          Sync only hitomi [use --sync-only-hitomi]
+   -t, --test                  hysnc test option [use --test <what>]
 ```
 
 High-Performance E-Hentai/EX-Hentai/Hitomi Works Data Synchronizer
