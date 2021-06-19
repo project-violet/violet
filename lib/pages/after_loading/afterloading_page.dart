@@ -51,7 +51,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
   }
 
   @override
-  void disposed() {
+  void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
