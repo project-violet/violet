@@ -708,7 +708,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     var tagDisplayed = info.item2;
     var count = '';
-    var color = Colors.grey;
+    Color color = Colors.grey;
 
     if (_tagTranslation && !_useTranslated)
       tagDisplayed =
