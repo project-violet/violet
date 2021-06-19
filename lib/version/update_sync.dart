@@ -3,9 +3,7 @@
 
 import 'dart:convert';
 
-import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
-
 import 'package:violet/network/wrapper.dart' as http;
 
 class UpdateSyncManager {

@@ -18,21 +18,19 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
-import 'package:violet/settings/device_type.dart';
-import 'package:violet/thread/semaphore.dart';
-import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_filter_page.dart';
-import 'package:violet/pages/search/search_result_selector.dart';
 import 'package:violet/pages/search/search_type.dart';
+import 'package:violet/settings/device_type.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/thread/semaphore.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/search_bar.dart';
 
 bool blurred = false;
 

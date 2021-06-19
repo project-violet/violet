@@ -7,9 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/tag_translated_regacy.dart';
-import 'package:violet/variables.dart';
 
 class TagTranslate {
   static const defaultLanguage = 'korean';

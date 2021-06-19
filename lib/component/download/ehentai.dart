@@ -2,16 +2,11 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 // Reference https://github.com/rollrat/downloader/blob/master/Koromo_Copy.Framework/Extractor/PixivExtractor.cs
-import 'dart:io';
 
-import 'package:html_unescape/html_unescape_small.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:violet/component/downloadable.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 import 'package:path/path.dart' as path;
-import 'package:crypto/crypto.dart';
+import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';

@@ -1,9 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:convert';
 
-import 'package:http/http.dart' as http;
 import 'package:tuple/tuple.dart';
 
 class NHentaiManager {

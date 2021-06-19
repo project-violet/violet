@@ -2,14 +2,12 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:isolate';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,7 +22,6 @@ import 'package:violet/pages/main/card/artist_collection_card.dart';
 import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
 import 'package:violet/pages/main/card/github_card.dart';
-import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/main/card/update_log_card.dart';
 import 'package:violet/pages/main/card/views_card.dart';
 import 'package:violet/settings/settings.dart';

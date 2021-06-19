@@ -8,9 +8,8 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/server/salt.dart';
-
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/server/salt.dart';
 
 class VioletServer {
   static const protocol = 'https';

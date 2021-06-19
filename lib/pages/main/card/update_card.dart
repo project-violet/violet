@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
 
@@ -10,12 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
-import 'package:violet/other/dialogs.dart';
-import 'package:open_file/open_file.dart';
-import 'package:violet/version/update_sync.dart';
 
 class UpdateCard extends StatefulWidget {
   final VoidCallback clickEvent;
