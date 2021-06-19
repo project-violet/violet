@@ -3,7 +3,6 @@
 
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings/settings.dart';
 
 class FAQPageKorean extends StatelessWidget {

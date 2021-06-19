@@ -12,8 +12,8 @@ import 'package:device_info/device_info.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:synchronized/synchronized.dart' as sync;
 import 'package:path_provider/path_provider.dart';
+import 'package:synchronized/synchronized.dart' as sync;
 import 'package:violet/component/downloadable.dart';
 
 typedef downloader_init = Void Function(Int64);

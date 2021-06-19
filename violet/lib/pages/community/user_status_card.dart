@@ -7,12 +7,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/community/signin_dialog.dart';
+import 'package:violet/pages/community/signup_dialog.dart';
 import 'package:violet/server/community/article.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/pages/community/signin_dialog.dart';
-import 'package:violet/pages/community/signup_dialog.dart';
 import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
