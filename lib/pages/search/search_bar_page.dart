@@ -826,7 +826,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       color = Colors.green.withOpacity(0.6);
     else if (info.item1 == 'type') color = Colors.orange;
 
-    var ts = List<TextSpan>();
+    var ts = <TextSpan>[];
     var accColor = Colors.pink;
 
     if (color == Colors.pink) accColor = Colors.orange;

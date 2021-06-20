@@ -140,7 +140,7 @@ class Settings {
     includeTags = includetags;
     excludeTags = excludetags.split('|').toList();
     blurredTags =
-        blurredtags != null ? blurredtags.split(' ').toList() : List<String>();
+        blurredtags != null ? blurredtags.split(' ').toList() : [];
 
     translateTags =
         (await SharedPreferences.getInstance()).getBool('translatetags');

@@ -867,6 +867,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                 } else if (t is ScrollEndNotification) {
                   _onScroll = false;
                 }
+                return false;
               },
             ),
           ),

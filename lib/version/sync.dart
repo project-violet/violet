@@ -62,7 +62,7 @@ class SyncManager {
 
       // lines: [old ... latest]
       // _rows: [latest ... old]
-      _rows = List<SyncInfoRecord>();
+      _rows = [];
 
       lines.reversed.forEach((element) {
         if (element.startsWith('#')) return;

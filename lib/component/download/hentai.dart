@@ -74,7 +74,7 @@ class HentaiDonwloadManager extends Downloadable {
     gdp.thumbnailCallback(await provider.getThumbnailUrl(),
         jsonEncode(await provider.getHeader(0)));
 
-    var result = List<DownloadTask>();
+    var result = <DownloadTask>[];
 
     for (int i = 0; i < provider.length(); i++) {
       var page = await provider.getImageUrl(i);

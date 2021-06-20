@@ -134,7 +134,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   .reversed
                   .toList();
               if (cc.length == 0) {
-                queryResult = List<QueryResult>();
+                queryResult = <QueryResult>[];
                 filterResult = queryResult;
                 setState(() {});
                 return;
@@ -149,7 +149,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   qr[element.id().toString()] = element;
                 });
 
-                var result = List<QueryResult>();
+                var result = <QueryResult>[];
                 cc.forEach((element) async {
                   if (qr[element.article()] == null) {
                     // TODO: Handle qurey not found
@@ -443,7 +443,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 tagStates = value[0];
                 groupStates = value[1];
                 isOr = value[2];
-                var result = List<QueryResult>();
+                var result = <QueryResult>[];
                 queryResult.forEach((element) {
                   var succ = !isOr;
                   tagStates.forEach((key, value) {
@@ -494,8 +494,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   Map<String, bool> groupStates = Map<String, bool>();
 
   bool scaleOnce = false;
-  List<QueryResult> queryResult = List<QueryResult>();
-  List<QueryResult> filterResult = List<QueryResult>();
+  List<QueryResult> queryResult = <QueryResult>[];
+  List<QueryResult> filterResult = <QueryResult>[];
 
   static String prefix2Tag(String prefix) {
     switch (prefix) {
@@ -651,7 +651,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   bool checkMode = false;
   bool checkModePre = false;
-  List<int> checked = List<int>();
+  List<int> checked = [];
 
   void longpress(int article) {
     print(article);

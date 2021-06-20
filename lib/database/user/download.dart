@@ -43,8 +43,7 @@ class DownloadItemModel {
 
   Future<void> test() async {
     var db = await CommonUserDatabase.getInstance();
-    var x = await db
-        .query('SELECT * FROM DownloadItem WHERE Id=' + id().toString());
+    await db.query('SELECT * FROM DownloadItem WHERE Id=' + id().toString());
   }
 
   Future<void> delete() async {

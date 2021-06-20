@@ -89,7 +89,6 @@ class _MainPage2State extends State<MainPage2>
   Widget build(BuildContext context) {
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
-    final double width = MediaQuery.of(context).size.width;
 
     final cardList = [
       DiscordCard(),
@@ -719,8 +718,8 @@ class _MainPage2State extends State<MainPage2>
       IsolateNameServer.registerPortWithName(
           _port.sendPort, 'downloader_send_port');
       _port.listen((dynamic data) {
-        String id = data[0];
-        DownloadTaskStatus status = data[1];
+        // String id = data[0];
+        // DownloadTaskStatus status = data[1];
         int progress = data[2];
         if (progress == 100 && !once) {
           OpenFile.open(
