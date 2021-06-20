@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/main.dart';
+import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/main_page2.dart';
@@ -185,7 +186,6 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
   }
 
   _drawer() {
-    print(_colorToString(Settings.majorColor));
     final mediaQuery = MediaQuery.of(context);
     Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
         (mediaQuery.padding + mediaQuery.viewInsets).bottom);
@@ -225,7 +225,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                         InkWell(
                           child: Image.asset(
                             'assets/images/logo-' +
-                                _colorToString(Settings.majorColor) +
+                                Settings.majorColor.name +
                                 '.png',
                             width: 100,
                             height: 100,
@@ -341,7 +341,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                         InkWell(
                           child: Image.asset(
                             'assets/images/logo-' +
-                                _colorToString(Settings.majorColor) +
+                                Settings.majorColor.name +
                                 '.png',
                             width: 100,
                             height: 100,
@@ -418,29 +418,6 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         ),
       );
     }
-  }
-
-  _colorToString(Color color) {
-    if (Colors.red.value == color.value) return 'red         '.trim();
-    if (Colors.pink.value == color.value) return 'pink        '.trim();
-    if (Colors.purple.value == color.value) return 'purple      '.trim();
-    if (Colors.deepPurple.value == color.value) return 'deepPurple  '.trim();
-    if (Colors.indigo.value == color.value) return 'indigo      '.trim();
-    if (Colors.blue.value == color.value) return 'blue        '.trim();
-    if (Colors.lightBlue.value == color.value) return 'lightBlue   '.trim();
-    if (Colors.cyan.value == color.value) return 'cyan        '.trim();
-    if (Colors.teal.value == color.value) return 'teal        '.trim();
-    if (Colors.green.value == color.value) return 'green       '.trim();
-    if (Colors.lightGreen.value == color.value) return 'lightGreen  '.trim();
-    if (Colors.lime.value == color.value) return 'lime        '.trim();
-    if (Colors.yellow.value == color.value) return 'yellow      '.trim();
-    if (Colors.amber.value == color.value) return 'amber       '.trim();
-    if (Colors.orange.value == color.value) return 'orange      '.trim();
-    if (Colors.deepOrange.value == color.value) return 'deepOrange  '.trim();
-    if (Colors.brown.value == color.value) return 'brown       '.trim();
-    if (Colors.grey.value == color.value) return 'grey        '.trim();
-    if (Colors.blueGrey.value == color.value) return 'blueGrey    '.trim();
-    if (Colors.black.value == color.value) return 'black       '.trim();
   }
 
   _drawerButton(IconData icon, int page, String name, Color color) {
