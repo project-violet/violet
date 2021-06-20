@@ -71,9 +71,14 @@ class HitomiIndexs {
       Logger.error('[Hitomi-Indexs] E: ' + e.toString() + '\n' + st.toString());
     }
 
-    var relatedData = await rootBundle.loadString(
-        'assets/locale/tag/related-tag-${TagTranslate.defaultLanguage}.json');
-    relatedTag = json.decode(relatedData);
+    var relatedData = json.decode(await rootBundle.loadString(
+            'assets/locale/tag/related-tag-${TagTranslate.defaultLanguage}.json'))
+        as List<dynamic>;
+    relatedTag = Map<String, dynamic>();
+    relatedData.forEach((element) {
+      var kv = (element as Map<String, dynamic>).entries.first;
+      relatedTag[kv.key] = kv.value;
+    });
   }
 
   static List<Tuple2<String, double>> _calculateSimilars(
@@ -149,6 +154,7 @@ class HitomiIndexs {
   }
 
   static List<Tuple2<String, double>> getRelatedCharacters(String series) {
+    if (!characterSeries.containsKey(series)) return <Tuple2<String, double>>[];
     var ll = (characterSeries[series] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
@@ -158,6 +164,8 @@ class HitomiIndexs {
   }
 
   static List<Tuple2<String, double>> getRelatedSeries(String character) {
+    if (!seriesCharacter.containsKey(character))
+      return <Tuple2<String, double>>[];
     var ll = (seriesCharacter[character] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))

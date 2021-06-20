@@ -318,7 +318,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         Wrap(
           spacing: 4.0,
           runSpacing: -10.0,
-          children: _relatedLists.map((item) => chip(item)).toList(),
+          children: _relatedLists.map((item) => chip(item, true)).toList(),
         ),
       ],
     );
@@ -679,18 +679,26 @@ class _SearchBarPageState extends State<SearchBarPage>
     if (token.startsWith('female:') ||
         token.startsWith('male:') ||
         token.startsWith('tag:')) {
-      _relatedLists = HitomiIndexs.getRelatedTag(
-              token.startsWith('tag:') ? token.split(':').last : token)
+      _relatedLists = HitomiIndexs.getRelatedTag(token.startsWith('tag:')
+              ? token.split(':').last.replaceAll('_', ' ')
+              : token.replaceAll('_', ' '))
           .map((e) => Tuple3<String, String, int>(
-              'tag', e.item1, (e.item2 * 100).toInt()));
+              'tag', e.item1, (e.item2 * 100).toInt()))
+          .toList();
     } else if (token.startsWith('series:')) {
-      _relatedLists = HitomiIndexs.getRelatedCharacters(token.split(':').last)
+      _relatedLists = HitomiIndexs.getRelatedCharacters(
+              token.split(':').last.replaceAll('_', ' '))
           .map((e) => Tuple3<String, String, int>(
-              'character', e.item1, (e.item2 * 100).toInt()));
+              'character', e.item1, e.item2.toInt()))
+          .toList();
     } else if (token.startsWith('character:')) {
-      _relatedLists = HitomiIndexs.getRelatedSeries(token.split(':').last).map(
-          (e) => Tuple3<String, String, int>(
-              'series', e.item1, (e.item2 * 100).toInt()));
+      _relatedLists = HitomiIndexs.getRelatedSeries(
+              token.split(':').last.replaceAll('_', ' '))
+          .map((e) =>
+              Tuple3<String, String, int>('series', e.item1, e.item2.toInt()))
+          .toList();
+    } else {
+      _relatedLists.clear();
     }
 
     _insertPos = pos;
@@ -766,7 +774,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   // Create tag-chip
   // group, name, counts
-  Widget chip(Tuple3<String, String, int> info) {
+  Widget chip(Tuple3<String, String, int> info, [bool related = false]) {
     if (info.item2.startsWith('female:'))
       info = Tuple3<String, String, int>(
           'female',
@@ -794,7 +802,12 @@ class _SearchBarPageState extends State<SearchBarPage>
     else if (_useTranslated)
       tagDisplayed = info.item2.split('|').last.split(':').last;
 
-    if (info.item3 > 0 && _showCount) count = ' (${info.item3})';
+    if (info.item3 > 0 && _showCount)
+      count = ' (${info.item3.toString() + (related && [
+            'female',
+            'male',
+            'tag'
+          ].contains(info.item1) ? '%' : '')})';
 
     if (info.item1 == 'female' ||
         (info.item1 == 'tag' && info.item2.startsWith('female:')))
@@ -817,7 +830,10 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     if (color == Colors.pink) accColor = Colors.orange;
 
-    if (!useFuzzy && latestToken != '' && tagDisplayed.contains(latestToken)) {
+    if (!useFuzzy &&
+        latestToken != '' &&
+        tagDisplayed.contains(latestToken) &&
+        !related) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
@@ -837,7 +853,8 @@ class _SearchBarPageState extends State<SearchBarPage>
     } else if (!useFuzzy &&
         latestToken.contains(':') &&
         latestToken.split(':')[1] != '' &&
-        tagDisplayed.contains(latestToken.split(':')[1])) {
+        tagDisplayed.contains(latestToken.split(':')[1]) &&
+        !related) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
@@ -854,13 +871,13 @@ class _SearchBarPageState extends State<SearchBarPage>
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken.split(':')[1])[1]));
-    } else if (!useFuzzy && !_useTranslated) {
+    } else if (!useFuzzy && !_useTranslated && !related) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed));
-    } else if (latestToken != '') {
+    } else if (latestToken != '' && !related) {
       var route = Distance.levenshteinDistanceRoute(
           tagDisplayed.runes.toList(), latestToken.runes.toList());
       for (int i = 0; i < tagDisplayed.length; i++) {
@@ -914,6 +931,31 @@ class _SearchBarPageState extends State<SearchBarPage>
             baseOffset: _insertPos + insert.length,
             extentOffset: _insertPos + insert.length,
           );
+
+          if (info.item1 == 'female' ||
+              info.item1 == 'male' ||
+              info.item1 == 'tag') {
+            _relatedLists = HitomiIndexs.getRelatedTag(
+                    info.item2.split('|')[0].replaceAll('_', ' '))
+                .map((e) => Tuple3<String, String, int>(
+                    'tag', e.item1, (e.item2 * 100).toInt()))
+                .toList();
+            setState(() {});
+          } else if (info.item1 == 'series') {
+            _relatedLists = HitomiIndexs.getRelatedCharacters(
+                    info.item2.split('|')[0].replaceAll('_', ' '))
+                .map((e) => Tuple3<String, String, int>(
+                    'character', e.item1, e.item2.toInt()))
+                .toList();
+            setState(() {});
+          } else if (info.item1 == 'character') {
+            _relatedLists = HitomiIndexs.getRelatedSeries(
+                    info.item2.split('|')[0].replaceAll('_', ' '))
+                .map((e) => Tuple3<String, String, int>(
+                    'series', e.item1, e.item2.toInt()))
+                .toList();
+            setState(() {});
+          }
         } else {
           var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
