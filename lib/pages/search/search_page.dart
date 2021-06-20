@@ -307,6 +307,8 @@ class _SearchPageState extends State<SearchPage>
                     return FadeTransition(opacity: animation, child: wi);
                   },
                   pageBuilder: (_, __, ___) => SearchType(),
+                  barrierColor: Colors.black12,
+                  barrierDismissible: true,
                 ))
                     .then((value) async {
                   await Future.delayed(Duration(milliseconds: 50), () {
