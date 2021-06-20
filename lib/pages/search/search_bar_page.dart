@@ -9,6 +9,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/hitomi/tag_translated_regacy.dart';
 import 'package:violet/database/query.dart';
@@ -32,7 +33,10 @@ class SearchBarPage extends StatefulWidget {
 
 class _SearchBarPageState extends State<SearchBarPage>
     with SingleTickerProviderStateMixin {
-  PageController _controller = PageController(
+  PageController _bottomController = PageController(
+    initialPage: 0,
+  );
+  PageController _topController = PageController(
     initialPage: 0,
   );
   static const _kDuration = const Duration(milliseconds: 300);
@@ -40,7 +44,9 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   AnimationController controller;
   List<Tuple3<String, String, int>> _searchLists =
-      List<Tuple3<String, String, int>>();
+      <Tuple3<String, String, int>>[];
+  List<Tuple3<String, String, int>> _relatedLists =
+      <Tuple3<String, String, int>>[];
 
   TextEditingController _searchController;
   int _insertPos, _insertLength;
@@ -65,7 +71,8 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _topController.dispose();
+    _bottomController.dispose();
     super.dispose();
   }
 
@@ -107,194 +114,16 @@ class _SearchBarPageState extends State<SearchBarPage>
                 child: Container(
                   child: Column(
                     children: <Widget>[
-                      Material(
-                        child: ListTile(
-                          title: TextFormField(
-                            cursorColor: Colors.black,
-                            onChanged: (String str) async {
-                              await searchProcess(
-                                  str, _searchController.selection);
-                            },
-                            controller: _searchController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              suffixIcon: IconButton(
-                                onPressed: () async {
-                                  _searchController.clear();
-                                  _searchController.selection = TextSelection(
-                                      baseOffset: 0, extentOffset: 0);
-                                  await searchProcess(
-                                      '', _searchController.selection);
-                                },
-                                icon: Icon(Icons.clear),
-                              ),
-                              contentPadding: EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText:
-                                  Translations.of(context).trans('search'),
-                            ),
-                          ),
-                          // leading: SizedBox(
-                          //   width: 25,
-                          //   height: 25,
-                          //   child: RawMaterialButton(
-                          //       onPressed: () {
-                          //         Navigator.pop(context);
-                          //       },
-                          //       shape: CircleBorder(),
-                          //         child: FlareArtboard(widget.artboard,
-                          //             controller: widget.heroController),
-                          // ),
-                          leading: Container(
-                            transform: Matrix4.translationValues(-4, 0, 0),
-                            child: SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: RawMaterialButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  shape: CircleBorder(),
-                                  child: Transform.scale(
-                                    scale: 0.65,
-                                    child: FlareArtboard(widget.artboard,
-                                        controller: widget.heroController),
-                                  )),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          height: 1.0,
-                          color: Colors.black12,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 40,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
-                          child: ButtonTheme(
-                            minWidth: double.infinity,
-                            height: 30,
-                            child: RaisedButton(
-                              color: Settings.majorColor,
-                              textColor: Colors.white,
-                              child: Text(
-                                  Translations.of(context).trans('search')),
-                              onPressed: () async {
-                                // final query = HitomiManager.translate2query(
-                                //     _searchController.text +
-                                //         ' ' +
-                                //         Settings.includeTags +
-                                //         ' ' +
-                                //         Settings.excludeTags
-                                //             .where((e) => e.trim() != '')
-                                //             .map((e) => '-$e')
-                                //             .join(' ')
-                                //             .trim());
-                                // final result =
-                                //     QueryManager.queryPagination(query);
-                                // Navigator.pop(
-                                //     context,
-                                //     Tuple2<QueryManager, String>(
-                                //         result, _searchController.text));
-                                // final searchInfo = await HentaiManager.search(
-                                //     _searchController.text);
-                                Navigator.pop(context, _searchController.text
-                                    // Tuple2<Tuple2<List<QueryResult>, int>,
-                                    //         String>(
-                                    //     searchInfo, _searchController.text
-                                    // )
-                                    );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          height: 1.0,
-                          color: Colors.black12,
-                        ),
-                      ),
+                      _searchBar(),
+                      _seperator(),
+                      _searchButton(),
+                      _seperator(),
                       Expanded(
-                        child: _searchLists.length == 0 || _nothing
-                            ? Center(
-                                child: Text(_nothing
-                                    ? Translations.of(context)
-                                        .trans('nosearchresult')
-                                    : Translations.of(context)
-                                        .trans('inputsearchtoken')))
-                            : ListView(
-                                padding: EdgeInsets.symmetric(horizontal: 8),
-                                physics: BouncingScrollPhysics(),
-                                children: [
-                                  Wrap(
-                                    spacing: 4.0,
-                                    runSpacing: -10.0,
-                                    children: _searchLists
-                                        .map((item) => chip(item))
-                                        .toList(),
-                                  ),
-                                ],
-                              ),
+                        child: _searchTopPanel(),
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Container(
-                          height: 1.0,
-                          color: Colors.black12,
-                        ),
-                      ),
+                      _seperator(),
                       Expanded(
-                        child: Stack(
-                          children: [
-                            PageView(
-                              controller: _controller,
-                              children: [
-                                _searchOptionPage(),
-                                _searchHistory(),
-                              ],
-                            ),
-                            FutureBuilder(
-                              future: Future.value(1),
-                              builder: (context, snapshot) {
-                                print(snapshot.hasData);
-                                return !snapshot.hasData
-                                    ? Container()
-                                    : Positioned(
-                                        bottom: 0.0,
-                                        left: 0.0,
-                                        right: 0.0,
-                                        child: Container(
-                                          color: null,
-                                          padding: const EdgeInsets.all(20.0),
-                                          child: Center(
-                                            child: DotsIndicator(
-                                              controller: _controller,
-                                              itemCount: 2,
-                                              onPageSelected: (int page) {
-                                                _controller.animateToPage(
-                                                  page,
-                                                  duration: _kDuration,
-                                                  curve: _kCurve,
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                              },
-                            ),
-                          ],
-                        ),
+                        child: _searchBottomPanel(),
                       ),
                     ],
                   ),
@@ -304,6 +133,241 @@ class _SearchBarPageState extends State<SearchBarPage>
           ),
         ],
       ),
+    );
+  }
+
+  _seperator() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
+      child: Container(
+        height: 1.0,
+        color: Colors.black12,
+      ),
+    );
+  }
+
+  _searchBar() {
+    return Material(
+      child: ListTile(
+        title: TextFormField(
+          cursorColor: Colors.black,
+          onChanged: (String str) async {
+            await searchProcess(str, _searchController.selection);
+          },
+          controller: _searchController,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            suffixIcon: IconButton(
+              onPressed: () async {
+                _searchController.clear();
+                _searchController.selection =
+                    TextSelection(baseOffset: 0, extentOffset: 0);
+                await searchProcess('', _searchController.selection);
+              },
+              icon: Icon(Icons.clear),
+            ),
+            contentPadding:
+                EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+            hintText: Translations.of(context).trans('search'),
+          ),
+        ),
+        // leading: SizedBox(
+        //   width: 25,
+        //   height: 25,
+        //   child: RawMaterialButton(
+        //       onPressed: () {
+        //         Navigator.pop(context);
+        //       },
+        //       shape: CircleBorder(),
+        //         child: FlareArtboard(widget.artboard,
+        //             controller: widget.heroController),
+        // ),
+        leading: Container(
+          transform: Matrix4.translationValues(-4, 0, 0),
+          child: SizedBox(
+            width: 40,
+            height: 40,
+            child: RawMaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                shape: CircleBorder(),
+                child: Transform.scale(
+                  scale: 0.65,
+                  child: FlareArtboard(widget.artboard,
+                      controller: widget.heroController),
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _searchButton() {
+    return SizedBox(
+      height: 40,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+        child: ButtonTheme(
+          minWidth: double.infinity,
+          height: 30,
+          child: RaisedButton(
+            color: Settings.majorColor,
+            textColor: Colors.white,
+            child: Text(Translations.of(context).trans('search')),
+            onPressed: () async {
+              // final query = HitomiManager.translate2query(
+              //     _searchController.text +
+              //         ' ' +
+              //         Settings.includeTags +
+              //         ' ' +
+              //         Settings.excludeTags
+              //             .where((e) => e.trim() != '')
+              //             .map((e) => '-$e')
+              //             .join(' ')
+              //             .trim());
+              // final result =
+              //     QueryManager.queryPagination(query);
+              // Navigator.pop(
+              //     context,
+              //     Tuple2<QueryManager, String>(
+              //         result, _searchController.text));
+              // final searchInfo = await HentaiManager.search(
+              //     _searchController.text);
+              Navigator.pop(context, _searchController.text
+                  // Tuple2<Tuple2<List<QueryResult>, int>,
+                  //         String>(
+                  //     searchInfo, _searchController.text
+                  // )
+                  );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  _searchTopPanel() {
+    return Stack(children: [
+      PageView(
+        controller: _topController,
+        children: [
+          _searchAutoCompletePanel(),
+          _searchRelatedPanel(),
+        ],
+      ),
+      FutureBuilder(
+          future: Future.value(1),
+          builder: (context, snapshot) {
+            return !snapshot.hasData
+                ? Container()
+                : Positioned(
+                    bottom: 0.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: Container(
+                      color: null,
+                      padding: const EdgeInsets.all(20.0),
+                      child: Center(
+                        child: DotsIndicator(
+                          controller: _topController,
+                          itemCount: 2,
+                          onPageSelected: (int page) {
+                            _topController.animateToPage(
+                              page,
+                              duration: _kDuration,
+                              curve: _kCurve,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+          }),
+    ]);
+  }
+
+  _searchAutoCompletePanel() {
+    if (_searchLists.length == 0 || _nothing)
+      return Center(
+          child: Text(_nothing
+              ? Translations.of(context).trans('nosearchresult')
+              : Translations.of(context).trans('inputsearchtoken')));
+    return ListView(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      physics: BouncingScrollPhysics(),
+      children: [
+        Wrap(
+          spacing: 4.0,
+          runSpacing: -10.0,
+          children: _searchLists.map((item) => chip(item)).toList(),
+        ),
+      ],
+    );
+  }
+
+  _searchRelatedPanel() {
+    if (_relatedLists.length == 0)
+      return Center(
+          child: Text(Translations.of(context).trans('nosearchresult')));
+    return ListView(
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      physics: BouncingScrollPhysics(),
+      children: [
+        Wrap(
+          spacing: 4.0,
+          runSpacing: -10.0,
+          children: _relatedLists.map((item) => chip(item)).toList(),
+        ),
+      ],
+    );
+  }
+
+  _searchBottomPanel() {
+    return Stack(
+      children: [
+        PageView(
+          controller: _bottomController,
+          children: [
+            _searchOptionPage(),
+            _searchHistory(),
+          ],
+        ),
+        FutureBuilder(
+          future: Future.value(1),
+          builder: (context, snapshot) {
+            print(snapshot.hasData);
+            return !snapshot.hasData
+                ? Container()
+                : Positioned(
+                    bottom: 0.0,
+                    left: 0.0,
+                    right: 0.0,
+                    child: Container(
+                      color: null,
+                      padding: const EdgeInsets.all(20.0),
+                      child: Center(
+                        child: DotsIndicator(
+                          controller: _bottomController,
+                          itemCount: 2,
+                          onPageSelected: (int page) {
+                            _bottomController.animateToPage(
+                              page,
+                              duration: _kDuration,
+                              curve: _kCurve,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+          },
+        ),
+      ],
     );
   }
 
@@ -613,6 +677,23 @@ class _SearchBarPageState extends State<SearchBarPage>
         _searchLists.clear();
       });
       return;
+    }
+
+    if (token.startsWith('female:') ||
+        token.startsWith('male:') ||
+        token.startsWith('tag:')) {
+      _relatedLists = HitomiIndexs.getRelatedTag(
+              token.startsWith('tag:') ? token.split(':').last : token)
+          .map((e) => Tuple3<String, String, int>(
+              'tag', e.item1, (e.item2 * 100).toInt()));
+    } else if (token.startsWith('series:')) {
+      _relatedLists = HitomiIndexs.getRelatedCharacters(token.split(':').last)
+          .map((e) => Tuple3<String, String, int>(
+              'character', e.item1, (e.item2 * 100).toInt()));
+    } else if (token.startsWith('character:')) {
+      _relatedLists = HitomiIndexs.getRelatedSeries(token.split(':').last).map(
+          (e) => Tuple3<String, String, int>(
+              'series', e.item1, (e.item2 * 100).toInt()));
     }
 
     _insertPos = pos;
