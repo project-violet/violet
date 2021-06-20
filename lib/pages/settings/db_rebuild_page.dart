@@ -1,15 +1,10 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/database.dart';
-import 'package:violet/database/query.dart';
-import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
 class DBRebuildPage extends StatefulWidget {

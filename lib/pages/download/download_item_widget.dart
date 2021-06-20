@@ -3,7 +3,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -11,21 +10,17 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:path/path.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/downloadable.dart';
-import 'package:violet/component/downloadable.dart' as violetd;
+import 'package:violet/database/user/download.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
-import 'package:violet/downloader/native_downloader.dart';
 import 'package:violet/pages/download/download_routine.dart';
 import 'package:violet/pages/download/gallery/gallery_item.dart';
 import 'package:violet/pages/download/gallery/gallery_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/database/user/download.dart';
-import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
 class DownloadItemWidget extends StatefulWidget {

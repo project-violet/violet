@@ -3,10 +3,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:violet/database/user/record.dart';
-import 'package:violet/locale/locale.dart';
-import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
 class ViewRecordPanel extends StatefulWidget {
