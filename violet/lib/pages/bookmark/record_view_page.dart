@@ -5,12 +5,9 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
-import 'package:violet/component/hentai.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
-import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';

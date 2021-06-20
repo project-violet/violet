@@ -8,8 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/downloadable.dart';
-import 'package:violet/database/user/download.dart';
 import 'package:violet/component/downloadable.dart' as violetd;
+import 'package:violet/database/user/download.dart';
 import 'package:violet/downloader/native_downloader.dart';
 import 'package:violet/settings/settings.dart';
 

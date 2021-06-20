@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -11,27 +10,21 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/indexs.dart';
-import 'package:violet/component/hitomi/series_finder.dart';
 import 'package:violet/database/database.dart';
-import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/server/violet.dart';
-import 'package:violet/settings/settings.dart';
-import 'package:violet/variables.dart';
-import 'package:violet/version/sync.dart';
-import 'locale/locale.dart';
+import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
-import 'package:violet/pages/after_loading/afterloading_page.dart';
+import 'package:violet/settings/settings.dart';
+
+import 'locale/locale.dart';
 
 DateTime currentBackPressTime;
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

@@ -1,7 +1,7 @@
 // https://github.com/ominibyte/flutter_device_type/blob/master/lib/flutter_device_type.dart
 
-import 'dart:ui' as ui;
 import 'dart:io';
+import 'dart:ui' as ui;
 
 class Device {
   static double devicePixelRatio = ui.window.devicePixelRatio;

@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'package:violet/component/download/hentai.dart';
 import 'package:violet/component/download/hitomi.dart';
 

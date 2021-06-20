@@ -1,9 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_headers.dart';
@@ -13,13 +11,11 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/image_provider.dart';
-import 'package:violet/component/nhentai/nhentai.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/settings/settings.dart';
-
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/settings/settings.dart';
 
 //
 // Hentai Component

@@ -7,7 +7,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
-import 'package:violet/pages/viewer/v_optimized_cached_image.dart';
 import 'package:violet/settings/settings.dart';
 
 class ThumbnailWidget extends StatelessWidget {

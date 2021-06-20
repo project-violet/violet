@@ -290,17 +290,17 @@
 //     return errorWidget(context, imageUrl, error);
 //   }
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:octo_image/octo_image.dart';
 //   BaseCacheManager getCacheManager() => useScaleCacheManager
 //       ? ImageCacheManager()
 //       : (cacheManager ?? DefaultCacheManager());
 // }
 
 import 'package:optimized_cached_image/optimized_cached_image.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:octo_image/octo_image.dart';
 
 /// Builder function to create an image widget. The function is called after
 /// the ImageProvider completes the image loading.

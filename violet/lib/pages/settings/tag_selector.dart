@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/component/hitomi/tag_translated_regacy.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
