@@ -796,7 +796,8 @@ class _SearchBarPageState extends State<SearchBarPage>
     var count = '';
     Color color = Colors.grey;
 
-    if (_tagTranslation && !_useTranslated)
+    if ((_tagTranslation && (!_useTranslated || related)) ||
+        (_useTranslated && related))
       tagDisplayed =
           TagTranslate.ofAny(info.item2).split('|').last.split(':').last;
     else if (_useTranslated)
@@ -936,9 +937,16 @@ class _SearchBarPageState extends State<SearchBarPage>
               info.item1 == 'male' ||
               info.item1 == 'tag') {
             _relatedLists = HitomiIndexs.getRelatedTag(
-                    info.item2.split('|')[0].replaceAll('_', ' '))
+                    (info.item1 == 'female' || info.item1 == 'male'
+                            ? info.item1 + ':'
+                            : '') +
+                        info.item2.split('|')[0].replaceAll('_', ' '))
                 .map((e) => Tuple3<String, String, int>(
-                    'tag', e.item1, (e.item2 * 100).toInt()))
+                    e.item1.split(':').first == ''
+                        ? 'tag'
+                        : e.item1.split(':').first,
+                    e.item1.split(':').last,
+                    (e.item2 * 100).toInt()))
                 .toList();
             setState(() {});
           } else if (info.item1 == 'series') {
