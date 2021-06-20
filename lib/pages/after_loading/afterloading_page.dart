@@ -28,31 +28,6 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
   PageController _c = PageController(initialPage: defaultInitialPage);
   int get _currentPage => _c.hasClients ? _c.page.round() : defaultInitialPage;
 
-  bool isBlurred = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    setState(() {
-      if (state == AppLifecycleState.paused ||
-          state == AppLifecycleState.inactive)
-        isBlurred = true;
-      else
-        isBlurred = false;
-    });
-  }
-
-  @override
-  void disposed() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!Settings.useDrawer)
