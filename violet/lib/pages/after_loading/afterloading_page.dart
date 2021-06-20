@@ -22,442 +22,201 @@ class AfterLoadingPage extends StatefulWidget {
   AfterLoadingPageState createState() => AfterLoadingPageState();
 }
 
-class AfterLoadingPageState extends State<AfterLoadingPage>
-    with WidgetsBindingObserver {
+class AfterLoadingPageState extends State<AfterLoadingPage> {
   static int defaultInitialPage = 0;
 
-  PageController _c = PageController(initialPage: defaultInitialPage);
-  int get _currentPage => _c.hasClients ? _c.page.round() : defaultInitialPage;
+  PageController _pageController =
+      PageController(initialPage: defaultInitialPage);
+
+  int get _currentPage => _pageController.hasClients
+      ? _pageController.page.round()
+      : defaultInitialPage;
+
+  bool get _usesDrawer => Settings.useDrawer;
+
+  bool get _usesBottomNavigationBar => !Settings.useDrawer;
+
+  Widget _buildBottomNavigationBar(BuildContext context) {
+    final translations = Translations.of(context);
+
+    BottomNavigationBarItem buildItem(IconData iconData, String key) {
+      return BottomNavigationBarItem(
+        backgroundColor: Settings.themeWhat
+            ? Colors.grey.shade900.withOpacity(0.90)
+            : Colors.grey.shade50,
+        icon: Icon(iconData),
+        label: translations.trans(key),
+      );
+    }
+
+    Widget result = BottomNavigationBar(
+      showUnselectedLabels: false,
+      type: BottomNavigationBarType.shifting,
+      fixedColor: Settings.majorColor,
+      unselectedItemColor: Settings.themeWhat ? Colors.white : Colors.black,
+      currentIndex: _currentPage,
+      onTap: (index) {
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOut,
+        );
+      },
+      items: <BottomNavigationBarItem>[
+        buildItem(MdiIcons.home, 'main'),
+        buildItem(Icons.search, 'search'),
+        buildItem(Icons.bookmark, 'bookmark'),
+        if (Platform.isAndroid) buildItem(Icons.file_download, 'download'),
+        buildItem(Icons.settings, 'settings'),
+      ],
+    );
+
+    if (Platform.isAndroid) {
+      final mediaQuery = MediaQuery.of(context);
+      result = MediaQuery(
+        data: mediaQuery.copyWith(
+          padding: mediaQuery.padding +
+              mediaQuery.viewInsets +
+              const EdgeInsets.only(bottom: 6),
+        ),
+        child: result,
+      );
+    }
+
+    return result;
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final translations = Translations.of(context);
+
+    Widget buildButton(IconData iconData, int page, String key) {
+      final color = Settings.majorColor;
+
+      return Container(
+        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+        height: 54,
+        child: Container(
+          decoration: BoxDecoration(
+              color: page == _currentPage ? color.withOpacity(0.4) : null,
+              borderRadius: const BorderRadius.all(Radius.circular(10))),
+          child: InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10))),
+            hoverColor: color,
+            highlightColor: color.withOpacity(0.2),
+            focusColor: color,
+            splashColor: color.withOpacity(0.3),
+            child: Row(
+              children: [
+                const SizedBox(width: 12),
+                Icon(iconData),
+                const SizedBox(width: 12),
+                Text(
+                  translations.trans(key),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+            onTap: () {
+              setState(() {
+                this._pageController.jumpToPage(page);
+              });
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      width: 220,
+      padding: mediaQuery.padding + mediaQuery.viewInsets,
+      child: Drawer(
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.all(40),
+              child: Column(
+                children: <Widget>[
+                  InkWell(
+                    child: Image.asset(
+                      'assets/images/logo-${Settings.majorColor.name}.png',
+                      width: 100,
+                      height: 100,
+                    ),
+                  ),
+                  const SizedBox(height: 12.0),
+                  Text(
+                    'Project Violet',
+                    style: TextStyle(
+                      color: Settings.themeWhat ? Colors.white : Colors.black87,
+                      fontSize: 18.0,
+                      fontFamily: "Calibre-Semibold",
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  Text(
+                    '${UpdateSyncManager.currentVersion}',
+                    style: const TextStyle(
+                      fontFamily: "Calibre-Semibold",
+                      fontSize: 17.0,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            buildButton(MdiIcons.home, 0, 'main'),
+            buildButton(Icons.search, 1, 'search'),
+            buildButton(MdiIcons.bookmark, 2, 'bookmark'),
+            if (Platform.isAndroid)
+              buildButton(MdiIcons.download, 3, 'download'),
+            buildButton(Icons.settings, Platform.isAndroid ? 4 : 3, 'settings'),
+            const Spacer(),
+            Text(
+              'Copyright (C) 2020-2021\nby project-violet',
+              style: TextStyle(
+                color: Settings.themeWhat ? Colors.white : Colors.black87,
+                fontSize: 12.0,
+                fontFamily: "Calibre-Semibold",
+                letterSpacing: 1.0,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (!Settings.useDrawer)
-      return _bottomNav();
-    else
-      return _drawer();
-  }
-
-  _bottomNav() {
     final mediaQuery = MediaQuery.of(context);
     Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
         (mediaQuery.padding + mediaQuery.viewInsets).bottom);
-    if (Platform.isAndroid) {
-      return Scaffold(
-        key: scaffoldKey,
-        bottomNavigationBar: MediaQuery(
-          data: mediaQuery.copyWith(
-            padding: mediaQuery.padding +
-                mediaQuery.viewInsets +
-                EdgeInsets.only(bottom: 6),
-          ),
-          child: BottomNavigationBar(
-            elevation: 9,
-            showUnselectedLabels: false,
-            type: BottomNavigationBarType.shifting,
-            fixedColor: Settings.majorColor,
-            unselectedItemColor: Settings.themeWhat
-                ? Colors.white
-                : Colors.black, //Colors.black,
-            currentIndex: _currentPage,
-            onTap: (index) {
-              this._c.animateToPage(index,
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut);
-            },
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                  backgroundColor: Settings.themeWhat
-                      ? Colors.grey.shade900.withOpacity(0.90)
-                      : Colors.grey.shade50,
-                  icon: Icon(MdiIcons.home),
-                  title: Text(Translations.of(context).trans('main'))),
-              BottomNavigationBarItem(
-                  backgroundColor: Settings.themeWhat
-                      ? Colors.grey.shade900.withOpacity(0.90)
-                      : Colors.grey.shade50,
-                  icon: Icon(Icons.search),
-                  title: Text(Translations.of(context).trans('search'))),
-              BottomNavigationBarItem(
-                  backgroundColor: Settings.themeWhat
-                      ? Colors.grey.shade900.withOpacity(0.90)
-                      : Colors.grey.shade50,
-                  icon: Icon(Icons.bookmark),
-                  title: Text(Translations.of(context).trans('bookmark'))),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.file_download),
-                  title: Text(Translations.of(context).trans('download'))),
-              // BottomNavigationBarItem(
-              //     backgroundColor: Settings.themeWhat
-              //         ? Colors.grey.shade900.withOpacity(0.90)
-              //         : Colors.grey.shade50,
-              //     icon: Icon(MdiIcons.accountGroup),
-              //     title: Text(Translations.of(context).trans('community'))),
-              BottomNavigationBarItem(
-                  backgroundColor: Settings.themeWhat
-                      ? Colors.grey.shade900.withOpacity(0.90)
-                      : Colors.grey.shade50,
-                  icon: Icon(Icons.settings),
-                  title: Text(Translations.of(context).trans('settings'))),
-            ],
-          ),
-        ),
-        body: PageView(
-          controller: _c,
-          onPageChanged: (newPage) {
-            setState(() {});
-          },
-          children: <Widget>[
-            MainPage2(),
-            SearchPage(),
-            BookmarkPage(),
-            DownloadPage(),
-            // CommunityPage(),
-            SettingsPage(),
-          ],
-          // ),
-        ),
-      );
-    } else if (Platform.isIOS) {
-      return Scaffold(
-        key: scaffoldKey,
-        bottomNavigationBar: BottomNavigationBar(
-          elevation: 9,
-          showUnselectedLabels: false,
-          type: BottomNavigationBarType.shifting,
-          fixedColor: Settings.majorColor,
-          unselectedItemColor:
-              Settings.themeWhat ? Colors.white : Colors.black, //Colors.black,
-          currentIndex: _currentPage,
-          onTap: (index) {
-            this._c.animateToPage(index,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut);
-          },
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                backgroundColor: Settings.themeWhat
-                    ? Colors.grey.shade900.withOpacity(0.90)
-                    : Colors.grey.shade50,
-                icon: Icon(MdiIcons.home),
-                title: Text(Translations.of(context).trans('main'))),
-            BottomNavigationBarItem(
-                backgroundColor: Settings.themeWhat
-                    ? Colors.grey.shade900.withOpacity(0.90)
-                    : Colors.grey.shade50,
-                icon: Icon(Icons.search),
-                title: Text(Translations.of(context).trans('search'))),
-            BottomNavigationBarItem(
-                backgroundColor: Settings.themeWhat
-                    ? Colors.grey.shade900.withOpacity(0.90)
-                    : Colors.grey.shade50,
-                icon: Icon(Icons.bookmark),
-                title: Text(Translations.of(context).trans('bookmark'))),
-            // BottomNavigationBarItem(
-            //     backgroundColor: Settings.themeWhat
-            //         ? Colors.grey.shade900.withOpacity(0.90)
-            //         : Colors.grey.shade50,
-            //     icon: Icon(MdiIcons.accountGroup),
-            //     title: Text(Translations.of(context).trans('community'))),
-            BottomNavigationBarItem(
-                backgroundColor: Settings.themeWhat
-                    ? Colors.grey.shade900.withOpacity(0.90)
-                    : Colors.grey.shade50,
-                icon: Icon(Icons.settings),
-                title: Text(Translations.of(context).trans('settings'))),
-          ],
-        ),
-        body: PageView(
-          controller: _c,
-          onPageChanged: (newPage) {
-            setState(() {});
-          },
-          children: <Widget>[
-            MainPage2(),
-            SearchPage(),
-            BookmarkPage(),
-            // CommunityPage(),
-            SettingsPage(),
-          ],
-        ),
-        // ),
-      );
-    }
-    throw Exception('not implemented');
-  }
 
-  _drawer() {
-    final mediaQuery = MediaQuery.of(context);
-    Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
-        (mediaQuery.padding + mediaQuery.viewInsets).bottom);
-    if (Platform.isAndroid) {
-      return Scaffold(
-        key: scaffoldKey,
-        body: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: _c,
-          scrollDirection: Axis.vertical,
-          children: <Widget>[
-            MainPage2(),
-            SearchPage(),
-            BookmarkPage(),
-            DownloadPage(),
-            // CommunityPage(),
-            SettingsPage(),
-          ],
-        ),
-        drawer: Container(
-          width: 220,
-          padding: mediaQuery.padding + mediaQuery.viewInsets,
-          child: Drawer(
-            child: Column(
-              children: <Widget>[
-                // DrawerHeader(
-                //   child: Text('Drawer Header'),
-                //   decoration: BoxDecoration(
-                //     color: Colors.blue,
-                //   ),
-                // ),
-                Container(
-                  margin: EdgeInsets.all(40),
-                  child: Center(
-                    child: Column(
-                      children: <Widget>[
-                        InkWell(
-                          child: Image.asset(
-                            'assets/images/logo-' +
-                                Settings.majorColor.name +
-                                '.png',
-                            width: 100,
-                            height: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 12),
-                        ),
-                        Text(
-                          'Project Violet',
-                          style: TextStyle(
-                            color: Settings.themeWhat
-                                ? Colors.white
-                                : Colors.black87,
-                            fontSize: 18.0,
-                            fontFamily: "Calibre-Semibold",
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        Text(
-                            '${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
-                            style: TextStyle(
-                              fontFamily: "Calibre-Semibold",
-                              fontSize: 17,
-                              letterSpacing: 1.0,
-                            ))
-                      ],
-                    ),
-                  ),
-                ),
-                _drawerButton(
-                    MdiIcons.home,
-                    0,
-                    Translations.of(context).trans('main'),
-                    Settings.majorColor),
-                _drawerButton(
-                    Icons.search,
-                    1,
-                    Translations.of(context).trans('search'),
-                    Settings.majorColor),
-                _drawerButton(
-                    MdiIcons.bookmark,
-                    2,
-                    Translations.of(context).trans('bookmark'),
-                    Settings.majorColor),
-                _drawerButton(
-                    MdiIcons.download,
-                    3,
-                    Translations.of(context).trans('download'),
-                    Settings.majorColor),
-                // _drawerButton(
-                //     MdiIcons.accountGroup,
-                //     4,
-                //     Translations.of(context).trans('community'),
-                //     Settings.majorColor),
-                _drawerButton(
-                    Icons.settings,
-                    4,
-                    Translations.of(context).trans('settings'),
-                    Settings.majorColor),
-                Expanded(
-                    child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Text(
-                    'Copyright (C) 2020-2021\nby project-violet',
-                    style: TextStyle(
-                      color: Settings.themeWhat ? Colors.white : Colors.black87,
-                      fontSize: 12.0,
-                      fontFamily: "Calibre-Semibold",
-                      letterSpacing: 1.0,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                )),
-                Container(height: 16)
-              ],
-            ),
-          ),
-        ),
-      );
-    } else if (Platform.isIOS) {
-      return Scaffold(
-        key: scaffoldKey,
-        body: PageView(
-          physics: NeverScrollableScrollPhysics(),
-          controller: _c,
-          scrollDirection: Axis.vertical,
-          children: <Widget>[
-            MainPage2(),
-            SearchPage(),
-            BookmarkPage(),
-            // CommunityPage(),
-            SettingsPage(),
-          ],
-        ),
-        drawer: Container(
-          width: 220,
-          padding: mediaQuery.padding + mediaQuery.viewInsets,
-          child: Drawer(
-            child: Column(
-              children: <Widget>[
-                // DrawerHeader(
-                //   child: Text('Drawer Header'),
-                //   decoration: BoxDecoration(
-                //     color: Colors.blue,
-                //   ),
-                // ),
-                Container(
-                  margin: EdgeInsets.all(40),
-                  child: Center(
-                    child: Column(
-                      children: <Widget>[
-                        InkWell(
-                          child: Image.asset(
-                            'assets/images/logo-' +
-                                Settings.majorColor.name +
-                                '.png',
-                            width: 100,
-                            height: 100,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 12),
-                        ),
-                        Text(
-                          'Project Violet',
-                          style: TextStyle(
-                            color: Settings.themeWhat
-                                ? Colors.white
-                                : Colors.black87,
-                            fontSize: 18.0,
-                            fontFamily: "Calibre-Semibold",
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                        Text(
-                            '${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
-                            style: TextStyle(
-                              fontFamily: "Calibre-Semibold",
-                              fontSize: 17,
-                              letterSpacing: 1.0,
-                            ))
-                      ],
-                    ),
-                  ),
-                ),
-                _drawerButton(
-                    MdiIcons.home,
-                    0,
-                    Translations.of(context).trans('main'),
-                    Settings.majorColor),
-                _drawerButton(
-                    Icons.search,
-                    1,
-                    Translations.of(context).trans('search'),
-                    Settings.majorColor),
-                _drawerButton(
-                    MdiIcons.bookmark,
-                    2,
-                    Translations.of(context).trans('bookmark'),
-                    Settings.majorColor),
-                // _drawerButton(
-                //     MdiIcons.accountGroup,
-                //     3,
-                //     Translations.of(context).trans('community'),
-                //     Settings.majorColor),
-                _drawerButton(
-                    Icons.settings,
-                    3,
-                    Translations.of(context).trans('settings'),
-                    Settings.majorColor),
-                Expanded(
-                    child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Text(
-                    'Copyright (C) 2020-2021\nby project-violet',
-                    style: TextStyle(
-                      color: Settings.themeWhat ? Colors.white : Colors.black87,
-                      fontSize: 12.0,
-                      fontFamily: "Calibre-Semibold",
-                      letterSpacing: 1.0,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                )),
-                Container(height: 16)
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  _drawerButton(IconData icon, int page, String name, Color color) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
-      height: 54,
-      child: Container(
-        // color: ,
-        decoration: BoxDecoration(
-            color: page == _currentPage ? color.withOpacity(0.4) : null,
-            borderRadius: BorderRadius.all(Radius.circular(10))),
-        child: InkWell(
-          customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          hoverColor: color,
-          highlightColor: color.withOpacity(0.2),
-          focusColor: color,
-          splashColor: color.withOpacity(0.3),
-          child: Row(
-            children: [
-              Container(width: 12),
-              Icon(icon),
-              Container(width: 12),
-              Text(
-                name,
-                style: TextStyle(fontWeight: FontWeight.bold),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-          onTap: () {
-            Navigator.pop(context);
-            setState(() {});
-            // this._c.animateToPage(page,
-            //     duration: const Duration(milliseconds: 250),
-            //     curve: Curves.easeInOut);
-            this._c.jumpToPage(page);
-          },
-        ),
+    return Scaffold(
+      key: scaffoldKey,
+      bottomNavigationBar:
+          _usesBottomNavigationBar ? _buildBottomNavigationBar(context) : null,
+      drawer: _usesDrawer ? _buildDrawer(context) : null,
+      body: PageView(
+        controller: _pageController,
+        physics: _usesDrawer ? NeverScrollableScrollPhysics() : null,
+        onPageChanged: (newPage) {
+          setState(() {});
+        },
+        children: <Widget>[
+          MainPage2(),
+          SearchPage(),
+          BookmarkPage(),
+          if (Platform.isAndroid) DownloadPage(),
+          SettingsPage(),
+        ],
       ),
     );
   }
