@@ -3,7 +3,6 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:html/parser.dart';
-import 'package:violet/database/query.dart';
 
 class HitomiParser {
   // Extract only title and artists

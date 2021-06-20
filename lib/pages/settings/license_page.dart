@@ -4,7 +4,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/pages/settings/libviolet_page.dart';
 import 'package:violet/settings/settings.dart';
 

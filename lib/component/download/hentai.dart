@@ -1,21 +1,11 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
+import 'dart:convert';
 
-import 'package:html_unescape/html_unescape_small.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as path;
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hentai.dart';
-import 'package:violet/network/wrapper.dart' as http;
-import 'dart:convert';
-import 'package:path/path.dart' as path;
-import 'package:crypto/crypto.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/hitomi_parser.dart';
-import 'package:violet/database/database.dart';
-import 'package:violet/database/query.dart';
 import 'package:violet/settings/settings.dart';
 
 class HentaiDonwloadManager extends Downloadable {

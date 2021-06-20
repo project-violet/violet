@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:violet/log/log.dart';
