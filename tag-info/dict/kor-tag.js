@@ -471,6 +471,7 @@ const kor_tag = {
   'female:prehensile hair': 'female:머리카락을 수족처럼 다룸',
   'female:inseki': 'female:입양가족',
   'female:ponygirl': 'female:포니걸',
+  'female:mother': 'female:엄마',
   'female:grandmother': 'female:할머니',
   'female:midget': 'female:난쟁이',
   'female:foot insertion': 'female:발을 삽입함',
