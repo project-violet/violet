@@ -4,26 +4,23 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
-import 'package:dio/dio.dart';
-import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
-import 'package:violet/version/update_sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
   final bool isExistsDataBase;

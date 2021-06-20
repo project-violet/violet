@@ -2,8 +2,8 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
-import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/settings/settings.dart';
 
 class GroupModifyPage extends StatelessWidget {

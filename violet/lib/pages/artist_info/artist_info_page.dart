@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
@@ -27,7 +28,6 @@ import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/series_list_page.dart';
 import 'package:violet/pages/artist_info/similar_list_page.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/toast.dart';
 

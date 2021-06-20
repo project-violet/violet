@@ -15,21 +15,17 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/hentai.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
-import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
-import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/variables.dart';
-import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
+import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 typedef void BookmarkCallback(int article);

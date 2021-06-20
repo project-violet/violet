@@ -3,7 +3,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:violet/other/dialogs.dart';
-import 'package:violet/locale/locale.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 

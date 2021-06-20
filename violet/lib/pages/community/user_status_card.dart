@@ -7,12 +7,12 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/community/signin_dialog.dart';
+import 'package:violet/pages/community/signup_dialog.dart';
 import 'package:violet/server/community/article.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/pages/community/signin_dialog.dart';
-import 'package:violet/pages/community/signup_dialog.dart';
 import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
@@ -138,40 +138,47 @@ class _UserStatusCardState extends State<UserStatusCard>
       children: [
         Expanded(
           child: InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(10.0),
                   bottomLeft: Radius.circular(10.0)),
             ),
             child: Container(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     children: [
-                      Text('User: ',
-                          style: TextStyle(color: Colors.grey, fontSize: 16)),
-                      Text(' $_userNickName ($_userId)',
-                          style: TextStyle(fontSize: 16)),
+                      const Text(
+                        'User:  ',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                      Expanded(
+                        child: Text(
+                          '$_userNickName ($_userId)',
+                          style: const TextStyle(fontSize: 16),
+                          overflow: TextOverflow.fade,
+                        ),
+                      ),
                     ],
                   ),
-                  Container(
-                    height: 2,
-                  ),
+                  const SizedBox(height: 2),
                   Row(
                     children: [
-                      Text('User App Id: ',
-                          style: TextStyle(color: Colors.grey, fontSize: 16)),
-                      Text(
-                          ' ' +
-                              (_userAppId != null
-                                  ? _userAppId.substring(0, 16)
-                                  : '') +
-                              '...',
-                          style: TextStyle(fontSize: 16)),
+                      const Text(
+                        'User App Id:  ',
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
+                      Expanded(
+                        child: Text(
+                          _userAppId,
+                          style: const TextStyle(fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

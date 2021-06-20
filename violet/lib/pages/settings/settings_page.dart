@@ -1,8 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:country_pickers/country.dart';
@@ -16,40 +16,39 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
-import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/community/user_status_card.dart';
+import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
-import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/log_page.dart';
+import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/route.dart';
 import 'package:violet/pages/settings/tag_rebuild_page.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
-import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/widgets/toast.dart';
-import 'package:violet/component/hitomi/indexs.dart';
-import 'package:violet/database/database.dart';
 
 class ExCountry extends Country {
   String language;
@@ -57,12 +56,22 @@ class ExCountry extends Country {
   String region;
   String variant;
 
-  ExCountry(String name, String iso) : super(name: name, isoCode: iso) {}
+  ExCountry(
+    String name,
+    String isoCode,
+    String iso3Code,
+    String phoneCode,
+  ) : super(
+          name: name,
+          isoCode: isoCode,
+          iso3Code: iso3Code,
+          phoneCode: phoneCode,
+        );
 
   static ExCountry create(String iso,
       {String language, String script, String region, String variant}) {
     var c = CountryPickerUtils.getCountryByIsoCode(iso);
-    var country = ExCountry(c.name, c.isoCode);
+    var country = ExCountry(c.name, c.isoCode, c.iso3Code, c.phoneCode);
     country.language = language;
     country.script = script;
     country.region = region;
