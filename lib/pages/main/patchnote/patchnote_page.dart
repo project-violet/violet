@@ -24,9 +24,10 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2021, 6, 18),
+    dateTime: DateTime(2021, 6, 20),
     version: '1.10.2 Patch Update <== Latest',
     contents: [
+      'add related tag viewer',
       'fix article info paddings error',
     ],
   ),
