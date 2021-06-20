@@ -799,7 +799,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     if ((_tagTranslation && (!_useTranslated || related)) ||
         (_useTranslated && related))
       tagDisplayed =
-          TagTranslate.ofAny(info.item2).split('|').last.split(':').last;
+          TagTranslate.ofAny(info.item2).split(':').last.split('|').first;
     else if (_useTranslated)
       tagDisplayed = info.item2.split('|').last.split(':').last;
 
