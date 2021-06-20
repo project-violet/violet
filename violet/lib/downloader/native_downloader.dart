@@ -67,7 +67,7 @@ class NativeDownloader {
   DownloaderDispose downloaderDispose;
   DownloaderStatus downloaderStatus;
   DownloaderAppend downloaderAppend;
-  List<DownloadTask> downloadTasks = List<DownloadTask>();
+  List<DownloadTask> downloadTasks = [];
 
   sync.Lock lock = sync.Lock();
 
@@ -185,6 +185,7 @@ class NativeDownloader {
       }
       await writeFile.writeFrom(Uint8List.view(data.buffer));
       return libFile.path;
-    } else {}
+    }
+    return null;
   }
 }

@@ -95,7 +95,6 @@ class _GroupArtistListState extends State<GroupArtistList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    var windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       // resizeToAvoidBottomPadding: false,
@@ -448,7 +447,7 @@ class _GroupArtistListState extends State<GroupArtistList>
 
   bool checkMode = false;
   bool checkModePre = false;
-  List<Tuple2<int, String>> checked = List<Tuple2<int, String>>();
+  List<Tuple2<int, String>> checked = [];
 
   void longpress(int type, String artist) {
     if (!checkMode) {

@@ -22,7 +22,7 @@ class SeriesFinder {
     final total = artists.length + groups.length;
     var index = 0;
 
-    var series_list = <List<QueryResult>>[];
+    var seriesList = <List<QueryResult>>[];
 
     for (var i = 0; i < artists.length; i++) {
       var kv = artists.entries.elementAt(i);
@@ -43,7 +43,7 @@ class SeriesFinder {
           .where((element) => element.length > 1)
           .toList()
           .forEach((element) {
-        series_list.add(element.map((e) => qr[e]).toList());
+        seriesList.add(element.map((e) => qr[e]).toList());
       });
     }
 
@@ -66,12 +66,12 @@ class SeriesFinder {
           .where((element) => element.length > 1)
           .toList()
           .forEach((element) {
-        series_list.add(element.map((e) => qr[e]).toList());
+        seriesList.add(element.map((e) => qr[e]).toList());
       });
     }
 
-    series_list.sort((x, y) => x.length.compareTo(y.length));
-    series_list.forEach((element) {
+    seriesList.sort((x, y) => x.length.compareTo(y.length));
+    seriesList.forEach((element) {
       print('[${element.length}] ${element.first.artists()}');
     });
   }

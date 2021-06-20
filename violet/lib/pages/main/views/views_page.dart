@@ -22,13 +22,9 @@ class ViewsPage extends StatefulWidget {
 }
 
 class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
-  TabController _tabController;
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -70,7 +66,6 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                           tabBarIndicatorSize: TabBarIndicatorSize.tab,
                           insets: EdgeInsets.only(left: 8, right: 8, top: 21),
                         ),
-                        // controller: _tabController,
                         tabs: [
                           Container(
                             alignment: Alignment.center,
@@ -144,7 +139,6 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       ),
                       Expanded(
                         child: TabBarView(
-                          // controller: _tabController,
                           children: [
                             _Tab(0),
                             _Tab(1),
@@ -207,7 +201,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
           qr[element.id().toString()] = element;
         });
 
-        var result = List<Tuple2<QueryResult, int>>();
+        var result = <Tuple2<QueryResult, int>>[];
         value.forEach((element) {
           if (qr[element.item1.toString()] == null) {
             // TODO: Handle qurey not found

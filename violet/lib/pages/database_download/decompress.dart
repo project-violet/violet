@@ -104,6 +104,7 @@ class P7zip {
       }
       await writeFile.writeFrom(Uint8List.view(data.buffer));
       return libFile.path;
-    } else {}
+    }
+    return null;
   }
 }

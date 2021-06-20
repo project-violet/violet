@@ -101,7 +101,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   Future<void> downloadFileAndroid() async {
     Dio dio = Dio();
-    int _1mb = 1024 * 1024;
+    int oneMega = 1024 * 1024;
     int _nu = 0;
     int latest = 0;
     int _tlatest = 0;
@@ -125,7 +125,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         _nu += rec - latest;
         _tnu += rec - latest;
         latest = rec;
-        if (_nu <= _1mb) return;
+        if (_nu <= oneMega) return;
 
         _nu = 0;
 
@@ -190,7 +190,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   Future<void> downloadFileIOS() async {
     Dio dio = Dio();
-    int _1mb = 1024 * 1024;
+    int oneMega = 1024 * 1024;
     int _nu = 0;
     int latest = 0;
     int _tlatest = 0;
@@ -214,7 +214,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         _nu += rec - latest;
         _tnu += rec - latest;
         latest = rec;
-        if (_nu <= _1mb) return;
+        if (_nu <= oneMega) return;
 
         _nu = 0;
 

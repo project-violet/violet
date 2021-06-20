@@ -170,7 +170,6 @@ class ArticleInfoPage extends StatelessWidget {
   }
 
   _readButtonEvent(context, data) async {
-    var startsTime = DateTime.now();
     if (Settings.useVioletServer) {
       await VioletServer.view(data.queryResult.id());
     }
@@ -424,8 +423,7 @@ class _CommentArea extends StatefulWidget {
 }
 
 class __CommentAreaState extends State<_CommentArea> {
-  List<Tuple3<DateTime, String, String>> comments =
-      List<Tuple3<DateTime, String, String>>();
+  List<Tuple3<DateTime, String, String>> comments = [];
 
   @override
   void initState() {
@@ -629,7 +627,7 @@ class _InfoAreaWidget extends StatelessWidget {
             Navigator.pop(context, false);
           },
         );
-        var dialog = await showDialog(
+        await showDialog(
           useRootNavigator: false,
           context: context,
           builder: (BuildContext context) => AlertDialog(

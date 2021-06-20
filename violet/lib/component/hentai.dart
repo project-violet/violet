@@ -72,7 +72,7 @@ class HentaiManager {
     }
 
     try {
-      var hh = await http.get('https://ltn.hitomi.la/galleryblock/${no}.html');
+      var hh = await http.get('https://ltn.hitomi.la/galleryblock/$no.html');
       var article = await HitomiParser.parseGalleryBlock(hh.body);
       var meta = {
         'Id': no,
@@ -316,7 +316,7 @@ class HentaiManager {
     var result = EHParser.parseReulstPageExtendedListView(html);
 
     return result.map((element) {
-      var tag = List<String>();
+      var tag = <String>[];
 
       if (element.descripts['female'] != null)
         tag.addAll(element.descripts['female'].map((e) => "female:" + e));

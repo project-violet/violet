@@ -15,11 +15,11 @@ class SearchFilter extends StatefulWidget {
   bool blurred;
   bool isOr;
   bool isSearch;
-  List<Tuple3<String, String, int>> tags = List<Tuple3<String, String, int>>();
+  List<Tuple3<String, String, int>> tags = [];
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
   Map<String, int> groupCount = Map<String, int>();
-  List<Tuple2<String, int>> groups = List<Tuple2<String, int>>();
+  List<Tuple2<String, int>> groups = [];
   final List<QueryResult> queryResult;
 
   SearchFilter({
