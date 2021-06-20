@@ -56,12 +56,22 @@ class ExCountry extends Country {
   String region;
   String variant;
 
-  ExCountry(String name, String iso) : super(name: name, isoCode: iso) {}
+  ExCountry(
+    String name,
+    String isoCode,
+    String iso3Code,
+    String phoneCode,
+  ) : super(
+          name: name,
+          isoCode: isoCode,
+          iso3Code: iso3Code,
+          phoneCode: phoneCode,
+        );
 
   static ExCountry create(String iso,
       {String language, String script, String region, String variant}) {
     var c = CountryPickerUtils.getCountryByIsoCode(iso);
-    var country = ExCountry(c.name, c.isoCode);
+    var country = ExCountry(c.name, c.isoCode, c.iso3Code, c.phoneCode);
     country.language = language;
     country.script = script;
     country.region = region;
