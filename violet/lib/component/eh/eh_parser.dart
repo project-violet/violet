@@ -63,7 +63,7 @@ class EHParser {
   // ex: https://exhentai.org/g/1212168/421ef300a8/
   static List<String> getImagesUrl(String html) {
     var doc = parse(html).querySelector("div[id='gdt']");
-    var result = List<String>();
+    var result = <String>[];
     doc.querySelectorAll('div').forEach((element) {
       var a = element.querySelector('a');
       if (a == null) return;
@@ -85,7 +85,7 @@ class EHParser {
   static List<String> getPagesUrl(String html, {String url}) {
     var doc = parse(html).querySelector("div.gtb");
 
-    var url = List<String>();
+    var url = <String>[];
     try {
       var rr = doc.querySelectorAll("table tbody tr td[onclick*='document']");
       if (rr.length != 0) {
@@ -120,7 +120,7 @@ class EHParser {
 
     if (url.length == 0) return null;
 
-    var result = List<String>();
+    var result = <String>[];
     var prefix = url[0].split('?p=')[0];
     for (int i = 0; i <= max; i++) result.add(prefix + '?p=' + i.toString());
     return result;
@@ -186,7 +186,7 @@ class EHParser {
     if (info.containsKey("misc:")) article.misc = info["misc:"];
 
     var nodeComments = h.querySelectorAll("div[id='cdiv'] > div.c1");
-    var comments = List<Tuple3<DateTime, String, String>>();
+    var comments = <Tuple3<DateTime, String, String>>[];
 
     if (nodeComments != null) {
       var hu = HtmlUnescape();
@@ -217,7 +217,7 @@ class EHParser {
 
   // ex: https://exhentai.org/?inline_set=dm_t
   static List<EHResultArticle> parseReulstPageThumbnailView(String html) {
-    var result = List<EHResultArticle>();
+    var result = <EHResultArticle>[];
 
     var nodes = parse(html).querySelectorAll('div.itg > div.id1');
 
@@ -245,7 +245,7 @@ class EHParser {
 
   // ex: https://exhentai.org/?inline_set=dm_l
   static List<EHResultArticle> parseReulstPageListView(String html) {
-    var result = List<EHResultArticle>();
+    var result = <EHResultArticle>[];
 
     var nodes = parse(html).querySelectorAll('div.itg > tr');
 
@@ -278,9 +278,9 @@ class EHParser {
   // ex: https://exhentai.org/?inline_set=dm_e
   // The html source is broken. Therefore, you have to do fucking like this.
   static List<EHResultArticle> parseReulstPageExtendedListView(String html) {
-    var result = List<EHResultArticle>();
+    var result = <EHResultArticle>[];
 
-    var q = List<Element>();
+    var q = <Element>[];
     parse(html)
         .querySelectorAll("table.itg.glte")
         .forEach((element) => q.add(element));
@@ -323,7 +323,7 @@ class EHParser {
               var cont = element.querySelector('td').text.trim();
               cont = cont.substring(0, cont.length - 1);
 
-              var cc = List<String>();
+              var cc = <String>[];
 
               element
                   .querySelectorAll('td')[1]
@@ -351,7 +351,7 @@ class EHParser {
 
   // ex: https://exhentai.org/?inline_set=dm_m
   static List<EHResultArticle> parseReulstPageMinimalListView(String html) {
-    var result = List<EHResultArticle>();
+    var result = <EHResultArticle>[];
 
     var nodes = parse(html).querySelectorAll("table[class='itg gltm'] > tr");
 

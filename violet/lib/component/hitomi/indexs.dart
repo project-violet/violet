@@ -84,7 +84,7 @@ class HitomiIndexs {
   static List<Tuple2<String, double>> _calculateSimilars(
       Map<String, dynamic> map, String artist) {
     var rr = map[artist];
-    var result = List<Tuple2<String, double>>();
+    var result = <Tuple2<String, double>>[];
 
     map.forEach((key, value) {
       if (artist == key) return;

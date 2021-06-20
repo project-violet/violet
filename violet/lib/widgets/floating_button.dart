@@ -112,7 +112,7 @@ class _AnimatedFloatingActionButtonState
   }
 
   List<Widget> _setFabButtons() {
-    List<Widget> processButtons = List<Widget>();
+    final processButtons = <Widget>[];
     for (int i = 0; i < widget.fabButtons.length; i++) {
       processButtons.add(TransformFloatButton(
         floatButton: widget.fabButtons[i],

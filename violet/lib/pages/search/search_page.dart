@@ -242,7 +242,7 @@ class _SearchPageState extends State<SearchPage>
                           latestQuery =
                               Tuple2<Tuple2<List<QueryResult>, int>, String>(
                                   null, 'random');
-                          queryResult = List<QueryResult>();
+                          queryResult = [];
                           isFilterUsed = false;
                           isOr = false;
                           tagStates = Map<String, bool>();
@@ -343,7 +343,7 @@ class _SearchPageState extends State<SearchPage>
                     tagStates = value[2];
                     groupStates = value[3];
                     isOr = value[4];
-                    var result = List<QueryResult>();
+                    var result = <QueryResult>[];
                     queryResult.forEach((element) {
                       var succ = !isOr;
                       tagStates.forEach((key, value) {
@@ -393,8 +393,8 @@ class _SearchPageState extends State<SearchPage>
   Map<String, bool> groupStates = Map<String, bool>();
 
   bool scaleOnce = false;
-  List<QueryResult> queryResult = List<QueryResult>();
-  List<QueryResult> filterResult = List<QueryResult>();
+  List<QueryResult> queryResult = [];
+  List<QueryResult> filterResult = [];
 
   ObjectKey key = ObjectKey(Uuid().v4());
 

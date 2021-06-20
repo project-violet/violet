@@ -6,10 +6,8 @@ class DisjointSet {
   // Disjoint Set Array
   List<int> array;
 
-  DisjointSet(int N) {
-    array = List<int>(N);
-
-    for (int i = 0; i < N; i++) array[i] = i;
+  DisjointSet(int n) {
+    array = Iterable.generate(n, (i) => i).toList();
   }
 
   int find(int x) {

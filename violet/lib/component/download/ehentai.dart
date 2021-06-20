@@ -76,7 +76,7 @@ class EHentaiManager extends Downloadable {
     gdp.simpleInfoCallback('[$id] ${article.title()}');
 
     var images = await HitomiManager.getImageList(id);
-    var result = List<DownloadTask>();
+    var result = <DownloadTask>[];
 
     gdp.thumbnailCallback(images.item2[0],
         jsonEncode({'Referer': 'https://hitomi.la/reader/$id.html'}));

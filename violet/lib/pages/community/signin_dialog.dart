@@ -12,10 +12,9 @@ class SignInDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget yesButton = FlatButton(
-      child: Text('Log In', style: TextStyle(color: Settings.majorColor)),
-      focusColor: Settings.majorColor,
-      splashColor: Settings.majorColor.withOpacity(0.3),
+    Widget yesButton = TextButton(
+      style: TextButton.styleFrom(primary: Settings.majorColor),
+      child: Text('Log In'),
       onPressed: () async {
         var id = nameController.text.trim();
         var pw = descController.text.trim();
@@ -29,10 +28,9 @@ class SignInDialog extends StatelessWidget {
         Navigator.pop(context, [nameController.text, descController.text]);
       },
     );
-    Widget noButton = FlatButton(
-      child: Text('Cancel', style: TextStyle(color: Settings.majorColor)),
-      focusColor: Settings.majorColor,
-      splashColor: Settings.majorColor.withOpacity(0.3),
+    Widget noButton = TextButton(
+      style: TextButton.styleFrom(primary: Settings.majorColor),
+      child: Text('Cancel'),
       onPressed: () {
         Navigator.pop(context, null);
       },

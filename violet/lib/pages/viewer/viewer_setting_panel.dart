@@ -19,8 +19,6 @@ class ViewerSettingPanel extends StatefulWidget {
 }
 
 class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
-  double _timerValue = 1;
-
   @override
   Widget build(BuildContext context) {
     return Container(

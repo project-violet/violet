@@ -33,8 +33,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  @override
-  bool get wantKeepAlive => true;
   int count = 0;
   bool ee = false;
   int _current = 0;
@@ -409,8 +407,8 @@ class _MainPageState extends State<MainPage> {
       IsolateNameServer.registerPortWithName(
           _port.sendPort, 'downloader_send_port');
       _port.listen((dynamic data) {
-        String id = data[0];
-        DownloadTaskStatus status = data[1];
+        // String id = data[0];
+        // DownloadTaskStatus status = data[1];
         int progress = data[2];
         if (progress == 100 && !once) {
           OpenFile.open(

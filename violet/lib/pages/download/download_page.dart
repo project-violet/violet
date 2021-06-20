@@ -31,7 +31,7 @@ class _DownloadPageState extends State<DownloadPage>
   bool get wantKeepAlive => true;
 
   ScrollController _scroll = ScrollController();
-  List<DownloadItemModel> items = List<DownloadItemModel>();
+  List<DownloadItemModel> items = [];
 
   @override
   void initState() {
@@ -57,7 +57,6 @@ class _DownloadPageState extends State<DownloadPage>
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     var windowWidth = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
     DownloadPageManager.downloadPageLoaded = true;
 
     return Container(
@@ -169,20 +168,18 @@ class _DownloadPageState extends State<DownloadPage>
                           return;
                         }
                       }
-                      Widget yesButton = FlatButton(
-                        child: Text(Translations.of(context).trans('ok'),
-                            style: TextStyle(color: Settings.majorColor)),
-                        focusColor: Settings.majorColor,
-                        splashColor: Settings.majorColor.withOpacity(0.3),
+                      Widget yesButton = TextButton(
+                        style:
+                            TextButton.styleFrom(primary: Settings.majorColor),
+                        child: Text(Translations.of(context).trans('ok')),
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
                       );
-                      Widget noButton = FlatButton(
-                        child: Text(Translations.of(context).trans('cancel'),
-                            style: TextStyle(color: Settings.majorColor)),
-                        focusColor: Settings.majorColor,
-                        splashColor: Settings.majorColor.withOpacity(0.3),
+                      Widget noButton = TextButton(
+                        style:
+                            TextButton.styleFrom(primary: Settings.majorColor),
+                        child: Text(Translations.of(context).trans('cancel')),
                         onPressed: () {
                           Navigator.pop(context, false);
                         },

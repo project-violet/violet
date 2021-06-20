@@ -14,7 +14,7 @@ class NHentaiManager {
         (index) => 'https://i.nhentai.net/galleries/$id/${index + 1}.jpg');
 
     var ti = 'https://t.nhentai.net/galleries/$id/cover.jpg';
-    var tis = List<String>();
+    var tis = <String>[];
     tis.add(ti);
 
     return Tuple3<List<String>, List<String>, List<String>>(tis, bt, il);

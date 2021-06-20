@@ -71,9 +71,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   List<Tuple2<String, double>> relatedCOSSingleAll;
   List<Tuple2<String, double>> relatedCharacterOrSeriesAll;
   // Similar Item Lists
-  List<List<QueryResult>> qrs = List<List<QueryResult>>();
-  List<List<QueryResult>> qrsCOSSingle = List<List<QueryResult>>();
-  List<List<QueryResult>> qrsCharacterOrSeries = List<List<QueryResult>>();
+  List<List<QueryResult>> qrs = [];
+  List<List<QueryResult>> qrsCOSSingle = [];
+  List<List<QueryResult>> qrsCharacterOrSeries = [];
   // Title clustering
   List<List<int>> series;
 

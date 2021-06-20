@@ -564,6 +564,8 @@ class _PreloadPageViewState extends State<PreloadPageView> {
             : axisDirection;
       case Axis.vertical:
         return widget.reverse ? AxisDirection.up : AxisDirection.down;
+      default:
+        return null;
     }
   }
 

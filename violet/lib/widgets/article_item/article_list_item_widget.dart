@@ -337,8 +337,6 @@ class _ArticleListItemVerySimpleWidgetState
                 //     isBookmarked: isBookmarked,
                 //   ),
                 // ));
-                final mediaQuery = MediaQuery.of(context);
-                final pad = mediaQuery.padding + mediaQuery.viewInsets;
                 final height = MediaQuery.of(context).size.height;
 
                 showModalBottomSheet(
@@ -394,7 +392,7 @@ class _ArticleListItemVerySimpleWidgetState
                     return;
                 }
                 try {
-                  Scaffold.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     duration: Duration(seconds: 2),
                     content: Text(
                       isBookmarked
@@ -597,7 +595,7 @@ class _DetailWidget extends StatelessWidget {
             children: [
               const Icon(Icons.date_range, size: 18),
               Text(
-                ' ${dateTime}',
+                ' $dateTime',
                 style:
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
@@ -608,7 +606,7 @@ class _DetailWidget extends StatelessWidget {
             children: [
               const Icon(Icons.photo, size: 18),
               Text(
-                ' ${imageCount} Page',
+                ' $imageCount Page',
                 style:
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
@@ -616,7 +614,7 @@ class _DetailWidget extends StatelessWidget {
               if (viewed != null) const Icon(MdiIcons.eyeOutline, size: 18),
               if (viewed != null)
                 Text(
-                  ' ${viewed} Viewed',
+                  ' $viewed Viewed',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500),
                 ),

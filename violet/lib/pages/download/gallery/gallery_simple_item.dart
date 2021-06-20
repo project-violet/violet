@@ -64,8 +64,7 @@ class _GallerySimpleItemState extends State<GallerySimpleItem>
                                   minScale: 1.0,
                                   maxScale: 3.0,
                                   initialIndex: widget.item.filesIndex,
-                                  scrollDirection:
-                                      false ? Axis.vertical : Axis.horizontal,
+                                  scrollDirection: Axis.horizontal,
                                 ),
                               ),
                             );
