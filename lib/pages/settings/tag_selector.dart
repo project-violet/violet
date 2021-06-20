@@ -58,7 +58,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       insetPadding: EdgeInsets.all(16),
       contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 0),
       content: Stack(
-        overflow: Overflow.visible,
+        clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: <Widget>[
           SizedBox(
@@ -131,8 +131,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     );
   }
 
-  List<Tuple3<String, String, int>> _searchLists =
-      List<Tuple3<String, String, int>>();
+  List<Tuple3<String, String, int>> _searchLists = [];
 
   TextEditingController _searchController;
   int _insertPos, _insertLength;

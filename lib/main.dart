@@ -131,7 +131,7 @@ void main() async {
                         now.difference(currentBackPressTime) >
                             Duration(seconds: 2)) {
                       currentBackPressTime = now;
-                      scaffoldKey.currentState.showSnackBar(SnackBar(
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         duration: Duration(seconds: 2),
                         content: Text(
                           Translations.of(context).trans('closedoubletap'),

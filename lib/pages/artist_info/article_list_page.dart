@@ -210,7 +210,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
   Map<String, bool> groupStates = Map<String, bool>();
 
   bool scaleOnce = false;
-  List<QueryResult> filterResult = List<QueryResult>();
+  List<QueryResult> filterResult = [];
 
   static String prefix2Tag(String prefix) {
     switch (prefix) {

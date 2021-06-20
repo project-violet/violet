@@ -10,17 +10,12 @@ class Dialogs {
   static Future okDialog(BuildContext context, String message,
       [String title]) async {
     title ??= 'Project Violet';
-    Widget okButton = FlatButton(
-      child: Text(Translations.of(context).trans('ok'),
-          style: TextStyle(color: Settings.majorColor)),
-      // color: Colors.purple,
-      // highlightColor: Colors.purple,
-      // hoverColor: Colors.purple,
-      focusColor: Settings.majorColor,
-      splashColor: Settings.majorColor.withOpacity(0.3),
+    Widget okButton = TextButton(
+      style: TextButton.styleFrom(primary: Settings.majorColor),
       onPressed: () {
         Navigator.pop(context, "OK");
       },
+      child: Text(Translations.of(context).trans('ok')),
     );
     AlertDialog alert = AlertDialog(
       title: Text(title),
@@ -40,23 +35,19 @@ class Dialogs {
   static Future<bool> yesnoDialog(BuildContext context, String message,
       [String title]) async {
     title ??= 'Project Violet';
-    Widget yesButton = FlatButton(
-      child: Text(Translations.of(context).trans('yes'),
-          style: TextStyle(color: Settings.majorColor)),
-      focusColor: Settings.majorColor,
-      splashColor: Settings.majorColor.withOpacity(0.3),
+    Widget yesButton = TextButton(
+      style: TextButton.styleFrom(primary: Settings.majorColor),
       onPressed: () {
         Navigator.pop(context, true);
       },
+      child: Text(Translations.of(context).trans('yes')),
     );
-    Widget noButton = FlatButton(
-      child: Text(Translations.of(context).trans('no'),
-          style: TextStyle(color: Settings.majorColor)),
-      focusColor: Settings.majorColor,
-      splashColor: Settings.majorColor.withOpacity(0.3),
+    Widget noButton = TextButton(
+      style: TextButton.styleFrom(primary: Settings.majorColor),
       onPressed: () {
         Navigator.pop(context, false);
       },
+      child: Text(Translations.of(context).trans('no')),
     );
     AlertDialog alert = AlertDialog(
       title: Text(title),

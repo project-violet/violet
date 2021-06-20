@@ -68,7 +68,7 @@ class HitomiDonwloadManager extends Downloadable {
         .map((e) => QueryResult(result: e))
         .toList();
 
-    var result = List<DownloadTask>();
+    var result = <DownloadTask>[];
     if (articles != null && articles.length != 0) {
       var article = articles[0];
 

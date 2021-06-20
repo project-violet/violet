@@ -26,8 +26,8 @@ class TabPanel extends StatefulWidget {
 
 class _TabPanelState extends State<TabPanel> {
   ScrollController _scrollController = ScrollController();
-  static const _kDuration = const Duration(milliseconds: 300);
-  static const _kCurve = Curves.ease;
+  // static const _kDuration = const Duration(milliseconds: 300);
+  // static const _kCurve = Curves.ease;
   GlobalKey containerKey = GlobalKey();
   Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
 

@@ -982,20 +982,16 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: Settings.useInnerStorage
                 ? null
                 : () async {
-                    Widget yesButton = FlatButton(
-                      child: Text(Translations.of(context).trans('ok'),
-                          style: TextStyle(color: Settings.majorColor)),
-                      focusColor: Settings.majorColor,
-                      splashColor: Settings.majorColor.withOpacity(0.3),
+                    Widget yesButton = TextButton(
+                      style: TextButton.styleFrom(primary: Settings.majorColor),
+                      child: Text(Translations.of(context).trans('ok')),
                       onPressed: () {
                         Navigator.pop(context, true);
                       },
                     );
-                    Widget noButton = FlatButton(
-                      child: Text(Translations.of(context).trans('cancel'),
-                          style: TextStyle(color: Settings.majorColor)),
-                      focusColor: Settings.majorColor,
-                      splashColor: Settings.majorColor.withOpacity(0.3),
+                    Widget noButton = TextButton(
+                      style: TextButton.styleFrom(primary: Settings.majorColor),
+                      child: Text(Translations.of(context).trans('cancel')),
                       onPressed: () {
                         Navigator.pop(context, false);
                       },
