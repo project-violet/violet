@@ -4,9 +4,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/log/log.dart';
 
 // This is used for estimation similiar Aritst/Group/Uplaoder with each others.
@@ -34,6 +36,8 @@ class HitomiIndexs {
   // Character, <Character, Count>
   // Map<String, Map<String, int>>
   static Map<String, dynamic> characterCharacter;
+  // Tag, [<Tag, Similarity>]
+  static Map<String, dynamic> relatedTag;
 
   static Future<void> init() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -66,6 +70,10 @@ class HitomiIndexs {
     } catch (e, st) {
       Logger.error('[Hitomi-Indexs] E: ' + e.toString() + '\n' + st.toString());
     }
+
+    var relatedData = await rootBundle.loadString(
+        'assets/locale/tag/related-tag-${TagTranslate.defaultLanguage}.json');
+    relatedTag = json.decode(relatedData);
   }
 
   static List<Tuple2<String, double>> _calculateSimilars(
@@ -153,6 +161,17 @@ class HitomiIndexs {
     var ll = (seriesCharacter[character] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
+        .toList();
+    ll.sort((x, y) => y.item2.compareTo(x.item2));
+    return ll;
+  }
+
+  static List<Tuple2<String, double>> getRelatedTag(String tag) {
+    if (!relatedTag.containsKey(tag)) return <Tuple2<String, double>>[];
+    var ll = (relatedTag[tag] as List<dynamic>)
+        .map((e) => Tuple2<String, double>(
+            (e as Map<String, dynamic>).entries.first.key,
+            (e as Map<String, dynamic>).entries.first.value.toDouble()))
         .toList();
     ll.sort((x, y) => y.item2.compareTo(x.item2));
     return ll;
