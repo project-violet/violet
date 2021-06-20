@@ -942,9 +942,9 @@ class _SearchBarPageState extends State<SearchBarPage>
                             : '') +
                         info.item2.split('|')[0].replaceAll('_', ' '))
                 .map((e) => Tuple3<String, String, int>(
-                    e.item1.split(':').first == ''
-                        ? 'tag'
-                        : e.item1.split(':').first,
+                    ['female', 'male'].contains(e.item1.split(':').first)
+                        ? e.item1.split(':').first
+                        : 'tag',
                     e.item1.split(':').last,
                     (e.item2 * 100).toInt()))
                 .toList();
