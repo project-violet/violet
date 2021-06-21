@@ -160,7 +160,7 @@ class _SplashPageState extends State<SplashPage> {
       await (await SharedPreferences.getInstance())
           .setBool('checkauthalready', true);
       if (await Permission.storage.request() == PermissionStatus.denied) {
-        await Dialogs.okDialog(context, "파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.");
+        await showOkDialog(context, "파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.");
       }
     }
   }
@@ -372,7 +372,7 @@ class _SplashPageState extends State<SplashPage> {
                           style: TextStyle(fontSize: 12),
                         ),
                         onLongPress: () {
-                          Dialogs.okDialog(
+                          showOkDialog(
                               context,
                               translations.trans('dbusermsg').replaceFirst(
                                   '%s', imgSize[translations.dbLanguageCode]));
@@ -391,7 +391,7 @@ class _SplashPageState extends State<SplashPage> {
                           style: TextStyle(fontSize: 12),
                         ),
                         onLongPress: () {
-                          Dialogs.okDialog(
+                          showOkDialog(
                               context,
                               translations
                                   .trans('dballmsg')
@@ -469,7 +469,7 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<void> _onDownloadButtonPressed() async {
     if (_database == Database.all) {
-      if (!await Dialogs.yesnoDialog(
+      if (!await showYesNoDialog(
           context,
           Translations.of(context).trans('dbwarn'),
           Translations.of(context).trans('warning'))) {
@@ -622,7 +622,7 @@ class _SplashPageState extends State<SplashPage> {
     );
 
     if (file == null) {
-      await Dialogs.okDialog(
+      await showOkDialog(
           context, Translations.of(context).trans('dbalreadyerr'));
       return '';
     }

@@ -140,7 +140,7 @@ class ArticleInfoPage extends StatelessWidget {
     if (Platform.isAndroid) {
       if (!await Permission.storage.isGranted) {
         if (await Permission.storage.request() == PermissionStatus.denied) {
-          await Dialogs.okDialog(context,
+          await showOkDialog(context,
               'If you do not allow file permissions, you cannot continue :(');
           return;
         }
@@ -521,7 +521,7 @@ class _InfoAreaWidget extends StatelessWidget {
       var children = List<Widget>.from(comments.map((e) {
         return InkWell(
           onTap: () async {
-            // Dialogs.okDialog(context, e.item3, 'Comments');
+            // showOkDialog(context, e.item3, 'Comments');
             AlertDialog alert = AlertDialog(
               content: SelectableText(e.item3),
               // actions: [
@@ -581,14 +581,14 @@ class _InfoAreaWidget extends StatelessWidget {
         // check loginable
 
         if (queryResult.ehash() == null) {
-          await Dialogs.okDialog(context, 'Cannot write comment!');
+          await showOkDialog(context, 'Cannot write comment!');
           return;
         }
 
         var cookie =
             (await SharedPreferences.getInstance()).getString('eh_cookies');
         if (cookie == null || !cookie.contains('ipb_pass_hash')) {
-          await Dialogs.okDialog(context, 'Please, Login First!');
+          await showOkDialog(context, 'Please, Login First!');
           return;
         }
 
@@ -604,7 +604,7 @@ class _InfoAreaWidget extends StatelessWidget {
                         text.text))
                     .trim() !=
                 '') {
-              await Dialogs.okDialog(
+              await showOkDialog(
                   context, 'Too short, or Not a valid session! Try Again!');
               return;
             }
@@ -855,14 +855,14 @@ class _Chip extends StatelessWidget {
         onLongPress: () async {
           if (!Settings.excludeTags
               .contains('$group:${name.replaceAll(' ', '_')}')) {
-            var yn = await Dialogs.yesnoDialog(context, '이 태그를 제외태그에 추가할까요?');
+            var yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
             if (yn != null && yn) {
               Settings.excludeTags.add('$group:${name.replaceAll(' ', '_')}');
               await Settings.setExcludeTags(Settings.excludeTags.join(' '));
-              await Dialogs.okDialog(context, '제외태그에 성공적으로 추가했습니다!');
+              await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
             }
           } else {
-            await Dialogs.okDialog(context, '이미 제외태그에 추가된 항목입니다!');
+            await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
           }
         },
         onTap: () async {

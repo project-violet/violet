@@ -388,7 +388,7 @@ class _ArticleListItemVerySimpleWidgetState
                 }
 
                 if (isBookmarked) {
-                  if (!await Dialogs.yesnoDialog(context, '북마크를 삭제할까요?', '북마크'))
+                  if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크'))
                     return;
                 }
                 try {

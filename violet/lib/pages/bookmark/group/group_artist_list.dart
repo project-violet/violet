@@ -393,7 +393,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         Container(
           child: FloatingActionButton(
             onPressed: () async {
-              if (await Dialogs.yesnoDialog(
+              if (await showYesNoDialog(
                   context,
                   Translations.of(context)
                       .trans('deletebookmarkmsg')
@@ -518,7 +518,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                   ),
                 )) ==
         1) {
-      if (await Dialogs.yesnoDialog(
+      if (await showYesNoDialog(
           context,
           Translations.of(context)
               .trans('movetoto')

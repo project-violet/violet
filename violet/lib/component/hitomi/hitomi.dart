@@ -4,11 +4,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/network/wrapper.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/variables.dart';
 
 class HitomiManager {
