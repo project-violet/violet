@@ -444,8 +444,12 @@ class _SplashPageState extends State<SplashPage> {
       alignment: Alignment.bottomRight,
       child: Padding(
         padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
-        child: RaisedButton(
-          textColor: Colors.white,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: widget.switching
+                ? Settings.majorColor.withAlpha(200)
+                : Colors.purple.shade400,
+          ),
           child: SizedBox(
             width: 90,
             child: Row(
@@ -458,9 +462,6 @@ class _SplashPageState extends State<SplashPage> {
             ),
           ),
           onPressed: _onDownloadButtonPressed,
-          color: widget.switching
-              ? Settings.majorColor.withAlpha(200)
-              : Colors.purple.shade400,
         ),
       ),
     );

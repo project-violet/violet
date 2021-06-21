@@ -489,8 +489,10 @@ class _GroupArtistListState extends State<GroupArtistList>
             builder: (BuildContext context) => AlertDialog(
                   title: Text(Translations.of(context).trans('wheretomove')),
                   actions: <Widget>[
-                    RaisedButton(
-                      color: Settings.majorColor,
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Settings.majorColor,
+                      ),
                       child: Text(Translations.of(context).trans('cancel')),
                       onPressed: () {
                         Navigator.pop(context, 0);

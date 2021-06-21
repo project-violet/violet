@@ -110,6 +110,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               child: Material(
                 child: Container(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       _searchBar(),
                       _seperator(),
@@ -205,45 +206,17 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchButton() {
-    return SizedBox(
+    return Container(
       height: 40,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
-        child: ButtonTheme(
-          minWidth: double.infinity,
-          height: 30,
-          child: RaisedButton(
-            color: Settings.majorColor,
-            textColor: Colors.white,
-            child: Text(Translations.of(context).trans('search')),
-            onPressed: () async {
-              // final query = HitomiManager.translate2query(
-              //     _searchController.text +
-              //         ' ' +
-              //         Settings.includeTags +
-              //         ' ' +
-              //         Settings.excludeTags
-              //             .where((e) => e.trim() != '')
-              //             .map((e) => '-$e')
-              //             .join(' ')
-              //             .trim());
-              // final result =
-              //     QueryManager.queryPagination(query);
-              // Navigator.pop(
-              //     context,
-              //     Tuple2<QueryManager, String>(
-              //         result, _searchController.text));
-              // final searchInfo = await HentaiManager.search(
-              //     _searchController.text);
-              Navigator.pop(context, _searchController.text
-                  // Tuple2<Tuple2<List<QueryResult>, int>,
-                  //         String>(
-                  //     searchInfo, _searchController.text
-                  // )
-                  );
-            },
-          ),
+      padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Settings.majorColor,
         ),
+        child: Text(Translations.of(context).trans('search')),
+        onPressed: () async {
+          Navigator.pop(context, _searchController.text);
+        },
       ),
     );
   }
@@ -535,24 +508,28 @@ class _SearchBarPageState extends State<SearchBarPage>
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             Expanded(
-                              child: RaisedButton(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade800
-                                    : Colors.grey,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Settings.themeWhat
+                                      ? Colors.grey.shade800
+                                      : Colors.grey,
+                                  onPrimary: Colors.black,
+                                ),
                                 child: Icon(MdiIcons.keyboardBackspace),
                                 onPressed: () {
                                   deleteProcess();
                                 },
                               ),
                             ),
-                            Container(
-                              width: 8,
-                            ),
+                            const SizedBox(width: 8),
                             Expanded(
-                              child: RaisedButton(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade800
-                                    : Colors.grey,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  primary: Settings.themeWhat
+                                      ? Colors.grey.shade800
+                                      : Colors.grey,
+                                  onPrimary: Colors.black,
+                                ),
                                 child: Icon(MdiIcons.keyboardSpace),
                                 onPressed: () {
                                   spaceProcess();
