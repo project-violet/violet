@@ -67,7 +67,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
   FlareCache.doesPrune = false;
-
   await Firebase.initializeApp();
   FlutterError.onError = recordFlutterError;
 

@@ -60,6 +60,12 @@ class Distance {
     return v0[y + y + 1];
   }
 
+  static int levenshteinDistanceString(String s1, String s2) {
+    final l1 = s1.runes.map((rune) => rune.toString()).toList();
+    final l2 = s2.runes.map((rune) => rune.toString()).toList();
+    return levenshteinDistanceComparable(l1, l2);
+  }
+
   static List<int> levenshteinDistanceRoute<T extends num>(
       List<T> l1, List<T> l2) {
     List<List<int>> dist = List.generate(
