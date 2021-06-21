@@ -26,9 +26,6 @@ import 'package:violet/settings/settings.dart';
 
 import 'locale/locale.dart';
 
-DateTime currentBackPressTime;
-final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
 const _filesToWarmup = [
   'assets/flare/Loading2.flr',
   'assets/flare/likeUtsua.flr'
@@ -123,29 +120,8 @@ void main() async {
             const Locale('eo', 'ES'),
           ],
           routes: <String, WidgetBuilder>{
-            '/AfterLoading': (BuildContext context) => WillPopScope(
-                  child: AfterLoadingPage(),
-                  onWillPop: () {
-                    DateTime now = DateTime.now();
-                    if (currentBackPressTime == null ||
-                        now.difference(currentBackPressTime) >
-                            Duration(seconds: 2)) {
-                      currentBackPressTime = now;
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        duration: Duration(seconds: 2),
-                        content: Text(
-                          Translations.of(context).trans('closedoubletap'),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.grey.shade800,
-                      ));
-                      return Future.value(false);
-                    }
-                    return Future.value(true);
-                  },
-                ),
-            '/DatabaseDownload': (BuildContext context) =>
-                DataBaseDownloadPage(),
+            '/AfterLoading': (context) => AfterLoadingPage(),
+            '/DatabaseDownload': (context) => DataBaseDownloadPage(),
           },
           localizationsDelegates: [
             const TranslationsDelegate(),
