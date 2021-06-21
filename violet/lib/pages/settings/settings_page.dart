@@ -1430,15 +1430,19 @@ class _SettingsPageState extends State<SettingsPage>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      RaisedButton(
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Settings.majorColor,
+                        ),
                         child: Text('Login From WebPage'),
                         onPressed: () => Navigator.pop(context, 1),
-                        color: Settings.majorColor,
                       ),
-                      RaisedButton(
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          primary: Settings.majorColor,
+                        ),
                         child: Text('Enter Cookie Information'),
                         onPressed: () => Navigator.pop(context, 2),
-                        color: Settings.majorColor,
                       ),
                     ],
                   ),

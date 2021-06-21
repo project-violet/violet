@@ -46,53 +46,43 @@ class GroupModifyPage extends StatelessWidget {
             height: 16,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: ButtonTheme(
-                    minWidth: 50,
-                    child: RaisedButton(
-                      color: Colors.red,
-                      child: Text(Translations.of(context).trans('delete')),
-                      onPressed: () async {
-                        if (await Dialogs.yesnoDialog(
-                            context,
-                            Translations.of(context).trans('deletegroupmsg'),
-                            Translations.of(context).trans('bookmark')))
-                          Navigator.pop(context, [2]);
-                      },
-                    ),
-                  ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.red,
                 ),
+                child: Text(Translations.of(context).trans('delete')),
+                onPressed: () async {
+                  if (await Dialogs.yesnoDialog(
+                      context,
+                      Translations.of(context).trans('deletegroupmsg'),
+                      Translations.of(context).trans('bookmark')))
+                    Navigator.pop(context, [2]);
+                },
               ),
-              ButtonTheme(
-                minWidth: 50,
-                child: RaisedButton(
-                  color: Settings.majorColor,
-                  child: Text(Translations.of(context).trans('ok')),
-                  onPressed: () {
-                    Navigator.pop(context, [
-                      1,
-                      nameController.text,
-                      descController.text,
-                    ]);
-                  },
+              const Spacer(),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Settings.majorColor,
                 ),
+                child: Text(Translations.of(context).trans('ok')),
+                onPressed: () {
+                  Navigator.pop(context, [
+                    1,
+                    nameController.text,
+                    descController.text,
+                  ]);
+                },
               ),
-              Container(
-                width: 8,
-              ),
-              ButtonTheme(
-                minWidth: 50,
-                child: RaisedButton(
-                  color: Settings.majorColor,
-                  child: Text(Translations.of(context).trans('cancel')),
-                  onPressed: () {
-                    Navigator.pop(context, [0]);
-                  },
+              const SizedBox(width: 8),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Settings.majorColor,
                 ),
+                child: Text(Translations.of(context).trans('cancel')),
+                onPressed: () {
+                  Navigator.pop(context, [0]);
+                },
               ),
             ],
           )
