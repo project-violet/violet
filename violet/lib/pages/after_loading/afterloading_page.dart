@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/main.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
@@ -35,6 +34,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
   bool get _usesDrawer => Settings.useDrawer;
 
   bool get _usesBottomNavigationBar => !Settings.useDrawer;
+
+  DateTime _lastPopAt;
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final translations = Translations.of(context);
@@ -199,24 +200,47 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
     Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
         (mediaQuery.padding + mediaQuery.viewInsets).bottom);
 
-    return Scaffold(
-      key: scaffoldKey,
-      bottomNavigationBar:
-          _usesBottomNavigationBar ? _buildBottomNavigationBar(context) : null,
-      drawer: _usesDrawer ? _buildDrawer(context) : null,
-      body: PageView(
-        controller: _pageController,
-        physics: _usesDrawer ? NeverScrollableScrollPhysics() : null,
-        onPageChanged: (newPage) {
-          setState(() {});
-        },
-        children: <Widget>[
-          MainPage2(),
-          SearchPage(),
-          BookmarkPage(),
-          if (Platform.isAndroid) DownloadPage(),
-          SettingsPage(),
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        DateTime now = DateTime.now();
+
+        if (_lastPopAt != null &&
+            now.difference(_lastPopAt) <= const Duration(seconds: 2)) {
+          return true;
+        }
+
+        _lastPopAt = now;
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          duration: const Duration(seconds: 2),
+          content: Text(
+            Translations.of(context).trans('closedoubletap'),
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.grey.shade800,
+        ));
+
+        return false;
+      },
+      child: Scaffold(
+        bottomNavigationBar: _usesBottomNavigationBar
+            ? _buildBottomNavigationBar(context)
+            : null,
+        drawer: _usesDrawer ? _buildDrawer(context) : null,
+        body: PageView(
+          controller: _pageController,
+          physics: _usesDrawer ? NeverScrollableScrollPhysics() : null,
+          onPageChanged: (newPage) {
+            setState(() {});
+          },
+          children: <Widget>[
+            MainPage2(),
+            SearchPage(),
+            BookmarkPage(),
+            if (Platform.isAndroid) DownloadPage(),
+            SettingsPage(),
+          ],
+        ),
       ),
     );
   }
