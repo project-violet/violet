@@ -103,41 +103,34 @@ class ArticleInfoPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Align(
-          // alignment: Alignment.centerRight,
-          child: Padding(
-            padding: EdgeInsets.only(right: 4),
-            child: RaisedButton(
-              child: Container(
-                width: (width - 32 - 64 - 32) / 2,
-                child: Text(
-                  Translations.of(context).trans('download'),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              color: Settings.majorColor.withAlpha(230),
-              onPressed: () async => await _downloadButtonEvent(context, data),
+        ElevatedButton(
+          child: Container(
+            width: (width - 32 - 64 - 32) / 2,
+            child: Text(
+              Translations.of(context).trans('download'),
+              textAlign: TextAlign.center,
             ),
           ),
+          style: ElevatedButton.styleFrom(
+            primary: Settings.majorColor.withAlpha(230),
+          ),
+          onPressed: () async => await _downloadButtonEvent(context, data),
         ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: EdgeInsets.only(right: 0),
-            child: RaisedButton(
-              child: Container(
-                width: (width - 32 - 64 - 32) / 2,
-                child: Text(
-                  Translations.of(context).trans('read'),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              color: Settings.majorColor,
-              onPressed: data.lockRead
-                  ? null
-                  : () async => await _readButtonEvent(context, data),
+        const SizedBox(width: 4.0),
+        ElevatedButton(
+          child: Container(
+            width: (width - 32 - 64 - 32) / 2,
+            child: Text(
+              Translations.of(context).trans('read'),
+              textAlign: TextAlign.center,
             ),
           ),
+          style: ElevatedButton.styleFrom(
+            primary: Settings.majorColor,
+          ),
+          onPressed: data.lockRead
+              ? null
+              : () async => await _readButtonEvent(context, data),
         ),
       ],
     );

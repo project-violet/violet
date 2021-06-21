@@ -348,9 +348,10 @@ class _MainPage2State extends State<MainPage2>
           //   width: 100,
           // )
           Container(
-            child: RaisedButton(
-              color: Settings.majorColor.withAlpha(220),
-              textColor: Colors.white,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Settings.majorColor.withAlpha(220),
+              ),
               onPressed: () {
                 if (!Platform.isIOS) {
                   Navigator.of(context).push(PageRouteBuilder(
@@ -377,7 +378,6 @@ class _MainPage2State extends State<MainPage2>
                 }
               },
               child: Text(Translations.of(context).trans('patchnote')),
-              elevation: 3.0,
             ),
             height: 40,
             width: 105,
@@ -433,9 +433,10 @@ class _MainPage2State extends State<MainPage2>
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          RaisedButton(
-            color: Settings.majorColor.withAlpha(220),
-            textColor: Colors.white,
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Settings.majorColor.withAlpha(220),
+            ),
             onPressed: Variables.databaseDecompressed
                 ? null
                 : () {
@@ -446,16 +447,16 @@ class _MainPage2State extends State<MainPage2>
                   },
             child:
                 Text('    ${Translations.of(context).trans('switching')}    '),
-            elevation: 3.0,
           ),
           Badge(
             showBadge: _syncAvailable,
             badgeContent: Text('N',
                 style: TextStyle(color: Colors.white, fontSize: 12.0)),
             // badgeColor: Settings.majorAccentColor,
-            child: RaisedButton(
-              color: Settings.majorColor.withAlpha(220),
-              textColor: Colors.white,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Settings.majorColor.withAlpha(220),
+              ),
               onPressed: Variables.databaseDecompressed
                   ? null
                   : () async {
@@ -518,7 +519,6 @@ class _MainPage2State extends State<MainPage2>
                       });
                     },
               child: Text('    ${Translations.of(context).trans('sync')}    '),
-              elevation: 3.0,
             ),
           ),
         ],
