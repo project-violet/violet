@@ -47,7 +47,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                     controller.forward(from: 0.0);
 
                     if (!Settings.useVioletServer) {
-                      await Dialogs.okDialog(context,
+                      await showOkDialog(context,
                           'To use this feature, turn on the Violet Server feature in Settings');
                       return;
                     }

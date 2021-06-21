@@ -11,12 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tuple/tuple.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
@@ -289,7 +289,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                       .inDays <
                   7) {
             if (moveAnywhere ||
-                await Dialogs.yesnoDialog(
+                await showYesNoDialog(
                     context,
                     Translations.of(context)
                         .trans('recordmessage')
@@ -454,7 +454,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
             await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
 
         if (isBookmarked) {
-          if (!await Dialogs.yesnoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
+          if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
         }
 
         FlutterToast(context).showToast(

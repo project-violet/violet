@@ -53,7 +53,7 @@ class GroupModifyPage extends StatelessWidget {
                 ),
                 child: Text(Translations.of(context).trans('delete')),
                 onPressed: () async {
-                  if (await Dialogs.yesnoDialog(
+                  if (await showYesNoDialog(
                       context,
                       Translations.of(context).trans('deletegroupmsg'),
                       Translations.of(context).trans('bookmark')))

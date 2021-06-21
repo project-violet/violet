@@ -321,7 +321,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         Container(
           child: FloatingActionButton(
             onPressed: () async {
-              if (await Dialogs.yesnoDialog(
+              if (await showYesNoDialog(
                   context,
                   Translations.of(context)
                       .trans('deletebookmarkmsg')
@@ -722,7 +722,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   ),
                 )) ==
         1) {
-      if (await Dialogs.yesnoDialog(
+      if (await showYesNoDialog(
           context,
           Translations.of(context)
               .trans('movetoto')

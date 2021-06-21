@@ -135,7 +135,7 @@ class _BookmarkPageState extends State<BookmarkPage>
           //     labelBackgroundColor:
           //         Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
           //     onTap: () async {
-          //       Dialogs.okDialog(
+          //       showOkDialog(
           //           context,
           //           '1. 모든 작품/작가는 하나의 그룹만 가질 수 있습니다.\n2. 그룹은 또 다른 그룹을 가질 수 없습니다.',
           //           Translations.of(context).trans('bookmark'));
@@ -313,7 +313,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                       },
                       onLongPress: () async {
                         if (index == -1 || oname == 'violet_default')
-                          await Dialogs.okDialog(
+                          await showOkDialog(
                               context,
                               Translations.of(context)
                                   .trans('cannotmodifydefaultgroup'),
