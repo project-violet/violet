@@ -526,7 +526,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   static bool isSingleTag(String prefix) {
     switch (prefix) {
       case 'language':
-      case 'series':
       case 'class':
       case 'type':
       case 'uploader':
@@ -537,6 +536,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 'tag':
       case 'female':
       case 'male':
+      case 'series':
         return false;
     }
     return null;
