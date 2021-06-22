@@ -17,13 +17,18 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ArtistListPage extends StatelessWidget {
-  final List<String> aritsts;
+  final List<String> artists;
   final bool isLast;
 
-  ArtistListPage({this.aritsts, this.isLast});
+  const ArtistListPage({this.artists, this.isLast});
+
+  static final RegExp _chDot = RegExp('[cC]h\\.');
 
   Future<List<QueryResult>> _future(String e) async {
-    var unescape = HtmlUnescape();
+    String resolveTitle(String origin) {
+      return HtmlUnescape().convert(origin.trim()).split(_chDot)[0];
+    }
+
     var postfix = e.trim().toLowerCase().replaceAll(' ', '_');
     var queryString = HitomiManager.translate2query((isLast ? '' : 'artist:') +
         postfix +
@@ -34,206 +39,197 @@ class ArtistListPage extends StatelessWidget {
             .where((e) => e.trim() != '')
             .map((e) => '-$e')
             .join(' '));
-    final qm = QueryManager.queryPagination(queryString);
-    qm.itemsPerPage = 10;
 
-    var x = await qm.next();
-    var y = [x[0]];
+    final queryManager = QueryManager.queryPagination(queryString);
+    queryManager.itemsPerPage = 10;
 
-    var titles = [unescape.convert((x[0].title() as String).trim())];
-    if (titles[0].contains('Ch.'))
-      titles[0] = titles[0].split('Ch.')[0];
-    else if (titles[0].contains('ch.')) titles[0] = titles[0].split('ch.')[0];
+    final queryResults = await queryManager.next();
+    final filtered = <QueryResult>[];
+    final titles = <String>[];
 
-    for (int i = 1; i < x.length; i++) {
+    for (int i = 0; i < queryResults.length; i++) {
       var skip = false;
-      var ff = unescape.convert((x[i].title() as String).trim());
-      if (ff.contains('Ch.'))
-        ff = ff.split('Ch.')[0];
-      else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
+      final iTitle = resolveTitle(queryResults[i].title() as String);
+
       for (int j = 0; j < titles.length; j++) {
-        var tt = titles[j];
-        if (Distance.levenshteinDistanceComparable(
-                tt.runes.map((e) => e.toString()).toList(),
-                ff.runes.map((e) => e.toString()).toList()) <
-            3) {
+        final jTitle = titles[j];
+
+        if (Distance.levenshteinDistanceString(jTitle, iTitle) < 3) {
           skip = true;
           break;
         }
       }
+
       if (skip) continue;
-      y.add(x[i]);
-      titles.add(ff.trim());
+
+      filtered.add(queryResults[i]);
+      titles.add(iTitle);
     }
 
-    return y;
+    return filtered;
   }
 
   @override
   Widget build(BuildContext context) {
-    var windowWidth = MediaQuery.of(context).size.width;
-    final width = MediaQuery.of(context).size.width;
-    final height =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    final mediaQuery = MediaQuery.of(context);
-    return Padding(
-      padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
-          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Card(
-              elevation: 5,
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-              child: SizedBox(
-                width: width - 16,
-                height: height -
-                    16 -
-                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-                child: Container(
-                    child: ListView.builder(
-                        padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                        physics: ClampingScrollPhysics(),
-                        itemCount: aritsts.length,
-                        itemBuilder: (BuildContext ctxt, int index) {
-                          var e = aritsts[index];
-                          return FutureBuilder<List<QueryResult>>(
-                              future: _future(e),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<QueryResult>> snapshot) {
-                                var qq = snapshot.data;
-                                if (!snapshot.hasData)
-                                  return Container(
-                                    height: 195,
-                                  );
-                                return InkWell(
-                                  onTap: () async {
-                                    if (!Platform.isIOS) {
-                                      Navigator.of(context)
-                                          .push(PageRouteBuilder(
-                                        // opaque: false,
-                                        transitionDuration:
-                                            Duration(milliseconds: 500),
-                                        transitionsBuilder: (context, animation,
-                                            secondaryAnimation, child) {
-                                          var begin = Offset(0.0, 1.0);
-                                          var end = Offset.zero;
-                                          var curve = Curves.ease;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Card(
+          elevation: 5,
+          color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+          child: ListView.builder(
+            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+            physics: ClampingScrollPhysics(),
+            itemCount: artists.length,
+            itemBuilder: (context, index) {
+              final artist = artists[index];
 
-                                          var tween = Tween(
-                                                  begin: begin, end: end)
-                                              .chain(CurveTween(curve: curve));
+              String classification;
+              String name;
 
-                                          return SlideTransition(
-                                            position: animation.drive(tween),
-                                            child: child,
-                                          );
-                                        },
-                                        pageBuilder: (_, __, ___) =>
-                                            ArtistInfoPage(
-                                          isGroup: isLast
-                                              ? e.startsWith('group:')
-                                              : false,
-                                          isUploader: false,
-                                          artist:
-                                              isLast ? e.split(':').last : e,
-                                        ),
-                                      ));
-                                    } else {
-                                      Navigator.of(context)
-                                          .push(CupertinoPageRoute(
-                                        builder: (_) => ArtistInfoPage(
-                                          isGroup: false,
-                                          isUploader: false,
-                                          artist: e,
-                                        ),
-                                      ));
-                                    }
-                                  },
-                                  child: SizedBox(
-                                    height: 195,
-                                    child: Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(12, 8, 12, 0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: <Widget>[
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: <Widget>[
-                                                Text(
-                                                    ' ' +
-                                                        e +
-                                                        ' (' +
-                                                        HitomiManager.getArticleCount(
-                                                                isLast
-                                                                    ? e
-                                                                        .split(
-                                                                            ':')
-                                                                        .first
-                                                                    : 'artist',
-                                                                isLast
-                                                                    ? e
-                                                                        .split(
-                                                                            ':')
-                                                                        .last
-                                                                    : e)
-                                                            .toString() +
-                                                        ')',
-                                                    style: TextStyle(
-                                                        fontSize: 17)),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 162,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: <Widget>[
-                                                  _image(qq, 0, windowWidth),
-                                                  _image(qq, 1, windowWidth),
-                                                  _image(qq, 2, windowWidth),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        )),
-                                  ),
-                                );
-                              });
-                        })),
-              ),
-            ),
-          ]),
+              if (isLast) {
+                final tokens = artist.split(':');
+                assert(tokens.length == 2);
+
+                classification = tokens.first;
+                name = tokens.last;
+              } else {
+                classification = 'artist';
+                name = artist;
+              }
+
+              return FutureBuilder<List<QueryResult>>(
+                future: _future(artist),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    print('Error: ${snapshot.error}');
+                    print(snapshot.stackTrace);
+
+                    return Container(
+                      height: 195,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error),
+                          Text(
+                            snapshot.error.toString(),
+                            overflow: TextOverflow.fade,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (!snapshot.hasData) {
+                    return Container(
+                      height: 195,
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  final queryResults = snapshot.data;
+                  final articleCount =
+                      HitomiManager.getArticleCount(classification, name);
+
+                  return InkWell(
+                    onTap: () async {
+                      if (!Platform.isIOS) {
+                        Navigator.of(context).push(PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 500),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            var begin = const Offset(0.0, 1.0);
+                            var end = Offset.zero;
+                            var curve = Curves.ease;
+
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                          pageBuilder: (_, __, ___) => ArtistInfoPage(
+                            isGroup: isLast && classification == 'group',
+                            isUploader: false,
+                            artist: name,
+                          ),
+                        ));
+                      } else {
+                        Navigator.of(context).push(CupertinoPageRoute(
+                          builder: (_) => ArtistInfoPage(
+                            isGroup: false,
+                            isUploader: false,
+                            artist: artist,
+                          ),
+                        ));
+                      }
+                    },
+                    child: Container(
+                      height: 195,
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Text(
+                            articleCount != null
+                                ? ' $artist ($articleCount)'
+                                : ' $artist',
+                            style: const TextStyle(fontSize: 17),
+                          ),
+                          Expanded(
+                            child: Row(
+                              children: <Widget>[
+                                _buildImage(queryResults, 0),
+                                _buildImage(queryResults, 1),
+                                _buildImage(queryResults, 2),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _image(List<QueryResult> qq, int index, double windowWidth) {
+  Widget _buildImage(List<QueryResult> queryResults, int index) {
+    if (queryResults.length <= index) {
+      return const Spacer();
+    }
+
     return Expanded(
-        flex: 1,
-        child: qq.length > index
-            ? Padding(
-                padding: EdgeInsets.all(4),
-                child: Provider<ArticleListItem>.value(
-                  value: ArticleListItem.fromArticleListItem(
-                    queryResult: qq[index],
-                    showDetail: false,
-                    addBottomPadding: false,
-                    width: (windowWidth - 16 - 4.0 - 16.0) / 3,
-                    thumbnailTag: Uuid().v4(),
-                    disableFilter: true,
-                    usableTabList: qq,
-                  ),
-                  child: ArticleListItemVerySimpleWidget(),
-                ),
-              )
-            : Container());
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            assert(constraints.minWidth == constraints.maxWidth);
+            final width = (constraints.minWidth + constraints.maxWidth) / 2;
+
+            return Provider<ArticleListItem>.value(
+              value: ArticleListItem.fromArticleListItem(
+                queryResult: queryResults[index],
+                showDetail: false,
+                addBottomPadding: false,
+                width: width,
+                thumbnailTag: Uuid().v4(),
+                disableFilter: true,
+                usableTabList: queryResults,
+              ),
+              child: ArticleListItemVerySimpleWidget(),
+            );
+          },
+        ),
+      ),
+    );
   }
 }

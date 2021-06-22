@@ -130,7 +130,7 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                                   );
                                 },
                                 pageBuilder: (_, __, ___) => ArtistListPage(
-                                  aritsts: (item.value as List<String>)
+                                  artists: (item.value as List<String>)
                                       .map((e) => e.trim())
                                       .toList(),
                                   isLast: index ==
@@ -145,7 +145,7 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                               Navigator.of(context).push(
                                 CupertinoPageRoute(
                                   builder: (_) => ArtistListPage(
-                                    aritsts: (item.value as List<String>)
+                                    artists: (item.value as List<String>)
                                         .map((e) => e.trim())
                                         .toList(),
                                     isLast: index ==
