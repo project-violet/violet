@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
+import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/variables.dart';
@@ -89,7 +90,7 @@ class HitomiManager {
   }
 
   static Map<String, dynamic> tagmap;
-  static Future<List<Tuple3<String, String, int>>> queryAutoComplete(
+  static Future<List<Tuple2<DisplayedTag, int>>> queryAutoComplete(
       String prefix,
       [bool useTranslated = false]) async {
     if (tagmap == null) {
@@ -127,7 +128,7 @@ class HitomiManager {
         pp = 'character';
       else if (pp == 'classes') pp = 'class';
 
-      var results = <Tuple3<String, String, int>>[];
+      var results = <Tuple2<DisplayedTag, int>>[];
       if (!tagmap.containsKey(pp)) return results;
 
       final ch = tagmap[pp];
@@ -136,7 +137,8 @@ class HitomiManager {
           ch.forEach((key, value) {
             if (key.toLowerCase().startsWith(opp + ':') &&
                 key.toLowerCase().contains(prefix))
-              results.add(Tuple3<String, String, int>(opp, key, value));
+              results.add(Tuple2<DisplayedTag, int>(
+                  DisplayedTag(group: opp, name: key), value));
           });
         } else if (opp == 'tag') {
           var po = prefix.split(':')[1];
@@ -144,85 +146,82 @@ class HitomiManager {
             if (!key.toLowerCase().startsWith('female:') &&
                 !key.toLowerCase().startsWith('male:') &&
                 key.toLowerCase().contains(po))
-              results.add(Tuple3<String, String, int>(opp, key, value));
+              results.add(Tuple2<DisplayedTag, int>(
+                  DisplayedTag(group: opp, name: key), value));
           });
         } else {
           var po = prefix.split(':')[1];
           ch.forEach((key, value) {
             if (key.toLowerCase().contains(po))
-              results.add(Tuple3<String, String, int>(pp, key, value));
+              results.add(Tuple2<DisplayedTag, int>(
+                  DisplayedTag(group: pp, name: key), value));
           });
         }
-        results.sort((a, b) => b.item3.compareTo(a.item3));
+        results.sort((a, b) => b.item2.compareTo(a.item2));
         return results;
       } else {
         var po = prefix.split(':').last;
         var results = TagTranslate.containsTotal(po)
             .where((e) =>
-                e.item1.contains(opp != 'female' && opp != 'male'
-                    ? opp + ':'
-                    : 'tag:' + opp + ':') &&
-                ch.containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
-            .map((e) => Tuple3<String, String, int>(
-                pp,
-                e.item1.substring(e.item1.indexOf(':') + 1) +
-                    '|' +
-                    e.item2.split('|')[0],
-                ch[e.item1.substring(e.item1.indexOf(':') + 1)]))
+                // e.item1.contains(opp != 'female' && opp != 'male'
+                //     ? opp + ':'
+                //     : 'tag:' + opp + ':') &&
+                (opp != 'female' && opp != 'male'
+                    ? e.group == opp
+                    : e.group == 'tag' && e.name.startsWith(opp)) &&
+                ch.containsKey(e.name))
+            .map((e) => Tuple2<DisplayedTag, int>(e, ch[e.name]))
             .where((e) => opp == 'tag'
-                ? !(e.item2.startsWith('female:') ||
-                    e.item2.startsWith('male:'))
+                ? !(e.item1.name.startsWith('female:') ||
+                    e.item1.name.startsWith('male:'))
                 : true)
             .toList();
-        results.sort((a, b) => b.item3.compareTo(a.item3));
+        results.sort((a, b) => b.item2.compareTo(a.item2));
         return results;
       }
     } else {
       if (!useTranslated) {
-        var results = <Tuple3<String, String, int>>[];
+        var results = <Tuple2<DisplayedTag, int>>[];
         tagmap.forEach((key1, value) {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
               if (key2.contains(':')) {
                 if (key2.split(':')[1].contains(prefix))
-                  results.add(Tuple3<String, String, int>(
-                      key2.split(':')[0], key2, value2));
+                  results.add(Tuple2<DisplayedTag, int>(
+                      DisplayedTag(group: key2.split(':')[0], name: key2),
+                      value2));
               } else if (key2.contains(prefix)) {
                 if (key2.contains(':'))
-                  results.add(Tuple3<String, String, int>(
-                      key2.split(':')[0], key2, value2));
+                  results.add(Tuple2<DisplayedTag, int>(
+                      DisplayedTag(group: key2.split(':')[0], name: key2),
+                      value2));
                 else
-                  results.add(Tuple3<String, String, int>('tag', key2, value2));
+                  results.add(Tuple2<DisplayedTag, int>(
+                      DisplayedTag(tag: 'tag', group: key2), value2));
               }
             });
           } else {
             value.forEach((key2, value2) {
               if (key2.toLowerCase().contains(prefix))
-                results.add(Tuple3<String, String, int>(key1, key2, value2));
+                results.add(Tuple2<DisplayedTag, int>(
+                    DisplayedTag(tag: key1, name: key2), value2));
             });
           }
         });
-        results.sort((a, b) => b.item3.compareTo(a.item3));
+        results.sort((a, b) => b.item2.compareTo(a.item2));
         return results;
       } else {
         var results = TagTranslate.containsTotal(prefix)
-            .where((e) => tagmap[e.item1.split(':')[0]]
-                .containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
-            .map((e) => Tuple3<String, String, int>(
-                e.item1.split(':')[0],
-                e.item1.substring(e.item1.indexOf(':') + 1) +
-                    '|' +
-                    e.item2.split('|')[0],
-                tagmap[e.item1.split(':')[0]]
-                    [e.item1.substring(e.item1.indexOf(':') + 1)]))
+            .where((e) => tagmap[e.group].containsKey(e.name))
+            .map((e) => Tuple2<DisplayedTag, int>(e, tagmap[e.group][e.name]))
             .toList();
-        results.sort((a, b) => b.item3.compareTo(a.item3));
+        results.sort((a, b) => b.item2.compareTo(a.item2));
         return results;
       }
     }
   }
 
-  static Future<List<Tuple3<String, String, int>>> queryAutoCompleteFuzzy(
+  static Future<List<Tuple2<DisplayedTag, int>>> queryAutoCompleteFuzzy(
       String prefix,
       [bool useTranslated = false]) async {
     if (tagmap == null) {
@@ -260,8 +259,8 @@ class HitomiManager {
         pp = 'character';
       else if (pp == 'classes') pp = 'class';
 
-      var results = <Tuple4<String, String, int, int>>[];
-      if (!tagmap.containsKey(pp)) return <Tuple3<String, String, int>>[];
+      var results = <Tuple3<DisplayedTag, int, int>>[];
+      if (!tagmap.containsKey(pp)) return <Tuple2<DisplayedTag, int>>[];
 
       final ch = tagmap[pp];
       if (!useTranslated) {
@@ -271,9 +270,8 @@ class HitomiManager {
                 // &&
                 // key.toLowerCase().contains(prefix)
                 )
-              results.add(Tuple4<String, String, int, int>(
-                  opp,
-                  key,
+              results.add(Tuple3<DisplayedTag, int, int>(
+                  DisplayedTag(group: opp, name: key),
                   Distance.levenshteinDistance(
                       prefix.runes.toList(), key.runes.toList()),
                   value));
@@ -286,9 +284,8 @@ class HitomiManager {
                 // &&
                 // key.toLowerCase().contains(po)
                 )
-              results.add(Tuple4<String, String, int, int>(
-                  opp,
-                  key,
+              results.add(Tuple3<DisplayedTag, int, int>(
+                  DisplayedTag(group: opp, name: key),
                   Distance.levenshteinDistance(
                       po.runes.toList(), key.runes.toList()),
                   value));
@@ -298,68 +295,59 @@ class HitomiManager {
 
           ch.forEach((key, value) {
             // if (key.toLowerCase().contains(po))
-            results.add(Tuple4<String, String, int, int>(
-                pp,
-                key,
+            results.add(Tuple3<DisplayedTag, int, int>(
+                DisplayedTag(group: pp, name: key),
                 Distance.levenshteinDistance(
                     po.runes.toList(), key.runes.toList()),
                 value));
           });
         }
-        results.sort((a, b) => a.item3.compareTo(b.item3));
+        results.sort((a, b) => a.item2.compareTo(b.item2));
         return results
-            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
+            .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item3))
             .toList();
       } else {
         var po = prefix.split(':').last;
         var results = TagTranslate.containsFuzzingTotal(po)
             .where((e) =>
-                e.item1.contains(opp != 'female' && opp != 'male'
-                    ? opp + ':'
-                    : 'tag:' + opp + ':') &&
-                ch.containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
-            .map((e) => Tuple4<String, String, int, int>(
-                pp,
-                e.item1.substring(e.item1.indexOf(':') + 1) +
-                    '|' +
-                    e.item2.split('|')[0],
-                ch[e.item1.substring(e.item1.indexOf(':') + 1)],
-                e.item3))
+                (opp != 'female' && opp != 'male'
+                    ? e.item1.group == opp
+                    : e.item1.group == 'tag' && e.item1.name.startsWith(opp)) &&
+                ch.containsKey(e.item1.name))
+            .map((e) => Tuple3<DisplayedTag, int, int>(
+                e.item1, ch[e.item1.name], e.item2))
             .where((e) => opp == 'tag'
-                ? !(e.item2.startsWith('female:') ||
-                    e.item2.startsWith('male:'))
+                ? !(e.item1.name.startsWith('female:') ||
+                    e.item1.name.startsWith('male:'))
                 : true)
             .toList();
-        results.sort((a, b) => a.item4.compareTo(b.item4));
+        results.sort((a, b) => a.item3.compareTo(b.item3));
         return results
-            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item3))
+            .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item2))
             .toList();
       }
     } else {
       if (!useTranslated) {
-        var results = <Tuple4<String, String, int, int>>[];
+        var results = <Tuple3<DisplayedTag, int, int>>[];
         tagmap.forEach((key1, value) {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
               if (key2.contains(':')) {
-                results.add(Tuple4<String, String, int, int>(
-                    key2.split(':')[0],
-                    key2,
+                results.add(Tuple3<DisplayedTag, int, int>(
+                    DisplayedTag(group: key2.split(':')[0], name: key2),
                     Distance.levenshteinDistance(
                         prefix.runes.toList(), key2.runes.toList()),
                     value2));
               } else {
                 if (key2.contains(':'))
-                  results.add(Tuple4<String, String, int, int>(
-                      key2.split(':')[0],
-                      key2,
+                  results.add(Tuple3<DisplayedTag, int, int>(
+                      DisplayedTag(group: key2.split(':')[0], name: key2),
                       Distance.levenshteinDistance(
                           prefix.runes.toList(), key2.runes.toList()),
                       value2));
                 else
-                  results.add(Tuple4<String, String, int, int>(
-                      'tag',
-                      key2,
+                  results.add(Tuple3<DisplayedTag, int, int>(
+                      DisplayedTag(group: 'tag', name: key2),
                       Distance.levenshteinDistance(
                           prefix.runes.toList(), key2.runes.toList()),
                       value2));
@@ -367,35 +355,27 @@ class HitomiManager {
             });
           } else {
             value.forEach((key2, value2) {
-              results.add(Tuple4<String, String, int, int>(
-                  key1,
-                  key2,
+              results.add(Tuple3<DisplayedTag, int, int>(
+                  DisplayedTag(group: key1, name: key2),
                   Distance.levenshteinDistance(
                       prefix.runes.toList(), key2.runes.toList()),
                   value2));
             });
           }
         });
-        results.sort((a, b) => a.item3.compareTo(b.item3));
+        results.sort((a, b) => a.item2.compareTo(b.item2));
         return results
-            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item4))
+            .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item3))
             .toList();
       } else {
         var results = TagTranslate.containsFuzzingTotal(prefix)
-            .where((e) => tagmap[e.item1.split(':')[0]]
-                .containsKey(e.item1.substring(e.item1.indexOf(':') + 1)))
-            .map((e) => Tuple4<String, String, int, int>(
-                e.item1.split(':')[0],
-                e.item1.substring(e.item1.indexOf(':') + 1) +
-                    '|' +
-                    e.item2.split('|')[0],
-                tagmap[e.item1.split(':')[0]]
-                    [e.item1.substring(e.item1.indexOf(':') + 1)],
-                e.item3))
+            .where((e) => tagmap[e.item1.group].containsKey(e.item1.name))
+            .map((e) => Tuple3<DisplayedTag, int, int>(
+                e.item1, tagmap[e.item1.group][e.item1.name], e.item2))
             .toList();
-        results.sort((a, b) => a.item4.compareTo(b.item4));
+        results.sort((a, b) => a.item3.compareTo(b.item3));
         return results
-            .map((e) => Tuple3<String, String, int>(e.item1, e.item2, e.item3))
+            .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item2))
             .toList();
       }
     }
