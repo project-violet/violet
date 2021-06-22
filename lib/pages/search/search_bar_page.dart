@@ -866,12 +866,11 @@ class _SearchBarPageState extends State<SearchBarPage>
       labelPadding: EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(info.item1.name == 'tag'
-            ? info.item1.group.startsWith('female:') ||
-                    info.item1.group.startsWith('male:')
-                ? info.item1.group[0].toUpperCase()
-                : 'T'
-            : info.item1.name[0].toUpperCase()),
+        child: Text(info.item1.group == 'tag' &&
+                (info.item1.name.startsWith('female:') ||
+                    info.item1.name.startsWith('male:'))
+            ? info.item1.name[0].toUpperCase()
+            : info.item1.group[0].toUpperCase()),
       ),
       label: RichText(
           text: TextSpan(
@@ -891,10 +890,11 @@ class _SearchBarPageState extends State<SearchBarPage>
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {
           var insert = (info.item1.group == 'tag' &&
-                  (info.item1.name.startsWith('female') ||
-                      info.item1.name.startsWith('male'))
-              ? info.item1.name
-              : info.item1.getTag()).replaceAll(' ', '_');
+                      (info.item1.name.startsWith('female') ||
+                          info.item1.name.startsWith('male'))
+                  ? info.item1.name
+                  : info.item1.getTag())
+              .replaceAll(' ', '_');
 
           _searchController.text = _searchText.substring(0, _insertPos) +
               insert +
