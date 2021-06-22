@@ -49,6 +49,6 @@ class DisplayedTag {
 
   String getTranslated() {
     return translated =
-        translated ?? TagTranslate.of(group, name).split(':').last;
+        translated ?? TagTranslate.ofAny(name).split(':').last;
   }
 }
