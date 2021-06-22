@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:optimized_cached_image/optimized_cached_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -81,8 +80,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   int _inactivateSeconds = 0;
   bool isBookmarked = false;
   ViewerReport _report;
-  List<int> _100msPerPages;
-  bool _isInactivated = false;
+  List<int> _decisecondPerPages;
 
   @override
   void initState() {
@@ -131,14 +129,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     _lifecycleEventHandler = LifecycleEventHandler(
       inactiveCallBack: () async {
         _inactivateTime = DateTime.now();
-        _isInactivated = true;
         await (await User.getInstance())
             .updateUserLog(_pageInfo.id, currentPage);
       },
       resumeCallBack: () async {
         _inactivateSeconds +=
             DateTime.now().difference(_inactivateTime).inSeconds;
-        _isInactivated = false;
         setState(() {
           _mpPoints = 0;
         });
@@ -162,7 +158,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         pages: _pageInfo.uris.length,
         startsTime: DateTime.now(),
       );
-      _100msPerPages = List.filled(_pageInfo.uris.length, 0);
+      _decisecondPerPages = List.filled(_pageInfo.uris.length, 0);
 
       Timer.periodic(
         Duration(milliseconds: 100),
@@ -205,7 +201,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       _report.validSeconds =
           DateTime.now().difference(_startsTime).inSeconds - _inactivateSeconds;
       _report.lastPage = currentPage;
-      _report.msPerPages = _100msPerPages;
+      _report.msPerPages = _decisecondPerPages;
 
       VioletServer.viewClose(
           _pageInfo.id,
@@ -215,7 +211,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   Future<void> pageReadTimerCallback(timer) async {
-    _100msPerPages[currentPage < 0
+    _decisecondPerPages[currentPage < 0
         ? 0
         : currentPage >= _pageInfo.uris.length
             ? _pageInfo.uris.length - 1
@@ -1430,6 +1426,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     return completer.future;
   }
 
+  /*
   Future<Size> _calculateNetworkImageDimension(String uri) async {
     Completer<Size> completer = Completer();
     Image image = Image(
@@ -1445,6 +1442,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     );
     return completer.future;
   }
+   */
 
   List<Map<String, String>> _headerCache;
   List<String> _urlCache;

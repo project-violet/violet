@@ -264,6 +264,9 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
   int nowType = 0;
 
+  List<ScrollController> _scrollControllers =
+      Iterable.generate(4, (i) => ScrollController()).toList();
+
   Widget buildList() {
     var mm = nowType == 0 ? 3 : 2;
     var windowWidth = MediaQuery.of(context).size.width;
@@ -273,6 +276,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverGrid(
+            controller: _scrollControllers[nowType],
             showItemInterval: Duration(milliseconds: 50),
             showItemDuration: Duration(milliseconds: 150),
             visibleFraction: 0.001,
@@ -324,6 +328,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverList(
+            controller: _scrollControllers[nowType],
             itemCount: filter().length,
             itemBuilder: (context, index, animation) {
               return Align(
