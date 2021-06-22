@@ -43,7 +43,7 @@ class TagTranslate {
 
   static String of(String classification, String key) {
     if (_translateMap.containsKey(classification + ':' + key))
-      return _translateMap[classification + ':' + key];
+      return _translateMap[classification + ':' + key].split('|').first;
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));

@@ -890,7 +890,11 @@ class _SearchBarPageState extends State<SearchBarPage>
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {
-          var insert = info.item1.getTag();
+          var insert = (info.item1.group == 'tag' &&
+                  (info.item1.name.startsWith('female') ||
+                      info.item1.name.startsWith('male'))
+              ? info.item1.name
+              : info.item1.getTag()).replaceAll(' ', '_');
 
           _searchController.text = _searchText.substring(0, _insertPos) +
               insert +
