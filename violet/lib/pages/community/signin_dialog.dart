@@ -20,7 +20,7 @@ class SignInDialog extends StatelessWidget {
         var pw = descController.text.trim();
 
         if (await VioletCommunitySession.signIn(id, pw) == null) {
-          await Dialogs.okDialog(context,
+          await showOkDialog(context,
               'User is not registered, or password is different. If you continue to get this, please contact the developer.');
           return;
         }

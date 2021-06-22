@@ -450,7 +450,7 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.of(context).trans('tagrebuild')),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              if (await Dialogs.yesnoDialog(
+              if (await showYesNoDialog(
                   context,
                   Translations.of(context).trans('tagrebuildmsg'),
                   Translations.of(context).trans('tagrebuild'))) {
@@ -670,7 +670,7 @@ class _SettingsPageState extends State<SettingsPage>
                 //   ),
                 // );
               } else {
-                await Dialogs.okDialog(
+                await showOkDialog(
                     context, 'Developer tools can only be run in debug mode.');
               }
             },
@@ -716,7 +716,7 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
-              if (await Dialogs.yesnoDialog(
+              if (await showYesNoDialog(
                   context,
                   Translations.of(context).trans('dbrebuildmsg'),
                   Translations.of(context).trans('dbrebuild'))) {
@@ -1254,7 +1254,7 @@ class _SettingsPageState extends State<SettingsPage>
                 count += element.length;
               });
 
-              var qqq = await Dialogs.yesnoDialog(
+              var qqq = await showYesNoDialog(
                   context, '$count개 항목을 북마크에 추가할까요? (각 Favorite별로 그룹이 생성됩니다.)');
               if (qqq != null && qqq == true) {
                 var bookmark = await Bookmark.getInstance();
@@ -1386,14 +1386,14 @@ class _SettingsPageState extends State<SettingsPage>
                   }
                 }
 
-                await Dialogs.okDialog(context, 'Success!');
+                await showOkDialog(context, 'Success!');
               } catch (e, st) {
                 Logger.error('[Import from hiyobi] ' +
                     e.toString() +
                     '\n' +
                     st.toString());
 
-                await Dialogs.okDialog(context,
+                await showOkDialog(context,
                     'Bookmark format is not correct. Please refer to Log Record for details.');
               }
             },

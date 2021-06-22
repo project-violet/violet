@@ -694,7 +694,7 @@ class _MainPage2State extends State<MainPage2>
     bool updateContinued = false;
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
-        var bb = await Dialogs.yesnoDialog(
+        var bb = await showYesNoDialog(
             context,
             Translations.of(context).trans('newupdate') +
                 ' ' +
@@ -707,7 +707,7 @@ class _MainPage2State extends State<MainPage2>
 
       if (!await Permission.storage.isGranted) {
         if (await Permission.storage.request() == PermissionStatus.denied) {
-          await Dialogs.okDialog(context,
+          await showOkDialog(context,
               'If you do not allow file permissions, you cannot continue :(');
           return;
         }
@@ -744,7 +744,7 @@ class _MainPage2State extends State<MainPage2>
               .getBool('usevioletserver_check') !=
           null) return;
 
-      var bb = await Dialogs.yesnoDialog(
+      var bb = await showYesNoDialog(
           context, Translations.of(context).trans('violetservermsg'));
       if (bb == null || bb == false) {
         await (await SharedPreferences.getInstance())
