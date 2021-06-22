@@ -430,9 +430,8 @@ class _SearchPageState extends State<SearchPage>
       var next = await HentaiManager.search(latestQuery.item2,
           latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
 
-      latestQuery =
-          Tuple2<Tuple2<List<QueryResult>, int>, String>(
-              next, latestQuery.item2);
+      latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
+          next, latestQuery.item2);
 
       if (next.item1.length == 0) {
         queryEnd = true;
@@ -481,7 +480,6 @@ class _SearchPageState extends State<SearchPage>
   static bool isSingleTag(String prefix) {
     switch (prefix) {
       case 'language':
-      case 'series':
       case 'class':
       case 'type':
       case 'uploader':
@@ -492,6 +490,7 @@ class _SearchPageState extends State<SearchPage>
       case 'tag':
       case 'female':
       case 'male':
+      case 'series':
         return false;
     }
     return null;
