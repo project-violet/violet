@@ -51,15 +51,15 @@ class TagTranslate {
 
   static String ofAny(String key) {
     if (_translateMap.containsKey('series:' + key))
-      return _translateMap['series:' + key];
+      return _translateMap['series:' + key].split('|').first;
     if (_translateMap.containsKey('character:' + key))
-      return _translateMap['character:' + key];
+      return _translateMap['character:' + key].split('|').first;
     if (_translateMap.containsKey('tag:female:' + key))
-      return _translateMap['tag:female:' + key];
+      return _translateMap['tag:female:' + key].split('|').first;
     if (_translateMap.containsKey('tag:male:' + key))
-      return _translateMap['tag:male:' + key];
+      return _translateMap['tag:male:' + key].split('|').first;
     if (_translateMap.containsKey('tag:' + key))
-      return _translateMap['tag:' + key];
+      return _translateMap['tag:' + key].split('|').first;
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
