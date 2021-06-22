@@ -23,7 +23,6 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/other/named_color.dart';
-import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/settings/settings.dart';
@@ -227,24 +226,6 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     startTime();
-  }
-
-  Route _createRoute() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          AfterLoadingPage(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        var begin = Offset(0.0, 1.0);
-        var end = Offset.zero;
-        var curve = Curves.ease;
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
   }
 
   Database _database;
