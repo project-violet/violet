@@ -730,7 +730,7 @@ class _MainPage2State extends State<MainPage2>
       });
 
       FlutterDownloader.registerCallback(downloadCallback);
-      final taskId = await FlutterDownloader.enqueue(
+      await FlutterDownloader.enqueue(
         url: UpdateSyncManager.updateUrl,
         savedDir: '${ext.path}',
         showNotification:

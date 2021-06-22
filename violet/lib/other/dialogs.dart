@@ -28,6 +28,58 @@ Future<void> showOkDialog(BuildContext context, String message,
   );
 }
 
+Future<bool> showOkCancelDialog({
+  @required BuildContext context,
+  @required String titleText,
+  String contentText,
+  WidgetBuilder contentBuilder,
+  EdgeInsetsGeometry contentPadding,
+  String okText,
+  String cancelText,
+  VoidCallback onOkPressed,
+  VoidCallback onCancelPressed,
+  bool useRootNavigator = true,
+}) async {
+  assert((contentText != null && contentBuilder == null) ||
+      (contentText == null && contentBuilder != null));
+
+  return await showDialog(
+    context: context,
+    useRootNavigator: useRootNavigator,
+    builder: (context) => AlertDialog(
+      title: Text(titleText ?? defaultTitle),
+      content: contentText != null
+          ? Text(contentText)
+          : Builder(builder: contentBuilder),
+      contentPadding: contentPadding,
+      actions: [
+        TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          onPressed: () {
+            if (onOkPressed != null) {
+              onOkPressed();
+            } else {
+              Navigator.pop(context, true);
+            }
+          },
+          child: Text(okText ?? Translations.of(context).trans('ok')),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          onPressed: () {
+            if (onCancelPressed != null) {
+              onCancelPressed();
+            } else {
+              Navigator.pop(context, false);
+            }
+          },
+          child: Text(cancelText ?? Translations.of(context).trans('cancel')),
+        ),
+      ],
+    ),
+  );
+}
+
 Future<bool> showYesNoDialog(BuildContext context, String message,
     [String title]) async {
   return await showDialog<bool>(

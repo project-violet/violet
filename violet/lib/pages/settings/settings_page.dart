@@ -1055,20 +1055,16 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
-              Widget yesButton = FlatButton(
-                child: Text(Translations.of(context).trans('ok'),
-                    style: TextStyle(color: Settings.majorColor)),
-                focusColor: Settings.majorColor,
-                splashColor: Settings.majorColor.withOpacity(0.3),
+              Widget okButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('ok')),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               );
-              Widget noButton = FlatButton(
-                child: Text(Translations.of(context).trans('cancel'),
-                    style: TextStyle(color: Settings.majorColor)),
-                focusColor: Settings.majorColor,
-                splashColor: Settings.majorColor.withOpacity(0.3),
+              Widget cancelButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('cancel')),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -1086,7 +1082,7 @@ class _SettingsPageState extends State<SettingsPage>
                     autofocus: true,
                     maxLines: 3,
                   ),
-                  actions: [yesButton, noButton],
+                  actions: [okButton, cancelButton],
                 ),
               );
               if (dialog != null && dialog == true) {
@@ -1193,7 +1189,7 @@ class _SettingsPageState extends State<SettingsPage>
               var dbfile = File('${db.path}/user.db');
               var ext = await getExternalStorageDirectory();
               var extpath = '${ext.path}/bookmark.db';
-              var extfile = await dbfile.copy(extpath);
+              await dbfile.copy(extpath);
 
               flutterToast.showToast(
                 child: ToastWrapper(
@@ -1303,20 +1299,16 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               TextEditingController textController = TextEditingController();
 
-              Widget yesButton = FlatButton(
-                child: Text('Import',
-                    style: TextStyle(color: Settings.majorColor)),
-                focusColor: Settings.majorColor,
-                splashColor: Settings.majorColor.withOpacity(0.3),
+              Widget importButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text('Import'),
                 onPressed: () async {
                   Navigator.pop(context, textController.text);
                 },
               );
-              Widget noButton = FlatButton(
-                child: Text('Cancel',
-                    style: TextStyle(color: Settings.majorColor)),
-                focusColor: Settings.majorColor,
-                splashColor: Settings.majorColor.withOpacity(0.3),
+              Widget cancelButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text('Cancel'),
                 onPressed: () {
                   Navigator.pop(context, null);
                 },
@@ -1329,8 +1321,8 @@ class _SettingsPageState extends State<SettingsPage>
                     title: Text('Import From Hiyobi'),
                     contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
                     actions: [
-                      yesButton,
-                      noButton,
+                      importButton,
+                      cancelButton,
                     ],
                     content: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
@@ -1483,20 +1475,16 @@ class _SettingsPageState extends State<SettingsPage>
                     text: cookie != null
                         ? parseCookies(cookie)['ipb_pass_hash']
                         : '');
-                Widget yesButton = FlatButton(
-                  child: Text(Translations.of(context).trans('ok'),
-                      style: TextStyle(color: Settings.majorColor)),
-                  focusColor: Settings.majorColor,
-                  splashColor: Settings.majorColor.withOpacity(0.3),
+                Widget okButton = TextButton(
+                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  child: Text(Translations.of(context).trans('ok')),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
                 );
-                Widget noButton = FlatButton(
-                  child: Text(Translations.of(context).trans('cancel'),
-                      style: TextStyle(color: Settings.majorColor)),
-                  focusColor: Settings.majorColor,
-                  splashColor: Settings.majorColor.withOpacity(0.3),
+                Widget cancelButton = TextButton(
+                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  child: Text(Translations.of(context).trans('cancel')),
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
@@ -1504,7 +1492,7 @@ class _SettingsPageState extends State<SettingsPage>
                 var dialog = await showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
-                    actions: [yesButton, noButton],
+                    actions: [okButton, cancelButton],
                     title: Text('E-Hentai Login'),
                     contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
                     content: Column(

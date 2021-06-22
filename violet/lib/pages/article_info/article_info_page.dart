@@ -593,11 +593,9 @@ class _InfoAreaWidget extends StatelessWidget {
         }
 
         TextEditingController text = TextEditingController();
-        Widget yesButton = FlatButton(
-          child: Text(Translations.of(context).trans('ok'),
-              style: TextStyle(color: Settings.majorColor)),
-          focusColor: Settings.majorColor,
-          splashColor: Settings.majorColor.withOpacity(0.3),
+        Widget okButton = TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          child: Text(Translations.of(context).trans('ok')),
           onPressed: () async {
             if ((await EHSession.postComment(
                         'https://exhentai.org/g/${queryResult.id()}/${queryResult.ehash()}',
@@ -611,11 +609,9 @@ class _InfoAreaWidget extends StatelessWidget {
             Navigator.pop(context, true);
           },
         );
-        Widget noButton = FlatButton(
-          child: Text(Translations.of(context).trans('cancel'),
-              style: TextStyle(color: Settings.majorColor)),
-          focusColor: Settings.majorColor,
-          splashColor: Settings.majorColor.withOpacity(0.3),
+        Widget cancelButton = TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          child: Text(Translations.of(context).trans('cancel')),
           onPressed: () {
             Navigator.pop(context, false);
           },
@@ -630,7 +626,7 @@ class _InfoAreaWidget extends StatelessWidget {
               controller: text,
               autofocus: true,
             ),
-            actions: [yesButton, noButton],
+            actions: [okButton, cancelButton],
           ),
         );
       },
@@ -672,7 +668,6 @@ class _InfoAreaWidget extends StatelessWidget {
   }
 
   void _showArticleInfo(int id) async {
-    final mediaQuery = MediaQuery.of(_context);
     final height = MediaQuery.of(_context).size.height;
 
     final search = await HentaiManager.idSearch(id.toString());
