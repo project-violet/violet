@@ -184,7 +184,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         .toList();
     if (result.length == 0) _nothing = true;
     setState(() {
-      _searchLists = result;
+      _searchLists = result.map((e) =>
+          Tuple3<String, String, int>(e.item1.group, e.item1.name, e.item2));
     });
   }
 

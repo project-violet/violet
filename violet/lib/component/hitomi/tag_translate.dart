@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
+import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/tag_translated_regacy.dart';
 
 class TagTranslate {
@@ -65,75 +66,75 @@ class TagTranslate {
   }
 
   // [<Origin, Translated>]
-  static List<Tuple2<String, String>> contains(String part) {
+  static List<DisplayedTag> contains(String part) {
     part = part.replaceAll(' ', '');
     return _translateMap.entries
         .where((element) => element.value.replaceAll(' ', '').contains(part))
-        .map((e) => Tuple2<String, String>(e.key, e.value))
+        .map((e) => DisplayedTag(tag: e.key, translated: e.value))
         .toList();
   }
 
   // [<Origin, Translated>]
-  static List<Tuple2<String, String>> containsAndro(String part) {
+  static List<DisplayedTag> containsAndro(String part) {
     part = disassembly(part.replaceAll(' ', ''));
     return _reverseAndroMap.entries
         .where((element) => element.key.replaceAll(' ', '').contains(part))
-        .map((e) => Tuple2<String, String>(e.value, _translateMap[e.value]))
+        .map((e) =>
+            DisplayedTag(tag: e.value, translated: _translateMap[e.value]))
         .toList();
   }
 
   // [<Origin, Translated>]
-  static List<Tuple2<String, String>> containsTotal(String part) {
+  static List<DisplayedTag> containsTotal(String part) {
     var result = contains(part) + containsAndro(part);
     var overlap = Set<String>();
-    var rresult = <Tuple2<String, String>>[];
+    var rresult = <DisplayedTag>[];
     result.forEach((element) {
-      if (overlap.contains(element.item1)) return;
-      overlap.add(element.item1);
+      if (overlap.contains(element.getTag())) return;
+      overlap.add(element.getTag());
       rresult.add(element);
     });
     return rresult;
   }
 
   // [<Origin, Translated>]
-  static List<Tuple3<String, String, int>> containsFuzzing(String part) {
+  static List<Tuple2<DisplayedTag, int>> containsFuzzing(String part) {
     part = part.replaceAll(' ', '');
     var result = _translateMap.entries
-        .map((e) => Tuple3<String, String, int>(
-            e.key,
-            e.value.split('|')[0],
+        .map((e) => Tuple2<DisplayedTag, int>(
+            DisplayedTag(tag: e.key, translated: e.value.split('|')[0]),
             Distance.levenshteinDistance(
                 e.value.replaceAll(' ', '').split('|')[0].runes.toList(),
                 part.runes.toList())))
         .toList();
-    result.sort((x, y) => x.item3.compareTo(y.item3));
+    result.sort((x, y) => x.item2.compareTo(y.item2));
     return result;
   }
 
   // [<Origin, Translated>]
-  static List<Tuple3<String, String, int>> containsFuzzingAndro(String part) {
+  static List<Tuple2<DisplayedTag, int>> containsFuzzingAndro(String part) {
     part = disassembly(part.replaceAll(' ', ''));
     var result = _reverseAndroMap.entries
-        .map((e) => Tuple3<String, String, int>(
-            e.value,
-            _translateMap[e.value].split('|')[0],
+        .map((e) => Tuple2<DisplayedTag, int>(
+            DisplayedTag(
+                tag: e.value, translated: _translateMap[e.value].split('|')[0]),
             Distance.levenshteinDistance(
                 e.key.replaceAll(' ', '').split('|')[0].runes.toList(),
                 part.runes.toList())))
         .toList();
-    result.sort((x, y) => x.item3.compareTo(y.item3));
+    result.sort((x, y) => x.item2.compareTo(y.item2));
     return result;
   }
 
   // [<Origin, Translated>]
-  static List<Tuple3<String, String, int>> containsFuzzingTotal(String part) {
+  static List<Tuple2<DisplayedTag, int>> containsFuzzingTotal(String part) {
     var result = containsFuzzing(part) + containsFuzzingAndro(part);
-    result.sort((x, y) => x.item3.compareTo(y.item3));
+    result.sort((x, y) => x.item2.compareTo(y.item2));
     var overlap = Set<String>();
-    var rresult = <Tuple3<String, String, int>>[];
+    var rresult = <Tuple2<DisplayedTag, int>>[];
     result.forEach((element) {
-      if (overlap.contains(element.item1)) return;
-      overlap.add(element.item1);
+      if (overlap.contains(element.item1.getTag())) return;
+      overlap.add(element.item1.getTag());
       rresult.add(element);
     });
     return rresult;

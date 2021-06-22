@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
+import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
@@ -40,10 +41,8 @@ class _SearchBarPageState extends State<SearchBarPage>
   static const _kCurve = Curves.ease;
 
   AnimationController controller;
-  List<Tuple3<String, String, int>> _searchLists =
-      <Tuple3<String, String, int>>[];
-  List<Tuple3<String, String, int>> _relatedLists =
-      <Tuple3<String, String, int>>[];
+  List<Tuple2<DisplayedTag, int>> _searchLists = <Tuple2<DisplayedTag, int>>[];
+  List<Tuple2<DisplayedTag, int>> _relatedLists = <Tuple2<DisplayedTag, int>>[];
 
   TextEditingController _searchController;
   int _insertPos, _insertLength;
@@ -80,19 +79,32 @@ class _SearchBarPageState extends State<SearchBarPage>
     controller.forward();
 
     if (_searchLists.length == 0 && !_nothing) {
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'female', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'male', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'tag', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'lang', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'series', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'artist', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'group', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'uploader', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'character', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'type', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'class', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'recent', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'random', 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'female'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'male'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'tag'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'lang'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'series'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'artist'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'group'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'uploader'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'character'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'type'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'class'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'recent'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'random'), 0));
     }
 
     return Container(
@@ -659,20 +671,21 @@ class _SearchBarPageState extends State<SearchBarPage>
       _relatedLists = HitomiIndexs.getRelatedTag(token.startsWith('tag:')
               ? token.split(':').last.replaceAll('_', ' ')
               : token.replaceAll('_', ' '))
-          .map((e) => Tuple3<String, String, int>(
-              'tag', e.item1, (e.item2 * 100).toInt()))
+          .map((e) => Tuple2<DisplayedTag, int>(
+              DisplayedTag(group: 'tag', name: e.item1),
+              (e.item2 * 100).toInt()))
           .toList();
     } else if (token.startsWith('series:')) {
       _relatedLists = HitomiIndexs.getRelatedCharacters(
               token.split(':').last.replaceAll('_', ' '))
-          .map((e) => Tuple3<String, String, int>(
-              'character', e.item1, e.item2.toInt()))
+          .map((e) => Tuple2<DisplayedTag, int>(
+              DisplayedTag(group: 'character', name: e.item1), e.item2.toInt()))
           .toList();
     } else if (token.startsWith('character:')) {
       _relatedLists = HitomiIndexs.getRelatedSeries(
               token.split(':').last.replaceAll('_', ' '))
-          .map((e) =>
-              Tuple3<String, String, int>('series', e.item1, e.item2.toInt()))
+          .map((e) => Tuple2<DisplayedTag, int>(
+              DisplayedTag(group: 'series', name: e.item1), e.item2.toInt()))
           .toList();
     } else {
       _relatedLists.clear();
@@ -751,57 +764,31 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   // Create tag-chip
   // group, name, counts
-  Widget chip(Tuple3<String, String, int> info, [bool related = false]) {
-    if (info.item2.startsWith('female:'))
-      info = Tuple3<String, String, int>(
-          'female',
-          (_useTranslated
-                  ? info.item2.split('|').first.split(':').last + '|'
-                  : '') +
-              info.item2.split(':').last,
-          info.item3);
-    else if (info.item2.startsWith('male:'))
-      info = Tuple3<String, String, int>(
-          'male',
-          (_useTranslated
-                  ? info.item2.split('|').first.split(':').last + '|'
-                  : '') +
-              info.item2.split(':').last,
-          info.item3);
-
-    var tagDisplayed = info.item2;
+  Widget chip(Tuple2<DisplayedTag, int> info, [bool related = false]) {
+    var tagDisplayed = info.item1.name.split(':').last;
     var count = '';
     Color color = Colors.grey;
 
-    if ((_tagTranslation && (!_useTranslated || related)) ||
-        (_useTranslated && related))
-      tagDisplayed =
-          TagTranslate.ofAny(info.item2).split(':').last.split('|').first;
-    else if (_useTranslated)
-      tagDisplayed = info.item2.split('|').last.split(':').last;
+    if (_tagTranslation || _useTranslated)
+      tagDisplayed = info.item1.getTranslated();
 
-    if (info.item3 > 0 && _showCount)
-      count = ' (${info.item3.toString() + (related && [
-            'female',
-            'male',
-            'tag'
-          ].contains(info.item1) ? '%' : '')})';
+    if (info.item2 > 0 && _showCount)
+      count =
+          ' (${info.item2.toString() + (related && info.item1.group == 'tag' ? '%' : '')})';
 
-    if (info.item1 == 'female' ||
-        (info.item1 == 'tag' && info.item2.startsWith('female:')))
+    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:'))
       color = Colors.pink;
-    else if (info.item1 == 'male' ||
-        (info.item1 == 'tag' && info.item2.startsWith('male:')))
+    else if (info.item1.group == 'tag' && info.item1.name.startsWith('male:'))
       color = Colors.blue;
-    else if (info.item1 == 'prefix')
+    else if (info.item1.group == 'prefix')
       color = Colors.orange;
-    else if (info.item1 == 'language')
+    else if (info.item1.group == 'language')
       color = Colors.teal;
-    else if (info.item1 == 'series')
+    else if (info.item1.group == 'series')
       color = Colors.cyan;
-    else if (info.item1 == 'artist' || info.item1 == 'group')
+    else if (info.item1.group == 'artist' || info.item1.group == 'group')
       color = Colors.green.withOpacity(0.6);
-    else if (info.item1 == 'type') color = Colors.orange;
+    else if (info.item1.group == 'type') color = Colors.orange;
 
     var ts = <TextSpan>[];
     var accColor = Colors.pink;
@@ -879,7 +866,12 @@ class _SearchBarPageState extends State<SearchBarPage>
       labelPadding: EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(info.item1[0].toUpperCase()),
+        child: Text(info.item1.name == 'tag'
+            ? info.item1.group.startsWith('female:') ||
+                    info.item1.group.startsWith('male:')
+                ? info.item1.group[0].toUpperCase()
+                : 'T'
+            : info.item1.name[0].toUpperCase()),
       ),
       label: RichText(
           text: TextSpan(
@@ -897,9 +889,8 @@ class _SearchBarPageState extends State<SearchBarPage>
       padding: EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
-        if (info.item1 != 'prefix') {
-          var insert = info.item2.split('|')[0].replaceAll(' ', '_');
-          insert = info.item1 + ':' + insert;
+        if (info.item1.group != 'prefix') {
+          var insert = info.item1.getTag();
 
           _searchController.text = _searchText.substring(0, _insertPos) +
               insert +
@@ -910,34 +901,27 @@ class _SearchBarPageState extends State<SearchBarPage>
             extentOffset: _insertPos + insert.length,
           );
 
-          if (info.item1 == 'female' ||
-              info.item1 == 'male' ||
-              info.item1 == 'tag') {
-            _relatedLists = HitomiIndexs.getRelatedTag(
-                    (info.item1 == 'female' || info.item1 == 'male'
-                            ? info.item1 + ':'
-                            : '') +
-                        info.item2.split('|')[0].replaceAll('_', ' '))
-                .map((e) => Tuple3<String, String, int>(
-                    ['female', 'male'].contains(e.item1.split(':').first)
-                        ? e.item1.split(':').first
-                        : 'tag',
-                    e.item1.split(':').last,
-                    (e.item2 * 100).toInt()))
-                .toList();
+          if (info.item1.group == 'tag') {
+            _relatedLists =
+                HitomiIndexs.getRelatedTag(info.item1.name.replaceAll('_', ' '))
+                    .map((e) => Tuple2<DisplayedTag, int>(
+                        DisplayedTag(tag: e.item1), (e.item2 * 100).toInt()))
+                    .toList();
             setState(() {});
-          } else if (info.item1 == 'series') {
+          } else if (info.item1.group == 'series') {
             _relatedLists = HitomiIndexs.getRelatedCharacters(
-                    info.item2.split('|')[0].replaceAll('_', ' '))
-                .map((e) => Tuple3<String, String, int>(
-                    'character', e.item1, e.item2.toInt()))
+                    info.item1.name.replaceAll('_', ' '))
+                .map((e) => Tuple2<DisplayedTag, int>(
+                    DisplayedTag(group: 'character', name: e.item1),
+                    e.item2.toInt()))
                 .toList();
             setState(() {});
-          } else if (info.item1 == 'character') {
+          } else if (info.item1.group == 'character') {
             _relatedLists = HitomiIndexs.getRelatedSeries(
-                    info.item2.split('|')[0].replaceAll('_', ' '))
-                .map((e) => Tuple3<String, String, int>(
-                    'series', e.item1, e.item2.toInt()))
+                    info.item1.name.replaceAll('_', ' '))
+                .map((e) => Tuple2<DisplayedTag, int>(
+                    DisplayedTag(group: 'series', name: e.item1),
+                    e.item2.toInt()))
                 .toList();
             setState(() {});
           }
@@ -946,20 +930,20 @@ class _SearchBarPageState extends State<SearchBarPage>
           if (offset != -1) {
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
-                info.item2.split('|')[0] +
-                (info.item2 == 'random' ? ' ' : ':') +
+                info.item1.name +
+                (info.item1.name == 'random' ? ' ' : ':') +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item2.split('|')[0].length + 1,
-              extentOffset: offset + info.item2.split('|')[0].length + 1,
+              baseOffset: offset + info.item1.name.length + 1,
+              extentOffset: offset + info.item1.name.length + 1,
             );
           } else {
             _searchController.text =
-                info.item2.split('|')[0] + (info.item2 == 'random' ? '' : ':');
+                info.item1.name + (info.item1.name == 'random' ? '' : ':');
             _searchController.selection = TextSelection(
-              baseOffset: info.item2.split('|')[0].length + 1,
-              extentOffset: info.item2.split('|')[0].length + 1,
+              baseOffset: info.item1.name.length + 1,
+              extentOffset: info.item1.name.length + 1,
             );
           }
           _onChip = true;
