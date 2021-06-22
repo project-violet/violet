@@ -76,36 +76,53 @@ class _SearchPageState extends State<SearchPage>
     WidgetsBinding.instance
         .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
     Future.delayed(Duration(milliseconds: 500), () async {
-      // final query = HitomiManager.translate2query(Settings.includeTags +
-      //     ' ' +
-      //     Settings.excludeTags
-      //         .where((e) => e.trim() != '')
-      //         .map((e) => '-$e')
-      //         .join(' '));
-      // final result = QueryManager.queryPagination(query);
-      final result = await HentaiManager.search('');
+      try {
+        final result =
+            await HentaiManager.search('').timeout(const Duration(seconds: 5));
 
-      latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
-      // queryResult = List<QueryResult>();
-      // await loadNextQuery();
-      setState(() {
-        queryResult = latestQuery.item1.item1;
-      });
+        latestQuery =
+            Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
+        setState(() {
+          queryResult = latestQuery.item1.item1;
+        });
+      } catch (e) {
+        print('Initial search failed: $e');
+        FlutterToast(context).showToast(
+            child: Text('Failed to search all: $e'));
+      }
+    }).catchError((e) {
+      // It happened!
+      print('Initial search interrupted: $e');
+      FlutterToast(context)
+          .showToast(child: Text('Initial search interrupted: $e'));
     });
 
     _scroll.addListener(() {
-      if (scrollOnce || queryEnd) return;
-      if (_scroll.offset > _scroll.position.maxScrollExtent / 4 * 3) {
-        scrollOnce = true;
-        Future.delayed(Duration(milliseconds: 100)).then((value) async {
-          await loadNextQuery();
-          scrollOnce = false;
+      if (scrollInProgress || queryEnd) return;
+      if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
+        scrollInProgress = true;
+        Future.delayed(Duration(milliseconds: 100), () async {
+          try {
+            await loadNextQuery();
+          } catch (e) {
+            print('loadNextQuery failed: $e');
+            FlutterToast(context)
+                .showToast(child: Text('Failed to load next: $e'));
+          } finally {
+            scrollInProgress = false;
+          }
+        }).catchError((e) {
+          // It happened!
+          print('Scrolling interrupted: $e');
+          FlutterToast(context)
+              .showToast(child: Text('Scrolling interrupted: $e'));
+          scrollInProgress = false;
         });
       }
     });
   }
 
-  bool scrollOnce = false;
+  bool scrollInProgress = false;
 
   Tuple2<Tuple2<List<QueryResult>, int>, String> latestQuery;
 
@@ -117,30 +134,27 @@ class _SearchPageState extends State<SearchPage>
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    return Container(
-      padding: EdgeInsets.only(top: statusBarHeight),
-      child: GestureDetector(
-        child: CustomScrollView(
-          controller: _scroll,
-          physics: const BouncingScrollPhysics(),
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              // pinned: true,
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
-                searchBar: Stack(
-                  children: <Widget>[
-                    _searchBar(),
-                    _align(),
-                  ],
-                ),
+    return SafeArea(
+      bottom: false,
+      child: CustomScrollView(
+        controller: _scroll,
+        physics: const BouncingScrollPhysics(),
+        slivers: <Widget>[
+          SliverPersistentHeader(
+            floating: true,
+            delegate: AnimatedOpacitySliver(
+              minExtent: 64 + 12.0,
+              maxExtent: 64.0 + 12,
+              searchBar: Stack(
+                children: <Widget>[
+                  _searchBar(),
+                  _align(),
+                ],
               ),
             ),
-            makeResult(),
-          ],
-        ),
+          ),
+          makeResult(),
+        ],
       ),
     );
   }
@@ -428,7 +442,8 @@ class _SearchPageState extends State<SearchPage>
       }
 
       var next = await HentaiManager.search(latestQuery.item2,
-          latestQuery.item1 == null ? 0 : latestQuery.item1.item2);
+          latestQuery.item1 == null ? 0 : latestQuery.item1.item2).timeout(
+          const Duration(seconds: 5));
 
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
           next, latestQuery.item2);
@@ -448,6 +463,7 @@ class _SearchPageState extends State<SearchPage>
       rethrow;
     } finally {
       _querySem.release();
+      print('* loadNextQuery sem released');
     }
   }
 
