@@ -77,7 +77,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         });
 
         if (await DataBaseManager.create(widget.dbPath).test() == false) {
-          await Dialogs.okDialog(
+          await showOkDialog(
               context, Translations.instance.trans('dbdcheckerr'));
           await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
           return;

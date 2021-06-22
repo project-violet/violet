@@ -6,62 +6,51 @@ import 'package:flutter/material.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
-class Dialogs {
-  static Future okDialog(BuildContext context, String message,
-      [String title]) async {
-    title ??= 'Project Violet';
-    Widget okButton = TextButton(
-      style: TextButton.styleFrom(primary: Settings.majorColor),
-      onPressed: () {
-        Navigator.pop(context, "OK");
-      },
-      child: Text(Translations.of(context).trans('ok')),
-    );
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
+final defaultTitle = 'Project Violet';
+
+Future<void> showOkDialog(BuildContext context, String message,
+    [String title]) async {
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title ?? defaultTitle),
       content: SelectableText(message),
       actions: [
-        okButton,
+        TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(Translations.of(context).trans('ok')),
+        ),
       ],
-    );
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+    ),
+  );
+}
 
-  static Future<bool> yesnoDialog(BuildContext context, String message,
-      [String title]) async {
-    title ??= 'Project Violet';
-    Widget yesButton = TextButton(
-      style: TextButton.styleFrom(primary: Settings.majorColor),
-      onPressed: () {
-        Navigator.pop(context, true);
-      },
-      child: Text(Translations.of(context).trans('yes')),
-    );
-    Widget noButton = TextButton(
-      style: TextButton.styleFrom(primary: Settings.majorColor),
-      onPressed: () {
-        Navigator.pop(context, false);
-      },
-      child: Text(Translations.of(context).trans('no')),
-    );
-    AlertDialog alert = AlertDialog(
-      title: Text(title),
+Future<bool> showYesNoDialog(BuildContext context, String message,
+    [String title]) async {
+  return await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title ?? defaultTitle),
       content: Text(message),
       actions: [
-        yesButton,
-        noButton,
+        TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+          child: Text(Translations.of(context).trans('yes')),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+          child: Text(Translations.of(context).trans('no')),
+        ),
       ],
-    );
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    ) as bool;
-  }
+    ),
+  );
 }

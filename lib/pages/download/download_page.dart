@@ -163,7 +163,7 @@ class _DownloadPageState extends State<DownloadPage>
                             .setBool('checkauthalready', true);
                         if (await Permission.storage.request() ==
                             PermissionStatus.denied) {
-                          await Dialogs.okDialog(context,
+                          await showOkDialog(context,
                               "You cannot use downloader, if you not allow external storage permission.");
                           return;
                         }

@@ -166,7 +166,7 @@ class _CommunityPageState extends State<CommunityPage>
                       ),
                     ),
                     onTap: () async {
-                      await Dialogs.okDialog(
+                      await showOkDialog(
                           context,
                           '$_userAppId\n\nThis user app id has a unique value on a per app session. If you have any problems using the app, please contact us with above user app id.',
                           'Your User App Id');
@@ -218,7 +218,7 @@ class _CommunityPageState extends State<CommunityPage>
                               return;
                             }
 
-                            var ync = await Dialogs.yesnoDialog(
+                            var ync = await showYesNoDialog(
                                 context,
                                 'You need to log in to use the community feature. ' +
                                     'If you have an existing id, press "YES" to log in. ' +
@@ -244,7 +244,7 @@ class _CommunityPageState extends State<CommunityPage>
                               if (await VioletCommunitySession.checkUserAppId(
                                       _userAppId) !=
                                   'success') {
-                                await Dialogs.okDialog(
+                                await showOkDialog(
                                     context,
                                     'You cannot continue, there is an account registered with your UserAppId.' +
                                         ' If you have already registered as a member, please sign in with your existing id.' +
@@ -265,12 +265,12 @@ class _CommunityPageState extends State<CommunityPage>
                               if (await VioletCommunitySession.signUp(
                                       r[0], r[1], _userAppId, r[2]) ==
                                   'success') {
-                                await Dialogs.okDialog(
+                                await showOkDialog(
                                     context, 'Sign up is complete!');
                                 id = r[0];
                                 pw = r[1];
                               } else {
-                                await Dialogs.okDialog(
+                                await showOkDialog(
                                     context, 'Registration has been declined!');
                                 return;
                               }

@@ -586,7 +586,7 @@ class _PatchNotePageState extends State<PatchNotePage> {
                             //                 size: 24,
                             //               ),
                             //               onPressed: () async {
-                            //                 await Dialogs.okDialog(
+                            //                 await showOkDialog(
                             //                     context, ii.detail, 'Detail');
                             //               },
                             //             ),

@@ -25,19 +25,19 @@ class SignUpDialog extends StatelessWidget {
         var nn = nnController.text.trim();
 
         if (pw != pwa || pw.length < 8) {
-          await Dialogs.okDialog(context,
+          await showOkDialog(context,
               'Please check your password. Pw and Pw Again must be the same, and must be at least 8 characters long.');
           return;
         }
 
         if (await VioletCommunitySession.checkId(id) != 'success') {
-          await Dialogs.okDialog(
+          await showOkDialog(
               context, 'Id already exists. Please use a different ID.');
           return;
         }
 
         if (await VioletCommunitySession.checkNickName(nn) != 'success') {
-          await Dialogs.okDialog(context,
+          await showOkDialog(context,
               'NickName already exists. Please use a different NickName.');
           return;
         }
