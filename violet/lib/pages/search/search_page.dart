@@ -59,6 +59,21 @@ class _SearchPageState extends State<SearchPage>
 
   DateTime datetime = DateTime.now();
 
+  void _showErrorToast(String message) {
+    FlutterToast(context).showToast(
+      toastDuration: const Duration(seconds: 10),
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(),
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        ),
+        child: Text(message),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,14 +102,12 @@ class _SearchPageState extends State<SearchPage>
         });
       } catch (e) {
         print('Initial search failed: $e');
-        FlutterToast(context).showToast(
-            child: Text('Failed to search all: $e'));
+        _showErrorToast('Failed to search all: $e');
       }
     }).catchError((e) {
       // It happened!
       print('Initial search interrupted: $e');
-      FlutterToast(context)
-          .showToast(child: Text('Initial search interrupted: $e'));
+      _showErrorToast('Initial search interrupted: $e');
     });
 
     _scroll.addListener(() {
@@ -106,16 +119,13 @@ class _SearchPageState extends State<SearchPage>
             await loadNextQuery();
           } catch (e) {
             print('loadNextQuery failed: $e');
-            FlutterToast(context)
-                .showToast(child: Text('Failed to load next: $e'));
           } finally {
             scrollInProgress = false;
           }
         }).catchError((e) {
           // It happened!
           print('Scrolling interrupted: $e');
-          FlutterToast(context)
-              .showToast(child: Text('Scrolling interrupted: $e'));
+          _showErrorToast('Scrolling interrupted: $e');
           scrollInProgress = false;
         });
       }
@@ -424,9 +434,7 @@ class _SearchPageState extends State<SearchPage>
       onTimeout: () {
         print('* loadNextQuery sem acquire timeout');
 
-        FlutterToast(context).showToast(
-          child: Text('Semaphore acquisition failed'),
-        );
+        _showErrorToast('Semaphore acquisition failed');
 
         throw TimeoutException('Failed to acquire the query semaphore');
       },
@@ -459,6 +467,7 @@ class _SearchPageState extends State<SearchPage>
       print('* loadNextQuery failed');
       print('Exception: $e');
       print('Stack trace: $stackTrace');
+      _showErrorToast('Failed to load next query: $e');
       rethrow;
     } finally {
       _querySem.release();
