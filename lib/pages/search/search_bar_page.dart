@@ -909,7 +909,8 @@ class _SearchBarPageState extends State<SearchBarPage>
             _relatedLists =
                 HitomiIndexs.getRelatedTag(info.item1.name.replaceAll('_', ' '))
                     .map((e) => Tuple2<DisplayedTag, int>(
-                        DisplayedTag(tag: e.item1), (e.item2 * 100).toInt()))
+                        DisplayedTag(group: 'tag', name: e.item1),
+                        (e.item2 * 100).toInt()))
                     .toList();
             setState(() {});
           } else if (info.item1.group == 'series') {
