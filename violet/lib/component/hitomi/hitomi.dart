@@ -197,14 +197,14 @@ class HitomiManager {
                       value2));
                 else
                   results.add(Tuple2<DisplayedTag, int>(
-                      DisplayedTag(tag: 'tag', group: key2), value2));
+                      DisplayedTag(group: 'tag', name: key2), value2));
               }
             });
           } else {
             value.forEach((key2, value2) {
               if (key2.toLowerCase().contains(prefix))
                 results.add(Tuple2<DisplayedTag, int>(
-                    DisplayedTag(tag: key1, name: key2), value2));
+                    DisplayedTag(group: key1, name: key2), value2));
             });
           }
         });
