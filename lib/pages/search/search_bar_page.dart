@@ -10,7 +10,6 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
-import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/flare_artboard.dart';
@@ -48,7 +47,6 @@ class _SearchBarPageState extends State<SearchBarPage>
   int _insertPos, _insertLength;
   String _searchText;
   bool _nothing = false;
-  bool _onChip = false;
   bool _tagTranslation = false;
   bool _useTranslated = false;
   bool _showCount = true;
@@ -634,7 +632,6 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   Future<void> searchProcess(String target, TextSelection selection) async {
     _nothing = false;
-    _onChip = false;
     if (target.trim() == '') {
       latestToken = '';
       setState(() {
@@ -951,7 +948,6 @@ class _SearchBarPageState extends State<SearchBarPage>
               extentOffset: info.item1.name.length + 1,
             );
           }
-          _onChip = true;
           await searchProcess(
               _searchController.text, _searchController.selection);
         }

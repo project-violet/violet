@@ -14,10 +14,9 @@ class SignUpDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget yesButton = FlatButton(
-      child: Text('Sign Up', style: TextStyle(color: Settings.majorColor)),
-      focusColor: Settings.majorColor,
-      splashColor: Settings.majorColor.withOpacity(0.3),
+    Widget yesButton = TextButton(
+      style: TextButton.styleFrom(primary: Settings.majorColor),
+      child: const Text('Sign Up'),
       onPressed: () async {
         var id = idController.text.trim();
         var pw = pwController.text.trim();
@@ -46,10 +45,9 @@ class SignUpDialog extends StatelessWidget {
             context, [idController.text, pwController.text, nnController.text]);
       },
     );
-    Widget noButton = FlatButton(
-      child: Text('Cancel', style: TextStyle(color: Settings.majorColor)),
-      focusColor: Settings.majorColor,
-      splashColor: Settings.majorColor.withOpacity(0.3),
+    Widget noButton = TextButton(
+      style: TextButton.styleFrom(primary: Settings.majorColor),
+      child: const Text('Cancel'),
       onPressed: () {
         Navigator.pop(context, null);
       },

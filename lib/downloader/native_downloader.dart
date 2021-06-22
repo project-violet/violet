@@ -16,13 +16,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart' as sync;
 import 'package:violet/component/downloadable.dart';
 
-typedef downloader_init = Void Function(Int64);
+typedef CDownloaderInit = Void Function(Int64);
 typedef DownloaderInit = void Function(int queueSize);
-typedef downloader_dispose = Void Function();
+typedef CDownloaderDispose = Void Function();
 typedef DownloaderDispose = void Function();
-typedef downloader_status = Pointer<Utf8> Function();
+typedef CDownloaderStatus = Pointer<Utf8> Function();
 typedef DownloaderStatus = Pointer<Utf8> Function();
-typedef downloader_append = Pointer<Utf8> Function(Pointer<Utf8>);
+typedef CDownloaderAppend = Pointer<Utf8> Function(Pointer<Utf8>);
 typedef DownloaderAppend = Pointer<Utf8> Function(Pointer<Utf8> downloadInfo);
 
 class NativeDownloadTask {
@@ -79,16 +79,16 @@ class NativeDownloader {
     libviolet = DynamicLibrary.open(soPath);
 
     downloaderInit = libviolet
-        .lookup<NativeFunction<downloader_init>>("downloader_init")
+        .lookup<NativeFunction<CDownloaderInit>>("downloader_init")
         .asFunction();
     downloaderDispose = libviolet
-        .lookup<NativeFunction<downloader_dispose>>("downloader_dispose")
+        .lookup<NativeFunction<CDownloaderDispose>>("downloader_dispose")
         .asFunction();
     downloaderStatus = libviolet
-        .lookup<NativeFunction<downloader_status>>("downloader_status")
+        .lookup<NativeFunction<CDownloaderStatus>>("downloader_status")
         .asFunction();
     downloaderAppend = libviolet
-        .lookup<NativeFunction<downloader_append>>("downloader_append")
+        .lookup<NativeFunction<CDownloaderAppend>>("downloader_append")
         .asFunction();
 
     downloaderInit(32);

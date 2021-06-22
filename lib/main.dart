@@ -16,8 +16,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/database/database.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
@@ -37,6 +35,7 @@ Future<void> warmupFlare() async {
   }
 }
 
+/*
 Future<void> _sqlIntegrityTest() async {
   var sql1 =
       HitomiManager.translate2query('(lang:english) -group:zenmai_kourogi');
@@ -53,6 +52,7 @@ Future<void> _sqlIntegrityTest() async {
   print(sql3);
   print(query3.length);
 }
+ */
 
 Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
   Logger.error('[unhandled-error] E: ' +
@@ -79,7 +79,6 @@ void main() async {
   // };
 
   var analytics = FirebaseAnalytics();
-  var observer = FirebaseAnalyticsObserver(analytics: analytics);
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
   if (id == null) {
     var ii = sha1.convert(utf8.encode(DateTime.now().toString()));
