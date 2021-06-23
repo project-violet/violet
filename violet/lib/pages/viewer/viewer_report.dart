@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
+
 class ViewerReport {
   final int id;
   final int pages;
@@ -25,7 +27,7 @@ class ViewerReport {
       'endsTime': _endsTime.toUtc().millisecondsSinceEpoch,
       'lastPage': _lastPage,
       'validSeconds': _validSeconds,
-      'msPerPages': _msPerPages,
+      'msPerPages': jsonEncode(_msPerPages),
     };
   }
 }

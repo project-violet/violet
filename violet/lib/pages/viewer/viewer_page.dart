@@ -207,6 +207,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           _pageInfo.id,
           DateTime.now().difference(_startsTime).inSeconds -
               _inactivateSeconds);
+
+      VioletServer.viewReport(_report);
     }
   }
 

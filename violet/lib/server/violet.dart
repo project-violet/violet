@@ -9,6 +9,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/pages/viewer/viewer_report.dart';
 import 'package:violet/server/salt.dart';
 
 class VioletServer {
@@ -87,6 +88,32 @@ class VioletServer {
       });
     } catch (e, st) {
       Logger.error('[API-close] E: ' + e.toString() + '\n' + st.toString());
+    }
+  }
+
+  static Future<void> viewReport(ViewerReport report) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+    var userId = await getUserAppId();
+
+    try {
+      await http
+          .post(
+        '$api/view_report',
+        headers: {
+          'v-token': vToken.toString(),
+          'v-valid': vValid,
+          "Content-Type": "application/json"
+        },
+        body: jsonEncode({
+          'user': userId,
+        }..addAll(report.submission())),
+      )
+          .then((value) {
+        print(value.statusCode);
+      });
+    } catch (e, st) {
+      Logger.error('[API-report] E: ' + e.toString() + '\n' + st.toString());
     }
   }
 
