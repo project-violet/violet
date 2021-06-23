@@ -6,16 +6,26 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/settings/settings.dart';
 
-class GroupModifyPage extends StatelessWidget {
-  TextEditingController nameController;
-  TextEditingController descController;
-
+class GroupModifyPage extends StatefulWidget {
   final String name;
   final String desc;
 
-  GroupModifyPage({this.name, this.desc}) {
-    nameController = TextEditingController(text: name);
-    descController = TextEditingController(text: desc);
+  const GroupModifyPage({this.name, this.desc});
+
+  @override
+  _GroupModifyPageState createState() => _GroupModifyPageState();
+}
+
+class _GroupModifyPageState extends State<GroupModifyPage> {
+  TextEditingController _nameController;
+  TextEditingController _descController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _nameController = TextEditingController(text: widget.name);
+    _descController = TextEditingController(text: widget.desc);
   }
 
   @override
@@ -30,7 +40,7 @@ class GroupModifyPage extends StatelessWidget {
             Text('${Translations.of(context).trans('name')}: '),
             Expanded(
               child: TextField(
-                controller: nameController,
+                controller: _nameController,
               ),
             ),
           ]),
@@ -38,7 +48,7 @@ class GroupModifyPage extends StatelessWidget {
             Text('${Translations.of(context).trans('desc')}: '),
             Expanded(
               child: TextField(
-                controller: descController,
+                controller: _descController,
               ),
             ),
           ]),
@@ -69,8 +79,8 @@ class GroupModifyPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context, [
                     1,
-                    nameController.text,
-                    descController.text,
+                    _nameController.text,
+                    _descController.text,
                   ]);
                 },
               ),
