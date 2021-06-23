@@ -95,6 +95,17 @@ class VioletServer {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
     var userId = await getUserAppId();
+    var submission = report.submission();
+    var body = {
+      'user': userId,
+      'id': submission['id'],
+      'pages': submission['pages'],
+      'startsTime': submission['startsTime'],
+      'endsTime': submission['endsTime'],
+      'lastPage': submission['lastPage'],
+      'validSeconds': submission['validSeconds'],
+      'msPerPages': submission['msPerPages'],
+    };
 
     try {
       await http
@@ -105,9 +116,7 @@ class VioletServer {
           'v-valid': vValid,
           "Content-Type": "application/json"
         },
-        body: jsonEncode({
-          'user': userId,
-        }..addAll(report.submission())),
+        body: jsonEncode(body),
       )
           .then((value) {
         print(value.statusCode);

@@ -204,11 +204,12 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       _report.msPerPages = _decisecondPerPages;
 
       VioletServer.viewClose(
-          _pageInfo.id,
-          DateTime.now().difference(_startsTime).inSeconds -
-              _inactivateSeconds);
-
-      VioletServer.viewReport(_report);
+              _pageInfo.id,
+              DateTime.now().difference(_startsTime).inSeconds -
+                  _inactivateSeconds)
+          .then((value) {
+        VioletServer.viewReport(_report);
+      });
     }
   }
 
