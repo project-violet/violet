@@ -81,6 +81,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   bool isBookmarked = false;
   ViewerReport _report;
   List<int> _decisecondPerPages;
+  bool _isStaring = true;
 
   @override
   void initState() {
@@ -129,12 +130,14 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
     _lifecycleEventHandler = LifecycleEventHandler(
       inactiveCallBack: () async {
         _inactivateTime = DateTime.now();
+        _isStaring = false;
         await (await User.getInstance())
             .updateUserLog(_pageInfo.id, currentPage);
       },
       resumeCallBack: () async {
         _inactivateSeconds +=
             DateTime.now().difference(_inactivateTime).inSeconds;
+        _isStaring = true;
         setState(() {
           _mpPoints = 0;
         });
@@ -214,11 +217,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   }
 
   Future<void> pageReadTimerCallback(timer) async {
-    _decisecondPerPages[currentPage < 0
-        ? 0
-        : currentPage >= _pageInfo.uris.length
-            ? _pageInfo.uris.length - 1
-            : currentPage] += 1;
+    if (_isStaring) {
+      _decisecondPerPages[_prevPage - 1 < 0
+          ? 0
+          : _prevPage - 1 >= _pageInfo.uris.length
+              ? _pageInfo.uris.length - 1
+              : _prevPage - 1] += 1;
+    }
   }
 
   void startTimer() {
@@ -498,6 +503,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
         var isBookmarked =
             await (await Bookmark.getInstance()).isBookmark(qr.id());
 
+        _isStaring = false;
+        stopTimer();
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -525,7 +532,10 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               },
             );
           },
-        );
+        ).then((value) {
+          _isStaring = true;
+          startTimer();
+        });
       },
     );
   }
@@ -536,6 +546,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       color: Colors.white,
       onPressed: () async {
         stopTimer();
+        _isStaring = false;
         await showModalBottomSheet(
           context: context,
           isScrollControlled: false,
@@ -587,6 +598,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
               .then((value) => _checkLatestRead(true));
         });
         startTimer();
+        _isStaring = true;
       },
     );
   }
@@ -597,6 +609,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       color: Colors.white,
       onPressed: () async {
         stopTimer();
+        _isStaring = false;
         await showModalBottomSheet(
           context: context,
           isScrollControlled: false,
@@ -617,6 +630,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           }
         });
         startTimer();
+        _isStaring = true;
       },
     );
   }
@@ -640,6 +654,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       color: Colors.white,
       onPressed: () async {
         stopTimer();
+        _isStaring = false;
         if (!Platform.isIOS) {
           Navigator.of(context)
               .push(
@@ -710,6 +725,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           );
         }
         startTimer();
+        _isStaring = true;
       },
     );
   }
@@ -720,6 +736,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       color: Colors.white,
       onPressed: () async {
         stopTimer();
+        _isStaring = false;
         await showModalBottomSheet(
           context: context,
           isScrollControlled: false,
@@ -745,6 +762,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
           ),
         );
         startTimer();
+        _isStaring = true;
         return;
       },
     );
