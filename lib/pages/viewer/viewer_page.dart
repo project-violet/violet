@@ -82,6 +82,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
   ViewerReport _report;
   List<int> _decisecondPerPages;
   bool _isStaring = true;
+  List<bool> _isImageLoaded;
 
   @override
   void initState() {
@@ -163,6 +164,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
       );
       _decisecondPerPages = List.filled(_pageInfo.uris.length, 0);
 
+      _isImageLoaded = List.filled(_pageInfo.uris.length, false);
+
       Timer.periodic(
         Duration(milliseconds: 100),
         pageReadTimerCallback,
@@ -218,11 +221,13 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
 
   Future<void> pageReadTimerCallback(timer) async {
     if (_isStaring) {
-      _decisecondPerPages[_prevPage - 1 < 0
+      var _page = _prevPage - 1 < 0
           ? 0
           : _prevPage - 1 >= _pageInfo.uris.length
               ? _pageInfo.uris.length - 1
-              : _prevPage - 1] += 1;
+              : _prevPage - 1;
+
+      if (_isImageLoaded[_page]) _decisecondPerPages[_page] += 1;
     }
   }
 
@@ -1363,6 +1368,7 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                   final sizeRender = renderBoxRed.size;
                   if (sizeRender.height != 300)
                     _height[index] = width / sizeRender.aspectRatio;
+                  _isImageLoaded[index] = true;
                 } catch (e) {}
               }
               return child;
@@ -1552,6 +1558,8 @@ class __VerticalImageViewerState extends State<_VerticalImageViewer>
                         if (sizeRender.height != 300) {
                           _height[index] = width / sizeRender.aspectRatio;
                         }
+
+                        _isImageLoaded[index] = true;
 
                         if (_latestIndex >= index && !_onScroll)
                           _patchHeightForDynamicLoadedImage();
