@@ -459,18 +459,20 @@ class __CommentAreaState extends State<_CommentArea> {
   }
 }
 
-class _InfoAreaWidget extends StatelessWidget {
+class _InfoAreaWidget extends StatefulWidget {
   final QueryResult queryResult;
   final Map<String, String> headers;
   final List<Tuple3<DateTime, String, String>> comments;
 
   _InfoAreaWidget({@required this.queryResult, this.headers, this.comments});
 
-  BuildContext _context;
+  @override
+  __InfoAreaWidgetState createState() => __InfoAreaWidgetState();
+}
 
+class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
   @override
   Widget build(BuildContext context) {
-    _context = context;
     return ExpandableNotifier(
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -482,7 +484,7 @@ class _InfoAreaWidget extends StatelessWidget {
             header: Padding(
               padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
               child: Text(
-                  '${Translations.of(context).trans('comment')} (${comments.length})'),
+                  '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
             ),
             expanded: commentArea(context),
           ),
@@ -492,7 +494,7 @@ class _InfoAreaWidget extends StatelessWidget {
   }
 
   Widget commentArea(BuildContext context) {
-    if (comments.length == 0) {
+    if (widget.comments.length == 0) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -518,7 +520,7 @@ class _InfoAreaWidget extends StatelessWidget {
         ],
       );
     } else {
-      var children = List<Widget>.from(comments.map((e) {
+      var children = List<Widget>.from(widget.comments.map((e) {
         return InkWell(
           onTap: () async {
             // showOkDialog(context, e.item3, 'Comments');
@@ -580,7 +582,7 @@ class _InfoAreaWidget extends StatelessWidget {
       onTap: () async {
         // check loginable
 
-        if (queryResult.ehash() == null) {
+        if (widget.queryResult.ehash() == null) {
           await showOkDialog(context, 'Cannot write comment!');
           return;
         }
@@ -598,7 +600,7 @@ class _InfoAreaWidget extends StatelessWidget {
           child: Text(Translations.of(context).trans('ok')),
           onPressed: () async {
             if ((await EHSession.postComment(
-                        'https://exhentai.org/g/${queryResult.id()}/${queryResult.ehash()}',
+                        'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}',
                         text.text))
                     .trim() !=
                 '') {
@@ -668,7 +670,7 @@ class _InfoAreaWidget extends StatelessWidget {
   }
 
   void _showArticleInfo(int id) async {
-    final height = MediaQuery.of(_context).size.height;
+    final height = MediaQuery.of(context).size.height;
 
     final search = await HentaiManager.idSearch(id.toString());
     if (search.item1.length != 1) return;
@@ -684,7 +686,7 @@ class _InfoAreaWidget extends StatelessWidget {
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
       showModalBottomSheet(
-        context: _context,
+        context: context,
         isScrollControlled: true,
         builder: (_) {
           return DraggableScrollableSheet(
@@ -746,9 +748,9 @@ class _InfoAreaWidget extends StatelessWidget {
       Text.rich(TextSpan(children: linkify(textToLink)));
 
   Widget previewArea() {
-    if (ProviderManager.isExists(queryResult.id())) {
+    if (ProviderManager.isExists(widget.queryResult.id())) {
       return FutureBuilder(
-        future: ProviderManager.get(queryResult.id()).getSmallImagesUrl(),
+        future: ProviderManager.get(widget.queryResult.id()).getSmallImagesUrl(),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
