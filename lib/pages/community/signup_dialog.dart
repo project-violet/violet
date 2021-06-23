@@ -6,11 +6,16 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
-class SignUpDialog extends StatelessWidget {
-  TextEditingController idController = TextEditingController();
-  TextEditingController pwController = TextEditingController();
-  TextEditingController pwaController = TextEditingController();
-  TextEditingController nnController = TextEditingController();
+class SignUpDialog extends StatefulWidget {
+  @override
+  _SignUpDialogState createState() => _SignUpDialogState();
+}
+
+class _SignUpDialogState extends State<SignUpDialog> {
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _pwController = TextEditingController();
+  final TextEditingController _pwaController = TextEditingController();
+  final TextEditingController _nnController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +23,10 @@ class SignUpDialog extends StatelessWidget {
       style: TextButton.styleFrom(primary: Settings.majorColor),
       child: const Text('Sign Up'),
       onPressed: () async {
-        var id = idController.text.trim();
-        var pw = pwController.text.trim();
-        var pwa = pwaController.text.trim();
-        var nn = nnController.text.trim();
+        var id = _idController.text.trim();
+        var pw = _pwController.text.trim();
+        var pwa = _pwaController.text.trim();
+        var nn = _nnController.text.trim();
 
         if (pw != pwa || pw.length < 8) {
           await showOkDialog(context,
@@ -42,7 +47,7 @@ class SignUpDialog extends StatelessWidget {
         }
 
         Navigator.pop(
-            context, [idController.text, pwController.text, nnController.text]);
+            context, [_idController.text, _pwController.text, _nnController.text]);
       },
     );
     Widget noButton = TextButton(
@@ -67,7 +72,7 @@ class SignUpDialog extends StatelessWidget {
             Text('Id: '),
             Expanded(
               child: TextField(
-                controller: idController,
+                controller: _idController,
               ),
             ),
           ]),
@@ -79,7 +84,7 @@ class SignUpDialog extends StatelessWidget {
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  controller: pwController,
+                  controller: _pwController,
                 ),
               ),
             ],
@@ -92,7 +97,7 @@ class SignUpDialog extends StatelessWidget {
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  controller: pwaController,
+                  controller: _pwaController,
                 ),
               ),
             ],
@@ -102,7 +107,7 @@ class SignUpDialog extends StatelessWidget {
               Text('NickName: '),
               Expanded(
                 child: TextField(
-                  controller: nnController,
+                  controller: _nnController,
                 ),
               ),
             ],
