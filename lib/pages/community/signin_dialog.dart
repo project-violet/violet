@@ -6,9 +6,14 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
-class SignInDialog extends StatelessWidget {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController descController = TextEditingController();
+class SignInDialog extends StatefulWidget {
+  @override
+  _SignInDialogState createState() => _SignInDialogState();
+}
+
+class _SignInDialogState extends State<SignInDialog> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +21,8 @@ class SignInDialog extends StatelessWidget {
       style: TextButton.styleFrom(primary: Settings.majorColor),
       child: Text('Log In'),
       onPressed: () async {
-        var id = nameController.text.trim();
-        var pw = descController.text.trim();
+        var id = _nameController.text.trim();
+        var pw = _descController.text.trim();
 
         if (await VioletCommunitySession.signIn(id, pw) == null) {
           await showOkDialog(context,
@@ -25,7 +30,7 @@ class SignInDialog extends StatelessWidget {
           return;
         }
 
-        Navigator.pop(context, [nameController.text, descController.text]);
+        Navigator.pop(context, [_nameController.text, _descController.text]);
       },
     );
     Widget noButton = TextButton(
@@ -50,7 +55,7 @@ class SignInDialog extends StatelessWidget {
             Text('Id: '),
             Expanded(
               child: TextField(
-                controller: nameController,
+                controller: _nameController,
               ),
             ),
           ]),
@@ -62,7 +67,7 @@ class SignInDialog extends StatelessWidget {
                   obscureText: true,
                   enableSuggestions: false,
                   autocorrect: false,
-                  controller: descController,
+                  controller: _descController,
                 ),
               ),
             ],
