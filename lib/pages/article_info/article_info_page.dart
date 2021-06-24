@@ -750,7 +750,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
   Widget previewArea() {
     if (ProviderManager.isExists(widget.queryResult.id())) {
       return FutureBuilder(
-        future: ProviderManager.get(widget.queryResult.id()).getSmallImagesUrl(),
+        future:
+            ProviderManager.get(widget.queryResult.id()).getSmallImagesUrl(),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
