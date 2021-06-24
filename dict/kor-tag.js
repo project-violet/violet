@@ -14,6 +14,7 @@ const kor_tag = {
   'male': '남성',
   'tag': '태그',
   'lang':'언어',
+  'language':'언어',
   'series': '시리즈',
   'artist': '작가',
   'uploader': '업로더',
