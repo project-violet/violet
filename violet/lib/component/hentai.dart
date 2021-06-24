@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:math';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
@@ -88,6 +89,7 @@ class HentaiManager {
     return Tuple2<List<QueryResult>, int>([], -1);
   }
 
+  static int _latestSeed = 0;
   static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
       [int offset = 0]) async {
     final wwhat = what.split(' ').where((x) => x != 'random').join(' ');
@@ -101,9 +103,11 @@ class HentaiManager {
             .join(' ')
             .trim());
 
+    if (offset == 0) _latestSeed = new Random().nextInt(2147483647);
+
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
-            "$queryString ORDER BY RANDOM() LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
+            "$queryString ORDER BY RANDOM($_latestSeed) LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
         .map((e) => QueryResult(result: e))
         .toList();
     return Tuple2<List<QueryResult>, int>(
