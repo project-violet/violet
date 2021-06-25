@@ -1,0 +1,41 @@
+name: Build ios
+on:
+  push:
+    branches: [ ios-build ]
+
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ios-build
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '2.2.0'
+      - name: Podfile
+        run: |
+          cd ios
+          flutter clean
+          flutter pub get
+          pod install
+          pod update
+          cd ..
+      - name: Build
+        run: |
+          flutter build ios --release --no-codesign
+          mkdir -p Payload
+          mv ./build/ios/iphoneos/Runner.app Payload
+          zip -r -y Payload.zip Payload/Runner.app
+          mv Payload.zip Payload.ipa
+      - uses: actions/upload-artifact@v2.2.4
+        with:
+          # Artifact name
+          name: build
+          # A file, directory or wildcard pattern that describes what to upload
+          path: Payload.ipa
+          # The desired behavior if no files are found using the provided path.
