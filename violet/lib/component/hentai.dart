@@ -107,7 +107,7 @@ class HentaiManager {
 
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
-            "$queryString ORDER BY RANDOM($_latestSeed) LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
+            "$queryString ORDER BY $_latestSeed LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
         .map((e) => QueryResult(result: e))
         .toList();
     return Tuple2<List<QueryResult>, int>(
