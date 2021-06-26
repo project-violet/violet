@@ -15,6 +15,7 @@ class FilterController extends GetxController {
   var blurred = false.obs;
   var isOr = false.obs;
   var isSearch = false.obs;
+  var isPopulationSort = false.obs;
 
   var tags = <Tuple3<String, String, int>>[].obs;
   var tagStates = Map<String, bool>().obs;
@@ -178,6 +179,15 @@ class _FilterPageState extends State<FilterPage> {
                   spacing: 4.0,
                   runSpacing: -10.0,
                   children: <Widget>[
+                    FilterChip(
+                      label: Text("Population"),
+                      selected: c.isPopulationSort.isTrue,
+                      onSelected: (bool value) {
+                        setState(() {
+                          c.isPopulationSort.value = value;
+                        });
+                      },
+                    ),
                     FilterChip(
                       label: Text("OR"),
                       selected: c.isOr.isTrue,

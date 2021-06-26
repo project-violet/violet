@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
+import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
@@ -136,6 +137,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               if (cc.length == 0) {
                 queryResult = <QueryResult>[];
                 filterResult = queryResult;
+                if (isPopulationSort) Population.sortByPopulation(filterResult);
                 setState(() {});
                 return;
               }
@@ -196,6 +198,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   });
                 }
                 filterResult = result;
+                if (isPopulationSort) Population.sortByPopulation(filterResult);
                 setState(() {});
               });
             }));
@@ -437,6 +440,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   groupStates: groupStates,
                   isOr: isOr,
                   isSearch: isSearch,
+                  isPopulationSort: isPopulationSort,
                 ),
               ))
                   .then((value) async {
@@ -468,6 +472,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   if (succ) result.add(element);
                 });
                 filterResult = result;
+                if (isPopulationSort) Population.sortByPopulation(filterResult);
                 await Future.delayed(Duration(milliseconds: 50), () {
                   setState(() {});
                 });
@@ -490,6 +495,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   bool isFilterUsed = false;
   bool isOr = false;
   bool isSearch = false;
+  bool isPopulationSort = false;
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
 

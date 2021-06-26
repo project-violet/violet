@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
@@ -98,9 +99,9 @@ class _SearchPageState extends State<SearchPage>
 
         latestQuery =
             Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
-        setState(() {
-          queryResult = latestQuery.item1.item1;
-        });
+        queryResult = latestQuery.item1.item1;
+        if (isPopulationSort) Population.sortByPopulation(queryResult);
+        setState(() {});
       } catch (e) {
         print('Initial search failed: $e');
         _showErrorToast('Failed to search all: $e');
@@ -360,6 +361,7 @@ class _SearchPageState extends State<SearchPage>
                       groupStates: groupStates,
                       isOr: isOr,
                       isSearch: isSearch,
+                      isPopulationSort: isPopulationSort,
                     ),
                   ))
                       .then((value) async {
@@ -394,6 +396,8 @@ class _SearchPageState extends State<SearchPage>
                       if (succ) result.add(element);
                     });
                     filterResult = result;
+                    if (isPopulationSort)
+                      Population.sortByPopulation(filterResult);
                     setState(() {
                       key = ObjectKey(Uuid().v4());
                     });
@@ -415,6 +419,7 @@ class _SearchPageState extends State<SearchPage>
   bool ignoreBookmark = false;
   bool isOr = false;
   bool isSearch = false;
+  bool isPopulationSort = false;
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
 
@@ -461,9 +466,11 @@ class _SearchPageState extends State<SearchPage>
         return;
       }
 
-      setState(() {
-        queryResult.addAll(next.item1);
-      });
+      queryResult.addAll(next.item1);
+
+      if (isPopulationSort) Population.sortByPopulation(queryResult);
+
+      setState(() {});
     } catch (e, st) {
       Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
       rethrow;
