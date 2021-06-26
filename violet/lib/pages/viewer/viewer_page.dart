@@ -41,19 +41,12 @@ import 'package:violet/widgets/toast.dart';
 
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
-class ViewerPage extends StatelessWidget {
+class ViewerPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return _VerticalImageViewer();
-  }
+  _ViewerPageState createState() => _ViewerPageState();
 }
 
-class _VerticalImageViewer extends StatefulWidget {
-  @override
-  __VerticalImageViewerState createState() => __VerticalImageViewerState();
-}
-
-class __VerticalImageViewerState extends State<_VerticalImageViewer>
+class _ViewerPageState extends State<ViewerPage>
     with SingleTickerProviderStateMixin {
   ViewerPageProvider _pageInfo;
   Timer _clearTimer;
