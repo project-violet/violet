@@ -10,8 +10,7 @@ class Population {
   static Map<int, int> population;
 
   static Future<void> init() async {
-    final data =
-        await rootBundle.loadString('assets/locale/rank/population.json');
+    final data = await rootBundle.loadString('assets/rank/population.json');
 
     List<dynamic> _population = json.decode(data);
     population = Map<int, int>();
