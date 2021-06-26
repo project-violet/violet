@@ -15,6 +15,7 @@ class SearchFilter extends StatefulWidget {
   bool blurred;
   bool isOr;
   bool isSearch;
+  bool isPopulationSort;
   List<Tuple3<String, String, int>> tags = [];
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
@@ -30,6 +31,7 @@ class SearchFilter extends StatefulWidget {
     this.groupStates,
     this.isOr,
     this.isSearch,
+    this.isPopulationSort,
   });
 
   @override
@@ -389,6 +391,15 @@ class _SearchFilterState extends State<SearchFilter> {
                             spacing: 4.0,
                             runSpacing: -10.0,
                             children: <Widget>[
+                              FilterChip(
+                                label: Text("Population"),
+                                selected: widget.isPopulationSort,
+                                onSelected: (bool value) {
+                                  setState(() {
+                                    widget.isPopulationSort = value;
+                                  });
+                                },
+                              ),
                               FilterChip(
                                 label: Text("OR"),
                                 selected: widget.isOr,

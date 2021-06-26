@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
@@ -153,6 +154,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                   groupStates: groupStates,
                   isOr: isOr,
                   isSearch: isSearch,
+                  isPopulationSort: isPopulationSort,
                 ),
               ))
                   .then((value) async {
@@ -184,6 +186,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                   if (succ) result.add(element);
                 });
                 filterResult = result;
+                if (isPopulationSort) Population.sortByPopulation(filterResult);
                 await Future.delayed(Duration(milliseconds: 50), () {
                   setState(() {});
                 });
@@ -206,6 +209,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
   bool isFilterUsed = false;
   bool isOr = false;
   bool isSearch = false;
+  bool isPopulationSort = false;
   Map<String, bool> tagStates = Map<String, bool>();
   Map<String, bool> groupStates = Map<String, bool>();
 
