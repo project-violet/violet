@@ -166,6 +166,9 @@ flutter:
     - assets/locale/eo.json
     - assets/locale/tag/korean.json
     - assets/locale/tag/related-tag-korean.json
+
+    - assets/rank/population.json
+    
     # - assets/images/loading.gif
 
     # - assets/test/001.jpg
