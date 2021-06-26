@@ -30,8 +30,8 @@ class _LogPageState extends State<LogPage> {
               errors[i].message.startsWith('GETS:'))) continue;
       for (var j = i + 1; j < errors.length; j++) {
         if (errors[i].title != errors[j].title ||
-            !(errors[i].message.startsWith('GET:') ||
-                errors[i].message.startsWith('GETS:'))) break;
+            !(errors[j].message.startsWith('GET:') ||
+                errors[j].message.startsWith('GETS:'))) break;
         if (errors[j].message.length < 200) {
           errors[i].message += '\n' + errors[j].message;
           errors.removeAt(j--);
