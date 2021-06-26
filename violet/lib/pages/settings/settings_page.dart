@@ -982,6 +982,8 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: Settings.useInnerStorage
                 ? null
                 : () async {
+                    TextEditingController text =
+                        TextEditingController(text: Settings.downloadBasePath);
                     Widget yesButton = TextButton(
                       style: TextButton.styleFrom(primary: Settings.majorColor),
                       child: Text(Translations.of(context).trans('ok')),
@@ -996,8 +998,14 @@ class _SettingsPageState extends State<SettingsPage>
                         Navigator.pop(context, false);
                       },
                     );
-                    TextEditingController text =
-                        TextEditingController(text: Settings.downloadBasePath);
+                    Widget defaultButton = TextButton(
+                      style: TextButton.styleFrom(primary: Settings.majorColor),
+                      child: Text(Translations.of(context).trans('default')),
+                      onPressed: () {
+                        Settings.getDefaultDownloadPath()
+                            .then((value) => setState(() => text.text = value));
+                      },
+                    );
                     var dialog = await showDialog(
                       useRootNavigator: false,
                       context: context,
@@ -1010,7 +1018,7 @@ class _SettingsPageState extends State<SettingsPage>
                           autofocus: true,
                           maxLines: 3,
                         ),
-                        actions: [yesButton, noButton],
+                        actions: [defaultButton, yesButton, noButton],
                       ),
                     );
                     if (dialog != null && dialog == true) {
@@ -1055,6 +1063,8 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
+              TextEditingController text =
+                  TextEditingController(text: Settings.downloadRule);
               Widget okButton = TextButton(
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 child: Text(Translations.of(context).trans('ok')),
@@ -1069,8 +1079,14 @@ class _SettingsPageState extends State<SettingsPage>
                   Navigator.pop(context, false);
                 },
               );
-              TextEditingController text =
-                  TextEditingController(text: Settings.downloadRule);
+              Widget defaultButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('default')),
+                onPressed: () {
+                  setState(() => text.text =
+                      '%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s');
+                },
+              );
               var dialog = await showDialog(
                 useRootNavigator: false,
                 context: context,
@@ -1082,7 +1098,7 @@ class _SettingsPageState extends State<SettingsPage>
                     autofocus: true,
                     maxLines: 3,
                   ),
-                  actions: [okButton, cancelButton],
+                  actions: [defaultButton, okButton, cancelButton],
                 ),
               );
               if (dialog != null && dialog == true) {
