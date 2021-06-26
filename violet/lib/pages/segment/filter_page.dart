@@ -17,7 +17,7 @@ class FilterController extends GetxController {
   var isSearch = false.obs;
   var isPopulationSort = false.obs;
 
-  var tags = <Tuple3<String, String, int>>[].obs;
+  // var tags = <Tuple3<String, String, int>>[].obs;
   var tagStates = Map<String, bool>().obs;
   var groupStates = Map<String, bool>().obs;
   var groupCount = Map<String, int>().obs;
@@ -41,6 +41,7 @@ class _FilterPageState extends State<FilterPage> {
   TextEditingController _searchController = TextEditingController();
 
   bool test = false;
+  List<Tuple3<String, String, int>> _tags = <Tuple3<String, String, int>>[];
 
   @override
   void initState() {
@@ -71,7 +72,7 @@ class _FilterPageState extends State<FilterPage> {
         name = key.split(':')[1];
       } else
         c.groupCount['tag'] += 1;
-      c.tags.add(Tuple3<String, String, int>(group, name, value));
+      _tags.add(Tuple3<String, String, int>(group, name, value));
       if (!c.tagStates.containsKey(group + '|' + name))
         c.tagStates[group + '|' + name] = false;
     });
@@ -90,7 +91,7 @@ class _FilterPageState extends State<FilterPage> {
       c.groups.add(Tuple2<String, int>(key, value));
     });
     c.groups.sort((a, b) => b.item2.compareTo(a.item2));
-    c.tags.sort((a, b) => b.item3.compareTo(a.item3));
+    _tags.sort((a, b) => b.item3.compareTo(a.item3));
   }
 
   void append(String group, String vv) {
@@ -108,7 +109,7 @@ class _FilterPageState extends State<FilterPage> {
     });
     c.groupCount[group] += tags.length;
     tags.forEach((key, value) {
-      c.tags.add(Tuple3<String, String, int>(group, key, value));
+      _tags.add(Tuple3<String, String, int>(group, key, value));
       if (!c.tagStates.containsKey(group + '|' + key))
         c.tagStates[group + '|' + key] = false;
     });
@@ -217,19 +218,19 @@ class _FilterPageState extends State<FilterPage> {
   }
 
   _buildTagsPanel() {
-    var tags = c.tags
+    var tags = _tags
         .where((element) => c.tagStates[element.item1 + '|' + element.item2])
         .toList();
 
     if (c.isSearch.isTrue)
-      tags += c.tags
+      tags += _tags
           .where((element) =>
               (element.item1 + ':' + element.item2)
                   .contains(_searchController.text) &&
               !c.tagStates[element.item1 + '|' + element.item2])
           .toList();
     else
-      tags += c.tags
+      tags += _tags
           .where((element) =>
               c.groupStates[element.item1] &&
               !c.tagStates[element.item1 + '|' + element.item2])
@@ -313,7 +314,7 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.of(context).trans('selectall')),
           // selected: c.ignoreBookmark,
           onSelected: (bool value) {
-            c.tags
+            _tags
                 .where((element) => c.groupStates[element.item1])
                 .forEach((element) {
               c.tagStates[element.item1 + '|' + element.item2] = true;
@@ -325,7 +326,7 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.of(context).trans('deselectall')),
           // selected: c.blurred,
           onSelected: (bool value) {
-            c.tags
+            _tags
                 .where((element) => c.groupStates[element.item1])
                 .forEach((element) {
               c.tagStates[element.item1 + '|' + element.item2] = false;
@@ -337,7 +338,7 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.of(context).trans('inverse')),
           // selected: c.blurred,
           onSelected: (bool value) {
-            c.tags
+            _tags
                 .where((element) => c.groupStates[element.item1])
                 .forEach((element) {
               c.tagStates[element.item1 + '|' + element.item2] =
