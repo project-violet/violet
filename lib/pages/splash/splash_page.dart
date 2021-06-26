@@ -16,6 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
@@ -177,6 +178,7 @@ class _SplashPageState extends State<SplashPage> {
     await HitomiIndexs.init();
     await Logger.init();
     await TagTranslate.init();
+    await Population.init();
 
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
         !widget.switching) {
