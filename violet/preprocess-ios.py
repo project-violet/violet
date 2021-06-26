@@ -104,9 +104,9 @@ def create_dummy_valid(path):
 for root, subdirs, files in os.walk('./'):
     for filename in files:
         if filename.endswith(".dart"): 
-            process_dart(root + filename)
+            process_dart(root + '/' + filename)
         elif filename.endswith(".yaml"):
-            process_yaml(root + filename)
+            process_yaml(root + '/' +  filename)
 
 create_valid('./lib/server/saltt.dart')
 create_valid('./lib/server/wsaltt.dart')
