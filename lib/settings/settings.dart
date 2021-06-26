@@ -403,6 +403,24 @@ class Settings {
     }
   }
 
+  static Future<String> getDefaultDownloadPath() async {
+    final String path = await ExtStorage.getExternalStorageDirectory();
+
+    var androidInfo = await DeviceInfoPlugin().androidInfo;
+    var sdkInt = androidInfo.version.sdkInt;
+
+    if (sdkInt >= 30) {
+      var ext = await getExternalStorageDirectory();
+      downloadBasePath = ext.path;
+    }
+
+    if (downloadBasePath == null) {
+      downloadBasePath = join(path, '.violet');
+    }
+
+    return downloadBasePath;
+  }
+
   static Future<void> setThemeWhat(bool wh) async {
     themeWhat = wh;
     if (!themeWhat)
