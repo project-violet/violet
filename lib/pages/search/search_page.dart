@@ -101,12 +101,14 @@ class _SearchPageState extends State<SearchPage>
         setState(() {
           queryResult = latestQuery.item1.item1;
         });
-      } catch (e, st) {
-        Logger.error(
-            '[search-error] E: ' + e.toString() + '\n' + st.toString());
+      } catch (e) {
+        print('Initial search failed: $e');
+        _showErrorToast('Failed to search all: $e');
       }
-    }).catchError((e, st) {
-      Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
+    }).catchError((e) {
+      // It happened!
+      print('Initial search interrupted: $e');
+      _showErrorToast('Initial search interrupted: $e');
     });
 
     _scroll.addListener(() {
@@ -462,11 +464,8 @@ class _SearchPageState extends State<SearchPage>
       setState(() {
         queryResult.addAll(next.item1);
       });
-    } catch (e, stackTrace) {
-      print('* loadNextQuery failed');
-      print('Exception: $e');
-      print('Stack trace: $stackTrace');
-      _showErrorToast('Failed to load next query: $e');
+    } catch (e, st) {
+      Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
       rethrow;
     } finally {
       _querySem.release();
