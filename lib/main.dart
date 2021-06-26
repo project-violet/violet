@@ -5,15 +5,15 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart'; // @dependent: android [
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android ]
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/log/log.dart';
@@ -65,10 +65,10 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize();
+  await FlutterDownloader.initialize(); // @dependent: android
   FlareCache.doesPrune = false;
-  await Firebase.initializeApp();
-  FlutterError.onError = recordFlutterError;
+  await Firebase.initializeApp(); // @dependent: android
+  FlutterError.onError = recordFlutterError; // @dependent: android
 
   // await SeriesFinder.doFind2();
 
@@ -78,14 +78,14 @@ void main() async {
   //   await Logger.exportLog();
   // };
 
-  var analytics = FirebaseAnalytics();
+  var analytics = FirebaseAnalytics(); // @dependent: android
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
   if (id == null) {
     var ii = sha1.convert(utf8.encode(DateTime.now().toString()));
     id = ii.toString();
     (await SharedPreferences.getInstance()).setString('fa_userid', id);
   }
-  await analytics.setUserId(id);
+  await analytics.setUserId(id); // @dependent: android
 
   await Settings.initFirst();
   await warmupFlare();
@@ -105,6 +105,7 @@ void main() async {
       themedWidgetBuilder: (context, theme) {
         return MaterialApp(
           navigatorObservers: [
+            // @dependent: android =>
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
           theme: theme,

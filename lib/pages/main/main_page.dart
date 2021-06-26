@@ -1,46 +1,94 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:vibration/vibration.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
-import 'package:violet/pages/main/card/artist_collection_card.dart';
+import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
 import 'package:violet/pages/main/card/github_card.dart';
-import 'package:violet/pages/main/card/update_log_card.dart';
-import 'package:violet/pages/main/card/views_card.dart';
+import 'package:violet/pages/main/info/info_page.dart';
+import 'package:violet/pages/main/patchnote/patchnote_page.dart';
+import 'package:violet/pages/main/views/views_page.dart';
+import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/variables.dart';
+import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
+import 'package:violet/widgets/toast.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage2 extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  _MainPage2State createState() => _MainPage2State();
 }
 
-class _MainPageState extends State<MainPage> {
-  int count = 0;
-  bool ee = false;
+class _MainPage2State extends State<MainPage2>
+    with AutomaticKeepAliveClientMixin<MainPage2> {
+  @override
+  bool get wantKeepAlive => true;
+  // int count = 0;
+  // bool ee = false;
   int _current = 0;
+  bool _syncAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(milliseconds: 200)).then((value) async {
+      // var latestDB = SyncManager.getLatestDB().getDateTime();
+      // var lastDB =
+      //     (await SharedPreferences.getInstance()).getString('databasesync');
+      // if (lastDB != null &&
+      //     latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
+      //   return;
+      // }
+
+      await UpdateSyncManager.checkUpdateSync();
+      setState(() {});
+
+      // Update is not available for iOS.
+      if (!Platform.isIOS) {
+        updateCheckAndDownload(); // @dependent: android
+      }
+
+      if (SyncManager.syncRequire) {
+        setState(() {
+          _syncAvailable = true;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
-    final double width = MediaQuery.of(context).size.width;
 
     final cardList = [
       DiscordCard(),
@@ -52,27 +100,13 @@ class _MainPageState extends State<MainPage> {
       child: Padding(
         padding: EdgeInsets.only(top: statusBarHeight),
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(4),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Violet',
-                        style: TextStyle(
-                          fontSize: 46.0,
-                          fontFamily: "Calibre-Semibold",
-                          letterSpacing: 1.0,
-                        )),
-                  ],
-                ),
-              ),
-              _versionArea(),
+              Container(height: 16),
+              _buildGroup(
+                  Translations.of(context).trans('userstat'), _statArea()),
               CarouselSlider(
                 options: CarouselOptions(
                   height: 70,
@@ -121,47 +155,12 @@ class _MainPageState extends State<MainPage> {
                   );
                 }).toList(),
               ),
-              Padding(
-                padding: EdgeInsets.all(12),
-              ),
-              _userArea(),
-              GridView.count(
-                padding: EdgeInsets.all(8),
-                controller: null,
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                childAspectRatio: width / (75 - 5) / 2,
-                // crossAxisSpacing: 4,
-                mainAxisSpacing: 2,
-                children: [
-                  ArtistCollectionCard(),
-                  ViewsCard(),
-                  UpdateLogCard(),
-                ],
-              )
-              // Stack(children: [
-              //   Lottie.asset(
-              //       'assets/lottie/28395-hajj-mabroor-infographic-animation.json'),
-              // ]),
-              // Visibility(
-              //   visible: false,
-              //   child: UpdateCard(
-              //     clickEvent: () async {
-              //       count++;
-              //       await Vibration.vibrate(duration: 50, amplitude: 50);
-              //       if (count >= 10 && count <= 20 && !ee) {
-              //         ee = true;
-              //         Future.delayed(Duration(milliseconds: 7800), () {
-              //           count = 20;
-              //           ee = false;
-              //           setState(() {});
-              //         });
-              //       }
-              //       setState(() {});
-              //     },
-              //   ),
-              // ),
+              // _buildGroup('데이터베이스', _databaseArea()),
+              _buildGroup(Translations.of(context).trans('versionmanagement'),
+                  _versionArea()),
+              _buildGroup(
+                  Translations.of(context).trans('service'), _serviceArea()),
+              Container(height: 32)
             ],
           ),
         ),
@@ -169,207 +168,520 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  String numberWithComma(int param) {
-    return NumberFormat('###,###,###,###')
-        .format(param)
-        .replaceAll(' ', '');
+  // _databaseArea() {
+  //   return [
+  //     Row(
+  //       children: [
+  //         Text(Settings.databaseType.toUpperCase() + '언어 데이터베이스',
+  //             style: TextStyle(fontWeight: FontWeight.bold)),
+  //         Expanded(child: Container()),
+  //         Column(
+  //           children: [
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text('로컬', style: TextStyle(color: Colors.grey)),
+  //                 FutureBuilder(
+  //                     future: SharedPreferences.getInstance(),
+  //                     builder: (context, snapshot) {
+  //                       if (!snapshot.hasData) {
+  //                         return Text(' ??');
+  //                       }
+  //                       return Text(
+  //                         ' ' +
+  //                             DateFormat('yyyy.MM.dd').format(DateTime.parse(
+  //                                 snapshot.data.getString('databasesync'))),
+  //                       );
+  //                     }),
+  //               ],
+  //             ),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text('최신', style: TextStyle(color: Colors.grey)),
+  //                 Text(
+  //                   ' ' +
+  //                       DateFormat('yyyy.MM.dd').format(UpdateSyncManager
+  //                           .rawlangDB[Settings.databaseType].item1),
+  //                 ),
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //     _buildDivider(),
+  //     Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         RaisedButton(
+  //           color: Settings.majorColor.withAlpha(220),
+  //           onPressed: () {},
+  //           child: Text('    스위칭    '),
+  //           elevation: 3.0,
+  //         ),
+  //         Badge(
+  //           showBadge: _syncAvailable,
+  //           badgeContent: Text('N',
+  //               style: TextStyle(color: Colors.white, fontSize: 12.0)),
+  //           // badgeColor: Settings.majorAccentColor,
+  //           child: RaisedButton(
+  //             color: Settings.majorColor.withAlpha(220),
+  //             onPressed: () {},
+  //             child: Text('    동기화    '),
+  //             elevation: 3.0,
+  //           ),
+  //         ),
+  //       ],
+  //     )
+  //   ];
+  // }
+
+  _statArea() {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            children: [
+              Text(Translations.of(context).trans('readpresent')),
+              Container(height: 8),
+              FutureBuilder(future: Future.sync(
+                () async {
+                  return await (await User.getInstance()).getUserLog();
+                },
+              ), builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text('??',
+                      style: TextStyle(
+                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                }
+                return Text(numberWithComma(snapshot.data.length),
+                    style: TextStyle(
+                        fontFamily: "Calibre-Semibold", fontSize: 18));
+              }),
+            ],
+          ),
+          Column(
+            children: [
+              Text(Translations.of(context).trans('bookmark')),
+              Container(height: 8),
+              FutureBuilder(future: Future.sync(
+                () async {
+                  return await (await Bookmark.getInstance()).getArticle();
+                },
+              ), builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text('??',
+                      style: TextStyle(
+                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                }
+                return Text(numberWithComma(snapshot.data.length),
+                    style: TextStyle(
+                        fontFamily: "Calibre-Semibold", fontSize: 18));
+              }),
+            ],
+          ),
+          Column(
+            children: [
+              Text(Translations.of(context).trans('download')),
+              Container(height: 8),
+              FutureBuilder(future: Future.sync(
+                () async {
+                  return await (await Download.getInstance())
+                      .getDownloadItems();
+                },
+              ), builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Text('??',
+                      style: TextStyle(
+                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                }
+                return Text(numberWithComma(snapshot.data.length),
+                    style: TextStyle(
+                        fontFamily: "Calibre-Semibold", fontSize: 18));
+              }),
+            ],
+          ),
+        ],
+      )
+    ];
   }
 
   _versionArea() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(
-                width: 1.6,
-                color: Settings.themeWhat ? Colors.white : Colors.black,
-                style: BorderStyle.solid)),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
-          child: Column(
+    return [
+      // Version Info
+      Row(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                        // '${Translations.of(context).trans('mainversion')}:',
-                        'Version:',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18)),
-                  ),
+                  Text(Translations.of(context).trans('curversion'),
+                      style: TextStyle(color: Colors.grey)),
                   Text(
-                      ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
-                      style: TextStyle(
-                          fontFamily: "Calibre-Semibold", fontSize: 18))
+                      ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}'),
                 ],
               ),
+              ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}' !=
+                      ' ${UpdateSyncManager.latestVersion}'
+                  ? Row(
+                      children: [
+                        Text(Translations.of(context).trans('latestversion'),
+                            style: TextStyle(color: Colors.grey)),
+                        Text(' ${UpdateSyncManager.latestVersion}'),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Text(Translations.of(context).trans('curlatestversion'),
+                            style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+            ],
+          ),
+          Expanded(child: Container()),
+          // Container(
+          //   child: UpdateLogCard(),
+          //   height: 50,
+          //   width: 100,
+          // )
+          Container(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Settings.majorColor.withAlpha(220),
+              ),
+              onPressed: () {
+                if (!Platform.isIOS) {
+                  Navigator.of(context).push(PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      var begin = Offset(0.0, 1.0);
+                      var end = Offset.zero;
+                      var curve = Curves.ease;
+
+                      var tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+
+                      return SlideTransition(
+                        position: animation.drive(tween),
+                        child: child,
+                      );
+                    },
+                    pageBuilder: (_, __, ___) => PatchNotePage(),
+                  ));
+                } else {
+                  Navigator.of(context).push(
+                      CupertinoPageRoute(builder: (_) => PatchNotePage()));
+                }
+              },
+              child: Text(Translations.of(context).trans('patchnote')),
+            ),
+            height: 40,
+            width: 105,
+          ),
+        ],
+      ),
+      // Database
+      _buildDivider(),
+      Row(
+        children: [
+          Text(Translations.of(context).trans('database'),
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(child: Container()),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                        // '${Translations.of(context).trans('maindb')}:',
-                        'Database:',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18)),
-                  ),
+                  Text(Translations.of(context).trans('local'),
+                      style: TextStyle(color: Colors.grey)),
                   FutureBuilder(
                       future: SharedPreferences.getInstance(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return Text(' ??',
-                              style: TextStyle(
-                                  fontFamily: "Calibre-Semibold",
-                                  fontSize: 18));
+                          return Text(' ??');
                         }
                         return Text(
-                            ' ' +
-                                DateFormat('yyyy-MM-dd').format(DateTime.parse(
-                                    snapshot.data.getString('databasesync'))),
-                            style: TextStyle(
-                                fontFamily: "Calibre-Semibold", fontSize: 18));
+                          ' ' +
+                              DateFormat('yyyy.MM.dd').format(DateTime.parse(
+                                  snapshot.data.getString('databasesync'))),
+                        );
                       }),
                 ],
-              )
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(Translations.of(context).trans('latest'),
+                      style: TextStyle(color: Colors.grey)),
+                  Text(
+                    ' ' +
+                        DateFormat('yyyy.MM.dd')
+                            .format(SyncManager.getLatestDB().getDateTime()),
+                  ),
+                ],
+              ),
             ],
           ),
-        ),
+        ],
       ),
+      Container(height: 16),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Settings.majorColor.withAlpha(220),
+            ),
+            onPressed: Variables.databaseDecompressed
+                ? null
+                : () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => SplashPage(
+                              switching: true,
+                            )));
+                  },
+            child:
+                Text('    ${Translations.of(context).trans('switching')}    '),
+          ),
+          Badge(
+            showBadge: _syncAvailable,
+            badgeContent: Text('N',
+                style: TextStyle(color: Colors.white, fontSize: 12.0)),
+            // badgeColor: Settings.majorAccentColor,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Settings.majorColor.withAlpha(220),
+              ),
+              onPressed: Variables.databaseDecompressed
+                  ? null
+                  : () async {
+                      var latestDB = SyncManager.getLatestDB().getDateTime();
+                      var lastDB = (await SharedPreferences.getInstance())
+                          .getString('databasesync');
+
+                      if (lastDB != null &&
+                          latestDB.difference(DateTime.parse(lastDB)).inHours <
+                              1) {
+                        FlutterToast(context).showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: Translations.of(context)
+                                .trans('thisislatestbookmark'),
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                        return;
+                      }
+
+                      var dir = await getApplicationDocumentsDirectory();
+                      try {
+                        await ((await openDatabase('${dir.path}/data/data.db'))
+                            .close());
+                        await deleteDatabase('${dir.path}/data/data.db');
+                        await Directory('${dir.path}/data')
+                            .delete(recursive: true);
+                      } catch (e) {}
+
+                      setState(() {
+                        _syncAvailable = false;
+                      });
+
+                      await Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => DataBaseDownloadPage(
+                                    dbType: Settings.databaseType,
+                                    isExistsDataBase: false,
+                                    isSync: true,
+                                  )))
+                          .then((value) async {
+                        HitomiIndexs.init();
+                        final directory =
+                            await getApplicationDocumentsDirectory();
+                        final path = File('${directory.path}/data/index.json');
+                        final text = path.readAsStringSync();
+                        HitomiManager.tagmap = jsonDecode(text);
+                        await DataBaseManager.reloadInstance();
+
+                        FlutterToast(context).showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: Translations.of(context).trans('synccomplete'),
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: Duration(seconds: 4),
+                        );
+                      });
+                    },
+              child: Text('    ${Translations.of(context).trans('sync')}    '),
+            ),
+          ),
+        ],
+      )
+    ];
+  }
+
+  _buildServicePageRoute(Widget Function() builder) {
+    if (Platform.isIOS) {
+      return CupertinoPageRoute(builder: (context) => builder());
+    }
+
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 500),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final begin = const Offset(0.0, 1.0);
+        final end = Offset.zero;
+        final curve = Curves.ease;
+
+        final tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(
+          curve: curve,
+        ));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+      pageBuilder: (context, animation, secondaryAnimation) => builder(),
     );
   }
 
-  _userArea() {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 4),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(
-                width: 1.6,
-                color: Settings.themeWhat ? Colors.white : Colors.black,
-                style: BorderStyle.solid)),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(12, 12, 12, 8),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                        // '${Translations.of(context).trans('mainread')}:',
-                        'Read:',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18)),
-                  ),
-                  FutureBuilder(future: Future.sync(
-                    () async {
-                      return await (await User.getInstance()).getUserLog();
-                    },
-                  ), builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Text(' ??',
-                          style: TextStyle(
-                              fontFamily: "Calibre-Semibold", fontSize: 18));
-                    }
-                    return Text(' ' + numberWithComma(snapshot.data.length),
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18));
-                  }),
-                ],
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                        // '${Translations.of(context).trans('mainbookmark')}:',
-                        'Bookmark:',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18)),
-                  ),
-                  FutureBuilder(future: Future.sync(
-                    () async {
-                      return await (await Bookmark.getInstance()).getArticle();
-                    },
-                  ), builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Text(' ??',
-                          style: TextStyle(
-                              fontFamily: "Calibre-Semibold", fontSize: 18));
-                    }
-                    return Text(' ' + numberWithComma(snapshot.data.length),
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18));
-                  }),
-                ],
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 90,
-                    child: Text(
-                        // '${Translations.of(context).trans('maindownload')}:',
-                        'Donwload:',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18)),
-                  ),
-                  FutureBuilder(future: Future.sync(
-                    () async {
-                      return await (await Download.getInstance())
-                          .getDownloadItems();
-                    },
-                  ), builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Text(' ??',
-                          style: TextStyle(
-                              fontFamily: "Calibre-Semibold", fontSize: 18));
-                    }
-                    return Text(' ' + numberWithComma(snapshot.data.length),
-                        style: TextStyle(
-                            fontFamily: "Calibre-Semibold", fontSize: 18));
-                  }),
-                ],
-              ),
-              count > 0
-                  ? Row(
-                      children: [
-                        SizedBox(
-                          width: 90,
-                          child: Text(
-                              // '${Translations.of(context).trans('maindownload')}:',
-                              'Tap Count:',
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                  fontFamily: "Calibre-Semibold",
-                                  fontSize: 18)),
-                        ),
-                        Text(' ' + numberWithComma(count),
-                            style: TextStyle(
-                                fontFamily: "Calibre-Semibold", fontSize: 18))
-                      ],
-                    )
-                  : Container(),
-            ],
+  _serviceArea() {
+    final buttonStyle = ElevatedButton.styleFrom(
+      primary: Settings.majorColor.withAlpha(220),
+      onPrimary: Colors.white,
+      elevation: 3.0,
+      minimumSize: const Size(30.0, 30.0),
+      shape: const CircleBorder(),
+      padding: const EdgeInsets.all(16),
+    );
+
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Tooltip(
+            message: '작가별 모음',
+            child: ElevatedButton(
+              style: buttonStyle,
+              onPressed: () {
+                Navigator.of(context)
+                    .push(_buildServicePageRoute(() => ArtistCollectionPage()));
+              },
+              child: const Icon(MdiIcons.star),
+            ),
+          ),
+          Tooltip(
+            message: '조회수 베스트',
+            child: ElevatedButton(
+              style: buttonStyle,
+              onPressed: () {
+                Navigator.of(context)
+                    .push(_buildServicePageRoute(() => ViewsPage()));
+              },
+              child: const Icon(MdiIcons.starShooting),
+            ),
+          ),
+          Tooltip(
+            message: '정보',
+            child: ElevatedButton(
+              style: buttonStyle,
+              onPressed: () {
+                Navigator.of(context)
+                    .push(_buildServicePageRoute(() => InfoPage()));
+              },
+              child: const Icon(MdiIcons.heart),
+            ),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  _buildGroup(name, content) {
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.fromLTRB(32, 20, 32, 0),
+          alignment: Alignment.centerLeft,
+          child: Text(
+            name,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Settings.majorColor,
+              fontSize: 16.0,
+            ),
           ),
         ),
-      ),
+        Container(
+          margin: EdgeInsets.fromLTRB(32, 20, 32, 10),
+          // margin: EdgeInsets.only(left: 30, top: 100, right: 30, bottom: 50),
+          // height: double.infinity,
+          width: double.infinity,
+          decoration: !Settings.themeFlat
+              ? BoxDecoration(
+                  // color: Colors.white,
+                  color: Settings.themeWhat ? Colors.black26 : Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                      bottomLeft: Radius.circular(8),
+                      bottomRight: Radius.circular(8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Settings.themeWhat
+                          ? Colors.black26
+                          : Colors.grey.withOpacity(0.1),
+                      spreadRadius: Settings.themeWhat ? 0 : 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                )
+              : null,
+          color: !Settings.themeFlat
+              ? null
+              : Settings.themeWhat
+                  ? Colors.black26
+                  : Colors.white,
+          child: !Settings.themeFlat
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Material(
+                      color: Settings.themeWhat ? Colors.black38 : Colors.white,
+                      child: Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Column(children: content))))
+              : Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Column(children: content)),
+        ),
+      ],
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    updateCheckAndDownload();
+  Container _buildDivider() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 12.0),
+      width: double.infinity,
+      height: 1.0,
+      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
+    );
   }
 
+  String numberWithComma(int param) {
+    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
+  }
+
+  // @dependent: android [
   ReceivePort _port = ReceivePort();
 
   static void downloadCallback(
@@ -435,7 +747,11 @@ class _MainPageState extends State<MainPage> {
 
       var bb = await showYesNoDialog(
           context, Translations.of(context).trans('violetservermsg'));
-      if (bb == null || bb == false) return;
+      if (bb == null || bb == false) {
+        await (await SharedPreferences.getInstance())
+            .setBool('usevioletserver_check', false);
+        return;
+      }
 
       await Settings.setUseVioletServer(true);
       await (await SharedPreferences.getInstance())
@@ -449,4 +765,5 @@ class _MainPageState extends State<MainPage> {
     // TODO: implement dispose
     super.dispose();
   }
+  // @dependent: android ]
 }

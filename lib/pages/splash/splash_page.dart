@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -195,7 +195,7 @@ class _SplashPageState extends State<SplashPage> {
         }
       } catch (e, st) {
         // If an error occurs, stops synchronization immediately.
-        FirebaseCrashlytics.instance.recordError(e, st);
+        FirebaseCrashlytics.instance.recordError(e, st); // @dependent: android
         Logger.error(
             '[Splash-Navigation] E: ' + e.toString() + '\n' + st.toString());
       }
@@ -251,9 +251,7 @@ class _SplashPageState extends State<SplashPage> {
               top: showFirst ? 130 : height / 2 - 50,
               left: width / 2 - 50,
               child: Image.asset(
-                'assets/images/logo-' +
-                    Settings.majorColor.name +
-                    '.png',
+                'assets/images/logo-' + Settings.majorColor.name + '.png',
                 width: 100,
                 height: 100,
               ),

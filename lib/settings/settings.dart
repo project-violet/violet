@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:device_info/device_info.dart';
 import 'package:ext_storage/ext_storage.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -139,8 +139,7 @@ class Settings {
     }
     includeTags = includetags;
     excludeTags = excludetags.split('|').toList();
-    blurredTags =
-        blurredtags != null ? blurredtags.split(' ').toList() : [];
+    blurredTags = blurredtags != null ? blurredtags.split(' ').toList() : [];
 
     translateTags =
         (await SharedPreferences.getInstance()).getBool('translatetags');
@@ -357,6 +356,7 @@ class Settings {
             }
           }
         } catch (e, st) {
+          // @dependent: android =>
           Logger.error('[Settings] E: ' + e.toString() + '\n' + st.toString());
           FirebaseCrashlytics.instance.recordError(e, st);
         }
