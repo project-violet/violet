@@ -10,17 +10,17 @@
   "news": "Update",
   "theme": "Theme",
   "darkmode": "Dark Mode",
-  "colorsetting":"Color Setting",
-  "defaulttag":"Default Tag",
-  "currenttag":"Current Tag: ",
-  "excludetag":"Excluded Tags",
-  "blurredtag":"Blurred Tags",
-  "howtoshowsearchresult":"How To Display Search Results",
+  "colorsetting": "Color Setting",
+  "defaulttag": "Default Tag",
+  "currenttag": "Current Tag: ",
+  "excludetag": "Excluded Tags",
+  "blurredtag": "Blurred Tags",
+  "howtoshowsearchresult": "How To Display Search Results",
   "system": "System",
   "savedir": "Save Directory",
   "curdir": "Current Directory",
   "logrecord": "Log Record",
-  "language":"Language",
+  "language": "Language",
   "info": "Information",
   "devtool": "Developer Tools",
   "viewer": "Viewer",
@@ -37,15 +37,15 @@
   "tagtranslation": "Tag Translation (to Korean)",
   "showcount": "Show Count",
   "fuzzysearch": "Fuzzy Search",
-  "update":"Update",
+  "update": "Update",
   "checkupdate": "Check Update",
-  "etc":"Etc",
-  "discord":"Discord Channel",
-  "project":"Project",
-  "contact":"Contact",
+  "etc": "Etc",
+  "discord": "Discord Channel",
+  "project": "Project",
+  "contact": "Contact",
   "donate": "Donate",
   "externallink": "External Links",
-  "license":"License",
+  "license": "License",
   "srt0": "3 Line Grid View",
   "srt1": "2 Line Grid View",
   "srt2": "Lined View",
@@ -63,8 +63,7 @@
   "downloadpath": "Download Path",
   "curdownloadpath": "Current Path",
   "useinnerstorage": "Use Inner Storage",
-
-
+  "default": "Default",
   "read": "Read",
   "artists": "Artists",
   "groups": "Groups",
@@ -87,7 +86,6 @@
   "icharacter": "Characters",
   "score": "Score",
   "more": "More...",
-
   "database": "Database",
   "welcome": "Welcome to Violet. You must download the database before using this app.",
   "dbuser": "English Database",
@@ -99,7 +97,6 @@
   "warning": "Warning",
   "dbalready": "Have you already downloaded the database?",
   "dbalreadyerr": "Error! No file selected!\nPlease try again.",
-
   "dbdwaitforrequest": "Waiting for a request...",
   "dbderror": "Error! Contact the developer.",
   "dbdcheck": "Checking database...",
@@ -110,7 +107,6 @@
   "dbdcomplete": "Done!\nPlease restart app!",
   "dbdname": "Database Downloader",
   "dbddownloading": "Downloading...",
-
   "nosearchresult": "No search results found :(",
   "inputsearchtoken": "Please enter a search term!",
   "closedoubletap": "Press again to exit.",
@@ -120,25 +116,20 @@
   "infomessage": "The developer does not collect any information from users. All images and details are provided by hitomi.la, e-hentai.org or exhentai.org.",
   "tagmsgdefault": "This setting is a search term setting.",
   "tagrebuildmsg": "Tag rebuilding is the process of resetting autocomplete tags according to the settings given above. To rebuild the database, see the database group below. Will you continue?",
-
   "notice1": "Thank you for downloading my app.",
   "notice21": "Please send your inquiries to ",
   "notice22": ".",
   "notice3": "Any inquiries are welcome!",
   "notice4": "This app has nothing to do with",
   "notice5": "hitomi.la, e-hentai.org, exhentai.org.",
-
   "locking": "Locking",
   "enable_locking": "Enable Locking",
   "network": "Networking",
   "routing_rule": "Routing Rule",
   "proxy": "Proxy",
-
-
   "selectall": "Select All",
   "deselectall": "DeSelect All",
   "inverse": "Invert Selections",
-
   "readrecord": "Read Record",
   "readrecorddesc": "Viewed more than once articles are recorded.",
   "unclassified": "Unclassified",
@@ -170,10 +161,8 @@
   "right2left": "Read Right To Left",
   "newupdate": "New update available!",
   "latestver": "This is the latest version!",
-
   "yes": "Yes",
   "no": "No",
-
   "date": "Date",
   "complete": "Complete",
   "waitqueue": "Waiting queue...",
@@ -190,8 +179,6 @@
   "addurl": "Add URL",
   "writeurl": "Write URL.",
   "nothingtodownload": "Nothing to download :(",
-
-  
   "maindiscord": "Visit violet Discord Channel!",
   "maincontact": "Contact Developer",
   "maingithub": "Visit GitHub Project",
@@ -200,7 +187,6 @@
   "mainread": "Read",
   "mainbookmark": "Boomkark",
   "maindownload": "Download",
-  
   "usewebsearch": "Search on Web",
   "usevioletserver": "Use Violet Server",
   "wouldyouupdate": "Would you update?",
@@ -209,8 +195,6 @@
   "weekly": "Weekly",
   "monthly": "Monthly",
   "alltime": "All Time",
-  
-
   "toggleviewerstyle": "View page by page",
   "togglerighttoleft": "Right to Left",
   "togglescrollvertical": "Flip Vertically",
@@ -218,7 +202,6 @@
   "togglepadding": "Add Padding to Webtoon Viewer",
   "disableoverlaybuttons": "Enable Overlay Buttons",
   "disablefullscreen": "Enable Fullscreen",
-  
   "userstat": "User Statistics",
   "versionmanagement": "Version Management",
   "service": "Service",
