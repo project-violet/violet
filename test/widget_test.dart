@@ -6,6 +6,8 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 // import 'package:flutter/material.dart';
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 // import 'package:violet/component/download/hitomi.dart';
 // import 'package:http/http.dart' as http;
@@ -40,6 +42,19 @@ void main() {
             'series:rmskfqhsrmRhcdmldlfmadmsdnflsdkwlrahfmsek', true))
         .reversed
         .toList());
+
+    const t = 1776798;
+    var m = 99999999999.0;
+    var x = 0.0;
+    for (int i = 1; i < 100000000; i++) {
+      final xx = Random().nextDouble();
+      final y = (t * xx) - (t * xx).floor();
+      if (y < m) {
+        m = y;
+        x = xx;
+        print('$x, $m');
+      }
+    }
   });
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
