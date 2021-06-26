@@ -108,5 +108,5 @@ for root, subdirs, files in os.walk('./'):
         elif filename.endswith(".yaml"):
             process_yaml(root + '/' +  filename)
 
-create_valid('./lib/server/saltt.dart')
-create_valid('./lib/server/wsaltt.dart')
+create_dummy_valid('./lib/server/salt.dart')
+create_dummy_valid('./lib/server/wsalt.dart')
