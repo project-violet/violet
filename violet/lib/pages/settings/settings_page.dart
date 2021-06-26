@@ -1208,7 +1208,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.cloudSearchOutline,
                 color: Settings.majorColor,
               ),
-              title: Text('Import From E/Ex-Hentai'),
+              title: Text(Translations.of(context).trans('importfromeh')),
               trailing: Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
@@ -1219,7 +1219,7 @@ class _SettingsPageState extends State<SettingsPage>
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
-                    msg: 'Set Cookie First!',
+                    msg: Translations.of(context).trans('setcookiefirst'),
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -1237,7 +1237,7 @@ class _SettingsPageState extends State<SettingsPage>
                   child: ToastWrapper(
                     isCheck: false,
                     isWarning: true,
-                    msg: 'Bookmark is empty!',
+                    msg: Translations.of(context).trans('bookmarkisempty'),
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -1251,7 +1251,10 @@ class _SettingsPageState extends State<SettingsPage>
               });
 
               var qqq = await showYesNoDialog(
-                  context, '$count개 항목을 북마크에 추가할까요? (각 Favorite별로 그룹이 생성됩니다.)');
+                  context,
+                  Translations.of(context)
+                      .trans('ensurecreatebookmark')
+                      .replaceAll('\$1', count.toString()));
               if (qqq != null && qqq == true) {
                 var bookmark = await Bookmark.getInstance();
                 for (int i = 0; i < EHBookmark.bookmarkInfo.length; i++) {
@@ -1273,7 +1276,8 @@ class _SettingsPageState extends State<SettingsPage>
                   child: ToastWrapper(
                     isCheck: true,
                     isWarning: false,
-                    msg: '북마크 정보를 모두 불러왔습니다!',
+                    msg: Translations.of(context)
+                        .trans('completeimportbookmark'),
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -1293,7 +1297,7 @@ class _SettingsPageState extends State<SettingsPage>
                 MdiIcons.cloudSearchOutline,
                 color: Settings.majorColor,
               ),
-              title: Text('Import From Hiyobi'),
+              title: Text(Translations.of(context).trans('importfromjson')),
               trailing: Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
@@ -1318,7 +1322,8 @@ class _SettingsPageState extends State<SettingsPage>
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Import From Hiyobi'),
+                    title:
+                        Text(Translations.of(context).trans('importfromjson')),
                     contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
                     actions: [
                       importButton,
@@ -1331,7 +1336,8 @@ class _SettingsPageState extends State<SettingsPage>
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Paste your bookmark text!'),
+                          Text(Translations.of(context)
+                              .trans('pasteyourbookmarktext')),
                           Row(
                             children: [
                               Text('JSON: '),
@@ -1340,7 +1346,7 @@ class _SettingsPageState extends State<SettingsPage>
                                   decoration: InputDecoration(
                                       border: InputBorder.none,
                                       hintText:
-                                          'Paste Here! ex: ["1207894", "artist:michiking", ...]'),
+                                          'ex: ["1207894", "artist:michiking", ...]'),
                                   controller: textController,
                                   keyboardType: TextInputType.multiline,
                                   minLines: null,

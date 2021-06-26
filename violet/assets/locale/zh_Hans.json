@@ -239,5 +239,12 @@
     "timersetting": "Timer Tick",
     "second": "sec",
     "movetoappbartobottom": "Move Buttons To Bottom",
-    "showslider": "Show Slider"
+    "showslider": "Show Slider",
+    "importfromeh": "Import From E/Ex-Hentai",
+    "setcookiefirst": "Set Cookie First!",
+    "bookmarkisempty": "Bookmark is empty!",
+    "ensurecreatebookmark": "Would you like to add $1 item to your bookmarks? (Groups are created for each Favorite.)",
+    "completeimportbookmark": "All bookmark information has been loaded!",
+    "importfromjson": "Import in JSON",
+    "pasteyourbookmarktext": "Paste the bookmark format!"
 }
