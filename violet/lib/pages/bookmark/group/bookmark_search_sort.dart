@@ -130,6 +130,7 @@ class _BookmarkSearchSortState extends State<BookmarkSearchSort> {
           widget.tagStates,
           widget.groupStates,
           widget.isOr,
+          widget.isPopulationSort,
         ]);
         return Future(() => false);
       },

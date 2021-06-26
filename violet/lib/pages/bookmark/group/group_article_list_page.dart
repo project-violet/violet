@@ -447,6 +447,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 tagStates = value[0];
                 groupStates = value[1];
                 isOr = value[2];
+                isPopulationSort = value[3];
                 var result = <QueryResult>[];
                 queryResult.forEach((element) {
                   var succ = !isOr;
