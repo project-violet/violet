@@ -1,9 +1,8 @@
 name: Build ios
 on:
   push:
-    # 해당 브랜치에서 push됬을때 (바꿔주셔야해요)
     # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#configuring-workflow-events
-    branches: [ ios-build ]
+    branches: [ dev ]
 
 
 jobs:
@@ -12,15 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          # 브랜치 지정 (바꿔주셔야해요)
-          ref: ios-build
+          ref: dev
       - uses: actions/setup-java@v1
         with:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '2.2.0'
-      # Podfile.lock을 지워줘야할거같아서 지우고 다시 설치
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Preprocess
+          python3 preprocess-ios.py
       - name: Podfile
         run: |
           cd ios
@@ -30,8 +32,6 @@ jobs:
           pod install
           pod update
           cd ..
-      # 코드사인 없이 릴리즈
-      # ipa 빌드 https://stackoverflow.com/a/56666092
       - name: Build
         run: |
           flutter build ios --release --no-codesign
