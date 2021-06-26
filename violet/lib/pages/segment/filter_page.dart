@@ -6,13 +6,13 @@ import 'package:get/get.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart' as trans;
 import 'package:violet/settings/settings.dart';
 
 class FilterController extends GetxController {
   var ignoreBookmark = false.obs;
-  var blurred = false.obs;
   var isOr = false.obs;
   var isSearch = false.obs;
   var isPopulationSort = false.obs;
@@ -20,8 +20,6 @@ class FilterController extends GetxController {
   // var tags = <Tuple3<String, String, int>>[].obs;
   var tagStates = Map<String, bool>().obs;
   var groupStates = Map<String, bool>().obs;
-  var groupCount = Map<String, int>().obs;
-  var groups = <Tuple2<String, int>>[].obs;
 }
 
 class FilterPage extends StatefulWidget {
@@ -38,14 +36,22 @@ class FilterPage extends StatefulWidget {
 class _FilterPageState extends State<FilterPage> {
   final FilterController c = Get.find();
 
-  TextEditingController _searchController = TextEditingController();
+  final _searchController = TextEditingController();
 
   bool test = false;
-  List<Tuple3<String, String, int>> _tags = <Tuple3<String, String, int>>[];
+
+  final _tags = <Tuple3<String, String, int>>[];
+  final _groupCount = Map<String, int>();
+  final _groups = <Tuple2<String, int>>[];
 
   @override
   void initState() {
     super.initState();
+
+    _initTagPad();
+  }
+
+  _initTagPad() {
     Map<String, int> tags = Map<String, int>();
     widget.queryResult.forEach((element) {
       if (element.tags() != null) {
@@ -56,22 +62,22 @@ class _FilterPageState extends State<FilterPage> {
         });
       }
     });
-    c.groupCount['tag'] = 0;
-    c.groupCount['female'] = 0;
-    c.groupCount['male'] = 0;
+    _groupCount['tag'] = 0;
+    _groupCount['female'] = 0;
+    _groupCount['male'] = 0;
     tags.forEach((key, value) {
       var group = 'tag';
       var name = key;
       if (key.startsWith('female:')) {
         group = 'female';
-        c.groupCount['female'] += 1;
+        _groupCount['female'] += 1;
         name = key.split(':')[1];
       } else if (key.startsWith('male:')) {
         group = 'male';
-        c.groupCount['male'] += 1;
+        _groupCount['male'] += 1;
         name = key.split(':')[1];
       } else
-        c.groupCount['tag'] += 1;
+        _groupCount['tag'] += 1;
       _tags.add(Tuple3<String, String, int>(group, name, value));
       if (!c.tagStates.containsKey(group + '|' + name))
         c.tagStates[group + '|' + name] = false;
@@ -87,16 +93,16 @@ class _FilterPageState extends State<FilterPage> {
     append('class', 'Class');
     append('type', 'Type');
     append('uploader', 'Uploader');
-    c.groupCount.forEach((key, value) {
-      c.groups.add(Tuple2<String, int>(key, value));
+    _groupCount.forEach((key, value) {
+      _groups.add(Tuple2<String, int>(key, value));
     });
-    c.groups.sort((a, b) => b.item2.compareTo(a.item2));
+    _groups.sort((a, b) => b.item2.compareTo(a.item2));
     _tags.sort((a, b) => b.item3.compareTo(a.item3));
   }
 
   void append(String group, String vv) {
     if (!c.groupStates.containsKey(group)) c.groupStates[group] = false;
-    c.groupCount[group] = 0;
+    _groupCount[group] = 0;
     Map<String, int> tags = Map<String, int>();
     widget.queryResult.forEach((element) {
       if (element.result[vv] != null) {
@@ -107,7 +113,7 @@ class _FilterPageState extends State<FilterPage> {
         });
       }
     });
-    c.groupCount[group] += tags.length;
+    _groupCount[group] += tags.length;
     tags.forEach((key, value) {
       _tags.add(Tuple3<String, String, int>(group, key, value));
       if (!c.tagStates.containsKey(group + '|' + key))
@@ -118,29 +124,17 @@ class _FilterPageState extends State<FilterPage> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    return WillPopScope(
-      onWillPop: () {
-        Navigator.pop(context, [
-          c.ignoreBookmark,
-          c.blurred,
-          c.tagStates,
-          c.groupStates,
-          c.isOr,
-        ]);
-        return Future(() => false);
-      },
-      child: Container(
-        color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-        padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top,
-            bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Hero(tag: "searchtype", child: _buildPanel()),
-          ],
-        ),
+    return Container(
+      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+      padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Hero(tag: "searchtype", child: _buildPanel()),
+        ],
       ),
     );
   }
@@ -175,45 +169,49 @@ class _FilterPageState extends State<FilterPage> {
                 c.isSearch.isTrue
                     ? _buildSearchControlPanel()
                     : _buildSelectControlPanel(),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 4.0,
-                  runSpacing: -10.0,
-                  children: <Widget>[
-                    FilterChip(
-                      label: Text("Population"),
-                      selected: c.isPopulationSort.isTrue,
-                      onSelected: (bool value) {
-                        setState(() {
-                          c.isPopulationSort.value = value;
-                        });
-                      },
-                    ),
-                    FilterChip(
-                      label: Text("OR"),
-                      selected: c.isOr.isTrue,
-                      onSelected: (bool value) {
-                        setState(() {
-                          c.isOr.value = value;
-                        });
-                      },
-                    ),
-                    FilterChip(
-                      label: Text("Search"),
-                      selected: c.isSearch.isTrue,
-                      onSelected: (bool value) {
-                        setState(() {
-                          c.isSearch.value = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                _buildOptionButtons()
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  _buildOptionButtons() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 4.0,
+      runSpacing: -10.0,
+      children: <Widget>[
+        FilterChip(
+          label: Text("Population"),
+          selected: c.isPopulationSort.isTrue,
+          onSelected: (bool value) {
+            setState(() {
+              c.isPopulationSort.value = value;
+            });
+          },
+        ),
+        FilterChip(
+          label: Text("OR"),
+          selected: c.isOr.isTrue,
+          onSelected: (bool value) {
+            setState(() {
+              c.isOr.value = value;
+            });
+          },
+        ),
+        FilterChip(
+          label: Text("Search"),
+          selected: c.isSearch.isTrue,
+          onSelected: (bool value) {
+            setState(() {
+              c.isSearch.value = value;
+            });
+          },
+        ),
+      ],
     );
   }
 
@@ -260,7 +258,7 @@ class _FilterPageState extends State<FilterPage> {
         alignment: WrapAlignment.center,
         spacing: -7.0,
         runSpacing: -13.0,
-        children: c.groups
+        children: _groups
             .map((element) => _Chip(
                   count: element.item2,
                   group: element.item1,
@@ -370,9 +368,13 @@ class _Chip extends StatefulWidget {
 class __ChipState extends State<_Chip> {
   @override
   Widget build(BuildContext context) {
-    var tagRaw = widget.name;
+    var tagDisplayed = widget.name;
     var group = widget.group;
     Color color = Colors.grey;
+
+    if (Settings.translateTags)
+      tagDisplayed =
+          TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
 
     if (group == 'female')
       color = Colors.pink;
@@ -413,7 +415,7 @@ class __ChipState extends State<_Chip> {
           ),
           label: Text(
             ' ' +
-                HtmlUnescape().convert(tagRaw) +
+                HtmlUnescape().convert(tagDisplayed) +
                 ' (' +
                 widget.count.toString() +
                 ')',
