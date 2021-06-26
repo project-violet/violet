@@ -74,7 +74,7 @@ class VioletLicensePage extends StatelessWidget {
             ),
             Wrap(children: [
               SvgPicture.network(
-                'https://github.com/project-violet/violet-community-downloader/releases/download/logo/logo_flutter_1080px_clr.svg',
+                'https://github.com/project-violet/violet/releases/download/logos/flutter.svg',
                 width: 50,
                 height: 30,
               ),
@@ -82,7 +82,7 @@ class VioletLicensePage extends StatelessWidget {
                 width: 8,
               ),
               SvgPicture.network(
-                'https://github.com/project-violet/violet-community-downloader/releases/download/logo/logo_dart_1080px_clr.svg',
+                'https://github.com/project-violet/violet/releases/download/logos/dart.svg',
                 width: 30,
                 height: 30,
               ),
