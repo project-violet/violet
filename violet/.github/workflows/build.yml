@@ -22,6 +22,7 @@ jobs:
         with:
           python-version: '3.8'
       - name: Preprocess
+        run: | 
           python3 preprocess-ios.py
       - name: Podfile
         run: |
