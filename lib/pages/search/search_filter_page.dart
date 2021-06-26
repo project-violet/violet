@@ -134,6 +134,7 @@ class _SearchFilterState extends State<SearchFilter> {
           widget.tagStates,
           widget.groupStates,
           widget.isOr,
+          widget.isPopulationSort,
         ]);
         return Future(() => false);
       },

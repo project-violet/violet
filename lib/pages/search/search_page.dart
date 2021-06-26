@@ -371,6 +371,7 @@ class _SearchPageState extends State<SearchPage>
                     tagStates = value[2];
                     groupStates = value[3];
                     isOr = value[4];
+                    isPopulationSort = value[5];
                     var result = <QueryResult>[];
                     queryResult.forEach((element) {
                       var succ = !isOr;

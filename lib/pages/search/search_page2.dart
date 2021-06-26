@@ -231,39 +231,7 @@ class _SearchPageState extends State<SearchPage>
                     child: Material(
                       type: MaterialType.transparency,
                       child: InkWell(
-                        onTap: () async {
-                          await Future.delayed(Duration(milliseconds: 200));
-                          heroFlareControls.play('search2close');
-                          final query = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return SearchBarPage(
-                                  artboard: artboard,
-                                  initText: latestQuery != null
-                                      ? latestQuery.item2
-                                      : '',
-                                  heroController: heroFlareControls,
-                                );
-                              },
-                              fullscreenDialog: true,
-                            ),
-                          );
-                          final db = await SearchLogDatabase.getInstance();
-                          await db.insertSearchLog(query);
-                          setState(() {
-                            heroFlareControls.play('close2search');
-                          });
-                          if (query == null) return;
-                          latestQuery =
-                              Tuple2<Tuple2<List<QueryResult>, int>, String>(
-                                  null, query);
-                          queryResult = [];
-                          _filterController = FilterController();
-                          queryEnd = false;
-                          isFilterUsed = false;
-                          await loadNextQuery();
-                        },
+                        onTap: _showSearchBar,
                         onDoubleTap: () async {
                           // latestQuery = value;
                           latestQuery =
@@ -286,6 +254,36 @@ class _SearchPageState extends State<SearchPage>
             ),
           )),
     );
+  }
+
+  Future<void> _showSearchBar() async {
+    await Future.delayed(Duration(milliseconds: 200));
+    heroFlareControls.play('search2close');
+    final query = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return SearchBarPage(
+            artboard: artboard,
+            initText: latestQuery != null ? latestQuery.item2 : '',
+            heroController: heroFlareControls,
+          );
+        },
+        fullscreenDialog: true,
+      ),
+    );
+    final db = await SearchLogDatabase.getInstance();
+    await db.insertSearchLog(query);
+    setState(() {
+      heroFlareControls.play('close2search');
+    });
+    if (query == null) return;
+    latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(null, query);
+    queryResult = [];
+    _filterController = FilterController();
+    queryEnd = false;
+    isFilterUsed = false;
+    await loadNextQuery();
   }
 
   Widget _align() {
@@ -400,10 +398,10 @@ class _SearchPageState extends State<SearchPage>
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (split[0] == 'female' || split[0] == 'male')
-            tag = split[0] + ':' + split[1];
-          if ((element.result[dbColumn] as String).contains('|' + tag + '|') ==
-              isOr) succ = isOr;
+          if (['female', 'male'].contains(split[0]))
+            tag = '${split[0]}:${split[1]}';
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+            succ = isOr;
         }
 
         // If Multitag
