@@ -21,6 +21,7 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
@@ -100,14 +101,12 @@ class _SearchPageState extends State<SearchPage>
         setState(() {
           queryResult = latestQuery.item1.item1;
         });
-      } catch (e) {
-        print('Initial search failed: $e');
-        _showErrorToast('Failed to search all: $e');
+      } catch (e, st) {
+        Logger.error(
+            '[search-error] E: ' + e.toString() + '\n' + st.toString());
       }
-    }).catchError((e) {
-      // It happened!
-      print('Initial search interrupted: $e');
-      _showErrorToast('Initial search interrupted: $e');
+    }).catchError((e, st) {
+      Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
     });
 
     _scroll.addListener(() {
