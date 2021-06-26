@@ -60,6 +60,7 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
       '\n' +
       flutterErrorDetails.stack.toString());
 
+  // @dependent: android =>
   await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
 }
 
