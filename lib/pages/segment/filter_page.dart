@@ -12,12 +12,10 @@ import 'package:violet/locale/locale.dart' as trans;
 import 'package:violet/settings/settings.dart';
 
 class FilterController extends GetxController {
-  var ignoreBookmark = false.obs;
   var isOr = false.obs;
   var isSearch = false.obs;
   var isPopulationSort = false.obs;
 
-  // var tags = <Tuple3<String, String, int>>[].obs;
   var tagStates = Map<String, bool>().obs;
   var groupStates = Map<String, bool>().obs;
 }
@@ -310,7 +308,6 @@ class _FilterPageState extends State<FilterPage> {
       children: <Widget>[
         FilterChip(
           label: Text(trans.Translations.of(context).trans('selectall')),
-          // selected: c.ignoreBookmark,
           onSelected: (bool value) {
             _tags
                 .where((element) => c.groupStates[element.item1])
@@ -322,7 +319,6 @@ class _FilterPageState extends State<FilterPage> {
         ),
         FilterChip(
           label: Text(trans.Translations.of(context).trans('deselectall')),
-          // selected: c.blurred,
           onSelected: (bool value) {
             _tags
                 .where((element) => c.groupStates[element.item1])
@@ -334,7 +330,6 @@ class _FilterPageState extends State<FilterPage> {
         ),
         FilterChip(
           label: Text(trans.Translations.of(context).trans('inverse')),
-          // selected: c.blurred,
           onSelected: (bool value) {
             _tags
                 .where((element) => c.groupStates[element.item1])
