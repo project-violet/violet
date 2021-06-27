@@ -24,8 +24,20 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 6, 27),
+    version: '1.11 Minor Update <== Latest',
+    isMinor: true,
+    contents: [
+      'code refactoring for flutter 2.0',
+      'ehance tag translation(korean)',
+      'add viewer report routine',
+      'add sort by population to filter page',
+      'fix to consistent random search',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 6, 20),
-    version: '1.10.2 Patch Update <== Latest',
+    version: '1.10.2 Patch Update',
     contents: [
       'add related tag viewer',
       'fix article info paddings error',
