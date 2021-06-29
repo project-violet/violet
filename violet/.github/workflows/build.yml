@@ -58,6 +58,12 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           flutter-version: '2.2.0'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Preprocess
+        run: | 
+          python3 preprocess-android.py
       - name: Build
         run: |
           flutter clean
