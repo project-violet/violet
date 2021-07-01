@@ -20,6 +20,7 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
@@ -76,6 +77,7 @@ class _ViewerPageState extends State<ViewerPage>
   List<int> _decisecondPerPages;
   bool _isStaring = true;
   List<bool> _isImageLoaded;
+  bool _isSessionOutdated = false;
 
   @override
   void initState() {
@@ -319,6 +321,7 @@ class _ViewerPageState extends State<ViewerPage>
 
     return WillPopScope(
       onWillPop: () async {
+        _isSessionOutdated = true;
         if (!_pageInfo.useFileSystem) await _savePageRead();
         return Future(() => true);
       },
@@ -1467,6 +1470,7 @@ class _ViewerPageState extends State<ViewerPage>
   List<Map<String, String>> _headerCache;
   List<String> _urlCache;
   List<double> _estimatedImageHeight;
+  List<bool> _loadingEstimaed;
   int _latestIndex = 0;
   double _latestAlign = 0;
   bool _onScroll = false;
@@ -1486,11 +1490,19 @@ class _ViewerPageState extends State<ViewerPage>
 
     if (_estimatedImageHeight == null) {
       _estimatedImageHeight = List<double>.filled(_pageInfo.uris.length, 0);
+      _loadingEstimaed = List<bool>.filled(_pageInfo.uris.length, false);
+    }
+
+    if (_loadingEstimaed[index] == false) {
+      _loadingEstimaed[index] = true;
       Future.delayed(Duration(milliseconds: 1)).then((value) async {
-        for (int i = 0; i < _pageInfo.uris.length; i++) {
-          final _h = await _pageInfo.provider.getEstimatedImageHeight(i, width);
-          if (_h < 0) continue;
-          _estimatedImageHeight[i] = _h;
+        if (_isSessionOutdated) return;
+        final _h =
+            await _pageInfo.provider.getEstimatedImageHeight(index, width);
+        if (_h > 0) {
+          setState(() {
+            _estimatedImageHeight[index] = _h;
+          });
         }
       });
     }
@@ -1582,7 +1594,9 @@ class _ViewerPageState extends State<ViewerPage>
                 },
                 progressIndicatorBuilder: (context, string, progress) {
                   return SizedBox(
-                    height: 300,
+                    height: _estimatedImageHeight[index] != 0
+                        ? _estimatedImageHeight[index]
+                        : 300,
                     child: Center(
                       child: SizedBox(
                         child:
