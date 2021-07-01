@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -84,5 +83,10 @@ class EHentaiImageProvider extends VioletImageProvider {
   @override
   int length() {
     return count;
+  }
+
+  @override
+  Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
+    return -1;
   }
 }

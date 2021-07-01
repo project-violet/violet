@@ -1466,6 +1466,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   List<Map<String, String>> _headerCache;
   List<String> _urlCache;
+  List<double> _estimatedImageHeight;
   int _latestIndex = 0;
   double _latestAlign = 0;
   bool _onScroll = false;
@@ -1482,6 +1483,18 @@ class _ViewerPageState extends State<ViewerPage>
       _keys = List<GlobalKey>.generate(
           _pageInfo.uris.length, (index) => GlobalKey());
     }
+
+    if (_estimatedImageHeight == null) {
+      _estimatedImageHeight = List<double>.filled(_pageInfo.uris.length, 0);
+      Future.delayed(Duration(milliseconds: 1)).then((value) async {
+        for (int i = 0; i < _pageInfo.uris.length; i++) {
+          final _h = await _pageInfo.provider.getEstimatedImageHeight(i, width);
+          if (_h < 0) continue;
+          _estimatedImageHeight[i] = _h;
+        }
+      });
+    }
+
     return FutureBuilder(
       // to avoid loading all images when fast scrolling
       future: Future.delayed(Duration(milliseconds: 300)).then((value) => 1),
@@ -1490,7 +1503,9 @@ class _ViewerPageState extends State<ViewerPage>
         // it is necessary to put an empty box for the invisible part.
         if (!snapshot.hasData && _height[index] == 0) {
           return SizedBox(
-            height: 300,
+            height: _estimatedImageHeight[index] != 0
+                ? _estimatedImageHeight[index]
+                : 300,
             child: Center(
               child: SizedBox(
                 child: CircularProgressIndicator(),
@@ -1519,7 +1534,9 @@ class _ViewerPageState extends State<ViewerPage>
             if (!snapshot.hasData &&
                 (_urlCache[index] == null || _headerCache[index] == null)) {
               return SizedBox(
-                height: 300,
+                height: _estimatedImageHeight[index] != 0
+                    ? _estimatedImageHeight[index]
+                    : 300,
                 child: Center(
                   child: SizedBox(
                     child: CircularProgressIndicator(),
@@ -1533,7 +1550,9 @@ class _ViewerPageState extends State<ViewerPage>
               // height: _height[index] != 0 ? _height[index] : null,
               constraints: _height[index] != 0
                   ? BoxConstraints(minHeight: _height[index])
-                  : null,
+                  : _estimatedImageHeight[index] != 0
+                      ? BoxConstraints(minHeight: _estimatedImageHeight[index])
+                      : null,
               child: VCachedNetworkImage(
                 key: _keys[index],
                 imageUrl: _urlCache[index],

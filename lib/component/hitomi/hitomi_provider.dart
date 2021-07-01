@@ -3,6 +3,8 @@
 
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/image_provider.dart';
+import 'package:violet/network/wrapper.dart' as http;
+import 'package:image_size_getter/image_size_getter.dart';
 
 class HitomiImageProvider extends VioletImageProvider {
   Tuple3<List<String>, List<String>, List<String>> urls;
@@ -35,5 +37,19 @@ class HitomiImageProvider extends VioletImageProvider {
   @override
   int length() {
     return urls.item1.length;
+  }
+
+  @override
+  Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
+    if (urls.item3 == null || urls.item3.length > page) return -1;
+
+    final header = await getHeader(page);
+    final image = (await http.get(urls.item3[page], headers: header)).bodyBytes;
+    final thumbSize = ImageSizeGetter.getSize(MemoryInput(image));
+
+    // w1:h1=w2:h2
+    // w1h2=h1w2
+    // h2=h1w2/w1
+    return thumbSize.height * baseWidth / thumbSize.width;
   }
 }
