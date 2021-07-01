@@ -41,7 +41,7 @@ class HitomiImageProvider extends VioletImageProvider {
 
   @override
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
-    if (urls.item3 == null || urls.item3.length > page) return -1;
+    if (urls.item3 == null || urls.item3.length <= page) return -1;
 
     final header = await getHeader(page);
     final image = (await http.get(urls.item3[page], headers: header)).bodyBytes;
