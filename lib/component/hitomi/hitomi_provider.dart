@@ -39,9 +39,15 @@ class HitomiImageProvider extends VioletImageProvider {
     return urls.item1.length;
   }
 
+  List<double> _estimatedCache;
+
   @override
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
     if (urls.item3 == null || urls.item3.length <= page) return -1;
+
+    if (_estimatedCache == null)
+      _estimatedCache = List<double>.filled(urls.item3.length, 0);
+    else if (_estimatedCache[page] != 0) return _estimatedCache[page];
 
     final header = await getHeader(page);
     final image = (await http.get(urls.item3[page], headers: header)).bodyBytes;
@@ -50,6 +56,7 @@ class HitomiImageProvider extends VioletImageProvider {
     // w1:h1=w2:h2
     // w1h2=h1w2
     // h2=h1w2/w1
-    return thumbSize.height * baseWidth / thumbSize.width;
+    return _estimatedCache[page] =
+        thumbSize.height * baseWidth / thumbSize.width;
   }
 }
