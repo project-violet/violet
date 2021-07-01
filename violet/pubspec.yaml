@@ -75,6 +75,7 @@ dependencies:
   html:
   html_unescape:
   http:
+  image_size_getter: ^1.0.0
   intl: ^0.17.0
   kdtree:
   lottie:
