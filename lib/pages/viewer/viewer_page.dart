@@ -443,7 +443,8 @@ class _ViewerPageState extends State<ViewerPage>
       icon: Icon(Icons.arrow_back),
       color: Colors.white,
       onPressed: () async {
-        await _savePageRead();
+        _isSessionOutdated = true;
+        if (!_pageInfo.useFileSystem) await _savePageRead();
         Navigator.pop(context, currentPage);
         return Future(() => false);
       },
@@ -586,13 +587,26 @@ class _ViewerPageState extends State<ViewerPage>
             usableTabList: _pageInfo.usableTabList,
           );
 
+          _report = ViewerReport(
+            id: _pageInfo.id,
+            pages: _pageInfo.uris.length,
+            startsTime: DateTime.now(),
+          );
+          _decisecondPerPages = List.filled(_pageInfo.uris.length, 0);
+          _isImageLoaded = List.filled(_pageInfo.uris.length, false);
+
           _headerCache =
               List<Map<String, String>>.filled(_pageInfo.uris.length, null);
           _urlCache = List<String>.filled(_pageInfo.uris.length, null);
           _height = List<double>.filled(_pageInfo.uris.length, 0);
           _keys = List<GlobalKey>.generate(
               _pageInfo.uris.length, (index) => GlobalKey());
-
+          _estimatedImageHeight = List<double>.filled(_pageInfo.uris.length, 0);
+          _loadingEstimaed = List<bool>.filled(_pageInfo.uris.length, false);
+          _latestIndex = 0;
+          _latestAlign = 0;
+          _onScroll = false;
+          
           setState(() {});
 
           Future.delayed(Duration(milliseconds: 300))
