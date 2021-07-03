@@ -19,12 +19,16 @@ import 'package:flutter_test/flutter_test.dart';
 // import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/script/parse_tree.dart';
+
+import 'json/json_lexer.dart';
+import 'json/json_parser.dart';
 // import 'package:violet/database/query.dart';
 // import 'package:violet/server/community/session.dart';
 // import 'package:violet/server/violet.dart';
 
 void main() {
-  test("Test Translated", () async {
+  /*test("Test Translated", () async {
     await TagTranslate.init();
     // print(
     //     TagTranslate.containsFuzzingTotal('그날그쪽에핀꽃은아무도모른다').reversed.toList());
@@ -96,6 +100,38 @@ void main() {
         print('$x, $m');
       }
     }
+  });*/
+
+  test('test script', () {
+    JSonLexer lexer = JSonLexer();
+    JSonParser parser = JSonParser();
+    ParseTree tree;
+
+    lexer.allocateTarget("[{\"object\": \"obj\"}]");
+    var insert = (String x, String y, int a, int b) {
+      parser.insertByTokenName(x, y);
+      if (parser.isError())
+        throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
+      while (parser.reduce()) {
+        var l = parser.latestReduce();
+        //l.action(l);
+        parser.insertByTokenName(x, y);
+        if (parser.isError())
+          throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
+      }
+    };
+
+    while (lexer.valid()) {
+      var tk = lexer.next();
+      insert(tk.item1, tk.item2, tk.item3, tk.item4);
+    }
+
+    if (parser.isError()) throw new Exception();
+    insert("\$", "\$", -1, -1);
+
+    tree = parser.tree();
+
+    print(tree.printTree());
   });
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
