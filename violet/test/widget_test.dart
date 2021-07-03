@@ -20,6 +20,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/script/parse_tree.dart';
+import 'package:violet/script/script_lexer.dart';
+import 'package:violet/script/script_parser.dart';
 
 import 'json/json_lexer.dart';
 import 'json/json_parser.dart';
@@ -103,11 +105,22 @@ void main() {
   });*/
 
   test('test script', () {
-    JSonLexer lexer = JSonLexer();
-    JSonParser parser = JSonParser();
+    // var lexer = JSonLexer();
+    // var parser = JSonParser();
+    var lexer = ScriptLexer();
+    var parser = ScriptParser();
     ParseTree tree;
 
-    lexer.allocateTarget("[{\"object\": \"obj\"}]");
+    // lexer.allocateTarget("[{\"object\": \"obj\"}]");
+
+    lexer.allocateTarget("""if (or(gre(sum(x,y), sub(x,y)), iscon(x,y,z))) [
+    foreach (k : arrayx) 
+        print(k)
+    k[3] = 6 // Assign 6 to k[3]
+] else if (not(iscon(x,y,z))) [
+    k[2] = 7
+]""");
+
     var insert = (String x, String y, int a, int b) {
       parser.insertByTokenName(x, y);
       if (parser.isError())
