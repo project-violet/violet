@@ -3,8 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -41,17 +41,28 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     if (MediaQuery.of(context).viewInsets.bottom < 1) height = 400;
 
     if (_searchLists.length == 0 && !_nothing) {
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'female', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'male', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'tag', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'lang', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'series', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'artist', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'group', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'uploader', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'character', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'type', 0));
-      _searchLists.add(Tuple3<String, String, int>('prefix', 'class', 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'female'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'male'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'tag'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'lang'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'series'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'artist'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'group'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'uploader'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'character'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'type'), 0));
+      _searchLists.add(Tuple2<DisplayedTag, int>(
+          DisplayedTag(group: 'prefix', name: 'class'), 0));
     }
 
     return AlertDialog(
@@ -135,7 +146,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     );
   }
 
-  List<Tuple3<String, String, int>> _searchLists = [];
+  List<Tuple2<DisplayedTag, int>> _searchLists = <Tuple2<DisplayedTag, int>>[];
 
   TextEditingController _searchController;
   int _insertPos, _insertLength;
@@ -184,37 +195,48 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         .toList();
     if (result.length == 0) _nothing = true;
     setState(() {
-      _searchLists = result.map((e) =>
-          Tuple3<String, String, int>(e.item1.group, e.item1.name, e.item2));
+      _searchLists = result;
     });
   }
 
   // Create tag-chip
   // group, name, counts
-  Widget chip(Tuple3<String, String, int> info) {
-    var tagRaw = info.item2;
+  Widget chip(Tuple2<DisplayedTag, int> info) {
+    var tagDisplayed = info.item1.name.split(':').last;
     var count = '';
     var color = Colors.grey;
 
     if (_tagTranslation) // Korean
-      tagRaw = TagTranslate.ofAny(info.item2);
+      tagDisplayed = info.item1.getTranslated();
 
-    if (info.item3 > 0 && _showCount) count = ' (${info.item3})';
+    if (info.item2 > 0 && _showCount) count = ' (${info.item2})';
 
-    if (info.item1 == 'female')
+    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:'))
       color = Colors.pink;
-    else if (info.item1 == 'male')
+    else if (info.item1.group == 'tag' && info.item1.name.startsWith('male:'))
       color = Colors.blue;
-    else if (info.item1 == 'prefix') color = Colors.orange;
+    else if (info.item1.group == 'prefix')
+      color = Colors.orange;
+    else if (info.item1.group == 'language')
+      color = Colors.teal;
+    else if (info.item1.group == 'series')
+      color = Colors.cyan;
+    else if (info.item1.group == 'artist' || info.item1.group == 'group')
+      color = Colors.green.withOpacity(0.6);
+    else if (info.item1.group == 'type') color = Colors.orange;
 
     var fc = RawChip(
       labelPadding: EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
-        child: Text(info.item1[0].toUpperCase()),
+        child: Text(info.item1.group == 'tag' &&
+                (info.item1.name.startsWith('female:') ||
+                    info.item1.name.startsWith('male:'))
+            ? info.item1.name[0].toUpperCase()
+            : info.item1.group[0].toUpperCase()),
       ),
       label: Text(
-        ' ' + tagRaw + count,
+        ' ' + tagDisplayed + count,
         style: TextStyle(
           color: Colors.white,
         ),
@@ -225,10 +247,13 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       padding: EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
-        if (info.item1 != 'prefix') {
-          var insert = info.item2.replaceAll(' ', '_');
-          if (info.item1 != 'female' && info.item1 != 'male')
-            insert = info.item1 + ':' + insert;
+        if (info.item1.group != 'prefix') {
+          var insert = (info.item1.group == 'tag' &&
+                      (info.item1.name.startsWith('female') ||
+                          info.item1.name.startsWith('male'))
+                  ? info.item1.name
+                  : info.item1.getTag())
+              .replaceAll(' ', '_');
 
           _searchController.text = _searchText.substring(0, _insertPos) +
               insert +
@@ -243,19 +268,19 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           if (offset != -1) {
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
-                info.item2 +
-                ': ' +
+                info.item1.name +
+                ':' +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item2.length + 1,
-              extentOffset: offset + info.item2.length + 1,
+              baseOffset: offset + info.item1.name.length + 1,
+              extentOffset: offset + info.item1.name.length + 1,
             );
           } else {
-            _searchController.text = info.item2 + ': ';
+            _searchController.text = info.item1.name + ':';
             _searchController.selection = TextSelection(
-              baseOffset: info.item2.length + 1,
-              extentOffset: info.item2.length + 1,
+              baseOffset: info.item1.name.length + 1,
+              extentOffset: info.item1.name.length + 1,
             );
           }
           await searchProcess(
