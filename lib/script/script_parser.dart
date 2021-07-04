@@ -2,6 +2,7 @@
 // Copyright (C) 2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:violet/script/parser.dart';
+import 'package:violet/script/script_model.dart';
 
 class ScriptParser extends ShiftReduceParser {
   static const Map<String, int> _symbolTable = {
@@ -1637,5 +1638,6 @@ class ScriptParser extends ShiftReduceParser {
           production: _production,
           groupTable: _groupTable,
           accept: _accept,
+          actions: PActionDescription.actions,
         );
 }
