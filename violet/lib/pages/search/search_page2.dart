@@ -27,7 +27,6 @@ import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
-import 'package:violet/pages/search/search_filter_page.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/settings/device_type.dart';
