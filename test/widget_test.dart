@@ -22,6 +22,7 @@ import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/script/parse_tree.dart';
 import 'package:violet/script/script_lexer.dart';
 import 'package:violet/script/script_parser.dart';
+import 'package:violet/script/script_runner.dart';
 
 import 'json/json_lexer.dart';
 import 'json/json_parser.dart';
@@ -107,44 +108,49 @@ void main() {
   test('test script', () {
     // var lexer = JSonLexer();
     // var parser = JSonParser();
-    var lexer = ScriptLexer();
-    var parser = ScriptParser();
-    ParseTree tree;
+    // var lexer = ScriptLexer();
+    // var parser = ScriptParser();
+    // ParseTree tree;
 
     // lexer.allocateTarget("[{\"object\": \"obj\"}]");
 
-    lexer.allocateTarget("""if (or(gre(sum(x,y), sub(x,y)), iscon(x,y,z))) [
-    foreach (k : arrayx) 
-        print(k)
+    var runner =
+        ScriptRunner("""if (or(gre(sum(x,y), sub(x,y)), iscon(x,y,z))) [
+    foreach (k : arrayx) [
+        print(k)]
     k[3] = 6 // Assign 6 to k[3]
 ] else if (not(iscon(x,y,z))) [
     k[2] = 7
 ]""");
 
-    var insert = (String x, String y, int a, int b) {
-      parser.insertByTokenName(x, y);
-      if (parser.isError())
-        throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
-      while (parser.reduce()) {
-        var l = parser.latestReduce();
-        //l.action(l);
-        parser.insertByTokenName(x, y);
-        if (parser.isError())
-          throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
-      }
-    };
+    print(runner.printTree());
 
-    while (lexer.valid()) {
-      var tk = lexer.next();
-      insert(tk.item1, tk.item2, tk.item3, tk.item4);
-    }
+    runner.runScript(null);
 
-    if (parser.isError()) throw new Exception();
-    insert("\$", "\$", -1, -1);
+    // var insert = (String x, String y, int a, int b) {
+    //   parser.insertByTokenName(x, y);
+    //   if (parser.isError())
+    //     throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
+    //   while (parser.reduce()) {
+    //     var l = parser.latestReduce();
+    //     //l.action(l);
+    //     parser.insertByTokenName(x, y);
+    //     if (parser.isError())
+    //       throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
+    //   }
+    // };
 
-    tree = parser.tree();
+    // while (lexer.valid()) {
+    //   var tk = lexer.next();
+    //   insert(tk.item1, tk.item2, tk.item3, tk.item4);
+    // }
 
-    print(tree.printTree());
+    // if (parser.isError()) throw new Exception();
+    // insert("\$", "\$", -1, -1);
+
+    // tree = parser.tree();
+
+    // print(tree.printTree());
   });
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
