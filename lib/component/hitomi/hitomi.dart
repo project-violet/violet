@@ -42,10 +42,10 @@ class HitomiManager {
       var x = int.tryParse('${postfix[0]}${postfix[1]}', radix: 16);
 
       if (x != null && !x.isNaN) {
-        var nf = 3;
-        if (x < 0x70) nf = 2;
-        if (x < 0x49) x = 1;
-        subdomainx = String.fromCharCode(97 + (x % nf));
+        var o = 0;
+        if (x < 0x80) o = 1;
+        if (x < 0x40) o = 2;
+        subdomainx = String.fromCharCode(97 + o);
       }
 
       if (rr['haswebp'] == 0 || rr['haswebp'] == null) {
