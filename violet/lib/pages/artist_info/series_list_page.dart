@@ -1,18 +1,13 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
-import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
+import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class SeriesListPage extends StatelessWidget {
   final String prefix;
@@ -23,7 +18,6 @@ class SeriesListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var windowWidth = MediaQuery.of(context).size.width;
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
@@ -71,178 +65,13 @@ class SeriesListPage extends StatelessWidget {
                     itemCount: series.length,
                     itemBuilder: (BuildContext ctxt, int index) {
                       var e = series[index];
-                      return InkWell(
-                        onTap: () async {
-                          var page = ArticleListPage(
-                              cc: e.map((e) => cc[e]).toList(), name: 'Series');
 
-                          if (!Platform.isIOS) {
-                            Navigator.of(context).push(PageRouteBuilder(
-                              opaque: false,
-                              transitionDuration: Duration(milliseconds: 500),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = Offset(0.0, 1.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
-
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
-                              pageBuilder: (_, __, ___) => page,
-                            ));
-                          } else {
-                            Navigator.of(context)
-                                .push(CupertinoPageRoute(builder: (_) => page));
-                          }
-                          // Navigator.of(context).push(PageRouteBuilder(
-                          //   // opaque: false,
-                          //   transitionDuration: Duration(milliseconds: 500),
-                          //   transitionsBuilder: (context, animation,
-                          //       secondaryAnimation, child) {
-                          //     var begin = Offset(0.0, 1.0);
-                          //     var end = Offset.zero;
-                          //     var curve = Curves.ease;
-
-                          //     var tween = Tween(begin: begin, end: end)
-                          //         .chain(CurveTween(curve: curve));
-
-                          //     return SlideTransition(
-                          //       position: animation.drive(tween),
-                          //       child: child,
-                          //     );
-                          //   },
-                          //   pageBuilder: (_, __, ___) => ArtistInfoPage(
-                          //     isGroup: isGroup,
-                          //     isUploader: isUploader,
-                          //     artist: e.item1,
-                          //   ),
-                          // ));
-                        },
-                        child: SizedBox(
-                          height: 195,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  // crossAxisAlignment: CrossAxisAlignment,
-                                  children: <Widget>[
-                                    Flexible(
-                                        child: Text(
-                                            // (index + 1).toString() +
-                                            //     '. ' +
-                                            ' ' +
-                                                unescape
-                                                    .convert(cc[e[0]].title()),
-                                            style: TextStyle(fontSize: 17),
-                                            overflow: TextOverflow.ellipsis)),
-                                    Text(e.length.toString() + ' ',
-                                        style: TextStyle(
-                                          color: Settings.themeWhat
-                                              ? Colors.grey.shade300
-                                              : Colors.grey.shade700,
-                                        )),
-                                  ],
-                                ),
-                                // Text(' ' + unescape.convert(cc[e[0]].title()),
-                                //         style: TextStyle(fontSize: 17), overflow: TextOverflow.ellipsis,),
-                                SizedBox(
-                                  height: 162,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Expanded(
-                                          flex: 1,
-                                          child: e.length > 0
-                                              ? Padding(
-                                                  padding: EdgeInsets.all(4),
-                                                  child: Provider<
-                                                      ArticleListItem>.value(
-                                                    value: ArticleListItem
-                                                        .fromArticleListItem(
-                                                      queryResult: cc[e[0]],
-                                                      showDetail: false,
-                                                      addBottomPadding: false,
-                                                      width: (windowWidth -
-                                                              16 -
-                                                              4.0 -
-                                                              1.0) /
-                                                          3,
-                                                      thumbnailTag: Uuid().v4(),
-                                                      disableFilter: true,
-                                                    ),
-                                                    child:
-                                                        ArticleListItemVerySimpleWidget(),
-                                                  ),
-                                                )
-                                              : Container()),
-                                      Expanded(
-                                          flex: 1,
-                                          child: e.length > 1
-                                              ? Padding(
-                                                  padding: EdgeInsets.all(4),
-                                                  child: Provider<
-                                                      ArticleListItem>.value(
-                                                    value: ArticleListItem
-                                                        .fromArticleListItem(
-                                                      queryResult: cc[e[1]],
-                                                      showDetail: false,
-                                                      addBottomPadding: false,
-                                                      width: (windowWidth -
-                                                              16 -
-                                                              4.0 -
-                                                              1.0) /
-                                                          3,
-                                                      thumbnailTag: Uuid().v4(),
-                                                      disableFilter: true,
-                                                    ),
-                                                    child:
-                                                        ArticleListItemVerySimpleWidget(),
-                                                  ),
-                                                )
-                                              : Container()),
-                                      Expanded(
-                                          flex: 1,
-                                          child: e.length > 2
-                                              ? Padding(
-                                                  padding: EdgeInsets.all(4),
-                                                  child: Provider<
-                                                      ArticleListItem>.value(
-                                                    value: ArticleListItem
-                                                        .fromArticleListItem(
-                                                      queryResult: cc[e[1]],
-                                                      showDetail: false,
-                                                      addBottomPadding: false,
-                                                      width: (windowWidth -
-                                                              16 -
-                                                              4.0 -
-                                                              1.0) /
-                                                          3,
-                                                      thumbnailTag: Uuid().v4(),
-                                                      disableFilter: true,
-                                                    ),
-                                                    child:
-                                                        ArticleListItemVerySimpleWidget(),
-                                                  ),
-                                                )
-                                              : Container()),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      return ThreeArticlePanel(
+                        tappedRoute: ArticleListPage(
+                            cc: e.map((e) => cc[e]).toList(), name: 'Series'),
+                        title: ' ${unescape.convert(cc[e[0]].title())}',
+                        count: '${e.length} ',
+                        articles: e.map((e) => cc[e]).toList(),
                       );
                     },
                   ),

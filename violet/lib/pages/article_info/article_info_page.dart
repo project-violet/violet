@@ -30,7 +30,7 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
-import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/artist_info/artist_info_page2.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';

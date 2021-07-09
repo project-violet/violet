@@ -1,22 +1,17 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape_small.dart';
-import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/model/article_list_item.dart';
-import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/artist_info/artist_info_page2.dart';
+import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class SimilarListPage extends StatelessWidget {
   final String prefix;
@@ -85,7 +80,6 @@ class SimilarListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var windowWidth = MediaQuery.of(context).size.width;
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
@@ -109,168 +103,69 @@ class SimilarListPage extends StatelessWidget {
           top: MediaQuery.of(context).padding.top,
           bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
       child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Card(
-              elevation: 5,
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-              child: SizedBox(
-                width: width - 16,
-                height: height -
-                    16 -
-                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-                child: Container(
-                    child: ListView.builder(
-                        padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                        physics: ClampingScrollPhysics(),
-                        itemCount: similarsAll.length,
-                        itemBuilder: (BuildContext ctxt, int index) {
-                          var e = similarsAll[index];
-                          return FutureBuilder<List<QueryResult>>(
-                              future: _future(e.item1),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<List<QueryResult>> snapshot) {
-                                var qq = snapshot.data;
-                                if (!snapshot.hasData)
-                                  return Container(
-                                    height: 195,
-                                  );
-                                return InkWell(
-                                  onTap: () async {
-                                    if (!Platform.isIOS) {
-                                      Navigator.of(context)
-                                          .push(PageRouteBuilder(
-                                        // opaque: false,
-                                        transitionDuration:
-                                            Duration(milliseconds: 500),
-                                        transitionsBuilder: (context, animation,
-                                            secondaryAnimation, child) {
-                                          var begin = Offset(0.0, 1.0);
-                                          var end = Offset.zero;
-                                          var curve = Curves.ease;
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Card(
+            elevation: 5,
+            color:
+                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+            child: SizedBox(
+              width: width - 16,
+              height: height -
+                  16 -
+                  (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+              child: Container(
+                child: ListView.builder(
+                  padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                  physics: ClampingScrollPhysics(),
+                  itemCount: similarsAll.length,
+                  itemBuilder: (BuildContext ctxt, int index) {
+                    var e = similarsAll[index];
+                    return FutureBuilder<List<QueryResult>>(
+                      future: _future(e.item1),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<QueryResult>> snapshot) {
+                        var qq = snapshot.data;
+                        if (!snapshot.hasData)
+                          return Container(
+                            height: 195,
+                          );
 
-                                          var tween = Tween(
-                                                  begin: begin, end: end)
-                                              .chain(CurveTween(curve: curve));
+                        var type = 'artist';
+                        if (isGroup)
+                          type = 'group';
+                        else if (isUploader)
+                          type = 'uploader';
+                        else if (isSeries)
+                          type = 'series';
+                        else if (isCharacter) type = 'character';
 
-                                          return SlideTransition(
-                                            position: animation.drive(tween),
-                                            child: child,
-                                          );
-                                        },
-                                        pageBuilder: (_, __, ___) =>
-                                            ArtistInfoPage(
-                                          isGroup: isGroup,
-                                          isUploader: isUploader,
-                                          isCharacter: isCharacter,
-                                          isSeries: isSeries,
-                                          artist: e.item1,
-                                        ),
-                                      ));
-                                    } else {
-                                      Navigator.of(context)
-                                          .push(CupertinoPageRoute(
-                                        builder: (_) => ArtistInfoPage(
-                                          isGroup: isGroup,
-                                          isUploader: isUploader,
-                                          isCharacter: isCharacter,
-                                          isSeries: isSeries,
-                                          artist: e.item1,
-                                        ),
-                                      ));
-                                    }
-                                  },
-                                  child: SizedBox(
-                                    height: 195,
-                                    child: Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(12, 8, 12, 0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          children: <Widget>[
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: <Widget>[
-                                                Text(
-                                                    ' ' +
-                                                        e.item1 +
-                                                        ' (' +
-                                                        HitomiManager.getArticleCount(
-                                                                isGroup
-                                                                    ? 'group'
-                                                                    : isUploader
-                                                                        ? 'uploader'
-                                                                        : isSeries
-                                                                            ? 'series'
-                                                                            : isCharacter
-                                                                                ? 'character'
-                                                                                : 'artist',
-                                                                e.item1)
-                                                            .toString() +
-                                                        ')',
-                                                    style: TextStyle(fontSize: 17)),
-                                                Text(
-                                                    '${Translations.of(context).trans('score')}: ' +
-                                                        e.item2.toStringAsFixed(
-                                                            1) +
-                                                        ' ',
-                                                    style: TextStyle(
-                                                      color: Settings.themeWhat
-                                                          ? Colors.grey.shade300
-                                                          : Colors
-                                                              .grey.shade700,
-                                                    )),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 162,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: <Widget>[
-                                                  _image(qq, 0, windowWidth),
-                                                  _image(qq, 1, windowWidth),
-                                                  _image(qq, 2, windowWidth),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        )),
-                                  ),
-                                );
-                              });
-                        })),
+                        return ThreeArticlePanel(
+                          tappedRoute: ArtistInfoPage(
+                            isGroup: isGroup,
+                            isUploader: isUploader,
+                            isCharacter: isCharacter,
+                            isSeries: isSeries,
+                            artist: e.item1,
+                          ),
+                          title:
+                              ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1)})',
+                          count:
+                              '${Translations.of(context).trans('score')}: ' +
+                                  e.item2.toStringAsFixed(1) +
+                                  ' ',
+                          articles: qq,
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
-          ]),
+          ),
+        ],
+      ),
     );
-  }
-
-  Widget _image(List<QueryResult> qq, int index, double windowWidth) {
-    return Expanded(
-        flex: 1,
-        child: qq.length > index
-            ? Padding(
-                padding: EdgeInsets.all(4),
-                child: Provider<ArticleListItem>.value(
-                  value: ArticleListItem.fromArticleListItem(
-                    queryResult: qq[index],
-                    showDetail: false,
-                    addBottomPadding: false,
-                    width: (windowWidth - 16 - 4.0 - 16.0) / 3,
-                    thumbnailTag: Uuid().v4(),
-                    disableFilter: true,
-                    usableTabList: qq,
-                  ),
-                  child: ArticleListItemVerySimpleWidget(),
-                ),
-              )
-            : Container());
   }
 }

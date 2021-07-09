@@ -12,7 +12,7 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
-import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/artist_info/artist_info_page2.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
