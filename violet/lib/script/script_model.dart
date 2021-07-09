@@ -3,12 +3,27 @@
 
 import 'package:violet/script/parser.dart';
 
-abstract class INode {}
+enum PNodeType {
+  line_node,
+  statement_node,
+  block_node,
+  index_node,
+  variable_node,
+  argument_node,
+  function_node,
+  runnable_node,
+}
+
+abstract class INode {
+  PNodeType nodeType;
+
+  INode(this.nodeType);
+}
 
 class PLine extends INode {
   PStatement statement;
 
-  PLine(this.statement);
+  PLine(this.statement) : super(PNodeType.line_node);
 }
 
 enum StatementType {
@@ -25,7 +40,8 @@ class PStatement extends INode {
   PRunnable runnable;
 
   PStatement(this.type,
-      {this.function, this.index1, this.index2, this.runnable});
+      {this.function, this.index1, this.index2, this.runnable})
+      : super(PNodeType.statement_node);
 }
 
 class PBlock extends INode {
@@ -35,7 +51,8 @@ class PBlock extends INode {
   PLine line;
   PBlock block;
 
-  PBlock({this.isInnerBlock, this.isLine, this.isEmpty, this.line, this.block});
+  PBlock({this.isInnerBlock, this.isLine, this.isEmpty, this.line, this.block})
+      : super(PNodeType.block_node);
 }
 
 class PIndex extends INode {
@@ -43,27 +60,28 @@ class PIndex extends INode {
   PVariable variable1;
   PVariable variable2;
 
-  PIndex({this.isIndexing, this.variable1, this.variable2});
+  PIndex({this.isIndexing, this.variable1, this.variable2})
+      : super(PNodeType.index_node);
 }
 
 class PVariable extends INode {
-  String content;
+  Object content;
 
-  PVariable({this.content});
+  PVariable({this.content}) : super(PNodeType.variable_node);
 }
 
 class PArgument extends INode {
   PIndex index;
   PArgument argument;
 
-  PArgument(this.index, {this.argument});
+  PArgument(this.index, {this.argument}) : super(PNodeType.argument_node);
 }
 
 class PFunction extends INode {
   String name;
   PArgument argument;
 
-  PFunction(this.name, {this.argument});
+  PFunction(this.name, {this.argument}) : super(PNodeType.function_node);
 }
 
 enum RunnableType {
@@ -80,7 +98,8 @@ class PRunnable extends INode {
   PBlock block1, block2;
 
   PRunnable(this.type, this.block1,
-      {this.block2, this.name, this.index1, this.index2});
+      {this.block2, this.name, this.index1, this.index2})
+      : super(PNodeType.runnable_node);
 }
 
 class PActionDescription {
@@ -112,7 +131,6 @@ class PActionDescription {
   */
   static List<ParserAction> actions = [
     //  1:         S' -> script
-    ParserAction((node) => node.userContents = node.childs[0].userContents),
     //  2:     script -> block
     ParserAction((node) => node.userContents = node.childs[0].userContents),
     //  3:       line -> stmt
@@ -153,7 +171,7 @@ class PActionDescription {
     ParserAction((node) => node.userContents = PIndex(
         isIndexing: true,
         variable1: node.childs[0].userContents,
-        variable2: node.childs[1].userContents)),
+        variable2: node.childs[2].userContents)),
     // 14:   variable -> name
     ParserAction((node) =>
         node.userContents = PVariable(content: node.childs[0].userContents)),

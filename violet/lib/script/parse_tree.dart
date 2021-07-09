@@ -21,6 +21,33 @@ class ParseTreeNode {
         production: production,
         contents: contents,
       );
+
+  void _innerPrint(
+      List<String> builder, ParseTreeNode node, String indent, bool last) {
+    builder[0] += indent;
+    if (last) {
+      builder[0] += "+-";
+      indent += "  ";
+    } else {
+      builder[0] += "|-";
+      indent += "| ";
+    }
+
+    if (node.childs.length == 0) {
+      builder[0] += node.production + " " + node.contents + "\r\n";
+    } else {
+      builder[0] += node.production + "\r\n";
+    }
+
+    for (int i = 0; i < node.childs.length; i++)
+      _innerPrint(builder, node.childs[i], indent, i == node.childs.length - 1);
+  }
+
+  String printSubTree() {
+    var builder = [''];
+    _innerPrint(builder, this, "", true);
+    return builder[0];
+  }
 }
 
 class ParseTree {
