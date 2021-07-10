@@ -13,7 +13,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ThreeArticlePanel extends StatelessWidget {
-  final Widget tappedRoute;
+  final Widget Function() tappedRoute;
   final String title;
   final String count;
   final List<QueryResult> articles;
@@ -105,11 +105,11 @@ class ThreeArticlePanel extends StatelessWidget {
             child: child,
           );
         },
-        pageBuilder: (_, __, ___) => tappedRoute,
+        pageBuilder: (_, __, ___) => tappedRoute(),
       ));
     } else {
       Navigator.of(context)
-          .push(CupertinoPageRoute(builder: (_) => tappedRoute));
+          .push(CupertinoPageRoute(builder: (_) => tappedRoute()));
     }
   }
 }

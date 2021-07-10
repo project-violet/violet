@@ -142,7 +142,7 @@ class SimilarListPage extends StatelessWidget {
                         else if (isCharacter) type = 'character';
 
                         return ThreeArticlePanel(
-                          tappedRoute: ArtistInfoPage(
+                          tappedRoute: () => ArtistInfoPage(
                             isGroup: isGroup,
                             isUploader: isUploader,
                             isCharacter: isCharacter,

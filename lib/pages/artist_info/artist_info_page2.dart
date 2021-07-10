@@ -542,7 +542,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     articleArea(),
                     Visibility(
                         visible: cc.length > 6,
-                        child: more(ArticleListPage(
+                        child: more(() => ArticleListPage(
                             cc: cc,
                             name: (widget.isGroup
                                     ? 'Groups: '
@@ -669,7 +669,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   ExpandableController ec = ExpandableController();
 
-  Widget more(Widget what) {
+  Widget more(Widget Function() what) {
     return SizedBox(
       height: 60,
       child: InkWell(
@@ -692,11 +692,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                   child: child,
                 );
               },
-              pageBuilder: (_, __, ___) => what,
+              pageBuilder: (_, __, ___) => what(),
             ));
           } else {
             Navigator.of(context)
-                .push(CupertinoPageRoute(builder: (_) => what));
+                .push(CupertinoPageRoute(builder: (_) => what()));
           }
         },
         child: Row(
@@ -768,14 +768,14 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       itemCount: similars.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == similars.length) {
-          return more(SimilarListPage(
-            prefix: prefix,
-            similarsAll: similarsAll,
-            isGroup: widget.isGroup,
-            isUploader: widget.isUploader,
-            isCharacter: widget.isCharacter,
-            isSeries: widget.isSeries,
-          ));
+          return more(() => SimilarListPage(
+                prefix: prefix,
+                similarsAll: similarsAll,
+                isGroup: widget.isGroup,
+                isUploader: widget.isUploader,
+                isCharacter: widget.isCharacter,
+                isSeries: widget.isSeries,
+              ));
         }
         var e = similars[index];
         var qq = qrs[index];
@@ -790,7 +790,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         else if (widget.isCharacter) type = 'character';
 
         return ThreeArticlePanel(
-          tappedRoute: ArtistInfoPage(
+          tappedRoute: () => ArtistInfoPage(
             isGroup: widget.isGroup,
             isUploader: widget.isUploader,
             isCharacter: widget.isCharacter,
@@ -816,16 +816,16 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       itemCount: min(series.length, 6) + (series.length > 6 ? 1 : 0),
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == 6) {
-          return more(SeriesListPage(
-            cc: cc,
-            prefix: prefix,
-            series: series,
-          ));
+          return more(() => SeriesListPage(
+                cc: cc,
+                prefix: prefix,
+                series: series,
+              ));
         }
         var e = series[index];
 
         return ThreeArticlePanel(
-          tappedRoute:
+          tappedRoute: () =>
               ArticleListPage(cc: e.map((e) => cc[e]).toList(), name: 'Series'),
           title: ' ${unescape.convert(cc[e[0]].title())}',
           count: '${e.length} ',
@@ -843,14 +843,14 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       itemCount: relatedCharacterOrSeries.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCharacterOrSeries.length) {
-          return more(SimilarListPage(
-            prefix: prefix,
-            similarsAll: relatedCharacterOrSeriesAll,
-            isGroup: widget.isGroup,
-            isUploader: widget.isUploader,
-            isCharacter: widget.isCharacter,
-            isSeries: widget.isSeries,
-          ));
+          return more(() => SimilarListPage(
+                prefix: prefix,
+                similarsAll: relatedCharacterOrSeriesAll,
+                isGroup: widget.isGroup,
+                isUploader: widget.isUploader,
+                isCharacter: widget.isCharacter,
+                isSeries: widget.isSeries,
+              ));
         }
 
         var e = relatedCharacterOrSeries[index];
@@ -860,7 +860,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         if (widget.isCharacter) cls = 'series';
 
         return ThreeArticlePanel(
-          tappedRoute: ArtistInfoPage(
+          tappedRoute: () => ArtistInfoPage(
             isGroup: widget.isGroup,
             isUploader: widget.isUploader,
             isCharacter: widget.isCharacter,
@@ -884,14 +884,14 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       itemCount: relatedCOSSingle.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCOSSingle.length) {
-          return more(SimilarListPage(
-            prefix: widget.isCharacter ? 'series:' : 'character:',
-            similarsAll: relatedCOSSingleAll,
-            isGroup: widget.isGroup,
-            isUploader: widget.isUploader,
-            isSeries: widget.isCharacter,
-            isCharacter: widget.isSeries,
-          ));
+          return more(() => SimilarListPage(
+                prefix: widget.isCharacter ? 'series:' : 'character:',
+                similarsAll: relatedCOSSingleAll,
+                isGroup: widget.isGroup,
+                isUploader: widget.isUploader,
+                isSeries: widget.isCharacter,
+                isCharacter: widget.isSeries,
+              ));
         }
         var e = relatedCOSSingle[index];
         var qq = qrsCOSSingle[index];
@@ -900,7 +900,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         if (widget.isCharacter) cls = 'series';
 
         return ThreeArticlePanel(
-          tappedRoute: ArtistInfoPage(
+          tappedRoute: () => ArtistInfoPage(
             isGroup: widget.isGroup,
             isUploader: widget.isUploader,
             isSeries: widget.isCharacter,
