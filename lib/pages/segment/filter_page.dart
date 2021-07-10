@@ -17,9 +17,12 @@ class FilterController {
   var isOr = false;
   var isSearch = false;
   var isPopulationSort = false;
+  var heroKey = "searchtype";
 
   var tagStates = Map<String, bool>();
   var groupStates = Map<String, bool>();
+
+  FilterController({this.heroKey});
 }
 
 class FilterPage extends StatefulWidget {
@@ -133,7 +136,7 @@ class _FilterPageState extends State<FilterPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Hero(tag: "searchtype", child: _buildPanel()),
+          Hero(tag: c.heroKey, child: _buildPanel()),
         ],
       ),
     );

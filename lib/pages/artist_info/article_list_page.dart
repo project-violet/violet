@@ -202,7 +202,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
   ObjectKey key = ObjectKey(Uuid().v4());
 
-  FilterController _filterController = FilterController();
+  FilterController _filterController = FilterController(heroKey: "searchtype2");
   List<QueryResult> filterResult = [];
 
   bool isFilterUsed = false;

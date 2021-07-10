@@ -466,7 +466,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   ObjectKey key = ObjectKey(Uuid().v4());
 
-  FilterController _filterController = FilterController();
+  FilterController _filterController = FilterController(heroKey: "searchtype2");
 
   bool isFilterUsed = false;
 
