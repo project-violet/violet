@@ -353,7 +353,9 @@ class _SearchPageState extends State<SearchPage>
                       pageBuilder: (_, __, ___) =>
                           Provider<FilterController>.value(
                         value: _filterController,
-                        child: FilterPage(),
+                        child: FilterPage(
+                          queryResult: queryResult,
+                        ),
                       ),
                     ),
                   )
