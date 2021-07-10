@@ -24,8 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 7, 10),
+    version: '1.12 Minor Update <== Latest',
+    isMinor: true,
+    contents: [
+      'add height estimation login',
+      'code refactoring for violet 2.0 project',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 6, 27),
-    version: '1.11 Minor Update <== Latest',
+    version: '1.11 Minor Update',
     isMinor: true,
     contents: [
       'code refactoring for flutter 2.0',
