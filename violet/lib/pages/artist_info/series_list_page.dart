@@ -67,7 +67,7 @@ class SeriesListPage extends StatelessWidget {
                       var e = series[index];
 
                       return ThreeArticlePanel(
-                        tappedRoute: ArticleListPage(
+                        tappedRoute: () => ArticleListPage(
                             cc: e.map((e) => cc[e]).toList(), name: 'Series'),
                         title: ' ${unescape.convert(cc[e[0]].title())}',
                         count: '${e.length} ',
