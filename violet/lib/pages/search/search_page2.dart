@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_getx_widget.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -102,7 +101,7 @@ class _SearchPageState extends State<SearchPage>
         latestQuery =
             Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
         queryResult = latestQuery.item1.item1;
-        if (_filterController.isPopulationSort.value)
+        if (_filterController.isPopulationSort)
           Population.sortByPopulation(queryResult);
         setState(() {});
       } catch (e) {
@@ -341,22 +340,23 @@ class _SearchPageState extends State<SearchPage>
               onLongPress: () async {
                 if (!Platform.isIOS) {
                   Navigator.of(context)
-                      .push(PageRouteBuilder(
-                    // opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder: (BuildContext context,
-                        Animation<double> animation,
-                        Animation<double> secondaryAnimation,
-                        Widget wi) {
-                      return FadeTransition(opacity: animation, child: wi);
-                    },
-                    pageBuilder: (_, __, ___) => GetX<FilterController>(
-                      init: _filterController,
-                      builder: (_) {
-                        return FilterPage();
+                      .push(
+                    PageRouteBuilder(
+                      // opaque: false,
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder: (BuildContext context,
+                          Animation<double> animation,
+                          Animation<double> secondaryAnimation,
+                          Widget wi) {
+                        return FadeTransition(opacity: animation, child: wi);
                       },
+                      pageBuilder: (_, __, ___) =>
+                          Provider<FilterController>.value(
+                        value: _filterController,
+                        child: FilterPage(),
+                      ),
                     ),
-                  ))
+                  )
                       .then((value) async {
                     _applyFilter();
                     setState(() {
@@ -374,8 +374,8 @@ class _SearchPageState extends State<SearchPage>
 
   void _applyFilter() {
     var result = <QueryResult>[];
-    var isOr = _filterController.isOr.value;
-    var succ = !_filterController.isOr.value;
+    var isOr = _filterController.isOr;
+    var succ = !_filterController.isOr;
     queryResult.forEach((element) {
       // key := <group>:<name>
       _filterController.tagStates.forEach((key, value) {
@@ -413,7 +413,7 @@ class _SearchPageState extends State<SearchPage>
     filterResult = result;
     isFilterUsed = true;
 
-    if (_filterController.isPopulationSort.value)
+    if (_filterController.isPopulationSort)
       Population.sortByPopulation(filterResult);
   }
 
@@ -463,7 +463,7 @@ class _SearchPageState extends State<SearchPage>
 
       queryResult.addAll(next.item1);
 
-      if (_filterController.isPopulationSort.value)
+      if (_filterController.isPopulationSort)
         Population.sortByPopulation(queryResult);
 
       setState(() {});
