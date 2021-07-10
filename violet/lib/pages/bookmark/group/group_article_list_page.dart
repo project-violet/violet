@@ -21,6 +21,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/bookmark/group/group_artist_article_list.dart';
 import 'package:violet/pages/bookmark/group/group_artist_list.dart';
+import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
@@ -186,97 +187,72 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    final mediaQuery = MediaQuery.of(context);
-    return Padding(
-      padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
-          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Card(
-            elevation: 5,
-            color:
-                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-            child: SizedBox(
-              width: width - 16,
-              height: height -
-                  16 -
-                  (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-              child: Stack(
-                children: [
-                  PageView(
-                    controller: _controller,
-                    children: [
-                      Scaffold(
-                        resizeToAvoidBottomInset: false,
-                        // resizeToAvoidBottomPadding: false,
-                        floatingActionButton: Visibility(
-                          visible: checkMode,
-                          child: AnimatedOpacity(
-                            opacity: checkModePre ? 1.0 : 0.0,
-                            duration: Duration(milliseconds: 500),
-                            child: _floatingButton(),
-                          ),
-                        ),
-                        // floatingActionButton: Container(child: Text('asdf')),
-                        body: Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: CustomScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            slivers: <Widget>[
-                              SliverPersistentHeader(
-                                floating: true,
-                                delegate: AnimatedOpacitySliver(
-                                  minExtent: 64 + 12.0,
-                                  maxExtent: 64.0 + 12,
-                                  searchBar: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 8.0),
-                                      child: Stack(children: <Widget>[
-                                        _filter(),
-                                        _title(),
-                                      ])),
-                                ),
-                              ),
-                              buildList()
-                            ],
-                          ),
+    return CardPanel.build(
+      context,
+      child: Stack(
+        children: [
+          PageView(
+            controller: _controller,
+            children: [
+              Scaffold(
+                resizeToAvoidBottomInset: false,
+                // resizeToAvoidBottomPadding: false,
+                floatingActionButton: Visibility(
+                  visible: checkMode,
+                  child: AnimatedOpacity(
+                    opacity: checkModePre ? 1.0 : 0.0,
+                    duration: Duration(milliseconds: 500),
+                    child: _floatingButton(),
+                  ),
+                ),
+                // floatingActionButton: Container(child: Text('asdf')),
+                body: Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverPersistentHeader(
+                        floating: true,
+                        delegate: AnimatedOpacitySliver(
+                          minExtent: 64 + 12.0,
+                          maxExtent: 64.0 + 12,
+                          searchBar: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Stack(children: <Widget>[
+                                _filter(),
+                                _title(),
+                              ])),
                         ),
                       ),
-                      GroupArtistList(
-                          name: widget.name, groupId: widget.groupId),
-                      GroupArtistArticleList(
-                          name: widget.name, groupId: widget.groupId),
+                      buildList()
                     ],
                   ),
-                  Positioned(
-                    bottom: 0.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Container(
-                      color: null,
-                      padding: const EdgeInsets.all(20.0),
-                      child: Center(
-                        child: DotsIndicator(
-                          controller: _controller,
-                          itemCount: 3,
-                          onPageSelected: (int page) {
-                            _controller.animateToPage(
-                              page,
-                              duration: _kDuration,
-                              curve: _kCurve,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+              ),
+              GroupArtistList(name: widget.name, groupId: widget.groupId),
+              GroupArtistArticleList(
+                  name: widget.name, groupId: widget.groupId),
+            ],
+          ),
+          Positioned(
+            bottom: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: Container(
+              color: null,
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: DotsIndicator(
+                  controller: _controller,
+                  itemCount: 3,
+                  onPageSelected: (int page) {
+                    _controller.animateToPage(
+                      page,
+                      duration: _kDuration,
+                      curve: _kCurve,
+                    );
+                  },
+                ),
               ),
             ),
           ),

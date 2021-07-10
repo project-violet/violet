@@ -10,6 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/pages/main/faq/faq_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/main/info/violet_page.dart';
+import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
 
 class InfoPage extends StatefulWidget {
@@ -20,142 +21,112 @@ class InfoPage extends StatefulWidget {
 class _InfoPageState extends State<InfoPage> {
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-
-    final mediaQuery = MediaQuery.of(context);
-
-    return Container(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+    return CardPanel.build(
+      context,
+      enableBackgroundColor: true,
       child: Padding(
-        padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top,
-            bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Card(
-              elevation: 5,
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-              child: SizedBox(
-                width: width - 16,
-                height: height -
-                    16 -
-                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-                child: Padding(
-                  padding: EdgeInsets.only(top: 16),
-                  child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
-                    child: Column(
-                      children: [
-                        // Container(height: 40),
-                        _buildTitle(),
-                        // Container(height: 30),
-                        _buildItem(
-                          Image.asset(
-                            'assets/images/logo.png',
-                            width: 45,
-                            height: 45,
-                          ),
-                          // 'Violet History',
-                          // 'What is violet?',
-                          'Violet이란?',
-                          'Violet은 무엇인가요?',
-                          null,
-                          () async {
-                            await showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return VioletPage();
-                              },
-                            );
-                          },
-                        ),
-                        _buildItem(
-                          Icon(MdiIcons.bookOpenPageVariant,
-                              size: 40, color: Colors.brown),
-                          // 'User Manual',
-                          // 'Check out the user manual here!',
-                          '유저 메뉴얼',
-                          '여기서 사용법을 확인하세요!',
-                          UserManualPage(),
-                        ),
-                        _buildItem(
-                          Icon(MdiIcons.frequentlyAskedQuestions,
-                              size: 40, color: Colors.orange),
-                          'FAQ',
-                          // 'Frequently Asked Questions',
-                          '자주 묻는 질문',
-                          FAQPageKorean(),
-                        ),
-                        _buildItem(
-                          Icon(MdiIcons.routes, size: 40, color: Colors.yellow),
-                          'Violet WalkRoad',
-                          '향후 동향과 역사를 살펴보세요!',
-                          null,
-                          () async {
-                            const url =
-                                'https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45';
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            }
-                          },
-                        ),
-                        _buildItem(
-                          Icon(MdiIcons.gmail,
-                              size: 40, color: Colors.redAccent),
-                          'Gmail',
-                          // 'Contact the developer',
-                          '개발자에게 연락해보세요!',
-                          null,
-                          () async {
-                            const url =
-                                'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            }
-                          },
-                        ),
-                        _buildItem(
-                          Icon(MdiIcons.discord,
-                              size: 40, color: Color(0xFF7189da)),
-                          // 'Discord Channel',
-                          // 'Communicate with developers',
-                          '디스코드 채널',
-                          '개발자와 소통해보세요!',
-                          null,
-                          () async {
-                            const url = 'https://discord.gg/K8qny6E';
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            }
-                          },
-                        ),
-                        _buildItem(
-                          Icon(MdiIcons.github, size: 40, color: Colors.black),
-                          // 'GitHub Repository',
-                          // 'Contribute to the project',
-                          'GitHub 저장소',
-                          '프로젝트에 기여해보세요!',
-                          null,
-                          () async {
-                            const url =
-                                'https://github.com/project-violet/violet';
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+        padding: EdgeInsets.only(top: 16),
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              // Container(height: 40),
+              _buildTitle(),
+              // Container(height: 30),
+              _buildItem(
+                Image.asset(
+                  'assets/images/logo.png',
+                  width: 45,
+                  height: 45,
                 ),
+                // 'Violet History',
+                // 'What is violet?',
+                'Violet이란?',
+                'Violet은 무엇인가요?',
+                null,
+                () async {
+                  await showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return VioletPage();
+                    },
+                  );
+                },
               ),
-            )
-          ],
+              _buildItem(
+                Icon(MdiIcons.bookOpenPageVariant,
+                    size: 40, color: Colors.brown),
+                // 'User Manual',
+                // 'Check out the user manual here!',
+                '유저 메뉴얼',
+                '여기서 사용법을 확인하세요!',
+                UserManualPage(),
+              ),
+              _buildItem(
+                Icon(MdiIcons.frequentlyAskedQuestions,
+                    size: 40, color: Colors.orange),
+                'FAQ',
+                // 'Frequently Asked Questions',
+                '자주 묻는 질문',
+                FAQPageKorean(),
+              ),
+              _buildItem(
+                Icon(MdiIcons.routes, size: 40, color: Colors.yellow),
+                'Violet WalkRoad',
+                '향후 동향과 역사를 살펴보세요!',
+                null,
+                () async {
+                  const url =
+                      'https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  }
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.gmail, size: 40, color: Colors.redAccent),
+                'Gmail',
+                // 'Contact the developer',
+                '개발자에게 연락해보세요!',
+                null,
+                () async {
+                  const url =
+                      'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  }
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.discord, size: 40, color: Color(0xFF7189da)),
+                // 'Discord Channel',
+                // 'Communicate with developers',
+                '디스코드 채널',
+                '개발자와 소통해보세요!',
+                null,
+                () async {
+                  const url = 'https://discord.gg/K8qny6E';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  }
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.github, size: 40, color: Colors.black),
+                // 'GitHub Repository',
+                // 'Contribute to the project',
+                'GitHub 저장소',
+                '프로젝트에 기여해보세요!',
+                null,
+                () async {
+                  const url = 'https://github.com/project-violet/violet';
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -9,6 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
@@ -16,34 +17,10 @@ class RecordViewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    final height =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-    final mediaQuery = MediaQuery.of(context);
-    return Container(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-      child: Padding(
-        padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top,
-            bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Card(
-              elevation: 5,
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-              child: SizedBox(
-                width: width - 16,
-                height: height -
-                    16 -
-                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-                child: Container(child: future(context, width)),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return CardPanel.build(
+      context,
+      child: future(context, width),
+      enableBackgroundColor: true,
     );
   }
 
