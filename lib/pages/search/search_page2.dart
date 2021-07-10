@@ -377,9 +377,9 @@ class _SearchPageState extends State<SearchPage>
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    var succ = !_filterController.isOr;
     queryResult.forEach((element) {
       // key := <group>:<name>
+      var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
         if (!value) return;
 
