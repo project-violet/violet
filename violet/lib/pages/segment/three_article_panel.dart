@@ -23,7 +23,7 @@ class ThreeArticlePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: _onTap(context),
+      onTap: () => _onTap(context),
       child: SizedBox(
         height: 195,
         child: Padding(
