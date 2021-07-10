@@ -1,7 +1,10 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:auto_animated/auto_animated.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +13,7 @@ import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
-import 'package:violet/pages/bookmark/group/bookmark_search_sort.dart';
+import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
@@ -138,60 +141,50 @@ class _ArticleListPageState extends State<ArticleListPage> {
             },
             onLongPress: () {
               isFilterUsed = true;
-              Navigator.of(context)
-                  .push(PageRouteBuilder(
-                // opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder: (BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                    Widget wi) {
-                  return FadeTransition(opacity: animation, child: wi);
-                },
-                pageBuilder: (_, __, ___) => BookmarkSearchSort(
-                  queryResult: widget.cc,
-                  tagStates: tagStates,
-                  groupStates: groupStates,
-                  isOr: isOr,
-                  isSearch: isSearch,
-                  isPopulationSort: isPopulationSort,
-                ),
-              ))
-                  .then((value) async {
-                tagStates = value[0];
-                groupStates = value[1];
-                isOr = value[2];
-                isPopulationSort = value[3];
-                var result = <QueryResult>[];
-                widget.cc.forEach((element) {
-                  var succ = !isOr;
-                  tagStates.forEach((key, value) {
-                    if (!value) return;
-                    if (succ == isOr) return;
-                    var split = key.split('|');
-                    var kk = prefix2Tag(split[0]);
-                    if (element.result[kk] == null && !isOr) {
-                      succ = false;
-                      return;
-                    }
-                    if (!isSingleTag(split[0])) {
-                      var tt = split[1];
-                      if (split[0] == 'female' || split[0] == 'male')
-                        tt = split[0] + ':' + split[1];
-                      if ((element.result[kk] as String)
-                              .contains('|' + tt + '|') ==
-                          isOr) succ = isOr;
-                    } else if ((element.result[kk] as String == split[1]) ==
-                        isOr) succ = isOr;
+              if (!Platform.isIOS) {
+                Navigator.of(context)
+                    .push(
+                  PageRouteBuilder(
+                    // opaque: false,
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder: (BuildContext context,
+                        Animation<double> animation,
+                        Animation<double> secondaryAnimation,
+                        Widget wi) {
+                      return FadeTransition(opacity: animation, child: wi);
+                    },
+                    pageBuilder: (_, __, ___) =>
+                        Provider<FilterController>.value(
+                      value: _filterController,
+                      child: FilterPage(
+                        queryResult: widget.cc,
+                      ),
+                    ),
+                  ),
+                )
+                    .then((value) async {
+                  _applyFilter();
+                  setState(() {
+                    key = ObjectKey(Uuid().v4());
                   });
-                  if (succ) result.add(element);
                 });
-                filterResult = result;
-                if (isPopulationSort) Population.sortByPopulation(filterResult);
-                await Future.delayed(Duration(milliseconds: 50), () {
-                  setState(() {});
+              } else {
+                Navigator.of(context)
+                    .push(CupertinoPageRoute(
+                  builder: (_) => Provider<FilterController>.value(
+                    value: _filterController,
+                    child: FilterPage(
+                      queryResult: widget.cc,
+                    ),
+                  ),
+                ))
+                    .then((value) async {
+                  _applyFilter();
+                  setState(() {
+                    key = ObjectKey(Uuid().v4());
+                  });
                 });
-              });
+              }
             },
           ),
         ),
@@ -207,15 +200,57 @@ class _ArticleListPageState extends State<ArticleListPage> {
     );
   }
 
-  bool isFilterUsed = false;
-  bool isOr = false;
-  bool isSearch = false;
-  bool isPopulationSort = false;
-  Map<String, bool> tagStates = Map<String, bool>();
-  Map<String, bool> groupStates = Map<String, bool>();
+  ObjectKey key = ObjectKey(Uuid().v4());
 
-  bool scaleOnce = false;
+  FilterController _filterController = FilterController();
   List<QueryResult> filterResult = [];
+
+  bool isFilterUsed = false;
+
+  void _applyFilter() {
+    var result = <QueryResult>[];
+    var isOr = _filterController.isOr;
+    widget.cc.forEach((element) {
+      // key := <group>:<name>
+      var succ = !_filterController.isOr;
+      _filterController.tagStates.forEach((key, value) {
+        if (!value) return;
+
+        // Check match just only one
+        if (succ == isOr) return;
+
+        // Get db column name from group
+        var split = key.split('|');
+        var dbColumn = prefix2Tag(split[0]);
+
+        // There is no matched db column name
+        if (element.result[dbColumn] == null && !isOr) {
+          succ = false;
+          return;
+        }
+
+        // If Single Tag
+        if (!isSingleTag(split[0])) {
+          var tag = split[1];
+          if (['female', 'male'].contains(split[0]))
+            tag = '${split[0]}:${split[1]}';
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+            succ = isOr;
+        }
+
+        // If Multitag
+        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+          succ = isOr;
+      });
+      if (succ) result.add(element);
+    });
+
+    filterResult = result;
+    isFilterUsed = true;
+
+    if (_filterController.isPopulationSort)
+      Population.sortByPopulation(filterResult);
+  }
 
   static String prefix2Tag(String prefix) {
     switch (prefix) {
@@ -281,6 +316,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverGrid(
+            key: key,
             controller: _scrollControllers[nowType],
             showItemInterval: Duration(milliseconds: 50),
             showItemDuration: Duration(milliseconds: 150),
@@ -333,6 +369,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverList(
+            key: key,
             controller: _scrollControllers[nowType],
             itemCount: filter().length,
             itemBuilder: (context, index, animation) {
