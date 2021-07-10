@@ -5,19 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart' as trans;
+import 'package:violet/model/article_info.dart';
 import 'package:violet/settings/settings.dart';
 
-class FilterController extends GetxController {
-  var isOr = false.obs;
-  var isSearch = false.obs;
-  var isPopulationSort = false.obs;
+class FilterController {
+  var isOr = false;
+  var isSearch = false;
+  var isPopulationSort = false;
 
-  var tagStates = Map<String, bool>().obs;
-  var groupStates = Map<String, bool>().obs;
+  var tagStates = Map<String, bool>();
+  var groupStates = Map<String, bool>();
 }
 
 class FilterPage extends StatefulWidget {
@@ -32,7 +34,7 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  final FilterController c = Get.find();
+  FilterController c;
 
   final _searchController = TextEditingController();
 
@@ -120,6 +122,12 @@ class _FilterPageState extends State<FilterPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    c = Provider.of<FilterController>(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     return Container(
@@ -163,8 +171,8 @@ class _FilterPageState extends State<FilterPage> {
                     ],
                   ),
                 ),
-                c.isSearch.isTrue ? Container() : _buildSelectPanel(),
-                c.isSearch.isTrue
+                c.isSearch ? Container() : _buildSelectPanel(),
+                c.isSearch
                     ? _buildSearchControlPanel()
                     : _buildSelectControlPanel(),
                 _buildOptionButtons()
@@ -184,28 +192,28 @@ class _FilterPageState extends State<FilterPage> {
       children: <Widget>[
         FilterChip(
           label: Text("Population"),
-          selected: c.isPopulationSort.isTrue,
+          selected: c.isPopulationSort,
           onSelected: (bool value) {
             setState(() {
-              c.isPopulationSort.value = value;
+              c.isPopulationSort = value;
             });
           },
         ),
         FilterChip(
           label: Text("OR"),
-          selected: c.isOr.isTrue,
+          selected: c.isOr,
           onSelected: (bool value) {
             setState(() {
-              c.isOr.value = value;
+              c.isOr = value;
             });
           },
         ),
         FilterChip(
           label: Text("Search"),
-          selected: c.isSearch.isTrue,
+          selected: c.isSearch,
           onSelected: (bool value) {
             setState(() {
-              c.isSearch.value = value;
+              c.isSearch = value;
             });
           },
         ),
@@ -218,7 +226,7 @@ class _FilterPageState extends State<FilterPage> {
         .where((element) => c.tagStates[element.item1 + '|' + element.item2])
         .toList();
 
-    if (c.isSearch.isTrue)
+    if (c.isSearch)
       tags += _tags
           .where((element) =>
               (element.item1 + ':' + element.item2)
