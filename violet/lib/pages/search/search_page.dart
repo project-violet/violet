@@ -9,6 +9,7 @@ import 'package:auto_animated/auto_animated.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controls.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -359,6 +360,22 @@ class _SearchPageState extends State<SearchPage>
                       ),
                     ),
                   )
+                      .then((value) async {
+                    _applyFilter();
+                    setState(() {
+                      key = ObjectKey(Uuid().v4());
+                    });
+                  });
+                } else {
+                  Navigator.of(context)
+                      .push(CupertinoPageRoute(
+                    builder: (_) => Provider<FilterController>.value(
+                      value: _filterController,
+                      child: FilterPage(
+                        queryResult: queryResult,
+                      ),
+                    ),
+                  ))
                       .then((value) async {
                     _applyFilter();
                     setState(() {
