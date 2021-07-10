@@ -12,6 +12,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
@@ -29,127 +30,92 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height =
-        MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
-
-    final mediaQuery = MediaQuery.of(context);
-
-    return Container(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-      child: Padding(
-        padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top,
-            bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
+    return CardPanel.build(
+      context,
+      enableBackgroundColor: true,
+      child: DefaultTabController(
+        length: 4,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Card(
-              elevation: 5,
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-              child: SizedBox(
-                width: width - 16,
-                height: height -
-                    16 -
-                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-                child: DefaultTabController(
-                  length: 4,
+            TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BubbleTabIndicator(
+                indicatorHeight: 40.0,
+                indicatorColor: Settings.majorColor,
+                tabBarIndicatorSize: TabBarIndicatorSize.tab,
+                insets: EdgeInsets.only(left: 8, right: 8, top: 21),
+              ),
+              tabs: [
+                Container(
+                  alignment: Alignment.center,
                   child: Column(
-                    children: <Widget>[
-                      TabBar(
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        indicator: BubbleTabIndicator(
-                          indicatorHeight: 40.0,
-                          indicatorColor: Settings.majorColor,
-                          tabBarIndicatorSize: TabBarIndicatorSize.tab,
-                          insets: EdgeInsets.only(left: 8, right: 8, top: 21),
-                        ),
-                        tabs: [
-                          Container(
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Container(height: 4),
-                                Icon(Icons.star,
-                                    color: Settings.themeWhat
-                                        ? null
-                                        : Colors.black),
-                                Text(Translations.of(context).trans('daily'),
-                                    style: Settings.themeWhat
-                                        ? null
-                                        : TextStyle(color: Colors.black)),
-                              ],
-                            ),
-                            height: 50,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Container(height: 4),
-                                Icon(MdiIcons.calendarWeek,
-                                    color: Settings.themeWhat
-                                        ? null
-                                        : Colors.black),
-                                Text(Translations.of(context).trans('weekly'),
-                                    style: Settings.themeWhat
-                                        ? null
-                                        : TextStyle(color: Colors.black)),
-                              ],
-                            ),
-                            height: 50,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Container(height: 4),
-                                Icon(MdiIcons.calendarMonth,
-                                    color: Settings.themeWhat
-                                        ? null
-                                        : Colors.black),
-                                Text(Translations.of(context).trans('monthly'),
-                                    style: Settings.themeWhat
-                                        ? null
-                                        : TextStyle(color: Colors.black)),
-                              ],
-                            ),
-                            height: 50,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            child: Column(
-                              children: [
-                                Container(height: 4),
-                                Icon(MdiIcons.heart,
-                                    color: Settings.themeWhat
-                                        ? null
-                                        : Colors.black),
-                                Text(Translations.of(context).trans('alltime'),
-                                    style: Settings.themeWhat
-                                        ? null
-                                        : TextStyle(color: Colors.black)),
-                              ],
-                            ),
-                            height: 50,
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: TabBarView(
-                          children: [
-                            _Tab(0),
-                            _Tab(1),
-                            _Tab(2),
-                            _Tab(3),
-                          ],
-                        ),
-                      ),
+                    children: [
+                      Container(height: 4),
+                      Icon(Icons.star,
+                          color: Settings.themeWhat ? null : Colors.black),
+                      Text(Translations.of(context).trans('daily'),
+                          style: Settings.themeWhat
+                              ? null
+                              : TextStyle(color: Colors.black)),
                     ],
                   ),
+                  height: 50,
                 ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Container(height: 4),
+                      Icon(MdiIcons.calendarWeek,
+                          color: Settings.themeWhat ? null : Colors.black),
+                      Text(Translations.of(context).trans('weekly'),
+                          style: Settings.themeWhat
+                              ? null
+                              : TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                  height: 50,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Container(height: 4),
+                      Icon(MdiIcons.calendarMonth,
+                          color: Settings.themeWhat ? null : Colors.black),
+                      Text(Translations.of(context).trans('monthly'),
+                          style: Settings.themeWhat
+                              ? null
+                              : TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                  height: 50,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Container(height: 4),
+                      Icon(MdiIcons.heart,
+                          color: Settings.themeWhat ? null : Colors.black),
+                      Text(Translations.of(context).trans('alltime'),
+                          style: Settings.themeWhat
+                              ? null
+                              : TextStyle(color: Colors.black)),
+                    ],
+                  ),
+                  height: 50,
+                ),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _Tab(0),
+                  _Tab(1),
+                  _Tab(2),
+                  _Tab(3),
+                ],
               ),
             ),
           ],
