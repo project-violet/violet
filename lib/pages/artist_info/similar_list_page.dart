@@ -9,7 +9,7 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/pages/artist_info/artist_info_page2.dart';
+import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/settings/settings.dart';
 

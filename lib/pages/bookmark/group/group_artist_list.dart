@@ -16,7 +16,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
-import 'package:violet/pages/artist_info/artist_info_page2.dart';
+import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
