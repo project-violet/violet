@@ -27,6 +27,7 @@ import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/series_list_page.dart';
 import 'package:violet/pages/artist_info/similar_list_page.dart';
+import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/toast.dart';
@@ -541,7 +542,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     articleArea(),
                     Visibility(
                         visible: cc.length > 6,
-                        child: more(ArticleListPage(
+                        child: more(() => ArticleListPage(
                             cc: cc,
                             name: (widget.isGroup
                                     ? 'Groups: '
@@ -668,41 +669,43 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   ExpandableController ec = ExpandableController();
 
-  Widget more(Widget what) {
+  Widget more(Widget Function() what) {
     return SizedBox(
-        height: 60,
-        child: InkWell(
-            onTap: () async {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
+      height: 60,
+      child: InkWell(
+        onTap: () async {
+          if (!Platform.isIOS) {
+            Navigator.of(context).push(PageRouteBuilder(
+              opaque: false,
+              transitionDuration: Duration(milliseconds: 500),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = Offset(0.0, 1.0);
+                var end = Offset.zero;
+                var curve = Curves.ease;
 
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
 
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => what,
-                ));
-              } else {
-                Navigator.of(context)
-                    .push(CupertinoPageRoute(builder: (_) => what));
-              }
-            },
-            child: Row(
-              children: [Text(Translations.of(context).trans('more'))],
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-            )));
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+              pageBuilder: (_, __, ___) => what(),
+            ));
+          } else {
+            Navigator.of(context)
+                .push(CupertinoPageRoute(builder: (_) => what()));
+          }
+        },
+        child: Row(
+          children: [Text(Translations.of(context).trans('more'))],
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+        ),
+      ),
+    );
   }
 
   Widget articleArea() {
@@ -758,730 +761,158 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   Widget similarArea() {
-    var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
-        padding: EdgeInsets.all(0),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: similars.length + 1,
-        itemBuilder: (BuildContext ctxt, int index) {
-          if (index == similars.length) {
-            return more(SimilarListPage(
-              prefix: prefix,
-              similarsAll: similarsAll,
-              isGroup: widget.isGroup,
-              isUploader: widget.isUploader,
-              isCharacter: widget.isCharacter,
-              isSeries: widget.isSeries,
-            ));
-          }
-          var e = similars[index];
-          var qq = qrs[index];
-          return InkWell(
-            onTap: () async {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  // opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
+      padding: EdgeInsets.all(0),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: similars.length + 1,
+      itemBuilder: (BuildContext ctxt, int index) {
+        if (index == similars.length) {
+          return more(() => SimilarListPage(
+                prefix: prefix,
+                similarsAll: similarsAll,
+                isGroup: widget.isGroup,
+                isUploader: widget.isUploader,
+                isCharacter: widget.isCharacter,
+                isSeries: widget.isSeries,
+              ));
+        }
+        var e = similars[index];
+        var qq = qrs[index];
 
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
+        var type = 'artist';
+        if (widget.isGroup)
+          type = 'group';
+        else if (widget.isUploader)
+          type = 'uploader';
+        else if (widget.isSeries)
+          type = 'series';
+        else if (widget.isCharacter) type = 'character';
 
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => ArtistInfoPage(
-                    isGroup: widget.isGroup,
-                    isUploader: widget.isUploader,
-                    isCharacter: widget.isCharacter,
-                    isSeries: widget.isSeries,
-                    artist: e.item1,
-                  ),
-                ));
-              } else {
-                Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (_) => ArtistInfoPage(
-                    isGroup: widget.isGroup,
-                    isUploader: widget.isUploader,
-                    isCharacter: widget.isCharacter,
-                    isSeries: widget.isSeries,
-                    artist: e.item1,
-                  ),
-                ));
-              }
-            },
-            child: SizedBox(
-              height: 195,
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // crossAxisAlignment: CrossAxisAlignment,
-                        children: <Widget>[
-                          Text(
-                              // (index + 1).toString() +
-                              //     '. ' +
-                              ' ' +
-                                  e.item1 +
-                                  ' (' +
-                                  HitomiManager.getArticleCount(
-                                          widget.isGroup
-                                              ? 'group'
-                                              : widget.isUploader
-                                                  ? 'uploader'
-                                                  : widget.isSeries
-                                                      ? 'series'
-                                                      : widget.isCharacter
-                                                          ? 'character'
-                                                          : 'artist',
-                                          e.item1)
-                                      .toString() +
-                                  ')',
-                              style: TextStyle(fontSize: 17)),
-                          Text(
-                              '${Translations.of(context).trans('score')}: ' +
-                                  e.item2.toStringAsFixed(1) +
-                                  ' ',
-                              style: TextStyle(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade300
-                                    : Colors.grey.shade700,
-                              )),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 162,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 0
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[0],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 1
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[1],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 2
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[2],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                          ],
-                        ),
-                      ),
-                      // Container(
-                      //   padding: EdgeInsets.all(2),
-                      // ),
-                      // Text('Score: ' + e.item2.toStringAsFixed(1),
-                      //     style: TextStyle(color: Colors.grey.shade300)),
-                    ],
-                  )),
-            ),
-          );
-        });
+        return ThreeArticlePanel(
+          tappedRoute: () => ArtistInfoPage(
+            isGroup: widget.isGroup,
+            isUploader: widget.isUploader,
+            isCharacter: widget.isCharacter,
+            isSeries: widget.isSeries,
+            artist: e.item1,
+          ),
+          title:
+              ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1).toString()})',
+          count:
+              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+          articles: qq,
+        );
+      },
+    );
   }
 
   Widget seriesArea() {
     var unescape = HtmlUnescape();
-    var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
-        padding: EdgeInsets.all(0),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: min(series.length, 6) + (series.length > 6 ? 1 : 0),
-        itemBuilder: (BuildContext ctxt, int index) {
-          if (index == 6) {
-            return more(SeriesListPage(
-              cc: cc,
-              prefix: prefix,
-              series: series,
-            ));
-          }
-          var e = series[index];
-          return InkWell(
-            onTap: () async {
-              var page = ArticleListPage(
-                  cc: e.map((e) => cc[e]).toList(), name: 'Series');
+      padding: EdgeInsets.all(0),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: min(series.length, 6) + (series.length > 6 ? 1 : 0),
+      itemBuilder: (BuildContext ctxt, int index) {
+        if (index == 6) {
+          return more(() => SeriesListPage(
+                cc: cc,
+                prefix: prefix,
+                series: series,
+              ));
+        }
+        var e = series[index];
 
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => page,
-                ));
-              } else {
-                Navigator.of(context)
-                    .push(CupertinoPageRoute(builder: (_) => page));
-              }
-              // Navigator.of(context).push(PageRouteBuilder(
-              //   // opaque: false,
-              //   transitionDuration: Duration(milliseconds: 500),
-              //   transitionsBuilder:
-              //       (context, animation, secondaryAnimation, child) {
-              //     var begin = Offset(0.0, 1.0);
-              //     var end = Offset.zero;
-              //     var curve = Curves.ease;
-
-              //     var tween = Tween(begin: begin, end: end)
-              //         .chain(CurveTween(curve: curve));
-
-              //     return SlideTransition(
-              //       position: animation.drive(tween),
-              //       child: child,
-              //     );
-              //   },
-              //   pageBuilder: (_, __, ___) => ArtistInfoPage(
-              //     isGroup: widget.isGroup,
-              //     isUploader: widget.isUploader,
-              //     artist: e.item1,
-              //   ),
-              // ));
-            },
-            child: SizedBox(
-              height: 195,
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Flexible(
-                              child: Text(
-                                  // (index + 1).toString() +
-                                  //     '. ' +
-                                  ' ' + unescape.convert(cc[e[0]].title()),
-                                  style: TextStyle(fontSize: 17),
-                                  overflow: TextOverflow.ellipsis)),
-                          Text(e.length.toString() + ' ',
-                              style: TextStyle(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade300
-                                    : Colors.grey.shade700,
-                              )),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 162,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                                flex: 1,
-                                child: e.length > 0
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: cc[e[0]],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: e.length > 1
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: cc[e[1]],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: e.length > 2
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: cc[e[2]],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-            ),
-          );
-        });
+        return ThreeArticlePanel(
+          tappedRoute: () =>
+              ArticleListPage(cc: e.map((e) => cc[e]).toList(), name: 'Series'),
+          title: ' ${unescape.convert(cc[e[0]].title())}',
+          count: '${e.length} ',
+          articles: e.map((e) => cc[e]).toList(),
+        );
+      },
+    );
   }
 
   Widget relatedArea() {
-    var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
-        padding: EdgeInsets.all(0),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: relatedCharacterOrSeries.length + 1,
-        itemBuilder: (BuildContext ctxt, int index) {
-          if (index == relatedCharacterOrSeries.length) {
-            return more(SimilarListPage(
-              prefix: prefix,
-              similarsAll: relatedCharacterOrSeriesAll,
-              isGroup: widget.isGroup,
-              isUploader: widget.isUploader,
-              isCharacter: widget.isCharacter,
-              isSeries: widget.isSeries,
-            ));
-          }
-          var e = relatedCharacterOrSeries[index];
-          var qq = qrsCharacterOrSeries[index];
-          return InkWell(
-            onTap: () async {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  // opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
+      padding: EdgeInsets.all(0),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: relatedCharacterOrSeries.length + 1,
+      itemBuilder: (BuildContext ctxt, int index) {
+        if (index == relatedCharacterOrSeries.length) {
+          return more(() => SimilarListPage(
+                prefix: prefix,
+                similarsAll: relatedCharacterOrSeriesAll,
+                isGroup: widget.isGroup,
+                isUploader: widget.isUploader,
+                isCharacter: widget.isCharacter,
+                isSeries: widget.isSeries,
+              ));
+        }
 
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
+        var e = relatedCharacterOrSeries[index];
+        var qq = qrsCharacterOrSeries[index];
 
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => ArtistInfoPage(
-                    isGroup: widget.isGroup,
-                    isUploader: widget.isUploader,
-                    isCharacter: widget.isCharacter,
-                    isSeries: widget.isSeries,
-                    artist: e.item1,
-                  ),
-                ));
-              } else {
-                Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (_) => ArtistInfoPage(
-                    isGroup: widget.isGroup,
-                    isUploader: widget.isUploader,
-                    isCharacter: widget.isCharacter,
-                    isSeries: widget.isSeries,
-                    artist: e.item1,
-                  ),
-                ));
-              }
-            },
-            child: SizedBox(
-              height: 195,
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // crossAxisAlignment: CrossAxisAlignment,
-                        children: <Widget>[
-                          Text(
-                              // (index + 1).toString() +
-                              //     '. ' +
-                              ' ' +
-                                  e.item1 +
-                                  ' (' +
-                                  HitomiManager.getArticleCount(
-                                          widget.isSeries
-                                              ? 'series'
-                                              : 'character',
-                                          e.item1)
-                                      .toString() +
-                                  ')',
-                              style: TextStyle(fontSize: 17)),
-                          Text(
-                              '${Translations.of(context).trans('score')}: ' +
-                                  e.item2.toStringAsFixed(1) +
-                                  ' ',
-                              style: TextStyle(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade300
-                                    : Colors.grey.shade700,
-                              )),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 162,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 0
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[0],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 1
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[1],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 2
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[2],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                          ],
-                        ),
-                      ),
-                      // Container(
-                      //   padding: EdgeInsets.all(2),
-                      // ),
-                      // Text('Score: ' + e.item2.toStringAsFixed(1),
-                      //     style: TextStyle(color: Colors.grey.shade300)),
-                    ],
-                  )),
-            ),
-          );
-        });
+        var cls = 'character';
+        if (widget.isCharacter) cls = 'series';
+
+        return ThreeArticlePanel(
+          tappedRoute: () => ArtistInfoPage(
+            isGroup: widget.isGroup,
+            isUploader: widget.isUploader,
+            isCharacter: widget.isCharacter,
+            isSeries: widget.isSeries,
+            artist: e.item1,
+          ),
+          title: ' ${e.item1} (${HitomiManager.getArticleCount(cls, e.item1)})',
+          count:
+              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+          articles: qq,
+        );
+      },
+    );
   }
 
   Widget relatedSingleArea() {
-    var windowWidth = MediaQuery.of(context).size.width;
     return ListView.builder(
-        padding: EdgeInsets.all(0),
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: relatedCOSSingle.length + 1,
-        itemBuilder: (BuildContext ctxt, int index) {
-          if (index == relatedCOSSingle.length) {
-            return more(SimilarListPage(
-              prefix: widget.isCharacter ? 'series:' : 'character:',
-              similarsAll: relatedCOSSingleAll,
-              isGroup: widget.isGroup,
-              isUploader: widget.isUploader,
-              isSeries: widget.isCharacter,
-              isCharacter: widget.isSeries,
-            ));
-          }
-          var e = relatedCOSSingle[index];
-          var qq = qrsCOSSingle[index];
-          return InkWell(
-            onTap: () async {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  // opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
+      padding: EdgeInsets.all(0),
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: relatedCOSSingle.length + 1,
+      itemBuilder: (BuildContext ctxt, int index) {
+        if (index == relatedCOSSingle.length) {
+          return more(() => SimilarListPage(
+                prefix: widget.isCharacter ? 'series:' : 'character:',
+                similarsAll: relatedCOSSingleAll,
+                isGroup: widget.isGroup,
+                isUploader: widget.isUploader,
+                isSeries: widget.isCharacter,
+                isCharacter: widget.isSeries,
+              ));
+        }
+        var e = relatedCOSSingle[index];
+        var qq = qrsCOSSingle[index];
 
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
+        var cls = 'character';
+        if (widget.isCharacter) cls = 'series';
 
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => ArtistInfoPage(
-                    isGroup: widget.isGroup,
-                    isUploader: widget.isUploader,
-                    isSeries: widget.isCharacter,
-                    isCharacter: widget.isSeries,
-                    artist: e.item1,
-                  ),
-                ));
-              } else {
-                Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (_) => ArtistInfoPage(
-                    isGroup: widget.isGroup,
-                    isUploader: widget.isUploader,
-                    isSeries: widget.isCharacter,
-                    isCharacter: widget.isSeries,
-                    artist: e.item1,
-                  ),
-                ));
-              }
-            },
-            child: SizedBox(
-              height: 195,
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        // crossAxisAlignment: CrossAxisAlignment,
-                        children: <Widget>[
-                          Text(
-                              // (index + 1).toString() +
-                              //     '. ' +
-                              ' ' +
-                                  e.item1 +
-                                  ' (' +
-                                  HitomiManager.getArticleCount(
-                                          widget.isCharacter
-                                              ? 'series'
-                                              : 'character',
-                                          e.item1)
-                                      .toString() +
-                                  ')',
-                              style: TextStyle(fontSize: 17)),
-                          Text(
-                              '${Translations.of(context).trans('score')}: ' +
-                                  e.item2.toStringAsFixed(1) +
-                                  ' ',
-                              style: TextStyle(
-                                color: Settings.themeWhat
-                                    ? Colors.grey.shade300
-                                    : Colors.grey.shade700,
-                              )),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 162,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 0
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[0],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 1
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[1],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                            Expanded(
-                                flex: 1,
-                                child: qq.length > 2
-                                    ? Padding(
-                                        padding: EdgeInsets.all(4),
-                                        child: Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: qq[2],
-                                            showDetail: false,
-                                            addBottomPadding: false,
-                                            width:
-                                                (windowWidth - 16 - 4.0 - 1.0) /
-                                                    3,
-                                            thumbnailTag: Uuid().v4(),
-                                            disableFilter: true,
-                                          ),
-                                          child:
-                                              ArticleListItemVerySimpleWidget(),
-                                        ),
-                                      )
-                                    : Container()),
-                          ],
-                        ),
-                      ),
-                      // Container(
-                      //   padding: EdgeInsets.all(2),
-                      // ),
-                      // Text('Score: ' + e.item2.toStringAsFixed(1),
-                      //     style: TextStyle(color: Colors.grey.shade300)),
-                    ],
-                  )),
-            ),
-          );
-        });
+        return ThreeArticlePanel(
+          tappedRoute: () => ArtistInfoPage(
+            isGroup: widget.isGroup,
+            isUploader: widget.isUploader,
+            isSeries: widget.isCharacter,
+            isCharacter: widget.isSeries,
+            artist: e.item1,
+          ),
+          title: ' ${e.item1} (${HitomiManager.getArticleCount(cls, e.item1)})',
+          count:
+              '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+          articles: qq,
+        );
+      },
+    );
   }
 }

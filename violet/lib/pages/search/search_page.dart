@@ -26,8 +26,8 @@ import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
-import 'package:violet/pages/search/search_filter_page.dart';
 import 'package:violet/pages/search/search_type.dart';
+import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/settings/device_type.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
@@ -53,6 +53,7 @@ class _SearchPageState extends State<SearchPage>
   FlutterActorArtboard artboard;
   ScrollController _scrollController = ScrollController();
 
+  bool isFilterUsed = false;
   bool searchbarVisible = true;
   double upperPixel = 0;
   double latestOffset = 0.0;
@@ -100,7 +101,8 @@ class _SearchPageState extends State<SearchPage>
         latestQuery =
             Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
         queryResult = latestQuery.item1.item1;
-        if (isPopulationSort) Population.sortByPopulation(queryResult);
+        if (_filterController.isPopulationSort)
+          Population.sortByPopulation(queryResult);
         setState(() {});
       } catch (e) {
         print('Initial search failed: $e');
@@ -227,52 +229,16 @@ class _SearchPageState extends State<SearchPage>
                     child: Material(
                       type: MaterialType.transparency,
                       child: InkWell(
-                        onTap: () async {
-                          await Future.delayed(Duration(milliseconds: 200));
-                          heroFlareControls.play('search2close');
-                          final query = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return SearchBarPage(
-                                  artboard: artboard,
-                                  initText: latestQuery != null
-                                      ? latestQuery.item2
-                                      : '',
-                                  heroController: heroFlareControls,
-                                );
-                              },
-                              fullscreenDialog: true,
-                            ),
-                          );
-                          final db = await SearchLogDatabase.getInstance();
-                          await db.insertSearchLog(query);
-                          setState(() {
-                            heroFlareControls.play('close2search');
-                          });
-                          if (query == null) return;
-                          latestQuery =
-                              Tuple2<Tuple2<List<QueryResult>, int>, String>(
-                                  null, query);
-                          queryResult = [];
-                          isFilterUsed = false;
-                          isOr = false;
-                          tagStates = <String, bool>{};
-                          groupStates = <String, bool>{};
-                          queryEnd = false;
-                          await loadNextQuery();
-                        },
+                        onTap: _showSearchBar,
                         onDoubleTap: () async {
                           // latestQuery = value;
                           latestQuery =
                               Tuple2<Tuple2<List<QueryResult>, int>, String>(
                                   null, 'random');
                           queryResult = [];
-                          isFilterUsed = false;
-                          isOr = false;
-                          tagStates = Map<String, bool>();
-                          groupStates = Map<String, bool>();
+                          _filterController = FilterController();
                           queryEnd = false;
+                          isFilterUsed = false;
                           await loadNextQuery();
                           setState(() {
                             key = ObjectKey(Uuid().v4());
@@ -286,6 +252,36 @@ class _SearchPageState extends State<SearchPage>
             ),
           )),
     );
+  }
+
+  Future<void> _showSearchBar() async {
+    await Future.delayed(Duration(milliseconds: 200));
+    heroFlareControls.play('search2close');
+    final query = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return SearchBarPage(
+            artboard: artboard,
+            initText: latestQuery != null ? latestQuery.item2 : '',
+            heroController: heroFlareControls,
+          );
+        },
+        fullscreenDialog: true,
+      ),
+    );
+    final db = await SearchLogDatabase.getInstance();
+    await db.insertSearchLog(query);
+    setState(() {
+      heroFlareControls.play('close2search');
+    });
+    if (query == null) return;
+    latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(null, query);
+    queryResult = [];
+    _filterController = FilterController();
+    queryEnd = false;
+    isFilterUsed = false;
+    await loadNextQuery();
   }
 
   Widget _align() {
@@ -344,68 +340,30 @@ class _SearchPageState extends State<SearchPage>
               onLongPress: () async {
                 if (!Platform.isIOS) {
                   Navigator.of(context)
-                      .push(PageRouteBuilder(
-                    // opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder: (BuildContext context,
-                        Animation<double> animation,
-                        Animation<double> secondaryAnimation,
-                        Widget wi) {
-                      return FadeTransition(opacity: animation, child: wi);
-                    },
-                    pageBuilder: (_, __, ___) => SearchFilter(
-                      ignoreBookmark: ignoreBookmark,
-                      blurred: blurred,
-                      queryResult: queryResult,
-                      tagStates: tagStates,
-                      groupStates: groupStates,
-                      isOr: isOr,
-                      isSearch: isSearch,
-                      isPopulationSort: isPopulationSort,
+                      .push(
+                    PageRouteBuilder(
+                      // opaque: false,
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder: (BuildContext context,
+                          Animation<double> animation,
+                          Animation<double> secondaryAnimation,
+                          Widget wi) {
+                        return FadeTransition(opacity: animation, child: wi);
+                      },
+                      pageBuilder: (_, __, ___) =>
+                          Provider<FilterController>.value(
+                        value: _filterController,
+                        child: FilterPage(
+                          queryResult: queryResult,
+                        ),
+                      ),
                     ),
-                  ))
+                  )
                       .then((value) async {
-                    isFilterUsed = true;
-                    ignoreBookmark = value[0];
-                    blurred = value[1];
-                    tagStates = value[2];
-                    groupStates = value[3];
-                    isOr = value[4];
-                    isPopulationSort = value[5];
-                    var result = <QueryResult>[];
-                    queryResult.forEach((element) {
-                      var succ = !isOr;
-                      tagStates.forEach((key, value) {
-                        if (!value) return;
-                        if (succ == isOr) return;
-                        var split = key.split('|');
-                        var kk = prefix2Tag(split[0]);
-                        if (element.result[kk] == null && !isOr) {
-                          succ = false;
-                          return;
-                        }
-                        if (!isSingleTag(split[0])) {
-                          var tt = split[1];
-                          if (split[0] == 'female' || split[0] == 'male')
-                            tt = split[0] + ':' + split[1];
-                          if ((element.result[kk] as String)
-                                  .contains('|' + tt + '|') ==
-                              isOr) succ = isOr;
-                        } else if ((element.result[kk] as String == split[1]) ==
-                            isOr) succ = isOr;
-                      });
-                      if (succ) result.add(element);
-                    });
-                    filterResult = result;
-                    if (isPopulationSort)
-                      Population.sortByPopulation(filterResult);
+                    _applyFilter();
                     setState(() {
                       key = ObjectKey(Uuid().v4());
                     });
-                    // await Future.delayed(
-                    //     Duration(milliseconds: 50), () {
-                    //   setState(() {});
-                    // });
                   });
                 }
               },
@@ -416,15 +374,53 @@ class _SearchPageState extends State<SearchPage>
     );
   }
 
-  bool isFilterUsed = false;
-  bool ignoreBookmark = false;
-  bool isOr = false;
-  bool isSearch = false;
-  bool isPopulationSort = false;
-  Map<String, bool> tagStates = Map<String, bool>();
-  Map<String, bool> groupStates = Map<String, bool>();
+  void _applyFilter() {
+    var result = <QueryResult>[];
+    var isOr = _filterController.isOr;
+    queryResult.forEach((element) {
+      // key := <group>:<name>
+      var succ = !_filterController.isOr;
+      _filterController.tagStates.forEach((key, value) {
+        if (!value) return;
 
-  bool scaleOnce = false;
+        // Check match just only one
+        if (succ == isOr) return;
+
+        // Get db column name from group
+        var split = key.split('|');
+        var dbColumn = prefix2Tag(split[0]);
+
+        // There is no matched db column name
+        if (element.result[dbColumn] == null && !isOr) {
+          succ = false;
+          return;
+        }
+
+        // If Single Tag
+        if (!isSingleTag(split[0])) {
+          var tag = split[1];
+          if (['female', 'male'].contains(split[0]))
+            tag = '${split[0]}:${split[1]}';
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+            succ = isOr;
+        }
+
+        // If Multitag
+        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+          succ = isOr;
+      });
+      if (succ) result.add(element);
+    });
+
+    filterResult = result;
+    isFilterUsed = true;
+
+    if (_filterController.isPopulationSort)
+      Population.sortByPopulation(filterResult);
+  }
+
+  FilterController _filterController = FilterController();
+
   List<QueryResult> queryResult = [];
   List<QueryResult> filterResult = [];
 
@@ -469,7 +465,8 @@ class _SearchPageState extends State<SearchPage>
 
       queryResult.addAll(next.item1);
 
-      if (isPopulationSort) Population.sortByPopulation(queryResult);
+      if (_filterController.isPopulationSort)
+        Population.sortByPopulation(queryResult);
 
       setState(() {});
     } catch (e, st) {
