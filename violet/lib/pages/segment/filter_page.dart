@@ -44,13 +44,6 @@ class _FilterPageState extends State<FilterPage> {
   final _groupCount = Map<String, int>();
   final _groups = <Tuple2<String, int>>[];
 
-  @override
-  void initState() {
-    super.initState();
-
-    _initTagPad();
-  }
-
   _initTagPad() {
     Map<String, int> tags = Map<String, int>();
     widget.queryResult.forEach((element) {
@@ -125,6 +118,7 @@ class _FilterPageState extends State<FilterPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     c = Provider.of<FilterController>(context);
+    _initTagPad();
   }
 
   @override
