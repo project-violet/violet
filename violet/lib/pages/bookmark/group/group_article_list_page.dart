@@ -1,8 +1,10 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -17,9 +19,9 @@ import 'package:violet/model/article_list_item.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
-import 'package:violet/pages/bookmark/group/bookmark_search_sort.dart';
 import 'package:violet/pages/bookmark/group/group_artist_article_list.dart';
 import 'package:violet/pages/bookmark/group/group_artist_list.dart';
+import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
@@ -134,13 +136,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   .toList()
                   .reversed
                   .toList();
+
               if (cc.length == 0) {
                 queryResult = <QueryResult>[];
                 filterResult = queryResult;
-                if (isPopulationSort) Population.sortByPopulation(filterResult);
-                setState(() {});
+                setState(() {
+                  key = ObjectKey(Uuid().v4());
+                });
                 return;
               }
+
               //queryRaw += cc.map((e) => 'Id=${e.article()}').join(' OR ');
               queryRaw +=
                   'Id IN (' + cc.map((e) => e.article()).join(',') + ')';
@@ -171,35 +176,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 });
 
                 queryResult = result;
-                if (isFilterUsed) {
-                  result.clear();
-                  queryResult.forEach((element) {
-                    var succ = !isOr;
-                    tagStates.forEach((key, value) {
-                      if (!value) return;
-                      if (succ == isOr) return;
-                      var split = key.split('|');
-                      var kk = prefix2Tag(split[0]);
-                      if (element.result[kk] == null && !isOr) {
-                        succ = false;
-                        return;
-                      }
-                      if (!isSingleTag(split[0])) {
-                        var tt = split[1];
-                        if (split[0] == 'female' || split[0] == 'male')
-                          tt = split[0] + ':' + split[1];
-                        if ((element.result[kk] as String)
-                                .contains('|' + tt + '|') ==
-                            isOr) succ = isOr;
-                      } else if ((element.result[kk] as String == split[1]) ==
-                          isOr) succ = isOr;
-                    });
-                    if (succ) result.add(element);
-                  });
-                }
-                filterResult = result;
-                if (isPopulationSort) Population.sortByPopulation(filterResult);
-                setState(() {});
+                _applyFilter();
+                setState(() {
+                  key = ObjectKey(Uuid().v4());
+                });
               });
             }));
   }
@@ -424,60 +404,51 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             onLongPress: () {
               if (checkMode) return;
               isFilterUsed = true;
-              Navigator.of(context)
-                  .push(PageRouteBuilder(
-                // opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder: (BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                    Widget wi) {
-                  return FadeTransition(opacity: animation, child: wi);
-                },
-                pageBuilder: (_, __, ___) => BookmarkSearchSort(
-                  queryResult: queryResult,
-                  tagStates: tagStates,
-                  groupStates: groupStates,
-                  isOr: isOr,
-                  isSearch: isSearch,
-                  isPopulationSort: isPopulationSort,
-                ),
-              ))
-                  .then((value) async {
-                tagStates = value[0];
-                groupStates = value[1];
-                isOr = value[2];
-                isPopulationSort = value[3];
-                var result = <QueryResult>[];
-                queryResult.forEach((element) {
-                  var succ = !isOr;
-                  tagStates.forEach((key, value) {
-                    if (!value) return;
-                    if (succ == isOr) return;
-                    var split = key.split('|');
-                    var kk = prefix2Tag(split[0]);
-                    if (element.result[kk] == null && !isOr) {
-                      succ = false;
-                      return;
-                    }
-                    if (!isSingleTag(split[0])) {
-                      var tt = split[1];
-                      if (split[0] == 'female' || split[0] == 'male')
-                        tt = split[0] + ':' + split[1];
-                      if ((element.result[kk] as String)
-                              .contains('|' + tt + '|') ==
-                          isOr) succ = isOr;
-                    } else if ((element.result[kk] as String == split[1]) ==
-                        isOr) succ = isOr;
+
+              if (!Platform.isIOS) {
+                Navigator.of(context)
+                    .push(
+                  PageRouteBuilder(
+                    // opaque: false,
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder: (BuildContext context,
+                        Animation<double> animation,
+                        Animation<double> secondaryAnimation,
+                        Widget wi) {
+                      return FadeTransition(opacity: animation, child: wi);
+                    },
+                    pageBuilder: (_, __, ___) =>
+                        Provider<FilterController>.value(
+                      value: _filterController,
+                      child: FilterPage(
+                        queryResult: queryResult,
+                      ),
+                    ),
+                  ),
+                )
+                    .then((value) async {
+                  _applyFilter();
+                  setState(() {
+                    key = ObjectKey(Uuid().v4());
                   });
-                  if (succ) result.add(element);
                 });
-                filterResult = result;
-                if (isPopulationSort) Population.sortByPopulation(filterResult);
-                await Future.delayed(Duration(milliseconds: 50), () {
-                  setState(() {});
+              } else {
+                Navigator.of(context)
+                    .push(CupertinoPageRoute(
+                  builder: (_) => Provider<FilterController>.value(
+                    value: _filterController,
+                    child: FilterPage(
+                      queryResult: queryResult,
+                    ),
+                  ),
+                ))
+                    .then((value) async {
+                  _applyFilter();
+                  setState(() {
+                    key = ObjectKey(Uuid().v4());
+                  });
                 });
-              });
+              }
             },
           ),
         ),
@@ -493,16 +464,59 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     );
   }
 
-  bool isFilterUsed = false;
-  bool isOr = false;
-  bool isSearch = false;
-  bool isPopulationSort = false;
-  Map<String, bool> tagStates = Map<String, bool>();
-  Map<String, bool> groupStates = Map<String, bool>();
+  ObjectKey key = ObjectKey(Uuid().v4());
 
-  bool scaleOnce = false;
+  FilterController _filterController = FilterController();
+
+  bool isFilterUsed = false;
+
   List<QueryResult> queryResult = <QueryResult>[];
   List<QueryResult> filterResult = <QueryResult>[];
+
+  void _applyFilter() {
+    var result = <QueryResult>[];
+    var isOr = _filterController.isOr;
+    queryResult.forEach((element) {
+      // key := <group>:<name>
+      var succ = !_filterController.isOr;
+      _filterController.tagStates.forEach((key, value) {
+        if (!value) return;
+
+        // Check match just only one
+        if (succ == isOr) return;
+
+        // Get db column name from group
+        var split = key.split('|');
+        var dbColumn = prefix2Tag(split[0]);
+
+        // There is no matched db column name
+        if (element.result[dbColumn] == null && !isOr) {
+          succ = false;
+          return;
+        }
+
+        // If Single Tag
+        if (!isSingleTag(split[0])) {
+          var tag = split[1];
+          if (['female', 'male'].contains(split[0]))
+            tag = '${split[0]}:${split[1]}';
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+            succ = isOr;
+        }
+
+        // If Multitag
+        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+          succ = isOr;
+      });
+      if (succ) result.add(element);
+    });
+
+    filterResult = result;
+    isFilterUsed = true;
+
+    if (_filterController.isPopulationSort)
+      Population.sortByPopulation(filterResult);
+  }
 
   static String prefix2Tag(String prefix) {
     switch (prefix) {
@@ -565,6 +579,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverGrid(
+            key: key,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: mm,
               crossAxisSpacing: 8,
@@ -614,6 +629,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverList(
+            key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
               return Align(
                 key: Key('group' +
