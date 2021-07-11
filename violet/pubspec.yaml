@@ -139,6 +139,7 @@ dev_dependencies:
   json_serializable: ^3.2.0
   freezed: ^0.12.1
   moor_flutter: ^4.0.0
+  sqflite_common_ffi:
 
 
 # For information on the generic Dart part of this file, see the
