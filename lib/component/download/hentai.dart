@@ -91,6 +91,9 @@ class HentaiDonwloadManager extends Downloadable {
             laugage: target.language(),
             uploadDate: target.getDateTime().toString(),
             filenameWithoutExtension: intToString(i, pad: 3),
+            artist: target.artists() != null
+                ? target.artists().split('|').first
+                : null,
             extension: path.extension(page.split('/').last).replaceAll(".", ""),
             extractor: 'hentai',
           ),
