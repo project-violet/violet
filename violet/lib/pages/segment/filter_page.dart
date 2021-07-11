@@ -17,12 +17,12 @@ class FilterController {
   var isOr = false;
   var isSearch = false;
   var isPopulationSort = false;
-  var heroKey = "searchtype";
+  String heroKey;
 
   var tagStates = Map<String, bool>();
   var groupStates = Map<String, bool>();
 
-  FilterController({this.heroKey});
+  FilterController({this.heroKey = "searchtype"});
 }
 
 class FilterPage extends StatefulWidget {
