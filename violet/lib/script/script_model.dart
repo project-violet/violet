@@ -160,10 +160,10 @@ class PActionDescription {
     ParserAction((node) => node.userContents = PBlock(isEmpty: true)),
     // 10:     consts -> number
     ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].userContents)),
+        node.userContents = PVariable(content: node.childs[0].contents)),
     // 11:     consts -> string
     ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].userContents)),
+        node.userContents = PVariable(content: node.childs[0].contents)),
     // 12:      index -> variable
     ParserAction((node) =>
         node.userContents = PIndex(variable1: node.childs[0].userContents)),
@@ -174,7 +174,7 @@ class PActionDescription {
         variable2: node.childs[2].userContents)),
     // 14:   variable -> name
     ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].userContents)),
+        node.userContents = PVariable(content: node.childs[0].contents)),
     // 15:   variable -> function
     ParserAction((node) =>
         node.userContents = PVariable(content: node.childs[0].userContents)),
