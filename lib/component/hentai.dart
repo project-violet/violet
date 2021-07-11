@@ -172,6 +172,24 @@ class HentaiManager {
     throw Exception('Never Taken');
   }
 
+  static Future<int> countSearch(String what) async {
+    final queryString = HitomiManager.translate2query(what +
+        ' ' +
+        Settings.includeTags +
+        ' ' +
+        Settings.excludeTags
+            .where((e) => e.trim() != '')
+            .map((e) => '-$e')
+            .join(' ')
+            .trim());
+
+    var count = (await (await DataBaseManager.getInstance()).query(queryString
+            .replaceAll('SELECT * FROM', 'SELECT COUNT(*) AS C FROM')))
+        .first['C'] as int;
+
+    return count;
+  }
+
   static Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
     var lang = qr.language() as String;
     var route = Settings.routingRule;

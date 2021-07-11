@@ -8,7 +8,10 @@
 // import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:violet/component/hentai.dart';
 // import 'package:violet/component/download/hitomi.dart';
 // import 'package:http/http.dart' as http;
 
@@ -19,6 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 // import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/database/database.dart';
 import 'package:violet/script/parse_tree.dart';
 import 'package:violet/script/script_lexer.dart';
 import 'package:violet/script/script_parser.dart';
@@ -26,11 +30,18 @@ import 'package:violet/script/script_runner.dart';
 
 import 'json/json_lexer.dart';
 import 'json/json_parser.dart';
+
+import 'package:sqflite_common/sqlite_api.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 // import 'package:violet/database/query.dart';
 // import 'package:violet/server/community/session.dart';
 // import 'package:violet/server/violet.dart';
 
 void main() {
+  sqfliteFfiInit();
+  setUp(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+  });
   /*test("Test Translated", () async {
     await TagTranslate.init();
     // print(
@@ -101,11 +112,25 @@ void main() {
         m = y;
         x = xx;
         print('$x, $m');
-      }
+      }s
     }
   });*/
 
-  test('test script', () {
+  test('test search', () async {
+    final db =
+        await databaseFactoryFfi.openDatabase('/home/ubuntu/rawdata-korean.db');
+
+    final queryString = HitomiManager.translate2query('ss');
+
+    print(queryString);
+    var count = (await db.rawQuery(queryString.replaceAll(
+            'SELECT * FROM', 'SELECT COUNT(*) AS C FROM')))
+        .first['C'] as int;
+
+    print(count);
+  });
+
+  /*test('test script', () {
     // var lexer = JSonLexer();
     // var parser = JSonParser();
     // var lexer = ScriptLexer();
@@ -151,7 +176,7 @@ void main() {
     // tree = parser.tree();
 
     // print(tree.printTree());
-  });
+  });*/
 
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
   //   // Build our app and trigger a frame.
