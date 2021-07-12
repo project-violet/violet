@@ -6,7 +6,7 @@ import 'package:violet/settings/settings.dart';
 
 class CardPanel {
   static Widget build(BuildContext context,
-      {Widget child, bool enableBackgroundColor = false}) {
+      {Widget child, bool enableBackgroundColor = false, String heroTag}) {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
@@ -22,15 +22,29 @@ class CardPanel {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          Card(
-            elevation: 5,
-            color: color,
-            child: SizedBox(
-              width: width - 16,
-              height: height - 16 - bottomPadding,
-              child: child,
-            ),
-          )
+          if (heroTag == null)
+            Card(
+              elevation: 5,
+              color: color,
+              child: SizedBox(
+                width: width - 16,
+                height: height - 16 - bottomPadding,
+                child: child,
+              ),
+            )
+          else
+            Hero(
+              tag: heroTag,
+              child: Card(
+                elevation: 5,
+                color: color,
+                child: SizedBox(
+                  width: width - 16,
+                  height: height - 16 - bottomPadding,
+                  child: child,
+                ),
+              ),
+            )
         ],
       ),
     );

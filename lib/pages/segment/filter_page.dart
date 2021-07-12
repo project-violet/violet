@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +9,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart' as trans;
-import 'package:violet/model/article_info.dart';
+import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
 
 class FilterController {
@@ -117,14 +116,48 @@ class _FilterPageState extends State<FilterPage> {
     });
   }
 
+  bool _initOnce = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    c = Provider.of<FilterController>(context);
-    _initTagPad();
+    if (!_initOnce) {
+      _initOnce = true;
+      c = Provider.of<FilterController>(context);
+      _initTagPad();
+    }
   }
 
   @override
+  Widget build(BuildContext context) {
+    return CardPanel.build(
+      context,
+      heroTag: c.heroKey,
+      child: Padding(
+        padding: EdgeInsets.all(4),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                physics: BouncingScrollPhysics(),
+                children: [
+                  _buildTagsPanel(),
+                ],
+              ),
+            ),
+            c.isSearch ? Container() : _buildSelectPanel(),
+            c.isSearch
+                ? _buildSearchControlPanel()
+                : _buildSelectControlPanel(),
+            _buildOptionButtons()
+          ],
+        ),
+      ),
+    );
+  }
+
+  /*@override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     return Container(
@@ -179,7 +212,7 @@ class _FilterPageState extends State<FilterPage> {
         ),
       ),
     );
-  }
+  }*/
 
   _buildOptionButtons() {
     return Wrap(
