@@ -77,32 +77,28 @@ class _SearchBarPageState extends State<SearchBarPage>
     controller.forward();
 
     if (_searchLists.length == 0 && !_nothing) {
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'female'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'male'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'tag'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'lang'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'series'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'artist'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'group'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'uploader'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'character'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'type'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'class'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'recent'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'random'), 0));
+      const prefixList = [
+        'female',
+        'male',
+        'tag',
+        'lang',
+        'series',
+        'artist',
+        'group',
+        'uploader',
+        'character',
+        'type',
+        'class',
+        'recent',
+        'random'
+      ];
+
+      prefixList.forEach(
+        (element) => _searchLists.add(
+          Tuple2<DisplayedTag, int>(
+              DisplayedTag(group: 'prefix', name: element), 0),
+        ),
+      );
     }
 
     return Container(
@@ -183,32 +179,22 @@ class _SearchBarPageState extends State<SearchBarPage>
             hintText: Translations.of(context).trans('search'),
           ),
         ),
-        // leading: SizedBox(
-        //   width: 25,
-        //   height: 25,
-        //   child: RawMaterialButton(
-        //       onPressed: () {
-        //         Navigator.pop(context);
-        //       },
-        //       shape: CircleBorder(),
-        //         child: FlareArtboard(widget.artboard,
-        //             controller: widget.heroController),
-        // ),
         leading: Container(
           transform: Matrix4.translationValues(-4, 0, 0),
           child: SizedBox(
             width: 40,
             height: 40,
             child: RawMaterialButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                shape: CircleBorder(),
-                child: Transform.scale(
-                  scale: 0.65,
-                  child: FlareArtboard(widget.artboard,
-                      controller: widget.heroController),
-                )),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              shape: CircleBorder(),
+              child: Transform.scale(
+                scale: 0.65,
+                child: FlareArtboard(widget.artboard,
+                    controller: widget.heroController),
+              ),
+            ),
           ),
         ),
       ),
@@ -241,33 +227,34 @@ class _SearchBarPageState extends State<SearchBarPage>
         ],
       ),
       FutureBuilder(
-          future: Future.value(1),
-          builder: (context, snapshot) {
-            return !snapshot.hasData
-                ? Container()
-                : Positioned(
-                    bottom: 0.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Container(
-                      color: null,
-                      padding: const EdgeInsets.all(20.0),
-                      child: Center(
-                        child: DotsIndicator(
-                          controller: _topController,
-                          itemCount: 2,
-                          onPageSelected: (int page) {
-                            _topController.animateToPage(
-                              page,
-                              duration: _kDuration,
-                              curve: _kCurve,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  );
-          }),
+        future: Future.value(1),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return Container();
+
+          return Positioned(
+            bottom: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: Container(
+              color: null,
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: DotsIndicator(
+                  controller: _topController,
+                  itemCount: 2,
+                  onPageSelected: (int page) {
+                    _topController.animateToPage(
+                      page,
+                      duration: _kDuration,
+                      curve: _kCurve,
+                    );
+                  },
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     ]);
   }
 
@@ -320,31 +307,29 @@ class _SearchBarPageState extends State<SearchBarPage>
         FutureBuilder(
           future: Future.value(1),
           builder: (context, snapshot) {
-            print(snapshot.hasData);
-            return !snapshot.hasData
-                ? Container()
-                : Positioned(
-                    bottom: 0.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Container(
-                      color: null,
-                      padding: const EdgeInsets.all(20.0),
-                      child: Center(
-                        child: DotsIndicator(
-                          controller: _bottomController,
-                          itemCount: 2,
-                          onPageSelected: (int page) {
-                            _bottomController.animateToPage(
-                              page,
-                              duration: _kDuration,
-                              curve: _kCurve,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  );
+            if (!snapshot.hasData) return Container();
+            return Positioned(
+              bottom: 0.0,
+              left: 0.0,
+              right: 0.0,
+              child: Container(
+                color: null,
+                padding: const EdgeInsets.all(20.0),
+                child: Center(
+                  child: DotsIndicator(
+                    controller: _bottomController,
+                    itemCount: 2,
+                    onPageSelected: (int page) {
+                      _bottomController.animateToPage(
+                        page,
+                        duration: _kDuration,
+                        curve: _kCurve,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            );
           },
         ),
       ],
@@ -573,17 +558,6 @@ class _SearchBarPageState extends State<SearchBarPage>
           padding: EdgeInsets.zero,
           itemExtent: 50.0,
           itemBuilder: (context, index) {
-            // return ListTile(
-            //   contentPadding: EdgeInsets.zero,
-            //   title: Text(snapshot.data[index].searchWhat()),
-            //   subtitle: Text(snapshot.data[index].datetime().toString()),
-            //   // dense: true,
-            //   onTap: () {
-            //     setState(() {
-            //       _searchController.text = snapshot.data[index].searchWhat();
-            //     });
-            //   },
-            // );
             if (index == 0)
               return Container(
                 alignment: Alignment.centerLeft,
