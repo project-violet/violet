@@ -204,7 +204,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   Widget chip(Tuple2<DisplayedTag, int> info) {
     var tagDisplayed = info.item1.name.split(':').last;
     var count = '';
-    var color = Colors.grey;
+    Color color = Colors.grey;
 
     if (_tagTranslation) // Korean
       tagDisplayed = info.item1.getTranslated();
