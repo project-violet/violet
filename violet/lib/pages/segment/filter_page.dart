@@ -133,6 +133,7 @@ class _FilterPageState extends State<FilterPage> {
     return CardPanel.build(
       context,
       heroTag: c.heroKey,
+      enableBackgroundColor: true,
       child: Padding(
         padding: EdgeInsets.all(4),
         child: Column(
