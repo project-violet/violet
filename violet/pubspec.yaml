@@ -29,6 +29,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   # I know there are too many packages.
+  android_intent_plus:
   animated_widgets:
   animations:
   async:
