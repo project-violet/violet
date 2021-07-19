@@ -2,8 +2,10 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -119,11 +121,21 @@ class SyncManager {
         _rows.where((element) => element.type == 'chunk').toList();
 
     // Download Jsons
-    var res = await Future.wait(
-        filteredIter.map((e) => http.get(e.url).then((value) async {
-              await progressCallback(0, filteredIter.length);
-              return value;
-            })));
+    var res = <Response>[];
+
+    for (var i = 0; i < filteredIter.length / 16; i++) {
+      var starts = i * 16;
+      var ends = min((i + 1) * 16, filteredIter.length);
+
+      var resi = await Future.wait(filteredIter
+          .sublist(starts, ends)
+          .map((e) => http.get(e.url).then((value) async {
+                await progressCallback(0, filteredIter.length);
+                return value;
+              })));
+
+      res.addAll(resi);
+    }
     var jsons = res.map((e) => utf8.decode(e.bodyBytes)).toList();
 
     // Update Database
