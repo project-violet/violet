@@ -4,6 +4,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
@@ -161,6 +163,12 @@ class _SplashPageState extends State<SplashPage> {
           .setBool('checkauthalready', true);
       if (await Permission.storage.request() == PermissionStatus.denied) {
         await showOkDialog(context, "파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.");
+      }
+
+      if (Platform.isAndroid) {
+        await AndroidIntent(
+          action: 'ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION',
+        ).launch();
       }
     }
   }
