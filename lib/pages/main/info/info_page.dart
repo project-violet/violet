@@ -84,6 +84,15 @@ class _InfoPageState extends State<InfoPage> {
                 },
               ),
               _buildItem(
+                Icon(MdiIcons.flask, size: 40, color: Color(0xFFE03F3F)),
+                // 'Discord Channel',
+                // 'Communicate with developers',
+                '실험실',
+                '새로운 기능들을 체험해보세요!',
+                null,
+                () async {},
+              ),
+              _buildItem(
                 Icon(MdiIcons.gmail, size: 40, color: Colors.redAccent),
                 'Gmail',
                 // 'Contact the developer',
