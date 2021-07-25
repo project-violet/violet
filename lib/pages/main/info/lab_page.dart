@@ -75,7 +75,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
+                Icon(MdiIcons.binoculars, size: 40, color: Colors.grey),
                 '#003 Articles',
                 'User Read Count DESC',
                 null,
@@ -103,7 +103,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
+                Icon(MdiIcons.binoculars, size: 40, color: Colors.grey),
                 '#004 Articles',
                 'User Reverse Read Record',
                 null,
