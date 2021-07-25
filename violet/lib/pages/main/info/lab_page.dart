@@ -37,11 +37,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
               // Container(height: 30),
               _buildItem(
                 Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
-                // 'User Manual',
-                // 'Check out the user manual here!',
                 '#001 Articles',
                 'Likes and Dislikes Index (LDI) DESC',
-                //ArticleListPage(name: "LDI DESC", ),
                 null,
                 () async {
                   if (LDI.ldi == null) await LDI.init();
@@ -58,8 +55,6 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
               ),
               _buildItem(
                 Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
-                // 'User Manual',
-                // 'Check out the user manual here!',
                 '#002 Articles',
                 'Likes and Dislikes Index (LDI) ASC',
                 null,
@@ -77,6 +72,33 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       queryRaw + ' AND ExistOnHitomi=1');
 
                   _navigate(ArticleListPage(name: "LDI ASC", cc: qm.results));
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
+                '#003 Articles',
+                'User Read Count DESC',
+                null,
+                () async {
+                  var userLog = await User.getInstance()
+                      .then((value) => value.getUserLog());
+                  var articleCount = new Map<String, int>();
+                  userLog.forEach((element) {
+                    if (!articleCount.containsKey(element.articleId()))
+                      articleCount[element.articleId()] = 0;
+                  });
+                  var ll = articleCount.entries.toList();
+                  ll.sort((x, y) => y.value.compareTo(x.value));
+
+                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+                  queryRaw += 'Id IN (' +
+                      ll.map((e) => e.key).take(1500).join(',') +
+                      ')';
+                  var qm = await QueryManager.query(
+                      queryRaw + ' AND ExistOnHitomi=1');
+
+                  _navigate(ArticleListPage(
+                      name: "User Read Count DESC", cc: qm.results));
                 },
               ),
             ],
