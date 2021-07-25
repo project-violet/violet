@@ -56,9 +56,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   });
 
                   var rr = LDI.ldi
-                    .reversed
-                    .where((e) => qr.containsKey(e.item1))
-                    .map((e) => qr[e.item1])
+                    .where((e) => qr.containsKey(e.item1.toString()))
+                    .map((e) => qr[e.item1.toString()])
                     .toList();
                   
                   _navigate(ArticleListPage(name: "LDI DESC", cc: rr));
@@ -88,8 +87,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   });
 
                   var rr = LDI.ldi
-                    .where((e) => qr.containsKey(e.item1))
-                    .map((e) => qr[e.item1])
+                    .reversed
+                    .where((e) => qr.containsKey(e.item1.toString()))
+                    .map((e) => qr[e.item1.toString()])
                     .toList();
 
                   _navigate(ArticleListPage(name: "LDI ASC", cc: rr));
