@@ -86,6 +86,34 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;
+                    articleCount[element.articleId()]++;
+                  });
+                  var ll = articleCount.entries.toList();
+                  ll.sort((x, y) => y.value.compareTo(x.value));
+
+                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+                  queryRaw += 'Id IN (' +
+                      ll.map((e) => e.key).take(1500).join(',') +
+                      ')';
+                  var qm = await QueryManager.query(
+                      queryRaw + ' AND ExistOnHitomi=1');
+
+                  _navigate(ArticleListPage(
+                      name: "User Read Count DESC", cc: qm.results));
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
+                '#004 Articles',
+                'User Reverse Read Record',
+                null,
+                () async {
+                  var userLog = await User.getInstance()
+                      .then((value) => value.getUserLog());
+                  var articleCount = new Map<String, int>();
+                  userLog.forEach((element) {
+                    if (!articleCount.containsKey(element.articleId()))
+                      articleCount[element.articleId()] = 0;
                   });
                   var ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));
