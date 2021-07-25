@@ -171,6 +171,7 @@ flutter:
     - assets/locale/tag/related-tag-korean.json
 
     - assets/rank/population.json
+    - assets/rank/ldi.json
     
     # - assets/images/loading.gif
 

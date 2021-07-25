@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/pages/main/faq/faq_page.dart';
+import 'package:violet/pages/main/info/lab_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/main/info/violet_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -84,13 +85,10 @@ class _InfoPageState extends State<InfoPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.flask, size: 40, color: Color(0xFFE03F3F)),
-                // 'Discord Channel',
-                // 'Communicate with developers',
+                Icon(MdiIcons.flask, size: 40, color: Color(0xFF73BE1E)),
                 '실험실',
                 '새로운 기능들을 체험해보세요!',
-                null,
-                () async {},
+                LaboratoryPage(),
               ),
               _buildItem(
                 Icon(MdiIcons.gmail, size: 40, color: Colors.redAccent),
