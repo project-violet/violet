@@ -21,6 +21,7 @@ import 'package:violet/component/hentai.dart';
 // import 'package:violet/component/eh/eh_parser.dart';
 // import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/script/parse_tree.dart';
@@ -117,17 +118,20 @@ void main() {
   });*/
 
   test('test search', () async {
-    final db =
-        await databaseFactoryFfi.openDatabase('/home/ubuntu/rawdata-korean.db');
+    await LDI.init();
+    // final queryString = HitomiManager.translate2query(
+    //     'female:loli female:sister (lang:korean or lang:n/a)');
 
-    final queryString = HitomiManager.translate2query('ss');
+    // print(queryString);
 
-    print(queryString);
-    var count = (await db.rawQuery(queryString.replaceAll(
-            'SELECT * FROM', 'SELECT COUNT(*) AS C FROM')))
-        .first['C'] as int;
+    // final db =
+    //     await databaseFactoryFfi.openDatabase('/home/ubuntu/rawdata-korean.db');
 
-    print(count);
+    // var count = (await db.rawQuery(queryString.replaceAll(
+    //         'SELECT * FROM', 'SELECT COUNT(*) AS C FROM')))
+    //     .first['C'] as int;
+
+    // print(count);
   });
 
   /*test('test script', () {

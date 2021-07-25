@@ -9,6 +9,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -52,8 +53,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(
                       queryRaw + ' AND ExistOnHitomi=1');
 
-                  await navigate(
-                      ArticleListPage(name: "LDI DESC", cc: qm.results));
+                  _navigate(ArticleListPage(name: "LDI DESC", cc: qm.results));
                 },
               ),
               _buildItem(
@@ -76,8 +76,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(
                       queryRaw + ' AND ExistOnHitomi=1');
 
-                  await navigate(
-                      ArticleListPage(name: "LDI ASC", cc: qm.results));
+                  _navigate(ArticleListPage(name: "LDI ASC", cc: qm.results));
                 },
               ),
             ],
@@ -146,7 +145,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
             subtitle: Text(subtitle),
             onTap: () async {
               if (warp != null) {
-                await navigate(warp);
+                await _navigate(warp);
               } else {
                 await run();
               }
@@ -157,7 +156,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
     );
   }
 
-  Future<void> navigate(Widget page) async {
+  _navigate(Widget page) {
     if (!Platform.isIOS) {
       Navigator.of(context).push(PageRouteBuilder(
         transitionDuration: Duration(milliseconds: 500),
