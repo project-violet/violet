@@ -49,8 +49,19 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       ')';
                   var qm = await QueryManager.query(
                       queryRaw + ' AND ExistOnHitomi=1');
+                  
+                  var qr = Map<String, QueryResult>();
+                  qm.results.forEach((element) {
+                    qr[element.id().toString()] = element;
+                  });
 
-                  _navigate(ArticleListPage(name: "LDI DESC", cc: qm.results));
+                  var rr = LDI.ldi
+                    .reversed
+                    .where((e) => qr.containsKey(e.item1))
+                    .map((e) => qr[e.item1])
+                    .toList();
+                  
+                  _navigate(ArticleListPage(name: "LDI DESC", cc: rr));
                 },
               ),
               _buildItem(
@@ -70,8 +81,18 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       ')';
                   var qm = await QueryManager.query(
                       queryRaw + ' AND ExistOnHitomi=1');
+                  
+                  var qr = Map<String, QueryResult>();
+                  qm.results.forEach((element) {
+                    qr[element.id().toString()] = element;
+                  });
 
-                  _navigate(ArticleListPage(name: "LDI ASC", cc: qm.results));
+                  var rr = LDI.ldi
+                    .where((e) => qr.containsKey(e.item1))
+                    .map((e) => qr[e.item1])
+                    .toList();
+
+                  _navigate(ArticleListPage(name: "LDI ASC", cc: rr));
                 },
               ),
               _buildItem(
