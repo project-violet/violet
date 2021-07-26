@@ -46,7 +46,8 @@ class HentaiManager {
       return await idSearch(what, offset);
     }
     // is random pick?
-    else if (what.split(' ').any((x) => x == 'random')) {
+    else if (what.split(' ').any((x) => x == 'random') ||
+        what.split(' ').any((x) => x.startsWith('random:'))) {
       return await _randomSearch(what, offset);
     }
     // is db search?
@@ -93,6 +94,22 @@ class HentaiManager {
   static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
       [int offset = 0]) async {
     final wwhat = what.split(' ').where((x) => x != 'random').join(' ');
+    var seed = -1.0;
+    if (what.split(' ').where((x) => x.startsWith('random:')).length > 0) {
+      var tseed = what
+          .split(' ')
+          .where((x) => x.startsWith('random:'))
+          .first
+          .split('random:')
+          .last;
+      seed = double.tryParse(tseed);
+
+      if (seed == null) {
+        Logger.error('[hentai-randomSearch] E: Seed must be double type!');
+
+        return Tuple2<List<QueryResult>, int>([], -1);
+      }
+    }
     final queryString = HitomiManager.translate2query(wwhat +
         ' ' +
         Settings.includeTags +
@@ -103,7 +120,7 @@ class HentaiManager {
             .join(' ')
             .trim());
 
-    if (offset == 0) _latestSeed = new Random().nextDouble() + 1;
+    if (offset == 0 && seed < 0) _latestSeed = new Random().nextDouble() + 1;
 
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
