@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:math';
+
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
@@ -211,7 +213,12 @@ class _SearchBarPageState extends State<SearchBarPage>
         ),
         child: Text(Translations.of(context).trans('search')),
         onPressed: () async {
-          Navigator.pop(context, _searchController.text);
+          var search = _searchController.text;
+          if (search.split(' ').any((x) => x == 'random')) {
+            search = search.split(' ').where((x) => x != 'random').join(' ');
+            search += ' random:${new Random().nextDouble() + 1}';
+          }
+          Navigator.pop(context, search);
         },
       ),
     );

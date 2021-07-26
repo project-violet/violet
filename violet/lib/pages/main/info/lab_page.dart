@@ -49,17 +49,17 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       ')';
                   var qm = await QueryManager.query(
                       queryRaw + ' AND ExistOnHitomi=1');
-                  
+
                   var qr = Map<String, QueryResult>();
                   qm.results.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
 
                   var rr = LDI.ldi
-                    .where((e) => qr.containsKey(e.item1.toString()))
-                    .map((e) => qr[e.item1.toString()])
-                    .toList();
-                  
+                      .where((e) => qr.containsKey(e.item1.toString()))
+                      .map((e) => qr[e.item1.toString()])
+                      .toList();
+
                   _navigate(ArticleListPage(name: "LDI DESC", cc: rr));
                 },
               ),
@@ -80,17 +80,16 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       ')';
                   var qm = await QueryManager.query(
                       queryRaw + ' AND ExistOnHitomi=1');
-                  
+
                   var qr = Map<String, QueryResult>();
                   qm.results.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
 
-                  var rr = LDI.ldi
-                    .reversed
-                    .where((e) => qr.containsKey(e.item1.toString()))
-                    .map((e) => qr[e.item1.toString()])
-                    .toList();
+                  var rr = LDI.ldi.reversed
+                      .where((e) => qr.containsKey(e.item1.toString()))
+                      .map((e) => qr[e.item1.toString()])
+                      .toList();
 
                   _navigate(ArticleListPage(name: "LDI ASC", cc: rr));
                 },
@@ -118,19 +117,19 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       ')';
                   var qm = await QueryManager.query(
                       queryRaw + ' AND ExistOnHitomi=1');
-                  
+
                   var qr = Map<String, QueryResult>();
                   qm.results.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
 
                   var rr = ll
-                    .where((e) => qr.containsKey(e.key))
-                    .map((e) => qr[e.key])
-                    .toList();
+                      .where((e) => qr.containsKey(e.key))
+                      .map((e) => qr[e.key])
+                      .toList();
 
-                  _navigate(ArticleListPage(
-                      name: "User Read Count DESC", cc: rr));
+                  _navigate(
+                      ArticleListPage(name: "User Read Count DESC", cc: rr));
                 },
               ),
               _buildItem(

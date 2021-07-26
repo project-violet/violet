@@ -108,7 +108,7 @@ class HitomiManager {
 
     prefix = prefix.toLowerCase().replaceAll('_', ' ');
 
-    if (prefix.contains(':')) {
+    if (prefix.contains(':') && prefix.split(':')[0] != 'random') {
       final opp = prefix.split(':')[0];
       var pp = opp;
 
