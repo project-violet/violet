@@ -66,6 +66,12 @@ class Settings {
   // View Option
   static bool showArticleProgress;
 
+  // Search Option
+  static bool searchUseFuzzy;
+  static bool searchTagTranslation;
+  static bool searchUseTranslated;
+  static bool searchShowCount;
+
   static Future<void> initFirst() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
     var mac =
@@ -371,36 +377,24 @@ class Settings {
           .setString('downloadrule', downloadRule);
     }
 
-    useVioletServer =
-        (await SharedPreferences.getInstance()).getBool('usevioletserver');
-    if (useVioletServer == null) {
-      useVioletServer = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('usevioletserver', useVioletServer);
-    }
+    useVioletServer = await _getBool('usevioletserver');
+    useDrawer = await _getBool('usedrawer');
+    showArticleProgress = await _getBool('showarticleprogress');
+    useOptimizeDatabase = await _getBool('useoptimizedatabase');
 
-    useDrawer = (await SharedPreferences.getInstance()).getBool('usedrawer');
-    if (useDrawer == null) {
-      useDrawer = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('usedrawer', useDrawer);
-    }
+    searchUseFuzzy = await _getBool('searchusefuzzy');
+    searchTagTranslation = await _getBool('searchtagtranslation');
+    searchUseTranslated = await _getBool('searchusetranslated');
+    searchShowCount = await _getBool('searchshowcount', true);
+  }
 
-    showArticleProgress =
-        (await SharedPreferences.getInstance()).getBool('showarticleprogress');
-    if (showArticleProgress == null) {
-      showArticleProgress = true;
-      await (await SharedPreferences.getInstance())
-          .setBool('showarticleprogress', showArticleProgress);
+  static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
+    var nn = (await SharedPreferences.getInstance()).getBool(key);
+    if (nn == null) {
+      nn = defaultValue;
+      await (await SharedPreferences.getInstance()).setBool('key', nn);
     }
-
-    useOptimizeDatabase =
-        (await SharedPreferences.getInstance()).getBool('useoptimizedatabase');
-    if (useOptimizeDatabase == null) {
-      useOptimizeDatabase = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('useoptimizedatabase', useOptimizeDatabase);
-    }
+    return nn;
   }
 
   static Future<String> getDefaultDownloadPath() async {
@@ -607,5 +601,28 @@ class Settings {
     useOptimizeDatabase = nn;
     await (await SharedPreferences.getInstance())
         .setBool('useoptimizedatabase', nn);
+  }
+
+  static Future<void> setSearchUseFuzzy(bool nn) async {
+    searchUseFuzzy = nn;
+    await (await SharedPreferences.getInstance()).setBool('searchusefuzzy', nn);
+  }
+
+  static Future<void> setSearchTagTranslation(bool nn) async {
+    searchTagTranslation = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('searchtagtranslation', nn);
+  }
+
+  static Future<void> setSearchUseTranslated(bool nn) async {
+    searchUseTranslated = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('searchusetranslated', nn);
+  }
+
+  static Future<void> setSearchShowCount(bool nn) async {
+    searchShowCount = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('searchshowcount', nn);
   }
 }
