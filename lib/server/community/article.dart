@@ -103,7 +103,7 @@ class VioletCommunityArticle {
   }
 
   /* Edit or Insert */
-  static Future<dynamic> wrtieComment(
+  static Future<dynamic> writeComment(
       VioletCommunitySession session, int id, String body, String etc,
       [int parent = -1]) async {
     if (parent != -1) {

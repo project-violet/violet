@@ -229,5 +229,7 @@
   "ensurecreatebookmark": "Would you like to add $1 item to your bookmarks? (Groups are created for each Favorite.)",
   "completeimportbookmark": "All bookmark information has been loaded!",
   "importfromjson": "Import in JSON",
-  "pasteyourbookmarktext": "Paste the bookmark format!"
+  "pasteyourbookmarktext": "Paste the bookmark format!",
+  "nocomment": "No Comment",
+  "writecomment": "Write Comment"
 }
