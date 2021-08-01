@@ -49,9 +49,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   int _insertPos, _insertLength;
   String _searchText;
   bool _nothing = false;
-  bool _tagTranslation = false;
-  bool _useTranslated = false;
-  bool _showCount = true;
+
   int _searchResultMaximum = 60;
 
   @override
@@ -370,19 +368,18 @@ class _SearchBarPageState extends State<SearchBarPage>
                     title:
                         Text(Translations.of(context).trans('tagtranslation')),
                     trailing: Switch(
-                      value: _tagTranslation,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _tagTranslation = newValue;
-                        });
+                      value: Settings.searchTagTranslation,
+                      onChanged: (newValue) async {
+                        await Settings.setSearchTagTranslation(newValue);
+                        setState(() {});
                       },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
-                    onTap: () {
-                      setState(() {
-                        _tagTranslation = !_tagTranslation;
-                      });
+                    onTap: () async {
+                      await Settings.setSearchTagTranslation(
+                          !Settings.searchTagTranslation);
+                      setState(() {});
                     },
                   ),
                   Container(
@@ -398,19 +395,18 @@ class _SearchBarPageState extends State<SearchBarPage>
                         Icon(MdiIcons.layersSearch, color: Settings.majorColor),
                     title: Text('한글 검색'),
                     trailing: Switch(
-                      value: _useTranslated,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _useTranslated = newValue;
-                        });
+                      value: Settings.searchUseTranslated,
+                      onChanged: (newValue) async {
+                        await Settings.setSearchUseTranslated(newValue);
+                        setState(() {});
                       },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
-                    onTap: () {
-                      setState(() {
-                        _useTranslated = !_useTranslated;
-                      });
+                    onTap: () async {
+                      await Settings.setSearchUseTranslated(
+                          !Settings.searchUseTranslated);
+                      setState(() {});
                     },
                   ),
                   Container(
@@ -425,19 +421,18 @@ class _SearchBarPageState extends State<SearchBarPage>
                     leading: Icon(MdiIcons.counter, color: Settings.majorColor),
                     title: Text(Translations.of(context).trans('showcount')),
                     trailing: Switch(
-                      value: _showCount,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _showCount = newValue;
-                        });
+                      value: Settings.searchShowCount,
+                      onChanged: (newValue) async {
+                        await Settings.setSearchShowCount(newValue);
+                        setState(() {});
                       },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
-                    onTap: () {
-                      setState(() {
-                        _showCount = !_showCount;
-                      });
+                    onTap: () async {
+                      await Settings.setSearchShowCount(
+                          !Settings.searchShowCount);
+                      setState(() {});
                     },
                   ),
                   Container(
@@ -453,19 +448,18 @@ class _SearchBarPageState extends State<SearchBarPage>
                         Icon(MdiIcons.chartBubble, color: Settings.majorColor),
                     title: Text(Translations.of(context).trans('fuzzysearch')),
                     trailing: Switch(
-                      value: useFuzzy,
-                      onChanged: (newValue) {
-                        setState(() {
-                          useFuzzy = newValue;
-                        });
+                      value: Settings.searchUseFuzzy,
+                      onChanged: (newValue) async {
+                        await Settings.setSearchUseFuzzy(newValue);
+                        setState(() {});
                       },
                       activeTrackColor: Settings.majorColor,
                       activeColor: Settings.majorAccentColor,
                     ),
-                    onTap: () {
-                      setState(() {
-                        useFuzzy = !useFuzzy;
-                      });
+                    onTap: () async {
+                      await Settings.setSearchUseFuzzy(
+                          !Settings.searchUseFuzzy);
+                      setState(() {});
                     },
                   ),
                   // Container(
@@ -678,20 +672,20 @@ class _SearchBarPageState extends State<SearchBarPage>
     _insertLength = token.length;
     _searchText = target;
     latestToken = token;
-    if (!useFuzzy) {
-      final result =
-          (await HitomiManager.queryAutoComplete(token, _useTranslated))
-              .take(_searchResultMaximum)
-              .toList();
+    if (!Settings.searchUseFuzzy) {
+      final result = (await HitomiManager.queryAutoComplete(
+              token, Settings.searchUseTranslated))
+          .take(_searchResultMaximum)
+          .toList();
       if (result.length == 0) _nothing = true;
       setState(() {
         _searchLists = result;
       });
     } else {
-      final result =
-          (await HitomiManager.queryAutoCompleteFuzzy(token, _useTranslated))
-              .take(_searchResultMaximum)
-              .toList();
+      final result = (await HitomiManager.queryAutoCompleteFuzzy(
+              token, Settings.searchUseTranslated))
+          .take(_searchResultMaximum)
+          .toList();
       if (result.length == 0) _nothing = true;
       setState(() {
         _searchLists = result;
@@ -700,7 +694,6 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   String latestToken = '';
-  bool useFuzzy = false;
 
   Future<void> deleteProcess() async {
     var text = _searchController.text;
@@ -752,10 +745,10 @@ class _SearchBarPageState extends State<SearchBarPage>
     var count = '';
     Color color = Colors.grey;
 
-    if (_tagTranslation || _useTranslated)
+    if (Settings.searchTagTranslation || Settings.searchUseTranslated)
       tagDisplayed = info.item1.getTranslated();
 
-    if (info.item2 > 0 && _showCount)
+    if (info.item2 > 0 && Settings.searchShowCount)
       count =
           ' (${info.item2.toString() + (related && info.item1.group == 'tag' ? '%' : '')})';
 
@@ -778,7 +771,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     if (color == Colors.pink) accColor = Colors.orange;
 
-    if (!useFuzzy &&
+    if (!Settings.searchUseFuzzy &&
         latestToken != '' &&
         tagDisplayed.contains(latestToken) &&
         !related) {
@@ -798,7 +791,7 @@ class _SearchBarPageState extends State<SearchBarPage>
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken)[1]));
-    } else if (!useFuzzy &&
+    } else if (!Settings.searchUseFuzzy &&
         latestToken.contains(':') &&
         latestToken.split(':')[1] != '' &&
         tagDisplayed.contains(latestToken.split(':')[1]) &&
@@ -819,7 +812,9 @@ class _SearchBarPageState extends State<SearchBarPage>
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken.split(':')[1])[1]));
-    } else if (!useFuzzy && !_useTranslated && !related) {
+    } else if (!Settings.searchUseFuzzy &&
+        !Settings.searchUseTranslated &&
+        !related) {
       ts.add(TextSpan(
           style: TextStyle(
             color: Colors.white,
