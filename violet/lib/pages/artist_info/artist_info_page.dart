@@ -222,29 +222,32 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         commentAreaEC.expanded = true;
       });
 
-      Future.delayed(Duration(microseconds: 100)).then((value) async {
-        var tcomments =
-            (await VioletCommunityAnonymous.getArtistComments((widget.isGroup
-                    ? 'group:'
-                    : widget.isUploader
-                        ? 'uploader:'
-                        : widget.isSeries
-                            ? 'series:'
-                            : widget.isCharacter
-                                ? 'character:'
-                                : 'artist:') +
-                widget.artist))['result'] as List<dynamic>;
-
-        comments = tcomments
-            .map((e) => Tuple3<DateTime, String, String>(
-                DateTime.parse(e['TimeStamp']), e['UserAppId'], e['Body']))
-            .toList()
-            .reversed
-            .toList();
-
-        if (comments.length > 0) setState(() {});
-      });
+      Future.delayed(Duration(microseconds: 100))
+          .then((value) async => await readComments());
     });
+  }
+
+  Future<void> readComments() async {
+    var tcomments =
+        (await VioletCommunityAnonymous.getArtistComments((widget.isGroup
+                ? 'group:'
+                : widget.isUploader
+                    ? 'uploader:'
+                    : widget.isSeries
+                        ? 'series:'
+                        : widget.isCharacter
+                            ? 'character:'
+                            : 'artist:') +
+            widget.artist))['result'] as List<dynamic>;
+
+    comments = tcomments
+        .map((e) => Tuple3<DateTime, String, String>(
+            DateTime.parse(e['TimeStamp']), e['UserAppId'], e['Body']))
+        .toList()
+        .reversed
+        .toList();
+
+    if (comments.length > 0) setState(() {});
   }
 
   Future<void> querySimilars(List<Tuple2<String, double>> similars,
@@ -589,6 +592,25 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               ),
             ),
           ),
+          ExpandableNotifier(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: ScrollOnExpand(
+                child: ExpandablePanel(
+                  theme: ExpandableThemeData(
+                      iconColor:
+                          Settings.themeWhat ? Colors.white : Colors.grey,
+                      animationDuration: const Duration(milliseconds: 500)),
+                  header: Padding(
+                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    child: Text(Translations.of(context).trans('comment') +
+                        ' (${(comments != null ? comments.length : 0)})'),
+                  ),
+                  expanded: commentArea(),
+                ),
+              ),
+            ),
+          ),
           widget.isCharacter || widget.isSeries
               ? ExpandableNotifier(
                   child: Padding(
@@ -688,24 +710,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         ' (${series.length})'),
                   ),
                   expanded: seriesArea(),
-                ),
-              ),
-            ),
-          ),
-          ExpandableNotifier(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: ScrollOnExpand(
-                child: ExpandablePanel(
-                  theme: ExpandableThemeData(
-                      iconColor:
-                          Settings.themeWhat ? Colors.white : Colors.grey,
-                      animationDuration: const Duration(milliseconds: 500)),
-                  header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(Translations.of(context).trans('comment')),
-                  ),
-                  expanded: commentArea(),
                 ),
               ),
             ),
@@ -904,12 +908,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text(e.item2),
+                  Text(e.item2.substring(0, 6)),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1)}',
+                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1.toLocal())}',
                           style: TextStyle(fontSize: 12)),
                     ),
                   ),
@@ -979,6 +983,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                     : 'artist:') +
                     widget.artist,
                 text.text);
+            await readComments();
             Navigator.pop(context, true);
           },
         );
