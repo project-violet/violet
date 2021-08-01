@@ -90,7 +90,7 @@ class HentaiManager {
     return Tuple2<List<QueryResult>, int>([], -1);
   }
 
-  static double _latestSeed = 0;
+  // static double _latestSeed = 0;
   static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
       [int offset = 0]) async {
     final wwhat = what.split(' ').where((x) => x != 'random').join(' ');
@@ -120,12 +120,12 @@ class HentaiManager {
             .join(' ')
             .trim());
 
-    if (offset == 0 && seed < 0) _latestSeed = new Random().nextDouble() + 1;
+    // if (offset == 0 && seed < 0) _latestSeed = new Random().nextDouble() + 1;
 
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
             "$queryString ORDER BY " +
-                "Id * $_latestSeed - ROUND(Id * $_latestSeed - 0.5, 0) DESC" +
+                "Id * $seed - ROUND(Id * $seed - 0.5, 0) DESC" +
                 " LIMIT $itemsPerPage OFFSET ${itemsPerPage * offset}"))
         .map((e) => QueryResult(result: e))
         .toList();
