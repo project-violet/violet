@@ -13,7 +13,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html_unescape/html_unescape_small.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/algorithm/distance.dart';
@@ -24,10 +26,12 @@ import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/series_list_page.dart';
 import 'package:violet/pages/artist_info/similar_list_page.dart';
 import 'package:violet/pages/segment/three_article_panel.dart';
+import 'package:violet/server/community/anon.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/toast.dart';
@@ -77,6 +81,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   List<List<QueryResult>> qrsCharacterOrSeries = [];
   // Title clustering
   List<List<int>> series;
+  // Comments
+  List<Tuple3<DateTime, String, String>> comments;
 
   bool isBookmarked = false;
   FlareControls flareController = FlareControls();
@@ -213,6 +219,30 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
       Future.delayed(Duration(milliseconds: 300)).then((value) {
         ec.expanded = true;
+        commentAreaEC.expanded = true;
+      });
+
+      Future.delayed(Duration(microseconds: 100)).then((value) async {
+        var tcomments =
+            (await VioletCommunityAnonymous.getArtistComments((widget.isGroup
+                    ? 'group:'
+                    : widget.isUploader
+                        ? 'uploader:'
+                        : widget.isSeries
+                            ? 'series:'
+                            : widget.isCharacter
+                                ? 'character:'
+                                : 'artist:') +
+                widget.artist))['result'] as List<dynamic>;
+
+        comments = tcomments
+            .map((e) => Tuple3<DateTime, String, String>(
+                DateTime.parse(e['TimeStamp']), e['UserAppId'], e['Body']))
+            .toList()
+            .reversed
+            .toList();
+
+        if (comments.length > 0) setState(() {});
       });
     });
   }
@@ -662,12 +692,31 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               ),
             ),
           ),
+          ExpandableNotifier(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: ScrollOnExpand(
+                child: ExpandablePanel(
+                  theme: ExpandableThemeData(
+                      iconColor:
+                          Settings.themeWhat ? Colors.white : Colors.grey,
+                      animationDuration: const Duration(milliseconds: 500)),
+                  header: Padding(
+                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    child: Text(Translations.of(context).trans('comment')),
+                  ),
+                  expanded: commentArea(),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   ExpandableController ec = ExpandableController();
+  ExpandableController commentAreaEC = ExpandableController();
 
   Widget more(Widget Function() what) {
     return SizedBox(
@@ -832,6 +881,136 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           articles: e.map((e) => cc[e]).toList(),
         );
       },
+    );
+  }
+
+  Widget commentArea() {
+    if (comments != null && comments.length > 0) {
+      var children = List<Widget>.from(comments.map((e) {
+        return InkWell(
+          onTap: () async {
+            AlertDialog alert = AlertDialog(
+              content: SelectableText(e.item3),
+            );
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return alert;
+              },
+            );
+          },
+          splashColor: Colors.white,
+          child: ListTile(
+            title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(e.item2),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1)}',
+                          style: TextStyle(fontSize: 12)),
+                    ),
+                  ),
+                ]),
+            subtitle: Text(e.item3),
+          ),
+        );
+      }));
+
+      return Padding(
+        padding: EdgeInsets.only(top: 8, bottom: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children + [comment(context)],
+        ),
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                // alignment: Alignment.center,
+                child: Align(
+                  // alignment: Alignment.center,
+                  child: Text(
+                    Translations.of(context).trans('nocomment'),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                width: 100,
+                height: 100,
+              )
+            ],
+          ),
+          comment(context),
+        ],
+      );
+    }
+  }
+
+  Widget comment(context) {
+    return InkWell(
+      onTap: () async {
+        TextEditingController text = TextEditingController();
+        Widget okButton = TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          child: Text(Translations.of(context).trans('ok')),
+          onPressed: () async {
+            if (text.text.length < 5 || text.text.length > 500) {
+              await showOkDialog(context, 'Comment too short or long!',
+                  Translations.of(context).trans('comment'));
+              return;
+            }
+            await VioletCommunityAnonymous.postArtistComment(
+                (widget.isGroup
+                        ? 'group:'
+                        : widget.isUploader
+                            ? 'uploader:'
+                            : widget.isSeries
+                                ? 'series:'
+                                : widget.isCharacter
+                                    ? 'character:'
+                                    : 'artist:') +
+                    widget.artist,
+                text.text);
+            Navigator.pop(context, true);
+          },
+        );
+        Widget cancelButton = TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          child: Text(Translations.of(context).trans('cancel')),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+        );
+        await showDialog(
+          useRootNavigator: false,
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+            title: Text(Translations.of(context).trans('writecomment')),
+            content: TextField(
+              controller: text,
+              autofocus: true,
+            ),
+            actions: [okButton, cancelButton],
+          ),
+        );
+      },
+      splashColor: Colors.white,
+      child: ListTile(
+        title: Row(
+          children: [Text(Translations.of(context).trans('writecomment'))],
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+        ),
+      ),
     );
   }
 
