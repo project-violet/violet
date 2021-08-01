@@ -93,7 +93,7 @@ class HentaiManager {
   // static double _latestSeed = 0;
   static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
       [int offset = 0]) async {
-    final wwhat = what.split(' ').where((x) => x != 'random').join(' ');
+    var wwhat = what.split(' ').where((x) => x != 'random').join(' ');
     var seed = -1.0;
     if (what.split(' ').where((x) => x.startsWith('random:')).length > 0) {
       var tseed = what
@@ -103,6 +103,8 @@ class HentaiManager {
           .split('random:')
           .last;
       seed = double.tryParse(tseed);
+
+      wwhat = what.split(' ').where((x) => !x.startsWith('random:')).join(' ');
 
       if (seed == null) {
         Logger.error('[hentai-randomSearch] E: Seed must be double type!');
