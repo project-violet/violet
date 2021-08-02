@@ -24,14 +24,17 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
-class LabRecentRecords extends StatefulWidget {
+class LabUserRecentRecords extends StatefulWidget {
+  final String userAppId;
+
+  LabUserRecentRecords(this.userAppId);
+
   @override
-  _LabRecentRecordsState createState() => _LabRecentRecordsState();
+  _LabUserRecentRecordsState createState() => _LabUserRecentRecordsState();
 }
 
-class _LabRecentRecordsState extends State<LabRecentRecords> {
+class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
-  int latestId = 0;
   int limit = 10;
   Timer timer;
   ScrollController _controller = ScrollController();
@@ -54,7 +57,6 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
 
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
         (value) => _controller.jumpTo(_controller.position.maxScrollExtent));
-    timer = Timer.periodic(Duration(seconds: 1), updateRercord);
   }
 
   @override
@@ -65,13 +67,11 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
 
   Future<void> updateRercord(dummy) async {
     try {
-      var trecords = await VioletServer.record(latestId, 10, limit);
+      var trecords =
+          await VioletServer.userRecent(widget.userAppId, 100, limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
-      var xrecords = trecords as List<Tuple3<int, int, int>>;
-
-      latestId = max(latestId,
-          xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
+      var xrecords = trecords as List<Tuple4<int, int, int, String>>;
 
       var queryRaw = HitomiManager.translate2query(Settings.includeTags +
               ' ' +
@@ -128,36 +128,52 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
       child: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(0),
-              controller: _controller,
-              physics: BouncingScrollPhysics(),
-              itemCount: records.length,
-              reverse: true,
-              itemBuilder: (BuildContext ctxt, int index) {
-                return Align(
-                  key: Key('records' +
-                      index.toString() +
-                      '/' +
-                      records[records.length - index - 1]
-                          .item1
-                          .id()
-                          .toString()),
-                  alignment: Alignment.center,
-                  child: Provider<ArticleListItem>.value(
-                    value: ArticleListItem.fromArticleListItem(
-                      queryResult: records[records.length - index - 1].item1,
-                      showDetail: true,
-                      addBottomPadding: true,
-                      width: (windowWidth - 4.0),
-                      thumbnailTag: Uuid().v4(),
-                      seconds: records[records.length - index - 1].item2,
-                    ),
-                    child: ArticleListItemVerySimpleWidget(),
+            child: records.length != 0
+                ? ListView.builder(
+                    padding: EdgeInsets.all(0),
+                    controller: _controller,
+                    physics: BouncingScrollPhysics(),
+                    itemCount: records.length,
+                    reverse: true,
+                    itemBuilder: (BuildContext ctxt, int index) {
+                      return Align(
+                        key: Key('records' +
+                            index.toString() +
+                            '/' +
+                            records[records.length - index - 1]
+                                .item1
+                                .id()
+                                .toString()),
+                        alignment: Alignment.center,
+                        child: Provider<ArticleListItem>.value(
+                          value: ArticleListItem.fromArticleListItem(
+                            queryResult:
+                                records[records.length - index - 1].item1,
+                            showDetail: true,
+                            addBottomPadding: true,
+                            width: (windowWidth - 4.0),
+                            thumbnailTag: Uuid().v4(),
+                            seconds: records[records.length - index - 1].item2,
+                          ),
+                          child: ArticleListItemVerySimpleWidget(),
+                        ),
+                      );
+                    },
+                  )
+                : Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
           ),
           Row(
             children: [
@@ -184,6 +200,7 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
                         activeColor: Settings.majorColor,
                         onChangeEnd: (value) async {
                           limit = value.toInt();
+                          await updateRercord(null);
                         },
                         onChanged: (value) {
                           setState(() {

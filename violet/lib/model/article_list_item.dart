@@ -7,6 +7,7 @@ import 'package:violet/database/query.dart';
 typedef void SelectCallback();
 typedef void BookmarkCallback(int article);
 typedef void BookmarkCheckCallback(int article, bool check);
+typedef void DoubleTapCallback();
 
 class ArticleListItem {
   final bool addBottomPadding;
@@ -22,6 +23,7 @@ class ArticleListItem {
   final bool disableFilter;
   final List<QueryResult> usableTabList;
   final bool selectMode;
+  final DoubleTapCallback doubleTapCallback;
   final SelectCallback selectCallback;
   // final bool isCheckMode;
   // bool isChecked;
@@ -38,6 +40,7 @@ class ArticleListItem {
     @required this.viewed,
     @required this.seconds,
     @required this.disableFilter,
+    @required this.doubleTapCallback,
     this.usableTabList,
     this.selectMode = false,
     this.selectCallback,
@@ -60,6 +63,7 @@ class ArticleListItem {
     List<QueryResult> usableTabList,
     bool selectMode = false,
     SelectCallback selectCallback,
+    DoubleTapCallback doubleTapCallback,
     // bool isCheckMode = false,
     // bool isChecked = false,
   }) {
@@ -78,6 +82,7 @@ class ArticleListItem {
       usableTabList: usableTabList,
       selectMode: selectMode,
       selectCallback: selectCallback,
+      doubleTapCallback: doubleTapCallback,
       // isCheckMode: isCheckMode,
       // isChecked: isChecked,
     );

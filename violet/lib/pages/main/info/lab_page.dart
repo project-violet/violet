@@ -13,6 +13,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
+import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
@@ -178,6 +179,15 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 null,
                 () async {
                   _navigate(LabRecentRecords());
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.accessPointNetwork, size: 40, color: Colors.red),
+                '#007 Articles',
+                'Real-Time User Article Record Picking User',
+                null,
+                () async {
+                  _navigate(LabRecentRecordsU());
                 },
               ),
             ],
