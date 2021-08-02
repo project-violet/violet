@@ -11,6 +11,7 @@ import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
+import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
@@ -157,6 +158,15 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
 
                   _navigate(ArticleListPage(
                       name: "User Read Count DESC", cc: qm.results));
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.commentTextMultiple, size: 40, color: Colors.red),
+                '#005 Comments',
+                'Recent Artist Comments',
+                null,
+                () async {
+                  _navigate(LabRecentComments());
                 },
               ),
             ],
