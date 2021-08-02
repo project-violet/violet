@@ -71,7 +71,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
           await VioletServer.userRecent(widget.userAppId, 100, limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
-      var xrecords = trecords as List<Tuple4<int, int, int, String>>;
+      var xrecords = trecords as List<Tuple3<int, int, int>>;
 
       var queryRaw = HitomiManager.translate2query(Settings.includeTags +
               ' ' +
