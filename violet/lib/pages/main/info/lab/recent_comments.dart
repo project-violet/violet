@@ -67,7 +67,7 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
               title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    Text(e.item2.substring(0, 6)),
+                    Text(e.item4),
                     Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
@@ -77,7 +77,7 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
                       ),
                     ),
                   ]),
-              subtitle: Text('<${e.item4}>\n${e.item3}'),
+              subtitle: Text('${e.item3}'),
             ),
           );
         },
