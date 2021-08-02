@@ -629,7 +629,7 @@ class _DetailWidget extends StatelessWidget {
               if (seconds != null) const Icon(MdiIcons.clockOutline, size: 18),
               if (seconds != null)
                 Text(
-                  ' $viewed Seconds',
+                  ' $seconds Seconds',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500),
                 ),
