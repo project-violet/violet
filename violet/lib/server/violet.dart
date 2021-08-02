@@ -189,4 +189,28 @@ class VioletServer {
       _userId = (await SharedPreferences.getInstance()).getString('fa_userid');
     return _userId;
   }
+
+  // https://koromo.xyz/api/record/recent?count=10&limit=180
+  static Future<dynamic> record(int offset, int count, int limit) async {
+    var gg = await http
+        .get('$api/record/recent?offset=$offset&count=$count&limit=$limit');
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+          .map((e) => Tuple3<int, int, int>((e as List<dynamic>)[0] as int,
+              (e as List<dynamic>)[1] as int, (e as List<dynamic>)[3] as int))
+          .toList();
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error('[API-record] E: ' + e.toString() + '\n' + st.toString());
+
+      return 900;
+    }
+  }
 }

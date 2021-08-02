@@ -62,6 +62,13 @@ class VioletCommunityAnonymous {
         '/community/anon/artistcomment/read', 'name=' + artistName);
   }
 
+  static Future<dynamic> getArtistCommentsRecent(
+      [int offset = 0, int count = 10]) async {
+    // artistName = group:<name> | artist:<name>
+    return await _getV(
+        '/community/anon/artistcomment/recent', 'count=$count&offset=$offset');
+  }
+
   static Future<dynamic> postArtistComment(
       String artistName, String commentBody) async {
     return await _postV('/community/anon/artistcomment/write', {
