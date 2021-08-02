@@ -191,7 +191,8 @@ class VioletServer {
   }
 
   // https://koromo.xyz/api/record/recent?count=10&limit=180
-  static Future<dynamic> record(int offset, int count, int limit) async {
+  static Future<dynamic> record(
+      [int offset = 0, int count = 10, int limit = 0]) async {
     var gg = await http
         .get('$api/record/recent?offset=$offset&count=$count&limit=$limit');
 
@@ -202,7 +203,7 @@ class VioletServer {
     try {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple3<int, int, int>((e as List<dynamic>)[0] as int,
-              (e as List<dynamic>)[1] as int, (e as List<dynamic>)[3] as int))
+              (e as List<dynamic>)[1] as int, (e as List<dynamic>)[2] as int))
           .toList();
       return result;
     } catch (e, st) {

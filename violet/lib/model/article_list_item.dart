@@ -18,6 +18,7 @@ class ArticleListItem {
   final BookmarkCallback bookmarkCallback;
   final BookmarkCheckCallback bookmarkCheckCallback;
   final int viewed;
+  final int seconds;
   final bool disableFilter;
   final List<QueryResult> usableTabList;
   final bool selectMode;
@@ -35,6 +36,7 @@ class ArticleListItem {
     @required this.bookmarkCallback,
     @required this.bookmarkCheckCallback,
     @required this.viewed,
+    @required this.seconds,
     @required this.disableFilter,
     this.usableTabList,
     this.selectMode = false,
@@ -52,6 +54,7 @@ class ArticleListItem {
     bool bookmarkMode = false,
     BookmarkCallback bookmarkCallback,
     BookmarkCheckCallback bookmarkCheckCallback,
+    int seconds,
     int viewed,
     bool disableFilter,
     List<QueryResult> usableTabList,
@@ -69,6 +72,7 @@ class ArticleListItem {
       bookmarkMode: bookmarkMode,
       bookmarkCallback: bookmarkCallback,
       bookmarkCheckCallback: bookmarkCheckCallback,
+      seconds: seconds,
       viewed: viewed,
       disableFilter: disableFilter,
       usableTabList: usableTabList,
