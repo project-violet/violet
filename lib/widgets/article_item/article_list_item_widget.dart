@@ -449,23 +449,28 @@ class _ArticleListItemVerySimpleWidgetState
               },
               onDoubleTap: () async {
                 onScaling = false;
-                var sz = await _calculateImageDimension(thumbnail);
-                Navigator.of(context).push(PageRouteBuilder(
-                  opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder: (BuildContext context,
-                      Animation<double> animation,
-                      Animation<double> secondaryAnimation,
-                      Widget wi) {
-                    return FadeTransition(opacity: animation, child: wi);
-                  },
-                  pageBuilder: (_, __, ___) => ThumbnailViewPage(
-                    size: sz,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: data.thumbnailTag,
-                  ),
-                ));
+
+                if (data.doubleTapCallback == null) {
+                  var sz = await _calculateImageDimension(thumbnail);
+                  Navigator.of(context).push(PageRouteBuilder(
+                    opaque: false,
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder: (BuildContext context,
+                        Animation<double> animation,
+                        Animation<double> secondaryAnimation,
+                        Widget wi) {
+                      return FadeTransition(opacity: animation, child: wi);
+                    },
+                    pageBuilder: (_, __, ___) => ThumbnailViewPage(
+                      size: sz,
+                      thumbnail: thumbnail,
+                      headers: headers,
+                      heroKey: data.thumbnailTag,
+                    ),
+                  ));
+                } else {
+                  data.doubleTapCallback();
+                }
                 setState(() {
                   pad = 0;
                 });

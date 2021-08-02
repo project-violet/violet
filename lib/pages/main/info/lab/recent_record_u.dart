@@ -18,19 +18,21 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
-class LabRecentRecords extends StatefulWidget {
+class LabRecentRecordsU extends StatefulWidget {
   @override
-  _LabRecentRecordsState createState() => _LabRecentRecordsState();
+  _LabRecentRecordsUState createState() => _LabRecentRecordsUState();
 }
 
-class _LabRecentRecordsState extends State<LabRecentRecords> {
-  List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
+class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
+  List<Tuple3<QueryResult, int, String>> records =
+      <Tuple3<QueryResult, int, String>>[];
   int latestId = 0;
   int limit = 10;
   Timer timer;
@@ -65,10 +67,10 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
 
   Future<void> updateRercord(dummy) async {
     try {
-      var trecords = await VioletServer.record(latestId, 10, limit);
+      var trecords = await VioletServer.recordU(latestId, 10, limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
-      var xrecords = trecords as List<Tuple3<int, int, int>>;
+      var xrecords = trecords as List<Tuple4<int, int, int, String>>;
 
       latestId = max(latestId,
           xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
@@ -91,13 +93,13 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
         qr[element.id().toString()] = element;
       });
 
-      var result = <Tuple2<QueryResult, int>>[];
+      var result = <Tuple3<QueryResult, int, String>>[];
       xrecords.forEach((element) {
         if (qr[element.item2.toString()] == null) {
           return;
         }
-        result.add(Tuple2<QueryResult, int>(
-            qr[element.item2.toString()], element.item3));
+        result.add(Tuple3<QueryResult, int, String>(
+            qr[element.item2.toString()], element.item3, element.item4));
       });
 
       records.insertAll(0, result);
@@ -152,6 +154,8 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
                       width: (windowWidth - 4.0),
                       thumbnailTag: Uuid().v4(),
                       seconds: records[records.length - index - 1].item2,
+                      doubleTapCallback: () => _doubleTapCallback(
+                          records[records.length - index - 1].item3),
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
@@ -200,5 +204,33 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
         ],
       ),
     );
+  }
+
+  _doubleTapCallback(String userAppId) {
+    _navigate(LabUserRecentRecords(userAppId));
+  }
+
+  _navigate(Widget page) {
+    if (!Platform.isIOS) {
+      Navigator.of(context).push(PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = Offset(0.0, 1.0);
+          var end = Offset.zero;
+          var curve = Curves.ease;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+        pageBuilder: (_, __, ___) => page,
+      ));
+    } else {
+      Navigator.of(context).push(CupertinoPageRoute(builder: (_) => page));
+    }
   }
 }
