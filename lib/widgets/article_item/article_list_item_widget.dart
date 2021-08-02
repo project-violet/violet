@@ -542,6 +542,7 @@ class _ArticleListItemVerySimpleWidgetState
       imageCount: imageCount,
       dateTime: dateTime,
       viewed: data.viewed,
+      seconds: data.seconds,
     );
   }
 
@@ -568,9 +569,16 @@ class _DetailWidget extends StatelessWidget {
   final int imageCount;
   final String dateTime;
   final int viewed;
+  final int seconds;
 
-  _DetailWidget(
-      {this.title, this.artist, this.imageCount, this.dateTime, this.viewed});
+  _DetailWidget({
+    this.title,
+    this.artist,
+    this.imageCount,
+    this.dateTime,
+    this.viewed,
+    this.seconds,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -615,6 +623,13 @@ class _DetailWidget extends StatelessWidget {
               if (viewed != null)
                 Text(
                   ' $viewed Viewed',
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w500),
+                ),
+              if (seconds != null) const Icon(MdiIcons.clockOutline, size: 18),
+              if (seconds != null)
+                Text(
+                  ' $viewed Seconds',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500),
                 ),

@@ -25,14 +25,16 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      var tcomments = await VioletCommunityAnonymous.getArtistCommentsRecent()
-          as List<dynamic>;
+      var tcomments =
+          (await VioletCommunityAnonymous.getArtistCommentsRecent())['result']
+              as List<dynamic>;
       comments = tcomments
           .map((e) => Tuple4<DateTime, String, String, String>(
               DateTime.parse(e['TimeStamp']),
               e['UserAppId'],
               e['Body'],
               e['ArtistName']))
+          .where((x) => x.item2 != 'test')
           .toList();
       setState(() {});
     });
@@ -43,48 +45,43 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
-      child: Padding(
-        padding: EdgeInsets.only(top: 16),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: ListView.builder(
-            padding: EdgeInsets.all(0),
-            itemBuilder: (BuildContext ctxt, int index) {
-              var e = comments[index];
-              return InkWell(
-                onTap: () async {
-                  var group = e.item4.split(':').first;
-                  var name = e.item4.split(':').last;
-                  _navigate(ArtistInfoPage(
-                    isGroup: group == 'groups' || group == 'group',
-                    isUploader: group == 'uploader',
-                    isCharacter: group == 'character',
-                    isSeries: group == 'series',
-                    artist: name,
-                  ));
-                },
-                splashColor: Colors.white,
-                child: ListTile(
-                  title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Text(e.item2.substring(0, 6)),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                                '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1.toLocal())}',
-                                style: TextStyle(fontSize: 12)),
-                          ),
-                        ),
-                      ]),
-                  subtitle: Text(e.item3),
-                ),
-              );
+      child: ListView.builder(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.all(0),
+        itemBuilder: (BuildContext ctxt, int index) {
+          var e = comments[index];
+          return InkWell(
+            onTap: () async {
+              var group = e.item4.split(':').first;
+              var name = e.item4.split(':').last;
+              _navigate(ArtistInfoPage(
+                isGroup: group == 'groups' || group == 'group',
+                isUploader: group == 'uploader',
+                isCharacter: group == 'character',
+                isSeries: group == 'series',
+                artist: name,
+              ));
             },
-            itemCount: comments.length,
-          ),
-        ),
+            splashColor: Colors.white,
+            child: ListTile(
+              title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text(e.item2.substring(0, 6)),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                            '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1.toLocal())}',
+                            style: TextStyle(fontSize: 12)),
+                      ),
+                    ),
+                  ]),
+              subtitle: Text('<${e.item4}>\n${e.item3}'),
+            ),
+          );
+        },
+        itemCount: comments.length,
       ),
     );
   }
