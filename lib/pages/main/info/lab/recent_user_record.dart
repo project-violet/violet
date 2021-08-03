@@ -6,6 +6,8 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +17,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
@@ -38,16 +41,14 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int limit = 10;
   ScrollController _controller = ScrollController();
+  FlareControls flareController = FlareControls();
+  bool isBookmarked = false;
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 200)).then((value) =>
-            _controller.animateTo(_controller.position.maxScrollExtent,
-                duration: Duration(milliseconds: 300),
-                curve: Curves.fastOutSlowIn)));
+    Future.delayed(Duration(milliseconds: 100)).then(updateRercord);
   }
 
   @override
@@ -56,6 +57,9 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   }
 
   Future<void> updateRercord(dummy) async {
+    isBookmarked =
+        await (await Bookmark.getInstance()).isBookmarkUser(widget.userAppId);
+
     try {
       var trecords =
           await VioletServer.userRecent(widget.userAppId, 100, limit);
@@ -77,6 +81,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       if (query.results.length == 0) return;
 
       /* Statistics -- */
+
       lff = <Tuple2<String, int>>[];
       lffOrigin = null;
       isExpanded = false;
@@ -156,27 +161,24 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                     itemCount: records.length + 1,
                     reverse: true,
                     itemBuilder: (BuildContext ctxt, int index) {
-                      if (index == records.length) {
+                      if (index == 0) {
                         return _tagChart();
                       }
+                      index -= 1;
                       return Align(
                         key: Key('records' +
                             index.toString() +
                             '/' +
-                            records[records.length - index - 1]
-                                .item1
-                                .id()
-                                .toString()),
+                            records[index].item1.id().toString()),
                         alignment: Alignment.center,
                         child: Provider<ArticleListItem>.value(
                           value: ArticleListItem.fromArticleListItem(
-                            queryResult:
-                                records[records.length - index - 1].item1,
+                            queryResult: records[index].item1,
                             showDetail: true,
                             addBottomPadding: true,
                             width: (windowWidth - 4.0),
                             thumbnailTag: Uuid().v4(),
-                            seconds: records[records.length - index - 1].item2,
+                            seconds: records[index].item2,
                           ),
                           child: ArticleListItemVerySimpleWidget(),
                         ),
@@ -271,12 +273,36 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       Container(
         height: 16,
       ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(widget.userAppId.substring(0, 16),
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        ],
+      GestureDetector(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 28,
+              height: 28,
+              child: FlareActor(
+                'assets/flare/likeUtsua.flr',
+                animation: isBookmarked ? "Like" : "IdleUnlike",
+                controller: flareController,
+              ),
+            ),
+            Text(widget.userAppId.substring(0, 16),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        onTap: () async {
+          isBookmarked = !isBookmarked;
+
+          if (!isBookmarked) {
+            await (await Bookmark.getInstance())
+                .unbookmarkUser(widget.userAppId);
+            flareController.play('Unlike');
+          } else {
+            await (await Bookmark.getInstance())
+                .unbookmarkUser(widget.userAppId);
+            flareController.play('Like');
+          }
+        },
       ),
       Padding(
         padding: EdgeInsets.fromLTRB(64, 16, 64, 0),
@@ -347,7 +373,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
             lff = lffOrigin.take(5).toList();
           setState(() {});
           Future.delayed(Duration(milliseconds: 100)).then((value) =>
-              _controller.animateTo(_controller.position.maxScrollExtent,
+              _controller.animateTo(0.0,
                   duration: Duration(milliseconds: 300),
                   curve: Curves.fastOutSlowIn));
         },
