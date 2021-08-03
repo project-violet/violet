@@ -56,7 +56,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
     });
 
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => _controller.jumpTo(_controller.position.maxScrollExtent));
+        (value) => Future.delayed(Duration(milliseconds: 300)).then((value) =>
+            _controller.jumpTo(_controller.position.maxScrollExtent)));
   }
 
   @override
@@ -200,6 +201,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                         activeColor: Settings.majorColor,
                         onChangeEnd: (value) async {
                           limit = value.toInt();
+                          records = <Tuple2<QueryResult, int>>[];
+                          setState(() {});
                           await updateRercord(null);
                         },
                         onChanged: (value) {
