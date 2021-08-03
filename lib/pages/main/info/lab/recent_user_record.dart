@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -36,27 +37,14 @@ class LabUserRecentRecords extends StatefulWidget {
 class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int limit = 10;
-  Timer timer;
   ScrollController _controller = ScrollController();
-  bool isTop = false;
 
   @override
   void initState() {
     super.initState();
 
-    _controller.addListener(() {
-      if (_controller.position.atEdge) {
-        if (_controller.position.pixels == 0) {
-          isTop = false;
-        } else {
-          isTop = true;
-        }
-      } else
-        isTop = false;
-    });
-
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
+        (value) => Future.delayed(Duration(milliseconds: 200)).then((value) =>
             _controller.animateTo(_controller.position.maxScrollExtent,
                 duration: Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn)));
@@ -64,7 +52,6 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
   @override
   void dispose() {
-    timer.cancel();
     super.dispose();
   }
 
@@ -89,6 +76,46 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       if (query.results.length == 0) return;
 
+      /* Statistics -- */
+      lff = <Tuple2<String, int>>[];
+      lffOrigin = null;
+      isExpanded = false;
+      femaleTags = 0;
+      maleTags = 0;
+      tags = 0;
+
+      var ffstat = Map<String, int>();
+
+      query.results.forEach((element) {
+        if (element.tags() == null) return;
+        (element.tags() as String)
+            .split('|')
+            .where((element) => element != '')
+            .forEach((element) {
+          if (element.startsWith('female:'))
+            femaleTags += 1;
+          else if (element.startsWith('male:'))
+            maleTags += 1;
+          else
+            tags += 1;
+
+          if (!ffstat.containsKey(element)) ffstat[element] = 0;
+          ffstat[element] += 1;
+        });
+      });
+
+      ffstat.forEach((key, value) {
+        lff.add(Tuple2<String, int>(key, value));
+      });
+      lff.sort((x, y) => y.item2.compareTo(x.item2));
+
+      lffOrigin = lff;
+      lff = lff.take(5).toList();
+
+      if (femaleTags + maleTags + tags == 0) tags = 0;
+
+      /* -- Statistics */
+
       var qr = Map<String, QueryResult>();
       query.results.forEach((element) {
         qr[element.id().toString()] = element;
@@ -105,17 +132,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       records.insertAll(0, result);
 
-      if (isTop) {
-        setState(() {});
-        Future.delayed(Duration(milliseconds: 50)).then((x) {
-          _controller.animateTo(
-            _controller.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.fastOutSlowIn,
-          );
-        });
-      } else
-        setState(() {});
+      setState(() {});
     } catch (e, st) {
       Logger.error(
           '[lab-recent_record] E: ' + e.toString() + '\n' + st.toString());
@@ -136,9 +153,12 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                     padding: EdgeInsets.all(0),
                     controller: _controller,
                     physics: BouncingScrollPhysics(),
-                    itemCount: records.length,
+                    itemCount: records.length + 1,
                     reverse: true,
                     itemBuilder: (BuildContext ctxt, int index) {
+                      if (index == records.length) {
+                        return _tagChart();
+                      }
                       return Align(
                         key: Key('records' +
                             index.toString() +
@@ -222,5 +242,119 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
         ],
       ),
     );
+  }
+
+  // Chart component lists
+  List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
+  List<Tuple2<String, int>> lffOrigin;
+  bool isExpanded = false;
+  // This is used for top color bar
+  int femaleTags = 0;
+  int maleTags = 0;
+  int tags = 0;
+
+  _tagChart() {
+    final width = MediaQuery.of(context).size.width;
+    var axis1 = charts.AxisSpec<String>(
+        renderSpec: charts.GridlineRendererSpec(
+            labelStyle: charts.TextStyleSpec(
+                fontSize: isExpanded ? 10 : 14,
+                color: charts.MaterialPalette.white),
+            lineStyle: charts.LineStyleSpec(
+                color: charts.MaterialPalette.transparent)));
+    var axis2 = charts.NumericAxisSpec(
+        renderSpec: charts.GridlineRendererSpec(
+      labelStyle: charts.TextStyleSpec(
+          fontSize: 10, color: charts.MaterialPalette.white),
+    ));
+    return Column(children: [
+      Container(
+        height: 16,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(widget.userAppId.substring(0, 16),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        ],
+      ),
+      Padding(
+        padding: EdgeInsets.fromLTRB(64, 16, 64, 0),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                  flex: femaleTags,
+                  child: Container(
+                    height: 8,
+                    color: Colors.pink,
+                  )),
+              Expanded(
+                  flex: maleTags,
+                  child: Container(
+                    height: 8,
+                    color: Colors.blue,
+                  )),
+              Expanded(
+                  flex: tags,
+                  child: Container(
+                    height: 8,
+                    color: Colors.grey,
+                  )),
+            ],
+          ),
+        ),
+      ),
+      Container(
+        padding: EdgeInsets.all(4),
+      ),
+      InkWell(
+        child: SizedBox(
+            width: width - 16 - 32,
+            height:
+                isExpanded ? lff.length * 14.0 + 10 : lff.length * 22.0 + 10,
+            child: charts.BarChart(
+              [
+                charts.Series<Tuple2<String, int>, String>(
+                    id: 'Sales',
+                    data: lff,
+                    domainFn: (Tuple2<String, int> sales, f) =>
+                        sales.item1.contains(':')
+                            ? sales.item1.split(':')[1]
+                            : sales.item1,
+                    measureFn: (Tuple2<String, int> sales, _) => sales.item2,
+                    colorFn: (Tuple2<String, int> sales, _) {
+                      if (sales.item1.startsWith('female:'))
+                        return charts.MaterialPalette.pink.shadeDefault;
+                      else if (sales.item1.startsWith('male:'))
+                        return charts.MaterialPalette.blue.shadeDefault;
+                      else
+                        return charts.MaterialPalette.gray.shadeDefault;
+                    }),
+              ],
+              primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
+              domainAxis: Settings.themeWhat ? axis1 : null,
+              animate: true,
+              vertical: false,
+            )),
+        onTap: () {},
+        onTapCancel: () {
+          isExpanded = !isExpanded;
+          if (isExpanded)
+            lff = lffOrigin;
+          else
+            lff = lffOrigin.take(5).toList();
+          setState(() {});
+          Future.delayed(Duration(milliseconds: 100)).then((value) =>
+              _controller.animateTo(_controller.position.maxScrollExtent,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.fastOutSlowIn));
+        },
+      ),
+      Container(
+        padding: EdgeInsets.all(8),
+      ),
+    ]);
   }
 }
