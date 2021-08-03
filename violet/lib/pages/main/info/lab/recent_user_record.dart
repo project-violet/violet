@@ -159,7 +159,6 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                     controller: _controller,
                     physics: BouncingScrollPhysics(),
                     itemCount: records.length + 1,
-                    reverse: true,
                     itemBuilder: (BuildContext ctxt, int index) {
                       if (index == 0) {
                         return _tagChart();
