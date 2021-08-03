@@ -56,8 +56,10 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
     });
 
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 300)).then((value) =>
-            _controller.jumpTo(_controller.position.maxScrollExtent)));
+        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
+            _controller.animateTo(_controller.position.maxScrollExtent,
+                duration: Duration(milliseconds: 300),
+                curve: Curves.fastOutSlowIn)));
   }
 
   @override

@@ -53,8 +53,10 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
     });
 
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 300)).then((value) =>
-            _controller.jumpTo(_controller.position.maxScrollExtent)));
+        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
+            _controller.animateTo(_controller.position.maxScrollExtent,
+                duration: Duration(milliseconds: 300),
+                curve: Curves.fastOutSlowIn)));
     timer = Timer.periodic(Duration(seconds: 1), updateRercord);
   }
 
