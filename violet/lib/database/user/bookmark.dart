@@ -352,7 +352,7 @@ class Bookmark {
   HashSet<String> bookmarkUserSet;
   Future<bool> isBookmarkUser(String user) async {
     await lock.synchronized(() async {
-      if (user == null) {
+      if (bookmarkUserSet == null) {
         var user = await getUser();
         bookmarkUserSet = HashSet<String>();
         user.forEach((element) {
