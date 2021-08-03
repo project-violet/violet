@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:auto_animated/auto_animated.dart';
@@ -235,7 +236,8 @@ class _SearchPageState extends State<SearchPage>
                           // latestQuery = value;
                           latestQuery =
                               Tuple2<Tuple2<List<QueryResult>, int>, String>(
-                                  null, 'random');
+                                  null,
+                                  'random:${new Random().nextDouble() + 1}');
                           queryResult = [];
                           _filterController = FilterController();
                           queryEnd = false;
