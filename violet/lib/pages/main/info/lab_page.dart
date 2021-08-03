@@ -6,17 +6,22 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
+import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/server/wsalt.dart';
 
 class LaboratoryPage extends StatefulWidget {
   @override
@@ -187,7 +192,71 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'Real-Time User Article Record Picking User',
                 null,
                 () async {
+                  if (!await _checkMaterKey()) {
+                    await showOkDialog(context, 'You cannot use this feature!');
+                    return;
+                  }
                   _navigate(LabRecentRecordsU());
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.incognito,
+                    size: 40, color: Colors.brown.shade700),
+                '#008 Bookmarks',
+                'User Bookmark List',
+                null,
+                () async {
+                  if (!await _checkMaterKey()) {
+                    await showOkDialog(context, 'You cannot use this feature!');
+                    return;
+                  }
+                  _navigate(LabUserBookmarkPage());
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.keyChainVariant,
+                    size: 40, color: Colors.yellow.shade700),
+                '#009 Unlock',
+                'Unlock Master Mode',
+                null,
+                () async {
+                  Widget yesButton = TextButton(
+                    style: TextButton.styleFrom(primary: Settings.majorColor),
+                    child: Text(Translations.of(context).trans('ok')),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                  );
+                  Widget noButton = TextButton(
+                    style: TextButton.styleFrom(primary: Settings.majorColor),
+                    child: Text(Translations.of(context).trans('cancel')),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                  );
+                  TextEditingController text = TextEditingController();
+                  var dialog = await showDialog(
+                    useRootNavigator: false,
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                      title: Text('Input Unlock Key'),
+                      content: TextField(
+                        controller: text,
+                        autofocus: true,
+                      ),
+                      actions: [yesButton, noButton],
+                    ),
+                  );
+                  if (dialog == true) {
+                    if (getValid(text.text + 'saltff') == '605f372') {
+                      await showOkDialog(context, 'Successful!');
+                      await (await SharedPreferences.getInstance())
+                          .setString('labmasterkey', text.text);
+                    } else {
+                      await showOkDialog(context, 'Fail!');
+                    }
+                  }
                 },
               ),
             ],
@@ -195,6 +264,14 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> _checkMaterKey() async {
+    var key = (await SharedPreferences.getInstance()).getString('labmasterkey');
+    if (key != null && getValid(key + 'saltff') == '605f372') {
+      return true;
+    }
+    return false;
   }
 
   _buildTitle() {
