@@ -55,7 +55,8 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
     });
 
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => _controller.jumpTo(_controller.position.maxScrollExtent));
+        (value) => Future.delayed(Duration(milliseconds: 300)).then((value) =>
+            _controller.jumpTo(_controller.position.maxScrollExtent)));
     timer = Timer.periodic(Duration(seconds: 1), updateRercord);
   }
 
@@ -123,6 +124,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
 
   @override
   Widget build(BuildContext context) {
+    var xrecords = records.where((x) => x.item2 > limit).toList();
     var windowWidth = MediaQuery.of(context).size.width;
     return CardPanel.build(
       context,
@@ -134,28 +136,28 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
               padding: EdgeInsets.all(0),
               controller: _controller,
               physics: BouncingScrollPhysics(),
-              itemCount: records.length,
+              itemCount: xrecords.length,
               reverse: true,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
                   key: Key('records' +
                       index.toString() +
                       '/' +
-                      records[records.length - index - 1]
+                      xrecords[xrecords.length - index - 1]
                           .item1
                           .id()
                           .toString()),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
-                      queryResult: records[records.length - index - 1].item1,
+                      queryResult: xrecords[xrecords.length - index - 1].item1,
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
                       thumbnailTag: Uuid().v4(),
-                      seconds: records[records.length - index - 1].item2,
+                      seconds: xrecords[xrecords.length - index - 1].item2,
                       doubleTapCallback: () => _doubleTapCallback(
-                          records[records.length - index - 1].item3),
+                          xrecords[xrecords.length - index - 1].item3),
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
