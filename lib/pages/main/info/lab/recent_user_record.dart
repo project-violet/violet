@@ -57,10 +57,10 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   }
 
   Future<void> updateRercord(dummy) async {
-    isBookmarked =
-        await (await Bookmark.getInstance()).isBookmarkUser(widget.userAppId);
-
     try {
+      isBookmarked =
+          await (await Bookmark.getInstance()).isBookmarkUser(widget.userAppId);
+
       var trecords =
           await VioletServer.userRecent(widget.userAppId, 100, limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
