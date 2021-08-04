@@ -145,7 +145,7 @@ class Bookmark {
         if (ex == null || ex.length == 0 || ex[0].length == 0) {
           await db.execute('''CREATE TABLE BookmarkUser (
               Id integer primary key autoincrement, 
-              Artist text, 
+              User text, 
               DateTime text, 
               GroupId integer,
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));

@@ -300,6 +300,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
             await (await Bookmark.getInstance()).bookmarkUser(widget.userAppId);
             flareController.play('Like');
           }
+          setState(() {});
         },
       ),
       Padding(
