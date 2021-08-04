@@ -297,8 +297,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                 .unbookmarkUser(widget.userAppId);
             flareController.play('Unlike');
           } else {
-            await (await Bookmark.getInstance())
-                .unbookmarkUser(widget.userAppId);
+            await (await Bookmark.getInstance()).bookmarkUser(widget.userAppId);
             flareController.play('Like');
           }
         },
