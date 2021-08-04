@@ -72,8 +72,9 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
         child: Material(
           color: Settings.themeWhat ? Colors.black38 : Colors.white,
           child: ListTile(
-            title: Text(data.user(), style: TextStyle(fontSize: 16.0)),
-            // subtitle: Text(data.),
+            title: Text(data.user().substring(0, 8),
+                style: TextStyle(fontSize: 16.0)),
+            subtitle: Text(''),
             trailing: Text(data.datetime().split(' ')[0]),
             onTap: () {
               if (!Platform.isIOS) {
