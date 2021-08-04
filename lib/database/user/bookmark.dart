@@ -89,6 +89,8 @@ class BookmarkUser {
   String user() => result['User'];
   String datetime() => result['DateTime'];
   int group() => result['GroupId'];
+  String title() => result['Title'];
+  String subtitle() => result['Subtitle'];
 
   Future<void> update() async {
     var db = await CommonUserDatabase.getInstance();
@@ -145,7 +147,9 @@ class Bookmark {
         if (ex == null || ex.length == 0 || ex[0].length == 0) {
           await db.execute('''CREATE TABLE BookmarkUser (
               Id integer primary key autoincrement, 
-              User text, 
+              User text,
+              Title text,
+              Subtitle text,
               DateTime text, 
               GroupId integer,
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
@@ -214,6 +218,13 @@ class Bookmark {
     await db.delete('BookmarkArtist', 'GroupId=?', [group.id().toString()]);
     await db.delete('BookmarkGroup', 'Id=?', [group.id().toString()]);
     bookmarkSet = null;
+    //
+  }
+
+  Future<void> deleteUser(BookmarkUser user) async {
+    var db = await CommonUserDatabase.getInstance();
+    await db.delete('BookmarkUser', 'Id=?', [user.id()]);
+    bookmarkUserSet.remove(user.user());
     //
   }
 
@@ -298,6 +309,13 @@ class Bookmark {
     await lock.synchronized(() async {
       await (await CommonUserDatabase.getInstance())
           .update('BookmarkGroup', group.result, 'Id=?', [group.id()]);
+    });
+  }
+
+  Future<void> modfiyUser(BookmarkUser user) async {
+    await lock.synchronized(() async {
+      await (await CommonUserDatabase.getInstance())
+          .update('BookmarkUser', user.result, 'Id=?', [user.id()]);
     });
   }
 

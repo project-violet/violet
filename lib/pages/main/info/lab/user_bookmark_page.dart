@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
@@ -72,9 +73,9 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
         child: Material(
           color: Settings.themeWhat ? Colors.black38 : Colors.white,
           child: ListTile(
-            title: Text(data.user().substring(0, 8),
+            title: Text(data.title() ?? data.user().substring(0, 8),
                 style: TextStyle(fontSize: 16.0)),
-            subtitle: Text(''),
+            subtitle: Text(data.subtitle() ?? ''),
             trailing: Text(data.datetime().split(' ')[0]),
             onTap: () {
               if (!Platform.isIOS) {
@@ -100,6 +101,33 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
               } else {
                 Navigator.of(context).push(CupertinoPageRoute(
                     builder: (_) => LabUserRecentRecords(data.user())));
+              }
+            },
+            onLongPress: () async {
+              var rr = await showDialog(
+                context: context,
+                builder: (BuildContext context) => GroupModifyPage(
+                    name: data.title() ?? data.user().substring(0, 8),
+                    desc: data.subtitle()),
+              );
+
+              if (rr == null) return;
+
+              if (rr[0] == 2) {
+                await (await Bookmark.getInstance()).deleteUser(data);
+                setState(() {});
+              } else if (rr[0] == 1) {
+                var nname = rr[1] as String;
+                var ndesc = rr[2] as String;
+
+                var rrt = Map<String, dynamic>.from(data.result);
+
+                rrt['Title'] = nname;
+                rrt['Subtitle'] = ndesc;
+
+                await (await Bookmark.getInstance())
+                    .modfiyUser(BookmarkUser(result: rrt));
+                setState(() {});
               }
             },
           ),
