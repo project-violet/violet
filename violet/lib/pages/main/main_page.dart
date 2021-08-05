@@ -608,7 +608,7 @@ class _MainPage2State extends State<MainPage2>
           ),
         ],
       ),
-      Container(height: 28),
+      Container(height: 24),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
