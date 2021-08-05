@@ -15,6 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pointycastle/export.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/cert/cert_data.dart';
 import 'package:violet/cert/cert_util.dart';
 import 'package:violet/cert/root.dart';
 import 'package:violet/component/hentai.dart';
@@ -161,28 +162,59 @@ void main() {
 
     // print(comments);
 
-    var pair = CertUtil.createRSAKeyPair();
+    // var pair = CertUtil.createRSAKeyPair();
 
-    var rootCA = RootCert(data: {
-      'RSAPublicModulus': pair.item1.modulus.toString(),
-      'RSAPublicExponent': pair.item1.exponent.toString(),
-      'AuthStarts': DateTime.now().toUtc().toString(),
-      'AuthEnds':
-          DateTime.now().add(Duration(days: 365 * 20 + 4)).toUtc().toString(),
-      'AuthVersion': '1.0',
-      'Owner': 'koromo the violet project leader',
-    });
+    // var rootCA = RootCert(data: {
+    //   'PubKey': CertUtil.exportRSAPublicKey(pair.item1),
+    //   'AuthStarts': DateTime.now().toUtc().toString(),
+    //   'AuthEnds':
+    //       DateTime.now().add(Duration(days: 365 * 20 + 4)).toUtc().toString(),
+    //   'AuthVersion': '1.0',
+    //   'Owner': 'koromo the violet project leader',
+    // });
 
-    var signedData = CertUtil.sign(
-        pair.item2, Uint8List.fromList(rootCA.getRawData().codeUnits));
+    // var signedData = CertUtil.sign(
+    //     pair.item2, Uint8List.fromList(rootCA.getRawData().codeUnits));
 
-    print(CertUtil.l8ToStr(signedData));
+    // rootCA.data['SignedData'] = CertUtil.l8ToStr(signedData);
 
-    rootCA.data['SignedData'] = CertUtil.l8ToStr(signedData);
+    // print('--- Verify ROOT CA ---');
+    // print(rootCA.verify(rootCA));
 
-    print(rootCA.verify(rootCA));
+    // print('--- ROOT CA ---');
+    // print(rootCA.toBase64());
 
-    print(jsonEncode(rootCA.data));
+    // print('--- ROOT CA RSA PRIVATE KEY ---');
+    // print(CertUtil.exportRSAPrivateKey(pair.item2));
+    // print('--- ROOT CA RSA PUBLIC KEY ---');
+    // print(CertUtil.exportRSAPublicKey(pair.item1));
+
+    // var priKey = CertUtil.importRSAPrivateKey('');
+    // var pubKey = CertUtil.importRSAPublicKey(
+    //     '');
+
+    // var testCert = CertData(data: {
+    //   'PubKey': CertUtil.exportRSAPublicKey(pubKey),
+    //   'AuthStarts': DateTime.now().toUtc().toString(),
+    //   'AuthEnds':
+    //       DateTime.now().add(Duration(days: 365 * 10 + 4)).toUtc().toString(),
+    //   'AuthVersion': '1.0',
+    //   'Owner': 'test user',
+    // });
+
+    // var signedData = CertUtil.sign(
+    //     priKey, Uint8List.fromList(testCert.getRawData().codeUnits));
+
+    // testCert.data['SignedData'] = CertUtil.l8ToStr(signedData);
+
+    // print('--- Verify TEST CERT ---');
+    // print(testCert.verify(RootCert.koromoCA()));
+
+    // print('--- TEST CERT ---');
+    // print(testCert.toBase64());
+
+    var testCert = CertData.testCert();
+    print(testCert.verify(RootCert.koromoCA()));
 
     // print(pair.item1.modulus);
     // print(pair.item2.privateExponent);
