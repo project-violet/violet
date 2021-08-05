@@ -6,11 +6,17 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 // import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pointycastle/export.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:tuple/tuple.dart';
+import 'package:violet/cert/cert_util.dart';
+import 'package:violet/cert/root.dart';
 import 'package:violet/component/hentai.dart';
 // import 'package:violet/component/download/hitomi.dart';
 // import 'package:http/http.dart' as http;
@@ -28,6 +34,8 @@ import 'package:violet/script/parse_tree.dart';
 import 'package:violet/script/script_lexer.dart';
 import 'package:violet/script/script_parser.dart';
 import 'package:violet/script/script_runner.dart';
+import 'package:violet/server/community/anon.dart';
+import 'package:violet/server/wsalt.dart';
 
 import 'json/json_lexer.dart';
 import 'json/json_parser.dart';
@@ -118,9 +126,14 @@ void main() {
   });*/
 
   test('test search', () async {
-    await LDI.init();
-    // final queryString = HitomiManager.translate2query(
-    //     'female:loli female:sister (lang:korean or lang:n/a)');
+    // await LDI.init();
+    // var tcomments =
+    //     (await VioletCommunityAnonymous.getArtistComments('test'))['result'];
+    // tcomments.map((e) => Tuple3<DateTime, String, String>(
+    //     DateTime.parse(e['TimeStamp']), e['UserAppId'], e['Body']));
+    // print(tcomments);
+
+    // final queryString = HitomiManager.translate2query('(lang:korean )');
 
     // print(queryString);
 
@@ -128,8 +141,55 @@ void main() {
     //     await databaseFactoryFfi.openDatabase('/home/ubuntu/rawdata-korean.db');
 
     // var count = (await db.rawQuery(queryString.replaceAll(
-    //         'SELECT * FROM', 'SELECT COUNT(*) AS C FROM')))
-    //     .first['C'] as int;
+    //         'SELECT * FROM', 'SELECT Id AS C FROM') +
+    //     " ORDER BY " +
+    //     "Id * 1.078021725751909 - ROUND(Id * 1.078021725751909 - 0.5, 0) DESC" +
+    //     " LIMIT 500 OFFSET ${500 * 0}"));
+
+    // print(count);
+
+    // var tcomments =
+    //     (await VioletCommunityAnonymous.getArtistCommentsRecent())['result']
+    //         as List<dynamic>;
+    // var comments = tcomments
+    //     .map((e) => Tuple4<DateTime, String, String, String>(
+    //         DateTime.parse(e['TimeStamp']),
+    //         e['UserAppId'],
+    //         e['Body'],
+    //         e['ArtistName']))
+    //     .toList();
+
+    // print(comments);
+
+    var pair = CertUtil.createRSAKeyPair();
+
+    var rootCA = RootCert(data: {
+      'RSAPublicModulus': pair.item1.modulus.toString(),
+      'RSAPublicExponent': pair.item1.exponent.toString(),
+      'AuthStarts': DateTime.now().toUtc().toString(),
+      'AuthEnds':
+          DateTime.now().add(Duration(days: 365 * 20 + 4)).toUtc().toString(),
+      'AuthVersion': '1.0',
+      'Owner': 'koromo the violet project leader',
+    });
+
+    var signedData = CertUtil.sign(
+        pair.item2, Uint8List.fromList(rootCA.getRawData().codeUnits));
+
+    print(CertUtil.l8ToStr(signedData));
+
+    rootCA.data['SignedData'] = CertUtil.l8ToStr(signedData);
+
+    print(rootCA.verify(rootCA));
+
+    print(jsonEncode(rootCA.data));
+
+    // print(pair.item1.modulus);
+    // print(pair.item2.privateExponent);
+
+    // RSAPrivateKey()
+
+    // var rootCert = RootCert();
 
     // print(count);
   });

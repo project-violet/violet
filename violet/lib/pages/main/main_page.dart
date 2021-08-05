@@ -608,7 +608,7 @@ class _MainPage2State extends State<MainPage2>
           ),
         ],
       ),
-      Container(height: 12),
+      Container(height: 20),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -699,7 +699,7 @@ class _MainPage2State extends State<MainPage2>
                   }
                 }
               },
-              child: const Icon(MdiIcons.heart),
+              child: const Icon(MdiIcons.keyChainVariant),
             ),
           ),
         ],
