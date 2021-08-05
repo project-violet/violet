@@ -47,3 +47,4 @@ lib/server/wsalt.dart
 lib/game/*
 mySdCardFile.img
 mySdCardFile.img.qcow2
+rsaPair.txt

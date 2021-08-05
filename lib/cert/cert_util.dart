@@ -52,4 +52,40 @@ class CertUtil {
   }
 
   static String l8ToStr(Uint8List value) => base64.encode(value);
+
+  static String exportRSAPublicKey(RSAPublicKey publicKey) {
+    return utf8.fuse(base64).encode(jsonEncode({
+          "exponent": publicKey.exponent.toString(),
+          "modulus": publicKey.modulus.toString(),
+        }));
+  }
+
+  static RSAPublicKey importRSAPublicKey(String key) {
+    var map = jsonDecode(utf8.fuse(base64).decode(key)) as Map<String, dynamic>;
+
+    return RSAPublicKey(
+      BigInt.parse(map['modulus']),
+      BigInt.parse(map['exponent']),
+    );
+  }
+
+  static String exportRSAPrivateKey(RSAPrivateKey privateKey) {
+    return utf8.fuse(base64).encode(jsonEncode({
+          "p": privateKey.p.toString(),
+          "q": privateKey.q.toString(),
+          "exponent": privateKey.privateExponent.toString(),
+          "modulus": privateKey.modulus.toString(),
+        }));
+  }
+
+  static RSAPrivateKey importRSAPrivateKey(String key) {
+    var map = jsonDecode(utf8.fuse(base64).decode(key)) as Map<String, dynamic>;
+
+    return RSAPrivateKey(
+      BigInt.parse(map['modulus']),
+      BigInt.parse(map['exponent']),
+      BigInt.parse(map['p']),
+      BigInt.parse(map['q']),
+    );
+  }
 }
