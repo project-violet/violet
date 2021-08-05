@@ -612,20 +612,26 @@ class _MainPage2State extends State<MainPage2>
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Tooltip(
-            message: '실시간 유저 레코드',
-            child: ElevatedButton(
-              style: buttonStyle,
-              onPressed: () async {
-                if (await _checkMaterKey()) {
-                  Navigator.of(context)
-                      .push(_buildServicePageRoute(() => LabRecentRecordsU()));
-                } else {
-                  Navigator.of(context)
-                      .push(_buildServicePageRoute(() => LabRecentRecords()));
-                }
-              },
-              child: const Icon(MdiIcons.accessPointNetwork),
+          Badge(
+            showBadge: true,
+            badgeContent: Text('N',
+                style: TextStyle(color: Colors.white, fontSize: 12.0)),
+            // badgeColor: Settings.majorAccentColor,
+            child: Tooltip(
+              message: '실시간 유저 레코드',
+              child: ElevatedButton(
+                style: buttonStyle,
+                onPressed: () async {
+                  if (await _checkMaterKey()) {
+                    Navigator.of(context).push(
+                        _buildServicePageRoute(() => LabRecentRecordsU()));
+                  } else {
+                    Navigator.of(context)
+                        .push(_buildServicePageRoute(() => LabRecentRecords()));
+                  }
+                },
+                child: const Icon(MdiIcons.accessPointNetwork),
+              ),
             ),
           ),
           Tooltip(
@@ -637,8 +643,10 @@ class _MainPage2State extends State<MainPage2>
                   Navigator.of(context).push(
                       _buildServicePageRoute(() => LabUserBookmarkPage()));
                 } else {
-                  await showOkDialog(context,
-                      'You must unlock this feature using the master key!');
+                  await showOkDialog(
+                      context,
+                      'You must unlock this feature using the master key! ' +
+                          '이 기능은 현재 인가된 사용자만 사용할 수 있습니다.');
                 }
               },
               child: const Icon(MdiIcons.incognito),
