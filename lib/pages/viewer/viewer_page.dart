@@ -606,7 +606,7 @@ class _ViewerPageState extends State<ViewerPage>
           _latestIndex = 0;
           _latestAlign = 0;
           _onScroll = false;
-          
+
           setState(() {});
 
           Future.delayed(Duration(milliseconds: 300))
@@ -944,6 +944,19 @@ class _ViewerPageState extends State<ViewerPage>
             scrollDirection:
                 Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
             reverse: Settings.rightToLeft,
+            loadingBuilder: (context, imageChunkEvent) {
+              return Center(
+                child: SizedBox(
+                  child: CircularProgressIndicator(
+                      value: imageChunkEvent == null
+                          ? 0
+                          : imageChunkEvent.cumulativeBytesLoaded /
+                              imageChunkEvent.expectedTotalBytes.toDouble()),
+                  width: 30,
+                  height: 30,
+                ),
+              );
+            },
           ),
         ),
         _verticalPageLabel(),
