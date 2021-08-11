@@ -21,7 +21,7 @@ class Variables {
     if (Platform.isAndroid) {
       if (statusBarHeight == 0 && statusBar > 0.1)
         statusBarHeight = max(statusBarHeight, statusBar);
-      if (bottomBarHeight == 0 && bottomBar > 0.1)
+      if (bottomBarHeight == 0 && bottomBar > 0.1 && bottomBar < 80)
         bottomBarHeight = max(bottomBarHeight, bottomBar);
     }
   }
