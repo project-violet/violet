@@ -276,7 +276,10 @@ class Settings {
     moveToAppBarToBottom =
         (await SharedPreferences.getInstance()).getBool('movetoappbartobottom');
     if (moveToAppBarToBottom == null) {
-      moveToAppBarToBottom = false;
+      if (Platform.isIOS)
+        moveToAppBarToBottom = true;
+      else
+        moveToAppBarToBottom = false;
       await (await SharedPreferences.getInstance())
           .setBool('movetoappbartobottom', moveToAppBarToBottom);
     }
