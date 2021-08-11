@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -125,15 +127,17 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
               setState(() {});
             },
           ),
-          _checkBox(
-            value: Settings.moveToAppBarToBottom,
-            title: Translations.of(context).trans('movetoappbartobottom'),
-            onChanged: (value) {
-              Settings.setMoveToAppBarToBottom(!Settings.moveToAppBarToBottom);
-              widget.setStateCallback.call();
-              setState(() {});
-            },
-          ),
+          if (!Platform.isIOS)
+            _checkBox(
+              value: Settings.moveToAppBarToBottom,
+              title: Translations.of(context).trans('movetoappbartobottom'),
+              onChanged: (value) {
+                Settings.setMoveToAppBarToBottom(
+                    !Settings.moveToAppBarToBottom);
+                widget.setStateCallback.call();
+                setState(() {});
+              },
+            ),
           _checkBox(
             value: Settings.showSlider,
             title: Translations.of(context).trans('showslider'),
