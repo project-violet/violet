@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 8, 11),
+    version: '1.13.2 Patch Update <== Latest',
+    isMinor: true,
+    contents: [
+      'fix hitomi routing error',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 8, 5),
-    version: '1.13.1 Patch Update <== Latest',
+    version: '1.13.1 Patch Update',
     isMinor: true,
     contents: [
       'fix random search bug',
