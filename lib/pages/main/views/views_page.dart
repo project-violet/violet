@@ -260,6 +260,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   width: (windowWidth - 4.0),
                   thumbnailTag: Uuid().v4(),
                   viewed: x.item2,
+                  usableTabList: results.map((e) => e.item1).toList(),
                   // isCheckMode: checkMode,
                   // isChecked: checked.contains(x.id()),
                 ),
