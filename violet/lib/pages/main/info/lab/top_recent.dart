@@ -180,9 +180,9 @@ class _LabTopRecentState extends State<LabTopRecent> {
                       ),
                       child: Slider(
                         value: limit.toDouble(),
-                        max: 99999,
+                        max: 30000,
                         min: 1,
-                        divisions: (99999 - 1),
+                        divisions: (30000 - 1),
                         inactiveColor: Settings.majorColor.withOpacity(0.7),
                         activeColor: Settings.majorColor,
                         onChangeEnd: (value) async {
