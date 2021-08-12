@@ -17,6 +17,7 @@ import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
+import 'package:violet/pages/main/info/lab/top_recent.dart';
 import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -257,6 +258,20 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       await showOkDialog(context, 'Fail!');
                     }
                   }
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.incognito,
+                    size: 40, color: Colors.brown.shade700),
+                '#010 Top Recent',
+                'Top Recent',
+                null,
+                () async {
+                  if (!await _checkMaterKey()) {
+                    await showOkDialog(context, 'You cannot use this feature!');
+                    return;
+                  }
+                  _navigate(LabTopRecent());
                 },
               ),
             ],
