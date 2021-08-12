@@ -40,6 +40,69 @@ class VioletServer {
     }
   }
 
+  static Future<dynamic> top_recent(int s) async {
+    var gg = await http.get('$api/top_recent?s=$s');
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+          .map((e) => Tuple2<int, int>(
+              (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
+          .toList();
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error(
+          '[API-top-recent] E: ' + e.toString() + '\n' + st.toString());
+
+      return 900;
+    }
+  }
+
+  static Future<dynamic> top_ts(int s) async {
+    var gg = await http.get('$api/top_ts?s=$s');
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result =
+          DateTime.tryParse(jsonDecode(gg.body)['result'] as String).toLocal();
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error('[API-top-ts] E: ' + e.toString() + '\n' + st.toString());
+
+      return 900;
+    }
+  }
+
+  static Future<dynamic> cur_ts() async {
+    var gg = await http.get('$api/cur_ts');
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result =
+          DateTime.tryParse(jsonDecode(gg.body)['result'] as String).toLocal();
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error('[API-cur-ts] E: ' + e.toString() + '\n' + st.toString());
+
+      return 900;
+    }
+  }
+
   static Future<void> view(int articleid) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
@@ -270,10 +333,8 @@ class VioletServer {
 
     try {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple3<int, int, int>(
-              (e as List<dynamic>)[0] as int,
-              (e as List<dynamic>)[1] as int,
-              (e as List<dynamic>)[2] as int))
+          .map((e) => Tuple3<int, int, int>((e as List<dynamic>)[0] as int,
+              (e as List<dynamic>)[1] as int, (e as List<dynamic>)[2] as int))
           .toList();
       return result;
     } catch (e, st) {

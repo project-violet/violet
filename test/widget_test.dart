@@ -20,7 +20,7 @@ import 'package:violet/cert/cert_util.dart';
 import 'package:violet/cert/root.dart';
 import 'package:violet/component/hentai.dart';
 // import 'package:violet/component/download/hitomi.dart';
-// import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 
 // import 'package:violet/main.dart';
 // import 'package:violet/component/download/twitter.dart';
@@ -36,6 +36,7 @@ import 'package:violet/script/script_lexer.dart';
 import 'package:violet/script/script_parser.dart';
 import 'package:violet/script/script_runner.dart';
 import 'package:violet/server/community/anon.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
 
 import 'json/json_lexer.dart';
@@ -127,6 +128,13 @@ void main() {
   });*/
 
   test('test search', () async {
+    var gg = await http.get(Uri.parse('${VioletServer.api}/top_recent?s=9999'));
+    var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+        .map((e) => Tuple2<int, int>(
+            (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
+        .toList();
+    print(result);
+
     // await LDI.init();
     // var tcomments =
     //     (await VioletCommunityAnonymous.getArtistComments('test'))['result'];
