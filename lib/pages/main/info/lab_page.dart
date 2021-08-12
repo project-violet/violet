@@ -261,8 +261,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.incognito,
-                    size: 40, color: Colors.brown.shade700),
+                Icon(MdiIcons.speedometer, size: 40, color: Colors.red),
                 '#010 Top Recent',
                 'Top Recent',
                 null,

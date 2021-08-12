@@ -55,15 +55,9 @@ class _LabTopRecentState extends State<LabTopRecent> {
 
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
         (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
-            _controller.animateTo(_controller.position.maxScrollExtent,
+            _controller.animateTo(0.0,
                 duration: Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn)));
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
   }
 
   Future<void> updateRercord(dummy) async {
@@ -81,7 +75,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
                   .join(' ')) +
           ' AND ';
 
-      queryRaw += '(' + xrecords.map((e) => 'Id=${e.item1}').join(' OR ') + ')';
+      queryRaw += 'Id IN (' + xrecords.map((e) => e.item1).join(',') + ')';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results.length == 0) return;
@@ -100,19 +94,19 @@ class _LabTopRecentState extends State<LabTopRecent> {
             qr[element.item1.toString()], element.item2));
       });
 
-      records.insertAll(0, result);
+      records = result;
 
       setState(() {});
       Future.delayed(Duration(milliseconds: 50)).then((x) {
         _controller.animateTo(
-          _controller.position.maxScrollExtent,
+          0.0,
           duration: Duration(milliseconds: 300),
           curve: Curves.fastOutSlowIn,
         );
       });
 
-      var sts = VioletServer.top_ts(limit) as DateTime;
-      var cts = VioletServer.cur_ts() as DateTime;
+      var sts = (await VioletServer.top_ts(limit)) as DateTime;
+      var cts = (await VioletServer.cur_ts()) as DateTime;
 
       var x = cts.difference(sts);
 
@@ -160,7 +154,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
                       thumbnailTag: Uuid().v4(),
-                      seconds: records[index].item2,
+                      viewed: records[index].item2,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
@@ -193,6 +187,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
                         activeColor: Settings.majorColor,
                         onChangeEnd: (value) async {
                           limit = value.toInt();
+                          await updateRercord(null);
                         },
                         onChanged: (value) {
                           setState(() {
