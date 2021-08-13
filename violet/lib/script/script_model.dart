@@ -8,6 +8,7 @@ enum PNodeType {
   statement_node,
   block_node,
   index_node,
+  consts_node,
   variable_node,
   argument_node,
   function_node,
@@ -62,6 +63,12 @@ class PIndex extends INode {
 
   PIndex({this.isIndexing, this.variable1, this.variable2})
       : super(PNodeType.index_node);
+}
+
+class PConsts extends INode {
+  Object content;
+
+  PConsts({this.content}) : super(PNodeType.consts_node);
 }
 
 class PVariable extends INode {
@@ -160,10 +167,10 @@ class PActionDescription {
     ParserAction((node) => node.userContents = PBlock(isEmpty: true)),
     // 10:     consts -> number
     ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].contents)),
+        node.userContents = PConsts(content: node.childs[0].contents)),
     // 11:     consts -> string
     ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].contents)),
+        node.userContents = PConsts(content: node.childs[0].contents)),
     // 12:      index -> variable
     ParserAction((node) =>
         node.userContents = PIndex(variable1: node.childs[0].userContents)),
