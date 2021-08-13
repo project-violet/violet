@@ -46,14 +46,19 @@ class PStatement extends INode {
 }
 
 class PBlock extends INode {
-  bool isInnerBlock = false;
-  bool isEmpty = false;
-  bool isLine = false;
+  bool isInnerBlock;
+  bool isEmpty;
+  bool isLine;
   PLine line;
   PBlock block;
 
-  PBlock({this.isInnerBlock, this.isLine, this.isEmpty, this.line, this.block})
-      : super(PNodeType.block_node);
+  PBlock({
+    this.isInnerBlock = false,
+    this.isLine = false,
+    this.isEmpty = false,
+    this.line,
+    this.block,
+  }) : super(PNodeType.block_node);
 }
 
 class PIndex extends INode {
@@ -61,8 +66,11 @@ class PIndex extends INode {
   PVariable variable1;
   PVariable variable2;
 
-  PIndex({this.isIndexing, this.variable1, this.variable2})
-      : super(PNodeType.index_node);
+  PIndex({
+    this.isIndexing = false,
+    this.variable1,
+    this.variable2,
+  }) : super(PNodeType.index_node);
 }
 
 class PConsts extends INode {
@@ -169,8 +177,9 @@ class PActionDescription {
     ParserAction((node) =>
         node.userContents = PConsts(content: node.childs[0].contents)),
     // 11:     consts -> string
-    ParserAction((node) =>
-        node.userContents = PConsts(content: node.childs[0].contents)),
+    ParserAction((node) => node.userContents = PConsts(
+        content: node.childs[0].contents
+            .substring(1, node.childs[0].contents.length - 1))),
     // 12:      index -> variable
     ParserAction((node) =>
         node.userContents = PIndex(variable1: node.childs[0].userContents)),
@@ -197,22 +206,21 @@ class PActionDescription {
         argument: node.childs[1].userContents)),
     // 19:   function -> name ( )
     ParserAction(
-        (node) => node.userContents = PFunction(node.childs[0].userContents)),
+        (node) => node.userContents = PFunction(node.childs[0].contents)),
     // 20:   function -> name ( argument )
     ParserAction((node) => node.userContents = PFunction(
-        node.childs[0].userContents,
+        node.childs[0].contents,
         argument: node.childs[2].userContents)),
     // 21:   runnable -> loop ( name = index to index ) block
     ParserAction((node) => node.userContents = PRunnable(
         RunnableType.sloop, node.childs[8].userContents,
-        name: node.childs[2].userContents,
+        name: node.childs[2].contents,
         index1: node.childs[4].userContents,
         index2: node.childs[6].userContents)),
     // 22:   runnable -> foreach ( name : index ) block
     ParserAction((node) => node.userContents = PRunnable(
         RunnableType.sforeach, node.childs[6].userContents,
-        name: node.childs[2].userContents,
-        index1: node.childs[4].userContents)),
+        name: node.childs[2].contents, index1: node.childs[4].userContents)),
     // 23:   runnable -> if ( index ) block
     ParserAction((node) => node.userContents = PRunnable(
         RunnableType.sif, node.childs[4].userContents,
