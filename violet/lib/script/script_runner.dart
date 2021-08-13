@@ -21,12 +21,18 @@ class RunVariable {
     this.isConst = false,
     this.isList = false,
     this.isVariable = false,
-    this.isString,
-    this.isInteger,
+    this.isString = false,
+    this.isInteger = false,
     this.isReady = true,
+    List<RunVariable> listValue,
     this.value,
   }) {
-    if (this.isList) _list = <RunVariable>[];
+    if (this.isList) {
+      if (listValue == null)
+        _list = <RunVariable>[];
+      else
+        _list = listValue;
+    }
   }
 
   List<RunVariable> _list;
@@ -44,7 +50,7 @@ class ScriptRunner {
   ParseTree _tree;
 
   ScriptRunner(String script) {
-    _doParse(script);
+    _doParse(script.trim());
   }
 
   _doParse(String script) {
@@ -81,22 +87,23 @@ class ScriptRunner {
     return _tree.printTree();
   }
 
-  runScript(Map<String, Object> variables) {
+  Future<void> runScript(Map<String, RunVariable> variables) async {
     var node = _tree.root.userContents as INode;
 
     if (!(node is PBlock))
       throw new Exception("[RUNNER] Error cannot continue!");
 
     _stack = <Map<String, RunVariable>>[];
+    _stack.add(variables);
     _pushStack();
-    _runBlock(node as PBlock);
+    await _runBlock(node as PBlock);
     _popStack();
   }
 
   List<Map<String, RunVariable>> _stack;
 
   _pushStack() {
-    _stack.add(Map<String, Object>());
+    _stack.add(Map<String, RunVariable>());
   }
 
   _popStack() {
@@ -185,7 +192,8 @@ class ScriptRunner {
     } else if (variable.content is String) {
       var name = variable.content as String;
       for (var e in _stack.reversed) {
-        if (e.containsKey(variable)) return e[name];
+        if (e == null) continue;
+        if (e.containsKey(name)) return e[name];
       }
 
       if (isLeftVariable) {
