@@ -2,11 +2,12 @@
 // Copyright (C) 2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:violet/script/parse_tree.dart';
+import 'package:violet/script/script_builtin.dart';
 import 'package:violet/script/script_lexer.dart';
 import 'package:violet/script/script_model.dart';
 import 'package:violet/script/script_parser.dart';
 
-class _Variable {
+class RunVariable {
   final bool isList;
   final bool isConst;
   final bool isVariable;
@@ -14,22 +15,25 @@ class _Variable {
   bool isString;
   bool isInteger;
 
-  _Variable({
+  bool isReady;
+
+  RunVariable({
     this.isConst = false,
     this.isList = false,
     this.isVariable = false,
     this.isString,
     this.isInteger,
+    this.isReady = true,
     this.value,
   }) {
-    if (this.isList) _list = <_Variable>[];
+    if (this.isList) _list = <RunVariable>[];
   }
 
-  List<_Variable> _list;
+  List<RunVariable> _list;
 
   Object value;
 
-  _Variable index(int index) {
+  RunVariable index(int index) {
     return _list[index];
   }
 
@@ -83,13 +87,13 @@ class ScriptRunner {
     if (!(node is PBlock))
       throw new Exception("[RUNNER] Error cannot continue!");
 
-    _stack = <Map<String, _Variable>>[];
+    _stack = <Map<String, RunVariable>>[];
     _pushStack();
     _runBlock(node as PBlock);
     _popStack();
   }
 
-  List<Map<String, _Variable>> _stack;
+  List<Map<String, RunVariable>> _stack;
 
   _pushStack() {
     _stack.add(Map<String, Object>());
@@ -118,17 +122,29 @@ class ScriptRunner {
         await _runFunction(stat.function);
         break;
       case StatementType.sindex:
-        var v1 = await _runIndex(stat.index1);
+        var v1 = await _runIndex(stat.index1, true);
         var v2 = await _runIndex(stat.index2);
 
         if (!(v1.isVariable || v1.isList))
-          throw Exception('[RUNNER] Cannot assign index to not varialbe value');
+          throw Exception('[RUNNER] Cannot assign index to not variable value');
 
-        if (v1.isList) {
-          if (!v2.isList)
-            throw Exception('[RUNNER] Not match left and right value type');
+        if (v1.isReady) {
+          if (v1.isList) {
+            if (!v2.isList)
+              throw Exception('[RUNNER] Not match left and right value type');
+            v1._list = v2._list;
+          } else if (v2.isConst) {
+            v1.value = v2.value;
+            v1.isString = v2.isString;
+            v1.isInteger = v2.isInteger;
+          }
+        } else {
+          if (!v2.isReady) {
+            throw Exception(
+                '[RUNNER] Cannot assign index to not ready variable.');
+          }
+          v1.isReady = true;
           v1._list = v2._list;
-        } else if (v2.isConst) {
           v1.value = v2.value;
           v1.isString = v2.isString;
           v1.isInteger = v2.isInteger;
@@ -145,8 +161,9 @@ class ScriptRunner {
     await _runStatement(line.statement);
   }
 
-  Future<_Variable> _runIndex(PIndex index) async {
-    var v1 = await _runVariable(index.variable1);
+  Future<RunVariable> _runIndex(PIndex index,
+      [bool isLeftVariable = false]) async {
+    var v1 = await _runVariable(index.variable1, isLeftVariable);
     if (!index.isIndexing) return v1;
 
     var v2 = await _runVariable(index.variable2);
@@ -161,24 +178,124 @@ class ScriptRunner {
     return v1.index(v2.value as int);
   }
 
-  Future<_Variable> _runVariable(PVariable variable) async {
+  Future<RunVariable> _runVariable(PVariable variable,
+      [bool isLeftVariable = false]) async {
     if (variable.content is PFunction) {
       return await _runFunction(variable.content as PFunction);
-    } else if (variable.content is PVariable) {
-      // TODO: handle variable correctly
-      return await _runVariable(variable.content as PVariable);
-    } else {
-      var v = variable.content as String;
+    } else if (variable.content is String) {
+      var name = variable.content as String;
+      for (var e in _stack.reversed) {
+        if (e.containsKey(variable)) return e[name];
+      }
+
+      if (isLeftVariable) {
+        var nv = RunVariable(isReady: false, isVariable: true);
+        _stack.last[name] = nv;
+        return nv;
+      }
+
+      // Variable Not Found!
+      throw Exception('[RUNNER] $name variable is not found in this scope!');
+    } else if (variable.content is PConsts) {
+      var v = (variable.content as PConsts).content;
       var i = int.tryParse(v);
 
-      if (i != null) return _Variable(isConst: true, isInteger: true, value: i);
-      return _Variable(isConst: true, isString: true, value: v);
+      if (i != null)
+        return RunVariable(isConst: true, isInteger: true, value: i);
+      return RunVariable(isConst: true, isString: true, value: v);
     }
+
+    throw Exception('[RUNNER] Dead reaching!');
   }
 
-  Future<void> _runArgument(PArgument arg) async {}
+  Future<List<RunVariable>> _runArgument(PArgument arg) async {
+    if (arg.argument == null) {
+      return [await _runIndex(arg.index)].toList();
+    }
 
-  Future<_Variable> _runFunction(PFunction func) async {}
+    var i = await _runIndex(arg.index);
+    var a = await _runArgument(arg.argument);
 
-  Future<void> _runRunnable(PRunnable runnable) async {}
+    return [i] + a;
+  }
+
+  Future<RunVariable> _runFunction(PFunction func) async {
+    var name = func.name;
+    var args = <RunVariable>[];
+
+    if (func.argument != null) {
+      args = await _runArgument(func.argument);
+    }
+
+    return await ScriptBuiltIn.run(name, args);
+  }
+
+  Future<void> _runRunnable(PRunnable runnable) async {
+    switch (runnable.type) {
+      case RunnableType.sloop:
+        var i1 = await _runIndex(runnable.index1);
+        var i2 = await _runIndex(runnable.index1);
+
+        if (!i1.isInteger || !i2.isInteger)
+          throw Exception('[RUNNER] Cannot looping by not integer value');
+
+        var name = runnable.name;
+
+        var ii1 = i1.value as int;
+        var ii2 = i2.value as int;
+
+        if (_stack.last.containsKey(name))
+          throw Exception('[RUNNER] $name is already used!');
+
+        _stack.last[name] =
+            RunVariable(isVariable: true, isInteger: true, value: ii1);
+
+        for (; ii1 <= ii2; ii1++) {
+          _stack.last[name].value = ii1;
+          await _runBlock(runnable.block1);
+        }
+
+        _stack.last.removeWhere((key, value) => key == name);
+
+        break;
+      case RunnableType.sforeach:
+        var name = runnable.name;
+        var index = await _runIndex(runnable.index1);
+
+        if (!index.isList)
+          throw Exception('[RUNNER] List type can only iterate.');
+
+        if (_stack.last.containsKey(name))
+          throw Exception('[RUNNER] $name is already used!');
+
+        for (var i = 0; i < index.length(); i++) {
+          _stack.last[name] = index.index(i);
+        }
+
+        _stack.last.removeWhere((key, value) => key == name);
+
+        break;
+      case RunnableType.sif:
+        var cond = await _runIndex(runnable.index1);
+
+        if (!cond.isInteger)
+          throw Exception('[RUNNER] Cannot conditioning by not integer value');
+
+        if (cond.value as int != 0) await _runBlock(runnable.block1);
+
+        break;
+      case RunnableType.sifelse:
+        var cond = await _runIndex(runnable.index1);
+
+        if (!cond.isInteger)
+          throw Exception('[RUNNER] Cannot conditioning by not integer value');
+
+        if (cond.value as int != 0)
+          await _runBlock(runnable.block1);
+        else
+          await _runBlock(runnable.block2);
+
+        break;
+    }
+  }
 }
