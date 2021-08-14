@@ -9,17 +9,29 @@ class ParseTreeNode {
   Object userContents;
   int productionRuleIndex;
   ParseTreeNode parent;
+  int line;
+  int column;
   List<ParseTreeNode> childs;
   SemanticAction action;
 
-  ParseTreeNode({this.parent, this.childs, this.production, this.contents});
+  ParseTreeNode({
+    this.parent,
+    this.childs,
+    this.production,
+    this.contents,
+    this.line,
+    this.column,
+  });
 
-  static ParseTreeNode newNode({String production, String contents}) =>
+  static ParseTreeNode newNode(
+          {String production, String contents, int line, int column}) =>
       new ParseTreeNode(
         parent: null,
         childs: <ParseTreeNode>[],
         production: production,
         contents: contents,
+        line: line,
+        column: column,
       );
 
   void _innerPrint(
@@ -34,7 +46,11 @@ class ParseTreeNode {
     }
 
     if (node.childs.length == 0) {
-      builder[0] += node.production + " " + node.contents + "\r\n";
+      builder[0] += node.production +
+          " " +
+          node.contents +
+          " (${node.line}, ${node.column})" +
+          "\r\n";
     } else {
       builder[0] += node.production + "\r\n";
     }
@@ -47,6 +63,11 @@ class ParseTreeNode {
     var builder = [''];
     _innerPrint(builder, this, "", true);
     return builder[0];
+  }
+
+  updateLC(ParseTreeNode node) {
+    line = node.line;
+    column = node.column;
   }
 }
 
@@ -67,7 +88,11 @@ class ParseTree {
     }
 
     if (node.childs.length == 0) {
-      builder[0] += node.production + " " + node.contents + "\r\n";
+      builder[0] += node.production +
+          " " +
+          node.contents +
+          " (${node.line}, ${node.column})" +
+          "\r\n";
     } else {
       builder[0] += node.production + "\r\n";
     }

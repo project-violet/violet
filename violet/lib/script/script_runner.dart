@@ -8,9 +8,9 @@ import 'package:violet/script/script_model.dart';
 import 'package:violet/script/script_parser.dart';
 
 class RunVariable {
-  final bool isList;
-  final bool isConst;
-  final bool isVariable;
+  bool isList;
+  bool isConst;
+  bool isVariable;
 
   bool isString;
   bool isInteger;
@@ -60,13 +60,15 @@ class ScriptRunner {
     lexer.allocateTarget(script);
 
     var insert = (String x, String y, int a, int b) {
-      parser.insertByTokenName(x, y);
+      parser.insertByTokenName(x, y, a, b);
       if (parser.isError())
         throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
       while (parser.reduce()) {
         var l = parser.latestReduce();
         l.action(l);
-        parser.insertByTokenName(x, y);
+        (l.userContents as INode).lineNumber = l.line;
+        (l.userContents as INode).columNumber = l.column;
+        parser.insertByTokenName(x, y, a, b);
         if (parser.isError())
           throw new Exception("[COMPILER] Parser error! L:$a, C:$b");
       }
@@ -133,12 +135,14 @@ class ScriptRunner {
         var v2 = await _runIndex(stat.index2);
 
         if (!(v1.isVariable || v1.isList))
-          throw Exception('[RUNNER] Cannot assign index to not variable value');
+          throw Exception('[RUNNER] Cannot assign index to not variable value' +
+              ' ${stat.getLC()}');
 
         if (v1.isReady) {
           if (v1.isList) {
             if (!v2.isList)
-              throw Exception('[RUNNER] Not match left and right value type');
+              throw Exception('[RUNNER] Not match left and right value type' +
+                  ' ${stat.getLC()}');
             v1._list = v2._list;
           } else if (v2.isConst) {
             v1.value = v2.value;
@@ -148,13 +152,17 @@ class ScriptRunner {
         } else {
           if (!v2.isReady) {
             throw Exception(
-                '[RUNNER] Cannot assign index to not ready variable.');
+                '[RUNNER] Cannot assign index to not ready variable.' +
+                    ' ${stat.getLC()}');
           }
           v1.isReady = true;
           v1._list = v2._list;
           v1.value = v2.value;
           v1.isString = v2.isString;
           v1.isInteger = v2.isInteger;
+          v1.isList = v2.isList;
+          v1.isConst = v2.isConst;
+          v1.isVariable = v2.isVariable;
         }
 
         break;
@@ -176,11 +184,14 @@ class ScriptRunner {
     var v2 = await _runVariable(index.variable2);
 
     if (!v1.isList)
-      throw Exception('[RUNNER] Cannot indexing by not list value');
+      throw Exception(
+          '[RUNNER] Cannot indexing by not list value' + ' ${index.getLC()}');
     if (!v2.isInteger)
-      throw Exception('[RUNNER] Cannot indexing by not integer value');
-    if (v1.length() >= (v2.value as int))
-      throw Exception('[RUNNER] Overflow, cannot index over list length');
+      throw Exception('[RUNNER] Cannot indexing by not integer value' +
+          ' ${index.getLC()}');
+    if (v1.length() <= (v2.value as int))
+      throw Exception('[RUNNER] Overflow, cannot index over list length' +
+          ' ${index.getLC()}');
 
     return v1.index(v2.value as int);
   }
@@ -203,17 +214,25 @@ class ScriptRunner {
       }
 
       // Variable Not Found!
-      throw Exception('[RUNNER] $name variable is not found in this scope!');
+      throw Exception('[RUNNER] $name variable is not found in this scope!' +
+          ' ${variable.getLC()}');
     } else if (variable.content is PConsts) {
-      var v = (variable.content as PConsts).content;
-      var i = int.tryParse(v);
+      var c = (variable.content as PConsts);
 
-      if (i != null)
-        return RunVariable(isConst: true, isInteger: true, value: i);
-      return RunVariable(isConst: true, isString: true, value: v);
+      if (c.isInteger)
+        return RunVariable(
+          isConst: true,
+          isInteger: true,
+          value: int.parse(c.content as String),
+        );
+      return RunVariable(
+        isConst: true,
+        isString: true,
+        value: (c.content as String),
+      );
     }
 
-    throw Exception('[RUNNER] Dead reaching!');
+    throw Exception('[RUNNER] Dead reaching!' + ' ${variable.getLC()}');
   }
 
   Future<List<RunVariable>> _runArgument(PArgument arg) async {
@@ -242,10 +261,11 @@ class ScriptRunner {
     switch (runnable.type) {
       case RunnableType.sloop:
         var i1 = await _runIndex(runnable.index1);
-        var i2 = await _runIndex(runnable.index1);
+        var i2 = await _runIndex(runnable.index2);
 
         if (!i1.isInteger || !i2.isInteger)
-          throw Exception('[RUNNER] Cannot looping by not integer value');
+          throw Exception('[RUNNER] Cannot looping by not integer value' +
+              ' ${runnable.getLC()}');
 
         var name = runnable.name;
 
@@ -253,7 +273,8 @@ class ScriptRunner {
         var ii2 = i2.value as int;
 
         if (_stack.last.containsKey(name))
-          throw Exception('[RUNNER] $name is already used!');
+          throw Exception(
+              '[RUNNER] $name is already used!' + ' ${runnable.getLC()}');
 
         _stack.last[name] =
             RunVariable(isVariable: true, isInteger: true, value: ii1);
@@ -271,10 +292,12 @@ class ScriptRunner {
         var index = await _runIndex(runnable.index1);
 
         if (!index.isList)
-          throw Exception('[RUNNER] List type can only iterate.');
+          throw Exception(
+              '[RUNNER] List type can only iterate.' + ' ${runnable.getLC()}');
 
         if (_stack.last.containsKey(name))
-          throw Exception('[RUNNER] $name is already used!');
+          throw Exception(
+              '[RUNNER] $name is already used!' + ' ${runnable.getLC()}');
 
         for (var i = 0; i < index.length(); i++) {
           _stack.last[name] = index.index(i);
@@ -287,7 +310,8 @@ class ScriptRunner {
         var cond = await _runIndex(runnable.index1);
 
         if (!cond.isInteger)
-          throw Exception('[RUNNER] Cannot conditioning by not integer value');
+          throw Exception('[RUNNER] Cannot conditioning by not integer value' +
+              ' ${runnable.getLC()}');
 
         if (cond.value as int != 0) await _runBlock(runnable.block1);
 
@@ -296,7 +320,8 @@ class ScriptRunner {
         var cond = await _runIndex(runnable.index1);
 
         if (!cond.isInteger)
-          throw Exception('[RUNNER] Cannot conditioning by not integer value');
+          throw Exception('[RUNNER] Cannot conditioning by not integer value' +
+              ' ${runnable.getLC()}');
 
         if (cond.value as int != 0)
           await _runBlock(runnable.block1);

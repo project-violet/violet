@@ -17,8 +17,11 @@ enum PNodeType {
 
 abstract class INode {
   PNodeType nodeType;
+  int lineNumber, columNumber;
 
   INode(this.nodeType);
+
+  String getLC() => "($lineNumber, $columNumber)";
 }
 
 class PLine extends INode {
@@ -75,8 +78,14 @@ class PIndex extends INode {
 
 class PConsts extends INode {
   Object content;
+  bool isString;
+  bool isInteger;
 
-  PConsts({this.content}) : super(PNodeType.consts_node);
+  PConsts({
+    this.content,
+    this.isString = false,
+    this.isInteger = false,
+  }) : super(PNodeType.consts_node);
 }
 
 class PVariable extends INode {
@@ -147,88 +156,145 @@ class PActionDescription {
   static List<ParserAction> actions = [
     //  1:         S' -> script
     //  2:     script -> block
-    ParserAction((node) => node.userContents = node.childs[0].userContents),
+    ParserAction((node) => {
+          node.userContents = node.childs[0].userContents,
+          node.updateLC(node.childs[0])
+        }),
     //  3:       line -> stmt
-    ParserAction(
-        (node) => node.userContents = PLine(node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents = PLine(node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     //  4:       stmt -> function
-    ParserAction((node) => node.userContents = PStatement(
-        StatementType.sfunction,
-        function: node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents = PStatement(StatementType.sfunction,
+              function: node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     //  5:       stmt -> index = index
-    ParserAction((node) => node.userContents = PStatement(StatementType.sindex,
-        index1: node.childs[0].userContents,
-        index2: node.childs[2].userContents)),
+    ParserAction((node) => {
+          node.userContents = PStatement(StatementType.sindex,
+              index1: node.childs[0].userContents,
+              index2: node.childs[2].userContents),
+          node.updateLC(node.childs[0])
+        }),
     //  6:       stmt -> runnable
-    ParserAction((node) => node.userContents = PStatement(
-        StatementType.srunnable,
-        runnable: node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents = PStatement(StatementType.srunnable,
+              runnable: node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     //  7:      block -> [ block ]
-    ParserAction((node) => node.userContents =
-        PBlock(isInnerBlock: true, block: node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents =
+              PBlock(isInnerBlock: true, block: node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     //  8:      block -> line block
-    ParserAction((node) => node.userContents = PBlock(
-        isLine: true,
-        line: node.childs[0].userContents,
-        block: node.childs[1].userContents)),
+    ParserAction((node) => {
+          node.userContents = PBlock(
+              isLine: true,
+              line: node.childs[0].userContents,
+              block: node.childs[1].userContents),
+          node.updateLC(node.childs[0])
+        }),
     //  9:      block ->
     ParserAction((node) => node.userContents = PBlock(isEmpty: true)),
     // 10:     consts -> number
-    ParserAction((node) =>
-        node.userContents = PConsts(content: node.childs[0].contents)),
+    ParserAction((node) => {
+          node.userContents =
+              PConsts(content: node.childs[0].contents, isInteger: true),
+          node.updateLC(node.childs[0])
+        }),
     // 11:     consts -> string
-    ParserAction((node) => node.userContents = PConsts(
-        content: node.childs[0].contents
-            .substring(1, node.childs[0].contents.length - 1))),
+    ParserAction((node) => {
+          node.userContents = PConsts(
+              content: node.childs[0].contents
+                  .substring(1, node.childs[0].contents.length - 1),
+              isString: true),
+          node.updateLC(node.childs[0])
+        }),
     // 12:      index -> variable
-    ParserAction((node) =>
-        node.userContents = PIndex(variable1: node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents = PIndex(variable1: node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 13:      index -> variable [ variable ]
-    ParserAction((node) => node.userContents = PIndex(
-        isIndexing: true,
-        variable1: node.childs[0].userContents,
-        variable2: node.childs[2].userContents)),
+    ParserAction((node) => {
+          node.userContents = PIndex(
+              isIndexing: true,
+              variable1: node.childs[0].userContents,
+              variable2: node.childs[2].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 14:   variable -> name
-    ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].contents)),
+    ParserAction((node) => {
+          node.userContents = PVariable(content: node.childs[0].contents),
+          node.updateLC(node.childs[0])
+        }),
     // 15:   variable -> function
-    ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents = PVariable(content: node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 16:   variable -> consts
-    ParserAction((node) =>
-        node.userContents = PVariable(content: node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents = PVariable(content: node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 17:   argument -> index
-    ParserAction(
-        (node) => node.userContents = PArgument(node.childs[0].userContents)),
+    ParserAction((node) => {
+          node.userContents = PArgument(node.childs[0].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 18:   argument -> index , argument
-    ParserAction((node) => node.userContents = PArgument(
-        node.childs[0].userContents,
-        argument: node.childs[1].userContents)),
+    ParserAction((node) => {
+          node.userContents = PArgument(node.childs[0].userContents,
+              argument: node.childs[2].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 19:   function -> name ( )
-    ParserAction(
-        (node) => node.userContents = PFunction(node.childs[0].contents)),
+    ParserAction((node) => {
+          node.userContents = PFunction(node.childs[0].contents),
+          node.updateLC(node.childs[0])
+        }),
     // 20:   function -> name ( argument )
-    ParserAction((node) => node.userContents = PFunction(
-        node.childs[0].contents,
-        argument: node.childs[2].userContents)),
+    ParserAction((node) => {
+          node.userContents = PFunction(node.childs[0].contents,
+              argument: node.childs[2].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 21:   runnable -> loop ( name = index to index ) block
-    ParserAction((node) => node.userContents = PRunnable(
-        RunnableType.sloop, node.childs[8].userContents,
-        name: node.childs[2].contents,
-        index1: node.childs[4].userContents,
-        index2: node.childs[6].userContents)),
+    ParserAction((node) => {
+          node.userContents = PRunnable(
+              RunnableType.sloop, node.childs[8].userContents,
+              name: node.childs[2].contents,
+              index1: node.childs[4].userContents,
+              index2: node.childs[6].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 22:   runnable -> foreach ( name : index ) block
-    ParserAction((node) => node.userContents = PRunnable(
-        RunnableType.sforeach, node.childs[6].userContents,
-        name: node.childs[2].contents, index1: node.childs[4].userContents)),
+    ParserAction((node) => {
+          node.userContents = PRunnable(
+              RunnableType.sforeach, node.childs[6].userContents,
+              name: node.childs[2].contents,
+              index1: node.childs[4].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 23:   runnable -> if ( index ) block
-    ParserAction((node) => node.userContents = PRunnable(
-        RunnableType.sif, node.childs[4].userContents,
-        index1: node.childs[2].userContents)),
+    ParserAction((node) => {
+          node.userContents = PRunnable(
+              RunnableType.sif, node.childs[4].userContents,
+              index1: node.childs[2].userContents),
+          node.updateLC(node.childs[0])
+        }),
     // 24:   runnable -> if ( index ) block else block
-    ParserAction((node) => node.userContents = PRunnable(
-        RunnableType.sif, node.childs[4].userContents,
-        index1: node.childs[2].userContents,
-        block2: node.childs[6].userContents)),
+    ParserAction((node) => {
+          node.userContents = PRunnable(
+              RunnableType.sif, node.childs[4].userContents,
+              index1: node.childs[2].userContents,
+              block2: node.childs[6].userContents),
+          node.updateLC(node.childs[0])
+        }),
   ];
 }
