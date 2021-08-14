@@ -51,9 +51,10 @@ abstract class ShiftReduceParser {
     _treenodeStack.clear();
   }
 
-  void insertByTokenName(String tokenName, String contents) =>
-      insertByIndex(symbolTable[tokenName], contents);
-  void insertByIndex(int index, String contents) {
+  void insertByTokenName(
+          String tokenName, String contents, int line, int column) =>
+      insertByIndex(symbolTable[tokenName], contents, line, column);
+  void insertByIndex(int index, String contents, int line, int column) {
     if (_stateStack.length == 0) {
       _stateStack.add(0);
       _latestError = false;
@@ -68,7 +69,11 @@ abstract class ShiftReduceParser {
       // Shift
       _stateStack.add(table[_stateStack.last][index]);
       _treenodeStack.add(ParseTreeNode.newNode(
-          production: _symbolIndexName[index], contents: contents));
+        production: _symbolIndexName[index],
+        contents: contents,
+        line: line,
+        column: column,
+      ));
     } else if (code < 0) {
       // Reduce
       _reduce(index);
