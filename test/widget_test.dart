@@ -128,12 +128,35 @@ void main() {
   });*/
 
   test('test search', () async {
-    var gg = await http.get(Uri.parse('${VioletServer.api}/top_recent?s=9999'));
-    var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-        .map((e) => Tuple2<int, int>(
-            (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
-        .toList();
-    print(result);
+    var runner = ScriptRunner("""
+        x="12|34"
+        print(split("12|32","|")[1])
+        loop (a = 0 to len(x))
+          print(at(replace(x, "2", "5"), a))
+        """
+        .trim());
+    /*
+        loop (a = 0 to len(x))
+          print(at(x, a)) */
+
+    /*if (or(gre(sum(x,y), sub(x,y)), iscon(x,y,z))) [
+    foreach (k : arrayx) [
+        print(k)]
+    k[3] = 6 // Assign 6 to k[3]
+] else if (not(iscon(x,y,z))) [
+    k[2] = 7
+] */
+
+    print(runner.printTree());
+
+    await runner.runScript(null);
+
+    // var gg = await http.get(Uri.parse('${VioletServer.api}/top_recent?s=9999'));
+    // var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+    //     .map((e) => Tuple2<int, int>(
+    //         (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
+    //     .toList();
+    // print(result);
 
     // await LDI.init();
     // var tcomments =
