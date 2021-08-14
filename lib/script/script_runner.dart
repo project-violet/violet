@@ -8,12 +8,13 @@ import 'package:violet/script/script_model.dart';
 import 'package:violet/script/script_parser.dart';
 
 class RunVariable {
-  bool isList;
   bool isConst;
   bool isVariable;
 
+  bool isList;
   bool isString;
   bool isInteger;
+  bool isMap;
 
   bool isReady;
 
@@ -23,8 +24,10 @@ class RunVariable {
     this.isVariable = false,
     this.isString = false,
     this.isInteger = false,
+    this.isMap = false,
     this.isReady = true,
     List<RunVariable> listValue,
+    Map<String, RunVariable> mapValue,
     this.value,
   }) {
     if (this.isList) {
@@ -33,15 +36,26 @@ class RunVariable {
       else
         _list = listValue;
     }
+
+    if (this.isMap) {
+      if (mapValue == null)
+        _map = Map<String, RunVariable>();
+      else
+        _map = mapValue;
+    }
   }
 
+  Map<String, RunVariable> _map;
   List<RunVariable> _list;
 
-  Object value;
+  RunVariable index(int index) => _list[index];
+  RunVariable map(String key) => _map[key];
 
-  RunVariable index(int index) {
-    return _list[index];
-  }
+  void mapSet(String key, RunVariable variable) => _map[key] = variable;
+
+  Iterable<MapEntry<String, RunVariable>> mapIter() => _map.entries;
+
+  Object value;
 
   int length() => _list.length;
 }
@@ -157,12 +171,14 @@ class ScriptRunner {
           }
           v1.isReady = true;
           v1._list = v2._list;
+          v1._map = v2._map;
           v1.value = v2.value;
           v1.isString = v2.isString;
           v1.isInteger = v2.isInteger;
           v1.isList = v2.isList;
           v1.isConst = v2.isConst;
           v1.isVariable = v2.isVariable;
+          v1.isMap = v2.isMap;
         }
 
         break;
@@ -178,22 +194,39 @@ class ScriptRunner {
 
   Future<RunVariable> _runIndex(PIndex index,
       [bool isLeftVariable = false]) async {
-    var v1 = await _runVariable(index.variable1, isLeftVariable);
-    if (!index.isIndexing) return v1;
+    if (!index.isIndexing) {
+      return await _runVariable(index.variable, isLeftVariable);
+    }
 
-    var v2 = await _runVariable(index.variable2);
+    var v1 = await _runIndex(index.index);
+    var v2 = await _runVariable(index.variable);
 
-    if (!v1.isList)
-      throw Exception(
-          '[RUNNER] Cannot indexing by not list value' + ' ${index.getLC()}');
-    if (!v2.isInteger)
-      throw Exception('[RUNNER] Cannot indexing by not integer value' +
-          ' ${index.getLC()}');
-    if (v1.length() <= (v2.value as int))
-      throw Exception('[RUNNER] Overflow, cannot index over list length' +
-          ' ${index.getLC()}');
+    if (v1.isList) {
+      if (!v2.isInteger)
+        throw Exception('[RUNNER] Cannot indexing by not integer value' +
+            ' ${index.getLC()}');
+      if (v1.length() <= (v2.value as int))
+        throw Exception('[RUNNER] Overflow, cannot index over list length' +
+            ' ${index.getLC()}');
 
-    return v1.index(v2.value as int);
+      return v1.index(v2.value as int);
+    } else if (v1.isMap) {
+      if (!v2.isString)
+        throw Exception('[RUNNER] Cannot mapping by not string value' +
+            ' ${index.getLC()}');
+
+      var v = v1.map(v2.value as String);
+
+      if (v == null)
+        throw Exception('[RUNNER] Key ${v2.value} is not found on map ' +
+            ' ${index.getLC()}');
+
+      return v;
+    }
+
+    throw Exception(
+        '[RUNNER] Cannot indexing or mapping by not list or map value' +
+            ' ${index.getLC()}');
   }
 
   Future<RunVariable> _runVariable(PVariable variable,

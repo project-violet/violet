@@ -66,13 +66,13 @@ class PBlock extends INode {
 
 class PIndex extends INode {
   bool isIndexing;
-  PVariable variable1;
-  PVariable variable2;
+  PIndex index;
+  PVariable variable;
 
   PIndex({
     this.isIndexing = false,
-    this.variable1,
-    this.variable2,
+    this.index,
+    this.variable,
   }) : super(PNodeType.index_node);
 }
 
@@ -140,7 +140,7 @@ class PActionDescription {
     10:     consts -> number 
     11:     consts -> string 
     12:      index -> variable 
-    13:      index -> variable [ variable ] 
+    13:      index -> index [ variable ] 
     14:   variable -> name 
     15:   variable -> function 
     16:   variable -> consts 
@@ -187,8 +187,8 @@ class PActionDescription {
     //  7:      block -> [ block ]
     ParserAction((node) => {
           node.userContents =
-              PBlock(isInnerBlock: true, block: node.childs[0].userContents),
-          node.updateLC(node.childs[0])
+              PBlock(isInnerBlock: true, block: node.childs[1].userContents),
+          node.updateLC(node.childs[1])
         }),
     //  8:      block -> line block
     ParserAction((node) => {
@@ -216,15 +216,15 @@ class PActionDescription {
         }),
     // 12:      index -> variable
     ParserAction((node) => {
-          node.userContents = PIndex(variable1: node.childs[0].userContents),
+          node.userContents = PIndex(variable: node.childs[0].userContents),
           node.updateLC(node.childs[0])
         }),
-    // 13:      index -> variable [ variable ]
+    // 13:      index -> index [ variable ]
     ParserAction((node) => {
           node.userContents = PIndex(
               isIndexing: true,
-              variable1: node.childs[0].userContents,
-              variable2: node.childs[2].userContents),
+              index: node.childs[0].userContents,
+              variable: node.childs[2].userContents),
           node.updateLC(node.childs[0])
         }),
     // 14:   variable -> name

@@ -130,14 +130,25 @@ void main() {
   test('test search', () async {
     var runner = ScriptRunner("""
         x="12|34"
+        
         print(split("12|32","|")[1])
-        loop (a = 0 to len(x))
-          print(at(replace(x, "2", "5"), a))
+        loop (a = 0 to len(x)) [
+          print(a, a)
+        ]
+
+        y = mapcreate()
+        mapinsert(y, "i1", x)
+        print(y["i1"])
+        mapinsert(y, "i2", mapcreate())
+        mapinsert(y["i2"], "i3", mapcreate())
+        mapinsert(y["i2"]["i3"], "i4", "sex")
+        print(y["i2"]["i3"])
+
         """
         .trim());
     /*
-        loop (a = 0 to len(x))
-          print(at(x, a)) */
+        loop (a = 0 to len(x)) 
+          print(at(replace(x, "2", "5"), a)) */
 
     /*if (or(gre(sum(x,y), sub(x,y)), iscon(x,y,z))) [
     foreach (k : arrayx) [

@@ -21,6 +21,10 @@ class ScriptBuiltIn {
       'ltrim': [strLTrim, 1],
       'rtrim': [strRTrim, 1],
       'at': [strAt, 2],
+      'isint': [strIsInt, 1],
+      'toint': [strToInt, 1],
+      'mapcreate': [mapMapCreate, 0],
+      'mapinsert': [mapMapInsert, 3],
     };
 
     if (!refMap.containsKey(name))
@@ -28,7 +32,7 @@ class ScriptBuiltIn {
 
     var item = refMap[name];
 
-    if (item[1] as int > 0 && args.length != item[1] as int)
+    if (item[1] as int >= 0 && args.length != item[1] as int)
       throw Exception(
           '[RUNNER-FUNCTION] $name arguments count is not matched!');
 
@@ -37,7 +41,7 @@ class ScriptBuiltIn {
 
   static _printInternal(RunVariable rv) {
     if (rv.isString)
-      core.print("${rv.value as String}");
+      core.print('${rv.value as String}');
     else if (rv.isInteger)
       core.print(rv.value as int);
     else if (rv.isList) {
@@ -47,6 +51,18 @@ class ScriptBuiltIn {
         if (i != rv.length() - 1) core.print(',');
       }
       core.print(']');
+    } else if (rv.isMap) {
+      core.print('{');
+      var iter = rv.mapIter();
+      var len = iter.length;
+      var i = 0;
+      for (var kv in rv.mapIter()) {
+        core.print('\"${kv.key}\":');
+        _printInternal(kv.value);
+        if (i != len - 1) core.print(',');
+        i++;
+      }
+      core.print('}');
     }
   }
 
@@ -174,6 +190,47 @@ class ScriptBuiltIn {
       isString: true,
       value: (args[0].value as String)[args[1].value as int],
     );
+  }
+
+  static Future<RunVariable> strIsInt(List<RunVariable> args) async {
+    if (!args[0].isString)
+      throw Exception('[RUNNER-FUNCTION] IsInt argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: int.tryParse(args[0].value as String) != null ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> strToInt(List<RunVariable> args) async {
+    if (!args[0].isString)
+      throw Exception('[RUNNER-FUNCTION] ToInt argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: int.parse(args[0].value as String),
+    );
+  }
+
+  /*----------------------------------------------------------------
+
+                          Map Functions
+
+  ----------------------------------------------------------------*/
+
+  static Future<RunVariable> mapMapCreate(List<RunVariable> args) async {
+    return RunVariable(isVariable: true, isMap: true);
+  }
+
+  static Future<RunVariable> mapMapInsert(List<RunVariable> args) async {
+    if (!args[0].isMap && !args[1].isString)
+      throw Exception('[RUNNER-FUNCTION] MapInstert argument type error!');
+
+    args[0].mapSet(args[1].value as String, args[2]);
+
+    return RunVariable(isReady: false);
   }
 
   /*----------------------------------------------------------------
