@@ -132,9 +132,9 @@ void main() {
         x="12|34"
         
         print(split("12|32","|")[1])
-        loop (a = 0 to len(x)) [
+        loop (a = 0 to len(x)) 
           print(a, a)
-        ]
+        
 
         y = mapcreate()
         mapinsert(y, "i1", x)
