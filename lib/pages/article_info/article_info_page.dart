@@ -800,6 +800,12 @@ class _Chip extends StatelessWidget {
 
   _Chip({this.name, this.group});
 
+  String normalize(String tag) {
+    if (tag == "groups") return "group";
+    if (tag == 'artists') return 'artist';
+    return tag;
+  }
+
   @override
   Widget build(BuildContext context) {
     var tagDisplayed = name;
@@ -852,10 +858,11 @@ class _Chip extends StatelessWidget {
         ),
         onLongPress: () async {
           if (!Settings.excludeTags
-              .contains('$group:${name.replaceAll(' ', '_')}')) {
+              .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
             var yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
             if (yn != null && yn) {
-              Settings.excludeTags.add('$group:${name.replaceAll(' ', '_')}');
+              Settings.excludeTags
+                  .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
               await Settings.setExcludeTags(Settings.excludeTags.join(' '));
               await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
             }
