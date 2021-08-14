@@ -71,7 +71,7 @@ class ScriptRunner {
     var lexer = ScriptLexer();
     var parser = ScriptParser();
 
-    lexer.allocateTarget(script);
+    lexer.allocateTarget("[$script]");
 
     var insert = (String x, String y, int a, int b) {
       parser.insertByTokenName(x, y, a, b);
@@ -106,13 +106,13 @@ class ScriptRunner {
   Future<void> runScript(Map<String, RunVariable> variables) async {
     var node = _tree.root.userContents as INode;
 
-    if (!(node is PBlock))
+    if (!(node is PBlockEntry))
       throw new Exception("[RUNNER] Error cannot continue!");
 
     _stack = <Map<String, RunVariable>>[];
     _stack.add(variables);
     _pushStack();
-    await _runBlock(node as PBlock);
+    await _runBlockEntry(node as PBlockEntry);
     _popStack();
   }
 
@@ -126,17 +126,21 @@ class ScriptRunner {
     _stack.removeLast();
   }
 
+  Future<void> _runBlockEntry(PBlockEntry blockEntry) async {
+    if (blockEntry.isInnerBlock) {
+      _pushStack();
+      await _runBlock(blockEntry.block);
+      _popStack();
+    } else if (blockEntry.isLine) {
+      await _runLine(blockEntry.line);
+    }
+  }
+
   Future<void> _runBlock(PBlock block) async {
     if (block.isEmpty) return;
 
-    if (block.isInnerBlock) {
-      _pushStack();
-      await _runBlock(block.block);
-      _popStack();
-    } else if (block.isLine) {
-      await _runLine(block.line);
-      await _runBlock(block.block);
-    }
+    await _runLine(block.line);
+    await _runBlock(block.block);
   }
 
   Future<void> _runStatement(PStatement stat) async {
@@ -314,7 +318,7 @@ class ScriptRunner {
 
         for (; ii1 <= ii2; ii1++) {
           _stack.last[name].value = ii1;
-          await _runBlock(runnable.block1);
+          await _runBlockEntry(runnable.blockEntry1);
         }
 
         _stack.last.removeWhere((key, value) => key == name);
@@ -346,7 +350,7 @@ class ScriptRunner {
           throw Exception('[RUNNER] Cannot conditioning by not integer value' +
               ' ${runnable.getLC()}');
 
-        if (cond.value as int != 0) await _runBlock(runnable.block1);
+        if (cond.value as int != 0) await _runBlockEntry(runnable.blockEntry1);
 
         break;
       case RunnableType.sifelse:
@@ -357,9 +361,9 @@ class ScriptRunner {
               ' ${runnable.getLC()}');
 
         if (cond.value as int != 0)
-          await _runBlock(runnable.block1);
+          await _runBlockEntry(runnable.blockEntry1);
         else
-          await _runBlock(runnable.block2);
+          await _runBlockEntry(runnable.blockEntry2);
 
         break;
     }

@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
 import 'dart:core';
 import 'dart:core' as core;
 
@@ -231,6 +232,21 @@ class ScriptBuiltIn {
     args[0].mapSet(args[1].value as String, args[2]);
 
     return RunVariable(isReady: false);
+  }
+
+  static Map<String, RunVariable> _fromJsonInternal(
+      Map<String, dynamic> jsonOption) {}
+
+  static Future<RunVariable> mapMapFromJson(List<RunVariable> args) async {
+    if (!args[0].isString)
+      throw Exception('[RUNNER-FUNCTION] MapFromJson argument type error!');
+
+    var a = jsonDecode(args[0].value as String) as Map<String, dynamic>;
+
+    return RunVariable(
+      isMap: true,
+      mapValue: _fromJsonInternal(jsonDecode(args[0].value as String)),
+    );
   }
 
   /*----------------------------------------------------------------
