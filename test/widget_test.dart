@@ -144,6 +144,18 @@ void main() {
         mapinsert(y["i2"]["i3"], "i4", "sex")
         print(y["i2"]["i3"])
 
+        z = listfromjson("[{\\"32\\":{\\"42\\":54},\\"str\\":\\"sex\\"}]")
+        print(z)
+
+        if (containsKey(z[0], "321"))
+          print("ok!")
+        else if (containsKey(z[0], "32"))
+          if (containsKey(z[0]["32"], "421"))
+            print("ok2!")
+          else
+            print("no2!")
+        else
+          print("no!")
         """
         .trim());
     /*

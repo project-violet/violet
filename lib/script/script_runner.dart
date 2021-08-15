@@ -55,6 +55,8 @@ class RunVariable {
 
   Iterable<MapEntry<String, RunVariable>> mapIter() => _map.entries;
 
+  bool containsKey(String key) => _map.containsKey(key);
+
   Object value;
 
   int length() => _list.length;
