@@ -13,6 +13,7 @@ class ScriptBuiltIn {
   static Future<RunVariable> run(String name, List<RunVariable> args) async {
     const refMap = {
       'print': [print, -1],
+      //
       'split': [strSplit, 2],
       'replace': [strReplace, 3],
       'concat': [strConcat, -1],
@@ -24,8 +25,32 @@ class ScriptBuiltIn {
       'at': [strAt, 2],
       'isint': [strIsInt, 1],
       'toint': [strToInt, 1],
+      //
       'mapcreate': [mapMapCreate, 0],
       'mapinsert': [mapMapInsert, 3],
+      'mapfromjson': [mapFromJson, 1],
+      //
+      'tostring': [intToString, 1],
+      'add': [intAdd, 2],
+      'sub': [intSub, 2],
+      'mul': [intMul, 2],
+      'div': [intDiv, 2],
+      'remain': [intRemain, 2],
+      //
+      'and': [logicAnd, 2],
+      'or': [logicOr, 2],
+      'xor': [logicXor, 2],
+      'not': [logicNot, 1],
+      'gr': [logicGr, 2],
+      'gre': [logicGre, 2],
+      'ls': [logicLs, 2],
+      'lse': [logicLse, 2],
+      'eq': [logicEq, 2],
+      'neq': [logicNeq, 2],
+      'contains': [logicStringContains, 2],
+      'containsKey': [logicMapContainsKey, 2],
+      //
+      'listfromjson': [listFromJson, 1],
     };
 
     if (!refMap.containsKey(name))
@@ -40,30 +65,30 @@ class ScriptBuiltIn {
     return await (item[0] as FunctionCallback)(args);
   }
 
-  static _printInternal(RunVariable rv) {
+  static _printInternal(RunVariable rv, [String pad = '']) {
     if (rv.isString)
-      core.print('${rv.value as String}');
+      core.print(pad + '${rv.value as String}');
     else if (rv.isInteger)
-      core.print(rv.value as int);
+      core.print(pad + (rv.value as int).toString());
     else if (rv.isList) {
-      core.print('[');
+      core.print(pad + '[');
       for (var i = 0; i < rv.length(); i++) {
-        _printInternal(rv.index(i));
+        _printInternal(rv.index(i), pad + '        ');
         if (i != rv.length() - 1) core.print(',');
       }
-      core.print(']');
+      core.print(pad + ']');
     } else if (rv.isMap) {
-      core.print('{');
+      core.print(pad + '{');
       var iter = rv.mapIter();
       var len = iter.length;
       var i = 0;
       for (var kv in rv.mapIter()) {
-        core.print('\"${kv.key}\":');
-        _printInternal(kv.value);
-        if (i != len - 1) core.print(',');
+        core.print(pad + '    ' + '\"${kv.key}\":');
+        _printInternal(kv.value, pad + '        ');
+        if (i != len - 1) core.print(pad + '    ' + ',');
         i++;
       }
-      core.print('}');
+      core.print(pad + '}');
     }
   }
 
@@ -234,18 +259,85 @@ class ScriptBuiltIn {
     return RunVariable(isReady: false);
   }
 
-  static Map<String, RunVariable> _fromJsonInternal(
-      Map<String, dynamic> jsonOption) {}
+  static List<RunVariable> _fromListJsonInternal(List<dynamic> jsonArray) {
+    return jsonArray.map((e) {
+      if (e is String) {
+        return RunVariable(
+          isVariable: true,
+          isString: true,
+          value: e,
+        );
+      } else if (e is int) {
+        return RunVariable(
+          isVariable: true,
+          isInteger: true,
+          value: e,
+        );
+      } else if (e is Map<String, dynamic>) {
+        return RunVariable(
+          isMap: true,
+          isVariable: true,
+          mapValue: _fromMapJsonInternal(e),
+        );
+      } else if (e is List<dynamic>) {
+        return RunVariable(
+          isList: true,
+          isVariable: true,
+          listValue: _fromListJsonInternal(e),
+        );
+      }
+    }).toList();
+  }
 
-  static Future<RunVariable> mapMapFromJson(List<RunVariable> args) async {
+  static Map<String, RunVariable> _fromMapJsonInternal(
+      Map<String, dynamic> jsonOption) {
+    var result = Map<String, RunVariable>();
+
+    for (var kv in jsonOption.entries) {
+      if (kv.value is String) {
+        result[kv.key] = RunVariable(
+          isVariable: true,
+          isString: true,
+          value: kv.value as String,
+        );
+      } else if (kv.value is int) {
+        result[kv.key] = RunVariable(
+          isVariable: true,
+          isInteger: true,
+          value: kv.value as int,
+        );
+      } else if (kv.value is Map<String, dynamic>) {
+        result[kv.key] = RunVariable(
+          isMap: true,
+          isVariable: true,
+          mapValue: _fromMapJsonInternal(kv.value as Map<String, dynamic>),
+        );
+      } else if (kv.value is List<dynamic>) {
+        result[kv.key] = RunVariable(
+          isList: true,
+          isVariable: true,
+          listValue: _fromListJsonInternal(kv.value as List<dynamic>),
+        );
+      }
+    }
+
+    return result;
+  }
+
+  static Future<RunVariable> mapFromJson(List<RunVariable> args) async {
     if (!args[0].isString)
       throw Exception('[RUNNER-FUNCTION] MapFromJson argument type error!');
 
-    var a = jsonDecode(args[0].value as String) as Map<String, dynamic>;
+    var json = jsonDecode(args[0].value as String);
+
+    if (!(json is Map<String, dynamic>))
+      throw Exception(
+          '[RUNNER-FUNCTION] MapFromJson only parse json_option! Try ListFromJson!');
 
     return RunVariable(
+      isVariable: true,
       isMap: true,
-      mapValue: _fromJsonInternal(jsonDecode(args[0].value as String)),
+      mapValue: _fromMapJsonInternal(json as Map<String, dynamic>),
     );
   }
 
@@ -255,17 +347,253 @@ class ScriptBuiltIn {
 
   ----------------------------------------------------------------*/
 
+  static Future<RunVariable> intToString(List<RunVariable> args) async {
+    if (!args[0].isInteger)
+      throw Exception('[RUNNER-FUNCTION] ToString argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isString: true,
+      value: (args[0].value as int).toString(),
+    );
+  }
+
+  static Future<RunVariable> intAdd(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Add argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) + (args[1].value as int),
+    );
+  }
+
+  static Future<RunVariable> intSub(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Subtract argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) - (args[1].value as int),
+    );
+  }
+
+  static Future<RunVariable> intMul(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Multiple argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) * (args[1].value as int),
+    );
+  }
+
+  static Future<RunVariable> intDiv(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Divide argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) ~/ (args[1].value as int),
+    );
+  }
+
+  static Future<RunVariable> intRemain(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Remain argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) % (args[1].value as int),
+    );
+  }
+
   /*----------------------------------------------------------------
 
                            Logic Functions
 
   ----------------------------------------------------------------*/
 
+  static Future<RunVariable> logicAnd(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic And argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) != 0 && (args[1].value as int) != 0 ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicOr(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic Or argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) != 0 || (args[1].value as int) != 0 ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicNot(List<RunVariable> args) async {
+    if (!args[0].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic Not argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) != 0 ? 0 : 1,
+    );
+  }
+
+  static Future<RunVariable> logicXor(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic Xor argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: ((args[0].value as int) != 0) != ((args[1].value as int) != 0)
+          ? 1
+          : 0,
+    );
+  }
+
+  static Future<RunVariable> logicGr(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic Gr argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) > (args[1].value as int) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicGre(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic Gre argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) >= (args[1].value as int) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicLs(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic Ls argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) < (args[1].value as int) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicLse(List<RunVariable> args) async {
+    if (!args[0].isInteger && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] Logic Lse argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as int) <= (args[1].value as int) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicEq(List<RunVariable> args) async {
+    if (args[0].isInteger != args[1].isInteger ||
+        args[0].isString != args[1].isString)
+      throw Exception('[RUNNER-FUNCTION] Logic Eq argument type error!');
+
+    if (args[0].isInteger)
+      return RunVariable(
+        isVariable: true,
+        isInteger: true,
+        value: (args[0].value as int) == (args[1].value as int) ? 1 : 0,
+      );
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as String) == (args[1].value as String) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicNeq(List<RunVariable> args) async {
+    if (args[0].isInteger != args[1].isInteger ||
+        args[0].isString != args[1].isString)
+      throw Exception('[RUNNER-FUNCTION] Logic Neq argument type error!');
+
+    if (args[0].isInteger)
+      return RunVariable(
+        isVariable: true,
+        isInteger: true,
+        value: (args[0].value as int) != (args[1].value as int) ? 1 : 0,
+      );
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as String) != (args[1].value as String) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicStringContains(List<RunVariable> args) async {
+    if (!args[0].isString && !args[1].isString)
+      throw Exception(
+          '[RUNNER-FUNCTION] Logic String Contains argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value:
+          (args[0].value as String).contains(args[1].value as String) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicMapContainsKey(List<RunVariable> args) async {
+    if (!args[0].isMap && !args[1].isString)
+      throw Exception(
+          '[RUNNER-FUNCTION] Logic ContainsKey argument type error!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: args[0].containsKey(args[1].value as String) ? 1 : 0,
+    );
+  }
+
   /*----------------------------------------------------------------
 
                          List Functions
 
   ----------------------------------------------------------------*/
+
+  static Future<RunVariable> listFromJson(List<RunVariable> args) async {
+    if (!args[0].isString)
+      throw Exception('[RUNNER-FUNCTION] ListFromJson argument type error!');
+
+    var json = jsonDecode(args[0].value as String);
+
+    if (!(json is List<dynamic>))
+      throw Exception(
+          '[RUNNER-FUNCTION] ListFromJson only parse json_array! Try ListFromJson!');
+
+    return RunVariable(
+      isVariable: true,
+      isList: true,
+      listValue: _fromListJsonInternal(json as List<dynamic>),
+    );
+  }
 
   /*----------------------------------------------------------------
 

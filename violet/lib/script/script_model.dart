@@ -259,7 +259,8 @@ class PActionDescription {
     ParserAction((node) => {
           node.userContents = PConsts(
               content: node.childs[0].contents
-                  .substring(1, node.childs[0].contents.length - 1),
+                  .substring(1, node.childs[0].contents.length - 1)
+                  .replaceAll('\\"', '"'),
               isString: true),
           node.updateLC(node.childs[0])
         }),
@@ -340,7 +341,7 @@ class PActionDescription {
     // 25:   runnable -> if ( index ) block else block
     ParserAction((node) => {
           node.userContents = PRunnable(
-              RunnableType.sif, node.childs[4].userContents,
+              RunnableType.sifelse, node.childs[4].userContents,
               index1: node.childs[2].userContents,
               blockEntry2: node.childs[6].userContents),
           node.updateLC(node.childs[0])
