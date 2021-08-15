@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:core' as core;
 
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/script/script_runner.dart';
 
 typedef FunctionCallback = Future Function(List<RunVariable>);
@@ -50,7 +51,12 @@ class ScriptBuiltIn {
       'contains': [logicStringContains, 2],
       'containsKey': [logicMapContainsKey, 2],
       //
+      'insert': [listInsert, 2],
+      'append': [listAppend, 1],
+      'removeat': [listRemoveAt, 1],
       'listfromjson': [listFromJson, 1],
+      //
+      'download': [httpDownload, -1]
     };
 
     if (!refMap.containsKey(name))
@@ -595,10 +601,59 @@ class ScriptBuiltIn {
     );
   }
 
+  static Future<RunVariable> listInsert(List<RunVariable> args) async {
+    if (!args[0].isList || !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] List Insert argument type error!');
+
+    args[0].insert(args[2], args[1].value as int);
+
+    return RunVariable(isReady: false);
+  }
+
+  static Future<RunVariable> listAppend(List<RunVariable> args) async {
+    if (!args[0].isList)
+      throw Exception('[RUNNER-FUNCTION] List Append argument type error!');
+
+    args[0].append(args[1]);
+
+    return RunVariable(isReady: false);
+  }
+
+  static Future<RunVariable> listRemoveAt(List<RunVariable> args) async {
+    if (!args[0].isList || !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] List RemoveAt argument type error!');
+
+    args[0].removeAt(args[1].value as int);
+
+    return RunVariable(isReady: false);
+  }
+
   /*----------------------------------------------------------------
 
                            Http Functions
 
   ----------------------------------------------------------------*/
 
+  static Future<RunVariable> httpDownload(List<RunVariable> args) async {
+    if (args.length >= 3 ||
+        !args[0].isString ||
+        (args.length == 2 && !args[1].isMap))
+      throw Exception('[RUNNER-FUNCTION] HTTP Download argument type error!');
+
+    if (args.length == 1) {
+      var res = await http.get(args[0].value as String);
+
+      return RunVariable(isVariable: true, isString: true, value: res.body);
+    } else {
+      var iter = args[1].mapIter();
+
+      var header = Map<String, String>();
+      iter.forEach(
+          (element) => header[element.key] = element.value.value as String);
+
+      var res = await http.get(args[0].value as String, headers: header);
+
+      return RunVariable(isVariable: true, isString: true, value: res.body);
+    }
+  }
 }

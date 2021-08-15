@@ -57,6 +57,10 @@ class RunVariable {
 
   bool containsKey(String key) => _map.containsKey(key);
 
+  void append(RunVariable variable) => _list.add(variable);
+  void insert(RunVariable variable, int pos) => _list.insert(pos, variable);
+  void removeAt(int pos) => _list.removeAt(pos);
+
   Object value;
 
   int length() => _list.length;
