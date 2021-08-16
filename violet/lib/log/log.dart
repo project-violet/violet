@@ -54,10 +54,13 @@ class Logger {
 
   static Future<void> log(String msg) async {
     print(msg);
-    await lock.synchronized(() async {
-      await logFile.writeAsString('[${DateTime.now().toUtc()}] ' + msg + '\n',
-          mode: FileMode.append);
-    });
+
+    if (!Platform.environment.containsKey('FLUTTER_TEST')) {
+      await lock.synchronized(() async {
+        await logFile.writeAsString('[${DateTime.now().toUtc()}] ' + msg + '\n',
+            mode: FileMode.append);
+      });
+    }
   }
 
   static Future<void> info(String msg) async {
