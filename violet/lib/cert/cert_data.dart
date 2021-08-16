@@ -4,8 +4,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-import 'package:pointycastle/export.dart';
 import 'package:violet/cert/cert_util.dart';
 import 'package:violet/cert/root.dart';
 
@@ -17,11 +15,13 @@ class CertData {
   DateTime authEnds() => DateTime.parse(data['AuthEnds']).toLocal();
   String authVersion() => data['AuthVersion'];
   String owner() => data['Owner']; // UserAppId
+  String others() => data['Others'];
 
   String signedData() => data['SignedData'];
 
-  String getRawData() =>
-      "${data['AuthStarts']}|${data['AuthEnds']}|${data['AuthVersion']}|${data['Owner']}";
+  String getRawData() => data.containsKey('Others')
+      ? "${data['AuthStarts']}|${data['AuthEnds']}|${data['AuthVersion']}|${data['Owner']}|${data['Others']}"
+      : "${data['AuthStarts']}|${data['AuthEnds']}|${data['AuthVersion']}|${data['Owner']}";
 
   bool verify(RootCert rootCA) {
     var rawData = getRawData();
