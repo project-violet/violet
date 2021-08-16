@@ -18,6 +18,7 @@ class ScriptBuiltIn {
       'split': [strSplit, 2],
       'replace': [strReplace, 3],
       'concat': [strConcat, -1],
+      'indexof': [strIndexOf, 2],
       'substr': [strSubstr, -1],
       'len': [strLen, 1],
       'trim': [strTrim, 1],
@@ -139,7 +140,7 @@ class ScriptBuiltIn {
   }
 
   static Future<RunVariable> strConcat(List<RunVariable> args) async {
-    if (args.any((element) => element.isList))
+    if (args.any((element) => element.isList || element.isMap))
       throw Exception(
           '[RUNNER-FUNCTION] Concat arguments must be integer or string type!');
 
@@ -147,6 +148,18 @@ class ScriptBuiltIn {
       isVariable: true,
       isString: true,
       value: args.map((e) => e.value.toString()).join(""),
+    );
+  }
+
+  static Future<RunVariable> strIndexOf(List<RunVariable> args) async {
+    if (!args[0].isString && !args[1].isString)
+      throw Exception(
+          '[RUNNER-FUNCTION] IndexOf arguments must be string type!');
+
+    return RunVariable(
+      isVariable: true,
+      isInteger: true,
+      value: (args[0].value as String).indexOf(args[1].value as String),
     );
   }
 
