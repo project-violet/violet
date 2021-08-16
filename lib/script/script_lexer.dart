@@ -42,7 +42,7 @@ class ScriptLexer extends Lexer {
       -1,
       18,
       -1,
-      -1,
+      16,
       -1,
       -1,
       -1,
