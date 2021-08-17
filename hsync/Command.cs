@@ -78,6 +78,10 @@ namespace hsync
             Info = "Upload data to server database by user range", Help = "--export-for-db-range")]
         public string[] ExportForDBRange;
 
+        [CommandLine("--save-exhentai-page", CommandType.ARGUMENTS, ArgumentsCount = 1,
+            Info = "Save exhentai page!", Help = "use --save-exhentai-page <start id>")]
+        public string[] SaveExhentaiPage;
+
         /// <summary>
         /// User Option
         /// </summary>
@@ -197,6 +201,10 @@ namespace hsync
             else if (option.ExportForDBRange != null)
             {
                 ProcessExportForDBRange(option.ExportForDBRange);
+            }
+            else if (option.SaveExhentaiPage != null)
+            {
+                ProcessSaveExhentaiPage(option.SaveExhentaiPage);
             }
             else if (option.ExportForES)
             {
@@ -915,12 +923,61 @@ namespace hsync
                     var db = new SQLiteConnection("data.db");
                     var rr = db.Query<HitomiColumnModel>("SELECT * FROM HitomiColumnModel WHERE Language='korean'" +
                             " ORDER BY Id DESC LIMIT 10", new object[] { });
-                    foreach (var r in rr) {
+                    foreach (var r in rr)
+                    {
                         Console.WriteLine(JsonConvert.SerializeObject(r));
                     }
                     break;
             }
 
+        }
+
+        static void ProcessSaveExhentaiPage(string[] args)
+        {
+            int startsId = int.Parse(args[0]);
+
+            var db = new SQLiteConnection("data.db");
+            var target = db.Query<HitomiColumnModel>("SELECT Id, EHash FROM HitomiColumnModel WHERE EHash IS NOT NULL AND Language='korean'");
+
+            target.Sort((x, y) => x.Id.CompareTo(y.Id));
+
+            var rcount = 0;
+
+            for (var i = 0; i < target.Count; i++)
+            {
+                if (target[i].Id < startsId)
+                    continue;
+
+                Logs.Instance.Push($"[Exhentai-Page] {target[i].Id} / {target[i].EHash}");
+
+                var url = $"https://exhentai.org/g/{target[i].Id}/{target[i].EHash}";
+
+                try
+                {
+                    var wc = new WebClient();
+                    wc.Encoding = Encoding.UTF8;
+                    wc.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
+                    wc.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36");
+                    wc.Headers.Add(HttpRequestHeader.Cookie, "igneous=30e0c0a66;ipb_member_id=2742770;ipb_pass_hash=6042be35e994fed920ee7dd11180b65f;sl=dm_2");
+                    var html = wc.DownloadString(url);
+
+                    //File.WriteAllText($"ex/{target[i].Id}.html", html);
+                    var comment = ExHentaiParser.ParseArticleData(html).comment;
+                    if (comment != null && comment.Length > 0)
+                        File.WriteAllText($"ex/{target[i].Id}.json", Logs.SerializeObject(comment));
+                }
+                catch (Exception e)
+                {
+                    Logs.Instance.PushError("[Fail] " + url + "\r\n" + Logs.SerializeObject(e));
+                }
+
+                Thread.Sleep(100);
+
+                if (rcount % 1000 == 999)
+                    Thread.Sleep(60000);
+
+                rcount++;
+            }
         }
     }
 }

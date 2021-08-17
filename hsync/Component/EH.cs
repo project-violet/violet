@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using hsync.Log;
 using System.Text.RegularExpressions;
 
 namespace hsync.Component
@@ -74,7 +75,7 @@ namespace hsync.Component
             article.Title = nodes.SelectSingleNode(".//div[@id='gd2']//h1[@id='gn']").InnerText;
             article.SubTitle = nodes.SelectSingleNode(".//div[@id='gd2']//h1[@id='gj']").InnerText;
 
-            article.Type = nodes.SelectSingleNode(".//div[@id='gmid']//div//div[@id='gdc']//a//img").GetAttributeValue("alt", "");
+            // article.Type = nodes.SelectSingleNode(".//div[@id='gmid']//div//div[@id='gdc']//a//img").GetAttributeValue("alt", "");
             article.Uploader = nodes.SelectSingleNode(".//div[@id='gmid']//div//div[@id='gdn']//a").InnerText;
 
             HtmlNodeCollection nodes_static = nodes.SelectNodes(".//div[@id='gmid']//div//div[@id='gdd']//table//tr");
@@ -199,11 +200,14 @@ namespace hsync.Component
                     string author = WebUtility.HtmlDecode(i.SelectNodes(".//div[@class='c2']//div[@class='c3']//a")[0].InnerText.Trim());
                     string contents = Regex.Replace(WebUtility.HtmlDecode(i.SelectNodes(".//div[@class='c6']")[0].InnerHtml.Trim()), @"<br>", "\r\n");
                     comments.Add(new Tuple<DateTime, string, string>(
-                        DateTime.Parse(date.Remove(date.IndexOf(" UTC")).Substring("Posted on ".Length) + "Z"),
+                        DateTime.Parse(date.Remove(date.IndexOf(" by")).Substring("Posted on ".Length) + "Z"),
                         author,
                         contents));
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logs.Instance.PushError("[Fail] \r\n" + Logs.SerializeObject(e));
+                }
             }
 
             comments.Sort((a, b) => a.Item1.CompareTo(b.Item1));
