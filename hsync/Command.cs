@@ -928,6 +928,68 @@ namespace hsync
                         Console.WriteLine(JsonConvert.SerializeObject(r));
                     }
                     break;
+
+                case "excommentzip":
+
+                    {
+                        var comment_files = Directory.GetFiles("./ex");
+                        var articles = new Dictionary<int, List<Tuple<DateTime, string, string>>>();
+
+                        var authors = new Dictionary<string, int>();
+
+                        using (var pb = new ExtractingProgressBar())
+                        {
+                            int count = 1;
+                            foreach (var file in comment_files)
+                            {
+                                if (!file.EndsWith(".json")) continue;
+                                var comments = JsonConvert.DeserializeObject<List<Tuple<DateTime, string, string>>>(File.ReadAllText(file));
+                                articles.Add(int.Parse(Path.GetFileNameWithoutExtension(file)), comments);
+
+                                comments.ForEach(x =>
+                                {
+                                    if (!authors.ContainsKey(x.Item2))
+                                        authors.Add(x.Item2, 0);
+                                    authors[x.Item2] += 1;
+                                });
+
+                                pb.Report(comment_files.Length, count++);
+                            }
+                        }
+
+                        Console.WriteLine("Total Comments: " + articles.ToList().Sum(x => x.Value.Count));
+
+                        var ll = articles.ToList();
+                        ll.Sort((x, y) => y.Value.Count.CompareTo(x.Value.Count));
+                        Console.WriteLine("Most Commented Articles: \r\n" + string.Join("\r\n", ll.Take(50).Select(x => $"{x.Key} ({x.Value.Count})")));
+
+                        var ll2 = authors.ToList();
+                        ll2.Sort((x, y) => y.Value.CompareTo(x.Value));
+                        Console.WriteLine("Most Commented Authors: \r\n" + string.Join("\r\n", ll2.Take(50).Select(x => $"{x.Key} ({x.Value})")));
+
+                        File.WriteAllText("excomment-zip.json", JsonConvert.SerializeObject(articles, Formatting.Indented));
+
+                    }
+
+                    break;
+
+                case "excommentsearch":
+
+                    {
+                        var articles =
+                        JsonConvert.DeserializeObject<Dictionary<int, List<Tuple<DateTime, string, string>>>>(File.ReadAllText("excomment-zip.json"));
+
+                        var ll = articles.ToList();
+                        ll.Sort((x, y) => x.Key.CompareTo(y.Key));
+
+                        var x = string.Join("\r\n---------------------------------------\r\n",
+                            ll.Select(x => string.Join("\r\n", x.Value.Where(x =>
+                                x.Item3.Contains("뷰어")).Select(y => $"({x.Key}) [{y.Item2}] {y.Item3}"))).Where(x => x.Length > 0));
+
+                        Console.WriteLine(x);
+                    }
+
+                    break;
             }
 
         }
