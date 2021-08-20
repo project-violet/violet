@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/component/hitomi/comments.dart';
 import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
@@ -23,6 +24,8 @@ import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/server/wsalt.dart';
+
+import 'lab/search_comment.dart';
 
 class LaboratoryPage extends StatefulWidget {
   @override
@@ -271,6 +274,50 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     return;
                   }
                   _navigate(LabTopRecent());
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.commentSearch, size: 40, color: Colors.grey),
+                '#011 Search Comment',
+                'Search Comment',
+                null,
+                () async {
+                  if (!await _checkMaterKey()) {
+                    await showOkDialog(context, 'You cannot use this feature!');
+                    return;
+                  }
+                  _navigate(LabSearchComments());
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
+                '#012 Articles',
+                'Sort with Comments Count',
+                null,
+                () async {
+                  if (CommentsCount.counts == null) await CommentsCount.init();
+
+                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+                  queryRaw += 'Id IN (' +
+                      CommentsCount.counts
+                          .map((e) => e.item1)
+                          .take(1500)
+                          .join(',') +
+                      ')';
+                  var qm = await QueryManager.query(
+                      queryRaw + ' AND ExistOnHitomi=1');
+
+                  var qr = Map<String, QueryResult>();
+                  qm.results.forEach((element) {
+                    qr[element.id().toString()] = element;
+                  });
+
+                  var rr = CommentsCount.counts
+                      .where((e) => qr.containsKey(e.item1.toString()))
+                      .map((e) => qr[e.item1.toString()])
+                      .toList();
+
+                  _navigate(ArticleListPage(name: "Comment Counts", cc: rr));
                 },
               ),
             ],

@@ -345,4 +345,72 @@ class VioletServer {
       return 900;
     }
   }
+
+  static Future<dynamic> searchComment(String param) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = wsalt.getValid(vToken.toString());
+
+    var gg = await http
+        .get('$api/excomment/find?q=' + Uri.encodeFull(param), headers: {
+      'v-token': vToken.toString(),
+      'v-valid': vValid,
+      "Content-Type": "application/json"
+    });
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+          .map((e) => Tuple4<int, DateTime, String, String>(
+              int.parse((e as Map<String, dynamic>)['id'] as String),
+              DateTime.parse((e as Map<String, dynamic>)['time'] as String),
+              (e as Map<String, dynamic>)['author'] as String,
+              (e as Map<String, dynamic>)['body'] as String))
+          .toList();
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error(
+          '[API-searchComment] E: ' + e.toString() + '\n' + st.toString());
+
+      return 900;
+    }
+  }
+
+  static Future<dynamic> searchCommentAuthor(String author) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = wsalt.getValid(vToken.toString());
+
+    var gg = await http
+        .get('$api/excomment/author?q=' + Uri.encodeFull(author), headers: {
+      'v-token': vToken.toString(),
+      'v-valid': vValid,
+      "Content-Type": "application/json"
+    });
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+          .map((e) => Tuple4<int, DateTime, String, String>(
+              int.parse((e as Map<String, dynamic>)['id'] as String),
+              DateTime.parse((e as Map<String, dynamic>)['time'] as String),
+              (e as Map<String, dynamic>)['author'] as String,
+              (e as Map<String, dynamic>)['body'] as String))
+          .toList();
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error(
+          '[API-searchComment] E: ' + e.toString() + '\n' + st.toString());
+
+      return 900;
+    }
+  }
 }
