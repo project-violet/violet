@@ -64,6 +64,36 @@ class RunVariable {
   Object value;
 
   int length() => _list.length;
+
+  static RunVariable fromInt(int value) =>
+      RunVariable(isVariable: true, isInteger: true, value: value);
+  static RunVariable fromString(String value) =>
+      RunVariable(isVariable: true, isString: true, value: value);
+
+  static dynamic _toElement(RunVariable rv) {
+    if (rv.isInteger) return rv.value as int;
+    if (rv.isString) return rv.value as String;
+    if (rv.isList) return rv._list.map((e) => _toElement(e)).toList();
+    if (rv.isMap) {
+      var map = Map<String, dynamic>();
+      rv._map.entries.map((e) => map[e.key] = _toElement(e.value));
+      return map;
+    }
+
+    throw Exception('[RUNVARIABLE] Dead reaching!');
+  }
+
+  List<dynamic> toList() {
+    if (!isList)
+      throw Exception('[RUNVARIABLE] You cannot port this variable to list!');
+    return _toElement(this) as List<dynamic>;
+  }
+
+  Map<String, dynamic> toMap() {
+    if (!isMap)
+      throw Exception('[RUNVARIABLE] You cannot port this variable to map!');
+    return _toElement(this) as Map<String, dynamic>;
+  }
 }
 
 class ScriptRunner {
@@ -119,7 +149,15 @@ class ScriptRunner {
     _stack.add(variables);
     _pushStack();
     await _runBlockEntry(node as PBlockEntry);
-    _popStack();
+    // _popStack();
+  }
+
+  RunVariable getValue(String name) {
+    for (var e in _stack.reversed) {
+      if (e == null) continue;
+      if (e.containsKey(name)) return e[name];
+    }
+    return null;
   }
 
   List<Map<String, RunVariable>> _stack;
