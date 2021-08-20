@@ -95,7 +95,12 @@ class ScriptRunner {
   ParseTree _tree;
 
   ScriptRunner(String script) {
-    _doParse(script.trim());
+    _doParse(_preprocess(script.trim()));
+  }
+
+  String _preprocess(String script) {
+    var lines = script.split('\n');
+    return lines.where((element) => !element.startsWith("#")).join("\n");
   }
 
   _doParse(String script) {

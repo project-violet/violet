@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:violet/log/log.dart';
 import 'package:violet/script/script_runner.dart';
 
 class ScriptHitomiGetImageList {
@@ -62,10 +63,17 @@ else [
 
   static Future<Map<String, dynamic>> run(int id) async {
     var sr = ScriptRunner(code);
-    await sr.runScript({
-      '\$id': RunVariable.fromInt(id),
-      '\$result': RunVariable(isReady: false),
-    });
+    try {
+      await sr.runScript({
+        '\$id': RunVariable.fromInt(id),
+        '\$result': RunVariable(isReady: false),
+      });
+    } catch (e, st) {
+      Logger.error('[script-HitomiGetImageList] E: ' +
+          e.toString() +
+          '\n' +
+          st.toString());
+    }
     return sr.getValue('\$result').toMap();
   }
 
