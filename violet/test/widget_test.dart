@@ -175,9 +175,7 @@ void main() {
 
     await runner.runScript(null);*/
 
-    // await ScriptHitomiGetImageList.run(12345);
-
-    print(await VioletServer.searchComment("로리 섹스"));
+    print(await ScriptHitomiGetImageList.run(1987576));
 
     // var gg = await http.get(Uri.parse('${VioletServer.api}/top_recent?s=9999'));
     // var result = (jsonDecode(gg.body)['result'] as List<dynamic>)

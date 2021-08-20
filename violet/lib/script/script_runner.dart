@@ -8,9 +8,6 @@ import 'package:violet/script/script_model.dart';
 import 'package:violet/script/script_parser.dart';
 
 class RunVariable {
-  bool isConst;
-  bool isVariable;
-
   bool isList;
   bool isString;
   bool isInteger;
@@ -19,9 +16,7 @@ class RunVariable {
   bool isReady;
 
   RunVariable({
-    this.isConst = false,
     this.isList = false,
-    this.isVariable = false,
     this.isString = false,
     this.isInteger = false,
     this.isMap = false,
@@ -66,9 +61,9 @@ class RunVariable {
   int length() => _list.length;
 
   static RunVariable fromInt(int value) =>
-      RunVariable(isVariable: true, isInteger: true, value: value);
+      RunVariable(isInteger: true, value: value);
   static RunVariable fromString(String value) =>
-      RunVariable(isVariable: true, isString: true, value: value);
+      RunVariable(isString: true, value: value);
 
   static dynamic _toElement(RunVariable rv) {
     if (rv.isInteger) return rv.value as int;
@@ -76,7 +71,7 @@ class RunVariable {
     if (rv.isList) return rv._list.map((e) => _toElement(e)).toList();
     if (rv.isMap) {
       var map = Map<String, dynamic>();
-      rv._map.entries.map((e) => map[e.key] = _toElement(e.value));
+      rv._map.entries.forEach((e) => map[e.key] = _toElement(e.value));
       return map;
     }
 
@@ -149,7 +144,7 @@ class ScriptRunner {
     _stack.add(variables);
     _pushStack();
     await _runBlockEntry(node as PBlockEntry);
-    // _popStack();
+    _popStack();
   }
 
   RunVariable getValue(String name) {
@@ -196,38 +191,20 @@ class ScriptRunner {
         var v1 = await _runIndex(stat.index1, true);
         var v2 = await _runIndex(stat.index2);
 
-        if (!(v1.isVariable || v1.isList))
-          throw Exception('[RUNNER] Cannot assign index to not variable value' +
-              ' ${stat.getLC()}');
-
-        if (v1.isReady) {
-          if (v1.isList) {
-            if (!v2.isList)
-              throw Exception('[RUNNER] Not match left and right value type' +
+        if (!v2.isReady) {
+          throw Exception(
+              '[RUNNER] Cannot assign index to not ready variable.' +
                   ' ${stat.getLC()}');
-            v1._list = v2._list;
-          } else if (v2.isConst) {
-            v1.value = v2.value;
-            v1.isString = v2.isString;
-            v1.isInteger = v2.isInteger;
-          }
-        } else {
-          if (!v2.isReady) {
-            throw Exception(
-                '[RUNNER] Cannot assign index to not ready variable.' +
-                    ' ${stat.getLC()}');
-          }
-          v1.isReady = true;
-          v1._list = v2._list;
-          v1._map = v2._map;
-          v1.value = v2.value;
-          v1.isString = v2.isString;
-          v1.isInteger = v2.isInteger;
-          v1.isList = v2.isList;
-          v1.isConst = v2.isConst;
-          v1.isVariable = v2.isVariable;
-          v1.isMap = v2.isMap;
         }
+
+        v1.isReady = true;
+        v1._list = v2._list;
+        v1._map = v2._map;
+        v1.value = v2.value;
+        v1.isString = v2.isString;
+        v1.isInteger = v2.isInteger;
+        v1.isList = v2.isList;
+        v1.isMap = v2.isMap;
 
         break;
       case StatementType.srunnable:
@@ -289,7 +266,7 @@ class ScriptRunner {
       }
 
       if (isLeftVariable) {
-        var nv = RunVariable(isReady: false, isVariable: true);
+        var nv = RunVariable(isReady: false);
         _stack.last[name] = nv;
         return nv;
       }
@@ -302,12 +279,10 @@ class ScriptRunner {
 
       if (c.isInteger)
         return RunVariable(
-          isConst: true,
           isInteger: true,
           value: int.parse(c.content as String),
         );
       return RunVariable(
-        isConst: true,
         isString: true,
         value: (c.content as String),
       );
@@ -357,8 +332,7 @@ class ScriptRunner {
           throw Exception(
               '[RUNNER] $name is already used!' + ' ${runnable.getLC()}');
 
-        _stack.last[name] =
-            RunVariable(isVariable: true, isInteger: true, value: ii1);
+        _stack.last[name] = RunVariable(isInteger: true, value: ii1);
 
         for (; ii1 <= ii2; ii1++) {
           _stack.last[name].value = ii1;
@@ -382,6 +356,7 @@ class ScriptRunner {
 
         for (var i = 0; i < index.length(); i++) {
           _stack.last[name] = index.index(i);
+          await _runBlockEntry(runnable.blockEntry1);
         }
 
         _stack.last.removeWhere((key, value) => key == name);
