@@ -35,6 +35,7 @@ import 'package:violet/script/parse_tree.dart';
 import 'package:violet/script/script_lexer.dart';
 import 'package:violet/script/script_parser.dart';
 import 'package:violet/script/script_runner.dart';
+import 'package:violet/script/scripts/hitomi_get_image_list.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
@@ -128,7 +129,7 @@ void main() {
   });*/
 
   test('test search', () async {
-    var runner = ScriptRunner("""
+    /*var runner = ScriptRunner("""
         x="12|34"
         
         print(split("12|32","|")[1])
@@ -172,7 +173,11 @@ void main() {
 
     print(runner.printTree());
 
-    await runner.runScript(null);
+    await runner.runScript(null);*/
+
+    // await ScriptHitomiGetImageList.run(12345);
+
+    print(await VioletServer.searchComment("로리 섹스"));
 
     // var gg = await http.get(Uri.parse('${VioletServer.api}/top_recent?s=9999'));
     // var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
