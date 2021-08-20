@@ -26,18 +26,23 @@ class ScriptBuiltIn {
       'rtrim': [strRTrim, 1],
       'at': [strAt, 2],
       'isint': [strIsInt, 1],
+      'ishexint': [strIsHexInt, 1],
       'toint': [strToInt, 1],
+      'hextoint': [strHexToInt, 1],
+      'codeunitat': [strCodeUnitAt, 2],
+      'fromcharcode': [strFromCharCode, 1],
       //
       'mapcreate': [mapMapCreate, 0],
       'mapinsert': [mapMapInsert, 3],
       'mapfromjson': [mapFromJson, 1],
+      'mapkeys': [mapKeys, 1],
       //
       'tostring': [intToString, 1],
       'add': [intAdd, 2],
       'sub': [intSub, 2],
       'mul': [intMul, 2],
       'div': [intDiv, 2],
-      'remain': [intRemain, 2],
+      'mod': [intRemain, 2],
       //
       'and': [logicAnd, 2],
       'or': [logicOr, 2],
@@ -50,10 +55,13 @@ class ScriptBuiltIn {
       'eq': [logicEq, 2],
       'neq': [logicNeq, 2],
       'contains': [logicStringContains, 2],
-      'containsKey': [logicMapContainsKey, 2],
+      'containskey': [logicMapContainsKey, 2],
+      'startswith': [logicStringStartsWith, 2],
+      'endswith': [logicStringEndsWith, 2],
       //
+      'listcreate': [listCreate, 0],
       'insert': [listInsert, 2],
-      'append': [listAppend, 1],
+      'append': [listAppend, 2],
       'removeat': [listRemoveAt, 1],
       'listfromjson': [listFromJson, 1],
       //
@@ -116,11 +124,10 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Split argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isList: true,
       listValue: (args[0].value as String)
           .split(args[1].value as String)
-          .map((e) => RunVariable(isConst: true, isString: true, value: e))
+          .map((e) => RunVariable(isString: true, value: e))
           .toList(),
     );
   }
@@ -130,7 +137,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Replace argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: (args[0].value as String).replaceAll(
         args[1].value as String,
@@ -145,7 +151,6 @@ class ScriptBuiltIn {
           '[RUNNER-FUNCTION] Concat arguments must be integer or string type!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: args.map((e) => e.value.toString()).join(""),
     );
@@ -157,7 +162,6 @@ class ScriptBuiltIn {
           '[RUNNER-FUNCTION] IndexOf arguments must be string type!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as String).indexOf(args[1].value as String),
     );
@@ -171,7 +175,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Substr argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: args.length == 2
           ? (args[0].value as String).substring(args[1].value as int)
@@ -184,11 +187,8 @@ class ScriptBuiltIn {
     if (!args[0].isString)
       throw Exception('[RUNNER-FUNCTION] Len argument type error!');
 
-    core.print(args[0].value as String);
-
     return RunVariable(
       isInteger: true,
-      isVariable: true,
       value: (args[0].value as String).length,
     );
   }
@@ -198,7 +198,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Trim argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: (args[0].value as String).trim(),
     );
@@ -209,7 +208,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] LTrim argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: (args[0].value as String).trimLeft(),
     );
@@ -220,7 +218,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] RTrim argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: (args[0].value as String).trimRight(),
     );
@@ -231,7 +228,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] At argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: (args[0].value as String)[args[1].value as int],
     );
@@ -242,9 +238,18 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] IsInt argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: int.tryParse(args[0].value as String) != null ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> strIsHexInt(List<RunVariable> args) async {
+    if (!args[0].isString)
+      throw Exception('[RUNNER-FUNCTION] IsHexInt argument type error!');
+
+    return RunVariable(
+      isInteger: true,
+      value: int.tryParse(args[0].value as String, radix: 16) != null ? 1 : 0,
     );
   }
 
@@ -253,9 +258,38 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] ToInt argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: int.parse(args[0].value as String),
+    );
+  }
+
+  static Future<RunVariable> strHexToInt(List<RunVariable> args) async {
+    if (!args[0].isString)
+      throw Exception('[RUNNER-FUNCTION] HexToInt argument type error!');
+
+    return RunVariable(
+      isInteger: true,
+      value: int.parse(args[0].value as String, radix: 16),
+    );
+  }
+
+  static Future<RunVariable> strCodeUnitAt(List<RunVariable> args) async {
+    if (!args[0].isString && !args[1].isInteger)
+      throw Exception('[RUNNER-FUNCTION] CodeUnitAt argument type error!');
+
+    return RunVariable(
+      isInteger: true,
+      value: (args[0].value as String).codeUnitAt(args[1].value),
+    );
+  }
+
+  static Future<RunVariable> strFromCharCode(List<RunVariable> args) async {
+    if (!args[0].isInteger)
+      throw Exception('[RUNNER-FUNCTION] FromCharCode argument type error!');
+
+    return RunVariable(
+      isString: true,
+      value: String.fromCharCode(args[0].value as int),
     );
   }
 
@@ -266,7 +300,7 @@ class ScriptBuiltIn {
   ----------------------------------------------------------------*/
 
   static Future<RunVariable> mapMapCreate(List<RunVariable> args) async {
-    return RunVariable(isVariable: true, isMap: true);
+    return RunVariable(isMap: true);
   }
 
   static Future<RunVariable> mapMapInsert(List<RunVariable> args) async {
@@ -282,26 +316,22 @@ class ScriptBuiltIn {
     return jsonArray.map((e) {
       if (e is String) {
         return RunVariable(
-          isVariable: true,
           isString: true,
           value: e,
         );
       } else if (e is int) {
         return RunVariable(
-          isVariable: true,
           isInteger: true,
           value: e,
         );
       } else if (e is Map<String, dynamic>) {
         return RunVariable(
           isMap: true,
-          isVariable: true,
           mapValue: _fromMapJsonInternal(e),
         );
       } else if (e is List<dynamic>) {
         return RunVariable(
           isList: true,
-          isVariable: true,
           listValue: _fromListJsonInternal(e),
         );
       }
@@ -315,26 +345,22 @@ class ScriptBuiltIn {
     for (var kv in jsonOption.entries) {
       if (kv.value is String) {
         result[kv.key] = RunVariable(
-          isVariable: true,
           isString: true,
           value: kv.value as String,
         );
       } else if (kv.value is int) {
         result[kv.key] = RunVariable(
-          isVariable: true,
           isInteger: true,
           value: kv.value as int,
         );
       } else if (kv.value is Map<String, dynamic>) {
         result[kv.key] = RunVariable(
           isMap: true,
-          isVariable: true,
           mapValue: _fromMapJsonInternal(kv.value as Map<String, dynamic>),
         );
       } else if (kv.value is List<dynamic>) {
         result[kv.key] = RunVariable(
           isList: true,
-          isVariable: true,
           listValue: _fromListJsonInternal(kv.value as List<dynamic>),
         );
       }
@@ -354,9 +380,19 @@ class ScriptBuiltIn {
           '[RUNNER-FUNCTION] MapFromJson only parse json_option! Try ListFromJson!');
 
     return RunVariable(
-      isVariable: true,
       isMap: true,
       mapValue: _fromMapJsonInternal(json as Map<String, dynamic>),
+    );
+  }
+
+  static Future<RunVariable> mapKeys(List<RunVariable> args) async {
+    if (!args[0].isMap)
+      throw Exception('[RUNNER-FUNCTION] MapKeys argument type error!');
+
+    return RunVariable(
+      isList: true,
+      listValue:
+          args[0].mapIter().map((e) => RunVariable.fromString(e.key)).toList(),
     );
   }
 
@@ -371,7 +407,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] ToString argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isString: true,
       value: (args[0].value as int).toString(),
     );
@@ -382,7 +417,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Add argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) + (args[1].value as int),
     );
@@ -393,7 +427,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Subtract argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) - (args[1].value as int),
     );
@@ -404,7 +437,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Multiple argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) * (args[1].value as int),
     );
@@ -415,7 +447,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Divide argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) ~/ (args[1].value as int),
     );
@@ -426,7 +457,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Remain argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) % (args[1].value as int),
     );
@@ -443,7 +473,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic And argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) != 0 && (args[1].value as int) != 0 ? 1 : 0,
     );
@@ -454,7 +483,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic Or argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) != 0 || (args[1].value as int) != 0 ? 1 : 0,
     );
@@ -465,7 +493,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic Not argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) != 0 ? 0 : 1,
     );
@@ -476,7 +503,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic Xor argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: ((args[0].value as int) != 0) != ((args[1].value as int) != 0)
           ? 1
@@ -489,7 +515,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic Gr argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) > (args[1].value as int) ? 1 : 0,
     );
@@ -500,7 +525,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic Gre argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) >= (args[1].value as int) ? 1 : 0,
     );
@@ -511,7 +535,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic Ls argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) < (args[1].value as int) ? 1 : 0,
     );
@@ -522,7 +545,6 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] Logic Lse argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as int) <= (args[1].value as int) ? 1 : 0,
     );
@@ -535,13 +557,11 @@ class ScriptBuiltIn {
 
     if (args[0].isInteger)
       return RunVariable(
-        isVariable: true,
         isInteger: true,
         value: (args[0].value as int) == (args[1].value as int) ? 1 : 0,
       );
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as String) == (args[1].value as String) ? 1 : 0,
     );
@@ -554,13 +574,11 @@ class ScriptBuiltIn {
 
     if (args[0].isInteger)
       return RunVariable(
-        isVariable: true,
         isInteger: true,
         value: (args[0].value as int) != (args[1].value as int) ? 1 : 0,
       );
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: (args[0].value as String) != (args[1].value as String) ? 1 : 0,
     );
@@ -572,7 +590,6 @@ class ScriptBuiltIn {
           '[RUNNER-FUNCTION] Logic String Contains argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value:
           (args[0].value as String).contains(args[1].value as String) ? 1 : 0,
@@ -585,9 +602,33 @@ class ScriptBuiltIn {
           '[RUNNER-FUNCTION] Logic ContainsKey argument type error!');
 
     return RunVariable(
-      isVariable: true,
       isInteger: true,
       value: args[0].containsKey(args[1].value as String) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicStringStartsWith(
+      List<RunVariable> args) async {
+    if (!args[0].isString && !args[1].isString)
+      throw Exception(
+          '[RUNNER-FUNCTION] Logic String StartsWith argument type error!');
+
+    return RunVariable(
+      isInteger: true,
+      value:
+          (args[0].value as String).startsWith(args[1].value as String) ? 1 : 0,
+    );
+  }
+
+  static Future<RunVariable> logicStringEndsWith(List<RunVariable> args) async {
+    if (!args[0].isString && !args[1].isString)
+      throw Exception(
+          '[RUNNER-FUNCTION] Logic String EndsWith argument type error!');
+
+    return RunVariable(
+      isInteger: true,
+      value:
+          (args[0].value as String).endsWith(args[1].value as String) ? 1 : 0,
     );
   }
 
@@ -596,6 +637,12 @@ class ScriptBuiltIn {
                          List Functions
 
   ----------------------------------------------------------------*/
+
+  static Future<RunVariable> listCreate(List<RunVariable> args) async {
+    return RunVariable(
+      isList: true,
+    );
+  }
 
   static Future<RunVariable> listFromJson(List<RunVariable> args) async {
     if (!args[0].isString)
@@ -608,7 +655,6 @@ class ScriptBuiltIn {
           '[RUNNER-FUNCTION] ListFromJson only parse json_array! Try ListFromJson!');
 
     return RunVariable(
-      isVariable: true,
       isList: true,
       listValue: _fromListJsonInternal(json as List<dynamic>),
     );
@@ -656,7 +702,7 @@ class ScriptBuiltIn {
     if (args.length == 1) {
       var res = await http.get(args[0].value as String);
 
-      return RunVariable(isVariable: true, isString: true, value: res.body);
+      return RunVariable(isString: true, value: res.body);
     } else {
       var iter = args[1].mapIter();
 
@@ -666,7 +712,7 @@ class ScriptBuiltIn {
 
       var res = await http.get(args[0].value as String, headers: header);
 
-      return RunVariable(isVariable: true, isString: true, value: res.body);
+      return RunVariable(isString: true, value: res.body);
     }
   }
 }
