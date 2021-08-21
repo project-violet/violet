@@ -188,7 +188,7 @@ class _SplashPageState extends State<SplashPage> {
     await Logger.init();
     await TagTranslate.init();
     await Population.init();
-    await ScriptManager.init();
+    // await ScriptManager.init();
 
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
         !widget.switching) {

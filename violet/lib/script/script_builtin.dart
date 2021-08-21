@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:core' as core;
 
-import 'package:violet/network/wrapper.dart' as http;
+import 'package:http/http.dart' as http;
 import 'package:violet/script/script_runner.dart';
 
 typedef FunctionCallback = Future Function(List<RunVariable>);
@@ -700,7 +700,7 @@ class ScriptBuiltIn {
       throw Exception('[RUNNER-FUNCTION] HTTP Download argument type error!');
 
     if (args.length == 1) {
-      var res = await http.get(args[0].value as String);
+      var res = await http.get(Uri.parse(args[0].value as String));
 
       return RunVariable(isString: true, value: res.body);
     } else {
@@ -710,7 +710,8 @@ class ScriptBuiltIn {
       iter.forEach(
           (element) => header[element.key] = element.value.value as String);
 
-      var res = await http.get(args[0].value as String, headers: header);
+      var res =
+          await http.get(Uri.parse(args[0].value as String), headers: header);
 
       return RunVariable(isString: true, value: res.body);
     }
