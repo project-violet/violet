@@ -26,12 +26,12 @@ class _InfoPageState extends State<InfoPage> {
       context,
       enableBackgroundColor: true,
       child: Padding(
-        padding: EdgeInsets.only(top: 16),
+        padding: EdgeInsets.zero,
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Column(
             children: [
-              // Container(height: 40),
+              Container(height: 16),
               _buildTitle(),
               // Container(height: 30),
               _buildItem(

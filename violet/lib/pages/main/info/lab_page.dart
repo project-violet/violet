@@ -39,12 +39,12 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
       context,
       enableBackgroundColor: true,
       child: Padding(
-        padding: EdgeInsets.only(top: 16),
+        padding: EdgeInsets.zero,
         child: SingleChildScrollView(
           physics: BouncingScrollPhysics(),
           child: Column(
             children: [
-              // Container(height: 40),
+              Container(height: 16),
               _buildTitle(),
               // Container(height: 30),
               _buildItem(
@@ -279,20 +279,16 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
               _buildItem(
                 Icon(MdiIcons.commentSearch, size: 40, color: Colors.grey),
                 '#011 Search Comment',
-                'Search Comment',
+                'Search ExHentai Comment',
                 null,
                 () async {
-                  if (!await _checkMaterKey()) {
-                    await showOkDialog(context, 'You cannot use this feature!');
-                    return;
-                  }
                   _navigate(LabSearchComments());
                 },
               ),
               _buildItem(
                 Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
                 '#012 Articles',
-                'Sort with Comments Count',
+                'Sort with ExHentai Comments Count',
                 null,
                 () async {
                   if (CommentsCount.counts == null) await CommentsCount.init();
