@@ -91,10 +91,10 @@ class RunVariable {
   }
 }
 
-class ScriptRunner {
-  ParseTree _tree;
+class ScriptCache {
+  ParseTree tree;
 
-  ScriptRunner(String script) {
+  ScriptCache(String script) {
     _doParse(_preprocess(script.trim()));
   }
 
@@ -132,15 +132,20 @@ class ScriptRunner {
     if (parser.isError()) throw new Exception("[COMPILER] Parser error! inf");
     insert("\$", "\$", -1, -1);
 
-    _tree = parser.tree();
+    tree = parser.tree();
   }
 
   printTree() {
-    return _tree.printTree();
+    return tree.printTree();
   }
+}
+
+class ScriptIsolate {
+  ScriptCache cache;
+  ScriptIsolate(this.cache);
 
   Future<void> runScript(Map<String, RunVariable> variables) async {
-    var node = _tree.root.userContents as INode;
+    var node = cache.tree.root.userContents as INode;
 
     if (!(node is PBlockEntry))
       throw new Exception("[RUNNER] Error cannot continue!");
