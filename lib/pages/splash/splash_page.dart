@@ -28,6 +28,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -187,6 +188,7 @@ class _SplashPageState extends State<SplashPage> {
     await Logger.init();
     await TagTranslate.init();
     await Population.init();
+    await ScriptManager.init();
 
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
         !widget.switching) {
