@@ -7,7 +7,7 @@ import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/script/script_runner.dart';
 
 class ScriptManager {
-  static Map<String, ScriptRunner> _caches;
+  static Map<String, ScriptCache> _caches;
 
   static Map<String, String> _codeUrls = {
     'hitomi_get_image_list':
@@ -15,11 +15,11 @@ class ScriptManager {
   };
 
   static Future<void> init() async {
-    _caches = Map<String, ScriptRunner>();
+    _caches = Map<String, ScriptCache>();
 
     for (var kv in _codeUrls.entries) {
       var code = await http.get(kv.value);
-      _caches[kv.key] = ScriptRunner(code.body);
+      _caches[kv.key] = ScriptCache(code.body);
     }
   }
 
@@ -27,13 +27,15 @@ class ScriptManager {
       runHitomiGetImageList(int id) async {
     if (_caches == null) return null;
 
+    var isolate = ScriptIsolate(_caches['hitomi_get_image_list']);
+
     try {
-      await _caches['hitomi_get_image_list'].runScript({
+      await isolate.runScript({
         '\$id': RunVariable.fromInt(id),
         '\$result': RunVariable(isReady: false),
       });
-      if (_caches['hitomi_get_image_list'].getValue('\$result').isReady) {
-        var map = _caches['hitomi_get_image_list'].getValue('\$result').toMap();
+      if (isolate.getValue('\$result').isReady) {
+        var map = isolate.getValue('\$result').toMap();
 
         return Tuple3<List<String>, List<String>, List<String>>(
             (map['result'] as List<dynamic>).map((e) => e as String).toList(),
