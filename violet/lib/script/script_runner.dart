@@ -100,7 +100,7 @@ class ScriptRunner {
 
   String _preprocess(String script) {
     var lines = script.split('\n');
-    return lines.where((element) => !element.startsWith("#")).join("\n");
+    return lines.where((element) => !element.trim().startsWith("#")).join("\n");
   }
 
   _doParse(String script) {
