@@ -24,9 +24,21 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 8, 21),
+    version: '1.14 Minor Update <== Latest',
+    isMinor: true,
+    contents: [
+      'add hitomi image route script',
+      'add exhentai comment search page',
+      'add exhentai comment count sorting',
+      'add progress indicator to horizontal view',
+      'lock appbar to bottom is true on ios',
+      'fix to bottom padding',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 8, 11),
     version: '1.13.2 Patch Update <== Latest',
-    isMinor: true,
     contents: [
       'fix hitomi routing error',
     ],
@@ -34,7 +46,6 @@ final patches = [
   PatchModel(
     dateTime: DateTime(2021, 8, 5),
     version: '1.13.1 Patch Update',
-    isMinor: true,
     contents: [
       'fix random search bug',
       'add recent user record page',
