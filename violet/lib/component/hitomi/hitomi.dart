@@ -10,12 +10,16 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/variables.dart';
 
 class HitomiManager {
   // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
   static Future<Tuple3<List<String>, List<String>, List<String>>> getImageList(
       String id) async {
+    var val = await ScriptManager.runHitomiGetImageList(int.parse(id));
+    if (val != null) return val;
+
     var gg = await http.get('https://ltn.hitomi.la/galleries/$id.js');
     var urls = gg.body;
     if (urls.trim().startsWith('<html>')) return null;
