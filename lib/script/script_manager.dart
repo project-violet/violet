@@ -5,6 +5,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/script/script_runner.dart';
+import 'package:violet/thread/semaphore.dart';
 
 class ScriptManager {
   static Map<String, ScriptCache> _caches;
@@ -28,12 +29,14 @@ class ScriptManager {
     if (_caches == null) return null;
 
     var isolate = ScriptIsolate(_caches['hitomi_get_image_list']);
+    var isRelease = false;
 
     try {
       await isolate.runScript({
         '\$id': RunVariable.fromInt(id),
         '\$result': RunVariable(isReady: false),
       });
+      isRelease = true;
       if (isolate.getValue('\$result').isReady) {
         var map = isolate.getValue('\$result').toMap();
 
