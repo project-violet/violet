@@ -219,7 +219,6 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
             isWarning: true,
             icon: Icons.logout,
             msg: Translations.of(context).trans('closedoubletap'),
-            bottomMorePad: Settings.useDrawer ? 0.0 : 16.0,
           ),
           gravity: ToastGravity.BOTTOM,
           toastDuration: Duration(seconds: 4),
