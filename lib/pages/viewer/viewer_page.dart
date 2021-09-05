@@ -465,12 +465,16 @@ class _ViewerPageState extends State<ViewerPage>
 
         FlutterToast(context).showToast(
           child: ToastWrapper(
-            isCheck: !isBookmarked,
-            isWarning: false,
+            icon: isBookmarked ? Icons.delete_forever : Icons.check,
+            color: isBookmarked
+                ? Colors.redAccent.withOpacity(0.8)
+                : Colors.greenAccent.withOpacity(0.8),
+            ignoreDrawer: true,
+            reverse: true,
             msg:
                 '${_pageInfo.id}${Translations.of(context).trans(!isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
           ),
-          gravity: ToastGravity.BOTTOM,
+          gravity: ToastGravity.TOP,
           toastDuration: Duration(seconds: 4),
         );
 

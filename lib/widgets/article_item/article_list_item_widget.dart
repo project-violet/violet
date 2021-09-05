@@ -407,8 +407,10 @@ class _ArticleListItemVerySimpleWidgetState
 
                   FlutterToast(context).showToast(
                     child: ToastWrapper(
-                      icon: Icons.delete_forever,
-                      color: Colors.red,
+                      icon: isBookmarked ? Icons.delete_forever : Icons.check,
+                      color: isBookmarked
+                          ? Colors.redAccent.withOpacity(0.8)
+                          : Colors.greenAccent.withOpacity(0.8),
                       msg:
                           '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked ? 'removetobookmark' : 'addtobookmark')}',
                     ),
