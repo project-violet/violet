@@ -67,49 +67,52 @@ class _ToastWrapperState extends State<ToastWrapper>
             ? Colors.orangeAccent.withOpacity(0.8)
             : Colors.redAccent.withOpacity(0.8);
 
-    return Padding(
-      padding:
-          EdgeInsets.only(bottom: Variables.bottomBarHeight.toDouble() + 6),
-      child: SlideTransition(
-        position: offset,
-        child: AnimatedOpacity(
-          duration: Duration(milliseconds: 500),
-          opacity: opacity,
-          curve: Curves.easeInOut,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(25.0),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                decoration: BoxDecoration(
-                    color: Settings.themeWhat
-                        ? Colors.black.withOpacity(0.6)
-                        : Colors.grey.withOpacity(0.1)),
-                // decoration: BoxDecoration(
-                //   borderRadius: BorderRadius.circular(25.0),
-                //   color: widget.isCheck
-                //       ? Colors.greenAccent.withOpacity(0.8)
-                //       : widget.isWarning != null && widget.isWarning
-                //           ? Colors.orangeAccent.withOpacity(0.8)
-                //           : Colors.redAccent.withOpacity(0.8),
-                // ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      widget.isCheck
-                          ? Icons.check
-                          : widget.isWarning != null && widget.isWarning
-                              ? Icons.warning
-                              : Icons.cancel,
-                      color: color,
-                    ),
-                    SizedBox(
-                      width: 12.0,
-                    ),
-                    Text(widget.msg, style: TextStyle(color: color)),
-                  ],
+    return IgnorePointer(
+      child: Padding(
+        padding:
+            EdgeInsets.only(bottom: Variables.bottomBarHeight.toDouble() + 6),
+        child: SlideTransition(
+          position: offset,
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 500),
+            opacity: opacity,
+            curve: Curves.easeInOut,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(25.0),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  decoration: BoxDecoration(
+                      color: Settings.themeWhat
+                          ? Colors.black.withOpacity(0.6)
+                          : Colors.grey.withOpacity(0.1)),
+                  // decoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.circular(25.0),
+                  //   color: widget.isCheck
+                  //       ? Colors.greenAccent.withOpacity(0.8)
+                  //       : widget.isWarning != null && widget.isWarning
+                  //           ? Colors.orangeAccent.withOpacity(0.8)
+                  //           : Colors.redAccent.withOpacity(0.8),
+                  // ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        widget.isCheck
+                            ? Icons.check
+                            : widget.isWarning != null && widget.isWarning
+                                ? Icons.warning
+                                : Icons.cancel,
+                        color: color,
+                      ),
+                      SizedBox(
+                        width: 12.0,
+                      ),
+                      Text(widget.msg, style: TextStyle(color: color)),
+                    ],
+                  ),
                 ),
               ),
             ),
