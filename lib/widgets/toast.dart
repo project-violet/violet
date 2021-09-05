@@ -11,8 +11,16 @@ class ToastWrapper extends StatefulWidget {
   final bool isCheck;
   final bool isWarning;
   final String msg;
+  final IconData icon;
+  final Color color;
 
-  ToastWrapper({this.isCheck, this.isWarning, this.msg});
+  ToastWrapper({
+    this.isCheck,
+    this.isWarning,
+    this.msg,
+    this.icon,
+    this.color,
+  });
 
   @override
   _ToastWrapperState createState() => _ToastWrapperState();
@@ -61,7 +69,7 @@ class _ToastWrapperState extends State<ToastWrapper>
 
   @override
   Widget build(BuildContext context) {
-    var color = widget.isCheck
+    var color = widget.color ?? widget.isCheck
         ? Colors.greenAccent.withOpacity(0.8)
         : widget.isWarning != null && widget.isWarning
             ? Colors.orangeAccent.withOpacity(0.8)
@@ -100,7 +108,7 @@ class _ToastWrapperState extends State<ToastWrapper>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        widget.isCheck
+                        widget.icon ?? widget.isCheck
                             ? Icons.check
                             : widget.isWarning != null && widget.isWarning
                                 ? Icons.warning

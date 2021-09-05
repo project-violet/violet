@@ -4,6 +4,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/named_color.dart';
@@ -15,6 +16,7 @@ import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
+import 'package:violet/widgets/toast.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   @override
@@ -211,14 +213,15 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
 
         _lastPopAt = now;
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          duration: const Duration(seconds: 2),
-          content: Text(
-            Translations.of(context).trans('closedoubletap'),
-            style: const TextStyle(color: Colors.white),
+        FlutterToast(context).showToast(
+          child: ToastWrapper(
+            isWarning: true,
+            icon: Icons.logout,
+            msg: Translations.of(context).trans('closedoubletap'),
           ),
-          backgroundColor: Colors.grey.shade800,
-        ));
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: 4),
+        );
 
         return false;
       },
