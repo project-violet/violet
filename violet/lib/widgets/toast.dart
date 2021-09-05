@@ -13,6 +13,8 @@ class ToastWrapper extends StatefulWidget {
   final String msg;
   final IconData icon;
   final Color color;
+  final bool ignoreDrawer;
+  final bool reverse;
 
   ToastWrapper({
     this.isCheck,
@@ -20,6 +22,8 @@ class ToastWrapper extends StatefulWidget {
     this.msg,
     this.icon,
     this.color,
+    this.ignoreDrawer = false,
+    this.reverse = false,
   });
 
   @override
@@ -53,7 +57,9 @@ class _ToastWrapperState extends State<ToastWrapper>
     });
     controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 700));
-    offset = Tween<Offset>(begin: Offset.zero, end: Offset(0.0, 1.0))
+    offset = Tween<Offset>(
+            begin: widget.reverse ? Offset(0.0, 1.0) : Offset.zero,
+            end: widget.reverse ? Offset.zero : Offset(0.0, 1.0))
         .animate(CurvedAnimation(
       parent: controller,
       curve: Curves.easeInOut,
@@ -82,18 +88,22 @@ class _ToastWrapperState extends State<ToastWrapper>
         visible: opened,
         child: Padding(
           padding: EdgeInsets.only(
-              bottom: Variables.bottomBarHeight.toDouble() +
-                  6 +
-                  (Settings.useDrawer ? 0.0 : 16.0)),
+            bottom: widget.reverse
+                ? 0.0
+                : (Variables.bottomBarHeight.toDouble() +
+                    6 +
+                    (Settings.useDrawer && !widget.ignoreDrawer ? 0.0 : 16.0)),
+          ),
           child: SlideTransition(
             position: offset,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(25.0),
               child: TweenAnimationBuilder<double>(
                 tween: Tween<double>(
-                    begin: reverse ? 10.0 : 0.1, end: reverse ? 0.1 : 10.0),
-                duration: const Duration(milliseconds: 700),
+                    begin: reverse ? 10.0 : 0.1, end: reverse ? 0.001 : 10.0),
+                duration: Duration(milliseconds: (reverse ? 500 : 700)),
                 builder: (_, value, child) {
+                  if (reverse && value < 0.1) return child;
                   return BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: value, sigmaY: value),
                     child: child,
