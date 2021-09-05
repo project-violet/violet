@@ -215,9 +215,11 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
 
         FlutterToast(context).showToast(
           child: ToastWrapper(
+            isCheck: false,
             isWarning: true,
             icon: Icons.logout,
             msg: Translations.of(context).trans('closedoubletap'),
+            bottomMorePad: Settings.useDrawer ? 0.0 : 16.0,
           ),
           gravity: ToastGravity.BOTTOM,
           toastDuration: Duration(seconds: 4),
