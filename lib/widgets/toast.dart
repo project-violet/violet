@@ -31,7 +31,8 @@ class _ToastWrapperState extends State<ToastWrapper>
   double opacity = 0.0;
   AnimationController controller;
   Animation<Offset> offset;
-  Animation<double> animation;
+  bool opened = false;
+  bool reverse = false;
 
   @override
   void initState() {
@@ -40,11 +41,13 @@ class _ToastWrapperState extends State<ToastWrapper>
       controller.reverse(from: 0.8);
       setState(() {
         opacity = 1.0;
+        opened = true;
       });
     });
     Future.delayed(Duration(milliseconds: 3000)).then((value) {
       setState(() {
         opacity = 0.0;
+        reverse = true;
       });
       controller.forward();
     });
@@ -55,15 +58,9 @@ class _ToastWrapperState extends State<ToastWrapper>
       parent: controller,
       curve: Curves.easeInOut,
     ));
-    animation = Tween<double>(
-      begin: 12.5, // x * 0.8 = 10
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeInOut,
-    ));
   }
 
+// https://dash-overflow.net/articles/why_vsync/
   @override
   void dispose() {
     // TODO: implement dispose
@@ -81,54 +78,64 @@ class _ToastWrapperState extends State<ToastWrapper>
                 : Colors.redAccent.withOpacity(0.8));
 
     return IgnorePointer(
-      child: Padding(
-        padding: EdgeInsets.only(
-            bottom: Variables.bottomBarHeight.toDouble() +
-                6 +
-                (Settings.useDrawer ? 0.0 : 16.0)),
-        child: SlideTransition(
-          position: offset,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(25.0),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                  sigmaX: animation.value, sigmaY: animation.value),
-              child: AnimatedOpacity(
-                duration: Duration(milliseconds: 500),
-                opacity: opacity,
-                curve: Curves.easeInOut,
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-                  decoration: BoxDecoration(
-                      color: Settings.themeWhat
-                          ? Colors.black.withOpacity(0.6)
-                          : Colors.grey.withOpacity(0.1)),
-                  // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(25.0),
-                  //   color: widget.isCheck
-                  //       ? Colors.greenAccent.withOpacity(0.8)
-                  //       : widget.isWarning != null && widget.isWarning
-                  //           ? Colors.orangeAccent.withOpacity(0.8)
-                  //           : Colors.redAccent.withOpacity(0.8),
-                  // ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        widget.icon ??
-                            (widget.isCheck
-                                ? Icons.check
-                                : widget.isWarning != null && widget.isWarning
-                                    ? Icons.warning
-                                    : Icons.cancel),
-                        color: color,
-                      ),
-                      SizedBox(
-                        width: 12.0,
-                      ),
-                      Text(widget.msg, style: TextStyle(color: color)),
-                    ],
+      child: Visibility(
+        visible: opened,
+        child: Padding(
+          padding: EdgeInsets.only(
+              bottom: Variables.bottomBarHeight.toDouble() +
+                  6 +
+                  (Settings.useDrawer ? 0.0 : 16.0)),
+          child: SlideTransition(
+            position: offset,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(25.0),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(
+                    begin: reverse ? 10.0 : 0.1, end: reverse ? 0.1 : 10.0),
+                duration: const Duration(milliseconds: 700),
+                builder: (_, value, child) {
+                  return BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: value, sigmaY: value),
+                    child: child,
+                  );
+                },
+                child: AnimatedOpacity(
+                  duration: Duration(milliseconds: 500),
+                  opacity: opacity,
+                  curve: Curves.easeInOut,
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    decoration: BoxDecoration(
+                        color: Settings.themeWhat
+                            ? Colors.black.withOpacity(0.6)
+                            : Colors.grey.withOpacity(0.1)),
+                    // decoration: BoxDecoration(
+                    //   borderRadius: BorderRadius.circular(25.0),
+                    //   color: widget.isCheck
+                    //       ? Colors.greenAccent.withOpacity(0.8)
+                    //       : widget.isWarning != null && widget.isWarning
+                    //           ? Colors.orangeAccent.withOpacity(0.8)
+                    //           : Colors.redAccent.withOpacity(0.8),
+                    // ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.icon ??
+                              (widget.isCheck
+                                  ? Icons.check
+                                  : widget.isWarning != null && widget.isWarning
+                                      ? Icons.warning
+                                      : Icons.cancel),
+                          color: color,
+                        ),
+                        SizedBox(
+                          width: 12.0,
+                        ),
+                        Text(widget.msg, style: TextStyle(color: color)),
+                      ],
+                    ),
                   ),
                 ),
               ),
