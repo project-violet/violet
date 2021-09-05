@@ -411,6 +411,7 @@ class _ArticleListItemVerySimpleWidgetState
                       color: Colors.red,
                       msg:
                           '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked ? 'removetobookmark' : 'addtobookmark')}',
+                      bottomMorePad: Settings.useDrawer ? 0.0 : 16.0,
                     ),
                     gravity: ToastGravity.BOTTOM,
                     toastDuration: Duration(seconds: 4),
