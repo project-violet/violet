@@ -9,6 +9,7 @@ import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html_unescape/html_unescape_small.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -27,6 +28,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
+import 'package:violet/widgets/toast.dart';
 
 typedef void BookmarkCallback(int article);
 typedef void BookmarkCheckCallback(int article, bool check);
@@ -392,16 +394,27 @@ class _ArticleListItemVerySimpleWidgetState
                     return;
                 }
                 try {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    duration: Duration(seconds: 2),
-                    content: Text(
-                      isBookmarked
-                          ? '${data.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
-                          : '${data.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
-                      style: TextStyle(color: Colors.white),
+                  // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  //   duration: Duration(seconds: 2),
+                  //   content: Text(
+                  //     isBookmarked
+                  //         ? '${data.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
+                  //         : '${data.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
+                  //     style: TextStyle(color: Colors.white),
+                  //   ),
+                  //   backgroundColor: Colors.grey.shade800,
+                  // ));
+
+                  FlutterToast(context).showToast(
+                    child: ToastWrapper(
+                      icon: Icons.delete_forever,
+                      color: Colors.red,
+                      msg:
+                          '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked ? 'removetobookmark' : 'addtobookmark')}',
                     ),
-                    backgroundColor: Colors.grey.shade800,
-                  ));
+                    gravity: ToastGravity.BOTTOM,
+                    toastDuration: Duration(seconds: 4),
+                  );
                 } catch (e, st) {
                   Logger.error('[ArticleList-LongPress] E: ' +
                       e.toString() +
