@@ -32,6 +32,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
+import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
@@ -54,48 +55,100 @@ class ArticleInfoPage extends StatelessWidget {
     final data = Provider.of<ArticleInfo>(context);
     final mediaQuery = MediaQuery.of(context);
 
-    return Container(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
-      padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
-      child: Card(
-        elevation: 5,
-        color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
-        child: SizedBox(
-          width: width - 16,
-          height:
-              height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-          child: Container(
-            // width: width,
-            // height: height,
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        child: Container(
+          color: Settings.themeWhat
+              ? Colors.black.withOpacity(0.6)
+              : Colors.grey.withOpacity(0.1),
+          padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
+          child: Card(
+            elevation: 5,
             color: Settings.themeWhat
-                ? Colors.black.withOpacity(0.9)
-                : Colors.white.withOpacity(0.97),
-            child: ListView(
-              controller: data.controller,
-              children: [
-                Container(
-                  width: width,
-                  height: 4 * 50.0 + 16,
-                  color: Settings.themeWhat
-                      ? Colors.grey.shade900.withOpacity(0.6)
-                      : Colors.white.withOpacity(0.2),
-                  child: SimpleInfoWidget(),
+                ? Color(0xFF353535).withOpacity(0.4)
+                : Colors.grey.shade200.withOpacity(0.4),
+            child: SizedBox(
+              width: width - 16,
+              height: height -
+                  36 -
+                  (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+              child: Container(
+                // width: width,
+                // height: height,
+                color: Settings.themeWhat
+                    ? Colors.black.withOpacity(0.9)
+                    : Colors.white.withOpacity(0.97),
+                child: ListView(
+                  controller: data.controller,
+                  children: [
+                    Container(
+                      width: width,
+                      height: 4 * 50.0 + 16,
+                      color: Settings.themeWhat
+                          ? Colors.grey.shade900.withOpacity(0.6)
+                          : Colors.white.withOpacity(0.2),
+                      child: SimpleInfoWidget(),
+                    ),
+                    _functionButtons(width, context, data),
+                    _tagInfoArea(data.queryResult, context),
+                    _buildDivider(),
+                    _CommentArea(
+                      headers: data.headers,
+                      queryResult: data.queryResult,
+                    ),
+                    _buildDivider(),
+                    _previewExpadable(data.queryResult, context)
+                  ],
                 ),
-                _functionButtons(width, context, data),
-                _tagInfoArea(data.queryResult, context),
-                _buildDivider(),
-                _CommentArea(
-                  headers: data.headers,
-                  queryResult: data.queryResult,
-                ),
-                _buildDivider(),
-                _previewExpadable(data.queryResult, context)
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
+    // return Container(
+    //   color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
+    //   padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
+    //   child: Card(
+    //     elevation: 5,
+    //     color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
+    //     child: SizedBox(
+    //       width: width - 16,
+    //       height:
+    //           height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+    //       child: Container(
+    //         // width: width,
+    //         // height: height,
+    //         color: Settings.themeWhat
+    //             ? Colors.black.withOpacity(0.9)
+    //             : Colors.white.withOpacity(0.97),
+    //         child: ListView(
+    //           controller: data.controller,
+    //           children: [
+    //             Container(
+    //               width: width,
+    //               height: 4 * 50.0 + 16,
+    //               color: Settings.themeWhat
+    //                   ? Colors.grey.shade900.withOpacity(0.6)
+    //                   : Colors.white.withOpacity(0.2),
+    //               child: SimpleInfoWidget(),
+    //             ),
+    //             _functionButtons(width, context, data),
+    //             _tagInfoArea(data.queryResult, context),
+    //             _buildDivider(),
+    //             _CommentArea(
+    //               headers: data.headers,
+    //               queryResult: data.queryResult,
+    //             ),
+    //             _buildDivider(),
+    //             _previewExpadable(data.queryResult, context)
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 
   _functionButtons(width, context, data) {
@@ -537,6 +590,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
               },
             );
           },
+          onLongPress: () async {
+            _navigate(LabSearchCommentsAuthor(e.item2));
+          },
           splashColor: Colors.white,
           child: ListTile(
             // dense: true,
@@ -643,6 +699,30 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         ),
       ),
     );
+  }
+
+  _navigate(Widget page) {
+    if (!Platform.isIOS) {
+      Navigator.of(context).push(PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = Offset(0.0, 1.0);
+          var end = Offset.zero;
+          var curve = Curves.ease;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+        pageBuilder: (_, __, ___) => page,
+      ));
+    } else {
+      Navigator.of(context).push(CupertinoPageRoute(builder: (_) => page));
+    }
   }
 
   TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
