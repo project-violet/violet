@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
-import 'package:utopic_toast/utopic_toast.dart';
-
 class ToastWrapper extends StatefulWidget {
   final bool isCheck;
   final bool isWarning;
