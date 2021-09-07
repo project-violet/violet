@@ -141,7 +141,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           isCheck: true,
           isWarning: false,
           icon: Icons.download,
-          msg: widget.item.info().split('[').last.split(']').first +
+          msg: widget.item.info().split('[')[1].split(']').first +
               Translations.of(context).trans('download') +
               " " +
               Translations.of(context).trans('complete'),
