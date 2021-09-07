@@ -103,8 +103,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
 
       await routine.extractFilePath();
 
-      var _timer =
-          Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
+      var _timer = Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
         setState(() {
           if (downloadSec / 1024 < 500.0)
             downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";
@@ -136,6 +135,20 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       _timer.cancel();
 
       await routine.setDownloadComplete();
+
+      FlutterToast(context).showToast(
+        child: ToastWrapper(
+          isCheck: true,
+          isWarning: false,
+          icon: Icons.download,
+          msg: widget.item.info().split('[').last.split(']').first +
+              Translations.of(context).trans('download') +
+              " " +
+              Translations.of(context).trans('complete'),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: Duration(seconds: 4),
+      );
     });
   }
 

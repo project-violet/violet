@@ -234,5 +234,6 @@
     "importfromjson": "Import in JSON",
     "pasteyourbookmarktext": "Paste the bookmark format!",
     "nocomment": "No Comment",
-    "writecomment": "Write Comment"
+    "writecomment": "Write Comment",
+    "addtodownloadqueue": " has been added to the download queue!"
 }
