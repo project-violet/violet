@@ -102,6 +102,8 @@ void main() async {
         // primaryColor: Settings.majorColor,
         // primarySwatch: Settings.majorColor,
         brightness: brightness,
+        bottomSheetTheme:
+            BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
       ),
       themedWidgetBuilder: (context, theme) {
         return MaterialApp(
