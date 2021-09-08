@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
@@ -28,7 +30,6 @@ class _TabPanelState extends State<TabPanel> {
   ScrollController _scrollController = ScrollController();
   // static const _kDuration = const Duration(milliseconds: 300);
   // static const _kCurve = Curves.ease;
-  GlobalKey containerKey = GlobalKey();
   Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
 
   @override
@@ -64,52 +65,60 @@ class _TabPanelState extends State<TabPanel> {
   @override
   Widget build(BuildContext context) {
     var windowWidth = MediaQuery.of(context).size.width;
-    return Container(
-      key: containerKey,
-      padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        controller: _scrollController,
-        slivers: <Widget>[
-          SliverPadding(
-            padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-                childAspectRatio: 3 / 4,
-              ),
-              delegate: SliverChildListDelegate(
-                widget.usableTabList.map(
-                  (e) {
-                    return Padding(
-                      key: itemKeys[e.id()],
-                      padding: EdgeInsets.zero,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Provider<ArticleListItem>.value(
-                          value: ArticleListItem.fromArticleListItem(
-                            queryResult: e,
-                            addBottomPadding: false,
-                            showDetail: false,
-                            width: (windowWidth - 4.0) / 3.0,
-                            thumbnailTag: Uuid().v4(),
-                            selectMode: true,
-                            selectCallback: () {
-                              Navigator.pop(context, e);
-                            },
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.6)
+                  : Colors.grey.withOpacity(0.1)),
+          padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            controller: _scrollController,
+            slivers: <Widget>[
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 3 / 4,
+                  ),
+                  delegate: SliverChildListDelegate(
+                    widget.usableTabList.map(
+                      (e) {
+                        return Padding(
+                          key: itemKeys[e.id()],
+                          padding: EdgeInsets.zero,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Provider<ArticleListItem>.value(
+                              value: ArticleListItem.fromArticleListItem(
+                                queryResult: e,
+                                addBottomPadding: false,
+                                showDetail: false,
+                                width: (windowWidth - 4.0) / 3.0,
+                                thumbnailTag: Uuid().v4(),
+                                selectMode: true,
+                                selectCallback: () {
+                                  Navigator.pop(context, e);
+                                },
+                              ),
+                              child: ArticleListItemVerySimpleWidget(),
+                            ),
                           ),
-                          child: ArticleListItemVerySimpleWidget(),
-                        ),
-                      ),
-                    );
-                  },
-                ).toList(),
+                        );
+                      },
+                    ).toList(),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
