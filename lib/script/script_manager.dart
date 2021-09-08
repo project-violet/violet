@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
@@ -8,7 +9,7 @@ import 'package:violet/script/script_runner.dart';
 import 'package:violet/thread/semaphore.dart';
 
 class ScriptManager {
-  static Map<String, ScriptCache> _caches;
+  static Map<String, String> _caches;
 
   static Map<String, String> _codeUrls = {
     'hitomi_get_image_list':
@@ -16,19 +17,30 @@ class ScriptManager {
   };
 
   static Future<void> init() async {
-    _caches = Map<String, ScriptCache>();
+    _caches = Map<String, String>();
 
     for (var kv in _codeUrls.entries) {
       var code = await http.get(kv.value);
-      _caches[kv.key] = ScriptCache(code.body);
+      _caches[kv.key] = code.body;
     }
   }
 
   static Future<Tuple3<List<String>, List<String>, List<String>>>
       runHitomiGetImageList(int id) async {
     if (_caches == null) return null;
+    JavascriptRuntime flutterJs;
+    flutterJs = getJavascriptRuntime();
+    flutterJs.evaluate(_caches['hitomi_get_image_list']);
+    var downloadUrl =
+        flutterJs.evaluate("create_download_url($id)").rawResult as String;
+    //var galleryInfo = await http.get("https://ltn.hitomi.la/galleries/$id.js");
+    var galleryInfo = await http.get(downloadUrl);
+    final jResult = flutterJs.evaluate("hitomi_get_image_list($galleryInfo)");
 
-    var isolate = ScriptIsolate(_caches['hitomi_get_image_list']);
+    return null;
+    //jResult.
+
+    /*var isolate = ScriptIsolate(_caches['hitomi_get_image_list']);
     var isRelease = false;
 
     try {
@@ -53,6 +65,6 @@ class ScriptManager {
           '\n' +
           st.toString());
     }
-    return null;
+    return null;*/
   }
 }

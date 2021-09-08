@@ -491,6 +491,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  flutter_js:
+    dependency: "direct main"
+    description:
+      name: flutter_js
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0+3"
   flutter_localizations:
     dependency: "direct main"
     description: flutter
@@ -792,7 +799,7 @@ packages:
       name: nested
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.4"
+    version: "1.0.0"
   node_interop:
     dependency: transitive
     description:
@@ -974,7 +981,7 @@ packages:
       name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.3.1"
+    version: "5.0.0"
   pub_semver:
     dependency: transitive
     description:
@@ -1148,6 +1155,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  sync_http:
+    dependency: transitive
+    description:
+      name: sync_http
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   synchronized:
     dependency: "direct main"
     description:

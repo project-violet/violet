@@ -11,7 +11,7 @@ description: Open Source Hentai Viewer App
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.14.0+0
+version: 1.14.1+0
 
 publish_to: none
 
@@ -69,6 +69,7 @@ dependencies:
   flutter_speed_dial:
   flutter_staggered_animations: ^1.0.0
   flutter_svg: ^0.21.0+1
+  flutter_js:
   fluttertoast:
   freezed_annotation:
   get: ^4.1.4

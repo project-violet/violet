@@ -24,8 +24,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 9, 8),
+    version: '1.14.1 Patch Update <== Latest',
+    contents: [
+      'change some uis',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 8, 21),
-    version: '1.14 Minor Update <== Latest',
+    version: '1.14 Minor Update',
     isMinor: true,
     contents: [
       'add hitomi image route script',
