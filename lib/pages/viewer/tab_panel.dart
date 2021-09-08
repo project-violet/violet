@@ -69,10 +69,7 @@ class _TabPanelState extends State<TabPanel> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
-          decoration: BoxDecoration(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.6)
-                  : Colors.grey.withOpacity(0.1)),
+          decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
           padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
