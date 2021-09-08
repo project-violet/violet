@@ -26,9 +26,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
           decoration: BoxDecoration(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.6)
-                  : Colors.grey.withOpacity(0.1)),
+              color: Colors.black.withOpacity(0.6)),
           padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
           child: FutureBuilder(
             future: User.getInstance().then((value) => value.getUserLog().then(
