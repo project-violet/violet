@@ -413,4 +413,32 @@ class VioletServer {
       return 900;
     }
   }
+
+  static Future<dynamic> searchMessage(String type, String what) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = wsalt.getValid(vToken.toString());
+
+    var gg = await http
+        .get('$api/search/msg/$type/' + Uri.encodeFull(what), headers: {
+      'v-token': vToken.toString(),
+      'v-valid': vValid,
+      "Content-Type": "application/json"
+    });
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result = (jsonDecode(gg.body) as List<dynamic>);
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error(
+          '[API-searchMessage] E: ' + e.toString() + '\n' + st.toString());
+
+      return 900;
+    }
+  }
 }

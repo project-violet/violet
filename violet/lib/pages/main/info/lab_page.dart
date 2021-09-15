@@ -18,6 +18,7 @@ import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
+import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/info/lab/top_recent.dart';
 import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
@@ -314,6 +315,16 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .toList();
 
                   _navigate(ArticleListPage(name: "Comment Counts", cc: rr));
+                },
+              ),
+
+              _buildItem(
+                Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
+                '#013 Images',
+                'Message Search',
+                null,
+                () async {
+                  _navigate(LabSearchMessage());
                 },
               ),
             ],
