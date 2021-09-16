@@ -29,7 +29,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   # I know there are too many packages.
-  android_intent_plus:
+  # android_intent_plus:
   animated_widgets:
   animations:
   async:
@@ -61,7 +61,7 @@ dependencies:
   flare_dart:
   flare_flutter: ^1.8.3
   flutter_colorpicker:
-  flutter_downloader: # @dependent: android
+  # flutter_downloader: # @dependent: android
   flutter_markdown:
   flutter_mobx:
   flutter_reorderable_list:

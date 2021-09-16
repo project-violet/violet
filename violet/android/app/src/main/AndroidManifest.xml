@@ -36,7 +36,7 @@
 <!--                <action android:name="android.net.VpnService" />-->
 <!--            </intent-filter>-->
 <!--        </service>-->
-            <provider
+            <!-- <provider
                 android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
                 android:authorities="${applicationId}.flutter_downloader.provider"
                 android:exported="false"
@@ -44,7 +44,7 @@
                 <meta-data
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/provider_paths"/>
-            </provider>
+            </provider> -->
     </application>
     
     <uses-permission android:name="android.permission.INTERNET" />

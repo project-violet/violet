@@ -56,6 +56,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     });
   }
 
+  String selected = 'Contains';
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width - 16;
@@ -211,6 +213,35 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
           ),
           Row(
             children: [
+              DropdownButton(
+                items: ['Contains', 'Similar']
+                    .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                    .toList(),
+                value: selected,
+                onChanged: (value) async {
+                  if (value == selected) return;
+                  messages = <
+                      Tuple6<double, int, int, String, double, List<double>>>[];
+                  setState(() {
+                    selected = value;
+                  });
+                  var tmessages = (await VioletServer.searchMessage(
+                      selected.toLowerCase(), text.text)) as List<dynamic>;
+                  messages = tmessages
+                      .map((e) => Tuple6<double, int, int, String, double,
+                              List<double>>(
+                          double.parse(e['MatchScore'] as String),
+                          e['Id'] as int,
+                          e['Page'] as int,
+                          e['Message'] as String,
+                          e['Correctness'] as double,
+                          (e['Rect'] as List<dynamic>)
+                              .map((e) => double.parse(e.toString()))
+                              .toList()))
+                      .toList();
+                  setState(() {});
+                },
+              ),
               Expanded(
                 child: TextField(
                   controller: text,
@@ -221,7 +252,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             List<double>>>[];
                     setState(() {});
                     var tmessages = (await VioletServer.searchMessage(
-                        'contains', text.text)) as List<dynamic>;
+                        selected.toLowerCase(), text.text)) as List<dynamic>;
                     messages = tmessages
                         .map((e) => Tuple6<double, int, int, String, double,
                                 List<double>>(
