@@ -13,7 +13,7 @@ import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
+// import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/log/log.dart';
@@ -66,7 +66,7 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize(); // @dependent: android
+  // await FlutterDownloader.initialize(); // @dependent: android
   FlareCache.doesPrune = false;
   await Firebase.initializeApp(); // @dependent: android
   FlutterError.onError = recordFlutterError; // @dependent: android
