@@ -317,7 +317,6 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   _navigate(ArticleListPage(name: "Comment Counts", cc: rr));
                 },
               ),
-
               _buildItem(
                 Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
                 '#013 Images',
