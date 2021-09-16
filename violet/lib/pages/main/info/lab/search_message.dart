@@ -15,6 +15,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
@@ -57,122 +58,122 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
 
   @override
   Widget build(BuildContext context) {
-    var dpp = MediaQuery.of(context).devicePixelRatio;
+    double width = MediaQuery.of(context).size.width - 16;
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
       child: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
+            child: SingleChildScrollView(
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.all(0),
-              itemBuilder: (BuildContext ctxt, int index) {
-                var e = messages[index];
-                return FutureBuilder(
-                  future: Future.delayed(Duration(milliseconds: 100))
-                      .then((value) async {
-                    var imgs =
-                        await HitomiManager.getImageList(e.item2.toString());
-                    return imgs.item1[e.item3];
-                  }),
-                  builder: (context, snapshot) {
-                    double width = MediaQuery.of(context).size.width;
-                    if (!snapshot.hasData) {
-                      return SizedBox(
-                        height: 300,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      );
-                    }
-                    return InkWell(
-                      // onTap: () async {},
-                      onLongPress: () async {
-                        // FocusScope.of(context).unfocus();
-                        // _navigate(LabSearchCommentsAuthor(e.item3));
-                        FocusScope.of(context).unfocus();
-                        _showArticleInfo(e.item2);
-                      },
-                      splashColor: Colors.white,
-                      // child: ListTile(
-                      //   title: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      //     children: <Widget>[
-                      //       Text('(${e.item1}) [${e.item3}]'),
-                      //       Expanded(
-                      //         child: Align(
-                      //           alignment: Alignment.centerRight,
-                      //           child: Text(
-                      //               '${DateFormat('yyyy-MM-dd HH:mm').format(e.item2.toLocal())}',
-                      //               style: TextStyle(fontSize: 12)),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   subtitle: Text(e.item4),
-                      // ),
-                      child: Column(
-                        children: [
-                          Stack(
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: snapshot.data as String,
-                                httpHeaders: {
-                                  "Referer":
-                                      'https://hitomi.la/reader/1234.html'
-                                },
+              child: Column(
+                children: messages.map(
+                  (e) {
+                    return FutureBuilder(
+                      future: Future.delayed(Duration(milliseconds: 100))
+                          .then((value) async {
+                        var imgs = await HitomiManager.getImageList(
+                            e.item2.toString());
+                        return imgs.item1[e.item3];
+                      }),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return SizedBox(
+                            height: 300,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: CircularProgressIndicator(),
                               ),
-                              FutureBuilder(
-                                future: _calculateImageDimension(
-                                    snapshot.data as String),
-                                builder:
-                                    (context, AsyncSnapshot<Size> snapshot2) {
-                                  if (!snapshot2.hasData) return Container();
+                            ),
+                          );
+                        }
+                        return InkWell(
+                          // onTap: () async {},
+                          onTap: () async {
+                            // FocusScope.of(context).unfocus();
+                            // _navigate(LabSearchCommentsAuthor(e.item3));
+                            FocusScope.of(context).unfocus();
+                            _showArticleInfo(e.item2);
+                          },
+                          splashColor: Colors.white,
+                          // child: ListTile(
+                          //   title: Row(
+                          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          //     children: <Widget>[
+                          //       Text('(${e.item1}) [${e.item3}]'),
+                          //       Expanded(
+                          //         child: Align(
+                          //           alignment: Alignment.centerRight,
+                          //           child: Text(
+                          //               '${DateFormat('yyyy-MM-dd HH:mm').format(e.item2.toLocal())}',
+                          //               style: TextStyle(fontSize: 12)),
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          //   subtitle: Text(e.item4),
+                          // ),
+                          child: Column(
+                            children: [
+                              Stack(
+                                children: [
+                                  CachedNetworkImage(
+                                    imageUrl: snapshot.data as String,
+                                    httpHeaders: {
+                                      "Referer":
+                                          'https://hitomi.la/reader/1234.html'
+                                    },
+                                  ),
+                                  FutureBuilder(
+                                    future: _calculateImageDimension(
+                                        snapshot.data as String),
+                                    builder: (context,
+                                        AsyncSnapshot<Size> snapshot2) {
+                                      if (!snapshot2.hasData)
+                                        return Container();
 
-                                  var brtx = e.item6[0];
-                                  var brty = e.item6[1];
-                                  var brbx = e.item6[2];
-                                  var brby = e.item6[3];
+                                      var brtx = e.item6[0];
+                                      var brty = e.item6[1];
+                                      var brbx = e.item6[2];
+                                      var brby = e.item6[3];
 
-                                  var w = snapshot2.data.width;
-                                  var h = snapshot2.data.height;
+                                      var w = snapshot2.data.width;
+                                      var h = snapshot2.data.height;
 
-                                  /*
+                                      /*
                                   <---------- image --------->
 
                                   <----- screen ----->
                                   */
 
-                                  // screen width : image width = x : boundary box width
-                                  // x = screen width * boundary box width / image width
+                                      // screen width : image width = x : boundary box width
+                                      // x = screen width * boundary box width / image width
 
-                                  var ratio = width * dpp / w;
+                                      var ratio = width / w;
 
-                                  return Positioned(
-                                    top: brty * ratio,
-                                    left: brtx * ratio,
-                                    child: SizedBox(
-                                      width: (brbx - brtx) * ratio,
-                                      height: (brby - brty) * ratio,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            width: 3,
-                                            color: Colors.red,
+                                      return Positioned(
+                                        top: brty * ratio - 4,
+                                        left: brtx * ratio - 4,
+                                        child: SizedBox(
+                                          width: (brbx - brtx) * ratio + 8,
+                                          height: (brby - brty) * ratio + 8,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                width: 3,
+                                                color: Colors.red,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                  );
+                                      );
 
-                                  /*return Positioned(
+                                      /*return Positioned(
                                 child: Container(
                                   width: double.infinity,
                                   height: double.infinity,
@@ -190,48 +191,59 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                 width: width,
                                 height: h * ratio,
                               );*/
-                                },
+                                    },
+                                  ),
+                                ],
+                              ),
+                              ListTile(
+                                title: Text("${e.item2} (${e.item3 + 1} Page)"),
+                                subtitle: Text("Score: ${e.item1}"),
                               ),
                             ],
                           ),
-                          ListTile(
-                            title: Text("${e.item2} (${e.item3} Page)"),
-                            subtitle: Text("Score: ${e.item1}"),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-              itemCount: messages.length,
+                ).toList(),
+              ),
             ),
           ),
           Row(
             children: [
-              TextField(
-                controller: text,
-                // autofocus: true,
-                onEditingComplete: () async {
-                  messages = <
-                      Tuple6<double, int, int, String, double, List<double>>>[];
-                  setState(() {});
-                  var tmessages =
-                      (await VioletServer.searchMessage('contains', text.text))
-                          as List<dynamic>;
-                  messages = tmessages
-                      .map((e) => Tuple6<double, int, int, String, double,
-                              List<double>>(
-                          double.parse(e['MatchScore'] as String),
-                          e['Id'] as int,
-                          e['Page'] as int,
-                          e['Message'] as String,
-                          e['Correctness'] as double,
-                          (e['Rect'] as List<dynamic>)
-                              .map((e) => double.parse(e.toString()))
-                              .toList()))
-                      .toList();
-                  setState(() {});
+              Expanded(
+                child: TextField(
+                  controller: text,
+                  // autofocus: true,
+                  onEditingComplete: () async {
+                    messages = <
+                        Tuple6<double, int, int, String, double,
+                            List<double>>>[];
+                    setState(() {});
+                    var tmessages = (await VioletServer.searchMessage(
+                        'contains', text.text)) as List<dynamic>;
+                    messages = tmessages
+                        .map((e) => Tuple6<double, int, int, String, double,
+                                List<double>>(
+                            double.parse(e['MatchScore'] as String),
+                            e['Id'] as int,
+                            e['Page'] as int,
+                            e['Message'] as String,
+                            e['Correctness'] as double,
+                            (e['Rect'] as List<dynamic>)
+                                .map((e) => double.parse(e.toString()))
+                                .toList()))
+                        .toList();
+                    setState(() {});
+                  },
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.info_outline),
+                color: Colors.grey,
+                onPressed: () async {
+                  await showOkDialog(
+                      context, '대사를 검색해 작품을 찾아보세요!', '대사 검색기 (베타)');
                 },
               ),
             ],
