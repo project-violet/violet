@@ -10,7 +10,7 @@ import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
+import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -80,7 +80,7 @@ class _MainPage2State extends State<MainPage2>
 
       // Update is not available for iOS.
       if (!Platform.isIOS) {
-        // updateCheckAndDownload(); // @dependent: android
+        updateCheckAndDownload(); // @dependent: android
       }
 
       if (SyncManager.syncRequire) {
@@ -802,7 +802,7 @@ class _MainPage2State extends State<MainPage2>
     return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
   }
 
-  /*// @dependent: android [
+  // @dependent: android [
   ReceivePort _port = ReceivePort();
 
   static void downloadCallback(
@@ -886,5 +886,5 @@ class _MainPage2State extends State<MainPage2>
     // TODO: implement dispose
     super.dispose();
   }
-  // @dependent: android ]*/
+  // @dependent: android ]
 }

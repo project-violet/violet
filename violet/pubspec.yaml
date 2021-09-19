@@ -29,7 +29,7 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   # I know there are too many packages.
-  # android_intent_plus:
+  android_intent_plus: ^2.0.0
   animated_widgets:
   animations:
   async:
@@ -39,7 +39,11 @@ dependencies:
   bubble_tab_indicator: "^0.1.4"
   cached_network_image: ^3.0.0
   carousel_slider: ^2.3.4
-  charts_flutter:
+  # charts_flutter: ^0.11.0
+  charts_flutter: # https://github.com/google/charts/issues/678
+    git:
+      url: https://github.com/google/charts
+      path: charts_flutter
   convert:
   country_pickers: ^2.0.0
   crypto:
@@ -55,17 +59,18 @@ dependencies:
   ext_storage:
   ffi: ^1.1.2
   file_picker: ^1.9.0+1
-  firebase_core : ^1.1.1 # @dependent: android
-  firebase_analytics: ^8.0.4 # @dependent: android
-  firebase_crashlytics: ^2.0.3 # @dependent: android
+  firebase_core : ^1.6.0 # @dependent: android
+  firebase_analytics: ^8.3.2 # @dependent: android
+  firebase_crashlytics: ^2.2.1 # @dependent: android
   flare_dart:
   flare_flutter: ^1.8.3
-  flutter_colorpicker:
-  # flutter_downloader: # @dependent: android
+  flutter_colorpicker: ^0.6.0
+  flutter_downloader: # @dependent: android
+    git: https://github.com/project-violet/flutter_downloader
   flutter_markdown:
   flutter_mobx:
   flutter_reorderable_list:
-  flutter_statusbar_manager: ^2.0.0
+  # flutter_statusbar_manager: ^2.0.0
   flutter_speed_dial:
   flutter_staggered_animations: ^1.0.0
   flutter_svg: ^0.21.0+1
@@ -88,7 +93,7 @@ dependencies:
   path:
   path_provider:
   permission_handler: ^7.1.0
-  photo_view: ^0.11.1
+  photo_view: ^0.12.0
   pimp_my_button: ^1.0.0
   pointycastle:
   provider:
@@ -99,7 +104,7 @@ dependencies:
   tuple:
   url_launcher:
   uuid:
-  webview_flutter:
+  webview_flutter: ^2.0.14
   # archive:
   # chunked_stream:
   # cloud_firestore: ^0.13.0+1 
