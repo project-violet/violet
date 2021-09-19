@@ -484,7 +484,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "61c3e072eb8794a00236630afbca0869fafd4e2c"
+      resolved-ref: "8616aa7e9c173095b380f8f640a1de5b1b9a28f9"
       url: "https://github.com/project-violet/flutter_downloader"
     source: git
     version: "1.7.0"
