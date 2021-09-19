@@ -24,6 +24,14 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 9, 19),
+    version: '1.15 Minor Update',
+    contents: [
+      'apply flutter 2.5',
+      'add dialog search (beta)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 9, 8),
     version: '1.14.1 Patch Update <== Latest',
     contents: [
