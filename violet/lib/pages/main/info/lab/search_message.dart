@@ -30,8 +30,8 @@ class LabSearchMessage extends StatefulWidget {
 }
 
 class _LabSearchMessageState extends State<LabSearchMessage> {
-  List<Tuple6<double, int, int, String, double, List<double>>> messages =
-      <Tuple6<double, int, int, String, double, List<double>>>[];
+  List<Tuple5<double, int, int, double, List<double>>> messages =
+      <Tuple5<double, int, int, double, List<double>>>[];
   TextEditingController text = TextEditingController(text: '은근슬쩍');
 
   @override
@@ -42,11 +42,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       var tmessages = (await VioletServer.searchMessage('contains', text.text))
           as List<dynamic>;
       messages = tmessages
-          .map((e) => Tuple6<double, int, int, String, double, List<double>>(
+          .map((e) => Tuple5<double, int, int, double, List<double>>(
               double.parse(e['MatchScore'] as String),
               e['Id'] as int,
               e['Page'] as int,
-              e['Message'] as String,
               e['Correctness'] as double,
               (e['Rect'] as List<dynamic>)
                   .map((e) => double.parse(e.toString()))
@@ -139,10 +138,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                       if (!snapshot2.hasData)
                                         return Container();
 
-                                      var brtx = e.item6[0];
-                                      var brty = e.item6[1];
-                                      var brbx = e.item6[2];
-                                      var brby = e.item6[3];
+                                      var brtx = e.item5[0];
+                                      var brty = e.item5[1];
+                                      var brbx = e.item5[2];
+                                      var brby = e.item5[3];
 
                                       var w = snapshot2.data.width;
                                       var h = snapshot2.data.height;
@@ -213,57 +212,59 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
           ),
           Row(
             children: [
-              DropdownButton(
-                items: ['Contains', 'Similar']
-                    .map((e) => DropdownMenuItem(child: Text(e), value: e))
-                    .toList(),
-                value: selected,
-                onChanged: (value) async {
-                  if (value == selected) return;
-                  messages = <
-                      Tuple6<double, int, int, String, double, List<double>>>[];
-                  setState(() {
-                    selected = value;
-                  });
-                  var tmessages = (await VioletServer.searchMessage(
-                      selected.toLowerCase(), text.text)) as List<dynamic>;
-                  messages = tmessages
-                      .map((e) => Tuple6<double, int, int, String, double,
-                              List<double>>(
-                          double.parse(e['MatchScore'] as String),
-                          e['Id'] as int,
-                          e['Page'] as int,
-                          e['Message'] as String,
-                          e['Correctness'] as double,
-                          (e['Rect'] as List<dynamic>)
-                              .map((e) => double.parse(e.toString()))
-                              .toList()))
-                      .toList();
-                  setState(() {});
-                },
+              Container(width: 8),
+              DropdownButtonHideUnderline(
+                child: DropdownButton(
+                  items: ['Contains', 'Similar']
+                      .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                      .toList(),
+                  value: selected,
+                  onChanged: (value) async {
+                    if (value == selected) return;
+                    messages =
+                        <Tuple5<double, int, int, double, List<double>>>[];
+                    setState(() {
+                      selected = value;
+                    });
+                    var tmessages = (await VioletServer.searchMessage(
+                        selected.toLowerCase(), text.text)) as List<dynamic>;
+                    messages = tmessages
+                        .map((e) =>
+                            Tuple5<double, int, int, double, List<double>>(
+                                double.parse(e['MatchScore'] as String),
+                                e['Id'] as int,
+                                e['Page'] as int,
+                                e['Correctness'] as double,
+                                (e['Rect'] as List<dynamic>)
+                                    .map((e) => double.parse(e.toString()))
+                                    .toList()))
+                        .toList();
+                    setState(() {});
+                  },
+                ),
               ),
+              Container(width: 4),
               Expanded(
                 child: TextField(
+                  decoration: new InputDecoration.collapsed(hintText: '대사 입력'),
                   controller: text,
                   // autofocus: true,
                   onEditingComplete: () async {
-                    messages = <
-                        Tuple6<double, int, int, String, double,
-                            List<double>>>[];
+                    messages =
+                        <Tuple5<double, int, int, double, List<double>>>[];
                     setState(() {});
                     var tmessages = (await VioletServer.searchMessage(
                         selected.toLowerCase(), text.text)) as List<dynamic>;
                     messages = tmessages
-                        .map((e) => Tuple6<double, int, int, String, double,
-                                List<double>>(
-                            double.parse(e['MatchScore'] as String),
-                            e['Id'] as int,
-                            e['Page'] as int,
-                            e['Message'] as String,
-                            e['Correctness'] as double,
-                            (e['Rect'] as List<dynamic>)
-                                .map((e) => double.parse(e.toString()))
-                                .toList()))
+                        .map((e) =>
+                            Tuple5<double, int, int, double, List<double>>(
+                                double.parse(e['MatchScore'] as String),
+                                e['Id'] as int,
+                                e['Page'] as int,
+                                e['Correctness'] as double,
+                                (e['Rect'] as List<dynamic>)
+                                    .map((e) => double.parse(e.toString()))
+                                    .toList()))
                         .toList();
                     setState(() {});
                   },

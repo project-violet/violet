@@ -36,6 +36,7 @@ import 'package:violet/pages/main/info/info_page.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
+import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/main/views/views_page.dart';
@@ -612,26 +613,20 @@ class _MainPage2State extends State<MainPage2>
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Badge(
-            showBadge: true,
-            badgeContent: Text('N',
-                style: TextStyle(color: Colors.white, fontSize: 12.0)),
-            // badgeColor: Settings.majorAccentColor,
-            child: Tooltip(
-              message: '실시간 유저 레코드',
-              child: ElevatedButton(
-                style: buttonStyle,
-                onPressed: () async {
-                  if (await _checkMaterKey()) {
-                    Navigator.of(context).push(
-                        _buildServicePageRoute(() => LabRecentRecordsU()));
-                  } else {
-                    Navigator.of(context)
-                        .push(_buildServicePageRoute(() => LabRecentRecords()));
-                  }
-                },
-                child: const Icon(MdiIcons.accessPointNetwork),
-              ),
+          Tooltip(
+            message: '실시간 유저 레코드',
+            child: ElevatedButton(
+              style: buttonStyle,
+              onPressed: () async {
+                if (await _checkMaterKey()) {
+                  Navigator.of(context)
+                      .push(_buildServicePageRoute(() => LabRecentRecordsU()));
+                } else {
+                  Navigator.of(context)
+                      .push(_buildServicePageRoute(() => LabRecentRecords()));
+                }
+              },
+              child: const Icon(MdiIcons.accessPointNetwork),
             ),
           ),
           Tooltip(
@@ -652,56 +647,73 @@ class _MainPage2State extends State<MainPage2>
               child: const Icon(MdiIcons.incognito),
             ),
           ),
-          Tooltip(
-            message: '마스터 모드 해금',
-            child: ElevatedButton(
-              style: buttonStyle,
-              onPressed: () async {
-                if (await _checkMaterKey()) {
-                  await showOkDialog(context, 'Alread Unlocked!');
-                  return;
-                }
-                Widget yesButton = TextButton(
-                  style: TextButton.styleFrom(primary: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('ok')),
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                );
-                Widget noButton = TextButton(
-                  style: TextButton.styleFrom(primary: Settings.majorColor),
-                  child: Text(Translations.of(context).trans('cancel')),
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                );
-                TextEditingController text = TextEditingController();
-                var dialog = await showDialog(
-                  useRootNavigator: false,
-                  context: context,
-                  builder: (BuildContext context) => AlertDialog(
-                    contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                    title: Text('Input Master Key'),
-                    content: TextField(
-                      controller: text,
-                      autofocus: true,
-                    ),
-                    actions: [yesButton, noButton],
-                  ),
-                );
-                if (dialog == true) {
-                  if (getValid(text.text + 'saltff') == '605f372') {
-                    await showOkDialog(context, 'Successful!');
-                    await (await SharedPreferences.getInstance())
-                        .setString('labmasterkey', text.text);
-                  } else {
-                    await showOkDialog(context, 'Fail!');
-                  }
-                }
-              },
-              child: const Icon(MdiIcons.keyChainVariant),
+          Badge(
+            showBadge: true,
+            badgeContent: Text('N',
+                style: TextStyle(color: Colors.white, fontSize: 12.0)),
+            // badgeColor: Settings.majorAccentColor,
+            child: Tooltip(
+              message: '대사 검색기',
+              child: ElevatedButton(
+                style: buttonStyle,
+                onPressed: () async {
+                  Navigator.of(context)
+                      .push(_buildServicePageRoute(() => LabSearchMessage()));
+                },
+                child: const Icon(MdiIcons.commentSearch),
+              ),
             ),
           ),
+          // Tooltip(
+          //   message: '마스터 모드 해금',
+          //   child: ElevatedButton(
+          //     style: buttonStyle,
+          //     onPressed: () async {
+          //       if (await _checkMaterKey()) {
+          //         await showOkDialog(context, 'Alread Unlocked!');
+          //         return;
+          //       }
+          //       Widget yesButton = TextButton(
+          //         style: TextButton.styleFrom(primary: Settings.majorColor),
+          //         child: Text(Translations.of(context).trans('ok')),
+          //         onPressed: () {
+          //           Navigator.pop(context, true);
+          //         },
+          //       );
+          //       Widget noButton = TextButton(
+          //         style: TextButton.styleFrom(primary: Settings.majorColor),
+          //         child: Text(Translations.of(context).trans('cancel')),
+          //         onPressed: () {
+          //           Navigator.pop(context, false);
+          //         },
+          //       );
+          //       TextEditingController text = TextEditingController();
+          //       var dialog = await showDialog(
+          //         useRootNavigator: false,
+          //         context: context,
+          //         builder: (BuildContext context) => AlertDialog(
+          //           contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+          //           title: Text('Input Master Key'),
+          //           content: TextField(
+          //             controller: text,
+          //             autofocus: true,
+          //           ),
+          //           actions: [yesButton, noButton],
+          //         ),
+          //       );
+          //       if (dialog == true) {
+          //         if (getValid(text.text + 'saltff') == '605f372') {
+          //           await showOkDialog(context, 'Successful!');
+          //           await (await SharedPreferences.getInstance())
+          //               .setString('labmasterkey', text.text);
+          //         } else {
+          //           await showOkDialog(context, 'Fail!');
+          //         }
+          //       }
+          //     },
+          //     child: const Icon(MdiIcons.keyChainVariant),
+          //   ),
+          // ),
         ],
       ),
     ];
