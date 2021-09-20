@@ -33,6 +33,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   List<Tuple5<double, int, int, double, List<double>>> messages =
       <Tuple5<double, int, int, double, List<double>>>[];
   TextEditingController text = TextEditingController(text: '은근슬쩍');
+  String latestSearch = '은근슬쩍';
 
   @override
   void initState() {
@@ -250,6 +251,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   controller: text,
                   // autofocus: true,
                   onEditingComplete: () async {
+                    if (latestSearch == text.text) return;
+                    latestSearch = text.text;
                     messages =
                         <Tuple5<double, int, int, double, List<double>>>[];
                     setState(() {});
