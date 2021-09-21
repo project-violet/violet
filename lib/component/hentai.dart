@@ -8,6 +8,8 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/eh/eh_provider.dart';
+import 'package:violet/component/hisoki/hisoki_getter.dart';
+import 'package:violet/component/hisoki/hisoki_provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
@@ -246,6 +248,11 @@ class HentaiManager {
             var urls = await HitomiManager.getImageList(qr.id().toString());
             if (urls.item1.length == 0 || urls.item2.length == 0) break;
             return HitomiImageProvider(urls);
+            break;
+          case 'Hisoki':
+            var urls = await HisokiGetter.getImages(qr.id());
+            if (urls.length == 0) break;
+            return HisokiImageProvider(infos: urls, id: qr.id());
             break;
           case 'NHentai':
             if (lang == 'english' || lang == 'japanese' || lang == 'chinese') {
