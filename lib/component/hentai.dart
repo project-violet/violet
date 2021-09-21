@@ -245,15 +245,19 @@ class HentaiManager {
             }
             break;
           case 'Hitomi':
-            var urls = await HitomiManager.getImageList(qr.id().toString());
-            if (urls.item1.length == 0 || urls.item2.length == 0) break;
-            return HitomiImageProvider(urls);
-            break;
+            {
+              var urls = await HitomiManager.getImageList(qr.id().toString());
+              if (urls.item1.length == 0 || urls.item2.length == 0) break;
+              return HitomiImageProvider(urls);
+            }
+
           case 'Hisoki':
-            var urls = await HisokiGetter.getImages(qr.id());
-            if (urls.length == 0) break;
-            return HisokiImageProvider(infos: urls, id: qr.id());
-            break;
+            {
+              var urls = await HisokiGetter.getImages(qr.id());
+              if (urls == null || urls.length == 0) break;
+              return HisokiImageProvider(infos: urls, id: qr.id());
+            }
+
           case 'NHentai':
             if (lang == 'english' || lang == 'japanese' || lang == 'chinese') {
               // return HitomiImageProvider(

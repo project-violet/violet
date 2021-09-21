@@ -20,7 +20,7 @@ class HisokiImageProvider extends VioletImageProvider {
 
   @override
   Future<String> getThumbnailUrl() async {
-    return 'https://hiso.observer/${id % 100}/$id/cover.webp';
+    return 'https://hiso.observer/${(id % 100).toString().padLeft(2, '0')}/$id/cover.webp';
   }
 
   @override

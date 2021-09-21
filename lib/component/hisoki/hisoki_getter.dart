@@ -9,7 +9,10 @@ import 'package:violet/network/wrapper.dart' as http;
 
 class HisokiGetter {
   static Future<List<Tuple3<String, double, double>>> getImages(int id) async {
-    var hash = HisokiHash.hash['$id'];
+    var hash = HisokiHash.getHash('$id');
+
+    if (hash == null) return null;
+
     var info = jsonDecode(
         (await http.get('https://hisoki.me/api/v1/manga/$hash')).body)["body"];
     var sl = info["sl"] as List<dynamic>;

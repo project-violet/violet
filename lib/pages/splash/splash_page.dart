@@ -16,6 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:violet/component/hisoki/hisoki_hash.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
@@ -187,6 +188,7 @@ class _SplashPageState extends State<SplashPage> {
     await Logger.init();
     await TagTranslate.init();
     await Population.init();
+    await HisokiHash.init();
     // await ScriptManager.init();
 
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
