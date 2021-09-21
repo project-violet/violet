@@ -8,25 +8,24 @@ import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 
 class HisokiHash {
-  static Map<String, String> hash = {};
+  static Map<String, String> hash;
 
-  static Future<String> getHash(String id) async {
-    if (hash == null) {
-      String data;
-      if (Platform.environment.containsKey('FLUTTER_TEST')) {
-        var file = File('/home/ubuntu/violet/assets/hisoki.json');
-        data = await file.readAsString();
-      } else {
-        data = await rootBundle.loadString('assets/rank/hisoki.json');
-      }
-
-      Map<String, dynamic> _hashs = json.decode(data);
-      hash = Map<String, String>();
-      hash.addEntries(_hashs.entries
-          .map((e) => MapEntry(e.key, e.value as String))
-          .toList());
+  static Future<void> init() async {
+    String data;
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      var file = File('/home/ubuntu/violet/assets/hisoki.json');
+      data = await file.readAsString();
+    } else {
+      data = await rootBundle.loadString('assets/hisoki.json');
     }
 
+    Map<String, dynamic> _hashs = json.decode(data);
+    hash = Map<String, String>();
+    hash.addEntries(
+        _hashs.entries.map((e) => MapEntry(e.key, e.value as String)).toList());
+  }
+
+  static String getHash(String id) {
     return hash[id];
   }
 }
