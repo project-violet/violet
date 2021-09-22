@@ -280,7 +280,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
 
   Widget buildBody() {
     return Container(
-      margin: EdgeInsets.only(bottom: 6),
+      margin: const EdgeInsets.only(bottom: 6),
       decoration: !Settings.themeFlat
           ? BoxDecoration(
               color: Settings.themeWhat ? Colors.grey.shade800 : Colors.white70,

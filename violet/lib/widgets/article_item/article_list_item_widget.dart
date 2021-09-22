@@ -250,13 +250,89 @@ class _ArticleListItemVerySimpleWidgetState
                 child: AnimatedContainer(
                   // alignment: FractionalOffset.center,
                   curve: Curves.easeInOut,
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   // padding: EdgeInsets.all(pad),
                   transform: Matrix4.identity()
                     ..translate(ww / 2, hh / 2)
                     ..scale(scale)
                     ..translate(-ww / 2, -hh / 2),
-                  child: buildBody(),
+                  child: Container(
+                      margin: data.addBottomPadding
+                          ? data.showDetail
+                              ? const EdgeInsets.only(bottom: 6)
+                              : const EdgeInsets.only(bottom: 50)
+                          : EdgeInsets.zero,
+                      decoration: !Settings.themeFlat
+                          ? BoxDecoration(
+                              color: data.showDetail
+                                  ? Settings.themeWhat
+                                      ? Colors.grey.shade800
+                                      : Colors.white70
+                                  : Colors.grey.withOpacity(0.3),
+                              borderRadius: const BorderRadius.all(
+                                  const Radius.circular(3)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Settings.themeWhat
+                                      ? Colors.grey.withOpacity(0.08)
+                                      : Colors.grey.withOpacity(0.4),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: const Offset(
+                                      0, 3), // changes position of shadow
+                                ),
+                              ],
+                            )
+                          : null,
+                      color: !Settings.themeFlat || !data.showDetail
+                          ? null
+                          : Settings.themeWhat
+                              ? Colors.black26
+                              : Colors.white,
+                      child: data.showDetail
+                          ? Row(
+                              children: <Widget>[
+                                ThumbnailWidget(
+                                  id: data.queryResult.id().toString(),
+                                  showDetail: data.showDetail,
+                                  thumbnail: thumbnail,
+                                  thumbnailTag: data.thumbnailTag,
+                                  imageCount: imageCount,
+                                  isBookmarked: isBookmarked,
+                                  flareController: _flareController,
+                                  pad: pad,
+                                  isBlurred: isBlurred,
+                                  headers: headers,
+                                  isLastestRead: isLastestRead,
+                                  latestReadPage: latestReadPage,
+                                  disableFiltering: disableFiltering,
+                                ),
+                                Expanded(
+                                    child: _DetailWidget(
+                                  artist: artist,
+                                  title: title,
+                                  imageCount: imageCount,
+                                  dateTime: dateTime,
+                                  viewed: data.viewed,
+                                  seconds: data.seconds,
+                                ))
+                              ],
+                            )
+                          : ThumbnailWidget(
+                              id: data.queryResult.id().toString(),
+                              showDetail: data.showDetail,
+                              thumbnail: thumbnail,
+                              thumbnailTag: data.thumbnailTag,
+                              imageCount: imageCount,
+                              isBookmarked: isBookmarked,
+                              flareController: _flareController,
+                              pad: pad,
+                              isBlurred: isBlurred,
+                              headers: headers,
+                              isLastestRead: isLastestRead,
+                              latestReadPage: latestReadPage,
+                              disableFiltering: disableFiltering,
+                            )),
                 ),
               ),
               // onScaleStart: (detail) {
@@ -341,6 +417,8 @@ class _ArticleListItemVerySimpleWidgetState
                 // ));
                 final height = MediaQuery.of(context).size.height;
 
+                // https://github.com/flutter/flutter/issues/67219
+                var cache;
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
@@ -351,20 +429,23 @@ class _ArticleListItemVerySimpleWidgetState
                       maxChildSize: 0.9,
                       expand: false,
                       builder: (_, controller) {
-                        return Provider<ArticleInfo>.value(
-                          child: ArticleInfoPage(
-                            key: ObjectKey('asdfasdf'),
-                          ),
-                          value: ArticleInfo.fromArticleInfo(
-                            queryResult: data.queryResult,
-                            thumbnail: thumbnail,
-                            headers: headers,
-                            heroKey: data.thumbnailTag,
-                            isBookmarked: isBookmarked,
-                            controller: controller,
-                            usableTabList: data.usableTabList,
-                          ),
-                        );
+                        if (cache == null) {
+                          cache = Provider<ArticleInfo>.value(
+                            child: ArticleInfoPage(
+                              key: ObjectKey('asdfasdf'),
+                            ),
+                            value: ArticleInfo.fromArticleInfo(
+                              queryResult: data.queryResult,
+                              thumbnail: thumbnail,
+                              headers: headers,
+                              heroKey: data.thumbnailTag,
+                              isBookmarked: isBookmarked,
+                              controller: controller,
+                              usableTabList: data.usableTabList,
+                            ),
+                          );
+                        }
+                        return cache;
                       },
                     );
                   },
@@ -495,12 +576,12 @@ class _ArticleListItemVerySimpleWidgetState
     );
   }
 
-  Widget buildBody() {
+  /*Widget buildBody() {
     return Container(
         margin: data.addBottomPadding
             ? data.showDetail
-                ? EdgeInsets.only(bottom: 6)
-                : EdgeInsets.only(bottom: 50)
+                ? const EdgeInsets.only(bottom: 6)
+                : const EdgeInsets.only(bottom: 50)
             : EdgeInsets.zero,
         decoration: !Settings.themeFlat
             ? BoxDecoration(
@@ -509,7 +590,7 @@ class _ArticleListItemVerySimpleWidgetState
                         ? Colors.grey.shade800
                         : Colors.white70
                     : Colors.grey.withOpacity(0.3),
-                borderRadius: BorderRadius.all(Radius.circular(3)),
+                borderRadius: const BorderRadius.all(Radius.circular(3)),
                 boxShadow: [
                   BoxShadow(
                     color: Settings.themeWhat
@@ -564,7 +645,7 @@ class _ArticleListItemVerySimpleWidgetState
       viewed: data.viewed,
       seconds: data.seconds,
     );
-  }
+  }*/
 
   Future<Size> _calculateImageDimension(String url) {
     Completer<Size> completer = Completer();

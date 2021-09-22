@@ -82,15 +82,73 @@ class ArticleInfoPage extends StatelessWidget {
                       : Colors.white.withOpacity(0.2),
                   child: SimpleInfoWidget(),
                 ),
-                _functionButtons(width, context, data),
-                _tagInfoArea(data.queryResult, context),
-                _buildDivider(),
+                // _functionButtons(width, context, data),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ElevatedButton(
+                      child: Container(
+                        width: (width - 32 - 64 - 32) / 2,
+                        child: Text(
+                          Translations.of(context).trans('download'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Settings.majorColor.withAlpha(230),
+                      ),
+                      onPressed: () async =>
+                          await _downloadButtonEvent(context, data),
+                    ),
+                    const SizedBox(width: 4.0),
+                    ElevatedButton(
+                      child: Container(
+                        width: (width - 32 - 64 - 32) / 2,
+                        child: Text(
+                          Translations.of(context).trans('read'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Settings.majorColor,
+                      ),
+                      onPressed: data.lockRead
+                          ? null
+                          : () async => await _readButtonEvent(context, data),
+                    ),
+                  ],
+                ),
+                TagInfoAreaWidget(queryResult: data.queryResult),
+                DividerWidget(),
                 _CommentArea(
                   headers: data.headers,
                   queryResult: data.queryResult,
                 ),
-                _buildDivider(),
-                _previewExpadable(data.queryResult, context)
+                DividerWidget(),
+                ExpandableNotifier(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: ScrollOnExpand(
+                      scrollOnExpand: true,
+                      scrollOnCollapse: false,
+                      child: ExpandablePanel(
+                        theme: ExpandableThemeData(
+                            iconColor:
+                                Settings.themeWhat ? Colors.white : Colors.grey,
+                            animationDuration:
+                                const Duration(milliseconds: 500)),
+                        header: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                          child:
+                              Text(Translations.of(context).trans('preview')),
+                        ),
+                        expanded:
+                            PreviewAreaWidget(queryResult: data.queryResult),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -99,7 +157,7 @@ class ArticleInfoPage extends StatelessWidget {
     );
   }
 
-  _functionButtons(width, context, data) {
+  /*_functionButtons(width, context, data) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -135,7 +193,7 @@ class ArticleInfoPage extends StatelessWidget {
         ),
       ],
     );
-  }
+  }*/
 
   _downloadButtonEvent(context, data) async {
     if (Platform.isAndroid) {
@@ -217,95 +275,102 @@ class ArticleInfoPage extends StatelessWidget {
       SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     });
   }
+}
 
-  _tagInfoArea(queryResult, context) {
+class DividerWidget extends StatelessWidget {
+  const DividerWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+      ),
+      width: double.infinity,
+      height: 1.0,
+      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
+    );
+  }
+}
+
+class TagInfoAreaWidget extends StatelessWidget {
+  final QueryResult queryResult;
+
+  const TagInfoAreaWidget({this.queryResult});
+
+  @override
+  Widget build(BuildContext context) {
     return ListView(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       children: [
-        multipleChip(
+        MultiChipWidget(
             queryResult.tags(),
             Translations.of(context).trans('tags'),
             queryResult.tags() != null
                 ? (queryResult.tags() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => _Chip(
-                        group: e.contains(':') ? e.split(':')[0] : 'tags',
-                        name: e.contains(':') ? e.split(':')[1] : e))
+                    .map((e) => Tuple2<String, String>(
+                        e.contains(':') ? e.split(':')[0] : 'tags',
+                        e.contains(':') ? e.split(':')[1] : e))
                     .toList()
                 : []),
-        singleChip(
+        SingleChipWidget(
             queryResult.language(),
             Translations.of(context).trans('language').split(' ')[0].trim(),
             'language'),
-        multipleChip(
+        MultiChipWidget(
             queryResult.artists(),
             Translations.of(context).trans('artists'),
             queryResult.artists() != null
                 ? (queryResult.artists() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => _Chip(group: 'artists', name: e))
+                    .map((e) => Tuple2<String, String>('artists', e))
                     .toList()
                 : []),
-        multipleChip(
+        MultiChipWidget(
             queryResult.groups(),
             Translations.of(context).trans('groups'),
             queryResult.groups() != null
                 ? (queryResult.groups() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => _Chip(group: 'groups', name: e))
+                    .map((e) => Tuple2<String, String>('groups', e))
                     .toList()
                 : []),
-        multipleChip(
+        MultiChipWidget(
             queryResult.series(),
             Translations.of(context).trans('series'),
             queryResult.series() != null
                 ? (queryResult.series() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => _Chip(group: 'series', name: e))
+                    .map((e) => Tuple2<String, String>('series', e))
                     .toList()
                 : []),
-        multipleChip(
+        MultiChipWidget(
             queryResult.characters(),
             Translations.of(context).trans('character'),
             queryResult.characters() != null
                 ? (queryResult.characters() as String)
                     .split('|')
                     .where((element) => element != '')
-                    .map((e) => _Chip(group: 'character', name: e))
+                    .map((e) => Tuple2<String, String>('character', e))
                     .toList()
                 : []),
-        singleChip(
+        SingleChipWidget(
             queryResult.type(), Translations.of(context).trans('type'), 'type'),
-        singleChip(queryResult.uploader(),
+        SingleChipWidget(queryResult.uploader(),
             Translations.of(context).trans('uploader'), 'uploader'),
-        singleChip(queryResult.id().toString(),
+        SingleChipWidget(queryResult.id().toString(),
             Translations.of(context).trans('id'), 'id'),
-        singleChip(queryResult.classname(),
+        SingleChipWidget(queryResult.classname(),
             Translations.of(context).trans('class'), 'class'),
         Container(height: 10),
       ],
     );
-  }
-
-  Widget singleChip(dynamic target, String name, String raw) {
-    if (target == null) return Container();
-    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-      Padding(
-        padding: EdgeInsets.only(top: 10.0),
-        child: Text(
-          '    $name: ',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-        ),
-      ),
-      Wrap(
-        children: <Widget>[_Chip(group: raw.toLowerCase(), name: target)],
-      ),
-    ]);
   }
 
   Widget multipleChip(dynamic target, String name, List<Widget> wrap) {
@@ -330,30 +395,74 @@ class ArticleInfoPage extends StatelessWidget {
       ],
     );
   }
+}
 
-  _previewExpadable(queryResult, context) {
-    return ExpandableNotifier(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0),
-        child: ScrollOnExpand(
-          scrollOnExpand: true,
-          scrollOnCollapse: false,
-          child: ExpandablePanel(
-            theme: ExpandableThemeData(
-                iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
-                animationDuration: const Duration(milliseconds: 500)),
-            header: Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-              child: Text(Translations.of(context).trans('preview')),
-            ),
-            expanded: _previewArea(queryResult),
-          ),
+class SingleChipWidget extends StatelessWidget {
+  final String target;
+  final String name;
+  final String raw;
+
+  SingleChipWidget(this.target, this.name, this.raw);
+
+  @override
+  Widget build(BuildContext context) {
+    if (target == null) return Container();
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+      Padding(
+        padding: EdgeInsets.only(top: 10.0),
+        child: Text(
+          '    $name: ',
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ),
+      Wrap(
+        children: <Widget>[_Chip(group: raw.toLowerCase(), name: target)],
+      ),
+    ]);
+  }
+}
+
+class MultiChipWidget extends StatelessWidget {
+  final List<Tuple2<String, String>> groupName;
+  final String name;
+  final String target;
+
+  const MultiChipWidget(this.target, this.name, this.groupName);
+
+  @override
+  Widget build(BuildContext context) {
+    if (target == null) return Container();
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 10.0),
+          child: Text(
+            '    $name: ',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: Wrap(
+            spacing: 1.0,
+            runSpacing: -12.0,
+            children: groupName
+                .map((x) => _Chip(group: x.item1, name: x.item2))
+                .toList(),
+          ),
+        ),
+      ],
     );
   }
+}
 
-  _previewArea(queryResult) {
+class PreviewAreaWidget extends StatelessWidget {
+  final QueryResult queryResult;
+
+  PreviewAreaWidget({this.queryResult});
+
+  @override
+  Widget build(BuildContext context) {
     if (ProviderManager.isExists(queryResult.id())) {
       return FutureBuilder(
         future: ProviderManager.get(queryResult.id()).getSmallImagesUrl(),
@@ -395,17 +504,6 @@ class ArticleInfoPage extends StatelessWidget {
           height: 100,
         )
       ],
-    );
-  }
-
-  _buildDivider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 8.0,
-      ),
-      width: double.infinity,
-      height: 1.0,
-      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
     );
   }
 }
@@ -837,7 +935,7 @@ class _Chip extends StatelessWidget {
   final String name;
   final String group;
 
-  _Chip({this.name, this.group});
+  const _Chip({this.name, this.group});
 
   String normalize(String tag) {
     if (tag == "groups") return "group";
