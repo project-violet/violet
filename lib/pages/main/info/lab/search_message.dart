@@ -347,6 +347,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
+      var cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -357,19 +358,22 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
             maxChildSize: 0.9,
             expand: false,
             builder: (_, controller) {
-              return Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: qr,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: 'zxcvzxcvzxcv',
-                  isBookmarked: isBookmarked,
-                  controller: controller,
-                ),
-              );
+              if (cache == null) {
+                cache = Provider<ArticleInfo>.value(
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
+                  ),
+                  value: ArticleInfo.fromArticleInfo(
+                    queryResult: qr,
+                    thumbnail: thumbnail,
+                    headers: headers,
+                    heroKey: 'zxcvzxcvzxcv',
+                    isBookmarked: isBookmarked,
+                    controller: controller,
+                  ),
+                );
+              }
+              return cache;
             },
           );
         },

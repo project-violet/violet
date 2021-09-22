@@ -248,8 +248,6 @@ class __ArticleListItemVerySimpleWidgetState
     }
   }
 
-  int count = 0;
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -273,8 +271,6 @@ class __ArticleListItemVerySimpleWidgetState
         scale = 0.95;
       });
     }
-
-    Logger.info('[Event-Build] aliw-${data.queryResult.id()}-${++count}');
 
     return Container(
       color: widget.isChecked ? Colors.amber : Colors.transparent,

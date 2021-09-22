@@ -511,6 +511,8 @@ class _ViewerPageState extends State<ViewerPage>
 
         _isStaring = false;
         stopTimer();
+
+        var cache;
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -521,20 +523,23 @@ class _ViewerPageState extends State<ViewerPage>
               maxChildSize: 0.9,
               expand: false,
               builder: (_, controller) {
-                return Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
-                  value: ArticleInfo.fromArticleInfo(
-                    queryResult: qr,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: 'zxcvzxcvzxcv',
-                    isBookmarked: isBookmarked,
-                    controller: controller,
-                    lockRead: true,
-                  ),
-                );
+                if (cache == null) {
+                  cache = Provider<ArticleInfo>.value(
+                    child: ArticleInfoPage(
+                      key: ObjectKey('asdfasdf'),
+                    ),
+                    value: ArticleInfo.fromArticleInfo(
+                      queryResult: qr,
+                      thumbnail: thumbnail,
+                      headers: headers,
+                      heroKey: 'zxcvzxcvzxcv',
+                      isBookmarked: isBookmarked,
+                      controller: controller,
+                      lockRead: true,
+                    ),
+                  );
+                }
+                return cache;
               },
             );
           },
