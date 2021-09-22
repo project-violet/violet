@@ -153,8 +153,8 @@ class _SearchPageState extends State<SearchPage>
       bottom: false,
       child: CustomScrollView(
         controller: _scroll,
+        cacheExtent: height * 2.0,
         physics: const BouncingScrollPhysics(),
-        cacheExtent: height * 2,
         slivers: <Widget>[
           SliverPersistentHeader(
             floating: true,
@@ -559,7 +559,12 @@ class ResultPanelWidget extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
   final ObjectKey key;
 
-  ResultPanelWidget({this.resultList, this.dateTime, this.key});
+  List<ArticleListItem> articleListItems;
+
+  ResultPanelWidget({this.resultList, this.dateTime, this.key}) {
+    articleListItems = List<ArticleListItem>.generate(
+        resultList.length, (x) => ArticleListItem(key: null)).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -578,34 +583,35 @@ class ResultPanelWidget extends StatelessWidget {
                 mainAxisSpacing: 8,
                 childAspectRatio: 3 / 4,
               ),
-              delegate: SliverChildListDelegate(
-                resultList
-                    .map(
-                      (e) => Padding(
-                        key: ValueKey('search-item-${e.id()}'),
-                        padding: EdgeInsets.zero,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: SizedBox(
-                            child: Provider<ArticleListItem>.value(
-                              value: ArticleListItem.fromArticleListItem(
-                                key: 'search-item-${e.id()}',
-                                queryResult: e,
-                                showDetail: false,
-                                addBottomPadding: false,
-                                width: (windowWidth - 4.0) / mm,
-                                thumbnailTag: 'thumbnail' +
-                                    e.id().toString() +
-                                    dateTime.toString(),
-                                usableTabList: resultList,
-                              ),
-                              child: ArticleListItemVerySimpleWidget(),
-                            ),
-                          ),
-                        ),
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  if (articleListItems[index].key == null) {
+                    articleListItems[index] =
+                        ArticleListItem.fromArticleListItem(
+                      key: 'search-item-${resultList[index].id()}',
+                      queryResult: resultList[index],
+                      showDetail: false,
+                      addBottomPadding: false,
+                      width: (windowWidth - 4.0) / mm,
+                      thumbnailTag: 'thumbnail' +
+                          resultList[index].id().toString() +
+                          dateTime.toString(),
+                      usableTabList: resultList,
+                    );
+                  }
+
+                  return Padding(
+                    key: ValueKey('search-item-${resultList[index].id()}'),
+                    padding: EdgeInsets.zero,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        child: ArticleListItemVerySimpleWidget(
+                            articleListItem: articleListItems[index]),
                       ),
-                    )
-                    .toList(),
+                    ),
+                  );
+                },
                 // delegate: SliverChildBuilderDelegate(
                 //   (BuildContext context, int index) {
                 //     return Padding(
@@ -632,7 +638,7 @@ class ResultPanelWidget extends StatelessWidget {
                 //       ),
                 //     );
                 //   },
-                //   childCount: resultList.length,
+                childCount: resultList.length,
               ),
             ));
 

@@ -50,6 +50,7 @@ class ArticleListItemVerySimpleWidget extends StatelessWidget {
     return _ArticleListItemVerySimpleWidget(
       isCheckMode: isCheckMode,
       isChecked: isChecked,
+      articleListItem: articleListItem,
     );
   }
 }
@@ -271,7 +272,6 @@ class __ArticleListItemVerySimpleWidgetState
       child: PimpedButton(
         particle: Rectangle2DemoParticle(),
         pimpedWidgetBuilder: (context, controller) {
-          Logger.info('[Event-Build] ${data.queryResult.id()}-${++count}');
           return GestureDetector(
             child: SizedBox(
               width: thisWidth,
