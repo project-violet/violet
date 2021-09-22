@@ -24,10 +24,10 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2021, 9, 21),
-    version: '1.15.1 Patch Update <== Latest',
+    dateTime: DateTime(2021, 9, 22),
+    version: '1.16 Patch Update <== Latest',
     contents: [
-      'optimize dialog search',
+      'optimize critical ui processes',
       'add hisoki.me router',
     ],
   ),
