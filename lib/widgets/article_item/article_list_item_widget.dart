@@ -89,8 +89,13 @@ class _ArticleListItemVerySimpleWidget extends StatefulWidget {
 
 class __ArticleListItemVerySimpleWidgetState
     extends State<_ArticleListItemVerySimpleWidget>
-    with TickerProviderStateMixin {
+    with
+        TickerProviderStateMixin,
+        AutomaticKeepAliveClientMixin<_ArticleListItemVerySimpleWidget> {
   ArticleListItem data;
+
+  @override
+  bool get wantKeepAlive => true;
 
   String thumbnail;
   int imageCount = 0;
@@ -247,6 +252,8 @@ class __ArticleListItemVerySimpleWidgetState
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     if (disposed) return null;
 
     _init();
@@ -266,6 +273,8 @@ class __ArticleListItemVerySimpleWidgetState
         scale = 0.95;
       });
     }
+
+    Logger.info('[Event-Build] aliw-${data.queryResult.id()}-${++count}');
 
     return Container(
       color: widget.isChecked ? Colors.amber : Colors.transparent,

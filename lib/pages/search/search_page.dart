@@ -153,7 +153,7 @@ class _SearchPageState extends State<SearchPage>
       bottom: false,
       child: CustomScrollView(
         controller: _scroll,
-        cacheExtent: height * 2.0,
+        // cacheExtent: height * 2.0,
         physics: const BouncingScrollPhysics(),
         slivers: <Widget>[
           SliverPersistentHeader(
@@ -601,7 +601,6 @@ class ResultPanelWidget extends StatelessWidget {
                   }
 
                   return Padding(
-                    key: ValueKey('search-item-${resultList[index].id()}'),
                     padding: EdgeInsets.zero,
                     child: Align(
                       alignment: Alignment.bottomCenter,
