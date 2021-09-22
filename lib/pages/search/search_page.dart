@@ -53,7 +53,6 @@ class _SearchPageState extends State<SearchPage>
 
   final FlareControls heroFlareControls = FlareControls();
   FlutterActorArtboard artboard;
-  ScrollController _scrollController = ScrollController();
 
   bool isFilterUsed = false;
   bool searchbarVisible = true;
@@ -148,12 +147,14 @@ class _SearchPageState extends State<SearchPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final height = MediaQuery.of(context).size.height;
 
     return SafeArea(
       bottom: false,
       child: CustomScrollView(
         controller: _scroll,
         physics: const BouncingScrollPhysics(),
+        cacheExtent: height * 2,
         slivers: <Widget>[
           SliverPersistentHeader(
             floating: true,
@@ -168,7 +169,11 @@ class _SearchPageState extends State<SearchPage>
               ),
             ),
           ),
-          makeResult(),
+          ResultPanelWidget(
+            dateTime: datetime,
+            resultList: filter(),
+            key: key,
+          ),
         ],
       ),
     );
@@ -178,82 +183,82 @@ class _SearchPageState extends State<SearchPage>
     return Container(
       padding: EdgeInsets.fromLTRB(8, 8, 72, 0),
       child: SizedBox(
-          height: 64,
-          child: Hero(
-            tag: "searchbar",
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(4.0),
-                ),
-              ),
-              elevation: !Settings.themeFlat ? 100 : 0,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Stack(
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Material(
-                        color: Settings.themeWhat
-                            ? Colors.grey.shade900.withOpacity(0.4)
-                            : Colors.grey.shade200.withOpacity(0.4),
-                        child: ListTile(
-                          title: TextFormField(
-                            cursorColor: Colors.black,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                errorBorder: InputBorder.none,
-                                disabledBorder: InputBorder.none,
-                                contentPadding: EdgeInsets.only(
-                                    left: 15, bottom: 11, top: 11, right: 15),
-                                hintText: latestQuery != null &&
-                                        latestQuery.item2.trim() != ''
-                                    ? latestQuery.item2
-                                    : Translations.of(context).trans('search')),
-                          ),
-                          leading: SizedBox(
-                            width: 25,
-                            height: 25,
-                            child: FlareArtboard(artboard,
-                                controller: heroFlareControls),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  Positioned(
-                    left: 0.0,
-                    top: 0.0,
-                    bottom: 0.0,
-                    right: 0.0,
-                    child: Material(
-                      type: MaterialType.transparency,
-                      child: InkWell(
-                        onTap: _showSearchBar,
-                        onDoubleTap: () async {
-                          // latestQuery = value;
-                          latestQuery =
-                              Tuple2<Tuple2<List<QueryResult>, int>, String>(
-                                  null,
-                                  'random:${new Random().nextDouble() + 1}');
-                          queryResult = [];
-                          _filterController = FilterController();
-                          queryEnd = false;
-                          isFilterUsed = false;
-                          await loadNextQuery();
-                          setState(() {
-                            key = ObjectKey(Uuid().v4());
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+        height: 64,
+        child: Hero(
+          tag: "searchbar",
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(4.0),
               ),
             ),
-          )),
+            elevation: !Settings.themeFlat ? 100 : 0,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: Stack(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    Material(
+                      color: Settings.themeWhat
+                          ? Colors.grey.shade900.withOpacity(0.4)
+                          : Colors.grey.shade200.withOpacity(0.4),
+                      child: ListTile(
+                        title: TextFormField(
+                          cursorColor: Colors.black,
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              contentPadding: EdgeInsets.only(
+                                  left: 15, bottom: 11, top: 11, right: 15),
+                              hintText: latestQuery != null &&
+                                      latestQuery.item2.trim() != ''
+                                  ? latestQuery.item2
+                                  : Translations.of(context).trans('search')),
+                        ),
+                        leading: SizedBox(
+                          width: 25,
+                          height: 25,
+                          child: FlareArtboard(artboard,
+                              controller: heroFlareControls),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Positioned(
+                  left: 0.0,
+                  top: 0.0,
+                  bottom: 0.0,
+                  right: 0.0,
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: InkWell(
+                      onTap: _showSearchBar,
+                      onDoubleTap: () async {
+                        // latestQuery = value;
+                        latestQuery =
+                            Tuple2<Tuple2<List<QueryResult>, int>, String>(null,
+                                'random:${new Random().nextDouble() + 1}');
+                        queryResult = [];
+                        _filterController = FilterController();
+                        queryEnd = false;
+                        isFilterUsed = false;
+                        await loadNextQuery();
+                        setState(() {
+                          key = ObjectKey(Uuid().v4());
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -546,11 +551,20 @@ class _SearchPageState extends State<SearchPage>
     if (!isFilterUsed) return queryResult;
     return filterResult;
   }
+}
 
-  Widget makeResult() {
+class ResultPanelWidget extends StatelessWidget {
+  final List<QueryResult> resultList;
+  final DateTime dateTime;
+  final ScrollController _scrollController = ScrollController();
+  final ObjectKey key;
+
+  ResultPanelWidget({this.resultList, this.dateTime, this.key});
+
+  @override
+  Widget build(BuildContext context) {
     var mm = Settings.searchResultType == 0 ? 3 : 2;
     var windowWidth = MediaQuery.of(context).size.width;
-    var filtered = filter();
     switch (Settings.searchResultType) {
       case 0:
       case 1:
@@ -564,82 +578,64 @@ class _SearchPageState extends State<SearchPage>
                 mainAxisSpacing: 8,
                 childAspectRatio: 3 / 4,
               ),
-              delegate:
-                  SliverChildBuilderDelegate((BuildContext context, int index) {
-                return Padding(
-                  padding: EdgeInsets.zero,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SizedBox(
-                      child: Provider<ArticleListItem>.value(
-                        value: ArticleListItem.fromArticleListItem(
-                          queryResult: filtered[index],
-                          showDetail: false,
-                          addBottomPadding: false,
-                          width: (windowWidth - 4.0) / mm,
-                          thumbnailTag: 'thumbnail' +
-                              filtered[index].id().toString() +
-                              datetime.toString(),
-                          usableTabList: filtered,
+              delegate: SliverChildListDelegate(
+                resultList
+                    .map(
+                      (e) => Padding(
+                        key: ValueKey('search-item-${e.id()}'),
+                        padding: EdgeInsets.zero,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SizedBox(
+                            child: Provider<ArticleListItem>.value(
+                              value: ArticleListItem.fromArticleListItem(
+                                key: 'search-item-${e.id()}',
+                                queryResult: e,
+                                showDetail: false,
+                                addBottomPadding: false,
+                                width: (windowWidth - 4.0) / mm,
+                                thumbnailTag: 'thumbnail' +
+                                    e.id().toString() +
+                                    dateTime.toString(),
+                                usableTabList: resultList,
+                              ),
+                              child: ArticleListItemVerySimpleWidget(),
+                            ),
+                          ),
                         ),
-                        child: ArticleListItemVerySimpleWidget(),
                       ),
-                    ),
-                  ),
-                );
-              }, childCount: filtered.length),
+                    )
+                    .toList(),
+                // delegate: SliverChildBuilderDelegate(
+                //   (BuildContext context, int index) {
+                //     return Padding(
+                //       key: ValueKey('search-item-${resultList[index].id()}'),
+                //       padding: EdgeInsets.zero,
+                //       child: Align(
+                //         alignment: Alignment.bottomCenter,
+                //         child: SizedBox(
+                //           child: Provider<ArticleListItem>.value(
+                //             value: ArticleListItem.fromArticleListItem(
+                //               key: 'search-item-${resultList[index].id()}',
+                //               queryResult: resultList[index],
+                //               showDetail: false,
+                //               addBottomPadding: false,
+                //               width: (windowWidth - 4.0) / mm,
+                //               thumbnailTag: 'thumbnail' +
+                //                   resultList[index].id().toString() +
+                //                   dateTime.toString(),
+                //               usableTabList: resultList,
+                //             ),
+                //             child: ArticleListItemVerySimpleWidget(),
+                //           ),
+                //         ),
+                //       ),
+                //     );
+                //   },
+                //   childCount: resultList.length,
+              ),
             ));
 
-      // return SliverPadding(
-      //     padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
-      //     sliver: LiveSliverGrid(
-      //       key: key,
-      //       controller: _scrollController,
-      //       showItemInterval: Duration(milliseconds: 50),
-      //       showItemDuration: Duration(milliseconds: 150),
-      //       visibleFraction: 0.001,
-      //       itemCount: filtered.length,
-      //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      //         crossAxisCount: Device.get().isTablet ? mm * 2 : mm,
-      //         crossAxisSpacing: 8,
-      //         mainAxisSpacing: 8,
-      //         childAspectRatio: 3 / 4,
-      //       ),
-      //       itemBuilder: (context, index, animation) {
-      //         return FadeTransition(
-      //           opacity: Tween<double>(
-      //             begin: 0,
-      //             end: 1,
-      //           ).animate(animation),
-      //           child: SlideTransition(
-      //             position: Tween<Offset>(
-      //               begin: Offset(0, -0.1),
-      //               end: Offset.zero,
-      //             ).animate(animation),
-      //             child: Padding(
-      //               padding: EdgeInsets.zero,
-      //               child: Align(
-      //                 alignment: Alignment.bottomCenter,
-      //                 child: SizedBox(
-      //                   child: Provider<ArticleListItem>.value(
-      //                     value: ArticleListItem.fromArticleListItem(
-      //                       queryResult: filtered[index],
-      //                       showDetail: false,
-      //                       addBottomPadding: false,
-      //                       width: (windowWidth - 4.0) / mm,
-      //                       thumbnailTag: 'thumbnail' +
-      //                           filtered[index].id().toString() +
-      //                           datetime.toString(),
-      //                     ),
-      //                     child: ArticleListItemVerySimpleWidget(),
-      //                   ),
-      //                 ),
-      //               ),
-      //             ),
-      //           ),
-      //         );
-      //       },
-      //     ));
       case 2:
       case 3:
         if (Device.get().isTablet ||
@@ -652,7 +648,7 @@ class _SearchPageState extends State<SearchPage>
               showItemInterval: Duration(milliseconds: 50),
               showItemDuration: Duration(milliseconds: 150),
               visibleFraction: 0.001,
-              itemCount: filtered.length,
+              itemCount: resultList.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 8,
@@ -666,12 +662,12 @@ class _SearchPageState extends State<SearchPage>
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
                       showDetail: Settings.searchResultType == 3,
-                      queryResult: filtered[index],
+                      queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag: 'thumbnail' +
-                          filtered[index].id().toString() +
-                          datetime.toString(),
-                      usableTabList: filtered,
+                          resultList[index].id().toString() +
+                          dateTime.toString(),
+                      usableTabList: resultList,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
@@ -690,18 +686,18 @@ class _SearchPageState extends State<SearchPage>
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
                       showDetail: Settings.searchResultType == 3,
-                      queryResult: filtered[index],
+                      queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag: 'thumbnail' +
-                          filtered[index].id().toString() +
-                          datetime.toString(),
-                      usableTabList: filtered,
+                          resultList[index].id().toString() +
+                          dateTime.toString(),
+                      usableTabList: resultList,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
-              childCount: filtered.length,
+              childCount: resultList.length,
             ),
           );
         }

@@ -16,6 +16,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
@@ -33,7 +34,27 @@ import 'package:violet/widgets/toast.dart';
 typedef void BookmarkCallback(int article);
 typedef void BookmarkCheckCallback(int article, bool check);
 
-class ArticleListItemVerySimpleWidget extends StatefulWidget {
+class ArticleListItemVerySimpleWidget extends StatelessWidget {
+  final bool isChecked;
+  final bool isCheckMode;
+  final ArticleListItem articleListItem;
+
+  ArticleListItemVerySimpleWidget({
+    this.isChecked = false,
+    this.isCheckMode = false,
+    this.articleListItem,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _ArticleListItemVerySimpleWidget(
+      isCheckMode: isCheckMode,
+      isChecked: isChecked,
+    );
+  }
+}
+
+class _ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final bool addBottomPadding;
   // final bool showDetail;
   // final QueryResult queryResult;
@@ -44,8 +65,9 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final BookmarkCheckCallback bookmarkCheckCallback;
   bool isChecked;
   final bool isCheckMode;
+  final ArticleListItem articleListItem;
 
-  ArticleListItemVerySimpleWidget({
+  _ArticleListItemVerySimpleWidget({
     // this.queryResult,
     // this.addBottomPadding,
     // this.showDetail,
@@ -56,15 +78,16 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
     // this.bookmarkCheckCallback,
     this.isChecked = false,
     this.isCheckMode = false,
+    this.articleListItem,
   });
 
   @override
-  _ArticleListItemVerySimpleWidgetState createState() =>
-      _ArticleListItemVerySimpleWidgetState();
+  __ArticleListItemVerySimpleWidgetState createState() =>
+      __ArticleListItemVerySimpleWidgetState();
 }
 
-class _ArticleListItemVerySimpleWidgetState
-    extends State<ArticleListItemVerySimpleWidget>
+class __ArticleListItemVerySimpleWidgetState
+    extends State<_ArticleListItemVerySimpleWidget>
     with TickerProviderStateMixin {
   ArticleListItem data;
 
@@ -83,6 +106,7 @@ class _ArticleListItemVerySimpleWidgetState
   int latestReadPage = 0;
   Map<String, String> headers;
   final FlareControls _flareController = FlareControls();
+  double thisWidth, thisHeight;
 
   @override
   void initState() {
@@ -108,8 +132,20 @@ class _ArticleListItemVerySimpleWidgetState
     if (_inited) return;
     _inited = true;
 
-    data = Provider.of<ArticleListItem>(context);
+    if (widget.articleListItem == null)
+      data = Provider.of<ArticleListItem>(context);
+    else
+      data = widget.articleListItem;
     disableFiltering = (data.disableFilter != null && data.disableFilter);
+
+    thisWidth = data.showDetail
+        ? data.width - 16
+        : data.width - (data.addBottomPadding ? 100 : 0);
+    thisHeight = data.showDetail
+        ? 130.0
+        : data.addBottomPadding
+            ? 500.0
+            : data.width * 4 / 3;
 
     _initAnimations();
     _checkIsBookmarked();
@@ -206,10 +242,14 @@ class _ArticleListItemVerySimpleWidgetState
     }
   }
 
+  int count = 0;
+
   @override
   Widget build(BuildContext context) {
     if (disposed) return null;
+
     _init();
+
     if (data.bookmarkMode &&
         !widget.isCheckMode &&
         !onScaling &&
@@ -226,426 +266,236 @@ class _ArticleListItemVerySimpleWidgetState
       });
     }
 
-    double ww = data.showDetail
-        ? data.width - 16
-        : data.width - (data.addBottomPadding ? 100 : 0);
-    double hh = data.showDetail
-        ? 130.0
-        : data.addBottomPadding
-            ? 500.0
-            : data.width * 4 / 3;
-
-    var headers = {
-      "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
-    };
     return Container(
       color: widget.isChecked ? Colors.amber : Colors.transparent,
       child: PimpedButton(
-          particle: Rectangle2DemoParticle(),
-          pimpedWidgetBuilder: (context, controller) {
-            return GestureDetector(
-              child: SizedBox(
-                width: ww,
-                height: hh,
-                child: AnimatedContainer(
-                  // alignment: FractionalOffset.center,
-                  curve: Curves.easeInOut,
-                  duration: const Duration(milliseconds: 300),
-                  // padding: EdgeInsets.all(pad),
-                  transform: Matrix4.identity()
-                    ..translate(ww / 2, hh / 2)
-                    ..scale(scale)
-                    ..translate(-ww / 2, -hh / 2),
-                  child: Container(
-                      margin: data.addBottomPadding
-                          ? data.showDetail
-                              ? const EdgeInsets.only(bottom: 6)
-                              : const EdgeInsets.only(bottom: 50)
-                          : EdgeInsets.zero,
-                      decoration: !Settings.themeFlat
-                          ? BoxDecoration(
-                              color: data.showDetail
-                                  ? Settings.themeWhat
-                                      ? Colors.grey.shade800
-                                      : Colors.white70
-                                  : Colors.grey.withOpacity(0.3),
-                              borderRadius: const BorderRadius.all(
-                                  const Radius.circular(3)),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Settings.themeWhat
-                                      ? Colors.grey.withOpacity(0.08)
-                                      : Colors.grey.withOpacity(0.4),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: const Offset(
-                                      0, 3), // changes position of shadow
-                                ),
-                              ],
-                            )
-                          : null,
-                      color: !Settings.themeFlat || !data.showDetail
-                          ? null
-                          : Settings.themeWhat
-                              ? Colors.black26
-                              : Colors.white,
-                      child: data.showDetail
-                          ? Row(
-                              children: <Widget>[
-                                ThumbnailWidget(
-                                  id: data.queryResult.id().toString(),
-                                  showDetail: data.showDetail,
-                                  thumbnail: thumbnail,
-                                  thumbnailTag: data.thumbnailTag,
-                                  imageCount: imageCount,
-                                  isBookmarked: isBookmarked,
-                                  flareController: _flareController,
-                                  pad: pad,
-                                  isBlurred: isBlurred,
-                                  headers: headers,
-                                  isLastestRead: isLastestRead,
-                                  latestReadPage: latestReadPage,
-                                  disableFiltering: disableFiltering,
-                                ),
-                                Expanded(
-                                    child: _DetailWidget(
-                                  artist: artist,
-                                  title: title,
-                                  imageCount: imageCount,
-                                  dateTime: dateTime,
-                                  viewed: data.viewed,
-                                  seconds: data.seconds,
-                                ))
-                              ],
-                            )
-                          : ThumbnailWidget(
-                              id: data.queryResult.id().toString(),
-                              showDetail: data.showDetail,
-                              thumbnail: thumbnail,
-                              thumbnailTag: data.thumbnailTag,
-                              imageCount: imageCount,
-                              isBookmarked: isBookmarked,
-                              flareController: _flareController,
-                              pad: pad,
-                              isBlurred: isBlurred,
-                              headers: headers,
-                              isLastestRead: isLastestRead,
-                              latestReadPage: latestReadPage,
-                              disableFiltering: disableFiltering,
-                            )),
+        particle: Rectangle2DemoParticle(),
+        pimpedWidgetBuilder: (context, controller) {
+          Logger.info('[Event-Build] ${data.queryResult.id()}-${++count}');
+          return GestureDetector(
+            child: SizedBox(
+              width: thisWidth,
+              height: thisHeight,
+              child: AnimatedContainer(
+                curve: Curves.easeInOut,
+                duration: const Duration(milliseconds: 300),
+                transform: Matrix4.identity()
+                  ..translate(thisWidth / 2, thisHeight / 2)
+                  ..scale(scale)
+                  ..translate(-thisWidth / 2, -thisHeight / 2),
+                child: BodyWidget(
+                  data: data,
+                  thumbnail: thumbnail,
+                  imageCount: imageCount,
+                  isBookmarked: isBookmarked,
+                  flareController: _flareController,
+                  pad: pad,
+                  isBlurred: isBlurred,
+                  headers: {
+                    "Referer":
+                        "https://hitomi.la/reader/${data.queryResult.id()}.html/"
+                  },
+                  isLastestRead: isLastestRead,
+                  latestReadPage: latestReadPage,
+                  disableFiltering: disableFiltering,
+                  artist: artist,
+                  title: title,
+                  dateTime: dateTime,
                 ),
               ),
-              // onScaleStart: (detail) {
-              //   onScaling = true;
-              //   setState(() {
-              //     pad = 0;
-              //   });
-              // },
-              // onScaleUpdate: (detail) async {
-              //   if (detail.scale > 1.1 &&
-              //       !scaleAnimationController.isAnimating &&
-              //       !scaleAnimationController.isCompleted) {
-              //     scaleAnimationController.forward(from: 1.0);
-              //   }
-              //   if (detail.scale > 1.1 && !scaleAnimationController.isCompleted) {
-              //     var sz = await _calculateImageDimension(thumbnail);
-              //     Navigator.of(context).push(PageRouteBuilder(
-              //       opaque: false,
-              //       transitionDuration: Duration(milliseconds: 500),
-              //       pageBuilder: (_, __, ___) => ThumbnailViewPage(
-              //         size: sz,
-              //         thumbnail: thumbnail,
-              //         headers: headers,
-              //       ),
-              //     ));
-              //   }
-              // },
-              // onScaleEnd: (detail) {
-              //   onScaling = false;
-              //   scaleAnimationController.reverse();
-              // },
-              onTapDown: (detail) {
-                if (onScaling) return;
-                onScaling = true;
-                setState(() {
-                  // pad = 10.0;
-                  scale = 0.95;
-                });
-              },
-              onTapUp: (detail) {
-                // if (onScaling) return;
-                if (data.selectMode) {
-                  data.selectCallback();
-                  return;
-                }
-                onScaling = false;
-                if (widget.isCheckMode) {
-                  widget.isChecked = !widget.isChecked;
-                  data.bookmarkCheckCallback(
-                      data.queryResult.id(), widget.isChecked);
-                  setState(() {
-                    if (widget.isChecked)
-                      scale = 0.95;
-                    else
-                      scale = 1.0;
-                  });
-                  return;
-                }
-                if (firstChecked) return;
-                setState(() {
-                  // pad = 0;
-                  scale = 1.0;
-                });
-
-                // Navigator.of(context).push(PageRouteBuilder(
-                //   // opaque: false,
-                //   transitionDuration: Duration(milliseconds: 500),
-                //   transitionsBuilder: (BuildContext context,
-                //       Animation<double> animation,
-                //       Animation<double> secondaryAnimation,
-                //       Widget wi) {
-                //     // return wi;
-                //     return FadeTransition(opacity: animation, child: wi);
-                //   },
-                //   pageBuilder: (_, __, ___) => ArticleInfoPage(
-                //     queryResult: widget.queryResult,
-                //     thumbnail: thumbnail,
-                //     headers: headers,
-                //     heroKey: widget.thumbnailTag,
-                //     isBookmarked: isBookmarked,
-                //   ),
-                // ));
-                final height = MediaQuery.of(context).size.height;
-
-                // https://github.com/flutter/flutter/issues/67219
-                var cache;
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) {
-                    return DraggableScrollableSheet(
-                      initialChildSize: 400 / height,
-                      minChildSize: 400 / height,
-                      maxChildSize: 0.9,
-                      expand: false,
-                      builder: (_, controller) {
-                        if (cache == null) {
-                          cache = Provider<ArticleInfo>.value(
-                            child: ArticleInfoPage(
-                              key: ObjectKey('asdfasdf'),
-                            ),
-                            value: ArticleInfo.fromArticleInfo(
-                              queryResult: data.queryResult,
-                              thumbnail: thumbnail,
-                              headers: headers,
-                              heroKey: data.thumbnailTag,
-                              isBookmarked: isBookmarked,
-                              controller: controller,
-                              usableTabList: data.usableTabList,
-                            ),
-                          );
-                        }
-                        return cache;
-                      },
-                    );
-                  },
-                );
-              },
-              onLongPress: () async {
-                onScaling = false;
-                if (data.bookmarkMode) {
-                  if (widget.isCheckMode) {
-                    widget.isChecked = !widget.isChecked;
-                    setState(() {
-                      scale = 1.0;
-                    });
-                    return;
-                  }
-                  widget.isChecked = true;
-                  firstChecked = true;
-                  setState(() {
-                    scale = 0.95;
-                  });
-                  data.bookmarkCallback(data.queryResult.id());
-                  return;
-                }
-
-                if (isBookmarked) {
-                  if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크'))
-                    return;
-                }
-                try {
-                  // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  //   duration: Duration(seconds: 2),
-                  //   content: Text(
-                  //     isBookmarked
-                  //         ? '${data.queryResult.id()}${Translations.of(context).trans('removetobookmark')}'
-                  //         : '${data.queryResult.id()}${Translations.of(context).trans('addtobookmark')}',
-                  //     style: TextStyle(color: Colors.white),
-                  //   ),
-                  //   backgroundColor: Colors.grey.shade800,
-                  // ));
-
-                  FlutterToast(context).showToast(
-                    child: ToastWrapper(
-                      icon: isBookmarked ? Icons.delete_forever : Icons.check,
-                      color: isBookmarked
-                          ? Colors.redAccent.withOpacity(0.8)
-                          : Colors.greenAccent.withOpacity(0.8),
-                      msg:
-                          '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked ? 'removetobookmark' : 'addtobookmark')}',
-                    ),
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: Duration(seconds: 4),
-                  );
-                } catch (e, st) {
-                  Logger.error('[ArticleList-LongPress] E: ' +
-                      e.toString() +
-                      '\n' +
-                      st.toString());
-                }
-                isBookmarked = !isBookmarked;
-                if (isBookmarked)
-                  await (await Bookmark.getInstance())
-                      .bookmark(data.queryResult.id());
-                else
-                  await (await Bookmark.getInstance())
-                      .unbookmark(data.queryResult.id());
-                if (!isBookmarked)
-                  _flareController.play('Unlike');
-                else {
-                  controller.forward(from: 0.0);
-                  _flareController.play('Like');
-                }
-                await HapticFeedback.vibrate();
-
-                // await Vibration.vibrate(duration: 50, amplitude: 50);
-                setState(() {
-                  pad = 0;
-                  scale = 1.0;
-                });
-              },
-              onLongPressEnd: (detail) {
-                onScaling = false;
-                if (firstChecked) {
-                  firstChecked = false;
-                  return;
-                }
-                setState(() {
-                  pad = 0;
-                  scale = 1.0;
-                });
-              },
-              onTapCancel: () {
-                onScaling = false;
-                setState(() {
-                  pad = 0;
-                  scale = 1.0;
-                });
-              },
-              onDoubleTap: () async {
-                onScaling = false;
-
-                if (data.doubleTapCallback == null) {
-                  var sz = await _calculateImageDimension(thumbnail);
-                  Navigator.of(context).push(PageRouteBuilder(
-                    opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder: (BuildContext context,
-                        Animation<double> animation,
-                        Animation<double> secondaryAnimation,
-                        Widget wi) {
-                      return FadeTransition(opacity: animation, child: wi);
-                    },
-                    pageBuilder: (_, __, ___) => ThumbnailViewPage(
-                      size: sz,
-                      thumbnail: thumbnail,
-                      headers: headers,
-                      heroKey: data.thumbnailTag,
-                    ),
-                  ));
-                } else {
-                  data.doubleTapCallback();
-                }
-                setState(() {
-                  pad = 0;
-                });
-              },
-            );
-          }),
+            ),
+            onTapDown: _onTapDown,
+            onTapUp: _onTapUp,
+            onLongPress: () async {
+              await _onLongPress(controller);
+            },
+            onLongPressEnd: _onPressEnd,
+            onTapCancel: _onTapCancle,
+            onDoubleTap: _onDoubleTap,
+          );
+        },
+      ),
     );
   }
 
-  /*Widget buildBody() {
-    return Container(
-        margin: data.addBottomPadding
-            ? data.showDetail
-                ? const EdgeInsets.only(bottom: 6)
-                : const EdgeInsets.only(bottom: 50)
-            : EdgeInsets.zero,
-        decoration: !Settings.themeFlat
-            ? BoxDecoration(
-                color: data.showDetail
-                    ? Settings.themeWhat
-                        ? Colors.grey.shade800
-                        : Colors.white70
-                    : Colors.grey.withOpacity(0.3),
-                borderRadius: const BorderRadius.all(Radius.circular(3)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Settings.themeWhat
-                        ? Colors.grey.withOpacity(0.08)
-                        : Colors.grey.withOpacity(0.4),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: Offset(0, 3), // changes position of shadow
-                  ),
-                ],
-              )
-            : null,
-        color: !Settings.themeFlat || !data.showDetail
-            ? null
-            : Settings.themeWhat
-                ? Colors.black26
-                : Colors.white,
-        child: data.showDetail
-            ? Row(
-                children: <Widget>[
-                  buildThumbnail(),
-                  Expanded(child: buildDetail())
-                ],
-              )
-            : buildThumbnail());
+  _onTapDown(detail) {
+    if (onScaling) return;
+    onScaling = true;
+    setState(() {
+      // pad = 10.0;
+      scale = 0.95;
+    });
   }
 
-  Widget buildThumbnail() {
-    return ThumbnailWidget(
-      id: data.queryResult.id().toString(),
-      showDetail: data.showDetail,
-      thumbnail: thumbnail,
-      thumbnailTag: data.thumbnailTag,
-      imageCount: imageCount,
-      isBookmarked: isBookmarked,
-      flareController: _flareController,
-      pad: pad,
-      isBlurred: isBlurred,
-      headers: headers,
-      isLastestRead: isLastestRead,
-      latestReadPage: latestReadPage,
-      disableFiltering: disableFiltering,
+  _onTapUp(detail) {
+    if (data.selectMode) {
+      data.selectCallback();
+      return;
+    }
+
+    onScaling = false;
+
+    if (widget.isCheckMode) {
+      widget.isChecked = !widget.isChecked;
+      data.bookmarkCheckCallback(data.queryResult.id(), widget.isChecked);
+      setState(() {
+        if (widget.isChecked)
+          scale = 0.95;
+        else
+          scale = 1.0;
+      });
+      return;
+    }
+    if (firstChecked) return;
+    setState(() {
+      scale = 1.0;
+    });
+
+    final height = MediaQuery.of(context).size.height;
+
+    // https://github.com/flutter/flutter/issues/67219
+    var cache;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return DraggableScrollableSheet(
+          initialChildSize: 400 / height,
+          minChildSize: 400 / height,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (_, controller) {
+            if (cache == null) {
+              cache = Provider<ArticleInfo>.value(
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: data.queryResult,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: data.thumbnailTag,
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                  usableTabList: data.usableTabList,
+                ),
+              );
+            }
+            return cache;
+          },
+        );
+      },
     );
   }
 
-  Widget buildDetail() {
-    return _DetailWidget(
-      artist: artist,
-      title: title,
-      imageCount: imageCount,
-      dateTime: dateTime,
-      viewed: data.viewed,
-      seconds: data.seconds,
-    );
-  }*/
+  Future<void> _onLongPress(controller) async {
+    onScaling = false;
+    if (data.bookmarkMode) {
+      if (widget.isCheckMode) {
+        widget.isChecked = !widget.isChecked;
+        setState(() {
+          scale = 1.0;
+        });
+        return;
+      }
+      widget.isChecked = true;
+      firstChecked = true;
+      setState(() {
+        scale = 0.95;
+      });
+      data.bookmarkCallback(data.queryResult.id());
+      return;
+    }
+
+    if (isBookmarked) {
+      if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
+    }
+    try {
+      FlutterToast(context).showToast(
+        child: ToastWrapper(
+          icon: isBookmarked ? Icons.delete_forever : Icons.check,
+          color: isBookmarked
+              ? Colors.redAccent.withOpacity(0.8)
+              : Colors.greenAccent.withOpacity(0.8),
+          msg:
+              '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked ? 'removetobookmark' : 'addtobookmark')}',
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: Duration(seconds: 4),
+      );
+    } catch (e, st) {
+      Logger.error(
+          '[ArticleList-LongPress] E: ' + e.toString() + '\n' + st.toString());
+    }
+    isBookmarked = !isBookmarked;
+
+    if (isBookmarked)
+      await (await Bookmark.getInstance()).bookmark(data.queryResult.id());
+    else
+      await (await Bookmark.getInstance()).unbookmark(data.queryResult.id());
+
+    if (!isBookmarked)
+      _flareController.play('Unlike');
+    else {
+      controller.forward(from: 0.0);
+      _flareController.play('Like');
+    }
+
+    await HapticFeedback.vibrate();
+
+    setState(() {
+      pad = 0;
+      scale = 1.0;
+    });
+  }
+
+  _onPressEnd(detail) {
+    onScaling = false;
+    if (firstChecked) {
+      firstChecked = false;
+      return;
+    }
+    setState(() {
+      pad = 0;
+      scale = 1.0;
+    });
+  }
+
+  _onTapCancle() {
+    onScaling = false;
+    setState(() {
+      pad = 0;
+      scale = 1.0;
+    });
+  }
+
+  Future<void> _onDoubleTap() async {
+    onScaling = false;
+
+    if (data.doubleTapCallback == null) {
+      var sz = await _calculateImageDimension(thumbnail);
+      Navigator.of(context).push(PageRouteBuilder(
+        opaque: false,
+        transitionDuration: Duration(milliseconds: 500),
+        transitionsBuilder: (BuildContext context, Animation<double> animation,
+            Animation<double> secondaryAnimation, Widget wi) {
+          return FadeTransition(opacity: animation, child: wi);
+        },
+        pageBuilder: (_, __, ___) => ThumbnailViewPage(
+          size: sz,
+          thumbnail: thumbnail,
+          headers: headers,
+          heroKey: data.thumbnailTag,
+        ),
+      ));
+    } else {
+      data.doubleTapCallback();
+    }
+
+    setState(() {
+      pad = 0;
+    });
+  }
 
   Future<Size> _calculateImageDimension(String url) {
     Completer<Size> completer = Completer();
@@ -660,6 +510,120 @@ class _ArticleListItemVerySimpleWidgetState
       ),
     );
     return completer.future;
+  }
+}
+
+class BodyWidget extends StatelessWidget {
+  final ArticleListItem data;
+  final String thumbnail;
+  final int imageCount;
+  final bool isBookmarked;
+  final FlareControls flareController;
+  final double pad;
+  final bool isBlurred;
+  final Map<String, String> headers;
+  final bool isLastestRead;
+  final int latestReadPage;
+  final bool disableFiltering;
+  final String artist;
+  final String title;
+  final String dateTime;
+
+  BodyWidget({
+    this.data,
+    this.thumbnail,
+    this.imageCount,
+    this.isBookmarked,
+    this.flareController,
+    this.pad,
+    this.isBlurred,
+    this.headers,
+    this.isLastestRead,
+    this.latestReadPage,
+    this.disableFiltering,
+    this.artist,
+    this.title,
+    this.dateTime,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: data.addBottomPadding
+          ? data.showDetail
+              ? const EdgeInsets.only(bottom: 6)
+              : const EdgeInsets.only(bottom: 50)
+          : EdgeInsets.zero,
+      decoration: !Settings.themeFlat
+          ? BoxDecoration(
+              color: data.showDetail
+                  ? Settings.themeWhat
+                      ? Colors.grey.shade800
+                      : Colors.white70
+                  : Colors.grey.withOpacity(0.3),
+              borderRadius: const BorderRadius.all(const Radius.circular(3)),
+              boxShadow: [
+                BoxShadow(
+                  color: Settings.themeWhat
+                      ? Colors.grey.withOpacity(0.08)
+                      : Colors.grey.withOpacity(0.4),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            )
+          : null,
+      color: !Settings.themeFlat || !data.showDetail
+          ? null
+          : Settings.themeWhat
+              ? Colors.black26
+              : Colors.white,
+      child: data.showDetail
+          ? Row(
+              children: <Widget>[
+                ThumbnailWidget(
+                  id: data.queryResult.id().toString(),
+                  showDetail: data.showDetail,
+                  thumbnail: thumbnail,
+                  thumbnailTag: data.thumbnailTag,
+                  imageCount: imageCount,
+                  isBookmarked: isBookmarked,
+                  flareController: flareController,
+                  pad: pad,
+                  isBlurred: isBlurred,
+                  headers: headers,
+                  isLastestRead: isLastestRead,
+                  latestReadPage: latestReadPage,
+                  disableFiltering: disableFiltering,
+                ),
+                Expanded(
+                    child: _DetailWidget(
+                  artist: artist,
+                  title: title,
+                  imageCount: imageCount,
+                  dateTime: dateTime,
+                  viewed: data.viewed,
+                  seconds: data.seconds,
+                ))
+              ],
+            )
+          : ThumbnailWidget(
+              id: data.queryResult.id().toString(),
+              showDetail: data.showDetail,
+              thumbnail: thumbnail,
+              thumbnailTag: data.thumbnailTag,
+              imageCount: imageCount,
+              isBookmarked: isBookmarked,
+              flareController: flareController,
+              pad: pad,
+              isBlurred: isBlurred,
+              headers: headers,
+              isLastestRead: isLastestRead,
+              latestReadPage: latestReadPage,
+              disableFiltering: disableFiltering,
+            ),
+    );
   }
 }
 
