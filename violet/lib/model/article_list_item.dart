@@ -10,6 +10,8 @@ typedef void BookmarkCheckCallback(int article, bool check);
 typedef void DoubleTapCallback();
 
 class ArticleListItem {
+  final String key;
+
   final bool addBottomPadding;
   final bool showDetail;
   final QueryResult queryResult;
@@ -29,6 +31,7 @@ class ArticleListItem {
   // bool isChecked;
 
   ArticleListItem({
+    @required this.key,
     @required this.queryResult,
     @required this.addBottomPadding,
     @required this.showDetail,
@@ -49,6 +52,7 @@ class ArticleListItem {
   });
 
   factory ArticleListItem.fromArticleListItem({
+    String key,
     bool addBottomPadding,
     bool showDetail,
     QueryResult queryResult,
@@ -68,6 +72,7 @@ class ArticleListItem {
     // bool isChecked = false,
   }) {
     return ArticleListItem(
+      key: key,
       addBottomPadding: addBottomPadding,
       showDetail: showDetail,
       queryResult: queryResult,
