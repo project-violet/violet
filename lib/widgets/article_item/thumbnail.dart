@@ -58,18 +58,33 @@ class ThumbnailWidget extends StatelessWidget {
       child: thumbnail != null
           ? ClipRRect(
               borderRadius: showDetail
-                  ? BorderRadius.horizontal(left: Radius.circular(3.0))
+                  ? const BorderRadius.horizontal(left: Radius.circular(3.0))
                   : BorderRadius.circular(3.0),
               child: Stack(
                 children: <Widget>[
-                  _thumbnailImage(),
-                  _bookmarkIndicator(),
-                  _readProgress(),
-                  _pages(),
+                  ThumbnailImageWidget(
+                    headers: headers,
+                    thumbnail: thumbnail,
+                    thumbnailTag: thumbnailTag,
+                    isBlurred: isBlurred,
+                  ),
+                  BookmarkIndicatorWidget(
+                    flareController: flareController,
+                    isBookmarked: isBookmarked,
+                  ),
+                  ReadProgressOverlayWidget(
+                    imageCount: imageCount,
+                    latestReadPage: latestReadPage,
+                    isLastestRead: isLastestRead,
+                  ),
+                  PagesOverlayWidget(
+                    imageCount: imageCount,
+                    showDetail: showDetail,
+                  ),
                 ],
               ),
             )
-          : FlareActor(
+          : const FlareActor(
               "assets/flare/Loading2.flr",
               alignment: Alignment.center,
               fit: BoxFit.fitHeight,
@@ -77,9 +92,19 @@ class ThumbnailWidget extends StatelessWidget {
             ),
     );
   }
+}
 
-  Widget _thumbnailImage() {
-    // var headers = {"Referer": "https://hitomi.la/reader/${id}.html/"};
+class ThumbnailImageWidget extends StatelessWidget {
+  final String thumbnailTag;
+  final String thumbnail;
+  final Map<String, String> headers;
+  final bool isBlurred;
+
+  ThumbnailImageWidget(
+      {this.thumbnail, this.thumbnailTag, this.headers, this.isBlurred});
+
+  @override
+  Widget build(BuildContext context) {
     return Hero(
       tag: thumbnailTag,
       child: CachedNetworkImage(
@@ -101,7 +126,7 @@ class ThumbnailWidget extends StatelessWidget {
               : Container(),
         ),
         placeholder: (b, c) {
-          return FlareActor(
+          return const FlareActor(
             "assets/flare/Loading2.flr",
             alignment: Alignment.center,
             fit: BoxFit.fitHeight,
@@ -111,8 +136,16 @@ class ThumbnailWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _bookmarkIndicator() {
+class BookmarkIndicatorWidget extends StatelessWidget {
+  final bool isBookmarked;
+  final FlareControls flareController;
+
+  BookmarkIndicatorWidget({this.isBookmarked, this.flareController});
+
+  @override
+  Widget build(BuildContext context) {
     return Align(
       alignment: FractionalOffset.topLeft,
       child: Transform(
@@ -129,15 +162,25 @@ class ThumbnailWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _readProgress() {
+class ReadProgressOverlayWidget extends StatelessWidget {
+  final bool isLastestRead;
+  final int latestReadPage;
+  final int imageCount;
+
+  ReadProgressOverlayWidget(
+      {this.isLastestRead, this.latestReadPage, this.imageCount});
+
+  @override
+  Widget build(BuildContext context) {
     return !isLastestRead || !Settings.showArticleProgress
         ? Container()
         : Align(
             alignment: FractionalOffset.topRight,
             child: Container(
               // margin: EdgeInsets.symmetric(vertical: 10),
-              margin: EdgeInsets.all(4),
+              margin: const EdgeInsets.all(4),
               width: 50,
               height: 5,
               color: Colors.transparent,
@@ -154,8 +197,16 @@ class ThumbnailWidget extends StatelessWidget {
             ),
           );
   }
+}
 
-  Widget _pages() {
+class PagesOverlayWidget extends StatelessWidget {
+  final bool showDetail;
+  final int imageCount;
+
+  const PagesOverlayWidget({this.showDetail, this.imageCount});
+
+  @override
+  Widget build(BuildContext context) {
     return Visibility(
       visible: !showDetail,
       child: Align(
@@ -174,7 +225,7 @@ class ThumbnailWidget extends StatelessWidget {
               ),
               elevation: 6.0,
               shadowColor: Colors.grey[60],
-              padding: EdgeInsets.all(6.0),
+              padding: const EdgeInsets.all(6.0),
             ),
           ),
         ),
