@@ -34,28 +34,7 @@ import 'package:violet/widgets/toast.dart';
 typedef void BookmarkCallback(int article);
 typedef void BookmarkCheckCallback(int article, bool check);
 
-class ArticleListItemVerySimpleWidget extends StatelessWidget {
-  final bool isChecked;
-  final bool isCheckMode;
-  final ArticleListItem articleListItem;
-
-  ArticleListItemVerySimpleWidget({
-    this.isChecked = false,
-    this.isCheckMode = false,
-    this.articleListItem,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return _ArticleListItemVerySimpleWidget(
-      isCheckMode: isCheckMode,
-      isChecked: isChecked,
-      articleListItem: articleListItem,
-    );
-  }
-}
-
-class _ArticleListItemVerySimpleWidget extends StatefulWidget {
+class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final bool addBottomPadding;
   // final bool showDetail;
   // final QueryResult queryResult;
@@ -68,7 +47,7 @@ class _ArticleListItemVerySimpleWidget extends StatefulWidget {
   final bool isCheckMode;
   final ArticleListItem articleListItem;
 
-  _ArticleListItemVerySimpleWidget({
+  ArticleListItemVerySimpleWidget({
     // this.queryResult,
     // this.addBottomPadding,
     // this.showDetail,
@@ -83,15 +62,15 @@ class _ArticleListItemVerySimpleWidget extends StatefulWidget {
   });
 
   @override
-  __ArticleListItemVerySimpleWidgetState createState() =>
-      __ArticleListItemVerySimpleWidgetState();
+  _ArticleListItemVerySimpleWidgetState createState() =>
+      _ArticleListItemVerySimpleWidgetState();
 }
 
-class __ArticleListItemVerySimpleWidgetState
-    extends State<_ArticleListItemVerySimpleWidget>
+class _ArticleListItemVerySimpleWidgetState
+    extends State<ArticleListItemVerySimpleWidget>
     with
         TickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<_ArticleListItemVerySimpleWidget> {
+        AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
   ArticleListItem data;
 
   @override
@@ -102,7 +81,7 @@ class __ArticleListItemVerySimpleWidgetState
   double pad = 0.0;
   double scale = 1.0;
   bool onScaling = false;
-  AnimationController scaleAnimationController;
+  // AnimationController scaleAnimationController;
   bool isBlurred = false;
   bool disposed = false;
   bool isBookmarked = false;
@@ -117,6 +96,10 @@ class __ArticleListItemVerySimpleWidgetState
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _init();
+    });
   }
 
   String artist;
@@ -127,7 +110,7 @@ class __ArticleListItemVerySimpleWidgetState
   void dispose() {
     disposed = true;
     super.dispose();
-    scaleAnimationController.dispose();
+    // scaleAnimationController.dispose();
   }
 
   bool firstChecked = false;
@@ -153,26 +136,27 @@ class __ArticleListItemVerySimpleWidgetState
             ? 500.0
             : data.width * 4 / 3;
 
-    _initAnimations();
+    // _initAnimations();
     _checkIsBookmarked();
     _checkLastRead();
     _initTexts();
     _setProvider();
   }
 
-  _initAnimations() {
-    scaleAnimationController = AnimationController(
-      vsync: this,
-      lowerBound: 1.0,
-      upperBound: 1.08,
-      duration: Duration(milliseconds: 180),
-    );
-    scaleAnimationController.addListener(() {
-      setState(() {
-        scale = scaleAnimationController.value;
-      });
-    });
-  }
+  // _initAnimations() {
+  //   scaleAnimationController = AnimationController(
+  //     vsync: this,
+  //     lowerBound: 1.0,
+  //     upperBound: 1.08,
+  //     duration: Duration(milliseconds: 180),
+  //   );
+  //   scaleAnimationController.addListener(() {
+  //     if (scaleAnimationController.value != scale)
+  //       setState(() {
+  //         scale = scaleAnimationController.value;
+  //       });
+  //   });
+  // }
 
   _checkIsBookmarked() {
     Bookmark.getInstance().then((value) async {
@@ -254,7 +238,7 @@ class __ArticleListItemVerySimpleWidgetState
 
     if (disposed) return null;
 
-    _init();
+    // _init();
 
     if (data.bookmarkMode &&
         !widget.isCheckMode &&
