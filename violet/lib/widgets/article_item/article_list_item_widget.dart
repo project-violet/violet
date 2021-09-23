@@ -84,7 +84,7 @@ class _ArticleListItemVerySimpleWidgetState
   // AnimationController scaleAnimationController;
   bool isBlurred = false;
   bool disposed = false;
-  bool isBookmarked = false;
+  ValueNotifier<bool> isBookmarked = ValueNotifier<bool>(false);
   bool animating = false;
   bool isLastestRead = false;
   bool disableFiltering = false;
@@ -160,8 +160,7 @@ class _ArticleListItemVerySimpleWidgetState
 
   _checkIsBookmarked() {
     Bookmark.getInstance().then((value) async {
-      isBookmarked = await value.isBookmark(data.queryResult.id());
-      if (isBookmarked) setState(() {});
+      isBookmarked.value = await value.isBookmark(data.queryResult.id());
     });
   }
 
@@ -256,6 +255,26 @@ class _ArticleListItemVerySimpleWidgetState
       });
     }
 
+    // https://stackoverflow.com/a/52249579
+    final body = BodyWidget(
+      data: data,
+      thumbnail: thumbnail,
+      imageCount: imageCount,
+      isBookmarked: isBookmarked,
+      flareController: _flareController,
+      pad: pad,
+      isBlurred: isBlurred,
+      headers: {
+        "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
+      },
+      isLastestRead: isLastestRead,
+      latestReadPage: latestReadPage,
+      disableFiltering: disableFiltering,
+      artist: artist,
+      title: title,
+      dateTime: dateTime,
+    );
+
     return Container(
       color: widget.isChecked ? Colors.amber : Colors.transparent,
       child: PimpedButton(
@@ -272,25 +291,7 @@ class _ArticleListItemVerySimpleWidgetState
                   ..translate(thisWidth / 2, thisHeight / 2)
                   ..scale(scale)
                   ..translate(-thisWidth / 2, -thisHeight / 2),
-                child: BodyWidget(
-                  data: data,
-                  thumbnail: thumbnail,
-                  imageCount: imageCount,
-                  isBookmarked: isBookmarked,
-                  flareController: _flareController,
-                  pad: pad,
-                  isBlurred: isBlurred,
-                  headers: {
-                    "Referer":
-                        "https://hitomi.la/reader/${data.queryResult.id()}.html/"
-                  },
-                  isLastestRead: isLastestRead,
-                  latestReadPage: latestReadPage,
-                  disableFiltering: disableFiltering,
-                  artist: artist,
-                  title: title,
-                  dateTime: dateTime,
-                ),
+                child: body,
               ),
             ),
             onTapDown: _onTapDown,
@@ -364,7 +365,7 @@ class _ArticleListItemVerySimpleWidgetState
                   thumbnail: thumbnail,
                   headers: headers,
                   heroKey: data.thumbnailTag,
-                  isBookmarked: isBookmarked,
+                  isBookmarked: isBookmarked.value,
                   controller: controller,
                   usableTabList: data.usableTabList,
                 ),
@@ -396,18 +397,18 @@ class _ArticleListItemVerySimpleWidgetState
       return;
     }
 
-    if (isBookmarked) {
+    if (isBookmarked.value) {
       if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
     }
     try {
       FlutterToast(context).showToast(
         child: ToastWrapper(
-          icon: isBookmarked ? Icons.delete_forever : Icons.check,
-          color: isBookmarked
+          icon: isBookmarked.value ? Icons.delete_forever : Icons.check,
+          color: isBookmarked.value
               ? Colors.redAccent.withOpacity(0.8)
               : Colors.greenAccent.withOpacity(0.8),
           msg:
-              '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked ? 'removetobookmark' : 'addtobookmark')}',
+              '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
         ),
         gravity: ToastGravity.BOTTOM,
         toastDuration: Duration(seconds: 4),
@@ -416,14 +417,14 @@ class _ArticleListItemVerySimpleWidgetState
       Logger.error(
           '[ArticleList-LongPress] E: ' + e.toString() + '\n' + st.toString());
     }
-    isBookmarked = !isBookmarked;
+    isBookmarked.value = !isBookmarked.value;
 
-    if (isBookmarked)
+    if (isBookmarked.value)
       await (await Bookmark.getInstance()).bookmark(data.queryResult.id());
     else
       await (await Bookmark.getInstance()).unbookmark(data.queryResult.id());
 
-    if (!isBookmarked)
+    if (!isBookmarked.value)
       _flareController.play('Unlike');
     else {
       controller.forward(from: 0.0);
@@ -506,7 +507,7 @@ class BodyWidget extends StatelessWidget {
   final ArticleListItem data;
   final String thumbnail;
   final int imageCount;
-  final bool isBookmarked;
+  final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
   final double pad;
   final bool isBlurred;

@@ -565,6 +565,30 @@ class ResultPanelWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var mm = Settings.searchResultType == 0 ? 3 : 2;
     var windowWidth = MediaQuery.of(context).size.width;
+
+    final childs = resultList
+        .map((e) => Padding(
+              padding: EdgeInsets.zero,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  child: Provider<ArticleListItem>.value(
+                    value: ArticleListItem.fromArticleListItem(
+                      queryResult: e,
+                      showDetail: false,
+                      addBottomPadding: false,
+                      width: (windowWidth - 4.0) / mm,
+                      thumbnailTag:
+                          'thumbnail' + e.id().toString() + dateTime.toString(),
+                      usableTabList: resultList,
+                    ),
+                    child: ArticleListItemVerySimpleWidget(),
+                  ),
+                ),
+              ),
+            ))
+        .toList();
+
     switch (Settings.searchResultType) {
       case 0:
       case 1:
@@ -606,32 +630,33 @@ class ResultPanelWidget extends StatelessWidget {
               //       ),
               //     );
               //   },
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return Padding(
-                    padding: EdgeInsets.zero,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        child: Provider<ArticleListItem>.value(
-                          value: ArticleListItem.fromArticleListItem(
-                            queryResult: resultList[index],
-                            showDetail: false,
-                            addBottomPadding: false,
-                            width: (windowWidth - 4.0) / mm,
-                            thumbnailTag: 'thumbnail' +
-                                resultList[index].id().toString() +
-                                dateTime.toString(),
-                            usableTabList: resultList,
-                          ),
-                          child: ArticleListItemVerySimpleWidget(),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                childCount: resultList.length,
-              ),
+              // delegate: SliverChildBuilderDelegate(
+              //   (BuildContext context, int index) {
+              //     return Padding(
+              //       padding: EdgeInsets.zero,
+              //       child: Align(
+              //         alignment: Alignment.bottomCenter,
+              //         child: SizedBox(
+              //           child: Provider<ArticleListItem>.value(
+              //             value: ArticleListItem.fromArticleListItem(
+              //               queryResult: resultList[index],
+              //               showDetail: false,
+              //               addBottomPadding: false,
+              //               width: (windowWidth - 4.0) / mm,
+              //               thumbnailTag: 'thumbnail' +
+              //                   resultList[index].id().toString() +
+              //                   dateTime.toString(),
+              //               usableTabList: resultList,
+              //             ),
+              //             child: ArticleListItemVerySimpleWidget(),
+              //           ),
+              //         ),
+              //       ),
+              //     );
+              //   },
+              delegate: SliverChildListDelegate(childs),
+              // childCount: childs.length,
+              // ),
             ));
 
       case 2:

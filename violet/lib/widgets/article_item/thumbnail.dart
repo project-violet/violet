@@ -15,7 +15,7 @@ class ThumbnailWidget extends StatelessWidget {
   final String thumbnail;
   final String thumbnailTag;
   final int imageCount;
-  final bool isBookmarked;
+  final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
   final String id;
   final bool isBlurred;
@@ -139,7 +139,7 @@ class ThumbnailImageWidget extends StatelessWidget {
 }
 
 class BookmarkIndicatorWidget extends StatelessWidget {
-  final bool isBookmarked;
+  final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
 
   BookmarkIndicatorWidget({this.isBookmarked, this.flareController});
@@ -153,10 +153,15 @@ class BookmarkIndicatorWidget extends StatelessWidget {
         child: SizedBox(
           width: 35,
           height: 35,
-          child: FlareActor(
-            'assets/flare/likeUtsua.flr',
-            animation: isBookmarked ? "Like" : "IdleUnlike",
-            controller: flareController,
+          child: ValueListenableBuilder(
+            valueListenable: isBookmarked,
+            builder: (BuildContext context, bool value, Widget child) {
+              return FlareActor(
+                'assets/flare/likeUtsua.flr',
+                animation: value ? "Like" : "IdleUnlike",
+                controller: flareController,
+              );
+            },
           ),
         ),
       ),
