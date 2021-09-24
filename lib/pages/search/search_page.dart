@@ -104,6 +104,7 @@ class _SearchPageState extends State<SearchPage>
         queryResult = latestQuery.item1.item1;
         if (_filterController.isPopulationSort)
           Population.sortByPopulation(queryResult);
+        _shouldReload = true;
         setState(() {});
       } catch (e) {
         print('Initial search failed: $e');
@@ -143,11 +144,24 @@ class _SearchPageState extends State<SearchPage>
 
   ScrollController _scroll = ScrollController();
 
+  bool _shouldReload = false;
+  ResultPanelWidget _cachedPannel;
+
   // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final height = MediaQuery.of(context).size.height;
+
+    final panel = ResultPanelWidget(
+      dateTime: datetime,
+      resultList: filter(),
+      key: key,
+    );
+
+    if (_cachedPannel == null || _shouldReload) {
+      _shouldReload = false;
+      _cachedPannel = panel;
+    }
 
     return SafeArea(
       bottom: false,
@@ -169,11 +183,7 @@ class _SearchPageState extends State<SearchPage>
               ),
             ),
           ),
-          ResultPanelWidget(
-            dateTime: datetime,
-            resultList: filter(),
-            key: key,
-          ),
+          _cachedPannel
         ],
       ),
     );
@@ -248,6 +258,7 @@ class _SearchPageState extends State<SearchPage>
                         isFilterUsed = false;
                         await loadNextQuery();
                         setState(() {
+                          _shouldReload = true;
                           key = ObjectKey(Uuid().v4());
                         });
                       },
@@ -341,6 +352,7 @@ class _SearchPageState extends State<SearchPage>
                 ))
                     .then((value) async {
                   await Future.delayed(Duration(milliseconds: 50), () {
+                    _shouldReload = true;
                     setState(() {});
                   });
                 });
@@ -370,6 +382,7 @@ class _SearchPageState extends State<SearchPage>
                       .then((value) async {
                     _applyFilter();
                     setState(() {
+                      _shouldReload = true;
                       key = ObjectKey(Uuid().v4());
                     });
                   });
@@ -386,6 +399,7 @@ class _SearchPageState extends State<SearchPage>
                       .then((value) async {
                     _applyFilter();
                     setState(() {
+                      _shouldReload = true;
                       key = ObjectKey(Uuid().v4());
                     });
                   });
@@ -492,6 +506,7 @@ class _SearchPageState extends State<SearchPage>
       if (_filterController.isPopulationSort)
         Population.sortByPopulation(queryResult);
 
+      _shouldReload = true;
       setState(() {});
     } catch (e, st) {
       Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
@@ -552,6 +567,8 @@ class _SearchPageState extends State<SearchPage>
     return filterResult;
   }
 }
+
+int count = 0;
 
 class ResultPanelWidget extends StatelessWidget {
   final List<QueryResult> resultList;

@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 9, 24),
+    version: '1.16.1 Patch Update <== Latest',
+    contents: [
+      'optimize critical ui processes-2',
+      'replace sync info url',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 9, 22),
-    version: '1.16 Patch Update <== Latest',
+    version: '1.16 Minor Update',
     contents: [
       'optimize critical ui processes',
       'add hisoki.me router',

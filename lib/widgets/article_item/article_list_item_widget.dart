@@ -81,7 +81,6 @@ class _ArticleListItemVerySimpleWidgetState
   double pad = 0.0;
   double scale = 1.0;
   bool onScaling = false;
-  // AnimationController scaleAnimationController;
   bool isBlurred = false;
   bool disposed = false;
   ValueNotifier<bool> isBookmarked = ValueNotifier<bool>(false);
@@ -110,7 +109,6 @@ class _ArticleListItemVerySimpleWidgetState
   void dispose() {
     disposed = true;
     super.dispose();
-    // scaleAnimationController.dispose();
   }
 
   bool firstChecked = false;
@@ -125,6 +123,7 @@ class _ArticleListItemVerySimpleWidgetState
       data = Provider.of<ArticleListItem>(context);
     else
       data = widget.articleListItem;
+
     disableFiltering = (data.disableFilter != null && data.disableFilter);
 
     thisWidth = data.showDetail
@@ -136,27 +135,11 @@ class _ArticleListItemVerySimpleWidgetState
             ? 500.0
             : data.width * 4 / 3;
 
-    // _initAnimations();
     _checkIsBookmarked();
     _checkLastRead();
     _initTexts();
     _setProvider();
   }
-
-  // _initAnimations() {
-  //   scaleAnimationController = AnimationController(
-  //     vsync: this,
-  //     lowerBound: 1.0,
-  //     upperBound: 1.08,
-  //     duration: Duration(milliseconds: 180),
-  //   );
-  //   scaleAnimationController.addListener(() {
-  //     if (scaleAnimationController.value != scale)
-  //       setState(() {
-  //         scale = scaleAnimationController.value;
-  //       });
-  //   });
-  // }
 
   _checkIsBookmarked() {
     Bookmark.getInstance().then((value) async {
@@ -175,6 +158,7 @@ class _ArticleListItemVerySimpleWidgetState
                       .inDays <
                   31);
           if (x.length == 0) return;
+          _shouldReload = true;
           setState(() {
             isLastestRead = true;
             latestReadPage = x.first.lastPage();
@@ -198,27 +182,21 @@ class _ArticleListItemVerySimpleWidgetState
     dateTime = data.queryResult.getDateTime() != null
         ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime())
         : '';
+    _shouldReload = true;
+    setState(() {});
   }
 
   _setProvider() {
     if (!ProviderManager.isExists(data.queryResult.id())) {
-      // HitomiManager.getImageList(data.queryResult.id().toString())
-      //     .then((images) {
-      //   if (images == null) {
-      //     return;
-      //   }
-      //   thumbnail = images.item2[0];
-      //   imageCount = images.item2.length;
-      //   ThumbnailManager.insert(data.queryResult.id(), images);
-      //   if (!disposed) setState(() {});
-      // });
-
       HentaiManager.getImageProvider(data.queryResult).then((value) async {
         thumbnail = await value.getThumbnailUrl();
         imageCount = value.length();
         headers = await value.getHeader(0);
         ProviderManager.insert(data.queryResult.id(), value);
-        if (!disposed) setState(() {});
+        if (!disposed)
+          setState(() {
+            _shouldReload = true;
+          });
       });
     } else {
       Future.delayed(Duration(milliseconds: 1)).then((v) async {
@@ -226,10 +204,16 @@ class _ArticleListItemVerySimpleWidgetState
         thumbnail = await provider.getThumbnailUrl();
         imageCount = provider.length();
         headers = await provider.getHeader(0);
-        if (!disposed) setState(() {});
+        if (!disposed)
+          setState(() {
+            _shouldReload = true;
+          });
       });
     }
   }
+
+  BodyWidget _body;
+  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +221,7 @@ class _ArticleListItemVerySimpleWidgetState
 
     if (disposed) return null;
 
-    // _init();
+    _init();
 
     if (data.bookmarkMode &&
         !widget.isCheckMode &&
@@ -275,6 +259,11 @@ class _ArticleListItemVerySimpleWidgetState
       dateTime: dateTime,
     );
 
+    if (_body == null || _shouldReload) {
+      _shouldReload = false;
+      _body = body;
+    }
+
     return Container(
       color: widget.isChecked ? Colors.amber : Colors.transparent,
       child: PimpedButton(
@@ -291,7 +280,7 @@ class _ArticleListItemVerySimpleWidgetState
                   ..translate(thisWidth / 2, thisHeight / 2)
                   ..scale(scale)
                   ..translate(-thisWidth / 2, -thisHeight / 2),
-                child: body,
+                child: _body,
               ),
             ),
             onTapDown: _onTapDown,
