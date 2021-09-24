@@ -36,7 +36,7 @@ class SyncInfoRecord {
 }
 
 class SyncManager {
-  static const String syncInfoURL = "https://koromo.xyz/version.txt";
+  static const String syncInfoURL = "https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt";
 
   static bool firstSync = false;
   static bool syncRequire = false; // database sync require
