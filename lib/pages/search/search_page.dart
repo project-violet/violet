@@ -256,6 +256,7 @@ class _SearchPageState extends State<SearchPage>
                         _filterController = FilterController();
                         queryEnd = false;
                         isFilterUsed = false;
+                        _shouldReload = true;
                         await loadNextQuery();
                         setState(() {
                           _shouldReload = true;
@@ -291,7 +292,9 @@ class _SearchPageState extends State<SearchPage>
     );
     final db = await SearchLogDatabase.getInstance();
     await db.insertSearchLog(query);
+    _shouldReload = true;
     setState(() {
+      _shouldReload = true;
       heroFlareControls.play('close2search');
     });
     if (query == null) return;
@@ -381,6 +384,7 @@ class _SearchPageState extends State<SearchPage>
                   )
                       .then((value) async {
                     _applyFilter();
+                    _shouldReload = true;
                     setState(() {
                       _shouldReload = true;
                       key = ObjectKey(Uuid().v4());
@@ -398,6 +402,7 @@ class _SearchPageState extends State<SearchPage>
                   ))
                       .then((value) async {
                     _applyFilter();
+                    _shouldReload = true;
                     setState(() {
                       _shouldReload = true;
                       key = ObjectKey(Uuid().v4());
@@ -507,7 +512,9 @@ class _SearchPageState extends State<SearchPage>
         Population.sortByPopulation(queryResult);
 
       _shouldReload = true;
-      setState(() {});
+      setState(() {
+        _shouldReload = true;
+      });
     } catch (e, st) {
       Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
       rethrow;
