@@ -141,7 +141,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               if (cc.length == 0) {
                 queryResult = <QueryResult>[];
                 filterResult = queryResult;
+                _shouldRebuild = true;
                 setState(() {
+                  _shouldRebuild = true;
                   key = ObjectKey(Uuid().v4());
                 });
                 return;
@@ -170,7 +172,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                       'Artists': article['Artists'].join('|'),
                     };
                     result.add(QueryResult(result: meta));
-                    setState(() {});
+                    _shouldRebuild = true;
+                    setState(() {
+                      _shouldRebuild = true;
+                    });
                     return;
                   }
                   result.add(qr[element.article()]);
@@ -178,15 +183,27 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
                 queryResult = result;
                 _applyFilter();
+                _shouldRebuild = true;
                 setState(() {
+                  _shouldRebuild = true;
                   key = ObjectKey(Uuid().v4());
                 });
               });
             }));
   }
 
+  bool _shouldRebuild = false;
+  Widget _cachedList;
+
   @override
   Widget build(BuildContext context) {
+    final list = buildList();
+
+    if (_cachedList == null || _shouldRebuild) {
+      _shouldRebuild = false;
+      _cachedList = list;
+    }
+
     return CardPanel.build(
       context,
       child: Stack(
@@ -224,7 +241,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                               ])),
                         ),
                       ),
-                      buildList()
+                      _cachedList
                     ],
                   ),
                 ),
@@ -270,7 +287,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               filterResult.forEach((element) {
                 checked.add(element.id());
               });
-              setState(() {});
+              _shouldRebuild = true;
+              setState(() {
+                _shouldRebuild = true;
+              });
             },
             elevation: 4,
             heroTag: 'a',
@@ -310,12 +330,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       ],
       animatedIconData: AnimatedIcons.menu_close,
       exitCallback: () {
+        _shouldRebuild = true;
         setState(() {
+          _shouldRebuild = true;
           checkModePre = false;
           checked.clear();
         });
         Future.delayed(Duration(milliseconds: 500)).then((value) {
+          _shouldRebuild = true;
           setState(() {
+            _shouldRebuild = true;
             checkMode = false;
           });
         });
@@ -373,7 +397,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 await (await SharedPreferences.getInstance())
                     .setInt('bookmark_${widget.groupId}', value);
                 await Future.delayed(Duration(milliseconds: 50), () {
-                  setState(() {});
+                  _shouldRebuild = true;
+                  setState(() {
+                    _shouldRebuild = true;
+                  });
                 });
               });
             },
@@ -404,7 +431,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 )
                     .then((value) async {
                   _applyFilter();
+                  _shouldRebuild = true;
                   setState(() {
+                    _shouldRebuild = true;
                     key = ObjectKey(Uuid().v4());
                   });
                 });
@@ -420,7 +449,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 ))
                     .then((value) async {
                   _applyFilter();
+                  _shouldRebuild = true;
                   setState(() {
+                    _shouldRebuild = true;
                     key = ObjectKey(Uuid().v4());
                   });
                 });
@@ -658,7 +689,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       checkMode = true;
       checkModePre = true;
       checked.add(article);
-      setState(() {});
+      _shouldRebuild = true;
+      setState(() {
+        _shouldRebuild = true;
+      });
     }
   }
 
@@ -668,12 +702,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     else {
       checked.removeWhere((element) => element == article);
       if (checked.length == 0) {
+        _shouldRebuild = true;
         setState(() {
+          _shouldRebuild = true;
           checkModePre = false;
           checked.clear();
         });
         Future.delayed(Duration(milliseconds: 500)).then((value) {
+          _shouldRebuild = true;
           setState(() {
+            _shouldRebuild = true;
             checkMode = false;
           });
         });
@@ -759,12 +797,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         }
 
         // 5. Update UI
+        _shouldRebuild = true;
         setState(() {
+          _shouldRebuild = true;
           checkModePre = false;
           checked.clear();
         });
+        _shouldRebuild = true;
         Future.delayed(Duration(milliseconds: 500)).then((value) {
           setState(() {
+            _shouldRebuild = true;
             checkMode = false;
           });
         });
