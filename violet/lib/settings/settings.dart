@@ -57,6 +57,7 @@ class Settings {
   static String downloadBasePath;
   static String downloadRule;
 
+  static String searchMessageAPI;
   static bool useVioletServer;
 
   static bool useDrawer;
@@ -386,6 +387,14 @@ class Settings {
           .setString('downloadrule', downloadRule);
     }
 
+    searchMessageAPI =
+        (await SharedPreferences.getInstance()).getString('searchmessageapi');
+    if (searchMessageAPI == null) {
+      searchMessageAPI = "https://koromo.xyz/api/search/msg";
+      await (await SharedPreferences.getInstance())
+          .setString('searchmessageapi', downloadRule);
+    }
+
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
     showArticleProgress = await _getBool('showarticleprogress');
@@ -592,6 +601,12 @@ class Settings {
   static Future<void> setDownloadRule(String nn) async {
     downloadRule = nn;
     await (await SharedPreferences.getInstance()).setString('downloadrule', nn);
+  }
+
+  static Future<void> setSearchMessageAPI(String nn) async {
+    searchMessageAPI = nn;
+    await (await SharedPreferences.getInstance())
+        .setString('searchmessageapi', nn);
   }
 
   static Future<void> setUserInnerStorage(bool nn) async {

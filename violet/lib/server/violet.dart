@@ -12,6 +12,7 @@ import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/pages/viewer/viewer_report.dart';
 import 'package:violet/server/salt.dart';
 import 'package:violet/server/wsalt.dart' as wsalt;
+import 'package:violet/settings/settings.dart';
 
 class VioletServer {
   static const protocol = 'https';
@@ -418,12 +419,13 @@ class VioletServer {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = wsalt.getValid(vToken.toString());
 
-    var gg = await http
-        .get('$api/search/msg/$type/' + Uri.encodeFull(what), headers: {
-      'v-token': vToken.toString(),
-      'v-valid': vValid,
-      "Content-Type": "application/json"
-    });
+    var gg = await http.get(
+        '${Settings.searchMessageAPI}/$type/' + Uri.encodeFull(what),
+        headers: {
+          'v-token': vToken.toString(),
+          'v-valid': vValid,
+          "Content-Type": "application/json"
+        });
 
     if (gg.statusCode != 200) {
       return gg.statusCode;

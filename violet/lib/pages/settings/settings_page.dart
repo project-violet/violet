@@ -887,6 +887,58 @@ class _SettingsPageState extends State<SettingsPage>
             },
           ),
           _buildDivider(),
+          ListTile(
+            leading: Icon(
+              MdiIcons.commentSearch,
+              color: Settings.majorColor,
+            ),
+            title: Text('대사 검색기 API'),
+            trailing: Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              TextEditingController text =
+                  TextEditingController(text: Settings.searchMessageAPI);
+              Widget okButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('ok')),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              );
+              Widget cancelButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('cancel')),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              );
+              Widget defaultButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('default')),
+                onPressed: () {
+                  setState(
+                      () => text.text = 'https://koromo.xyz/api/search/msg');
+                },
+              );
+              var dialog = await showDialog(
+                useRootNavigator: false,
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  title: Text('대사 검색기 API'),
+                  content: TextField(
+                    controller: text,
+                    autofocus: true,
+                    maxLines: 3,
+                  ),
+                  actions: [defaultButton, okButton, cancelButton],
+                ),
+              );
+              if (dialog != null && dialog == true) {
+                await Settings.setSearchMessageAPI(text.text);
+              }
+            },
+          ),
+          _buildDivider(),
           InkWell(
             customBorder: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
