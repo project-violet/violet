@@ -29,6 +29,9 @@ class ArticleListPage extends StatefulWidget {
 }
 
 class _ArticleListPageState extends State<ArticleListPage> {
+  bool _shouldReload = false;
+  Widget _cachedList;
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -36,6 +39,14 @@ class _ArticleListPageState extends State<ArticleListPage> {
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
     // if (similarsAll == null) return Text('asdf');
+
+    final list = buildList();
+
+    if (_cachedList == null || _shouldReload) {
+      _shouldReload = false;
+      _cachedList = list;
+    }
+
     return Padding(
       // padding: EdgeInsets.all(0),
       padding: EdgeInsets.only(
@@ -76,7 +87,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                           ),
                         ),
                       ),
-                      buildList()
+                      _cachedList
                     ],
                   ),
                 ),
@@ -135,7 +146,10 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 if (value == null) return;
                 nowType = value;
                 await Future.delayed(Duration(milliseconds: 50), () {
-                  setState(() {});
+                  _shouldReload = true;
+                  setState(() {
+                    _shouldReload = true;
+                  });
                 });
               });
             },
@@ -164,7 +178,9 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 )
                     .then((value) async {
                   _applyFilter();
+                  _shouldReload = true;
                   setState(() {
+                    _shouldReload = true;
                     key = ObjectKey(Uuid().v4());
                   });
                 });
@@ -180,7 +196,9 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 ))
                     .then((value) async {
                   _applyFilter();
+                  _shouldReload = true;
                   setState(() {
+                    _shouldReload = true;
                     key = ObjectKey(Uuid().v4());
                   });
                 });
