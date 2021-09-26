@@ -30,7 +30,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
       return HttpWrapper.cacheResponse[url];
     }
     Logger.info(
-        '[Http Request] GET: ' + url + '\nHEADERS: ' + jsonEncode(headers));
+        '[Http Request] GET: ' + url);
     var retry = 0;
     while (true) {
       var res = await http
