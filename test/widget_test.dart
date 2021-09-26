@@ -21,6 +21,8 @@ import 'package:violet/cert/root.dart';
 import 'package:violet/component/hentai.dart';
 // import 'package:violet/component/download/hitomi.dart';
 import 'package:http/http.dart' as http;
+import 'package:violet/component/hisoki/hisoki_getter.dart';
+import 'package:violet/component/hisoki/hisoki_hash.dart';
 
 // import 'package:violet/main.dart';
 // import 'package:violet/component/download/twitter.dart';
@@ -29,13 +31,14 @@ import 'package:http/http.dart' as http;
 // import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/ldi.dart';
+import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/script/parse_tree.dart';
 import 'package:violet/script/script_lexer.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/script/script_parser.dart';
 import 'package:violet/script/script_runner.dart';
-import 'package:violet/script/scripts/hitomi_get_image_list.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
@@ -51,8 +54,13 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   sqfliteFfiInit();
+
   setUp(() async {
     WidgetsFlutterBinding.ensureInitialized();
+  });
+
+  testWidgets('', (WidgetTester tester) async {
+    // tester.pumpAndSettle()
   });
   /*test("Test Translated", () async {
     await TagTranslate.init();
@@ -129,6 +137,30 @@ void main() {
   });*/
 
   test('test search', () async {
+    // await HisokiHash.init();
+    // var x = await HisokiGetter.getImages(2013923);
+    // print(x);
+
+    // var tmessages =
+    //     (await VioletServer.searchMessage('contains', '네다씹')) as List<dynamic>;
+    // print(tmessages[0]['Message']);
+    // var messages = tmessages
+    //     .map((e) => Tuple6<double, int, int, String, double, List<double>>(
+    //         double.parse(e['MatchScore'] as String),
+    //         e['Id'] as int,
+    //         e['Page'] as int,
+    //         e['Message'] as String,
+    //         e['Correctness'] as double,
+    //         (e['Rect'] as List<dynamic>)
+    //             .map((e) => double.parse(e.toString()))
+    //             .toList()))
+    //     .toList();
+
+    // var imgs = await HitomiManager.getImageList("2004843");
+    // print(imgs.item1[115]);
+
+    // print(messages);
+
     /*var runner = ScriptRunner("""
         x="12|34"
         
@@ -175,7 +207,11 @@ void main() {
 
     await runner.runScript(null);*/
 
-    print(await ScriptHitomiGetImageList.run(1987576));
+    // print(await VioletServer.searchComment(""));
+
+    // await ScriptManager.init();
+    // print(await ScriptManager.runHitomiGetImageList(1987576));
+    // print(await ScriptHitomiGetImageList.run(1987576));
 
     // var gg = await http.get(Uri.parse('${VioletServer.api}/top_recent?s=9999'));
     // var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
