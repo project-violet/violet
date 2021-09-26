@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:violet/database/query.dart';
@@ -10,7 +11,13 @@ class Population {
   static Map<int, int> population;
 
   static Future<void> init() async {
-    final data = await rootBundle.loadString('assets/rank/population.json');
+    String data;
+
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      var file = File('/home/ubuntu/violet/assets/rank/population.json');
+      data = await file.readAsString();
+    } else
+      data = await rootBundle.loadString('assets/rank/population.json');
 
     List<dynamic> _population = json.decode(data);
     population = Map<int, int>();

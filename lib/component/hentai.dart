@@ -167,11 +167,11 @@ class HentaiManager {
       try {
         switch (route[i]) {
           case 'EHentai':
-            var result = await _searchEHentai(what, offset.toString());
+            var result = await searchEHentai(what, offset.toString());
             return Tuple2<List<QueryResult>, int>(
                 result, result.length >= 25 ? offset + 1 : -1);
           case 'ExHentai':
-            var result = await _searchEHentai(what, offset.toString(), true);
+            var result = await searchEHentai(what, offset.toString(), true);
             return Tuple2<List<QueryResult>, int>(
                 result, result.length >= 25 ? offset + 1 : -1);
             break;
@@ -352,7 +352,7 @@ class HentaiManager {
   // static Future<Tuple2<bool, Tuple3<List<String>, List<String>, List<String>>>>
   //     _tryNHentai(QueryResult qr) async {}
 
-  static Future<List<QueryResult>> _searchEHentai(String what, String page,
+  static Future<List<QueryResult>> searchEHentai(String what, String page,
       [bool exh = false]) async {
     var search = Uri.encodeComponent(what);
     // var url =
