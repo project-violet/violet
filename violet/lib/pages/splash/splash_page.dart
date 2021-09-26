@@ -191,6 +191,11 @@ class _SplashPageState extends State<SplashPage> {
     await HisokiHash.init();
     // await ScriptManager.init();
 
+    if (Platform.isAndroid)
+      try {
+        await Logger.exportLog();
+      } catch (_) {}
+
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
         !widget.switching) {
       try {
