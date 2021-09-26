@@ -80,11 +80,6 @@ void main() async {
   //   await Logger.exportLog();
   // };
 
-  if (Platform.isAndroid)
-    try {
-      await Logger.exportLog();
-    } catch (_) {}
-
   var analytics = FirebaseAnalytics(); // @dependent: android
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
   if (id == null) {
