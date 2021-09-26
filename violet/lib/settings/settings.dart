@@ -392,7 +392,7 @@ class Settings {
     if (searchMessageAPI == null) {
       searchMessageAPI = "https://koromo.xyz/api/search/msg";
       await (await SharedPreferences.getInstance())
-          .setString('searchmessageapi', downloadRule);
+          .setString('searchmessageapi', searchMessageAPI);
     }
 
     useVioletServer = await _getBool('usevioletserver');
