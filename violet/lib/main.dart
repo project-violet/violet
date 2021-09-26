@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -78,6 +79,11 @@ void main() async {
   //   await Logger.error(details.exceptionAsString());
   //   await Logger.exportLog();
   // };
+
+  if (Platform.isAndroid)
+    try {
+      await Logger.exportLog();
+    } catch (_) {}
 
   var analytics = FirebaseAnalytics(); // @dependent: android
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
