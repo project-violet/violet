@@ -123,8 +123,9 @@ class Logger {
 
   static Future<void> exportLog() async {
     final ext = await getExternalStorageDirectory();
-    final dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
-    final extpath = '${ext.path}/log-${dateFormat.format(DateTime.now())}.log';
+    // final dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
+    // final extpath = '${ext.path}/log-${dateFormat.format(DateTime.now())}.log';
+    final extpath = '${ext.path}/log.txt';
     await logFile.copy(extpath);
   }
 }
