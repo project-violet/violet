@@ -20,6 +20,7 @@ import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
@@ -52,10 +53,19 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   .map((e) => double.parse(e.toString()))
                   .toList()))
           .toList();
+
+      if (_height == null) {
+        _height = List<double>.filled(messages.length, 0);
+        _keys =
+            List<GlobalKey>.generate(messages.length, (index) => GlobalKey());
+      }
+
       setState(() {});
     });
   }
 
+  List<double> _height;
+  List<GlobalKey> _keys;
   String selected = 'Contains';
 
   @override
@@ -67,148 +77,141 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       child: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
+            child: ListView.builder(
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.all(0),
-              child: Column(
-                children: messages.map(
-                  (e) {
-                    return FutureBuilder(
-                      future: Future.delayed(Duration(milliseconds: 100))
-                          .then((value) async {
-                        var imgs = await HitomiManager.getImageList(
-                            e.item2.toString());
-                        return imgs.item1[e.item3];
-                      }),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return SizedBox(
-                            height: 300,
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: CircularProgressIndicator(),
-                              ),
-                            ),
-                          );
-                        }
-                        return InkWell(
-                          // onTap: () async {},
-                          onTap: () async {
-                            // FocusScope.of(context).unfocus();
-                            // _navigate(LabSearchCommentsAuthor(e.item3));
-                            FocusScope.of(context).unfocus();
-                            _showArticleInfo(e.item2);
-                          },
-                          splashColor: Colors.white,
-                          // child: ListTile(
-                          //   title: Row(
-                          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          //     children: <Widget>[
-                          //       Text('(${e.item1}) [${e.item3}]'),
-                          //       Expanded(
-                          //         child: Align(
-                          //           alignment: Alignment.centerRight,
-                          //           child: Text(
-                          //               '${DateFormat('yyyy-MM-dd HH:mm').format(e.item2.toLocal())}',
-                          //               style: TextStyle(fontSize: 12)),
-                          //         ),
-                          //       ),
-                          //     ],
-                          //   ),
-                          //   subtitle: Text(e.item4),
-                          // ),
-                          child: Column(
+              itemBuilder: (BuildContext ctxt, int index) {
+                var e = messages[index];
+
+                return FutureBuilder(
+                  future: Future.delayed(Duration(milliseconds: 100))
+                      .then((value) async {
+                    var imgs =
+                        await HitomiManager.getImageList(e.item2.toString());
+                    return imgs.item1[e.item3];
+                  }),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return SizedBox(
+                        height: 300,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: CircularProgressIndicator(),
+                          ),
+                        ),
+                      );
+                    }
+                    return InkWell(
+                      onTap: () async {
+                        FocusScope.of(context).unfocus();
+                        _showArticleInfo(e.item2);
+                      },
+                      splashColor: Colors.white,
+                      child: Column(
+                        children: [
+                          Stack(
                             children: [
-                              Stack(
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: snapshot.data as String,
-                                    httpHeaders: {
-                                      "Referer":
-                                          'https://hitomi.la/reader/1234.html'
-                                    },
-                                  ),
-                                  FutureBuilder(
-                                    future: _calculateImageDimension(
-                                        snapshot.data as String),
-                                    builder: (context,
-                                        AsyncSnapshot<Size> snapshot2) {
-                                      if (!snapshot2.hasData)
-                                        return Container();
-
-                                      var brtx = e.item5[0];
-                                      var brty = e.item5[1];
-                                      var brbx = e.item5[2];
-                                      var brby = e.item5[3];
-
-                                      var w = snapshot2.data.width;
-                                      var h = snapshot2.data.height;
-
-                                      /*
-                                  <---------- image --------->
-
-                                  <----- screen ----->
-                                  */
-
-                                      // screen width : image width = x : boundary box width
-                                      // x = screen width * boundary box width / image width
-
-                                      var ratio = width / w;
-
-                                      return Positioned(
-                                        top: brty * ratio - 4,
-                                        left: brtx * ratio - 4,
+                              Container(
+                                constraints: BoxConstraints(
+                                    minHeight: _height[index] != 0
+                                        ? _height[index]
+                                        : 300),
+                                child: VCachedNetworkImage(
+                                  key: _keys[index],
+                                  fit: BoxFit.cover,
+                                  fadeInDuration: Duration(microseconds: 500),
+                                  fadeInCurve: Curves.easeIn,
+                                  imageUrl: snapshot.data as String,
+                                  httpHeaders: {
+                                    "Referer":
+                                        'https://hitomi.la/reader/1234.html'
+                                  },
+                                  progressIndicatorBuilder:
+                                      (context, string, progress) {
+                                    return SizedBox(
+                                      height: 300,
+                                      child: Center(
                                         child: SizedBox(
-                                          width: (brbx - brtx) * ratio + 8,
-                                          height: (brby - brty) * ratio + 8,
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                width: 3,
-                                                color: Colors.red,
-                                              ),
-                                            ),
+                                          child: CircularProgressIndicator(
+                                              value: progress.progress),
+                                          width: 30,
+                                          height: 30,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  imageBuilder:
+                                      (context, imageProvider, child) {
+                                    if (_height[index] == 0 ||
+                                        _height[index] == 300) {
+                                      Future.delayed(Duration(milliseconds: 50))
+                                          .then((value) {
+                                        try {
+                                          final RenderBox renderBoxRed =
+                                              _keys[index]
+                                                  .currentContext
+                                                  .findRenderObject();
+                                          final sizeRender = renderBoxRed.size;
+                                          if (sizeRender.height != 300) {
+                                            _height[index] =
+                                                width / sizeRender.aspectRatio;
+                                          }
+                                        } catch (e) {}
+                                      });
+                                    }
+                                    return child;
+                                  },
+                                ),
+                              ),
+                              FutureBuilder(
+                                future: _calculateImageDimension(
+                                    snapshot.data as String),
+                                builder:
+                                    (context, AsyncSnapshot<Size> snapshot2) {
+                                  if (!snapshot2.hasData) return Container();
+
+                                  var brtx = e.item5[0];
+                                  var brty = e.item5[1];
+                                  var brbx = e.item5[2];
+                                  var brby = e.item5[3];
+
+                                  var w = snapshot2.data.width;
+
+                                  var ratio = width / w;
+
+                                  return Positioned(
+                                    top: brty * ratio - 4,
+                                    left: brtx * ratio - 4,
+                                    child: SizedBox(
+                                      width: (brbx - brtx) * ratio + 8,
+                                      height: (brby - brty) * ratio + 8,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            width: 3,
+                                            color: Colors.red,
                                           ),
                                         ),
-                                      );
-
-                                      /*return Positioned(
-                                child: Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      width: 3,
-                                      color: Colors.red,
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                top: brty * ratio,
-                                left: brtx * ratio,
-                                right: (w - brbx) * ratio,
-                                bottom: (h - brby) * ratio,
-                                width: width,
-                                height: h * ratio,
-                              );*/
-                                    },
-                                  ),
-                                ],
-                              ),
-                              ListTile(
-                                title: Text("${e.item2} (${e.item3 + 1} Page)"),
-                                subtitle: Text("Score: ${e.item1}"),
+                                  );
+                                },
                               ),
                             ],
                           ),
-                        );
-                      },
+                          ListTile(
+                            title: Text("${e.item2} (${e.item3 + 1} Page)"),
+                            subtitle: Text("Score: ${e.item1}"),
+                          ),
+                        ],
+                      ),
                     );
                   },
-                ).toList(),
-              ),
+                );
+              },
             ),
           ),
           Row(
@@ -240,6 +243,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .map((e) => double.parse(e.toString()))
                                     .toList()))
                         .toList();
+
+                    _height = List<double>.filled(messages.length, 0);
+                    _keys = List<GlobalKey>.generate(
+                        messages.length, (index) => GlobalKey());
+
                     setState(() {});
                   },
                 ),

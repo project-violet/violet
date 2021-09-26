@@ -48,7 +48,15 @@ class DisplayedTag {
   }
 
   String getTranslated() {
-    return translated =
-        (translated ?? TagTranslate.ofAny(name)).split('|').first.split(':').last;
+    return translated = (translated ?? TagTranslate.ofAny(name))
+        .split('|')
+        .first
+        .split(':')
+        .last;
+  }
+
+  @override
+  String toString() {
+    return getTag();
   }
 }
