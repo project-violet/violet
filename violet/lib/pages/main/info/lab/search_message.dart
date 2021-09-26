@@ -58,18 +58,38 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
         _height = List<double>.filled(messages.length, 0);
         _keys =
             List<GlobalKey>.generate(messages.length, (index) => GlobalKey());
+        _urls = List<String>.filled(messages.length, '');
       }
 
       setState(() {});
     });
   }
 
+  @override
+  void dispose() {
+    PaintingBinding.instance.imageCache.clear();
+    imageCache.clearLiveImages();
+    imageCache.clear();
+    _urls.forEach((element) async {
+      await CachedNetworkImageProvider(element).evict();
+    });
+    super.dispose();
+  }
+
   List<double> _height;
   List<GlobalKey> _keys;
+  List<String> _urls;
   String selected = 'Contains';
 
   @override
   Widget build(BuildContext context) {
+    ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    if (_imageCache.currentSizeBytes >= (1024 + 256) << 20) {
+      _imageCache.clear();
+      _imageCache.clearLiveImages();
+    }
+
+    final height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width - 16;
     return CardPanel.build(
       context,
@@ -80,28 +100,41 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
             child: ListView.builder(
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.all(0),
+              cacheExtent: height * 3.0,
+              itemCount: messages.length,
               itemBuilder: (BuildContext ctxt, int index) {
+                // if (messages.length == 0) return Container();
                 var e = messages[index];
 
                 return FutureBuilder(
                   future: Future.delayed(Duration(milliseconds: 100))
                       .then((value) async {
-                    var imgs =
-                        await HitomiManager.getImageList(e.item2.toString());
-                    return imgs.item1[e.item3];
+                    if (_urls[index] != '') return _urls[index];
+                    _urls[index] =
+                        (await HitomiManager.getImageList(e.item2.toString()))
+                            .item1[e.item3];
+                    return _urls[index];
                   }),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return SizedBox(
-                        height: 300,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: CircularProgressIndicator(),
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: _height[index] != 0 ? _height[index] : 300,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
                           ),
-                        ),
+                          ListTile(
+                            title: Text("${e.item2} (${e.item3 + 1} Page)"),
+                            subtitle: Text("Score: ${e.item1}"),
+                          ),
+                        ],
                       );
                     }
                     return InkWell(
@@ -227,6 +260,16 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     if (value == selected) return;
                     messages =
                         <Tuple5<double, int, int, double, List<double>>>[];
+
+                    _urls.forEach((element) async {
+                      await CachedNetworkImageProvider(element).evict();
+                    });
+
+                    _height = List<double>.filled(messages.length, 0);
+                    _keys = List<GlobalKey>.generate(
+                        messages.length, (index) => GlobalKey());
+                    _urls = List<String>.filled(messages.length, '');
+
                     setState(() {
                       selected = value;
                     });
@@ -244,10 +287,6 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .toList()))
                         .toList();
 
-                    _height = List<double>.filled(messages.length, 0);
-                    _keys = List<GlobalKey>.generate(
-                        messages.length, (index) => GlobalKey());
-
                     setState(() {});
                   },
                 ),
@@ -263,6 +302,16 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     latestSearch = text.text;
                     messages =
                         <Tuple5<double, int, int, double, List<double>>>[];
+
+                    _urls.forEach((element) async {
+                      await CachedNetworkImageProvider(element).evict();
+                    });
+
+                    _height = List<double>.filled(messages.length, 0);
+                    _keys = List<GlobalKey>.generate(
+                        messages.length, (index) => GlobalKey());
+                    _urls = List<String>.filled(messages.length, '');
+
                     setState(() {});
                     var tmessages = (await VioletServer.searchMessage(
                         selected.toLowerCase(), text.text)) as List<dynamic>;
