@@ -33,6 +33,7 @@ import 'package:violet/pages/main/card/contact_card.dart';
 import 'package:violet/pages/main/card/discord_card.dart';
 import 'package:violet/pages/main/card/github_card.dart';
 import 'package:violet/pages/main/info/info_page.dart';
+import 'package:violet/pages/main/info/lab/global_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
@@ -629,22 +630,38 @@ class _MainPage2State extends State<MainPage2>
               child: const Icon(MdiIcons.accessPointNetwork),
             ),
           ),
-          Tooltip(
-            message: '유저 북마크 리스트',
-            child: ElevatedButton(
-              style: buttonStyle,
-              onPressed: () async {
-                if (await _checkMaterKey()) {
-                  Navigator.of(context).push(
-                      _buildServicePageRoute(() => LabUserBookmarkPage()));
-                } else {
-                  await showOkDialog(
-                      context,
-                      'You must unlock this feature using the master key! ' +
-                          '이 기능은 현재 인가된 사용자만 사용할 수 있습니다.');
-                }
-              },
-              child: const Icon(MdiIcons.incognito),
+          // Tooltip(
+          //   message: '유저 북마크 리스트',
+          //   child: ElevatedButton(
+          //     style: buttonStyle,
+          //     onPressed: () async {
+          //       if (await _checkMaterKey()) {
+          //         Navigator.of(context).push(
+          //             _buildServicePageRoute(() => LabUserBookmarkPage()));
+          //       } else {
+          //         await showOkDialog(
+          //             context,
+          //             'You must unlock this feature using the master key! ' +
+          //                 '이 기능은 현재 인가된 사용자만 사용할 수 있습니다.');
+          //       }
+          //     },
+          //     child: const Icon(MdiIcons.incognito),
+          //   ),
+          // ),
+          Badge(
+            showBadge: true,
+            badgeContent: Text('N',
+                style: TextStyle(color: Colors.white, fontSize: 12.0)),
+            child: Tooltip(
+              message: '댓글',
+              child: ElevatedButton(
+                style: buttonStyle,
+                onPressed: () async {
+                  Navigator.of(context)
+                      .push(_buildServicePageRoute(() => LabGlobalComments()));
+                },
+                child: const Icon(MdiIcons.commentTextMultiple),
+              ),
             ),
           ),
           Badge(

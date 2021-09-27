@@ -261,15 +261,6 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     messages =
                         <Tuple5<double, int, int, double, List<double>>>[];
 
-                    _urls.forEach((element) async {
-                      await CachedNetworkImageProvider(element).evict();
-                    });
-
-                    _height = List<double>.filled(messages.length, 0);
-                    _keys = List<GlobalKey>.generate(
-                        messages.length, (index) => GlobalKey());
-                    _urls = List<String>.filled(messages.length, '');
-
                     setState(() {
                       selected = value;
                     });
@@ -287,6 +278,15 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .toList()))
                         .toList();
 
+                    _urls.forEach((element) async {
+                      await CachedNetworkImageProvider(element).evict();
+                    });
+
+                    _height = List<double>.filled(messages.length, 0);
+                    _keys = List<GlobalKey>.generate(
+                        messages.length, (index) => GlobalKey());
+                    _urls = List<String>.filled(messages.length, '');
+
                     setState(() {});
                   },
                 ),
@@ -303,15 +303,6 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     messages =
                         <Tuple5<double, int, int, double, List<double>>>[];
 
-                    _urls.forEach((element) async {
-                      await CachedNetworkImageProvider(element).evict();
-                    });
-
-                    _height = List<double>.filled(messages.length, 0);
-                    _keys = List<GlobalKey>.generate(
-                        messages.length, (index) => GlobalKey());
-                    _urls = List<String>.filled(messages.length, '');
-
                     setState(() {});
                     var tmessages = (await VioletServer.searchMessage(
                         selected.toLowerCase(), text.text)) as List<dynamic>;
@@ -326,6 +317,16 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .map((e) => double.parse(e.toString()))
                                     .toList()))
                         .toList();
+
+                    _urls.forEach((element) async {
+                      await CachedNetworkImageProvider(element).evict();
+                    });
+
+                    _height = List<double>.filled(messages.length, 0);
+                    _keys = List<GlobalKey>.generate(
+                        messages.length, (index) => GlobalKey());
+                    _urls = List<String>.filled(messages.length, '');
+
                     setState(() {});
                   },
                 ),
