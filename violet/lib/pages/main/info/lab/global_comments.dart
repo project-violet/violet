@@ -24,6 +24,7 @@ class LabGlobalComments extends StatefulWidget {
 class _LabGlobalCommentsState extends State<LabGlobalComments> {
   List<Tuple3<DateTime, String, String>> comments =
       <Tuple3<DateTime, String, String>>[];
+  ScrollController _controller = ScrollController();
 
   @override
   void initState() {
@@ -47,6 +48,11 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
         .toList();
 
     if (comments.length > 0) setState(() {});
+
+    Future.value(1).then((value) => _controller.animateTo(
+        _controller.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.fastOutSlowIn));
   }
 
   @override
@@ -58,6 +64,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
         children: [
           Expanded(
             child: ListView.separated(
+              controller: _controller,
               padding: EdgeInsets.only(top: 16.0),
               reverse: true,
               physics: BouncingScrollPhysics(),
@@ -130,6 +137,8 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                       }
                       await VioletCommunityAnonymous.postArtistComment(
                           'global_general', text.text);
+                      text.text = '';
+                      setState(() {});
                       await readComments();
                     },
                   ),
@@ -178,6 +187,13 @@ class CommentUnit extends StatelessWidget {
                     MdiIcons.starCheckOutline,
                     size: 15.0,
                     color: const Color(0xffffd700),
+                  ),
+                if (author.startsWith(dev)) Container(width: 4.0),
+                if (author == Settings.userAppId)
+                  Icon(
+                    MdiIcons.pencilOutline,
+                    size: 15.0,
+                    color: const Color(0xffffa500),
                   )
               ],
             ),
