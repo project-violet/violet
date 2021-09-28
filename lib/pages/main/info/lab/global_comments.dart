@@ -49,10 +49,10 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
 
     if (comments.length > 0) setState(() {});
 
-    Future.value(1).then((value) => _controller.animateTo(
-        _controller.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.fastOutSlowIn));
+    Future.delayed(Duration(milliseconds: 100)).then((value) =>
+        _controller.animateTo(_controller.position.maxScrollExtent,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.fastOutSlowIn));
   }
 
   @override
