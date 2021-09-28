@@ -73,6 +73,8 @@ class Settings {
   static bool searchUseTranslated;
   static bool searchShowCount;
 
+  static String userAppId;
+
   static Future<void> initFirst() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
     var mac =
@@ -404,6 +406,8 @@ class Settings {
     searchTagTranslation = await _getBool('searchtagtranslation');
     searchUseTranslated = await _getBool('searchusetranslated');
     searchShowCount = await _getBool('searchshowcount', true);
+
+    userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
