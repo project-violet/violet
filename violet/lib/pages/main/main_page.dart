@@ -868,10 +868,18 @@ class _MainPage2State extends State<MainPage2>
         setState(() {});
       });
 
+      if (await File(
+              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
+          .exists()) {
+        await File('${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
+            .delete();
+      }
+
       FlutterDownloader.registerCallback(downloadCallback);
       await FlutterDownloader.enqueue(
         url: UpdateSyncManager.updateUrl,
         savedDir: '${ext.path}',
+        fileName: UpdateSyncManager.updateUrl.split('/').last,
         showNotification:
             true, // show download progress in status bar (for Android)
         openFileFromNotification:
