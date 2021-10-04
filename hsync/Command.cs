@@ -1,6 +1,13 @@
 ﻿// This source code is a part of project violet-server.
 // Copyright (C)2020-2021. violet-team. Licensed under the MIT Licence.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading;
 using Extreme.Mathematics;
 using Extreme.Statistics;
 using hsync.CL;
@@ -14,13 +21,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using SQLite;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
 
 namespace hsync
 {
@@ -929,6 +929,14 @@ namespace hsync
                     }
                     break;
 
+                case "latestexcomment":
+
+                    {
+                        var record = JsonConvert.DeserializeObject<Dictionary<int, List<Tuple<DateTime, string, string>>>>(File.ReadAllText("excomment-zip.json"));
+                        Console.WriteLine(record.ToList().Max(x => x.Key));
+                    }
+                    break;
+
                 case "excommentzip":
 
                     {
@@ -967,6 +975,17 @@ namespace hsync
                         ll2.Sort((x, y) => y.Value.CompareTo(x.Value));
                         Console.WriteLine("Most Commented Authors: \r\n" + string.Join("\r\n", ll2.Take(50).Select(x => $"{x.Key} ({x.Value})")));
 
+                        var record = JsonConvert.DeserializeObject<Dictionary<int, List<Tuple<DateTime, string, string>>>>(File.ReadAllText("excomment-zip.json"));
+                        var rll = record.ToList();
+                        rll.ForEach(x =>
+                        {
+                            if (!articles.ContainsKey(x.Key))
+                            {
+                                articles.Add(x.Key, x.Value);
+                            }
+                        });
+
+
                         File.WriteAllText("excomment-zip.json", JsonConvert.SerializeObject(articles, Formatting.Indented));
 
                     }
@@ -984,7 +1003,7 @@ namespace hsync
 
                         var x = string.Join("\r\n---------------------------------------\r\n",
                             ll.Select(x => string.Join("\r\n", x.Value.Where(x =>
-                                x.Item3.Contains("뷰어")).Select(y => $"({x.Key}) [{y.Item2}] {y.Item3}"))).Where(x => x.Length > 0));
+                                x.Item3.Contains("dcinside")).Select(y => $"({x.Key}) [{y.Item2}] {y.Item3}"))).Where(x => x.Length > 0));
 
                         Console.WriteLine(x);
                     }
