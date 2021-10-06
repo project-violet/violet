@@ -23,6 +23,10 @@ jobs:
           python-version: '3.8'
       - name: Preprocess
         run: | 
+          cd lib/server
+          wget -q ${{ secrets.SECRET_SALT }}
+          wget -q ${{ secrets.SECRET_WSALT }}
+          cd ../..
           python3 preprocess-ios.py
       - name: Podfile
         run: |
@@ -63,6 +67,10 @@ jobs:
           python-version: '3.8'
       - name: Preprocess
         run: | 
+          cd lib/server
+          wget -q ${{ secrets.SECRET_SALT }}
+          wget -q ${{ secrets.SECRET_WSALT }}
+          cd ../..
           python3 preprocess-android.py
       - name: Build
         run: |
