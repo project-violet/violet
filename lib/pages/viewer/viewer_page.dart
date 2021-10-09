@@ -1616,7 +1616,9 @@ class _ViewerPageState extends State<ViewerPage>
                             _keys[index].currentContext.findRenderObject();
                         final sizeRender = renderBoxRed.size;
                         if (sizeRender.height != 300) {
-                          _height[index] = width / sizeRender.aspectRatio;
+                          _height[index] = (width / sizeRender.aspectRatio)
+                              .floor()
+                              .toDouble();
                         }
 
                         _isImageLoaded[index] = true;
