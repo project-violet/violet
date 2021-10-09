@@ -22,6 +22,8 @@ class ThreeArticlePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var windowWidth = MediaQuery.of(context).size.width;
+    var subItemWidth = (windowWidth - 16 - 4.0 - 1.0) / 3;
     return InkWell(
       onTap: () => _onTap(context),
       child: SizedBox(
@@ -50,9 +52,9 @@ class ThreeArticlePanel extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    _subItem(context, 0),
-                    _subItem(context, 1),
-                    _subItem(context, 2),
+                    _SubItem(subItemWidth, articles, 0),
+                    _SubItem(subItemWidth, articles, 1),
+                    _SubItem(subItemWidth, articles, 2),
                   ],
                 ),
               ),
@@ -60,30 +62,6 @@ class ThreeArticlePanel extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  _subItem(context, index) {
-    var windowWidth = MediaQuery.of(context).size.width;
-    return Expanded(
-      flex: 1,
-      child: articles.length > index
-          ? Padding(
-              padding: EdgeInsets.all(4),
-              child: Provider<ArticleListItem>.value(
-                value: ArticleListItem.fromArticleListItem(
-                  queryResult: articles[index],
-                  showDetail: false,
-                  addBottomPadding: false,
-                  width: (windowWidth - 16 - 4.0 - 1.0) / 3,
-                  thumbnailTag: Uuid().v4(),
-                  disableFilter: true,
-                  usableTabList: articles,
-                ),
-                child: ArticleListItemVerySimpleWidget(),
-              ),
-            )
-          : Container(),
     );
   }
 
@@ -111,5 +89,42 @@ class ThreeArticlePanel extends StatelessWidget {
       Navigator.of(context)
           .push(CupertinoPageRoute(builder: (_) => tappedRoute()));
     }
+  }
+}
+
+class _SubItem extends StatelessWidget {
+  final List<QueryResult> articles;
+  final int index;
+  final double width;
+
+  _SubItem(this.width, this.articles, this.index);
+
+  @override
+  Widget build(BuildContext context) {
+    if (articles.length <= index) {
+      return Expanded(
+        flex: 1,
+        child: Container(),
+      );
+    }
+
+    return Expanded(
+      flex: 1,
+      child: Padding(
+        padding: EdgeInsets.all(4),
+        child: Provider<ArticleListItem>.value(
+          value: ArticleListItem.fromArticleListItem(
+            queryResult: articles[index],
+            showDetail: false,
+            addBottomPadding: false,
+            width: width,
+            thumbnailTag: Uuid().v4(),
+            disableFilter: true,
+            usableTabList: articles,
+          ),
+          child: ArticleListItemVerySimpleWidget(),
+        ),
+      ),
+    );
   }
 }
