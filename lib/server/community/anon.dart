@@ -70,11 +70,20 @@ class VioletCommunityAnonymous {
   }
 
   static Future<dynamic> postArtistComment(
-      String artistName, String commentBody) async {
+      int parent, String artistName, String commentBody) async {
+    if (parent == null) {
+      return await _postV('/community/anon/artistcomment/write', {
+        'UserAppId': await _getUserAppId(),
+        'ArtistName': artistName,
+        'Body': commentBody,
+      });
+    }
+
     return await _postV('/community/anon/artistcomment/write', {
       'UserAppId': await _getUserAppId(),
       'ArtistName': artistName,
       'Body': commentBody,
+      'Parent': parent,
     });
   }
 }
