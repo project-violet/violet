@@ -24,8 +24,32 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 10, 00),
+    version: '1.16.4 Patch Update <== Latest',
+    contents: [
+      'optimize global comments',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 9, 27),
+    version: '1.16.3 Patch Update',
+    contents: [
+      'refactoring search message',
+      'hide exhentai request header on logger',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 9, 25),
+    version: '1.16.2 Patch Update',
+    contents: [
+      'optimize article-list-page, bookmark-article-list',
+      'fix panel not updating when searching',
+      'add global comments page',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 9, 24),
-    version: '1.16.1 Patch Update <== Latest',
+    version: '1.16.1 Patch Update',
     contents: [
       'optimize critical ui processes-2',
       'replace sync info url',

@@ -972,6 +972,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               return;
             }
             await VioletCommunityAnonymous.postArtistComment(
+                null,
                 (widget.isGroup
                         ? 'group:'
                         : widget.isUploader

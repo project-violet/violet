@@ -197,10 +197,6 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'Real-Time User Article Record Picking User',
                 null,
                 () async {
-                  if (!await _checkMaterKey()) {
-                    await showOkDialog(context, 'You cannot use this feature!');
-                    return;
-                  }
                   _navigate(LabRecentRecordsU());
                 },
               ),
@@ -211,10 +207,6 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'User Bookmark List',
                 null,
                 () async {
-                  if (!await _checkMaterKey()) {
-                    await showOkDialog(context, 'You cannot use this feature!');
-                    return;
-                  }
                   _navigate(LabUserBookmarkPage());
                 },
               ),
@@ -270,10 +262,6 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'Top Recent',
                 null,
                 () async {
-                  if (!await _checkMaterKey()) {
-                    await showOkDialog(context, 'You cannot use this feature!');
-                    return;
-                  }
                   _navigate(LabTopRecent());
                 },
               ),
@@ -331,14 +319,6 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
         ),
       ),
     );
-  }
-
-  Future<bool> _checkMaterKey() async {
-    var key = (await SharedPreferences.getInstance()).getString('labmasterkey');
-    if (key != null && getValid(key + 'saltff') == '605f372') {
-      return true;
-    }
-    return false;
   }
 
   _buildTitle() {
