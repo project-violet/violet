@@ -22,9 +22,10 @@ class LabGlobalComments extends StatefulWidget {
 }
 
 class _LabGlobalCommentsState extends State<LabGlobalComments> {
-  List<Tuple3<DateTime, String, String>> comments =
-      <Tuple3<DateTime, String, String>>[];
+  List<Tuple5<int, DateTime, String, String, int>> comments =
+      <Tuple5<int, DateTime, String, String, int>>[];
   ScrollController _controller = ScrollController();
+  FocusNode myFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -41,22 +42,21 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
         'global_general'))['result'] as List<dynamic>;
 
     comments = tcomments
-        .map((e) => Tuple3<DateTime, String, String>(
-            DateTime.parse(e['TimeStamp']), e['UserAppId'], e['Body']))
-        .toList()
-        .reversed
+        .map((e) => Tuple5<int, DateTime, String, String, int>(
+            e['Id'],
+            DateTime.parse(e['TimeStamp']),
+            e['UserAppId'],
+            e['Body'],
+            e['Parent']))
         .toList();
 
     if (comments.length > 0) setState(() {});
-
-    Future.delayed(Duration(milliseconds: 100)).then((value) =>
-        _controller.animateTo(_controller.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.fastOutSlowIn));
   }
 
   @override
   Widget build(BuildContext context) {
+    var pureComments = comments.where((x) => x.item5 == null).toList();
+
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
@@ -70,9 +70,18 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
               physics: BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 return CommentUnit(
-                  author: comments[index].item2,
-                  body: comments[index].item3,
-                  dateTime: comments[index].item1,
+                  id: pureComments[index].item1,
+                  author: pureComments[index].item3,
+                  body: pureComments[index].item4,
+                  dateTime: pureComments[index].item2,
+                  reply: reply,
+                  replies: comments
+                      .where((x) =>
+                          x.item5 != null &&
+                          x.item5 == pureComments[index].item1)
+                      .toList()
+                      .reversed
+                      .toList(),
                 );
               },
               separatorBuilder: (context, index) {
@@ -89,144 +98,223 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                       : Colors.grey.shade300,
                 );
               },
-              itemCount: comments.length,
+              itemCount: pureComments.length,
             ),
           ),
           Container(
             margin: EdgeInsets.all(8.0),
-            padding: EdgeInsets.symmetric(horizontal: 12.0),
             height: 36.0,
-            decoration: new BoxDecoration(
-                color: Settings.themeWhat
-                    ? Colors.grey.shade800
-                    : Color(0xffe2e4e7),
-                borderRadius: new BorderRadius.all(const Radius.circular(6.0))),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    style: TextStyle(fontSize: 14.0, color: Colors.grey),
-                    decoration: new InputDecoration.collapsed(
-                        hintText: '500자까지 입력할 수 있습니다.'),
-                    controller: text,
-                    // onEditingComplete: () async {},
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Settings.themeWhat
-                          ? Colors.grey.shade600
-                          : Color(0xff3a4e66),
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(50, 36),
-                    ),
-                    child: Text(
-                      '작성',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+            child: Ink(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              decoration: new BoxDecoration(
+                  color: Settings.themeWhat
+                      ? Colors.grey.shade800
+                      : Color(0xffe2e4e7),
+                  borderRadius:
+                      new BorderRadius.all(const Radius.circular(6.0))),
+              child: Row(
+                children: [
+                  if (modReply)
+                    IconButton(
+                      padding: EdgeInsets.only(right: 4.0),
+                      constraints: BoxConstraints(),
+                      icon: Icon(
+                        Mdi.commentTextMultiple,
+                        size: 15.0,
+                        color: Settings.themeWhat
+                            ? Colors.grey.shade600
+                            : Color(0xff3a4e66),
                       ),
-                      textAlign: TextAlign.center,
+                      onPressed: () async {
+                        replyParent = null;
+                        modReply = false;
+                        setState(() {});
+                      },
                     ),
-                    onPressed: () async {
-                      if (text.text.length < 5 || text.text.length > 500) {
-                        await showOkDialog(context, '너무 짧아요!',
-                            Translations.of(context).trans('comment'));
-                        return;
-                      }
-                      await VioletCommunityAnonymous.postArtistComment(
-                          'global_general', text.text);
-                      text.text = '';
-                      setState(() {});
-                      await readComments();
-                    },
+                  Expanded(
+                    child: TextField(
+                      focusNode: myFocusNode,
+                      style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                      decoration: new InputDecoration.collapsed(
+                          hintText: '500자까지 입력할 수 있습니다.'),
+                      controller: text,
+                      // onEditingComplete: () async {},
+                    ),
                   ),
-                ),
-              ],
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        primary: Settings.themeWhat
+                            ? Colors.grey.shade600
+                            : Color(0xff3a4e66),
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(50, 36),
+                      ),
+                      child: Text(
+                        '작성',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      onPressed: () async {
+                        if (text.text.length < 5 || text.text.length > 500) {
+                          await showOkDialog(context, '너무 짧아요!',
+                              Translations.of(context).trans('comment'));
+                          return;
+                        }
+                        if (!modReply) {
+                          await VioletCommunityAnonymous.postArtistComment(
+                              null, 'global_general', text.text);
+                        } else {
+                          await VioletCommunityAnonymous.postArtistComment(
+                              replyParent, 'global_general', text.text);
+                          replyParent = null;
+                          modReply = false;
+                        }
+                        text.text = '';
+                        FocusScope.of(context).unfocus();
+                        setState(() {});
+                        await readComments();
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
+  bool modReply = false;
+  int replyParent;
+
+  Future<void> reply(int id) async {
+    replyParent = id;
+    modReply = true;
+    myFocusNode.requestFocus();
+    setState(() {});
+  }
 }
+
+typedef ReplyCallback = Future Function(int);
 
 class CommentUnit extends StatelessWidget {
   final String author;
   final String body;
   final DateTime dateTime;
+  final int id;
+  final ReplyCallback reply;
+  final bool isReply;
+  final List<Tuple5<int, DateTime, String, String, int>> replies;
 
   static const String dev = 'aee70691afaa';
 
-  const CommentUnit({this.author, this.body, this.dateTime});
+  const CommentUnit({
+    this.id,
+    this.author,
+    this.body,
+    this.dateTime,
+    this.reply,
+    this.replies,
+    this.isReply = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Text(
-                  author.substring(0, 7),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Settings.themeWhat
-                        ? Colors.grey.shade300
-                        : Color(0xff373a3c),
-                    fontSize: 15.0,
-                  ),
-                ),
-                Container(width: 4.0),
-                if (author.startsWith(dev))
-                  Icon(
-                    MdiIcons.starCheckOutline,
-                    size: 15.0,
-                    color: const Color(0xffffd700),
-                  ),
-                if (author.startsWith(dev)) Container(width: 4.0),
-                if (author == Settings.userAppId)
-                  Icon(
-                    MdiIcons.pencilOutline,
-                    size: 15.0,
-                    color: const Color(0xffffa500),
-                  )
-              ],
-            ),
-            RichText(
-              text: new TextSpan(
-                style: TextStyle(
-                  color: Settings.themeWhat
-                      ? Colors.grey.shade300
-                      : Color(0xff373a3c),
-                  fontSize: 12.0,
-                ),
-                children: <TextSpan>[
-                  new TextSpan(text: body),
-                  new TextSpan(text: ' '),
-                  new TextSpan(
-                    text: '${DateFormat('yyyy.MM.dd HH:mm').format(dateTime)}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Settings.themeWhat
-                          ? Colors.grey.shade500
-                          : Color(0xff989dab),
+    return Column(
+      children: <Widget>[
+            InkWell(
+              child: Padding(
+                padding: isReply
+                    ? const EdgeInsets.only(
+                        right: 24.0, top: 12.0, bottom: 12.0, left: 48)
+                    : const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          author.substring(0, 7),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Settings.themeWhat
+                                ? Colors.grey.shade300
+                                : Color(0xff373a3c),
+                            fontSize: 15.0,
+                          ),
+                        ),
+                        Container(width: 4.0),
+                        if (author.startsWith(dev))
+                          Icon(
+                            MdiIcons.starCheckOutline,
+                            size: 15.0,
+                            color: const Color(0xffffd700),
+                          ),
+                        if (author.startsWith(dev)) Container(width: 4.0),
+                        if (author == Settings.userAppId)
+                          Icon(
+                            MdiIcons.pencilOutline,
+                            size: 15.0,
+                            color: const Color(0xffffa500),
+                          )
+                      ],
                     ),
-                  ),
-                ],
+                    RichText(
+                      text: new TextSpan(
+                        style: TextStyle(
+                          color: Settings.themeWhat
+                              ? Colors.grey.shade300
+                              : Color(0xff373a3c),
+                          fontSize: 12.0,
+                        ),
+                        children: <TextSpan>[
+                          new TextSpan(text: body),
+                          new TextSpan(text: ' '),
+                          new TextSpan(
+                            text:
+                                '${DateFormat('yyyy.MM.dd HH:mm').format(dateTime)}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Settings.themeWhat
+                                  ? Colors.grey.shade500
+                                  : Color(0xff989dab),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-      onDoubleTap: () {
-        if (!author.startsWith(dev))
-          _navigate(context, LabUserRecentRecords(author));
-      },
+              onDoubleTap: () {
+                if (!author.startsWith(dev))
+                  _navigate(context, LabUserRecentRecords(author));
+              },
+              onLongPress: !isReply
+                  ? () {
+                      reply(id);
+                    }
+                  : null,
+            )
+          ] +
+          replies
+              .map(
+                (x) => CommentUnit(
+                  id: x.item1,
+                  dateTime: x.item2,
+                  author: x.item3,
+                  body: x.item4,
+                  isReply: true,
+                  replies: [],
+                ),
+              )
+              .toList(),
     );
   }
 

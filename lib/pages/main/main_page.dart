@@ -619,13 +619,8 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () async {
-                if (await _checkMaterKey()) {
-                  Navigator.of(context)
-                      .push(_buildServicePageRoute(() => LabRecentRecordsU()));
-                } else {
-                  Navigator.of(context)
-                      .push(_buildServicePageRoute(() => LabRecentRecords()));
-                }
+                Navigator.of(context)
+                    .push(_buildServicePageRoute(() => LabRecentRecordsU()));
               },
               child: const Icon(MdiIcons.accessPointNetwork),
             ),
@@ -734,14 +729,6 @@ class _MainPage2State extends State<MainPage2>
         ],
       ),
     ];
-  }
-
-  Future<bool> _checkMaterKey() async {
-    var key = (await SharedPreferences.getInstance()).getString('labmasterkey');
-    if (key != null && getValid(key + 'saltff') == '605f372') {
-      return true;
-    }
-    return false;
   }
 
   _buildGroup(name, content) {
