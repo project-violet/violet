@@ -84,7 +84,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               e.key, TagTranslate.disassembly(e.key), e.value as int))
           .toList();
 
-      autocompleteTarget.sort((x, y) => y.item2.compareTo(x.item2));
+      autocompleteTarget.sort((x, y) => y.item3.compareTo(x.item3));
 
       setState(() {});
     });
@@ -347,8 +347,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     text.text = suggestion;
                     await _onModifiedText();
                   },
-                  hideOnEmpty: true,
-                  hideOnLoading: true,
+                  // hideOnEmpty: true,
+                  // hideOnLoading: true,
                   textFieldConfiguration: TextFieldConfiguration(
                     decoration:
                         new InputDecoration.collapsed(hintText: '대사 입력'),
