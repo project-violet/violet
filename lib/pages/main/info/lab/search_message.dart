@@ -334,22 +334,23 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   itemBuilder:
                       (context, Tuple3<String, String, int> suggestion) {
                     return ListTile(
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 0.0, horizontal: 16.0),
-                        title: Text(suggestion.item1),
-                        trailing: Text(
-                          suggestion.item3.toString() + '회',
-                          style: TextStyle(color: Colors.grey, fontSize: 10.0),
-                        ),
-                        dense: true,                     
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                      title: Text(suggestion.item1),
+                      trailing: Text(
+                        suggestion.item3.toString() + '회',
+                        style: TextStyle(color: Colors.grey, fontSize: 10.0),
+                      ),
+                      dense: true,
                     );
                   },
                   direction: AxisDirection.up,
                   onSuggestionSelected: (suggestion) {
                     text.text = suggestion.item1;
                     setState(() {});
-                    Future.delayed(Duration(milliseconds: 100)).then((value) async {
-                       _onModifiedText();
+                    Future.delayed(Duration(milliseconds: 100))
+                        .then((value) async {
+                      _onModifiedText();
                     });
                   },
                   hideOnEmpty: true,
@@ -369,7 +370,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 onPressed: () async {
                   await showOkDialog(
                       context,
-                      '대사를 검색해 작품을 찾아보세요! 현재 2021.01.01 ~ 2021.09.15 기간에 업로드된 작품만 지원됩니다.',
+                      '대사를 검색해 작품을 찾아보세요! 현재 2019.01.01 ~ 2021.09.15 기간에 업로드된 작품만 지원됩니다.',
                       '대사 검색기 (베타)');
                 },
               ),

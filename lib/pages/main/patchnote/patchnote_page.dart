@@ -24,10 +24,13 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2021, 10, 00),
+    dateTime: DateTime(2021, 10, 11),
     version: '1.16.4 Patch Update <== Latest',
     contents: [
       'optimize global comments',
+      'optimize critical widgets',
+      'add autocomplete to search-message',
+      'fix viewer 1px missmatch bug',
     ],
   ),
   PatchModel(
