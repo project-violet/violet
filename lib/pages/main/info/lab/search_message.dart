@@ -337,7 +337,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                       height: 20,
                       child: ListTile(
                         contentPadding: EdgeInsets.symmetric(
-                            vertical: 0.0, horizontal: 8.0),
+                            vertical: 0.0, horizontal: 16.0),
                         title: Text(suggestion.item1),
                         trailing: Text(
                           suggestion.item3.toString() + '회',
