@@ -74,6 +74,7 @@ dependencies:
   flutter_speed_dial:
   flutter_staggered_animations: ^1.0.0
   flutter_svg: ^0.21.0+1
+  flutter_typeahead: ^3.2.1
   flutter_js:
   fluttertoast:
   freezed_annotation:

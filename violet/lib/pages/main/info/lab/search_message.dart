@@ -2,8 +2,11 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +38,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       <Tuple5<double, int, int, double, List<double>>>[];
   TextEditingController text = TextEditingController(text: '은근슬쩍');
   String latestSearch = '은근슬쩍';
+  List<String> autocompleteTarget;
 
   @override
   void initState() {
@@ -60,6 +64,17 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
             List<GlobalKey>.generate(messages.length, (index) => GlobalKey());
         _urls = List<String>.filled(messages.length, '');
       }
+
+      setState(() {});
+    });
+
+    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      const url =
+          "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
+      autocompleteTarget =
+          (jsonDecode((await http.get(Uri.parse(url))).body) as List<dynamic>)
+              .map((e) => e as String)
+              .toList();
 
       setState(() {});
     });
@@ -293,42 +308,60 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               ),
               Container(width: 4),
               Expanded(
-                child: TextField(
-                  decoration: new InputDecoration.collapsed(hintText: '대사 입력'),
-                  controller: text,
-                  // autofocus: true,
-                  onEditingComplete: () async {
-                    if (latestSearch == text.text) return;
-                    latestSearch = text.text;
-                    messages =
-                        <Tuple5<double, int, int, double, List<double>>>[];
-
-                    setState(() {});
-                    var tmessages = (await VioletServer.searchMessage(
-                        selected.toLowerCase(), text.text)) as List<dynamic>;
-                    messages = tmessages
-                        .map((e) =>
-                            Tuple5<double, int, int, double, List<double>>(
-                                double.parse(e['MatchScore'] as String),
-                                e['Id'] as int,
-                                e['Page'] as int,
-                                e['Correctness'] as double,
-                                (e['Rect'] as List<dynamic>)
-                                    .map((e) => double.parse(e.toString()))
-                                    .toList()))
+                child: TypeAheadField(
+                  suggestionsCallback: (pattern) async {
+                    if (autocompleteTarget == null) return <String>[];
+                    return autocompleteTarget
+                        .where((element) => element.startsWith(pattern))
                         .toList();
-
-                    _urls.forEach((element) async {
-                      await CachedNetworkImageProvider(element).evict();
-                    });
-
-                    _height = List<double>.filled(messages.length, 0);
-                    _keys = List<GlobalKey>.generate(
-                        messages.length, (index) => GlobalKey());
-                    _urls = List<String>.filled(messages.length, '');
-
-                    setState(() {});
                   },
+                  itemBuilder: (context, String suggestion) {
+                    return ListTile(
+                      title: Text(suggestion),
+                      dense: true,
+                    );
+                  },
+                  onSuggestionSelected: (suggestion) {
+                    text.text = suggestion;
+                  },
+                  textFieldConfiguration: TextFieldConfiguration(
+                    decoration:
+                        new InputDecoration.collapsed(hintText: '대사 입력'),
+                    controller: text,
+                    // autofocus: true,
+                    onEditingComplete: () async {
+                      if (latestSearch == text.text) return;
+                      latestSearch = text.text;
+                      messages =
+                          <Tuple5<double, int, int, double, List<double>>>[];
+
+                      setState(() {});
+                      var tmessages = (await VioletServer.searchMessage(
+                          selected.toLowerCase(), text.text)) as List<dynamic>;
+                      messages = tmessages
+                          .map((e) =>
+                              Tuple5<double, int, int, double, List<double>>(
+                                  double.parse(e['MatchScore'] as String),
+                                  e['Id'] as int,
+                                  e['Page'] as int,
+                                  e['Correctness'] as double,
+                                  (e['Rect'] as List<dynamic>)
+                                      .map((e) => double.parse(e.toString()))
+                                      .toList()))
+                          .toList();
+
+                      _urls.forEach((element) async {
+                        await CachedNetworkImageProvider(element).evict();
+                      });
+
+                      _height = List<double>.filled(messages.length, 0);
+                      _keys = List<GlobalKey>.generate(
+                          messages.length, (index) => GlobalKey());
+                      _urls = List<String>.filled(messages.length, '');
+
+                      setState(() {});
+                    },
+                  ),
                 ),
               ),
               IconButton(
