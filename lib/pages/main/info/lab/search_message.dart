@@ -334,7 +334,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   itemBuilder:
                       (context, Tuple3<String, String, int> suggestion) {
                     return SizedBox(
-                      height: 20,
+                      height: 32,
                       child: ListTile(
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 0.0, horizontal: 16.0),
@@ -351,7 +351,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   onSuggestionSelected: (suggestion) {
                     text.text = suggestion;
                     setState(() {});
-                    _onModifiedText();
+                    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+                       _onModifiedText();
+                    });
                   },
                   hideOnEmpty: true,
                   hideOnLoading: true,
