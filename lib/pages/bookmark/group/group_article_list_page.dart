@@ -197,9 +197,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final list = buildList();
-
     if (_cachedList == null || _shouldRebuild) {
+      final list = buildList();
+
       _shouldRebuild = false;
       _cachedList = list;
     }
