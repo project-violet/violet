@@ -348,9 +348,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     );
                   },
                   direction: AxisDirection.up,
-                  onSuggestionSelected: (suggestion) async {
+                  onSuggestionSelected: (suggestion) {
                     text.text = suggestion;
-                    await _onModifiedText();
+                    setState(() {});
+                    _onModifiedText();
                   },
                   hideOnEmpty: true,
                   hideOnLoading: true,
