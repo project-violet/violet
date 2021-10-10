@@ -192,7 +192,7 @@ class TagTranslate {
   }
 
   static bool checkJamo11(int ch) {
-    return 0x1100 <= ch && ch <= 0x11ff;
+    return 0x1100 <= ch && ch <= 0x1100 + 91 - 1;
   }
 
   static String disassemblyCharacter(int ch) {

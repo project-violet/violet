@@ -72,10 +72,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       const url =
           "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
-      // autocompleteTarget =
-      //     (jsonDecode((await http.get(Uri.parse(url))).body) as List<dynamic>)
-      //         .map((e) => e as String)
-      //         .toList();
+
       var m = jsonDecode((await http.get(Uri.parse(url))).body)
           as Map<String, dynamic>;
 
@@ -338,7 +335,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                       (context, Tuple3<String, String, int> suggestion) {
                     return ListTile(
                       title: Text(suggestion.item1),
-                      trailing: Text(suggestion.item3.toString() + '회'),
+                      trailing: Text(
+                        suggestion.item3.toString() + '회',
+                        style: TextStyle(color: Colors.grey, fontSize: 10.0),
+                      ),
                       dense: true,
                     );
                   },
@@ -347,8 +347,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     text.text = suggestion;
                     await _onModifiedText();
                   },
-                  // hideOnEmpty: true,
-                  // hideOnLoading: true,
+                  hideOnEmpty: true,
+                  hideOnLoading: true,
                   textFieldConfiguration: TextFieldConfiguration(
                     decoration:
                         new InputDecoration.collapsed(hintText: '대사 입력'),
