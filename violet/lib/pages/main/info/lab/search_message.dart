@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
@@ -38,7 +39,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       <Tuple5<double, int, int, double, List<double>>>[];
   TextEditingController text = TextEditingController(text: '은근슬쩍');
   String latestSearch = '은근슬쩍';
-  List<Tuple2<String, int>> autocompleteTarget;
+  List<Tuple3<String, String, int>> autocompleteTarget;
 
   @override
   void initState() {
@@ -79,7 +80,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
           as Map<String, dynamic>;
 
       autocompleteTarget = m.entries
-          .map((e) => Tuple2<String, int>(e.key, e.value as int))
+          .map((e) => Tuple3<String, String, int>(
+              e.key, TagTranslate.disassembly(e.key), e.value as int))
           .toList();
 
       autocompleteTarget.sort((x, y) => y.item2.compareTo(x.item2));
@@ -319,21 +321,24 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 child: TypeAheadField(
                   suggestionsCallback: (pattern) async {
                     if (autocompleteTarget == null)
-                      return <Tuple2<String, int>>[];
+                      return <Tuple3<String, String, int>>[];
+
+                    var ppattern = TagTranslate.disassembly(pattern);
 
                     return autocompleteTarget
-                        .where((element) => element.item1.startsWith(pattern))
+                        .where((element) => element.item2.startsWith(ppattern))
                         .toList()
                       ..addAll(autocompleteTarget
                           .where((element) =>
-                              !element.item1.startsWith(pattern) &&
-                              element.item1.contains(pattern))
+                              !element.item2.startsWith(ppattern) &&
+                              element.item2.contains(ppattern))
                           .toList());
                   },
-                  itemBuilder: (context, Tuple2<String, int> suggestion) {
+                  itemBuilder:
+                      (context, Tuple3<String, String, int> suggestion) {
                     return ListTile(
                       title: Text(suggestion.item1),
-                      trailing: Text(suggestion.item2.toString() + '회'),
+                      trailing: Text(suggestion.item3.toString() + '회'),
                       dense: true,
                     );
                   },
