@@ -321,6 +321,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                       dense: true,
                     );
                   },
+                  direction: AxisDirection.up,
                   onSuggestionSelected: (suggestion) {
                     text.text = suggestion;
                   },
