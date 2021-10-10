@@ -38,11 +38,10 @@ class _ArticleListPageState extends State<ArticleListPage> {
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
-    // if (similarsAll == null) return Text('asdf');
-
-    final list = buildList();
 
     if (_cachedList == null || _shouldReload) {
+      final list = buildList();
+
       _shouldReload = false;
       _cachedList = list;
     }
