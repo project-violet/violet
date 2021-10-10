@@ -333,9 +333,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   },
                   itemBuilder:
                       (context, Tuple3<String, String, int> suggestion) {
-                    return SizedBox(
-                      height: 32,
-                      child: ListTile(
+                    return ListTile(
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 0.0, horizontal: 16.0),
                         title: Text(suggestion.item1),
@@ -343,13 +341,12 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                           suggestion.item3.toString() + '회',
                           style: TextStyle(color: Colors.grey, fontSize: 10.0),
                         ),
-                        dense: true,
-                      ),
+                        dense: true,                     
                     );
                   },
                   direction: AxisDirection.up,
                   onSuggestionSelected: (suggestion) {
-                    text.text = suggestion;
+                    text.text = suggestion.item1;
                     setState(() {});
                     Future.delayed(Duration(milliseconds: 100)).then((value) async {
                        _onModifiedText();
