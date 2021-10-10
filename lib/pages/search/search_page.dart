@@ -152,13 +152,13 @@ class _SearchPageState extends State<SearchPage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final panel = ResultPanelWidget(
-      dateTime: datetime,
-      resultList: filter(),
-      key: key,
-    );
-
     if (_cachedPannel == null || _shouldReload) {
+      final panel = ResultPanelWidget(
+        dateTime: datetime,
+        resultList: filter(),
+       key: key,
+      );
+
       _shouldReload = false;
       _cachedPannel = panel;
     }
