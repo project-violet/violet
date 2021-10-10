@@ -38,7 +38,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       <Tuple5<double, int, int, double, List<double>>>[];
   TextEditingController text = TextEditingController(text: '은근슬쩍');
   String latestSearch = '은근슬쩍';
-  List<String> autocompleteTarget;
+  List<Tuple2<String, int>> autocompleteTarget;
 
   @override
   void initState() {
@@ -71,10 +71,18 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       const url =
           "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
-      autocompleteTarget =
-          (jsonDecode((await http.get(Uri.parse(url))).body) as List<dynamic>)
-              .map((e) => e as String)
-              .toList();
+      // autocompleteTarget =
+      //     (jsonDecode((await http.get(Uri.parse(url))).body) as List<dynamic>)
+      //         .map((e) => e as String)
+      //         .toList();
+      var m = jsonDecode((await http.get(Uri.parse(url))).body)
+          as Map<String, dynamic>;
+
+      autocompleteTarget = m.entries
+          .map((e) => Tuple2<String, int>(e.key, e.value as int))
+          .toList();
+
+      autocompleteTarget.sort((x, y) => y.item2.compareTo(x.item2));
 
       setState(() {});
     });
@@ -310,58 +318,38 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               Expanded(
                 child: TypeAheadField(
                   suggestionsCallback: (pattern) async {
-                    if (autocompleteTarget == null) return <String>[];
+                    if (autocompleteTarget == null)
+                      return <Tuple2<String, int>>[];
+
                     return autocompleteTarget
-                        .where((element) => element.startsWith(pattern))
-                        .toList();
+                        .where((element) => element.item1.startsWith(pattern))
+                        .toList()
+                      ..addAll(autocompleteTarget
+                          .where((element) =>
+                              !element.item1.startsWith(pattern) &&
+                              element.item1.contains(pattern))
+                          .toList());
                   },
-                  itemBuilder: (context, String suggestion) {
+                  itemBuilder: (context, Tuple2<String, int> suggestion) {
                     return ListTile(
-                      title: Text(suggestion),
+                      title: Text(suggestion.item1),
+                      trailing: Text(suggestion.item2.toString() + '회'),
                       dense: true,
                     );
                   },
                   direction: AxisDirection.up,
-                  onSuggestionSelected: (suggestion) {
+                  onSuggestionSelected: (suggestion) async {
                     text.text = suggestion;
+                    await _onModifiedText();
                   },
+                  hideOnEmpty: true,
+                  hideOnLoading: true,
                   textFieldConfiguration: TextFieldConfiguration(
                     decoration:
                         new InputDecoration.collapsed(hintText: '대사 입력'),
                     controller: text,
                     // autofocus: true,
-                    onEditingComplete: () async {
-                      if (latestSearch == text.text) return;
-                      latestSearch = text.text;
-                      messages =
-                          <Tuple5<double, int, int, double, List<double>>>[];
-
-                      setState(() {});
-                      var tmessages = (await VioletServer.searchMessage(
-                          selected.toLowerCase(), text.text)) as List<dynamic>;
-                      messages = tmessages
-                          .map((e) =>
-                              Tuple5<double, int, int, double, List<double>>(
-                                  double.parse(e['MatchScore'] as String),
-                                  e['Id'] as int,
-                                  e['Page'] as int,
-                                  e['Correctness'] as double,
-                                  (e['Rect'] as List<dynamic>)
-                                      .map((e) => double.parse(e.toString()))
-                                      .toList()))
-                          .toList();
-
-                      _urls.forEach((element) async {
-                        await CachedNetworkImageProvider(element).evict();
-                      });
-
-                      _height = List<double>.filled(messages.length, 0);
-                      _keys = List<GlobalKey>.generate(
-                          messages.length, (index) => GlobalKey());
-                      _urls = List<String>.filled(messages.length, '');
-
-                      setState(() {});
-                    },
+                    onEditingComplete: _onModifiedText,
                   ),
                 ),
               ),
@@ -380,6 +368,37 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
         ],
       ),
     );
+  }
+
+  Future<void> _onModifiedText() async {
+    if (latestSearch == text.text) return;
+    latestSearch = text.text;
+    messages = <Tuple5<double, int, int, double, List<double>>>[];
+
+    setState(() {});
+    var tmessages =
+        (await VioletServer.searchMessage(selected.toLowerCase(), text.text))
+            as List<dynamic>;
+    messages = tmessages
+        .map((e) => Tuple5<double, int, int, double, List<double>>(
+            double.parse(e['MatchScore'] as String),
+            e['Id'] as int,
+            e['Page'] as int,
+            e['Correctness'] as double,
+            (e['Rect'] as List<dynamic>)
+                .map((e) => double.parse(e.toString()))
+                .toList()))
+        .toList();
+
+    _urls.forEach((element) async {
+      await CachedNetworkImageProvider(element).evict();
+    });
+
+    _height = List<double>.filled(messages.length, 0);
+    _keys = List<GlobalKey>.generate(messages.length, (index) => GlobalKey());
+    _urls = List<String>.filled(messages.length, '');
+
+    setState(() {});
   }
 
   Future<Size> _calculateImageDimension(String url) {
