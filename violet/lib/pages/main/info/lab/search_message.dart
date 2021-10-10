@@ -334,6 +334,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   itemBuilder:
                       (context, Tuple3<String, String, int> suggestion) {
                     return ListTile(
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
                       title: Text(suggestion.item1),
                       trailing: Text(
                         suggestion.item3.toString() + '회',
