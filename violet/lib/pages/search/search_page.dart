@@ -80,8 +80,6 @@ class _SearchPageState extends State<SearchPage>
     );
   }
 
-  int currentScrollColumn = 0;
-
   @override
   void initState() {
     super.initState();
@@ -120,12 +118,14 @@ class _SearchPageState extends State<SearchPage>
       _showErrorToast('Initial search interrupted: $e');
     });
 
-    final width = MediaQuery.of(context).size.width;
-    final itemHeight = width * 4 / 3 / 3;
     _scroll.addListener(() {
-      var curI = (_scroll.offset / itemHeight + 1).toInt();
+      final itemCount = filter().length;
+      final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
+      final itemMaxFloor = itemCount / itemPerRow;
+      final itemHeight = _scroll.position.maxScrollExtent / itemMaxFloor;
+      final curI = (_scroll.offset / itemHeight + 1).toInt() * itemPerRow;
 
-      if (curI != currentScrollColumn) {
+      if (curI != searchPageNum.value) {
         searchPageNum.value = curI;
       }
 
