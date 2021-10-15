@@ -633,7 +633,7 @@ class _SettingsPageState extends State<SettingsPage>
               activeColor: Settings.majorAccentColor,
             ),
             onTap: () async {
-              await Settings.setTranslateTags(!Settings.useLowPerf);
+              await Settings.setUseLowPerf(!Settings.useLowPerf);
               setState(() {});
             },
           ),
