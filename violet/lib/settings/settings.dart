@@ -64,6 +64,8 @@ class Settings {
 
   static bool useOptimizeDatabase;
 
+  static bool useLowPerf;
+
   // View Option
   static bool showArticleProgress;
 
@@ -402,6 +404,8 @@ class Settings {
     showArticleProgress = await _getBool('showarticleprogress');
     useOptimizeDatabase = await _getBool('useoptimizedatabase');
 
+    useLowPerf = await _getBool('uselowperf');
+
     searchUseFuzzy = await _getBool('searchusefuzzy');
     searchTagTranslation = await _getBool('searchtagtranslation');
     searchUseTranslated = await _getBool('searchusetranslated');
@@ -629,6 +633,11 @@ class Settings {
     useOptimizeDatabase = nn;
     await (await SharedPreferences.getInstance())
         .setBool('useoptimizedatabase', nn);
+  }
+
+  static Future<void> setUseLowPerf(bool nn) async {
+    useLowPerf = nn;
+    await (await SharedPreferences.getInstance()).setBool('uselowperf', nn);
   }
 
   static Future<void> setSearchUseFuzzy(bool nn) async {
