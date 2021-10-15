@@ -108,7 +108,7 @@ class ThumbnailImageWidget extends StatelessWidget {
     return Hero(
       tag: thumbnailTag,
       child: CachedNetworkImage(
-        memCacheWidth: Settings.useLowPerf ? 100 : null,
+        memCacheWidth: Settings.useLowPerf ? 50 : 100,
         imageUrl: thumbnail,
         fit: BoxFit.cover,
         httpHeaders: headers,
