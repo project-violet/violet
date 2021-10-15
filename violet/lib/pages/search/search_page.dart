@@ -78,6 +78,8 @@ class _SearchPageState extends State<SearchPage>
     );
   }
 
+  int currentScrollColumn = 0;
+
   @override
   void initState() {
     super.initState();
@@ -116,7 +118,17 @@ class _SearchPageState extends State<SearchPage>
       _showErrorToast('Initial search interrupted: $e');
     });
 
+    final width = MediaQuery.of(context).size.width;
+    final itemHeight = width * 4 / 3 / 3;
     _scroll.addListener(() {
+      var curI = (_scroll.offset / itemHeight + 1).toInt();
+
+      if (curI != currentScrollColumn) {
+        setState(() {
+          currentScrollColumn = curI;
+        });
+      }
+
       if (scrollInProgress || queryEnd) return;
       if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
         scrollInProgress = true;
@@ -156,7 +168,7 @@ class _SearchPageState extends State<SearchPage>
       final panel = ResultPanelWidget(
         dateTime: datetime,
         resultList: filter(),
-       key: key,
+        key: key,
       );
 
       _shouldReload = false;
@@ -165,25 +177,52 @@ class _SearchPageState extends State<SearchPage>
 
     return SafeArea(
       bottom: false,
-      child: CustomScrollView(
-        controller: _scroll,
-        // cacheExtent: height * 2.0,
-        physics: const BouncingScrollPhysics(),
-        slivers: <Widget>[
-          SliverPersistentHeader(
-            floating: true,
-            delegate: AnimatedOpacitySliver(
-              minExtent: 64 + 12.0,
-              maxExtent: 64.0 + 12,
-              searchBar: Stack(
-                children: <Widget>[
-                  _searchBar(),
-                  _align(),
-                ],
+      child: Stack(
+        children: [
+          CustomScrollView(
+            controller: _scroll,
+            // cacheExtent: height * 2.0,
+            physics: const BouncingScrollPhysics(),
+            slivers: <Widget>[
+              SliverPersistentHeader(
+                floating: true,
+                delegate: AnimatedOpacitySliver(
+                  minExtent: 64 + 12.0,
+                  maxExtent: 64.0 + 12,
+                  searchBar: Stack(
+                    children: <Widget>[
+                      _searchBar(),
+                      _align(),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              _cachedPannel
+            ],
           ),
-          _cachedPannel
+          Container(
+            alignment: Alignment.bottomCenter,
+            padding: EdgeInsets.all(8),
+            child: Stack(
+              children: [
+                Text(
+                  '$currentScrollColumn/${filter().length}',
+                  style: TextStyle(
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 2
+                      ..color = Colors.black,
+                  ),
+                ),
+                Text(
+                  '$currentScrollColumn/${filter().length}',
+                  style: TextStyle(
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );
