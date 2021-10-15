@@ -620,6 +620,25 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
+            leading:
+                Icon(MdiIcons.imageSizeSelectLarge, color: Settings.majorColor),
+            title: Text('저사양 모드'),
+            trailing: Switch(
+              value: Settings.useLowPerf,
+              onChanged: (newValue) async {
+                await Settings.setUseLowPerf(newValue);
+                setState(() {});
+              },
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+            onTap: () async {
+              await Settings.setTranslateTags(!Settings.useLowPerf);
+              setState(() {});
+            },
+          ),
+          _buildDivider(),
+          ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
             trailing: Icon(Icons.keyboard_arrow_right),
