@@ -61,6 +61,8 @@ class _SearchPageState extends State<SearchPage>
   int eventCalled = 0;
   bool whenTopScroll = false;
 
+  ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
+
   DateTime datetime = DateTime.now();
 
   void _showErrorToast(String message) {
@@ -124,9 +126,7 @@ class _SearchPageState extends State<SearchPage>
       var curI = (_scroll.offset / itemHeight + 1).toInt();
 
       if (curI != currentScrollColumn) {
-        setState(() {
-          currentScrollColumn = curI;
-        });
+        searchPageNum.value = curI;
       }
 
       if (scrollInProgress || queryEnd) return;
@@ -200,29 +200,34 @@ class _SearchPageState extends State<SearchPage>
               _cachedPannel
             ],
           ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            padding: EdgeInsets.all(8),
-            child: Stack(
-              children: [
-                Text(
-                  '$currentScrollColumn/${filter().length}',
-                  style: TextStyle(
-                    foreground: Paint()
-                      ..style = PaintingStyle.stroke
-                      ..strokeWidth = 2
-                      ..color = Colors.black,
-                  ),
+          ValueListenableBuilder(
+            valueListenable: searchPageNum,
+            builder: (BuildContext context, int value, Widget child) {
+              return Container(
+                alignment: Alignment.bottomCenter,
+                padding: EdgeInsets.all(8),
+                child: Stack(
+                  children: [
+                    Text(
+                      '$value/${filter().length}',
+                      style: TextStyle(
+                        foreground: Paint()
+                          ..style = PaintingStyle.stroke
+                          ..strokeWidth = 2
+                          ..color = Colors.black,
+                      ),
+                    ),
+                    Text(
+                      '$value/${filter().length}',
+                      style: TextStyle(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  '$currentScrollColumn/${filter().length}',
-                  style: TextStyle(
-                    color: Colors.grey.shade300,
-                  ),
-                ),
-              ],
-            ),
-          )
+              );
+            },
+          ),
         ],
       ),
     );
