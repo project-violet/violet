@@ -130,16 +130,16 @@ class _SearchPageState extends State<SearchPage>
       else
         scrollQueue.add(1);
 
-      if (scrollQueue.length > 8) {
-        scrollQueue.removeRange(0, scrollQueue.length - 9);
+      if (scrollQueue.length > 32) {
+        scrollQueue.removeRange(0, scrollQueue.length - 33);
       }
 
       var p = scrollQueue.reduce((value, element) => value + element);
 
-      if (p <= -4 && !isExtended) {
+      if (p <= -16 && !isExtended) {
         isExtended = true;
         setState(() {});
-      } else if (p >= 4 && isExtended) {
+      } else if (p >= 16 && isExtended) {
         isExtended = false;
         setState(() {});
       }
@@ -570,14 +570,12 @@ class _SearchPageState extends State<SearchPage>
       if (_filterController.isPopulationSort)
         Population.sortByPopulation(queryResult);
 
-      if (next.item2 != -1 && searchTotalResultCount == 0) {
+      if (searchTotalResultCount == 0) {
         Future.delayed(Duration(milliseconds: 100)).then((value) async {
           searchTotalResultCount =
               await HentaiManager.countSearch(latestQuery.item2);
           setState(() {});
         });
-      } else {
-        searchTotalResultCount = filter().length;
       }
 
       _shouldReload = true;
