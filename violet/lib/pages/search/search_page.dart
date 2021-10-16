@@ -61,8 +61,6 @@ class _SearchPageState extends State<SearchPage>
   int eventCalled = 0;
   bool whenTopScroll = false;
 
-  ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
-
   DateTime datetime = DateTime.now();
 
   void _showErrorToast(String message) {
@@ -119,16 +117,6 @@ class _SearchPageState extends State<SearchPage>
     });
 
     _scroll.addListener(() {
-      final itemCount = filter().length;
-      final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
-      final itemMaxFloor = itemCount / itemPerRow;
-      final itemHeight = _scroll.position.maxScrollExtent / itemMaxFloor;
-      final curI = (_scroll.offset / itemHeight + 1).toInt() * itemPerRow;
-
-      if (curI != searchPageNum.value) {
-        searchPageNum.value = curI;
-      }
-
       if (scrollInProgress || queryEnd) return;
       if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
         scrollInProgress = true;
@@ -177,57 +165,25 @@ class _SearchPageState extends State<SearchPage>
 
     return SafeArea(
       bottom: false,
-      child: Stack(
-        children: [
-          CustomScrollView(
-            controller: _scroll,
-            // cacheExtent: height * 2.0,
-            physics: const BouncingScrollPhysics(),
-            slivers: <Widget>[
-              SliverPersistentHeader(
-                floating: true,
-                delegate: AnimatedOpacitySliver(
-                  minExtent: 64 + 12.0,
-                  maxExtent: 64.0 + 12,
-                  searchBar: Stack(
-                    children: <Widget>[
-                      _searchBar(),
-                      _align(),
-                    ],
-                  ),
-                ),
+      child: CustomScrollView(
+        controller: _scroll,
+        // cacheExtent: height * 2.0,
+        physics: const BouncingScrollPhysics(),
+        slivers: <Widget>[
+          SliverPersistentHeader(
+            floating: true,
+            delegate: AnimatedOpacitySliver(
+              minExtent: 64 + 12.0,
+              maxExtent: 64.0 + 12,
+              searchBar: Stack(
+                children: <Widget>[
+                  _searchBar(),
+                  _align(),
+                ],
               ),
-              _cachedPannel
-            ],
+            ),
           ),
-          ValueListenableBuilder(
-            valueListenable: searchPageNum,
-            builder: (BuildContext context, int value, Widget child) {
-              return Container(
-                alignment: Alignment.bottomCenter,
-                padding: EdgeInsets.all(8),
-                child: Stack(
-                  children: [
-                    Text(
-                      '$value/${filter().length}',
-                      style: TextStyle(
-                        foreground: Paint()
-                          ..style = PaintingStyle.stroke
-                          ..strokeWidth = 2
-                          ..color = Colors.black,
-                      ),
-                    ),
-                    Text(
-                      '$value/${filter().length}',
-                      style: TextStyle(
-                        color: Colors.grey.shade300,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          _cachedPannel,
         ],
       ),
     );
