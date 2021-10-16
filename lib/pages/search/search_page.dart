@@ -139,8 +139,9 @@ class _SearchPageState extends State<SearchPage>
       final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
       final itemMaxFloor = itemCount / itemPerRow;
       final itemHeight =
-          (_scroll.position.maxScrollExtent - (64 + 16)) / itemMaxFloor;
-      final curI = (_scroll.offset / itemHeight + 1).toInt() * itemPerRow;
+          (_scroll.position.maxScrollExtent - (64 + 8 + 16)) / itemMaxFloor;
+      final curI = ((_scroll.offset - (64 + 8 + 16)) / itemHeight + 1).toInt() *
+          itemPerRow;
 
       if (curI != searchPageNum.value && isExtended) {
         searchPageNum.value = curI;
@@ -272,7 +273,7 @@ class _SearchPageState extends State<SearchPage>
                       valueListenable: searchPageNum,
                       builder: (BuildContext context, int value, Widget child) {
                         return Text(
-                            '${queryResult.length}/$value/$searchTotalResultCount');
+                            '$value/${queryResult.length}/$searchTotalResultCount');
                       },
                     ),
                   ],
