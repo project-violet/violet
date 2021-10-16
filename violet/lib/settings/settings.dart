@@ -404,7 +404,7 @@ class Settings {
     showArticleProgress = await _getBool('showarticleprogress');
     useOptimizeDatabase = await _getBool('useoptimizedatabase');
 
-    useLowPerf = await _getBool('uselowperf');
+    useLowPerf = await _getBool('uselowperf', true);
 
     searchUseFuzzy = await _getBool('searchusefuzzy');
     searchTagTranslation = await _getBool('searchtagtranslation');
