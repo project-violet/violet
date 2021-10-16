@@ -216,7 +216,6 @@ class _SearchPageState extends State<SearchPage>
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
         backgroundColor: Settings.majorColor,
         label: AnimatedSwitcher(
           duration: Duration(milliseconds: 300),
@@ -239,10 +238,11 @@ class _SearchPageState extends State<SearchPage>
                       padding: const EdgeInsets.only(right: 4.0),
                       child: Icon(MdiIcons.bookOpenPageVariantOutline),
                     ),
-                    Text('${latestQuery.item1.item2}/$searchTotalResultCount'),
+                    Text('${queryResult.length}/$searchTotalResultCount'),
                   ],
                 ),
         ),
+        onPressed: () {},
       ),
     );
   }
