@@ -65,6 +65,7 @@ class _SearchPageState extends State<SearchPage>
 
   DateTime datetime = DateTime.now();
 
+  ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
   int searchTotalResultCount = 0;
   List<int> scrollQueue = <int>[];
 
@@ -99,6 +100,8 @@ class _SearchPageState extends State<SearchPage>
         () => heroFlareControls.play('close2search'));
     WidgetsBinding.instance
         .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
+
+    // 16+64
     Future.delayed(Duration(milliseconds: 500), () async {
       try {
         final result =
@@ -111,6 +114,13 @@ class _SearchPageState extends State<SearchPage>
           Population.sortByPopulation(queryResult);
         _shouldReload = true;
         setState(() {});
+
+        if (searchTotalResultCount == 0) {
+          Future.delayed(Duration(milliseconds: 100)).then((value) async {
+            searchTotalResultCount = await HentaiManager.countSearch('');
+            setState(() {});
+          });
+        }
       } catch (e) {
         print('Initial search failed: $e');
         _showErrorToast('Failed to search all: $e');
@@ -122,6 +132,23 @@ class _SearchPageState extends State<SearchPage>
     });
 
     _scroll.addListener(() {
+      //
+      // scroll position
+      //
+      final itemCount = filter().length;
+      final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
+      final itemMaxFloor = itemCount / itemPerRow;
+      final itemHeight =
+          (_scroll.position.maxScrollExtent - (64 + 16)) / itemMaxFloor;
+      final curI = (_scroll.offset / itemHeight + 1).toInt() * itemPerRow;
+
+      if (curI != searchPageNum.value && isExtended) {
+        searchPageNum.value = curI;
+      }
+
+      //
+      // scroll direction
+      //
       var upScrolling =
           _scroll.position.userScrollDirection == ScrollDirection.forward;
 
@@ -130,20 +157,23 @@ class _SearchPageState extends State<SearchPage>
       else
         scrollQueue.add(1);
 
-      if (scrollQueue.length > 32) {
-        scrollQueue.removeRange(0, scrollQueue.length - 33);
+      if (scrollQueue.length > 64) {
+        scrollQueue.removeRange(0, scrollQueue.length - 65);
       }
 
       var p = scrollQueue.reduce((value, element) => value + element);
 
-      if (p <= -16 && !isExtended) {
+      if (p <= -32 && !isExtended) {
         isExtended = true;
         setState(() {});
-      } else if (p >= 16 && isExtended) {
+      } else if (p >= 32 && isExtended) {
         isExtended = false;
         setState(() {});
       }
 
+      //
+      //  scroll lazy next query loading
+      //
       if (scrollInProgress || queryEnd) return;
       if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
         scrollInProgress = true;
@@ -238,7 +268,13 @@ class _SearchPageState extends State<SearchPage>
                       padding: const EdgeInsets.only(right: 4.0),
                       child: Icon(MdiIcons.bookOpenPageVariantOutline),
                     ),
-                    Text('${queryResult.length}/$searchTotalResultCount'),
+                    ValueListenableBuilder(
+                      valueListenable: searchPageNum,
+                      builder: (BuildContext context, int value, Widget child) {
+                        return Text(
+                            '${queryResult.length}/$value/$searchTotalResultCount');
+                      },
+                    ),
                   ],
                 ),
         ),
@@ -641,8 +677,6 @@ class _SearchPageState extends State<SearchPage>
     return filterResult;
   }
 }
-
-int count = 0;
 
 class ResultPanelWidget extends StatelessWidget {
   final List<QueryResult> resultList;
