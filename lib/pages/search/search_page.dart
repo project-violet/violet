@@ -136,10 +136,10 @@ class _SearchPageState extends State<SearchPage>
 
       var p = scrollQueue.reduce((value, element) => value + element);
 
-      if (p == -8 && !isExtended) {
+      if (p <= -4 && !isExtended) {
         isExtended = true;
         setState(() {});
-      } else if (p == 8 && isExtended) {
+      } else if (p >= 4 && isExtended) {
         isExtended = false;
         setState(() {});
       }
