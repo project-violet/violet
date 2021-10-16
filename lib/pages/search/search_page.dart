@@ -122,25 +122,6 @@ class _SearchPageState extends State<SearchPage>
     });
 
     _scroll.addListener(() {
-      if (scrollInProgress || queryEnd) return;
-      if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
-        scrollInProgress = true;
-        Future.delayed(Duration(milliseconds: 100), () async {
-          try {
-            await loadNextQuery();
-          } catch (e) {
-            print('loadNextQuery failed: $e');
-          } finally {
-            scrollInProgress = false;
-          }
-        }).catchError((e) {
-          // It happened!
-          print('Scrolling interrupted: $e');
-          _showErrorToast('Scrolling interrupted: $e');
-          scrollInProgress = false;
-        });
-      }
-
       var upScrolling =
           _scroll.position.userScrollDirection == ScrollDirection.forward;
 
@@ -161,6 +142,25 @@ class _SearchPageState extends State<SearchPage>
       } else if (p == 8 && isExtended) {
         isExtended = false;
         setState(() {});
+      }
+
+      if (scrollInProgress || queryEnd) return;
+      if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
+        scrollInProgress = true;
+        Future.delayed(Duration(milliseconds: 100), () async {
+          try {
+            await loadNextQuery();
+          } catch (e) {
+            print('loadNextQuery failed: $e');
+          } finally {
+            scrollInProgress = false;
+          }
+        }).catchError((e) {
+          // It happened!
+          print('Scrolling interrupted: $e');
+          _showErrorToast('Scrolling interrupted: $e');
+          scrollInProgress = false;
+        });
       }
     });
   }
