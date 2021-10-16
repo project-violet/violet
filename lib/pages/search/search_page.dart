@@ -64,6 +64,8 @@ class _SearchPageState extends State<SearchPage>
 
   DateTime datetime = DateTime.now();
 
+  int searchTotalResultCount = 0;
+
   void _showErrorToast(String message) {
     FlutterToast(context).showToast(
       toastDuration: const Duration(seconds: 10),
@@ -301,6 +303,7 @@ class _SearchPageState extends State<SearchPage>
                         queryEnd = false;
                         isFilterUsed = false;
                         _shouldReload = true;
+                        searchTotalResultCount = 0;
                         await loadNextQuery();
                         setState(() {
                           _shouldReload = true;
@@ -554,6 +557,16 @@ class _SearchPageState extends State<SearchPage>
 
       if (_filterController.isPopulationSort)
         Population.sortByPopulation(queryResult);
+
+      if (next.item2 != -1 && searchTotalResultCount == 0) {
+        Future.delayed(Duration(milliseconds: 100)).then((value) async {
+          searchTotalResultCount =
+              await HentaiManager.countSearch(latestQuery.item2);
+          setState(() {});
+        });
+      } else {
+        searchTotalResultCount = filter().length;
+      }
 
       _shouldReload = true;
       setState(() {
