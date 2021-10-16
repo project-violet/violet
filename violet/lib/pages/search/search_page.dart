@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
@@ -65,6 +66,7 @@ class _SearchPageState extends State<SearchPage>
   DateTime datetime = DateTime.now();
 
   int searchTotalResultCount = 0;
+  List<int> scrollQueue = <int>[];
 
   void _showErrorToast(String message) {
     FlutterToast(context).showToast(
@@ -141,14 +143,24 @@ class _SearchPageState extends State<SearchPage>
 
       var upScrolling =
           _scroll.position.userScrollDirection == ScrollDirection.forward;
-      if (upScrolling && !isExtended) {
-        setState(() {
-          isExtended = true;
-        });
-      } else if (!upScrolling && isExtended) {
-        setState(() {
-          isExtended = false;
-        });
+
+      if (upScrolling)
+        scrollQueue.add(-1);
+      else
+        scrollQueue.add(1);
+
+      if (scrollQueue.length > 8) {
+        scrollQueue.removeRange(0, scrollQueue.length - 9);
+      }
+
+      var p = scrollQueue.reduce((value, element) => value + element);
+
+      if (p == -8 && !isExtended) {
+        isExtended = true;
+        setState(() {});
+      } else if (p == 8 && isExtended) {
+        isExtended = false;
+        setState(() {});
       }
     });
   }
@@ -227,7 +239,7 @@ class _SearchPageState extends State<SearchPage>
                       padding: const EdgeInsets.only(right: 4.0),
                       child: Icon(MdiIcons.bookOpenPageVariantOutline),
                     ),
-                    Text('${latestQuery.item1.item2}/0'),
+                    Text('${latestQuery.item1.item2}/$searchTotalResultCount'),
                   ],
                 ),
         ),
