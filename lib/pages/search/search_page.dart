@@ -60,6 +60,7 @@ class _SearchPageState extends State<SearchPage>
   double latestOffset = 0.0;
   int eventCalled = 0;
   bool whenTopScroll = false;
+  bool isExtended = false;
 
   DateTime datetime = DateTime.now();
 
@@ -135,6 +136,18 @@ class _SearchPageState extends State<SearchPage>
           scrollInProgress = false;
         });
       }
+
+      var upScrolling =
+          _scroll.position.userScrollDirection == ScrollDirection.forward;
+      if (upScrolling && !isExtended) {
+        setState(() {
+          isExtended = true;
+        });
+      } else if (!upScrolling && isExtended) {
+        setState(() {
+          isExtended = false;
+        });
+      }
     });
   }
 
@@ -163,28 +176,59 @@ class _SearchPageState extends State<SearchPage>
       _cachedPannel = panel;
     }
 
-    return SafeArea(
-      bottom: false,
-      child: CustomScrollView(
-        controller: _scroll,
-        // cacheExtent: height * 2.0,
-        physics: const BouncingScrollPhysics(),
-        slivers: <Widget>[
-          SliverPersistentHeader(
-            floating: true,
-            delegate: AnimatedOpacitySliver(
-              minExtent: 64 + 12.0,
-              maxExtent: 64.0 + 12,
-              searchBar: Stack(
-                children: <Widget>[
-                  _searchBar(),
-                  _align(),
-                ],
+    return Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          controller: _scroll,
+          // cacheExtent: height * 2.0,
+          physics: const BouncingScrollPhysics(),
+          slivers: <Widget>[
+            SliverPersistentHeader(
+              floating: true,
+              delegate: AnimatedOpacitySliver(
+                minExtent: 64 + 12.0,
+                maxExtent: 64.0 + 12,
+                searchBar: Stack(
+                  children: <Widget>[
+                    _searchBar(),
+                    _align(),
+                  ],
+                ),
               ),
             ),
+            _cachedPannel,
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        backgroundColor: Settings.majorColor,
+        label: AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          transitionBuilder: (Widget child, Animation<double> animation) =>
+              FadeTransition(
+            opacity: animation,
+            child: SizeTransition(
+              child: child,
+              sizeFactor: animation,
+              axis: Axis.horizontal,
+            ),
           ),
-          _cachedPannel,
-        ],
+          child: !isExtended
+              ? Icon(MdiIcons.bookOpenPageVariantOutline)
+              : Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4.0),
+                      child: Icon(MdiIcons.bookOpenPageVariantOutline),
+                    ),
+                    Text('${latestQuery.item1.item2}/0'),
+                  ],
+                ),
+        ),
       ),
     );
   }
