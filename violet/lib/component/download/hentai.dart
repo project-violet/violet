@@ -57,7 +57,7 @@ class HentaiDonwloadManager extends Downloadable {
   @override
   Future<List<DownloadTask>> createTask(
       String url, GeneralDownloadProgress gdp) async {
-    var query = (await HentaiManager.idSearch(url, 0)).item1;
+    var query = (await HentaiManager.idSearch(url)).item1;
 
     if (query.length == 0) {
       return null;
