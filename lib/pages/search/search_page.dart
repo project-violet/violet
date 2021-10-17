@@ -70,6 +70,7 @@ class _SearchPageState extends State<SearchPage>
   double itemHeight = 0.0;
   ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
   int searchTotalResultCount = 0;
+  int baseCount = 0; // using for user custom page index
   List<int> scrollQueue = <int>[];
 
   void _showErrorToast(String message) {
@@ -138,7 +139,9 @@ class _SearchPageState extends State<SearchPage>
       // scroll position
       //
       if (itemKeys.length > 0 && itemHeight <= 0.1) {
-        itemHeight = itemKeys[0].currentContext.size.height + 8;
+        if (itemKeys[0].currentContext != null) {
+          itemHeight = itemKeys[0].currentContext.size.height + 8;
+        }
       }
 
       final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
@@ -279,7 +282,7 @@ class _SearchPageState extends State<SearchPage>
                       valueListenable: searchPageNum,
                       builder: (BuildContext context, int value, Widget child) {
                         return Text(
-                            '$value/${queryResult.length}/$searchTotalResultCount');
+                            '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
                       },
                     ),
                   ],
@@ -295,24 +298,27 @@ class _SearchPageState extends State<SearchPage>
           );
           if (rr == null) return;
 
-          // if (rr[0] == 1) {
-          //   var setPage = rr[1] as int;
+          if (rr[0] == 1) {
+            var setPage = rr[1] as int;
 
-          //   latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-          //       null, latestQuery.item2);
-          //   queryResult = [];
-          //   _filterController = FilterController();
-          //   queryEnd = false;
-          //   isFilterUsed = false;
-          //   _shouldReload = true;
-          //   searchTotalResultCount = 0;
-          //   searchPageNum.value = 0;
-          //   await loadNextQuery();
-          //   setState(() {
-          //     _shouldReload = true;
-          //     key = ObjectKey(Uuid().v4());
-          //   });
-          // }
+            baseCount = setPage;
+
+            latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
+                Tuple2<List<QueryResult>, int>(<QueryResult>[], baseCount),
+                latestQuery.item2);
+            queryEnd = false;
+            queryResult = [];
+            _filterController = FilterController();
+            isFilterUsed = false;
+            _shouldReload = true;
+            searchTotalResultCount = 0;
+            searchPageNum.value = 0;
+            await loadNextQuery();
+            setState(() {
+              _shouldReload = true;
+              key = ObjectKey(Uuid().v4());
+            });
+          }
         },
       ),
     );
@@ -388,6 +394,7 @@ class _SearchPageState extends State<SearchPage>
                         _shouldReload = true;
                         searchTotalResultCount = 0;
                         searchPageNum.value = 0;
+                        baseCount = 0;
                         await loadNextQuery();
                         setState(() {
                           _shouldReload = true;
@@ -436,6 +443,7 @@ class _SearchPageState extends State<SearchPage>
     isFilterUsed = false;
     searchPageNum.value = 0;
     searchTotalResultCount = 0;
+    baseCount = 0;
     await loadNextQuery();
   }
 
