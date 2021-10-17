@@ -66,7 +66,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                   }
                   Navigator.pop(context, [
                     1,
-                    _pageController.text,
+                    int.parse(_pageController.text),
                   ]);
                 },
               ),
