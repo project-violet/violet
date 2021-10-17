@@ -65,6 +65,7 @@ class _SearchPageState extends State<SearchPage>
 
   DateTime datetime = DateTime.now();
 
+  List<GlobalKey> itemKeys = <GlobalKey>[];
   ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
   int searchTotalResultCount = 0;
   List<int> scrollQueue = <int>[];
@@ -135,16 +136,15 @@ class _SearchPageState extends State<SearchPage>
       //
       // scroll position
       //
-      final itemCount = filter().length;
-      final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
-      final itemMaxFloor = itemCount / itemPerRow;
-      final itemHeight =
-          (_scroll.position.maxScrollExtent - (64 + 8 + 16)) / itemMaxFloor;
-      final curI = ((_scroll.offset - (64 + 8 + 16)) / itemHeight + 1).toInt() *
-          itemPerRow;
+      if (itemKeys.length > 0) {
+        final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
+        final itemHeight = itemKeys[0].currentContext.size.height + 8;
+        final curI = ((_scroll.offset - (64 + 16)) / itemHeight + 1).toInt() *
+            itemPerRow;
 
-      if (curI != searchPageNum.value && isExtended) {
-        searchPageNum.value = curI;
+        if (curI != searchPageNum.value && isExtended) {
+          searchPageNum.value = curI;
+        }
       }
 
       //
@@ -211,9 +211,13 @@ class _SearchPageState extends State<SearchPage>
     super.build(context);
 
     if (_cachedPannel == null || _shouldReload) {
+      itemKeys.clear();
+      filter().forEach((element) => itemKeys.add(GlobalKey()));
+
       final panel = ResultPanelWidget(
         dateTime: datetime,
         resultList: filter(),
+        itemKeys: itemKeys,
         key: key,
       );
 
@@ -684,8 +688,9 @@ class ResultPanelWidget extends StatelessWidget {
   final DateTime dateTime;
   final ScrollController _scrollController = ScrollController();
   final ObjectKey key;
+  final List<GlobalKey> itemKeys;
 
-  ResultPanelWidget({this.resultList, this.dateTime, this.key});
+  ResultPanelWidget({this.resultList, this.dateTime, this.key, this.itemKeys});
 
   @override
   Widget build(BuildContext context) {
@@ -708,6 +713,7 @@ class ResultPanelWidget extends StatelessWidget {
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
                   return Padding(
+                    key: itemKeys.length >= index ? itemKeys[index] : null,
                     padding: EdgeInsets.zero,
                     child: Align(
                       alignment: Alignment.bottomCenter,
@@ -809,6 +815,7 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               itemBuilder: (context, index, animation) {
                 return Align(
+                  key: itemKeys.length >= index ? itemKeys[index] : null,
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
@@ -833,6 +840,7 @@ class ResultPanelWidget extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return Align(
+                  key: itemKeys.length >= index ? itemKeys[index] : null,
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
