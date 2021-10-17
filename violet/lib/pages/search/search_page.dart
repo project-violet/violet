@@ -29,6 +29,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
+import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/settings/device_type.dart';
@@ -103,7 +104,6 @@ class _SearchPageState extends State<SearchPage>
     WidgetsBinding.instance
         .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
 
-    // 16+64
     Future.delayed(Duration(milliseconds: 500), () async {
       try {
         final result =
@@ -285,7 +285,35 @@ class _SearchPageState extends State<SearchPage>
                   ],
                 ),
         ),
-        onPressed: () {},
+        onPressed: () async {
+          var rr = await showDialog(
+            context: context,
+            builder: (BuildContext context) => SearchPageModifyPage(
+              curPage: searchPageNum.value,
+              maxPage: searchTotalResultCount,
+            ),
+          );
+          if (rr == null) return;
+
+          // if (rr[0] == 1) {
+          //   var setPage = rr[1] as int;
+
+          //   latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
+          //       null, latestQuery.item2);
+          //   queryResult = [];
+          //   _filterController = FilterController();
+          //   queryEnd = false;
+          //   isFilterUsed = false;
+          //   _shouldReload = true;
+          //   searchTotalResultCount = 0;
+          //   searchPageNum.value = 0;
+          //   await loadNextQuery();
+          //   setState(() {
+          //     _shouldReload = true;
+          //     key = ObjectKey(Uuid().v4());
+          //   });
+          // }
+        },
       ),
     );
   }
@@ -359,6 +387,7 @@ class _SearchPageState extends State<SearchPage>
                         isFilterUsed = false;
                         _shouldReload = true;
                         searchTotalResultCount = 0;
+                        searchPageNum.value = 0;
                         await loadNextQuery();
                         setState(() {
                           _shouldReload = true;
@@ -405,6 +434,7 @@ class _SearchPageState extends State<SearchPage>
     _filterController = FilterController();
     queryEnd = false;
     isFilterUsed = false;
+    searchPageNum.value = 0;
     searchTotalResultCount = 0;
     await loadNextQuery();
   }
@@ -489,6 +519,7 @@ class _SearchPageState extends State<SearchPage>
                       .then((value) async {
                     _applyFilter();
                     _shouldReload = true;
+                    searchPageNum.value = 0;
                     setState(() {
                       _shouldReload = true;
                       key = ObjectKey(Uuid().v4());
