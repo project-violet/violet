@@ -66,6 +66,7 @@ class _SearchPageState extends State<SearchPage>
   DateTime datetime = DateTime.now();
 
   List<GlobalKey> itemKeys = <GlobalKey>[];
+  double itemHeight = 0.0;
   ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
   int searchTotalResultCount = 0;
   List<int> scrollQueue = <int>[];
@@ -136,15 +137,16 @@ class _SearchPageState extends State<SearchPage>
       //
       // scroll position
       //
-      if (itemKeys.length > 0) {
-        final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
-        final itemHeight = itemKeys[0].currentContext.size.height + 8;
-        final curI = ((_scroll.offset - (64 + 16)) / itemHeight + 1).toInt() *
-            itemPerRow;
+      if (itemKeys.length > 0 && itemHeight <= 0.1) {
+        itemHeight = itemKeys[0].currentContext.size.height + 8;
+      }
 
-        if (curI != searchPageNum.value && isExtended) {
-          searchPageNum.value = curI;
-        }
+      final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
+      final curI =
+          ((_scroll.offset - (64 + 16)) / itemHeight + 1).toInt() * itemPerRow;
+
+      if (curI != searchPageNum.value && isExtended) {
+        searchPageNum.value = curI;
       }
 
       //
@@ -403,6 +405,7 @@ class _SearchPageState extends State<SearchPage>
     _filterController = FilterController();
     queryEnd = false;
     isFilterUsed = false;
+    searchTotalResultCount = 0;
     await loadNextQuery();
   }
 
@@ -456,6 +459,7 @@ class _SearchPageState extends State<SearchPage>
                     .then((value) async {
                   await Future.delayed(Duration(milliseconds: 50), () {
                     _shouldReload = true;
+                    itemHeight = 0.0;
                     setState(() {});
                   });
                 });
