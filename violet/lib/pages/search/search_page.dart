@@ -292,7 +292,7 @@ class _SearchPageState extends State<SearchPage>
           var rr = await showDialog(
             context: context,
             builder: (BuildContext context) => SearchPageModifyPage(
-              curPage: searchPageNum.value,
+              curPage: searchPageNum.value + baseCount,
               maxPage: searchTotalResultCount,
             ),
           );
