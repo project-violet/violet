@@ -29,7 +29,7 @@ class _UserStatusCardState extends State<UserStatusCard>
   String _userId = 'None';
   String _userAppId;
   String _userNickName = 'None';
-  bool _logining = false;
+  bool _logining = true;
 
   @override
   void initState() {
@@ -37,50 +37,50 @@ class _UserStatusCardState extends State<UserStatusCard>
 
     // load boards
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      var id = (await SharedPreferences.getInstance())
-          .getString('saved_community_id');
-      var pw = (await SharedPreferences.getInstance())
-          .getString('saved_community_pw');
+      // var id = (await SharedPreferences.getInstance())
+      //     .getString('saved_community_id');
+      // var pw = (await SharedPreferences.getInstance())
+      //     .getString('saved_community_pw');
 
       _userAppId =
           (await SharedPreferences.getInstance()).getString('fa_userid');
       setState(() {});
 
-      if (id != null && pw != null) {
-        setState(() {
-          _logining = true;
-        });
-        sess = VioletCommunitySession.lastSession != null
-            ? VioletCommunitySession.lastSession
-            : await VioletCommunitySession.signIn(id, pw);
-        _userNickName =
-            (await VioletCommunitySession.getUserInfo(id))['NickName'];
-        setState(() {
-          _logining = false;
-        });
-      }
+      // if (id != null && pw != null) {
+      //   setState(() {
+      //     _logining = true;
+      //   });
+      //   sess = VioletCommunitySession.lastSession != null
+      //       ? VioletCommunitySession.lastSession
+      //       : await VioletCommunitySession.signIn(id, pw);
+      //   _userNickName =
+      //       (await VioletCommunitySession.getUserInfo(id))['NickName'];
+      //   setState(() {
+      //     _logining = false;
+      //   });
+      // }
 
       // [{Id: 1, ShortName: issue, Name: Issue, Description: Leave app issues or improvements here},
       //  {Id: 2, ShortName: general, Name: General, Description: Any Topic}]
-      var boards = (await VioletCommunityArticle.getBoards(null))['result'];
-      boards.removeWhere((element) => element['ShortName'] == '-- free --');
+      // var boards = (await VioletCommunityArticle.getBoards(null))['result'];
+      // boards.removeWhere((element) => element['ShortName'] == '-- free --');
     });
   }
 
-  Future<void> _trylogin() async {
-    var id =
-        (await SharedPreferences.getInstance()).getString('saved_community_id');
-    var pw =
-        (await SharedPreferences.getInstance()).getString('saved_community_pw');
+  // Future<void> _trylogin() async {
+  //   var id =
+  //       (await SharedPreferences.getInstance()).getString('saved_community_id');
+  //   var pw =
+  //       (await SharedPreferences.getInstance()).getString('saved_community_pw');
 
-    _userId = id != null ? id : 'None';
-    _userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
-    setState(() {});
+  //   _userId = id != null ? id : 'None';
+  //   _userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
+  //   setState(() {});
 
-    if (id != null && pw != null) {
-      sess = await VioletCommunitySession.signIn(id, pw);
-    }
-  }
+  //   if (id != null && pw != null) {
+  //     sess = await VioletCommunitySession.signIn(id, pw);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -228,107 +228,116 @@ class _UserStatusCardState extends State<UserStatusCard>
                           size: 30),
                     ),
                   ),
-                  onTap: () async {
-                    if (sess != null) {
-                      setState(() {
-                        _logining = true;
-                      });
+                  onTap: true
+                      ? () async {
+                          await showOkDialog(
+                              context,
+                              'This feature is no longer available!',
+                              'Violet Community');
+                        }
+                      // ignore: dead_code
+                      : () async {
+                          if (sess != null) {
+                            setState(() {
+                              _logining = true;
+                            });
 
-                      var resc = await VioletServer.uploadBookmark();
+                            var resc = await VioletServer.uploadBookmark();
 
-                      setState(() {
-                        _logining = false;
-                      });
+                            setState(() {
+                              _logining = false;
+                            });
 
-                      if (resc) {
-                        FlutterToast(context).showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: 'Bookmark Backup Success!',
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
-                      } else {
-                        FlutterToast(context).showToast(
-                          child: ToastWrapper(
-                            isCheck: false,
-                            isWarning: false,
-                            msg: 'Bookmark Backup Fail!',
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
-                      }
+                            if (resc) {
+                              FlutterToast(context).showToast(
+                                child: ToastWrapper(
+                                  isCheck: true,
+                                  msg: 'Bookmark Backup Success!',
+                                ),
+                                gravity: ToastGravity.BOTTOM,
+                                toastDuration: Duration(seconds: 4),
+                              );
+                            } else {
+                              FlutterToast(context).showToast(
+                                child: ToastWrapper(
+                                  isCheck: false,
+                                  isWarning: false,
+                                  msg: 'Bookmark Backup Fail!',
+                                ),
+                                gravity: ToastGravity.BOTTOM,
+                                toastDuration: Duration(seconds: 4),
+                              );
+                            }
 
-                      return;
-                    }
+                            return;
+                          }
 
-                    var ync = await showYesNoDialog(
-                        context,
-                        'You need to log in to use the community feature. ' +
-                            'If you have an existing id, press "YES" to log in. ' +
-                            'If you do not have an existing id, press "NO" to register for a new one.',
-                        'Sign In/Up');
+                          var ync = await showYesNoDialog(
+                              context,
+                              'You need to log in to use the community feature. ' +
+                                  'If you have an existing id, press "YES" to log in. ' +
+                                  'If you do not have an existing id, press "NO" to register for a new one.',
+                              'Sign In/Up');
 
-                    if (ync == null) return;
+                          if (ync == null) return;
 
-                    String id, pw;
+                          String id, pw;
 
-                    if (ync == true) {
-                      // signin
-                      var r = await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SignInDialog();
-                          });
-                      if (r == null) return;
-                      id = r[0];
-                      pw = r[1];
-                    } else {
-                      // signup
-                      if (await VioletCommunitySession.checkUserAppId(
-                              _userAppId) !=
-                          'success') {
-                        await showOkDialog(
-                            context,
-                            'You cannot continue, there is an account registered with your UserAppId.' +
-                                ' If you have already registered as a member, please sign in with your existing id.' +
-                                ' If you forgot your login information, please contact developer.');
-                        return;
-                      }
-                      var r = await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SignUpDialog();
-                          });
+                          if (ync == true) {
+                            // signin
+                            var r = await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SignInDialog();
+                                });
+                            if (r == null) return;
+                            id = r[0];
+                            pw = r[1];
+                          } else {
+                            // signup
+                            if (await VioletCommunitySession.checkUserAppId(
+                                    _userAppId) !=
+                                'success') {
+                              await showOkDialog(
+                                  context,
+                                  'You cannot continue, there is an account registered with your UserAppId.' +
+                                      ' If you have already registered as a member, please sign in with your existing id.' +
+                                      ' If you forgot your login information, please contact developer.');
+                              return;
+                            }
+                            var r = await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return SignUpDialog();
+                                });
 
-                      if (r == null) return;
+                            if (r == null) return;
 
-                      print(await VioletCommunitySession.signUp(
-                          r[0], r[1], _userAppId, r[2]));
+                            print(await VioletCommunitySession.signUp(
+                                r[0], r[1], _userAppId, r[2]));
 
-                      if (await VioletCommunitySession.signUp(
-                              r[0], r[1], _userAppId, r[2]) ==
-                          'success') {
-                        await showOkDialog(context, 'Sign up is complete!');
-                        id = r[0];
-                        pw = r[1];
-                      } else {
-                        await showOkDialog(
-                            context, 'Registration has been declined!');
-                        return;
-                      }
-                    }
+                            if (await VioletCommunitySession.signUp(
+                                    r[0], r[1], _userAppId, r[2]) ==
+                                'success') {
+                              await showOkDialog(
+                                  context, 'Sign up is complete!');
+                              id = r[0];
+                              pw = r[1];
+                            } else {
+                              await showOkDialog(
+                                  context, 'Registration has been declined!');
+                              return;
+                            }
+                          }
 
-                    await (await SharedPreferences.getInstance())
-                        .setString('saved_community_id', id);
-                    await (await SharedPreferences.getInstance())
-                        .setString('saved_community_pw', pw);
+                          await (await SharedPreferences.getInstance())
+                              .setString('saved_community_id', id);
+                          await (await SharedPreferences.getInstance())
+                              .setString('saved_community_pw', pw);
 
-                    await _trylogin();
-                    setState(() {});
-                  },
+                          // await _trylogin();
+                          setState(() {});
+                        },
                 ),
         ),
       ],
