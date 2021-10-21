@@ -29,7 +29,7 @@ class _UserStatusCardState extends State<UserStatusCard>
   String _userId = 'None';
   String _userAppId;
   String _userNickName = 'None';
-  bool _logining = true;
+  bool _logining = false;
 
   @override
   void initState() {
