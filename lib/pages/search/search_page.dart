@@ -216,8 +216,10 @@ class _SearchPageState extends State<SearchPage>
     super.build(context);
 
     if (_cachedPannel == null || _shouldReload) {
+      _shouldReload = false;
+
       itemKeys.clear();
-      filter().forEach((element) => itemKeys.add(GlobalKey()));
+      itemKeys.add(GlobalKey());
 
       final panel = ResultPanelWidget(
         dateTime: datetime,
@@ -226,7 +228,6 @@ class _SearchPageState extends State<SearchPage>
         key: key,
       );
 
-      _shouldReload = false;
       _cachedPannel = panel;
     }
 
