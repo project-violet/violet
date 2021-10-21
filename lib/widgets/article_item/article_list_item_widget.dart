@@ -239,28 +239,29 @@ class _ArticleListItemVerySimpleWidgetState
       });
     }
 
-    // https://stackoverflow.com/a/52249579
-    final body = BodyWidget(
-      data: data,
-      thumbnail: thumbnail,
-      imageCount: imageCount,
-      isBookmarked: isBookmarked,
-      flareController: _flareController,
-      pad: pad,
-      isBlurred: isBlurred,
-      headers: {
-        "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
-      },
-      isLastestRead: isLastestRead,
-      latestReadPage: latestReadPage,
-      disableFiltering: disableFiltering,
-      artist: artist,
-      title: title,
-      dateTime: dateTime,
-    );
-
     if (_body == null || _shouldReload) {
       _shouldReload = false;
+
+      // https://stackoverflow.com/a/52249579
+      final body = BodyWidget(
+        data: data,
+        thumbnail: thumbnail,
+        imageCount: imageCount,
+        isBookmarked: isBookmarked,
+        flareController: _flareController,
+        pad: pad,
+        isBlurred: isBlurred,
+        headers: {
+          "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
+        },
+        isLastestRead: isLastestRead,
+        latestReadPage: latestReadPage,
+        disableFiltering: disableFiltering,
+        artist: artist,
+        title: title,
+        dateTime: dateTime,
+      );
+
       _body = body;
     }
 
