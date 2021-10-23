@@ -24,8 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 10, 23),
+    version: '1.17 Minor Update <== Latest',
+    contents: [
+      'optimize critial widgets',
+      'add search index jumper',
+      'add memory optimization options (default on)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 10, 11),
-    version: '1.16.4 Patch Update <== Latest',
+    version: '1.16.4 Patch Update',
     contents: [
       'optimize global comments',
       'optimize critical widgets',

@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/version/update_sync.dart';
 
 class VersionViewPage extends StatelessWidget {
   @override
@@ -29,7 +30,7 @@ class VersionViewPage extends StatelessWidget {
                       style: TextStyle(fontSize: 30),
                     ),
                     Text(
-                      '1.16.4',
+                      '${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
                       style: TextStyle(fontSize: 20),
                     ),
                     Text(''),
