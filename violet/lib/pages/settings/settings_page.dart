@@ -150,6 +150,7 @@ class _SettingsPageState extends State<SettingsPage>
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     if (_cachedGroups == null || _shouldReload) {
+      _shouldReload = false;
       _cachedGroups = _themeGroup()
         ..add(UserStatusCard())
         ..addAll(_searchGroup())
