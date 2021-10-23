@@ -183,7 +183,8 @@ class _ArticleListItemVerySimpleWidgetState
         ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime())
         : '';
     _shouldReload = true;
-    setState(() {});
+
+    if (data.showDetail) setState(() {});
   }
 
   _setProvider() {
@@ -214,12 +215,15 @@ class _ArticleListItemVerySimpleWidgetState
 
   BodyWidget _body;
   bool _shouldReload = false;
+  int _buildCount = 0;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     if (disposed) return null;
+
+    Logger.info('[aa] ${++_buildCount}');
 
     _init();
 
