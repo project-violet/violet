@@ -77,7 +77,9 @@ class _MainPage2State extends State<MainPage2>
       // }
 
       await UpdateSyncManager.checkUpdateSync();
-      setState(() {});
+      setState(() {
+        _shouldReload = true;
+      });
 
       // Update is not available for iOS.
       if (!Platform.isIOS) {
@@ -86,11 +88,15 @@ class _MainPage2State extends State<MainPage2>
 
       if (SyncManager.syncRequire) {
         setState(() {
+          _shouldReload = true;
           _syncAvailable = true;
         });
       }
     });
   }
+
+  List<Widget> _cachedGroups;
+  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +109,67 @@ class _MainPage2State extends State<MainPage2>
       GithubCard(),
     ];
 
+    if (_cachedGroups == null || _shouldReload) {
+      _shouldReload = false;
+      _cachedGroups = <Widget>[
+        Container(height: 16),
+        _buildGroup(Translations.of(context).trans('userstat'), _statArea()),
+        CarouselSlider(
+          options: CarouselOptions(
+            height: 70,
+            aspectRatio: 16 / 9,
+            viewportFraction: 1.0,
+            initialPage: 0,
+            enableInfiniteScroll: false,
+            reverse: false,
+            autoPlay: true,
+            autoPlayInterval: Duration(seconds: 10),
+            autoPlayAnimationDuration: Duration(milliseconds: 800),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: true,
+            scrollDirection: Axis.horizontal,
+            onPageChanged: (index, reason) {
+              setState(() {
+                _shouldReload = true;
+                _current = index;
+              });
+            },
+          ),
+          items: cardList.map((card) {
+            return Builder(
+              builder: (BuildContext context) => card,
+            );
+          }).toList(),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [1, 2, 3].map((url) {
+            int index = [1, 2, 3].indexOf(url);
+            return Container(
+              width: 8.0,
+              height: 8.0,
+              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: _current == index
+                    ? Settings.themeWhat
+                        ? Color.fromRGBO(255, 255, 255, 0.9)
+                        : Color.fromRGBO(0, 0, 0, 0.9)
+                    : Settings.themeWhat
+                        ? Color.fromRGBO(255, 255, 255, 0.4)
+                        : Color.fromRGBO(0, 0, 0, 0.4),
+              ),
+            );
+          }).toList(),
+        ),
+        // _buildGroup('데이터베이스', _databaseArea()),
+        _buildGroup(Translations.of(context).trans('versionmanagement'),
+            _versionArea()),
+        _buildGroup(Translations.of(context).trans('service'), _serviceArea()),
+        Container(height: 32)
+      ];
+    }
+
     return Container(
       child: Padding(
         padding: EdgeInsets.only(top: statusBarHeight),
@@ -110,65 +177,7 @@ class _MainPage2State extends State<MainPage2>
           physics: BouncingScrollPhysics(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(height: 16),
-              _buildGroup(
-                  Translations.of(context).trans('userstat'), _statArea()),
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 70,
-                  aspectRatio: 16 / 9,
-                  viewportFraction: 1.0,
-                  initialPage: 0,
-                  enableInfiniteScroll: false,
-                  reverse: false,
-                  autoPlay: true,
-                  autoPlayInterval: Duration(seconds: 10),
-                  autoPlayAnimationDuration: Duration(milliseconds: 800),
-                  autoPlayCurve: Curves.fastOutSlowIn,
-                  enlargeCenterPage: true,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _current = index;
-                    });
-                  },
-                ),
-                items: cardList.map((card) {
-                  return Builder(
-                    builder: (BuildContext context) => card,
-                  );
-                }).toList(),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [1, 2, 3].map((url) {
-                  int index = [1, 2, 3].indexOf(url);
-                  return Container(
-                    width: 8.0,
-                    height: 8.0,
-                    margin:
-                        EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _current == index
-                          ? Settings.themeWhat
-                              ? Color.fromRGBO(255, 255, 255, 0.9)
-                              : Color.fromRGBO(0, 0, 0, 0.9)
-                          : Settings.themeWhat
-                              ? Color.fromRGBO(255, 255, 255, 0.4)
-                              : Color.fromRGBO(0, 0, 0, 0.4),
-                    ),
-                  );
-                }).toList(),
-              ),
-              // _buildGroup('데이터베이스', _databaseArea()),
-              _buildGroup(Translations.of(context).trans('versionmanagement'),
-                  _versionArea()),
-              _buildGroup(
-                  Translations.of(context).trans('service'), _serviceArea()),
-              Container(height: 32)
-            ],
+            children: _cachedGroups,
           ),
         ),
       ),
@@ -496,6 +505,7 @@ class _MainPage2State extends State<MainPage2>
                       } catch (e) {}
 
                       setState(() {
+                        _shouldReload = true;
                         _syncAvailable = false;
                       });
 
@@ -852,7 +862,9 @@ class _MainPage2State extends State<MainPage2>
               '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
           once = true;
         }
-        setState(() {});
+        setState(() {
+          _shouldReload = true;
+        });
       });
 
       if (await File(
