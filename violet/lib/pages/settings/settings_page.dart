@@ -141,10 +141,30 @@ class _SettingsPageState extends State<SettingsPage>
     flutterToast = FlutterToast(context);
   }
 
+  List<Widget> _cachedGroups;
+  bool _shouldReload = false;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
+
+    if (_cachedGroups == null || _shouldReload) {
+      _cachedGroups = _themeGroup()
+        ..add(UserStatusCard())
+        ..addAll(_searchGroup())
+        ..addAll(_systemGroup())
+        ..addAll(_databaseGroup())
+        ..addAll(_networkingGroup())
+        ..addAll(Platform.isAndroid ? _downloadGroup() : [])
+        ..addAll(_bookmarkGroup())
+        ..addAll(_componetGroup())
+        ..addAll(_viewGroup())
+        ..addAll(_updateGroup())
+        ..addAll(_etcGroup())
+        ..add(_bottomInfo());
+    }
+
     return Container(
       child: Padding(
         padding: EdgeInsets.only(top: statusBarHeight),
@@ -152,19 +172,7 @@ class _SettingsPageState extends State<SettingsPage>
           physics: BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: _themeGroup()
-              ..add(UserStatusCard())
-              ..addAll(_searchGroup())
-              ..addAll(_systemGroup())
-              ..addAll(_databaseGroup())
-              ..addAll(_networkingGroup())
-              ..addAll(Platform.isAndroid ? _downloadGroup() : [])
-              ..addAll(_bookmarkGroup())
-              ..addAll(_componetGroup())
-              ..addAll(_viewGroup())
-              ..addAll(_updateGroup())
-              ..addAll(_etcGroup())
-              ..add(_bottomInfo()),
+            children: _cachedGroups,
           ),
         ),
       ),
@@ -285,7 +293,9 @@ class _SettingsPageState extends State<SettingsPage>
                 Theme.of(context).brightness == Brightness.dark
                     ? Brightness.light
                     : Brightness.dark);
-            setState(() {});
+            setState(() {
+              _shouldReload = true;
+            });
           },
         ),
         _buildDivider(),
@@ -314,7 +324,9 @@ class _SettingsPageState extends State<SettingsPage>
                       pickerColor: Settings.majorColor,
                       onColorChanged: (color) async {
                         await Settings.setMajorColor(color);
-                        setState(() {});
+                        setState(() {
+                          _shouldReload = true;
+                        });
                       },
                     ),
                   ),
@@ -332,7 +344,9 @@ class _SettingsPageState extends State<SettingsPage>
               value: Settings.themeFlat,
               onChanged: (newValue) async {
                 await Settings.setThemeFlat(newValue);
-                setState(() {});
+                setState(() {
+                  _shouldReload = true;
+                });
               },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
@@ -340,7 +354,9 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           onTap: () async {
             await Settings.setThemeFlat(!Settings.themeFlat);
-            setState(() {});
+            setState(() {
+              _shouldReload = true;
+            });
           },
         ),
         _buildDivider(),
@@ -356,11 +372,15 @@ class _SettingsPageState extends State<SettingsPage>
               value: Settings.useDrawer,
               onChanged: (newValue) async {
                 await Settings.setUseDrawer(newValue);
-                setState(() {});
+                setState(() {
+                  _shouldReload = true;
+                });
 
                 final afterLoadingPageState =
                     context.findAncestorStateOfType<AfterLoadingPageState>();
-                afterLoadingPageState.setState(() {});
+                afterLoadingPageState.setState(() {
+                  _shouldReload = true;
+                });
               },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
@@ -368,11 +388,15 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           onTap: () async {
             await Settings.setUseDrawer(!Settings.useDrawer);
-            setState(() {});
+            setState(() {
+              _shouldReload = true;
+            });
 
             final afterLoadingPageState =
                 context.findAncestorStateOfType<AfterLoadingPageState>();
-            afterLoadingPageState.setState(() {});
+            afterLoadingPageState.setState(() {
+              _shouldReload = true;
+            });
           },
         ),
       ])
@@ -416,7 +440,9 @@ class _SettingsPageState extends State<SettingsPage>
 
               if (vv != null && vv.item1 == 1) {
                 Settings.setIncludeTags(vv.item2);
-                setState(() {});
+                setState(() {
+                  _shouldReload = true;
+                });
               }
             },
           ),
@@ -437,7 +463,9 @@ class _SettingsPageState extends State<SettingsPage>
 
               if (vv.item1 == 1) {
                 Settings.setExcludeTags(vv.item2);
-                setState(() {});
+                setState(() {
+                  _shouldReload = true;
+                });
               }
             },
           ),
@@ -491,7 +519,9 @@ class _SettingsPageState extends State<SettingsPage>
                 value: Settings.searchNetwork,
                 onChanged: (newValue) async {
                   await Settings.setSearchOnWeb(newValue);
-                  setState(() {});
+                  setState(() {
+                    _shouldReload = true;
+                  });
                 },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
@@ -499,7 +529,9 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             onTap: () async {
               await Settings.setSearchOnWeb(!Settings.searchNetwork);
-              setState(() {});
+              setState(() {
+                _shouldReload = true;
+              });
             },
           ),
         ],
@@ -569,7 +601,9 @@ class _SettingsPageState extends State<SettingsPage>
                           var exc = country as ExCountry;
                           await Translations.of(context).load(exc.toString());
                           await Settings.setLanguage(exc.toString());
-                          setState(() {});
+                          setState(() {
+                            _shouldReload = true;
+                          });
                         },
                         itemFilter: (c) => [].contains(c.isoCode),
                         priorityList: [
@@ -608,14 +642,18 @@ class _SettingsPageState extends State<SettingsPage>
               value: Settings.translateTags,
               onChanged: (newValue) async {
                 await Settings.setTranslateTags(newValue);
-                setState(() {});
+                setState(() {
+                  _shouldReload = true;
+                });
               },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
             ),
             onTap: () async {
               await Settings.setTranslateTags(!Settings.translateTags);
-              setState(() {});
+              setState(() {
+                _shouldReload = true;
+              });
             },
           ),
           _buildDivider(),
@@ -627,14 +665,18 @@ class _SettingsPageState extends State<SettingsPage>
               value: Settings.useLowPerf,
               onChanged: (newValue) async {
                 await Settings.setUseLowPerf(newValue);
-                setState(() {});
+                setState(() {
+                  _shouldReload = true;
+                });
               },
               activeTrackColor: Settings.majorColor,
               activeColor: Settings.majorAccentColor,
             ),
             onTap: () async {
               await Settings.setUseLowPerf(!Settings.useLowPerf);
-              setState(() {});
+              setState(() {
+                _shouldReload = true;
+              });
             },
           ),
           _buildDivider(),
@@ -769,7 +811,9 @@ class _SettingsPageState extends State<SettingsPage>
                 value: Settings.useOptimizeDatabase,
                 onChanged: (newValue) async {
                   await Settings.setUseOptimizeDatabase(newValue);
-                  setState(() {});
+                  setState(() {
+                    _shouldReload = true;
+                  });
                 },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
@@ -778,7 +822,9 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               await Settings.setUseOptimizeDatabase(
                   !Settings.useOptimizeDatabase);
-              setState(() {});
+              setState(() {
+                _shouldReload = true;
+              });
             },
           ),
           _buildDivider(),
@@ -934,6 +980,7 @@ class _SettingsPageState extends State<SettingsPage>
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 child: Text(Translations.of(context).trans('default')),
                 onPressed: () {
+                  _shouldReload = true;
                   setState(
                       () => text.text = 'https://koromo.xyz/api/search/msg');
                 },
@@ -974,7 +1021,9 @@ class _SettingsPageState extends State<SettingsPage>
                 value: Settings.useVioletServer,
                 onChanged: (newValue) async {
                   await Settings.setUseVioletServer(newValue);
-                  setState(() {});
+                  setState(() {
+                    _shouldReload = true;
+                  });
                 },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
@@ -982,7 +1031,9 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             onTap: () async {
               await Settings.setUseVioletServer(!Settings.useVioletServer);
-              setState(() {});
+              setState(() {
+                _shouldReload = true;
+              });
             },
           ),
         ],
@@ -1012,7 +1063,9 @@ class _SettingsPageState extends State<SettingsPage>
                     ? null
                     : (newValue) async {
                         await Settings.setUserInnerStorage(newValue);
-                        setState(() {});
+                        setState(() {
+                          _shouldReload = true;
+                        });
                       },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
@@ -1023,7 +1076,9 @@ class _SettingsPageState extends State<SettingsPage>
                 : () async {
                     await Settings.setUserInnerStorage(
                         !Settings.useInnerStorage);
-                    setState(() {});
+                    setState(() {
+                      _shouldReload = true;
+                    });
                   },
           ),
           _buildDivider(),
@@ -1073,6 +1128,7 @@ class _SettingsPageState extends State<SettingsPage>
                       style: TextButton.styleFrom(primary: Settings.majorColor),
                       child: Text(Translations.of(context).trans('default')),
                       onPressed: () {
+                        _shouldReload = true;
                         Settings.getDefaultDownloadPath()
                             .then((value) => setState(() => text.text = value));
                       },
@@ -1154,6 +1210,7 @@ class _SettingsPageState extends State<SettingsPage>
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 child: Text(Translations.of(context).trans('default')),
                 onPressed: () {
+                  _shouldReload = true;
                   setState(() => text.text =
                       '%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s');
                 },
@@ -1658,7 +1715,9 @@ class _SettingsPageState extends State<SettingsPage>
                 value: Settings.showArticleProgress,
                 onChanged: (newValue) async {
                   await Settings.setShowArticleProgress(newValue);
-                  setState(() {});
+                  setState(() {
+                    _shouldReload = true;
+                  });
                 },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
@@ -1667,7 +1726,9 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               await Settings.setShowArticleProgress(
                   !Settings.showArticleProgress);
-              setState(() {});
+              setState(() {
+                _shouldReload = true;
+              });
             },
           ),
         ],
