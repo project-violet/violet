@@ -884,7 +884,7 @@ class ResultPanelWidget extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return Align(
-                  key: itemKeys.length >= index ? itemKeys[index] : null,
+                  key: itemKeys.length > index ? itemKeys[index] : null,
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
