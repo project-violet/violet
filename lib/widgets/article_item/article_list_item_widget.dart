@@ -215,7 +215,9 @@ class _ArticleListItemVerySimpleWidgetState
 
   BodyWidget _body;
   bool _shouldReload = false;
-  int _buildCount = 0;
+
+  Widget _cachedBuildWidget;
+  bool _shouldReloadCachedBuildWidget = false;
 
   @override
   Widget build(BuildContext context) {
@@ -223,14 +225,15 @@ class _ArticleListItemVerySimpleWidgetState
 
     if (disposed) return null;
 
-    Logger.info('[aa] ${++_buildCount}');
-
     _init();
 
     if (data.bookmarkMode &&
         !widget.isCheckMode &&
         !onScaling &&
         scale != 1.0) {
+      _shouldReloadCachedBuildWidget = true;
+      Future.delayed(Duration(milliseconds: 500))
+          .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 1.0;
       });
@@ -238,73 +241,85 @@ class _ArticleListItemVerySimpleWidgetState
         widget.isCheckMode &&
         widget.isChecked &&
         scale != 0.95) {
+      _shouldReloadCachedBuildWidget = true;
+      Future.delayed(Duration(milliseconds: 500))
+          .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 0.95;
       });
     }
 
-    if (_body == null || _shouldReload) {
-      _shouldReload = false;
+    if (_cachedBuildWidget == null ||
+        _shouldReloadCachedBuildWidget ||
+        _shouldReload) {
+      if (_body == null || _shouldReload) {
+        _shouldReload = false;
 
-      // https://stackoverflow.com/a/52249579
-      final body = BodyWidget(
-        data: data,
-        thumbnail: thumbnail,
-        imageCount: imageCount,
-        isBookmarked: isBookmarked,
-        flareController: _flareController,
-        pad: pad,
-        isBlurred: isBlurred,
-        headers: {
-          "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
-        },
-        isLastestRead: isLastestRead,
-        latestReadPage: latestReadPage,
-        disableFiltering: disableFiltering,
-        artist: artist,
-        title: title,
-        dateTime: dateTime,
+        // https://stackoverflow.com/a/52249579
+        final body = BodyWidget(
+          data: data,
+          thumbnail: thumbnail,
+          imageCount: imageCount,
+          isBookmarked: isBookmarked,
+          flareController: _flareController,
+          pad: pad,
+          isBlurred: isBlurred,
+          headers: {
+            "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
+          },
+          isLastestRead: isLastestRead,
+          latestReadPage: latestReadPage,
+          disableFiltering: disableFiltering,
+          artist: artist,
+          title: title,
+          dateTime: dateTime,
+        );
+
+        _body = body;
+      }
+
+      _cachedBuildWidget = Container(
+        color: widget.isChecked ? Colors.amber : Colors.transparent,
+        child: PimpedButton(
+          particle: Rectangle2DemoParticle(),
+          pimpedWidgetBuilder: (context, controller) {
+            return GestureDetector(
+              child: SizedBox(
+                width: thisWidth,
+                height: thisHeight,
+                child: AnimatedContainer(
+                  curve: Curves.easeInOut,
+                  duration: const Duration(milliseconds: 300),
+                  transform: Matrix4.identity()
+                    ..translate(thisWidth / 2, thisHeight / 2)
+                    ..scale(scale)
+                    ..translate(-thisWidth / 2, -thisHeight / 2),
+                  child: _body,
+                ),
+              ),
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onLongPress: () async {
+                await _onLongPress(controller);
+              },
+              onLongPressEnd: _onPressEnd,
+              onTapCancel: _onTapCancle,
+              onDoubleTap: _onDoubleTap,
+            );
+          },
+        ),
       );
-
-      _body = body;
     }
 
-    return Container(
-      color: widget.isChecked ? Colors.amber : Colors.transparent,
-      child: PimpedButton(
-        particle: Rectangle2DemoParticle(),
-        pimpedWidgetBuilder: (context, controller) {
-          return GestureDetector(
-            child: SizedBox(
-              width: thisWidth,
-              height: thisHeight,
-              child: AnimatedContainer(
-                curve: Curves.easeInOut,
-                duration: const Duration(milliseconds: 300),
-                transform: Matrix4.identity()
-                  ..translate(thisWidth / 2, thisHeight / 2)
-                  ..scale(scale)
-                  ..translate(-thisWidth / 2, -thisHeight / 2),
-                child: _body,
-              ),
-            ),
-            onTapDown: _onTapDown,
-            onTapUp: _onTapUp,
-            onLongPress: () async {
-              await _onLongPress(controller);
-            },
-            onLongPressEnd: _onPressEnd,
-            onTapCancel: _onTapCancle,
-            onDoubleTap: _onDoubleTap,
-          );
-        },
-      ),
-    );
+    return _cachedBuildWidget;
   }
 
   _onTapDown(detail) {
     if (onScaling) return;
     onScaling = true;
+    _shouldReloadCachedBuildWidget = true;
+    Future.delayed(Duration(milliseconds: 500))
+        .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       // pad = 10.0;
       scale = 0.95;
@@ -322,6 +337,9 @@ class _ArticleListItemVerySimpleWidgetState
     if (widget.isCheckMode) {
       widget.isChecked = !widget.isChecked;
       data.bookmarkCheckCallback(data.queryResult.id(), widget.isChecked);
+      _shouldReloadCachedBuildWidget = true;
+      Future.delayed(Duration(milliseconds: 500))
+          .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         if (widget.isChecked)
           scale = 0.95;
@@ -331,6 +349,9 @@ class _ArticleListItemVerySimpleWidgetState
       return;
     }
     if (firstChecked) return;
+    _shouldReloadCachedBuildWidget = true;
+    Future.delayed(Duration(milliseconds: 500))
+        .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       scale = 1.0;
     });
@@ -377,6 +398,9 @@ class _ArticleListItemVerySimpleWidgetState
     if (data.bookmarkMode) {
       if (widget.isCheckMode) {
         widget.isChecked = !widget.isChecked;
+        _shouldReloadCachedBuildWidget = true;
+        Future.delayed(Duration(milliseconds: 500))
+            .then((value) => _shouldReloadCachedBuildWidget = false);
         setState(() {
           scale = 1.0;
         });
@@ -384,6 +408,9 @@ class _ArticleListItemVerySimpleWidgetState
       }
       widget.isChecked = true;
       firstChecked = true;
+      _shouldReloadCachedBuildWidget = true;
+      Future.delayed(Duration(milliseconds: 500))
+          .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 0.95;
       });
@@ -427,6 +454,9 @@ class _ArticleListItemVerySimpleWidgetState
 
     await HapticFeedback.vibrate();
 
+    _shouldReloadCachedBuildWidget = true;
+    Future.delayed(Duration(milliseconds: 500))
+        .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
       scale = 1.0;
@@ -439,6 +469,9 @@ class _ArticleListItemVerySimpleWidgetState
       firstChecked = false;
       return;
     }
+    _shouldReloadCachedBuildWidget = true;
+    Future.delayed(Duration(milliseconds: 500))
+        .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
       scale = 1.0;
@@ -447,6 +480,9 @@ class _ArticleListItemVerySimpleWidgetState
 
   _onTapCancle() {
     onScaling = false;
+    _shouldReloadCachedBuildWidget = true;
+    Future.delayed(Duration(milliseconds: 500))
+        .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
       scale = 1.0;
@@ -476,6 +512,9 @@ class _ArticleListItemVerySimpleWidgetState
       data.doubleTapCallback();
     }
 
+    _shouldReloadCachedBuildWidget = true;
+    Future.delayed(Duration(milliseconds: 500))
+        .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
     });
