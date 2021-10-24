@@ -730,6 +730,7 @@ class _SearchPageState extends State<SearchPage>
   }
 }
 
+// ignore: must_be_immutable
 class ResultPanelWidget extends StatelessWidget {
   final List<QueryResult> resultList;
   final DateTime dateTime;
@@ -737,12 +738,18 @@ class ResultPanelWidget extends StatelessWidget {
   final ObjectKey key;
   final List<GlobalKey> itemKeys;
 
+  List<Widget> _cachedItems;
+
   ResultPanelWidget({this.resultList, this.dateTime, this.key, this.itemKeys});
 
   @override
   Widget build(BuildContext context) {
     var mm = Settings.searchResultType == 0 ? 3 : 2;
     var windowWidth = MediaQuery.of(context).size.width;
+
+    if (_cachedItems == null) {
+      _cachedItems = List<Widget>.generate(resultList.length, (x) => null);
+    }
 
     switch (Settings.searchResultType) {
       case 0:
@@ -759,28 +766,31 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  return Padding(
-                    key: itemKeys.length > index ? itemKeys[index] : null,
-                    padding: EdgeInsets.zero,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        child: Provider<ArticleListItem>.value(
-                          value: ArticleListItem.fromArticleListItem(
-                            queryResult: resultList[index],
-                            showDetail: false,
-                            addBottomPadding: false,
-                            width: (windowWidth - 4.0) / mm,
-                            thumbnailTag: 'thumbnail' +
-                                resultList[index].id().toString() +
-                                dateTime.toString(),
-                            usableTabList: resultList,
+                  if (_cachedItems[index] == null) {
+                    _cachedItems[index] = Padding(
+                      key: itemKeys.length > index ? itemKeys[index] : null,
+                      padding: EdgeInsets.zero,
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SizedBox(
+                          child: Provider<ArticleListItem>.value(
+                            value: ArticleListItem.fromArticleListItem(
+                              queryResult: resultList[index],
+                              showDetail: false,
+                              addBottomPadding: false,
+                              width: (windowWidth - 4.0) / mm,
+                              thumbnailTag: 'thumbnail' +
+                                  resultList[index].id().toString() +
+                                  dateTime.toString(),
+                              usableTabList: resultList,
+                            ),
+                            child: ArticleListItemVerySimpleWidget(),
                           ),
-                          child: ArticleListItemVerySimpleWidget(),
                         ),
                       ),
-                    ),
-                  );
+                    );
+                  }
+                  return _cachedItems[index];
                 },
                 childCount: resultList.length,
               ),
