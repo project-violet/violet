@@ -433,6 +433,7 @@ class _SearchPageState extends State<SearchPage>
     await db.insertSearchLog(query);
     _shouldReload = true;
     setState(() {
+      key = ObjectKey(Uuid().v4());
       _shouldReload = true;
       heroFlareControls.play('close2search');
     });
@@ -664,7 +665,9 @@ class _SearchPageState extends State<SearchPage>
       }
 
       _shouldReload = true;
+      _cachedPannel = null;
       setState(() {
+        key = ObjectKey(Uuid().v4());
         _shouldReload = true;
       });
     } catch (e, st) {
