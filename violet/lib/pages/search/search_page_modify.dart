@@ -60,7 +60,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                 ),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () async {
-                  if (int.parse(_pageController.text.trim()) > widget.maxPage) {
+                  if (int.parse(_pageController.text.trim()) >= widget.maxPage) {
                     await showOkDialog(context, '최대 아이템 위치보다 낮게 설정해야합니다!');
                     return;
                   }
