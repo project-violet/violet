@@ -24,6 +24,13 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 10, 26),
+    version: '1.17.1 Patch Update <== Latest',
+    contents: [
+      'update hitomi image rule',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 10, 23),
     version: '1.17 Minor Update <== Latest',
     isMinor: true,
