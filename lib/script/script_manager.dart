@@ -33,19 +33,25 @@ class ScriptManager {
       var downloadUrl =
           flutterJs.evaluate("create_download_url('$id')").rawResult as String;
       var galleryInfo = await http.get(downloadUrl);
-      final jResult = flutterJs
-          .evaluate(
-              "hitomi_get_image_list('$id', \"${galleryInfo.body.replaceAll('"', '\\"')}\")")
-          .rawResult as Map<dynamic, dynamic>;
+      final jResult = flutterJs.evaluate(
+          "hitomi_get_image_list('$id', \"${galleryInfo.body.replaceAll('"', '\\"')}\")");
 
-      return Tuple3<List<String>, List<String>, List<String>>(
-          (jResult["result"] as List<dynamic>).map((e) => e as String).toList(),
-          (jResult["btresult"] as List<dynamic>)
-              .map((e) => e as String)
-              .toList(),
-          (jResult["stresult"] as List<dynamic>)
-              .map((e) => e as String)
-              .toList());
+      if (jResult.rawResult is Map<dynamic, dynamic>) {
+        return Tuple3<List<String>, List<String>, List<String>>(
+            (jResult.rawResult["result"] as List<dynamic>)
+                .map((e) => e as String)
+                .toList(),
+            (jResult.rawResult["btresult"] as List<dynamic>)
+                .map((e) => e as String)
+                .toList(),
+            (jResult.rawResult["stresult"] as List<dynamic>)
+                .map((e) => e as String)
+                .toList());
+      } else {
+        Logger.error(
+            '[script-HitomiGetImageList] E: JSError\n' + jResult.toString());
+        return null;
+      }
     } catch (e, st) {
       Logger.error('[script-HitomiGetImageList] E: ' +
           e.toString() +
