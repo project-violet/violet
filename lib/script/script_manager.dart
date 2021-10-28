@@ -5,15 +5,13 @@ import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
-import 'package:violet/script/script_runner.dart';
-import 'package:violet/thread/semaphore.dart';
 
 class ScriptManager {
   static Map<String, String> _caches;
 
   static Map<String, String> _codeUrls = {
     'hitomi_get_image_list':
-        'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list.py',
+        'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list.js',
   };
 
   static Future<void> init() async {
@@ -28,16 +26,34 @@ class ScriptManager {
   static Future<Tuple3<List<String>, List<String>, List<String>>>
       runHitomiGetImageList(int id) async {
     if (_caches == null) return null;
-    JavascriptRuntime flutterJs;
-    flutterJs = getJavascriptRuntime();
-    flutterJs.evaluate(_caches['hitomi_get_image_list']);
-    var downloadUrl =
-        flutterJs.evaluate("create_download_url($id)").rawResult as String;
-    //var galleryInfo = await http.get("https://ltn.hitomi.la/galleries/$id.js");
-    var galleryInfo = await http.get(downloadUrl);
-    final jResult = flutterJs.evaluate("hitomi_get_image_list($galleryInfo)");
+    try {
+      JavascriptRuntime flutterJs;
+      flutterJs = getJavascriptRuntime();
+      flutterJs.evaluate(_caches['hitomi_get_image_list']);
+      var downloadUrl =
+          flutterJs.evaluate("create_download_url('$id')").rawResult as String;
+      var galleryInfo = await http.get(downloadUrl);
+      final jResult = flutterJs
+          .evaluate(
+              "hitomi_get_image_list('$id', \"${galleryInfo.body.replaceAll('"', '\\"')}\")")
+          .rawResult as Map<dynamic, dynamic>;
 
-    return null;
+      return Tuple3<List<String>, List<String>, List<String>>(
+          (jResult["result"] as List<dynamic>).map((e) => e as String).toList(),
+          (jResult["btresult"] as List<dynamic>)
+              .map((e) => e as String)
+              .toList(),
+          (jResult["stresult"] as List<dynamic>)
+              .map((e) => e as String)
+              .toList());
+    } catch (e, st) {
+      Logger.error('[script-HitomiGetImageList] E: ' +
+          e.toString() +
+          '\n' +
+          st.toString());
+      return null;
+    }
+
     //jResult.
 
     /*var isolate = ScriptIsolate(_caches['hitomi_get_image_list']);

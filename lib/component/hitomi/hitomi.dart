@@ -17,8 +17,8 @@ class HitomiManager {
   // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
   static Future<Tuple3<List<String>, List<String>, List<String>>> getImageList(
       String id) async {
-    // var val = await ScriptManager.runHitomiGetImageList(int.parse(id));
-    // if (val != null) return val;
+    var val = await ScriptManager.runHitomiGetImageList(int.parse(id));
+    if (val != null) return val;
 
     var gg = await http.get('https://ltn.hitomi.la/galleries/$id.js');
     var urls = gg.body;
