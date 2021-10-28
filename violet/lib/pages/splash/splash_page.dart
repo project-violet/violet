@@ -189,7 +189,7 @@ class _SplashPageState extends State<SplashPage> {
     await TagTranslate.init();
     await Population.init();
     await HisokiHash.init();
-    // await ScriptManager.init();
+    await ScriptManager.init();
 
     // if (Platform.isAndroid)
     //   try {
