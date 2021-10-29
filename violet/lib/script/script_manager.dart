@@ -49,13 +49,14 @@ class ScriptManager {
                 .toList());
       } else {
         Logger.error(
-            '[script-HitomiGetImageList] E: JSError\n' + jResult.toString());
+            '[script-HitomiGetImageList] E: JSError\nId: $id\nMessage: ' +
+                jResult.toString());
         return null;
       }
     } catch (e, st) {
       Logger.error('[script-HitomiGetImageList] E: ' +
           e.toString() +
-          '\n' +
+          '\nId: $id\n' +
           st.toString());
       return null;
     }
