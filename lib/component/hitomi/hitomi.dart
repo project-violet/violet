@@ -47,7 +47,7 @@ class HitomiManager {
 
       if (x != null && !x.isNaN) {
         var o = 0;
-        if (x < 0x7b) o = 1;
+        if (x < 0x7c) o = 1;
         subdomainx = String.fromCharCode(97 + o);
       }
 
