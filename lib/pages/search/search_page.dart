@@ -431,10 +431,7 @@ class _SearchPageState extends State<SearchPage>
     );
     final db = await SearchLogDatabase.getInstance();
     await db.insertSearchLog(query);
-    _shouldReload = true;
     setState(() {
-      key = ObjectKey(Uuid().v4());
-      _shouldReload = true;
       heroFlareControls.play('close2search');
     });
     if (query == null) return;
@@ -664,11 +661,9 @@ class _SearchPageState extends State<SearchPage>
         });
       }
 
-      _shouldReload = true;
-      _cachedPannel = null;
       setState(() {
-        key = ObjectKey(Uuid().v4());
         _shouldReload = true;
+        key = ObjectKey(Uuid().v4());
       });
     } catch (e, st) {
       Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
