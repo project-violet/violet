@@ -98,6 +98,7 @@ class _ViewerPageState extends State<ViewerPage>
       });
 
     itemPositionsListener.itemPositions.addListener(() {
+      if (_isSessionOutdated) return;
       if (_sliderOnChange) return;
 
       var v = itemPositionsListener.itemPositions.value.toList();
