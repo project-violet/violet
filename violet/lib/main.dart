@@ -21,6 +21,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 
 import 'locale/locale.dart';
@@ -91,7 +92,7 @@ void main() async {
 
   await Settings.initFirst();
   await warmupFlare();
-  // await VioletServer.uploadBookmark();
+  await VioletServer.uploadBookmark();
 
   // await _sqlIntegrityTest();
 
