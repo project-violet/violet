@@ -196,7 +196,7 @@ class VioletServer {
     var vValid = getValid(vToken.toString());
     var userId = await getUserAppId();
     var upload = (await SharedPreferences.getInstance())
-        .getBool('upload_bookmark_178_test');
+        .getBool('upload_bookmark_179_test');
     if (upload != null && upload != false) return false;
 
     /*
