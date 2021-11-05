@@ -239,7 +239,7 @@ class VioletServer {
       });
 
       await (await SharedPreferences.getInstance())
-          .setBool('upload_bookmark_178', true);
+          .setBool('upload_bookmark_179', true);
 
       return res.statusCode == 200;
     } catch (e, st) {
