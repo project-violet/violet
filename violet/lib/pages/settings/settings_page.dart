@@ -39,6 +39,7 @@ import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
+import 'package:violet/pages/settings/resotre_bookmark.dart';
 import 'package:violet/pages/settings/route.dart';
 import 'package:violet/pages/settings/tag_rebuild_page.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
@@ -1347,37 +1348,13 @@ class _SettingsPageState extends State<SettingsPage>
                 }
 
                 // 3. 북마크만 덮어쓰기 한다.
-                // var record = result['record'] as List<dynamic>;
-                var articles = result['article'] as List<dynamic>;
-                var artists = result['artist'] as List<dynamic>;
-                var groups = result['group'] as List<dynamic>;
+                var rr = await showDialog(
+                  context: context,
+                  builder: (BuildContext context) => RestoreBookmarkPage(),
+                );
 
-                // 북마크 그룹 생성
-                var groupInv = Map<int, int>();
-
-                var bookmark = await Bookmark.getInstance();
-                for (var group in groups) {
-                  var ref = BookmarkGroup(result: group);
-                  var gid = await bookmark.createGroup(
-                      ref.name(),
-                      ref.description(),
-                      Colors.black,
-                      DateTime.parse(ref.datetime()));
-                  groupInv[ref.id()] = gid;
-                }
-
-                // 북마크 작품 처리
-                for (var article in articles) {
-                  var ref = BookmarkArticle(result: article);
-                  await bookmark.insertArticle(ref.article(),
-                      DateTime.parse(ref.datetime()), groupInv[ref.group()]);
-                }
-
-                // 북마크 작가 처리
-                for (var artist in artists) {
-                  var ref = BookmarkArtist(result: artist);
-                  await bookmark.insertArtist(ref.artist(), ref.type(),
-                      DateTime.parse(ref.datetime()), groupInv[ref.group()]);
+                if (rr != null && rr == false) {
+                  return;
                 }
               } catch (e, st) {
                 Logger.error('[Restore Bookmark] ' +
