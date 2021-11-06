@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/community/signin_dialog.dart';
 import 'package:violet/pages/community/signup_dialog.dart';
@@ -181,8 +182,8 @@ class _UserStatusCardState extends State<UserStatusCard>
             onTap: () async {
               await showOkDialog(
                   context,
-                  '$_userAppId\n\nThis user app id has a unique value on a per app session. If you have any problems using the app, please contact us with above user app id.',
-                  'Your User App Id');
+                  '$_userAppId\n\n${Translations.of(context).trans('userappmsg')}',
+                  Translations.of(context).trans('uruserappid'));
             },
           ),
         ),
