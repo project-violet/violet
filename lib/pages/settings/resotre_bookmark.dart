@@ -3,7 +3,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
+import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
@@ -47,20 +49,42 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         }
 
         // 북마크 작품 처리
-        for (var article in articles) {
-          var ref = BookmarkArticle(result: article);
-          await bookmark.insertArticle(ref.article(),
-              DateTime.parse(ref.datetime()), groupInv[ref.group()]);
-          setState(() => progress++);
-        }
-
-        // 북마크 작가 처리
-        for (var artist in artists) {
-          var ref = BookmarkArtist(result: artist);
-          await bookmark.insertArtist(ref.artist(), ref.type(),
-              DateTime.parse(ref.datetime()), groupInv[ref.group()]);
-          setState(() => progress++);
-        }
+        var db = await DataBaseManager.getInstance();
+        var dbraw = await openDatabase(db.dbPath);
+        await dbraw.transaction((txn) async {
+          final batch = txn.batch();
+          for (var article in articles) {
+            var ref = BookmarkArticle(result: article);
+            batch.insert(
+                'BookmarkArticle',
+                {
+                  'Article': ref.article(),
+                  'DateTime': ref.datetime(),
+                  'GroupId': groupInv[ref.group()],
+                },
+                conflictAlgorithm: ConflictAlgorithm.fail);
+            setState(() => progress++);
+          }
+          await batch.commit();
+        });
+        await dbraw.transaction((txn) async {
+          final batch = txn.batch();
+          for (var artist in artists) {
+            var ref = BookmarkArtist(result: artist);
+            batch.insert(
+                'BookmarkArtist',
+                {
+                  'Artist': ref.artist(),
+                  'IsGroup': ref.type(),
+                  'DateTime': ref.datetime(),
+                  'GroupId': groupInv[ref.group()],
+                },
+                conflictAlgorithm: ConflictAlgorithm.fail);
+            setState(() => progress++);
+          }
+          await batch.commit();
+        });
+        await dbraw.close();
       } catch (e, st) {
         Logger.error(
             '[Restore Bookmark] ' + e.toString() + '\n' + st.toString());

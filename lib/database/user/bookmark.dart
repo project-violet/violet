@@ -206,7 +206,7 @@ class Bookmark {
     return await db.insert('BookmarkGroup', {
       'Name': name,
       'Description': description,
-      'DateTime': DateTime.now().toString(),
+      'DateTime': datetime.toString(),
       'Color': color.value,
       'Gorder': groups.last.gorder() + 1,
     });
