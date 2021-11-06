@@ -63,12 +63,14 @@ class DataBaseManager {
     });
   }
 
-  Future<void> insert(String name, Map<String, dynamic> wh) async {
+  Future<int> insert(String name, Map<String, dynamic> wh) async {
+    int result;
     await lock.synchronized(() async {
       await _open();
-      await db.insert(name, wh);
+      result = await db.insert(name, wh);
       await _close();
     });
+    return result;
   }
 
   Future<void> update(String name, Map<String, dynamic> wh, String where,

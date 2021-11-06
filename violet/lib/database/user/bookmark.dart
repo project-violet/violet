@@ -198,12 +198,12 @@ class Bookmark {
     bookmarkUserSet.add(user);
   }
 
-  Future<void> createGroup(String name, String description, Color color,
+  Future<int> createGroup(String name, String description, Color color,
       [DateTime datetime]) async {
     datetime ??= DateTime.now();
     var groups = await getGroup();
     var db = await CommonUserDatabase.getInstance();
-    await db.insert('BookmarkGroup', {
+    return await db.insert('BookmarkGroup', {
       'Name': name,
       'Description': description,
       'DateTime': DateTime.now().toString(),

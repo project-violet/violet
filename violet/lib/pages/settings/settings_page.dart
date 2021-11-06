@@ -44,6 +44,7 @@ import 'package:violet/pages/settings/tag_rebuild_page.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -1252,7 +1253,7 @@ class _SettingsPageState extends State<SettingsPage>
                     topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
-                MdiIcons.backupRestore,
+                MdiIcons.bookArrowUpOutline,
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('autobackupbookmark')),
@@ -1274,6 +1275,136 @@ class _SettingsPageState extends State<SettingsPage>
               setState(() {
                 _shouldReload = true;
               });
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Icon(
+                MdiIcons.bookArrowDownOutline,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('restoringbookmark')),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
+            onTap: () async {
+              await showOkDialog(
+                  context,
+                  Translations.of(context).trans('restorebookmarkmsg'),
+                  Translations.of(context).trans('warning'));
+
+              var myappid = (await SharedPreferences.getInstance())
+                  .getString('fa_userid');
+
+              // 1. 북마크 유저 아이디 선택
+              TextEditingController text = TextEditingController(text: myappid);
+              Widget okButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('ok')),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              );
+              Widget cancelButton = TextButton(
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                child: Text(Translations.of(context).trans('cancel')),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              );
+              var dialog = await showDialog(
+                useRootNavigator: false,
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  title: Text('Enter User App Id'),
+                  content: TextField(
+                    controller: text,
+                    autofocus: true,
+                    maxLines: 3,
+                  ),
+                  actions: [okButton, cancelButton],
+                ),
+              );
+              if (dialog == null || dialog == false) {
+                // await Settings.setDownloadRule(text.text);
+                return;
+              }
+
+              try {
+                // 2. 유효한 유저 아이디 인지 확인(서버 요청 및 다운로드)
+                var result = await VioletServer.resotreBookmark(text.text);
+                if (result == null) {
+                  await showOkDialog(
+                      context,
+                      "Invalid User-App-Id! If you're still getting this error, contact the developer.",
+                      Translations.of(context).trans('restoringbookmark'));
+                  return;
+                }
+
+                // 3. 북마크만 덮어쓰기 한다.
+                // var record = result['record'] as List<dynamic>;
+                var articles = result['article'] as List<dynamic>;
+                var artists = result['artist'] as List<dynamic>;
+                var groups = result['group'] as List<dynamic>;
+
+                // 북마크 그룹 생성
+                var groupInv = Map<int, int>();
+
+                var bookmark = await Bookmark.getInstance();
+                for (var group in groups) {
+                  var ref = BookmarkGroup(result: group);
+                  var gid = await bookmark.createGroup(
+                      ref.name(),
+                      ref.description(),
+                      Colors.black,
+                      DateTime.parse(ref.datetime()));
+                  groupInv[ref.id()] = gid;
+                }
+
+                // 북마크 작품 처리
+                for (var article in articles) {
+                  var ref = BookmarkArticle(result: article);
+                  await bookmark.insertArticle(ref.article(),
+                      DateTime.parse(ref.datetime()), groupInv[ref.group()]);
+                }
+
+                // 북마크 작가 처리
+                for (var artist in artists) {
+                  var ref = BookmarkArtist(result: artist);
+                  await bookmark.insertArtist(ref.artist(), ref.type(),
+                      DateTime.parse(ref.datetime()), groupInv[ref.group()]);
+                }
+              } catch (e, st) {
+                Logger.error('[Restore Bookmark] ' +
+                    e.toString() +
+                    '\n' +
+                    st.toString());
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: false,
+                    msg: "Bookmark Restoring Error!",
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: Duration(seconds: 4),
+                );
+                return;
+              }
+
+              await Bookmark.getInstance();
+
+              flutterToast.showToast(
+                child: ToastWrapper(
+                  isCheck: true,
+                  msg: Translations.of(context).trans('importbookmark'),
+                ),
+                gravity: ToastGravity.BOTTOM,
+                toastDuration: Duration(seconds: 4),
+              );
             },
           ),
           _buildDivider(),

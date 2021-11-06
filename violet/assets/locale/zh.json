@@ -236,5 +236,9 @@
   "nocomment": "No Comment",
   "writecomment": "Write Comment",
   "addtodownloadqueue": " has been added to the download queue!",
-  "autobackupbookmark": "Auto Bookmark Backup"
+  "autobackupbookmark": "Auto Bookmark Backup",
+  "restoringbookmark": "Restore Bookmark",
+  "uruserappid": "Your User App Id",
+  "userappmsg": "This user app id has a unique value on a per app session. Be sure to keep this user ID! If you lose your user ID, you may not be able to use important functions such as restoring bookmarks.",
+  "restorebookmarkmsg": "Before restoring bookmarks, be sure to back up your existing bookmarks by exporting bookmarks! We are not responsible for any loss caused by user negligence."
 }
