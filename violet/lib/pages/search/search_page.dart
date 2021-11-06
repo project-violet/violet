@@ -434,7 +434,10 @@ class _SearchPageState extends State<SearchPage>
     setState(() {
       heroFlareControls.play('close2search');
     });
-    if (query == null) return;
+    if (query == null) {
+      await Logger.warning('[Search Trace] q1');
+      return;
+    }
     latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(null, query);
     queryResult = [];
     _filterController = FilterController();
@@ -615,6 +618,8 @@ class _SearchPageState extends State<SearchPage>
   Semaphore _querySem = Semaphore(maxCount: 1);
 
   Future<void> loadNextQuery() async {
+    Logger.warning('[Search Trace] lnqs');
+
     print('* loadNextQuery start');
 
     await _querySem.acquire().timeout(
@@ -623,6 +628,7 @@ class _SearchPageState extends State<SearchPage>
         print('* loadNextQuery sem acquire timeout');
 
         _showErrorToast('Semaphore acquisition failed');
+        Logger.warning('[Search Trace] q2');
 
         throw TimeoutException('Failed to acquire the query semaphore');
       },
@@ -631,20 +637,26 @@ class _SearchPageState extends State<SearchPage>
     print('* loadNextQuery sem acquired');
 
     try {
+      Logger.warning('[Search Trace] lnqs-t');
+
       if (queryEnd ||
           (latestQuery.item1 != null && latestQuery.item1.item2 == -1)) {
+        Logger.warning('[Search Trace] q3');
         return;
       }
 
       var next = await HentaiManager.search(latestQuery.item2,
               latestQuery.item1 == null ? 0 : latestQuery.item1.item2)
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 10));
+
+      Logger.warning('[Search Trace] lnqs-t-as');
 
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
           next, latestQuery.item2);
 
       if (next.item1.length == 0) {
         queryEnd = true;
+        Logger.warning('[Search Trace] q4');
         return;
       }
 
@@ -660,6 +672,8 @@ class _SearchPageState extends State<SearchPage>
           setState(() {});
         });
       }
+
+      Logger.warning('[Search Trace] qe');
 
       setState(() {
         _shouldReload = true;
