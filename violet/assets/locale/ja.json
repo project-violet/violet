@@ -232,5 +232,6 @@
   "pasteyourbookmarktext": "ブックマークフォーマットを貼り付けてください！",
   "nocomment": "コメントなし",
   "writecomment": "コメントを書く",
-  "addtodownloadqueue": "がダウンロードキューに追加されました！"
+  "addtodownloadqueue": "がダウンロードキューに追加されました！",
+  "autobackupbookmark": "Auto Bookmark Backup"
 }

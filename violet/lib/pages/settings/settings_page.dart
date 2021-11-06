@@ -1251,6 +1251,38 @@ class _SettingsPageState extends State<SettingsPage>
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
+              leading: Icon(
+                MdiIcons.backupRestore,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('autobackupbookmark')),
+              trailing: Switch(
+                value: Settings.autobackupBookmark,
+                onChanged: (newValue) async {
+                  await Settings.setAutoBackupBookmark(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setAutoBackupBookmark(
+                  !Settings.autobackupBookmark);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
+            child: ListTile(
               leading: Icon(MdiIcons.import, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('importingbookmark')),
               trailing: Icon(Icons.keyboard_arrow_right),

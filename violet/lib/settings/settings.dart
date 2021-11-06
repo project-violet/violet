@@ -77,6 +77,8 @@ class Settings {
 
   static String userAppId;
 
+  static bool autobackupBookmark;
+
   static Future<void> initFirst() async {
     var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
     var mac =
@@ -412,6 +414,8 @@ class Settings {
     searchShowCount = await _getBool('searchshowcount', true);
 
     userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
+
+    autobackupBookmark = await _getBool('autobackupbookmark', true);
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
@@ -661,5 +665,11 @@ class Settings {
     searchShowCount = nn;
     await (await SharedPreferences.getInstance())
         .setBool('searchshowcount', nn);
+  }
+
+  static Future<void> setAutoBackupBookmark(bool nn) async {
+    autobackupBookmark = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('autobackupbookmark', nn);
   }
 }

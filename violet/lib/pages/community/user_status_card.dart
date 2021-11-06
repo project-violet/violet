@@ -30,6 +30,7 @@ class _UserStatusCardState extends State<UserStatusCard>
   String _userAppId;
   String _userNickName = 'None';
   bool _logining = false;
+  DateTime _latestBackup = DateTime.now();
 
   @override
   void initState() {
@@ -37,11 +38,6 @@ class _UserStatusCardState extends State<UserStatusCard>
 
     // load boards
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      // var id = (await SharedPreferences.getInstance())
-      //     .getString('saved_community_id');
-      // var pw = (await SharedPreferences.getInstance())
-      //     .getString('saved_community_pw');
-
       _userAppId =
           (await SharedPreferences.getInstance()).getString('fa_userid');
       setState(() {});
@@ -221,123 +217,64 @@ class _UserStatusCardState extends State<UserStatusCard>
                           style:
                               TextStyle(color: Colors.white, fontSize: 12.0)),
                       // badgeColor: Settings.majorAccentColor,
-                      child: Icon(
-                          sess == null
-                              ? MdiIcons.accountCancel
-                              : MdiIcons.cloudUpload,
-                          size: 30),
+                      child: Icon(MdiIcons.cloudUpload, size: 30),
                     ),
                   ),
-                  onTap: true
-                      ? () async {
-                          await showOkDialog(
-                              context,
-                              'This feature is no longer available!',
-                              'Violet Community');
-                        }
-                      // ignore: dead_code
-                      : () async {
-                          if (sess != null) {
-                            setState(() {
-                              _logining = true;
-                            });
+                  onTap: () async {
+                    if (Settings.autobackupBookmark) {
+                      await showOkDialog(
+                          context,
+                          'Bookmark Auto-Backup function is enabled. Each time you restart the app, ' +
+                              'your bookmarks are automatically backed up to Violet Server. If you want ' +
+                              'to back up manually, turn off automatic backup option.',
+                          'Bookmark Backup');
+                      return;
+                    }
 
-                            var resc = await VioletServer.uploadBookmark();
+                    if (DateTime.now()
+                            .difference(_latestBackup)
+                            .abs()
+                            .inMinutes >
+                        3) {
+                      await showOkDialog(
+                          context,
+                          'Please try again in a few minutes!',
+                          'Bookmark Backup');
+                      return;
+                    }
+                    _latestBackup = DateTime.now();
 
-                            setState(() {
-                              _logining = false;
-                            });
+                    setState(() {
+                      _logining = true;
+                    });
 
-                            if (resc) {
-                              FlutterToast(context).showToast(
-                                child: ToastWrapper(
-                                  isCheck: true,
-                                  msg: 'Bookmark Backup Success!',
-                                ),
-                                gravity: ToastGravity.BOTTOM,
-                                toastDuration: Duration(seconds: 4),
-                              );
-                            } else {
-                              FlutterToast(context).showToast(
-                                child: ToastWrapper(
-                                  isCheck: false,
-                                  isWarning: false,
-                                  msg: 'Bookmark Backup Fail!',
-                                ),
-                                gravity: ToastGravity.BOTTOM,
-                                toastDuration: Duration(seconds: 4),
-                              );
-                            }
+                    var resc = await VioletServer.uploadBookmark();
 
-                            return;
-                          }
+                    setState(() {
+                      _logining = false;
+                    });
 
-                          var ync = await showYesNoDialog(
-                              context,
-                              'You need to log in to use the community feature. ' +
-                                  'If you have an existing id, press "YES" to log in. ' +
-                                  'If you do not have an existing id, press "NO" to register for a new one.',
-                              'Sign In/Up');
-
-                          if (ync == null) return;
-
-                          String id, pw;
-
-                          if (ync == true) {
-                            // signin
-                            var r = await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return SignInDialog();
-                                });
-                            if (r == null) return;
-                            id = r[0];
-                            pw = r[1];
-                          } else {
-                            // signup
-                            if (await VioletCommunitySession.checkUserAppId(
-                                    _userAppId) !=
-                                'success') {
-                              await showOkDialog(
-                                  context,
-                                  'You cannot continue, there is an account registered with your UserAppId.' +
-                                      ' If you have already registered as a member, please sign in with your existing id.' +
-                                      ' If you forgot your login information, please contact developer.');
-                              return;
-                            }
-                            var r = await showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return SignUpDialog();
-                                });
-
-                            if (r == null) return;
-
-                            print(await VioletCommunitySession.signUp(
-                                r[0], r[1], _userAppId, r[2]));
-
-                            if (await VioletCommunitySession.signUp(
-                                    r[0], r[1], _userAppId, r[2]) ==
-                                'success') {
-                              await showOkDialog(
-                                  context, 'Sign up is complete!');
-                              id = r[0];
-                              pw = r[1];
-                            } else {
-                              await showOkDialog(
-                                  context, 'Registration has been declined!');
-                              return;
-                            }
-                          }
-
-                          await (await SharedPreferences.getInstance())
-                              .setString('saved_community_id', id);
-                          await (await SharedPreferences.getInstance())
-                              .setString('saved_community_pw', pw);
-
-                          // await _trylogin();
-                          setState(() {});
-                        },
+                    if (resc) {
+                      FlutterToast(context).showToast(
+                        child: ToastWrapper(
+                          isCheck: true,
+                          msg: 'Bookmark Backup Success!',
+                        ),
+                        gravity: ToastGravity.BOTTOM,
+                        toastDuration: Duration(seconds: 4),
+                      );
+                    } else {
+                      FlutterToast(context).showToast(
+                        child: ToastWrapper(
+                          isCheck: false,
+                          isWarning: false,
+                          msg: 'Bookmark Backup Fail!',
+                        ),
+                        gravity: ToastGravity.BOTTOM,
+                        toastDuration: Duration(seconds: 4),
+                      );
+                    }
+                  },
                 ),
         ),
       ],
