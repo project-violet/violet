@@ -29,6 +29,7 @@ import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/script/script_manager.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -138,6 +139,7 @@ class _SplashPageState extends State<SplashPage> {
   bool showIndicator = false;
   int chunkDownloadMax = 0;
   int chunkDownloadProgress = 0;
+  bool backupBookmark = false;
 
   final imgSize = {
     'global': '320MB',
@@ -190,6 +192,16 @@ class _SplashPageState extends State<SplashPage> {
     await Population.init();
     await HisokiHash.init();
     await ScriptManager.init();
+
+    if (Settings.autobackupBookmark) {
+      setState(() {
+        backupBookmark = true;
+      });
+      await VioletServer.uploadBookmark();
+      setState(() {
+        backupBookmark = false;
+      });
+    }
 
     // if (Platform.isAndroid)
     //   try {
@@ -289,7 +301,7 @@ class _SplashPageState extends State<SplashPage> {
 
   _chunkDownload() {
     return Visibility(
-      visible: showIndicator,
+      visible: showIndicator || backupBookmark,
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
@@ -297,13 +309,17 @@ class _SplashPageState extends State<SplashPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text('<< AutoSync >>', style: TextStyle(color: Colors.white)),
+              if (showIndicator)
+                const Text('<< AutoSync >>',
+                    style: TextStyle(color: Colors.white)),
               Text(
-                  chunkDownloadProgress != chunkDownloadMax ||
-                          chunkDownloadMax == 0
-                      ? 'Chunk downloading...[$chunkDownloadProgress/${SyncManager.getSyncRequiredChunkCount()}]'
-                      : 'Extracting...',
-                  style: TextStyle(color: Colors.white)),
+                  backupBookmark
+                      ? 'Bookmark Backup...'
+                      : chunkDownloadProgress != chunkDownloadMax ||
+                              chunkDownloadMax == 0
+                          ? 'Chunk downloading...[$chunkDownloadProgress/${SyncManager.getSyncRequiredChunkCount()}]'
+                          : 'Extracting...',
+                  style: const TextStyle(color: Colors.white)),
               Container(
                 height: 16,
               ),

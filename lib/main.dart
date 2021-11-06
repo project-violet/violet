@@ -92,7 +92,6 @@ void main() async {
 
   await Settings.initFirst();
   await warmupFlare();
-  await VioletServer.uploadBookmark();
 
   // await _sqlIntegrityTest();
 

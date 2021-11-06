@@ -235,5 +235,6 @@
     "pasteyourbookmarktext": "북마크 형식을 붙여넣으세요!",
     "nocomment": "댓글 없음",
     "writecomment": "댓글 쓰기",
-    "addtodownloadqueue": "가 다운로드 큐에 추가되었습니다!"
+    "addtodownloadqueue": "가 다운로드 큐에 추가되었습니다!",
+    "autobackupbookmark": "북마크 자동 백업"
 }

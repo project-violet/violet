@@ -195,9 +195,9 @@ class VioletServer {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
     var userId = await getUserAppId();
-    var upload = (await SharedPreferences.getInstance())
-        .getBool('upload_bookmark_179_test');
-    if (upload != null && upload != false) return false;
+    // var upload = (await SharedPreferences.getInstance())
+    //     .getBool('upload_bookmark_179_test');
+    // if (upload != null && upload != false) return false;
 
     /*
       ArticleReadLog
@@ -238,8 +238,8 @@ class VioletServer {
         return value;
       });
 
-      await (await SharedPreferences.getInstance())
-          .setBool('upload_bookmark_179', true);
+      // await (await SharedPreferences.getInstance())
+      //     .setBool('upload_bookmark_179', true);
 
       return res.statusCode == 200;
     } catch (e, st) {
