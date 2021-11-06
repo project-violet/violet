@@ -1350,7 +1350,7 @@ class _SettingsPageState extends State<SettingsPage>
                 // 3. 북마크만 덮어쓰기 한다.
                 var rr = await showDialog(
                   context: context,
-                  builder: (BuildContext context) => RestoreBookmarkPage(),
+                  builder: (BuildContext context) => RestoreBookmarkPage(source: result),
                 );
 
                 if (rr != null && rr == false) {
