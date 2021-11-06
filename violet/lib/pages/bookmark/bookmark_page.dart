@@ -312,7 +312,8 @@ class _BookmarkPageState extends State<BookmarkPage>
                         }
                       },
                       onLongPress: () async {
-                        if (index == -1 || oname == 'violet_default')
+                        if (index == -1 ||
+                            (oname == 'violet_default' && index == 0))
                           await showOkDialog(
                               context,
                               Translations.of(context)
