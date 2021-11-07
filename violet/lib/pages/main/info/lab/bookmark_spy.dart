@@ -110,12 +110,12 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                       ];
                     }),
                     builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                      if (!snapshot.hasData) return Container();
+                      if (!snapshot.hasData) return null;
 
                       if (snapshot.data[0] as bool)
                         return Icon(
                           MdiIcons.starCircleOutline,
-                          color: Colors.grey,
+                          color: Colors.yellow,
                         );
 
                       if (snapshot.data[1] as bool)
@@ -124,7 +124,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                           color: Colors.grey,
                         );
 
-                      return Container();
+                      return null;
                     },
                   ),
             onTap: () async {
