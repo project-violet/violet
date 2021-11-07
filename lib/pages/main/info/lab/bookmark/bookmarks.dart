@@ -8,6 +8,8 @@ import 'dart:ui';
 import 'package:animated_widgets/animated_widgets.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
@@ -172,6 +174,62 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                               groupId: id,
                               name: name,
                             )));
+                }
+              },
+              onLongPress: () async {
+                var yn = await showYesNoDialog(
+                    context, '이 북마크를 끌어올까요?', 'Bookmark Spy');
+                if (yn != null && yn) {
+                  // 북마크 그룹 생성
+                  var groupName =
+                      "${widget.userAppId.substring(0, 8)}-${data.name()}";
+
+                  var bookmark = await Bookmark.getInstance();
+                  var gid = await bookmark.createGroup(
+                      groupName,
+                      data.description(),
+                      Colors.black,
+                      DateTime.parse(data.datetime()));
+
+                  var dir = await getApplicationDocumentsDirectory();
+                  var dbraw = await openDatabase('${dir.path}/user.db');
+                  await dbraw.transaction((txn) async {
+                    final batch = txn.batch();
+                    for (var article in articles) {
+                      if (article.group() != data.id()) continue;
+                      var ref = article;
+                      batch.insert(
+                          'BookmarkArticle',
+                          {
+                            'Article': ref.article(),
+                            'DateTime': ref.datetime(),
+                            'GroupId': gid,
+                          },
+                          conflictAlgorithm: ConflictAlgorithm.fail);
+                    }
+                    await batch.commit();
+                  });
+                  await dbraw.transaction((txn) async {
+                    final batch = txn.batch();
+                    for (var artist in artists) {
+                      if (artist.group() != data.id()) continue;
+                      var ref = artist;
+                      batch.insert(
+                          'BookmarkArtist',
+                          {
+                            'Artist': ref.artist(),
+                            'IsGroup': ref.type(),
+                            'DateTime': ref.datetime(),
+                            'GroupId': gid,
+                          },
+                          conflictAlgorithm: ConflictAlgorithm.fail);
+                    }
+                    await batch.commit();
+                  });
+                  await dbraw.close();
+
+                  await showOkDialog(
+                      context, '북마크를 성공적으로 끌어왔습니다!', 'Bookmark Spy');
                 }
               },
               title: Text(name, style: TextStyle(fontSize: 16.0)),
