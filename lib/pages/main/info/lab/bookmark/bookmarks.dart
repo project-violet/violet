@@ -178,7 +178,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
               },
               onLongPress: () async {
                 var yn = await showYesNoDialog(
-                    context, '이 북마크를 끌어올까요?', 'Bookmark Spy');
+                    context, '이 북마크 그룹을 끌어올까요?', 'Bookmark Spy');
                 if (yn != null && yn) {
                   // 북마크 그룹 생성
                   var groupName =
@@ -229,7 +229,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                   await dbraw.close();
 
                   await showOkDialog(
-                      context, '북마크를 성공적으로 끌어왔습니다!', 'Bookmark Spy');
+                      context, '북마크 그룹을 성공적으로 끌어왔습니다!', 'Bookmark Spy');
                 }
               },
               title: Text(name, style: TextStyle(fontSize: 16.0)),
