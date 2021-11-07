@@ -370,7 +370,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 onPressed: () async {
                   await showOkDialog(
                       context,
-                      '대사를 검색해 작품을 찾아보세요! 현재 2019.01.01 ~ 2021.09.15 기간에 업로드된 작품만 지원됩니다.',
+                      '대사를 검색해 작품을 찾아보세요! 현재 2021.09.15까지 업로드된 작품들을 지원됩니다.',
                       '대사 검색기 (베타)');
                 },
               ),
