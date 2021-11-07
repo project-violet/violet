@@ -462,12 +462,12 @@ class Bookmark {
     if (!await isBookmarkUser(user)) return;
     var db = await CommonUserDatabase.getInstance();
     await db.delete('BookmarkUser', 'User=?', [user]);
-    bookmarkUserSet.add(user);
+    bookmarkUserSet.remove(user);
   }
 
   Future<void> setHistoryUser(String user) async {
     if (await isHistoryUser(user)) return;
     historyUserSet.add(user);
-    await insertUser(user, null);
+    await historyUser(user, null);
   }
 }
