@@ -7,6 +7,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
