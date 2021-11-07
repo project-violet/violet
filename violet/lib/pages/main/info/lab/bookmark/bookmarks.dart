@@ -177,6 +177,8 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                 }
               },
               onLongPress: () async {
+                if (index == -1) return;
+
                 var yn = await showYesNoDialog(
                     context, '이 북마크 그룹을 끌어올까요?', 'Bookmark Spy');
                 if (yn != null && yn) {
