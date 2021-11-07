@@ -6,6 +6,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
@@ -24,6 +25,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
   ScrollController _scrollController = ScrollController();
 
   static const String dev = 'aee70691afaa';
+  String _latestAccessUserAppId = '';
 
   @override
   Widget build(BuildContext context) {
@@ -95,9 +97,44 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
             title: Text(data['user'].substring(0, 8),
                 style: TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
-            onTap: () {
+            trailing: (_latestAccessUserAppId == data['user'] as String)
+                ? Icon(
+                    MdiIcons.starCircle,
+                    color: Colors.green,
+                  )
+                : FutureBuilder(
+                    future: Bookmark.getInstance().then((value) async {
+                      return [
+                        await value.isBookmarkUser(data['user'] as String),
+                        await value.isHistoryUser(data['user'] as String)
+                      ];
+                    }),
+                    builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                      if (!snapshot.hasData) return Container();
+
+                      if (snapshot.data[0] as bool)
+                        return Icon(
+                          MdiIcons.starCircleOutline,
+                          color: Colors.grey,
+                        );
+
+                      if (snapshot.data[1] as bool)
+                        return Icon(
+                          MdiIcons.rayStartVertexEnd,
+                          color: Colors.grey,
+                        );
+
+                      return Container();
+                    },
+                  ),
+            onTap: () async {
+              _latestAccessUserAppId = data['user'] as String;
+
+              var bookmark = await Bookmark.getInstance();
+              await bookmark.setHistoryUser(data['user'] as String);
+
               if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
+                await Navigator.of(context).push(PageRouteBuilder(
                     opaque: false,
                     transitionDuration: Duration(milliseconds: 500),
                     transitionsBuilder:
@@ -117,9 +154,22 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                     pageBuilder: (_, __, ___) =>
                         LabBookmarkPage(userAppId: data['user'] as String)));
               } else {
-                Navigator.of(context).push(CupertinoPageRoute(
+                await Navigator.of(context).push(CupertinoPageRoute(
                     builder: (_) =>
                         LabBookmarkPage(userAppId: data['user'] as String)));
+              }
+              setState(() {});
+            },
+            onLongPress: () async {
+              var bookmark = await Bookmark.getInstance();
+              if (await bookmark.isBookmarkUser(data['user'] as String)) {
+                await (await Bookmark.getInstance())
+                    .unbookmarkUser(data['user'] as String);
+                setState(() {});
+              } else {
+                await (await Bookmark.getInstance())
+                    .bookmarkUser(data['user'] as String);
+                setState(() {});
               }
             },
           ),

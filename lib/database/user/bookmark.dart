@@ -98,6 +98,20 @@ class BookmarkUser {
   }
 }
 
+class HistoryUser {
+  Map<String, dynamic> result;
+  HistoryUser({this.result});
+
+  int id() => result['Id'];
+  String user() => result['User'];
+  String datetime() => result['DateTime'];
+
+  Future<void> update() async {
+    var db = await CommonUserDatabase.getInstance();
+    await db.update('HistoryUser', result, 'Id=?', [id()]);
+  }
+}
+
 class Bookmark {
   static Bookmark _instance;
   static Lock lock = Lock();
@@ -155,6 +169,15 @@ class Bookmark {
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
               ''');
         }
+        var ex2 = await db.query(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='HistoryUser';");
+        if (ex2 == null || ex2.length == 0 || ex2[0].length == 0) {
+          await db.execute('''CREATE TABLE HistoryUser (
+              Id integer primary key autoincrement, 
+              User text,
+              DateTime text);
+              ''');
+        }
         _instance = Bookmark();
       }
     });
@@ -196,6 +219,16 @@ class Bookmark {
       'GroupId': group,
     });
     bookmarkUserSet.add(user);
+  }
+
+  Future<void> historyUser(String user, [DateTime datetime]) async {
+    datetime ??= DateTime.now();
+    var db = await CommonUserDatabase.getInstance();
+    await db.insert('HistoryUser', {
+      'User': user,
+      'DateTime': datetime.toString(),
+    });
+    historyUserSet.add(user);
   }
 
   Future<int> createGroup(String name, String description, Color color,
@@ -305,6 +338,13 @@ class Bookmark {
         .toList();
   }
 
+  Future<List<HistoryUser>> getHistoryUser() async {
+    return (await (await CommonUserDatabase.getInstance())
+            .query('SELECT * FROM HistoryUser'))
+        .map((x) => HistoryUser(result: x))
+        .toList();
+  }
+
   Future<void> modfiyGroup(BookmarkGroup group) async {
     await lock.synchronized(() async {
       await (await CommonUserDatabase.getInstance())
@@ -382,6 +422,21 @@ class Bookmark {
     return bookmarkUserSet.contains(user);
   }
 
+  HashSet<String> historyUserSet;
+  Future<bool> isHistoryUser(String user) async {
+    await lock.synchronized(() async {
+      if (historyUserSet == null) {
+        var user = await getHistoryUser();
+        historyUserSet = HashSet<String>();
+        user.forEach((element) {
+          historyUserSet.add(element.user());
+        });
+      }
+    });
+
+    return historyUserSet.contains(user);
+  }
+
   Future<void> bookmarkArtist(String name, int type, [int group = 1]) async {
     if (await isBookmarkArtist(name, type)) return;
     bookmarkArtistSet[type].add(name);
@@ -408,5 +463,11 @@ class Bookmark {
     var db = await CommonUserDatabase.getInstance();
     await db.delete('BookmarkUser', 'User=?', [user]);
     bookmarkUserSet.add(user);
+  }
+
+  Future<void> setHistoryUser(String user) async {
+    if (await isHistoryUser(user)) return;
+    historyUserSet.add(user);
+    await insertUser(user, null);
   }
 }
