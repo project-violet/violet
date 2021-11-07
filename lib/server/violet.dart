@@ -471,4 +471,32 @@ class VioletServer {
     }
     return false;
   }
+
+  static Future<List<dynamic>> bookmarkLists() async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+
+    try {
+      var res = await http.get(
+        '$api/bookmarks',
+        headers: {
+          'v-token': vToken.toString(),
+          'v-valid': vValid,
+          "Content-Type": "application/json"
+        },
+      ).then((value) {
+        print(value.statusCode);
+        return value;
+      });
+
+      if (res.statusCode != 200) {
+        return null;
+      }
+
+      return jsonDecode(res.body)['result'] as List<dynamic>;
+    } catch (e, st) {
+      Logger.error('[API-bookmarks] E: ' + e.toString() + '\n' + st.toString());
+    }
+    return null;
+  }
 }

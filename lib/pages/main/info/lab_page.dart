@@ -15,6 +15,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
+import 'package:violet/pages/main/info/lab/bookmark_spy.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
@@ -317,6 +318,16 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 null,
                 () async {
                   _navigate(LabSearchMessage());
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.incognito,
+                    size: 40, color: Colors.brown.shade700),
+                '#014 Bookmark Spy',
+                'User\'s Bookmark List',
+                null,
+                () async {
+                  _navigate(LabBookmarkSpyPage());
                 },
               ),
             ],
