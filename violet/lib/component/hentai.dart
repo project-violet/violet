@@ -124,6 +124,7 @@ class HentaiManager {
             .trim());
 
     // if (offset == 0 && seed < 0) _latestSeed = new Random().nextDouble() + 1;
+    await Logger.info('[Database Query]\nSQL: $queryString');
 
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
@@ -148,7 +149,7 @@ class HentaiManager {
             .join(' ')
             .trim());
 
-    print(queryString);
+    await Logger.info('[Database Query]\nSQL: $queryString');
 
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
