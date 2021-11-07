@@ -124,12 +124,16 @@ class _SearchPageState extends State<SearchPage>
             setState(() {});
           });
         }
-      } catch (e) {
+      } catch (e, st) {
+        Logger.error(
+            '[Initial-Search] E: ' + e.toString() + '\n' + st.toString());
         print('Initial search failed: $e');
         _showErrorToast('Failed to search all: $e');
       }
-    }).catchError((e) {
+    }).catchError((e, st) {
       // It happened!
+      Logger.error(
+          '[Initial-SearchI] E: ' + e.toString() + '\n' + st.toString());
       print('Initial search interrupted: $e');
       _showErrorToast('Initial search interrupted: $e');
     });
