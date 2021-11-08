@@ -25,36 +25,40 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
   ScrollController _scrollController = ScrollController();
 
   static const String dev = 'aee70691afaa';
+
   String _latestAccessUserAppId = '';
+  List<dynamic> bookmarks;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      bookmarks = await VioletServer.bookmarkLists();
+      bookmarks.removeWhere((element) =>
+          ((element as Map<String, dynamic>)['user'] as String)
+              .startsWith(dev));
+
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
-      child: FutureBuilder(
-        future: VioletServer.bookmarkLists(),
-        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-          if (!snapshot.hasData)
-            return Container(
-              child: Center(
-                child: Text('Loading ...'),
-              ),
-            );
-          var rr = snapshot.data;
-          rr.removeWhere((element) =>
-              ((element as Map<String, dynamic>)['user'] as String)
-                  .startsWith(dev));
-          return ListView.builder(
+      child: bookmarks == null
+          ? Container(child: Center(child: Text('Loading ...')))
+          : ListView.builder(
               padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
               physics: BouncingScrollPhysics(),
               controller: _scrollController,
-              itemCount: rr.length,
+              itemCount: bookmarks.length,
               itemBuilder: (BuildContext ctxt, int index) {
-                return _buildItem(rr[index] as Map<String, dynamic>);
-              });
-        },
-      ),
+                return _buildItem(bookmarks[index] as Map<String, dynamic>);
+              },
+            ),
     );
   }
 

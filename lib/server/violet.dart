@@ -478,7 +478,7 @@ class VioletServer {
 
     try {
       var res = await http.get(
-        '$api/bookmarks',
+        '$api/bookmarks2',
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
