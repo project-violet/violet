@@ -21,8 +21,12 @@ import 'bookmarks_records.dart';
 
 class LabBookmarkPage extends StatefulWidget {
   final String userAppId;
+  final String version;
 
-  LabBookmarkPage({this.userAppId});
+  LabBookmarkPage({
+    this.userAppId,
+    this.version,
+  });
 
   @override
   _BookmarkPageState createState() => _BookmarkPageState();
@@ -40,7 +44,12 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     return Scaffold(
       body: FutureBuilder(
         // future: Bookmark.getInstance().then((value) => value.getGroup()),
-        future: VioletServer.resotreBookmark(widget.userAppId),
+        future: widget.version == null
+            ? VioletServer.resotreBookmark(widget.userAppId)
+            : VioletServer.resotreBookmarkWithVersion(
+                widget.userAppId,
+                widget.version,
+              ),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (!snapshot.hasData)
             return Container(

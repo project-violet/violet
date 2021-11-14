@@ -499,4 +499,61 @@ class VioletServer {
     }
     return null;
   }
+
+  static Future<List<dynamic>> versionsBookmark(String userAppId) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+
+    try {
+      var res = await http.get(
+        '$api/bookmarks/versions?user=$userAppId',
+        headers: {
+          'v-token': vToken.toString(),
+          'v-valid': vValid,
+          "Content-Type": "application/json"
+        },
+      ).then((value) {
+        print(value.statusCode);
+        return value;
+      });
+
+      if (res.statusCode != 200) {
+        return null;
+      }
+
+      return jsonDecode(res.body)['result'] as List<dynamic>;
+    } catch (e, st) {
+      Logger.error('[API-versions] E: ' + e.toString() + '\n' + st.toString());
+    }
+    return null;
+  }
+
+  static Future<dynamic> resotreBookmarkWithVersion(
+      String userAppId, String vid) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+
+    try {
+      var res = await http.get(
+        '$api/bookmarks/restore_v?user=$userAppId&vid=$vid',
+        headers: {
+          'v-token': vToken.toString(),
+          'v-valid': vValid,
+          "Content-Type": "application/json"
+        },
+      ).then((value) {
+        print(value.statusCode);
+        return value;
+      });
+
+      if (res.statusCode != 200) {
+        return null;
+      }
+
+      return jsonDecode(res.body)['result'] as Map<String, dynamic>;
+    } catch (e, st) {
+      Logger.error('[API-restore_v] E: ' + e.toString() + '\n' + st.toString());
+    }
+    return false;
+  }
 }
