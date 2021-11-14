@@ -34,6 +34,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/settings/bookmark_version_select.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
@@ -1347,10 +1348,52 @@ class _SettingsPageState extends State<SettingsPage>
                   return;
                 }
 
-                // 3. 북마크만 덮어쓰기 한다.
+                // 3. 북마크 버전 가져오기
+                var versions = await VioletServer.versionsBookmark(text.text);
+                if (versions == null) {
+                  await showOkDialog(
+                      context,
+                      "북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.",
+                      Translations.of(context).trans('restoringbookmark'));
+                  return;
+                }
+
+                // 4. 버전 선택 및 북마크 확인 (이 북마크를 복원할까요?)
+                var version = await Navigator.of(context).push(PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    var begin = Offset(0.0, 1.0);
+                    var end = Offset.zero;
+                    var curve = Curves.ease;
+
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (_, __, ___) => BookmarkVersionSelectPage(
+                    userAppId: text.text,
+                    versions: versions,
+                  ),
+                ));
+
+                if (version == null) {
+                  return;
+                }
+
+                // 5. 북마크 다운로드
+                var bookmark = await VioletServer.resotreBookmarkWithVersion(
+                    text.text, version);
+
+                // 6. 북마크만 덮어쓰기 한다.
                 var rr = await showDialog(
                   context: context,
-                  builder: (BuildContext context) => RestoreBookmarkPage(source: result),
+                  builder: (BuildContext context) =>
+                      RestoreBookmarkPage(source: bookmark),
                 );
 
                 if (rr != null && rr == false) {
