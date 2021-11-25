@@ -87,10 +87,9 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
         child: Material(
           color: Settings.themeWhat ? Colors.black38 : Colors.white,
           child: ListTile(
-            title: Text(data['vid'].substring(0, 16),
+            title: Text(DateTime.parse(data['dt']).toString(),
                 style: TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
-            trailing: Text(DateTime.parse(data['dt']).toString()),
             onTap: () async {
               if (!Platform.isIOS) {
                 await Navigator.of(context).push(PageRouteBuilder(
@@ -111,13 +110,13 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
                       );
                     },
                     pageBuilder: (_, __, ___) => LabBookmarkPage(
-                          userAppId: data['user'] as String,
+                          userAppId: widget.userAppId,
                           version: data['vid'] as String,
                         )));
               } else {
                 await Navigator.of(context).push(CupertinoPageRoute(
                     builder: (_) => LabBookmarkPage(
-                          userAppId: data['user'] as String,
+                          userAppId: widget.userAppId,
                           version: data['vid'] as String,
                         )));
               }
