@@ -25,7 +25,14 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2021, 10, 29),
-    version: '1.17.2 Patch Update <== Latest',
+    version: '1.17.3 Patch Update <== Latest',
+    contents: [
+      'implements bookmark restore page',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2021, 10, 29),
+    version: '1.17.2 Patch Update',
     contents: [
       'update hitomi image rule (apply builtin javascript engine)',
     ],
