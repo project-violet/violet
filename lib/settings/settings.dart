@@ -415,7 +415,7 @@ class Settings {
 
     userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
 
-    autobackupBookmark = await _getBool('autobackupbookmark', true);
+    autobackupBookmark = await _getBool('autobackupbookmark', false);
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
