@@ -193,15 +193,15 @@ class _SplashPageState extends State<SplashPage> {
     await HisokiHash.init();
     await ScriptManager.init();
 
-    if (Settings.autobackupBookmark) {
-      setState(() {
-        backupBookmark = true;
-      });
-      await VioletServer.uploadBookmark();
-      setState(() {
-        backupBookmark = false;
-      });
-    }
+    // if (Settings.autobackupBookmark) {
+    //   setState(() {
+    //     backupBookmark = true;
+    //   });
+    //   await VioletServer.uploadBookmark();
+    //   setState(() {
+    //     backupBookmark = false;
+    //   });
+    // }
 
     // if (Platform.isAndroid)
     //   try {

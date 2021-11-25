@@ -1261,23 +1261,27 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('autobackupbookmark')),
               trailing: Switch(
                 value: Settings.autobackupBookmark,
-                onChanged: (newValue) async {
-                  await Settings.setAutoBackupBookmark(newValue);
-                  setState(() {
-                    _shouldReload = true;
-                  });
-                },
+                onChanged: true
+                    ? null
+                    : (newValue) async {
+                        await Settings.setAutoBackupBookmark(newValue);
+                        setState(() {
+                          _shouldReload = true;
+                        });
+                      },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: () async {
-              await Settings.setAutoBackupBookmark(
-                  !Settings.autobackupBookmark);
-              setState(() {
-                _shouldReload = true;
-              });
-            },
+            onTap: true
+                ? null
+                : () async {
+                    await Settings.setAutoBackupBookmark(
+                        !Settings.autobackupBookmark);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
           ),
           _buildDivider(),
           InkWell(

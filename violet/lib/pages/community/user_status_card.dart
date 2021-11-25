@@ -222,15 +222,15 @@ class _UserStatusCardState extends State<UserStatusCard>
                     ),
                   ),
                   onTap: () async {
-                    if (Settings.autobackupBookmark) {
-                      await showOkDialog(
-                          context,
-                          'Bookmark Auto-Backup function is enabled. Each time you restart the app, ' +
-                              'your bookmarks are automatically backed up to Violet Server. If you want ' +
-                              'to back up manually, turn off automatic backup option.',
-                          'Bookmark Backup');
-                      return;
-                    }
+                    // if (Settings.autobackupBookmark) {
+                    //   await showOkDialog(
+                    //       context,
+                    //       'Bookmark Auto-Backup function is enabled. Each time you restart the app, ' +
+                    //           'your bookmarks are automatically backed up to Violet Server. If you want ' +
+                    //           'to back up manually, turn off automatic backup option.',
+                    //       'Bookmark Backup');
+                    //   return;
+                    // }
 
                     if (DateTime.now()
                             .difference(_latestBackup)
