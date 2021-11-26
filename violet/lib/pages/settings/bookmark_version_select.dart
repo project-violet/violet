@@ -12,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
@@ -19,6 +20,25 @@ import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
+import 'package:timeago/timeago.dart' as timeago;
+
+bool alreadyInit = false;
+void setLocalMessages() {
+  if (alreadyInit) return;
+  alreadyInit = true;
+  timeago.setLocaleMessages('ko', timeago.KoMessages());
+  timeago.setLocaleMessages('de', timeago.DeMessages());
+  timeago.setLocaleMessages('fr', timeago.FrMessages());
+  timeago.setLocaleMessages('ja', timeago.JaMessages());
+  timeago.setLocaleMessages('id', timeago.IdMessages());
+  timeago.setLocaleMessages('zh', timeago.ZhMessages());
+  timeago.setLocaleMessages('it', timeago.ItMessages());
+  timeago.setLocaleMessages('fa', timeago.FaMessages());
+  timeago.setLocaleMessages('ru', timeago.RuMessages());
+  timeago.setLocaleMessages('tr', timeago.TrMessages());
+  timeago.setLocaleMessages('pl', timeago.PlMessages());
+  timeago.setLocaleMessages('zh', timeago.ZhMessages());
+}
 
 class BookmarkVersionSelectPage extends StatefulWidget {
   final String userAppId;
@@ -33,6 +53,13 @@ class BookmarkVersionSelectPage extends StatefulWidget {
 
 class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
   ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setLocalMessages();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +114,9 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
         child: Material(
           color: Settings.themeWhat ? Colors.black38 : Colors.white,
           child: ListTile(
-            title: Text(DateTime.parse(data['dt']).toString(),
+            title: Text(
+                timeago.format(DateTime.parse(data['dt']).toLocal(),
+                    locale: Translations.of(context).locale.languageCode),
                 style: TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
             onTap: () async {
