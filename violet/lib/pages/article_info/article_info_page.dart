@@ -234,12 +234,14 @@ class ArticleInfoPage extends StatelessWidget {
 
   _readButtonEvent(context, data) async {
     if (Settings.useVioletServer) {
-      await VioletServer.view(data.queryResult.id());
+      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+        await VioletServer.view(data.queryResult.id());
+      });
     }
     await (await User.getInstance()).insertUserLog(data.queryResult.id(), 0);
 
     if (!Settings.disableFullScreen)
-      SystemChrome.setEnabledSystemUIOverlays([]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     await ProviderManager.get(data.queryResult.id()).init();
 
@@ -267,12 +269,8 @@ class ArticleInfoPage extends StatelessWidget {
         },
       ),
     ).then((value) async {
-      // await (await User.getInstance())
-      //     .updateUserLog(data.queryResult.id(), value[0] as int);
-      // if (Settings.useVioletServer) {
-      //   await VioletServer.viewClose(data.queryResult.id(), value[1] as int);
-      // }
-      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
     });
   }
 }
