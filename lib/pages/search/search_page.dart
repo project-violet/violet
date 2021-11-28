@@ -659,7 +659,11 @@ class _SearchPageState extends State<SearchPage>
           next, latestQuery.item2);
 
       if (next.item1.length == 0) {
-        queryEnd = true;
+        setState(() {
+          queryEnd = true;
+          _shouldReload = true;
+          key = ObjectKey(Uuid().v4());
+        });
         Logger.warning('[Search Trace] q4');
         return;
       }
