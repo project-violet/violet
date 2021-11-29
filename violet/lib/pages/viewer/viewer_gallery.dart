@@ -165,7 +165,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
         crossAxisCount: properties[viewStyle][0],
         crossAxisSpacing: 2,
         mainAxisSpacing: 2,
-        childAspectRatio: 1,
+        childAspectRatio: 3 / 4,
       ),
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
