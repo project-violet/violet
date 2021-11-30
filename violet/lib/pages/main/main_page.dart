@@ -8,6 +8,7 @@ import 'dart:ui';
 
 import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -76,7 +77,11 @@ class _MainPage2State extends State<MainPage2>
       //   return;
       // }
 
+      var connectivityResult = await (Connectivity().checkConnectivity());
+      if (connectivityResult == ConnectivityResult.none) return;
+
       await UpdateSyncManager.checkUpdateSync();
+
       setState(() {
         _shouldReload = true;
       });
