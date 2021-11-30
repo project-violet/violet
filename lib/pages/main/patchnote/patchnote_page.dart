@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 12, 0),
+    version: '1.17.4 Patch Update <== Latest',
+    contents: [
+      'enhance read button event',
+      'enhance viewer gallery image ratio',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 10, 29),
-    version: '1.17.3 Patch Update <== Latest',
+    version: '1.17.3 Patch Update',
     contents: [
       'implements bookmark restore page',
     ],
