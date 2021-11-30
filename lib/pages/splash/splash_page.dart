@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:android_intent_plus/android_intent.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:file_picker/file_picker.dart';
@@ -191,7 +192,11 @@ class _SplashPageState extends State<SplashPage> {
     await TagTranslate.init();
     await Population.init();
     await HisokiHash.init();
-    await ScriptManager.init();
+
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult != ConnectivityResult.none) {
+      await ScriptManager.init();
+    }
 
     // if (Settings.autobackupBookmark) {
     //   setState(() {
@@ -210,24 +215,27 @@ class _SplashPageState extends State<SplashPage> {
 
     if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
         !widget.switching) {
-      try {
-        await SyncManager.checkSync();
-        if (!SyncManager.firstSync && SyncManager.chunkRequire) {
-          setState(() {
-            showIndicator = true;
-          });
-          await SyncManager.doChunkSync((_, len) async {
+      if (connectivityResult != ConnectivityResult.none) {
+        try {
+          await SyncManager.checkSync();
+          if (!SyncManager.firstSync && SyncManager.chunkRequire) {
             setState(() {
-              chunkDownloadMax = len;
-              chunkDownloadProgress++;
+              showIndicator = true;
             });
-          });
+            await SyncManager.doChunkSync((_, len) async {
+              setState(() {
+                chunkDownloadMax = len;
+                chunkDownloadProgress++;
+              });
+            });
+          }
+        } catch (e, st) {
+          // If an error occurs, stops synchronization immediately.
+          FirebaseCrashlytics.instance
+              .recordError(e, st); // @dependent: android
+          Logger.error(
+              '[Splash-Navigation] E: ' + e.toString() + '\n' + st.toString());
         }
-      } catch (e, st) {
-        // If an error occurs, stops synchronization immediately.
-        FirebaseCrashlytics.instance.recordError(e, st); // @dependent: android
-        Logger.error(
-            '[Splash-Navigation] E: ' + e.toString() + '\n' + st.toString());
       }
 
       // We must show main page to user anyway
