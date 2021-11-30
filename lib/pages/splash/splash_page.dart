@@ -231,7 +231,7 @@ class _SplashPageState extends State<SplashPage> {
           }
         } catch (e, st) {
           // If an error occurs, stops synchronization immediately.
-          FirebaseCrashlytics.instance
+          FirebaseCrashlytics.instance // @dependent: android
               .recordError(e, st); // @dependent: android
           Logger.error(
               '[Splash-Navigation] E: ' + e.toString() + '\n' + st.toString());
