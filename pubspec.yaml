@@ -44,6 +44,7 @@ dependencies:
     git:
       url: https://github.com/google/charts
       path: charts_flutter
+  connectivity:
   convert:
   country_pickers: ^2.0.0
   crypto:
