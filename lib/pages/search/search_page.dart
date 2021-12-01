@@ -433,24 +433,29 @@ class _SearchPageState extends State<SearchPage>
         fullscreenDialog: true,
       ),
     );
-    final db = await SearchLogDatabase.getInstance();
-    await db.insertSearchLog(query);
-    setState(() {
-      heroFlareControls.play('close2search');
-    });
-    if (query == null) {
-      await Logger.warning('[Search Trace] q1');
-      return;
+    try {
+      final db = await SearchLogDatabase.getInstance();
+      await db.insertSearchLog(query);
+      setState(() {
+        heroFlareControls.play('close2search');
+      });
+      if (query == null) {
+        await Logger.warning('[Search Trace] q1');
+        return;
+      }
+      latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(null, query);
+      queryResult = [];
+      _filterController = FilterController();
+      queryEnd = false;
+      isFilterUsed = false;
+      searchPageNum.value = 0;
+      searchTotalResultCount = 0;
+      baseCount = 0;
+      await loadNextQuery();
+    } catch (e, st) {
+      await Logger.error(
+          '[showSearchBar] E: ${e.toString()}\n${st.toString()}');
     }
-    latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(null, query);
-    queryResult = [];
-    _filterController = FilterController();
-    queryEnd = false;
-    isFilterUsed = false;
-    searchPageNum.value = 0;
-    searchTotalResultCount = 0;
-    baseCount = 0;
-    await loadNextQuery();
   }
 
   Widget _align() {
