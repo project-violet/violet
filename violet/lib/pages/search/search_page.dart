@@ -651,7 +651,11 @@ class _SearchPageState extends State<SearchPage>
 
       var next = await HentaiManager.search(latestQuery.item2,
               latestQuery.item1 == null ? 0 : latestQuery.item1.item2)
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        Logger.error('[Search_loadNextQuery] Search Timeout');
+
+        throw TimeoutException('Failed to search the query');
+      });
 
       Logger.warning('[Search Trace] lnqs-t-as');
 
