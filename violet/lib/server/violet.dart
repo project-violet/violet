@@ -223,7 +223,7 @@ class VioletServer {
 
     try {
       var res = await http
-          .post('$api/bookmarks/upload',
+          .post('$api/bookmarks/v2/upload',
               headers: {
                 'v-token': vToken.toString(),
                 'v-valid': vValid,
@@ -450,7 +450,7 @@ class VioletServer {
 
     try {
       var res = await http.get(
-        '$api/bookmarks/restore?user=$userAppId',
+        '$api/bookmarks/v2/restore?user=$userAppId',
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
@@ -478,7 +478,7 @@ class VioletServer {
 
     try {
       var res = await http.get(
-        '$api/bookmarks/bookmarks',
+        '$api/bookmarks/v2/bookmarks',
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
@@ -506,7 +506,7 @@ class VioletServer {
 
     try {
       var res = await http.get(
-        '$api/bookmarks/versions?user=$userAppId',
+        '$api/bookmarks/v2/versions?user=$userAppId',
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
@@ -535,7 +535,7 @@ class VioletServer {
 
     try {
       var res = await http.get(
-        '$api/bookmarks/restore_v?user=$userAppId&vid=$vid',
+        '$api/bookmarks/v2/restore_v?user=$userAppId&vid=$vid',
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
