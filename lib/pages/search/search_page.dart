@@ -320,6 +320,7 @@ class _SearchPageState extends State<SearchPage>
             searchPageNum.value = 0;
             await loadNextQuery();
             setState(() {
+              _cachedPannel = null;
               _shouldReload = true;
               key = ObjectKey(Uuid().v4());
             });
@@ -402,6 +403,7 @@ class _SearchPageState extends State<SearchPage>
                         baseCount = 0;
                         await loadNextQuery();
                         setState(() {
+                          _cachedPannel = null;
                           _shouldReload = true;
                           key = ObjectKey(Uuid().v4());
                         });
@@ -439,10 +441,8 @@ class _SearchPageState extends State<SearchPage>
       setState(() {
         heroFlareControls.play('close2search');
       });
-      if (query == null) {
-        await Logger.warning('[Search Trace] q1');
-        return;
-      }
+      if (query == null) return;
+
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(null, query);
       queryResult = [];
       _filterController = FilterController();
@@ -540,6 +540,7 @@ class _SearchPageState extends State<SearchPage>
                     _shouldReload = true;
                     searchPageNum.value = 0;
                     setState(() {
+                      _cachedPannel = null;
                       _shouldReload = true;
                       key = ObjectKey(Uuid().v4());
                     });
@@ -558,6 +559,7 @@ class _SearchPageState extends State<SearchPage>
                     _applyFilter();
                     _shouldReload = true;
                     setState(() {
+                      _cachedPannel = null;
                       _shouldReload = true;
                       key = ObjectKey(Uuid().v4());
                     });
@@ -627,32 +629,18 @@ class _SearchPageState extends State<SearchPage>
   Semaphore _querySem = Semaphore(maxCount: 1);
 
   Future<void> loadNextQuery() async {
-    Logger.warning('[Search Trace] lnqs');
-
-    print('* loadNextQuery start');
-
     await _querySem.acquire().timeout(
       const Duration(seconds: 5),
       onTimeout: () {
-        print('* loadNextQuery sem acquire timeout');
-
         _showErrorToast('Semaphore acquisition failed');
-        Logger.warning('[Search Trace] q2');
 
         throw TimeoutException('Failed to acquire the query semaphore');
       },
     );
 
-    print('* loadNextQuery sem acquired');
-
     try {
-      Logger.warning('[Search Trace] lnqs-t');
-
       if (queryEnd ||
-          (latestQuery.item1 != null && latestQuery.item1.item2 == -1)) {
-        Logger.warning('[Search Trace] q3');
-        return;
-      }
+          (latestQuery.item1 != null && latestQuery.item1.item2 == -1)) return;
 
       var next = await HentaiManager.search(latestQuery.item2,
               latestQuery.item1 == null ? 0 : latestQuery.item1.item2)
@@ -662,18 +650,16 @@ class _SearchPageState extends State<SearchPage>
         throw TimeoutException('Failed to search the query');
       });
 
-      Logger.warning('[Search Trace] lnqs-t-as');
-
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
           next, latestQuery.item2);
 
       if (next.item1.length == 0) {
         setState(() {
+          _cachedPannel = null;
           queryEnd = true;
           _shouldReload = true;
           key = ObjectKey(Uuid().v4());
         });
-        Logger.warning('[Search Trace] q4');
         return;
       }
 
@@ -690,9 +676,8 @@ class _SearchPageState extends State<SearchPage>
         });
       }
 
-      Logger.warning('[Search Trace] qe');
-
       setState(() {
+        _cachedPannel = null;
         _shouldReload = true;
         key = ObjectKey(Uuid().v4());
       });
@@ -701,7 +686,6 @@ class _SearchPageState extends State<SearchPage>
       rethrow;
     } finally {
       _querySem.release();
-      print('* loadNextQuery sem released');
     }
   }
 
