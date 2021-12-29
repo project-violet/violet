@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
+
 import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
@@ -11,7 +13,7 @@ class ScriptManager {
 
   static Map<String, String> _codeUrls = {
     'hitomi_get_image_list':
-        'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list.js',
+        'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v2.js',
   };
 
   static Future<void> init() async {
@@ -31,20 +33,23 @@ class ScriptManager {
       flutterJs = getJavascriptRuntime();
       flutterJs.evaluate(_caches['hitomi_get_image_list']);
       var downloadUrl =
-          flutterJs.evaluate("create_download_url('$id')").rawResult as String;
+          flutterJs.evaluate("create_download_url('$id')").stringResult;
       var galleryInfo = await http.get(downloadUrl);
-      final jResult = flutterJs.evaluate(
-          "hitomi_get_image_list('$id', \"${galleryInfo.body.replaceAll('"', '\\"')}\")");
+      final jResult = flutterJs
+          .evaluate(
+              "hitomi_get_image_list('$id', \"${galleryInfo.body.replaceAll('"', '\\"')}\")")
+          .stringResult;
+      final jResultObject = jsonDecode(jResult);
 
-      if (jResult.rawResult is Map<dynamic, dynamic>) {
+      if (jResultObject is Map<dynamic, dynamic>) {
         return Tuple3<List<String>, List<String>, List<String>>(
-            (jResult.rawResult["result"] as List<dynamic>)
+            (jResultObject["result"] as List<dynamic>)
                 .map((e) => e as String)
                 .toList(),
-            (jResult.rawResult["btresult"] as List<dynamic>)
+            (jResultObject["btresult"] as List<dynamic>)
                 .map((e) => e as String)
                 .toList(),
-            (jResult.rawResult["stresult"] as List<dynamic>)
+            (jResultObject["stresult"] as List<dynamic>)
                 .map((e) => e as String)
                 .toList());
       } else {
