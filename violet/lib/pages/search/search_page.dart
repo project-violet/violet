@@ -32,6 +32,7 @@ import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/pages/segment/filter_page.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/device_type.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
@@ -681,6 +682,8 @@ class _SearchPageState extends State<SearchPage>
         _shouldReload = true;
         key = ObjectKey(Uuid().v4());
       });
+
+      ScriptManager.refresh();
     } catch (e, st) {
       Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
       rethrow;
