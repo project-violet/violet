@@ -25,6 +25,10 @@ class ScriptManager {
     }
   }
 
+  static Future<void> refresh() async {
+    await init();
+  }
+
   static Future<Tuple3<List<String>, List<String>, List<String>>>
       runHitomiGetImageList(int id) async {
     if (_caches == null) return null;
