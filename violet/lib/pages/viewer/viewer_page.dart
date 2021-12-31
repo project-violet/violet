@@ -34,6 +34,7 @@ import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_report.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
@@ -138,6 +139,7 @@ class _ViewerPageState extends State<ViewerPage>
         setState(() {
           _mpPoints = 0;
         });
+        await ScriptManager.refresh();
       },
     );
 
