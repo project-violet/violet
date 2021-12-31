@@ -13,29 +13,36 @@ class ScriptManager {
   static const String _scriptUrl =
       'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v2.js';
   static String _scriptCache;
+  static JavascriptRuntime _runtime;
 
   static Future<void> init() async {
     _scriptCache = (await http.get(_scriptUrl)).body;
+    _initRuntime();
   }
 
   static Future<void> refresh() async {
     var scriptTemp = _scriptCache;
     await init();
 
-    if (_scriptCache != scriptTemp) ProviderManager.refresh();
+    if (_scriptCache != scriptTemp) {
+      _initRuntime();
+      ProviderManager.refresh();
+    }
+  }
+
+  static void _initRuntime() {
+    _runtime = getJavascriptRuntime();
+    _runtime.evaluate(_scriptCache);
   }
 
   static Future<Tuple3<List<String>, List<String>, List<String>>>
       runHitomiGetImageList(int id) async {
     if (_scriptCache == null) return null;
     try {
-      JavascriptRuntime flutterJs;
-      flutterJs = getJavascriptRuntime();
-      flutterJs.evaluate(_scriptCache);
       var downloadUrl =
-          flutterJs.evaluate("create_download_url('$id')").stringResult;
+          _runtime.evaluate("create_download_url('$id')").stringResult;
       var galleryInfo = await http.get(downloadUrl);
-      final jResult = flutterJs
+      final jResult = _runtime
           .evaluate(
               "hitomi_get_image_list('$id', \"${galleryInfo.body.replaceAll('"', '\\"')}\")")
           .stringResult;
