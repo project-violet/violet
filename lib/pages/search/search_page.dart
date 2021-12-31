@@ -452,7 +452,13 @@ class _SearchPageState extends State<SearchPage>
       searchPageNum.value = 0;
       searchTotalResultCount = 0;
       baseCount = 0;
-      await loadNextQuery();
+      await loadNextQuery().then((value) {
+        setState(() {
+          _cachedPannel = null;
+          _shouldReload = true;
+          key = ObjectKey(Uuid().v4());
+        });
+      });
     } catch (e, st) {
       await Logger.error(
           '[showSearchBar] E: ${e.toString()}\n${st.toString()}');
