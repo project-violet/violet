@@ -2,14 +2,16 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:tuple/tuple.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:image_size_getter/image_size_getter.dart';
 
 class HitomiImageProvider extends VioletImageProvider {
   Tuple3<List<String>, List<String>, List<String>> urls;
+  String id;
 
-  HitomiImageProvider(this.urls);
+  HitomiImageProvider(this.urls, this.id);
 
   @override
   Future<void> init() async {}
@@ -58,5 +60,15 @@ class HitomiImageProvider extends VioletImageProvider {
     // h2=h1w2/w1
     return _estimatedCache[page] =
         thumbSize.height * baseWidth / thumbSize.width;
+  }
+
+  @override
+  bool isRefreshable() {
+    return true;
+  }
+
+  @override
+  Future<void> refresh() async {
+    urls = await HitomiManager.getImageList(id);
   }
 }

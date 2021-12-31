@@ -24,4 +24,10 @@ class ProviderManager {
   static void clear() {
     _ids.clear();
   }
+
+  static void refresh() {
+    for (var v in _ids.entries) {
+      if (v.value.isRefreshable()) v.value.refresh();
+    }
+  }
 }

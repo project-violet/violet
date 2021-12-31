@@ -89,4 +89,12 @@ class EHentaiImageProvider extends VioletImageProvider {
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
     return -1;
   }
+
+  @override
+  bool isRefreshable() {
+    return false;
+  }
+
+  @override
+  Future<void> refresh() async {}
 }
