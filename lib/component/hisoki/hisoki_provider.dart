@@ -45,4 +45,12 @@ class HisokiImageProvider extends VioletImageProvider {
     return _estimatedCache[page] =
         infos[page].item3 * baseWidth / infos[page].item2;
   }
+
+  @override
+  bool isRefreshable() {
+    return false;
+  }
+
+  @override
+  Future<void> refresh() async {}
 }

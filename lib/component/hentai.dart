@@ -248,7 +248,7 @@ class HentaiManager {
             {
               var urls = await HitomiManager.getImageList(qr.id().toString());
               if (urls.item1.length == 0 || urls.item2.length == 0) break;
-              return HitomiImageProvider(urls);
+              return HitomiImageProvider(urls, qr.id().toString());
             }
 
           case 'Hisoki':

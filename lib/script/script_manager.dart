@@ -7,35 +7,31 @@ import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {
-  static Map<String, String> _caches;
-
-  static Map<String, String> _codeUrls = {
-    'hitomi_get_image_list':
-        'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v2.js',
-  };
+  static const String _scriptUrl =
+      'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v2.js';
+  static String _scriptCache;
 
   static Future<void> init() async {
-    _caches = Map<String, String>();
-
-    for (var kv in _codeUrls.entries) {
-      var code = await http.get(kv.value);
-      _caches[kv.key] = code.body;
-    }
+    _scriptCache = (await http.get(_scriptUrl)).body;
   }
 
   static Future<void> refresh() async {
+    var scriptTemp = _scriptCache;
     await init();
+
+    if (_scriptCache != scriptTemp) ProviderManager.refresh();
   }
 
   static Future<Tuple3<List<String>, List<String>, List<String>>>
       runHitomiGetImageList(int id) async {
-    if (_caches == null) return null;
+    if (_scriptCache == null) return null;
     try {
       JavascriptRuntime flutterJs;
       flutterJs = getJavascriptRuntime();
-      flutterJs.evaluate(_caches['hitomi_get_image_list']);
+      flutterJs.evaluate(_scriptCache);
       var downloadUrl =
           flutterJs.evaluate("create_download_url('$id')").stringResult;
       var galleryInfo = await http.get(downloadUrl);

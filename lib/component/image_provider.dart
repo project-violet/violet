@@ -9,4 +9,6 @@ abstract class VioletImageProvider {
   Future<String> getImageUrl(int page);
   Future<Map<String, String>> getHeader(int page);
   Future<double> getEstimatedImageHeight(int page, double baseWidth);
+  bool isRefreshable();
+  Future<void> refresh();
 }
