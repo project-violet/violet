@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 12, 31),
+    version: '1.17.5 Patch Update <== Latest',
+    contents: [
+      'enhance script runner',
+      'happy new year!',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 12, 0),
-    version: '1.17.4 Patch Update <== Latest',
+    version: '1.17.4 Patch Update',
     contents: [
       'enhance read button event',
       'enhance viewer gallery image ratio',
