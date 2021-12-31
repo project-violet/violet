@@ -29,8 +29,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
       HttpWrapper.throttlerExHentai.release();
       return HttpWrapper.cacheResponse[url];
     }
-    Logger.info(
-        '[Http Request] GET: ' + url);
+    Logger.info('[Http Request] GET: ' + url);
     var retry = 0;
     while (true) {
       var res = await http
@@ -88,6 +87,21 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
       HttpWrapper.throttlerEHentai.release();
       return res;
     }
+  } else if (url.contains('ltn.hitomi.la')) {
+    Logger.info('[Http Cache] GET: ' + url);
+    if (HttpWrapper.cacheResponse.containsKey(url)) {
+      return HttpWrapper.cacheResponse[url];
+    }
+    var res = await http.get(Uri.parse(url), headers: headers);
+    if (res.statusCode != 200) {
+      Logger.warning('[Http Response] CODE: ' +
+          res.statusCode.toString() +
+          ', GET: ' +
+          url);
+    }
+    if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200)
+      HttpWrapper.cacheResponse[url] = res;
+    return res;
   } else {
     Logger.info('[Http Request] GET: ' + url);
     var res = await http.get(Uri.parse(url), headers: headers);
