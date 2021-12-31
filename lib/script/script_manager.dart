@@ -20,14 +20,17 @@ class ScriptManager {
     _initRuntime();
   }
 
-  static Future<void> refresh() async {
+  static Future<bool> refresh() async {
     var scriptTemp = _scriptCache;
     await init();
 
     if (_scriptCache != scriptTemp) {
       _initRuntime();
       ProviderManager.refresh();
+      return true;
     }
+
+    return false;
   }
 
   static void _initRuntime() {
