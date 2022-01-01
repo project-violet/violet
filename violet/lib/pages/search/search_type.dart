@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -34,8 +34,7 @@ class SearchType extends StatelessWidget {
                 children: <Widget>[
                   _typeItem(context, Icons.grid_on, 'srt0', 0),
                   _typeItem(context, MdiIcons.gridLarge, 'srt1', 1),
-                  _typeItem(
-                      context, MdiIcons.viewAgendaOutline, 'srt2', 2),
+                  _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
                   _typeItem(context, MdiIcons.formatListText, 'srt3', 3),
                 ],
               ),

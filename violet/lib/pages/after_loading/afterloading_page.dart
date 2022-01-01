@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
 
@@ -180,7 +180,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
             buildButton(Icons.settings, Platform.isAndroid ? 4 : 3, 'settings'),
             const Spacer(),
             Text(
-              'Copyright (C) 2020-2021\nby project-violet',
+              'Copyright (C) 2020-2022\nby project-violet',
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
