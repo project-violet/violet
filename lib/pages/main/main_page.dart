@@ -527,10 +527,6 @@ class _MainPage2State extends State<MainPage2>
     ];
   }
 
-  _buildServicePageRoute(Widget Function() builder) {
-    PlatformNavigator.navigateSlide(context, builder());
-  }
-
   _serviceArea() {
     final buttonStyle = ElevatedButton.styleFrom(
       primary: Settings.majorColor.withAlpha(220),
@@ -550,8 +546,8 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () {
-                Navigator.of(context)
-                    .push(_buildServicePageRoute(() => ArtistCollectionPage()));
+                PlatformNavigator.navigateSlide(
+                    context, ArtistCollectionPage());
               },
               child: const Icon(MdiIcons.star),
             ),
@@ -561,8 +557,7 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () {
-                Navigator.of(context)
-                    .push(_buildServicePageRoute(() => ViewsPage()));
+                PlatformNavigator.navigateSlide(context, ViewsPage());
               },
               child: const Icon(MdiIcons.starShooting),
             ),
@@ -572,8 +567,7 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () {
-                Navigator.of(context)
-                    .push(_buildServicePageRoute(() => InfoPage()));
+                PlatformNavigator.navigateSlide(context, InfoPage());
               },
               child: const Icon(MdiIcons.heart),
             ),
@@ -589,8 +583,7 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () async {
-                Navigator.of(context)
-                    .push(_buildServicePageRoute(() => LabRecentRecordsU()));
+                PlatformNavigator.navigateSlide(context, LabRecentRecordsU());
               },
               child: const Icon(MdiIcons.accessPointNetwork),
             ),
@@ -622,8 +615,7 @@ class _MainPage2State extends State<MainPage2>
               child: ElevatedButton(
                 style: buttonStyle,
                 onPressed: () async {
-                  Navigator.of(context)
-                      .push(_buildServicePageRoute(() => LabGlobalComments()));
+                  PlatformNavigator.navigateSlide(context, LabGlobalComments());
                 },
                 child: const Icon(MdiIcons.commentTextMultiple),
               ),
@@ -639,8 +631,7 @@ class _MainPage2State extends State<MainPage2>
               child: ElevatedButton(
                 style: buttonStyle,
                 onPressed: () async {
-                  Navigator.of(context)
-                      .push(_buildServicePageRoute(() => LabSearchMessage()));
+                  PlatformNavigator.navigateSlide(context, LabSearchMessage());
                 },
                 child: const Icon(MdiIcons.commentSearch),
               ),
