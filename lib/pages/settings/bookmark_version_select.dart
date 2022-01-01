@@ -17,6 +17,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
@@ -120,35 +121,12 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
                 style: TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
             onTap: () async {
-              if (!Platform.isIOS) {
-                await Navigator.of(context).push(PageRouteBuilder(
-                    opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      var begin = Offset(0.0, 1.0);
-                      var end = Offset.zero;
-                      var curve = Curves.ease;
-
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
-                    pageBuilder: (_, __, ___) => LabBookmarkPage(
-                          userAppId: widget.userAppId,
-                          version: data['vid'] as String,
-                        )));
-              } else {
-                await Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (_) => LabBookmarkPage(
-                          userAppId: widget.userAppId,
-                          version: data['vid'] as String,
-                        )));
-              }
+              await PlatformNavigator.navigateSlide(
+                  context,
+                  LabBookmarkPage(
+                    userAppId: widget.userAppId,
+                    version: data['vid'] as String,
+                  ));
 
               if (await showYesNoDialog(context, '이 북마크 버전을 선택할까요?')) {
                 Navigator.pop(context, data['vid']);

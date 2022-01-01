@@ -13,6 +13,7 @@ import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -137,31 +138,9 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
               var bookmark = await Bookmark.getInstance();
               await bookmark.setHistoryUser(data['user'] as String);
 
-              if (!Platform.isIOS) {
-                await Navigator.of(context).push(PageRouteBuilder(
-                    opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      var begin = Offset(0.0, 1.0);
-                      var end = Offset.zero;
-                      var curve = Curves.ease;
+              await PlatformNavigator.navigateSlide(
+                  context, LabBookmarkPage(userAppId: data['user'] as String));
 
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
-                    pageBuilder: (_, __, ___) =>
-                        LabBookmarkPage(userAppId: data['user'] as String)));
-              } else {
-                await Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (_) =>
-                        LabBookmarkPage(userAppId: data['user'] as String)));
-              }
               setState(() {});
             },
             onLongPress: () async {

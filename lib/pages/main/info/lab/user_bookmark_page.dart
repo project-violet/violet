@@ -9,6 +9,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabUserBookmarkPage extends StatefulWidget {
@@ -78,30 +79,8 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
             subtitle: Text(data.subtitle() ?? ''),
             trailing: Text(data.datetime().split(' ')[0]),
             onTap: () {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                    opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      var begin = Offset(0.0, 1.0);
-                      var end = Offset.zero;
-                      var curve = Curves.ease;
-
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
-                    pageBuilder: (_, __, ___) =>
-                        LabUserRecentRecords(data.user())));
-              } else {
-                Navigator.of(context).push(CupertinoPageRoute(
-                    builder: (_) => LabUserRecentRecords(data.user())));
-              }
+              PlatformNavigator.navigateSlide(
+                  context, LabUserRecentRecords(data.user()));
             },
             onLongPress: () async {
               var rr = await showDialog(

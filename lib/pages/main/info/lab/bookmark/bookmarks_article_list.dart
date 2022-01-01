@@ -22,6 +22,7 @@ import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks_artist_list.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/filter_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
@@ -322,54 +323,22 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
             onLongPress: () {
               isFilterUsed = true;
 
-              if (!Platform.isIOS) {
-                Navigator.of(context)
-                    .push(
-                  PageRouteBuilder(
-                    // opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder: (BuildContext context,
-                        Animation<double> animation,
-                        Animation<double> secondaryAnimation,
-                        Widget wi) {
-                      return FadeTransition(opacity: animation, child: wi);
-                    },
-                    pageBuilder: (_, __, ___) =>
-                        Provider<FilterController>.value(
-                      value: _filterController,
-                      child: FilterPage(
-                        queryResult: queryResult,
-                      ),
-                    ),
+              PlatformNavigator.navigateSlide(
+                context,
+                Provider<FilterController>.value(
+                  value: _filterController,
+                  child: FilterPage(
+                    queryResult: queryResult,
                   ),
-                )
-                    .then((value) async {
-                  _applyFilter();
+                ),
+              ).then((value) async {
+                _applyFilter();
+                _shouldRebuild = true;
+                setState(() {
                   _shouldRebuild = true;
-                  setState(() {
-                    _shouldRebuild = true;
-                    key = ObjectKey(Uuid().v4());
-                  });
+                  key = ObjectKey(Uuid().v4());
                 });
-              } else {
-                Navigator.of(context)
-                    .push(CupertinoPageRoute(
-                  builder: (_) => Provider<FilterController>.value(
-                    value: _filterController,
-                    child: FilterPage(
-                      queryResult: queryResult,
-                    ),
-                  ),
-                ))
-                    .then((value) async {
-                  _applyFilter();
-                  _shouldRebuild = true;
-                  setState(() {
-                    _shouldRebuild = true;
-                    key = ObjectKey(Uuid().v4());
-                  });
-                });
-              }
+              });
             },
           ),
         ),

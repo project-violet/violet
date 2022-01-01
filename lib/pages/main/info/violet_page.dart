@@ -6,10 +6,6 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
 
 class VioletPage extends StatelessWidget {
-  Color getColor(int i) {
-    return Settings.themeWhat ? Colors.grey.shade400 : Colors.grey.shade900;
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

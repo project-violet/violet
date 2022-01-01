@@ -7,8 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PlatformNavigator {
-  static Future<T> navigateFade<T extends Object>(
-      BuildContext context, Widget page) async {
+  static Future<T> navigateFade<T>(BuildContext context, Widget page) async {
     if (!Platform.isIOS) {
       return await Navigator.of(context).push<T>(
         PageRouteBuilder(
@@ -29,8 +28,7 @@ class PlatformNavigator {
     }
   }
 
-  static Future<T> navigateSlide<T extends Object>(
-      BuildContext context, Widget page) async {
+  static Future<T> navigateSlide<T>(BuildContext context, Widget page) async {
     if (!Platform.isIOS) {
       return await Navigator.of(context).push<T>(PageRouteBuilder(
         transitionDuration: Duration(milliseconds: 500),
@@ -55,8 +53,7 @@ class PlatformNavigator {
     }
   }
 
-  static Future<T> navigateOption<T extends Object>(
-      BuildContext context, Widget page) async {
+  static Future<T> navigateOption<T>(BuildContext context, Widget page) async {
     return await Navigator.of(context).push<T>(
       PageRouteBuilder(
         opaque: false,

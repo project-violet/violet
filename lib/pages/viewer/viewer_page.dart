@@ -24,6 +24,7 @@ import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
@@ -682,75 +683,27 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
-        if (!Platform.isIOS) {
-          Navigator.of(context)
-              .push(
-            PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 500),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                var begin = Offset(0.0, 1.0);
-                var end = Offset.zero;
-                var curve = Curves.ease;
-
-                var tween = Tween(begin: begin, end: end)
-                    .chain(CurveTween(curve: curve));
-
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-              pageBuilder: (_, __, ___) => Provider<ViewerPageProvider>.value(
-                value: _pageInfo,
-                child: ViewerGallery(
-                  viewedPage: _prevPage,
-                ),
-              ),
-            ),
-          )
-              .then(
-            (value) {
-              if (value != null) {
-                if (!Settings.isHorizontal) {
-                  itemScrollController.jumpTo(index: value, alignment: 0.12);
-                } else {
-                  _pageController.jumpToPage(value - 1);
-                }
-                currentPage = value;
-                setState(() {
-                  _prevPage = value;
-                });
+        PlatformNavigator.navigateSlide(
+          context,
+          Provider<ViewerPageProvider>.value(
+            value: _pageInfo,
+            child: ViewerGallery(),
+          ),
+        ).then(
+          (value) {
+            if (value != null) {
+              if (!Settings.isHorizontal) {
+                itemScrollController.jumpTo(index: value, alignment: 0.12);
+              } else {
+                _pageController.jumpToPage(value - 1);
               }
-            },
-          );
-        } else {
-          Navigator.of(context)
-              .push(
-            CupertinoPageRoute(
-              builder: (_) => Provider<ViewerPageProvider>.value(
-                value: _pageInfo,
-                child: ViewerGallery(),
-              ),
-            ),
-          )
-              .then(
-            (value) {
-              if (value != null) {
-                if (!Settings.isHorizontal) {
-                  itemScrollController.jumpTo(
-                      index: _prevPage - 1, alignment: 0.12);
-                } else {
-                  _pageController.jumpToPage(value - 1);
-                }
-                currentPage = value;
-                setState(() {
-                  _prevPage = value;
-                });
-              }
-            },
-          );
-        }
+              currentPage = value;
+              setState(() {
+                _prevPage = value;
+              });
+            }
+          },
+        );
         startTimer();
         _isStaring = true;
       },
