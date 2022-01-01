@@ -11,7 +11,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {
   static const String _scriptUrl =
-      'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v2.js';
+      'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js';
   static String _scriptCache;
   static JavascriptRuntime _runtime;
 
@@ -45,10 +45,8 @@ class ScriptManager {
       var downloadUrl =
           _runtime.evaluate("create_download_url('$id')").stringResult;
       var galleryInfo = await http.get(downloadUrl);
-      final jResult = _runtime
-          .evaluate(
-              "hitomi_get_image_list('$id', \"${galleryInfo.body.replaceAll('"', '\\"')}\")")
-          .stringResult;
+      _runtime.evaluate(galleryInfo.body);
+      final jResult = _runtime.evaluate("hitomi_get_image_list()").stringResult;
       final jResultObject = jsonDecode(jResult);
 
       if (jResultObject is Map<dynamic, dynamic>) {
