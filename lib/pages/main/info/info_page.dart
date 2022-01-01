@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
 
@@ -166,7 +166,7 @@ class _InfoPageState extends State<InfoPage> {
               ),
             ),
             Text(
-              'Copyright (C) 2020-2021 by project-violet',
+              'Copyright (C) 2020-2022 by project-violet',
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,

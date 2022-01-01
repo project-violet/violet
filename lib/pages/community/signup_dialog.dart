@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:violet/other/dialogs.dart';
@@ -46,8 +46,8 @@ class _SignUpDialogState extends State<SignUpDialog> {
           return;
         }
 
-        Navigator.pop(
-            context, [_idController.text, _pwController.text, _nnController.text]);
+        Navigator.pop(context,
+            [_idController.text, _pwController.text, _nnController.text]);
       },
     );
     Widget noButton = TextButton(

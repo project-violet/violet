@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:ui';
 
@@ -25,8 +25,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: Container(
-          decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.6)),
+          decoration: BoxDecoration(color: Colors.black.withOpacity(0.6)),
           padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
           child: FutureBuilder(
             future: User.getInstance().then((value) => value.getUserLog().then(
