@@ -42,6 +42,7 @@ import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/main/views/views_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/server/wsalt.dart';
 import 'package:violet/settings/settings.dart';
@@ -374,29 +375,7 @@ class _MainPage2State extends State<MainPage2>
                 primary: Settings.majorColor.withAlpha(220),
               ),
               onPressed: () {
-                if (!Platform.isIOS) {
-                  Navigator.of(context).push(PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      var begin = Offset(0.0, 1.0);
-                      var end = Offset.zero;
-                      var curve = Curves.ease;
-
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
-                    pageBuilder: (_, __, ___) => PatchNotePage(),
-                  ));
-                } else {
-                  Navigator.of(context).push(
-                      CupertinoPageRoute(builder: (_) => PatchNotePage()));
-                }
+                PlatformNavigator.navigateSlide(context, PatchNotePage());
               },
               child: Text(Translations.of(context).trans('patchnote')),
             ),

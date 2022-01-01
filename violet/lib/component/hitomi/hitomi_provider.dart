@@ -62,6 +62,11 @@ class HitomiImageProvider extends VioletImageProvider {
         thumbSize.height * baseWidth / thumbSize.width;
   }
 
+  /*
+    https://ltn.hitomi.la/common.js의 get_gg함수는 30분에 한 번씩 호출된다.
+    이에 따라 get_gg에 의해 로드되는 gg.js는 적어도 30분에 한 번씩 재구성됨을 
+    추론할 수 있다.
+   */
   @override
   bool isRefreshable() {
     return true;

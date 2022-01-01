@@ -10,6 +10,7 @@ import 'package:violet/component/hitomi/artists.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/main/artist_collection/artist_list_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class ArtistCollectionPage extends StatefulWidget {
@@ -87,53 +88,19 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                   ),
                 ),
                 onTap: () {
-                  if (!Platform.isIOS) {
-                    Navigator.of(context).push(PageRouteBuilder(
-                      opaque: false,
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        var begin = Offset(0.0, 1.0);
-                        var end = Offset.zero;
-                        var curve = Curves.ease;
-
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
-
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (_, __, ___) => ArtistListPage(
-                        artists: (item.value as List<String>)
-                            .map((e) => e.trim())
-                            .toList(),
-                        isLast: index ==
-                            Artists.collection.entries
-                                    .where(
-                                        (element) => element.value.length > 0)
-                                    .length -
-                                1,
-                      ),
-                    ));
-                  } else {
-                    Navigator.of(context).push(
-                      CupertinoPageRoute(
-                        builder: (_) => ArtistListPage(
-                          artists: (item.value as List<String>)
-                              .map((e) => e.trim())
-                              .toList(),
-                          isLast: index ==
-                              Artists.collection.entries
-                                      .where(
-                                          (element) => element.value.length > 0)
-                                      .length -
-                                  1,
-                        ),
-                      ),
-                    );
-                  }
+                  PlatformNavigator.navigateSlide(
+                    context,
+                    ArtistListPage(
+                      artists: (item.value as List<String>)
+                          .map((e) => e.trim())
+                          .toList(),
+                      isLast: index ==
+                          Artists.collection.entries
+                                  .where((element) => element.value.length > 0)
+                                  .length -
+                              1,
+                    ),
+                  );
                 },
               ),
             );

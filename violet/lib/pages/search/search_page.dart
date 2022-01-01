@@ -32,6 +32,7 @@ import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/pages/segment/filter_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/device_type.dart';
 import 'package:violet/settings/settings.dart';
@@ -241,7 +242,6 @@ class _SearchPageState extends State<SearchPage>
         bottom: false,
         child: CustomScrollView(
           controller: _scroll,
-          // cacheExtent: height * 2.0,
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPersistentHeader(
@@ -497,87 +497,56 @@ class _SearchPageState extends State<SearchPage>
                   ],
                 ),
               ),
-              onTap: () async {
-                Navigator.of(context)
-                    .push(PageRouteBuilder(
-                  opaque: false,
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder: (BuildContext context,
-                      Animation<double> animation,
-                      Animation<double> secondaryAnimation,
-                      Widget wi) {
-                    return FadeTransition(opacity: animation, child: wi);
-                  },
-                  pageBuilder: (_, __, ___) => SearchType(),
-                  barrierColor: Colors.black12,
-                  barrierDismissible: true,
-                ))
-                    .then((value) async {
-                  await Future.delayed(Duration(milliseconds: 50), () {
-                    _shouldReload = true;
-                    itemHeight = 0.0;
-                    setState(() {});
-                  });
-                });
-              },
-              onLongPress: () async {
-                if (!Platform.isIOS) {
-                  Navigator.of(context)
-                      .push(
-                    PageRouteBuilder(
-                      // opaque: false,
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder: (BuildContext context,
-                          Animation<double> animation,
-                          Animation<double> secondaryAnimation,
-                          Widget wi) {
-                        return FadeTransition(opacity: animation, child: wi);
-                      },
-                      pageBuilder: (_, __, ___) =>
-                          Provider<FilterController>.value(
-                        value: _filterController,
-                        child: FilterPage(
-                          queryResult: queryResult,
-                        ),
-                      ),
-                    ),
-                  )
-                      .then((value) async {
-                    _applyFilter();
-                    _shouldReload = true;
-                    searchPageNum.value = 0;
-                    setState(() {
-                      _cachedPannel = null;
-                      _shouldReload = true;
-                      key = ObjectKey(Uuid().v4());
-                    });
-                  });
-                } else {
-                  Navigator.of(context)
-                      .push(CupertinoPageRoute(
-                    builder: (_) => Provider<FilterController>.value(
-                      value: _filterController,
-                      child: FilterPage(
-                        queryResult: queryResult,
-                      ),
-                    ),
-                  ))
-                      .then((value) async {
-                    _applyFilter();
-                    _shouldReload = true;
-                    setState(() {
-                      _cachedPannel = null;
-                      _shouldReload = true;
-                      key = ObjectKey(Uuid().v4());
-                    });
-                  });
-                }
-              },
+              onTap: _alignOnTap,
+              onLongPress: _alignLongPress,
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _alignOnTap() async {
+    Navigator.of(context)
+        .push(PageRouteBuilder(
+      opaque: false,
+      transitionDuration: Duration(milliseconds: 500),
+      transitionsBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation, Widget wi) {
+        return FadeTransition(opacity: animation, child: wi);
+      },
+      pageBuilder: (_, __, ___) => SearchType(),
+      barrierColor: Colors.black12,
+      barrierDismissible: true,
+    ))
+        .then((value) async {
+      await Future.delayed(Duration(milliseconds: 50), () {
+        _shouldReload = true;
+        itemHeight = 0.0;
+        setState(() {});
+      });
+    });
+  }
+
+  Future<void> _alignLongPress() async {
+    PlatformNavigator.navigateFade(
+      context,
+      Provider<FilterController>.value(
+        value: _filterController,
+        child: FilterPage(
+          queryResult: queryResult,
+        ),
+      ),
+    ).then((value) {
+      _applyFilter();
+      _shouldReload = true;
+      searchPageNum.value = 0;
+      setState(() {
+        _cachedPannel = null;
+        _shouldReload = true;
+        key = ObjectKey(Uuid().v4());
+      });
+    });
   }
 
   void _applyFilter() {
@@ -813,61 +782,6 @@ class ResultPanelWidget extends StatelessWidget {
                 },
                 childCount: resultList.length,
               ),
-              // delegate: SliverChildBuilderDelegate(
-              //   (BuildContext context, int index) {
-              //     if (articleListItems[index].key == null) {
-              //       articleListItems[index] =
-              //           ArticleListItem.fromArticleListItem(
-              //         key: 'search-item-${resultList[index].id()}',
-              //         queryResult: resultList[index],
-              //         showDetail: false,
-              //         addBottomPadding: false,
-              //         width: (windowWidth - 4.0) / mm,
-              //         thumbnailTag: 'thumbnail' +
-              //             resultList[index].id().toString() +
-              //             dateTime.toString(),
-              //         usableTabList: resultList,
-              //       );
-              //     }
-
-              //     return Padding(
-              //       padding: EdgeInsets.zero,
-              //       child: Align(
-              //         alignment: Alignment.bottomCenter,
-              //         child: SizedBox(
-              //           child: ArticleListItemVerySimpleWidget(
-              //               articleListItem: articleListItems[index]),
-              //         ),
-              //       ),
-              //     );
-              //   },
-              // delegate: SliverChildBuilderDelegate(
-              //   (BuildContext context, int index) {
-              //     return Padding(
-              //       padding: EdgeInsets.zero,
-              //       child: Align(
-              //         alignment: Alignment.bottomCenter,
-              //         child: SizedBox(
-              //           child: Provider<ArticleListItem>.value(
-              //             value: ArticleListItem.fromArticleListItem(
-              //               queryResult: resultList[index],
-              //               showDetail: false,
-              //               addBottomPadding: false,
-              //               width: (windowWidth - 4.0) / mm,
-              //               thumbnailTag: 'thumbnail' +
-              //                   resultList[index].id().toString() +
-              //                   dateTime.toString(),
-              //               usableTabList: resultList,
-              //             ),
-              //             child: ArticleListItemVerySimpleWidget(),
-              //           ),
-              //         ),
-              //       ),
-              //     );
-              //   },
-              //delegate: SliverChildListDelegate(childs),
-              // childCount: childs.length,
-              // ),
             ));
 
       case 2:

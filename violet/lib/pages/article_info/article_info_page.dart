@@ -33,6 +33,7 @@ import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
@@ -649,7 +650,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             );
           },
           onLongPress: () async {
-            _navigate(LabSearchCommentsAuthor(e.item2));
+            PlatformNavigator.navigateSlide(
+                context, LabSearchCommentsAuthor(e.item2));
           },
           splashColor: Colors.white,
           child: ListTile(
@@ -757,30 +759,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         ),
       ),
     );
-  }
-
-  _navigate(Widget page) {
-    if (!Platform.isIOS) {
-      Navigator.of(context).push(PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 500),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var begin = Offset(0.0, 1.0);
-          var end = Offset.zero;
-          var curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-        pageBuilder: (_, __, ___) => page,
-      ));
-    } else {
-      Navigator.of(context).push(CupertinoPageRoute(builder: (_) => page));
-    }
   }
 
   TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
@@ -1019,50 +997,16 @@ class _Chip extends StatelessWidget {
                   group == 'series' ||
                   group == 'character') &&
               name.toLowerCase() != 'n/a') {
-            if (!Platform.isIOS) {
-              Navigator.of(context).push(PageRouteBuilder(
-                // opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                // transitionsBuilder: (BuildContext context,
-                //     Animation<double> animation,
-                //     Animation<double> secondaryAnimation,
-                //     Widget wi) {
-                //   // return wi;
-                //   return FadeTransition(opacity: animation, child: wi);
-                // },
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  var begin = Offset(0.0, 1.0);
-                  var end = Offset.zero;
-                  var curve = Curves.ease;
-
-                  var tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: curve));
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-                pageBuilder: (_, __, ___) => ArtistInfoPage(
-                  isGroup: group == 'groups',
-                  isUploader: group == 'uploader',
-                  isCharacter: group == 'character',
-                  isSeries: group == 'series',
-                  artist: name,
-                ),
-              ));
-            } else {
-              Navigator.of(context).push(CupertinoPageRoute(
-                builder: (_) => ArtistInfoPage(
-                  isGroup: group == 'groups',
-                  isUploader: group == 'uploader',
-                  isCharacter: group == 'character',
-                  isSeries: group == 'series',
-                  artist: name,
-                ),
-              ));
-            }
+            PlatformNavigator.navigateSlide(
+              context,
+              ArtistInfoPage(
+                isGroup: group == 'groups',
+                isUploader: group == 'uploader',
+                isCharacter: group == 'character',
+                isSeries: group == 'series',
+                artist: name,
+              ),
+            );
           }
         },
       ),

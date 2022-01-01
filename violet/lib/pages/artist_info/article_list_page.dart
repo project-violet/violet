@@ -14,6 +14,7 @@ import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/segment/filter_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
@@ -127,21 +128,12 @@ class _ArticleListPageState extends State<ArticleListPage> {
               ),
             ),
             onTap: () async {
-              Navigator.of(context)
-                  .push(PageRouteBuilder(
-                opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder: (BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                    Widget wi) {
-                  return FadeTransition(opacity: animation, child: wi);
-                },
-                pageBuilder: (_, __, ___) => SearchType2(
+              PlatformNavigator.navigateOption(
+                context,
+                SearchType2(
                   nowType: nowType,
                 ),
-              ))
-                  .then((value) async {
+              ).then((value) async {
                 if (value == null) return;
                 nowType = value;
                 await Future.delayed(Duration(milliseconds: 50), () {
@@ -154,54 +146,22 @@ class _ArticleListPageState extends State<ArticleListPage> {
             },
             onLongPress: () {
               isFilterUsed = true;
-              if (!Platform.isIOS) {
-                Navigator.of(context)
-                    .push(
-                  PageRouteBuilder(
-                    // opaque: false,
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder: (BuildContext context,
-                        Animation<double> animation,
-                        Animation<double> secondaryAnimation,
-                        Widget wi) {
-                      return FadeTransition(opacity: animation, child: wi);
-                    },
-                    pageBuilder: (_, __, ___) =>
-                        Provider<FilterController>.value(
-                      value: _filterController,
-                      child: FilterPage(
-                        queryResult: widget.cc,
-                      ),
-                    ),
+              PlatformNavigator.navigateFade(
+                context,
+                Provider<FilterController>.value(
+                  value: _filterController,
+                  child: FilterPage(
+                    queryResult: widget.cc,
                   ),
-                )
-                    .then((value) async {
-                  _applyFilter();
+                ),
+              ).then((value) async {
+                _applyFilter();
+                _shouldReload = true;
+                setState(() {
                   _shouldReload = true;
-                  setState(() {
-                    _shouldReload = true;
-                    key = ObjectKey(Uuid().v4());
-                  });
+                  key = ObjectKey(Uuid().v4());
                 });
-              } else {
-                Navigator.of(context)
-                    .push(CupertinoPageRoute(
-                  builder: (_) => Provider<FilterController>.value(
-                    value: _filterController,
-                    child: FilterPage(
-                      queryResult: widget.cc,
-                    ),
-                  ),
-                ))
-                    .then((value) async {
-                  _applyFilter();
-                  _shouldReload = true;
-                  setState(() {
-                    _shouldReload = true;
-                    key = ObjectKey(Uuid().v4());
-                  });
-                });
-              }
+              });
             },
           ),
         ),

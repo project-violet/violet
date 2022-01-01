@@ -73,14 +73,6 @@ void main() async {
   await Firebase.initializeApp(); // @dependent: android
   FlutterError.onError = recordFlutterError; // @dependent: android
 
-  // await SeriesFinder.doFind2();
-
-  // FlutterError.onError = (FlutterErrorDetails details) async {
-  //   await Logger.init();
-  //   await Logger.error(details.exceptionAsString());
-  //   await Logger.exportLog();
-  // };
-
   var analytics = FirebaseAnalytics(); // @dependent: android
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
   if (id == null) {
@@ -93,15 +85,11 @@ void main() async {
   await Settings.initFirst();
   await warmupFlare();
 
-  // await _sqlIntegrityTest();
-
   runApp(
     DynamicTheme(
       defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
         accentColor: Settings.majorColor,
-        // primaryColor: Settings.majorColor,
-        // primarySwatch: Settings.majorColor,
         brightness: brightness,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),

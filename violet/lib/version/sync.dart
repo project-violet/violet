@@ -36,7 +36,8 @@ class SyncInfoRecord {
 }
 
 class SyncManager {
-  static const String syncInfoURL = "https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt";
+  static const String syncInfoURL =
+      "https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt";
 
   static bool firstSync = false;
   static bool syncRequire = false; // database sync require
@@ -66,6 +67,20 @@ class SyncManager {
       // _rows: [latest ... old]
       _rows = [];
 
+      /*
+        syncversion은 
+
+        ...
+        chunk 1640992742 https://github.com/violet-dev/chunk/releases/download/1640992742/data-637765895426855402.json 31519
+        db 1640997991 https://github.com/violet-dev/db/releases/download/2022.01.01/rawdata
+        chunk 1640998430 https://github.com/violet-dev/chunk/releases/download/1640998430/data-637765952304854006.json 47546
+        chunk 1640998430 https://github.com/violet-dev/chunk/releases/download/1640998430/data-637765952304854006.db 45056
+        chunk 1641003001 https://github.com/violet-dev/chunk/releases/download/1641003001/data-637765998015030026.json 30911
+        chunk 1641003001 https://github.com/violet-dev/chunk/releases/download/1641003001/data-637765998015030026.db 32768
+        ...
+
+        와 같은 형식으로 아래쪽이 항상 최신 청크다. 따라서 reversed 탐색을 시도한다.
+       */
       lines.reversed.forEach((element) {
         if (element.startsWith('#')) return;
 
@@ -78,6 +93,10 @@ class SyncManager {
 
         // We require only json files when synchronize with chunk.
         if (type == 'chunk' && !url.endsWith('.json')) return;
+
+        //
+        // 마지막으로 동기화한 시간보다 작은 경우 해당 청크는 무시한다.
+        //
         if (type == 'chunk' && timestamp <= latest) return;
 
         requestSize += size;
@@ -89,6 +108,11 @@ class SyncManager {
         ));
       });
 
+      /*
+         너무 많은 청크를 다운로드해야하는 경우 동기화를 추천한다.
+         그 이유는 다운로드해야하는 파일이 너무 많아지기 때문이며, 
+         또한 데이터베이스의 무결성이 훼손될 가능성이 있기 때문이다.
+      */
       if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
       if (_rows.any((element) => element.type == 'chunk')) chunkRequire = true;
     } catch (e, st) {
@@ -102,6 +126,10 @@ class SyncManager {
         if (_rows[i].type == 'db') return _rows[i];
     }
 
+    //
+    //  syncversion.txt에 데이터베이스 정보가 없는 경우라면 동기화 방지를 위해
+    //  1970년 01월 01일 00:00:00를 리턴한다.
+    //
     return SyncInfoRecord(
       type: 'db',
       timestamp:
@@ -123,6 +151,10 @@ class SyncManager {
     // Download Jsons
     var res = <Response>[];
 
+    //
+    //  너무 많은 동시 다운로드 작업으로 인해 connection fail이 발생할 수 있다.
+    //  따라서 16개씩 나누어서 동시 다운로드한다.
+    //
     for (var i = 0; i < filteredIter.length / 16; i++) {
       var starts = i * 16;
       var ends = min((i + 1) * 16, filteredIter.length);
