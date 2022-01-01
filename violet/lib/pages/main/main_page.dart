@@ -528,31 +528,7 @@ class _MainPage2State extends State<MainPage2>
   }
 
   _buildServicePageRoute(Widget Function() builder) {
-    if (Platform.isIOS) {
-      return CupertinoPageRoute(builder: (context) => builder());
-    }
-
-    return PageRouteBuilder(
-      transitionDuration: const Duration(milliseconds: 500),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final begin = const Offset(0.0, 1.0);
-        final end = Offset.zero;
-        final curve = Curves.ease;
-
-        final tween = Tween(
-          begin: begin,
-          end: end,
-        ).chain(CurveTween(
-          curve: curve,
-        ));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-      pageBuilder: (context, animation, secondaryAnimation) => builder(),
-    );
+    PlatformNavigator.navigateSlide(context, builder());
   }
 
   _serviceArea() {

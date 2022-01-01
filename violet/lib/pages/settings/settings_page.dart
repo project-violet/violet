@@ -34,6 +34,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/bookmark_version_select.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
@@ -559,29 +560,7 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    var begin = Offset(0.0, 1.0);
-                    var end = Offset.zero;
-                    var curve = Curves.ease;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (_, __, ___) => LogPage(),
-                ));
-              } else {
-                Navigator.of(context)
-                    .push(CupertinoPageRoute(builder: (_) => LogPage()));
-              }
+              PlatformNavigator.navigateSlide(context, LogPage());
             },
           ),
           _buildDivider(),
@@ -688,31 +667,13 @@ class _SettingsPageState extends State<SettingsPage>
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
             trailing: Icon(Icons.keyboard_arrow_right),
-            onTap: () {
-              if (!Platform.isIOS) {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    opaque: false,
-                    pageBuilder: (_, __, ___) {
-                      return VersionViewPage();
-                    },
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      var begin = Offset(0.0, 1.0);
-                      var end = Offset.zero;
-                      var curve = Curves.ease;
-
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-
-                      return SlideTransition(
-                        position: animation.drive(tween),
-                        child: child,
-                      );
-                    },
-                  ),
-                );
-              }
+            onTap: () async {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return VersionViewPage();
+                },
+              );
             },
           ),
           _buildDivider(),

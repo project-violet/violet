@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
@@ -66,29 +67,7 @@ class ThreeArticlePanel extends StatelessWidget {
   }
 
   _onTap(context) {
-    if (!Platform.isIOS) {
-      Navigator.of(context).push(PageRouteBuilder(
-        // opaque: false,
-        transitionDuration: Duration(milliseconds: 500),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var begin = Offset(0.0, 1.0);
-          var end = Offset.zero;
-          var curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-        pageBuilder: (_, __, ___) => tappedRoute(),
-      ));
-    } else {
-      Navigator.of(context)
-          .push(CupertinoPageRoute(builder: (_) => tappedRoute()));
-    }
+    PlatformNavigator.navigateSlide(context, tappedRoute());
   }
 }
 

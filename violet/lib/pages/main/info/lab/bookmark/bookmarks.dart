@@ -14,6 +14,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks_article_list.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -147,43 +148,16 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
             color: Settings.themeWhat ? Colors.black38 : Colors.white,
             child: ListTile(
               onTap: () {
-                if (!Platform.isIOS) {
-                  Navigator.of(context).push(PageRouteBuilder(
-                      opaque: false,
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        var begin = Offset(0.0, 1.0);
-                        var end = Offset.zero;
-                        var curve = Curves.ease;
-
-                        var tween = Tween(begin: begin, end: end)
-                            .chain(CurveTween(curve: curve));
-
-                        return SlideTransition(
-                          position: animation.drive(tween),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (_, __, ___) => id == -1
-                          ? LabRecordViewPage(records: records)
-                          : LabGroupArticleListPage(
-                              articles: articles,
-                              artists: artists,
-                              groupId: id,
-                              name: name,
-                            )));
-                } else {
-                  Navigator.of(context).push(CupertinoPageRoute(
-                      builder: (_) => id == -1
-                          ? LabRecordViewPage(records: records)
-                          : LabGroupArticleListPage(
-                              articles: articles,
-                              artists: artists,
-                              groupId: id,
-                              name: name,
-                            )));
-                }
+                PlatformNavigator.navigateSlide(
+                    context,
+                    id == -1
+                        ? LabRecordViewPage(records: records)
+                        : LabGroupArticleListPage(
+                            articles: articles,
+                            artists: artists,
+                            groupId: id,
+                            name: name,
+                          ));
               },
               onLongPress: () async {
                 if (index == -1) return;

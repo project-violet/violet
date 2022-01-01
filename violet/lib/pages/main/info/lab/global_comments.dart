@@ -13,6 +13,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -294,7 +295,8 @@ class CommentUnit extends StatelessWidget {
               ),
               onDoubleTap: () {
                 if (!author.startsWith(dev))
-                  _navigate(context, LabUserRecentRecords(author));
+                  PlatformNavigator.navigateSlide(
+                      context, LabUserRecentRecords(author));
               },
               onLongPress: !isReply
                   ? () {
@@ -316,29 +318,5 @@ class CommentUnit extends StatelessWidget {
               )
               .toList(),
     );
-  }
-
-  _navigate(context, Widget page) {
-    if (!Platform.isIOS) {
-      Navigator.of(context).push(PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 500),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var begin = Offset(0.0, 1.0);
-          var end = Offset.zero;
-          var curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-        pageBuilder: (_, __, ___) => page,
-      ));
-    } else {
-      Navigator.of(context).push(CupertinoPageRoute(builder: (_) => page));
-    }
   }
 }

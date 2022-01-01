@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/community/anon.dart';
 
 class LabRecentComments extends StatefulWidget {
@@ -87,26 +88,6 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
   }
 
   _navigate(Widget page) {
-    if (!Platform.isIOS) {
-      Navigator.of(context).push(PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 500),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          var begin = Offset(0.0, 1.0);
-          var end = Offset.zero;
-          var curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-        pageBuilder: (_, __, ___) => page,
-      ));
-    } else {
-      Navigator.of(context).push(CupertinoPageRoute(builder: (_) => page));
-    }
+    PlatformNavigator.navigateSlide(context, page);
   }
 }
