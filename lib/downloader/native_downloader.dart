@@ -12,9 +12,12 @@ import 'package:device_info/device_info.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synchronized/synchronized.dart' as sync;
 import 'package:violet/component/downloadable.dart';
+import 'package:violet/log/log.dart';
 
 typedef CDownloaderInit = Void Function(Int64);
 typedef DownloaderInit = void Function(int queueSize);
@@ -24,6 +27,8 @@ typedef CDownloaderStatus = Pointer<Utf8> Function();
 typedef DownloaderStatus = Pointer<Utf8> Function();
 typedef CDownloaderAppend = Pointer<Utf8> Function(Pointer<Utf8>);
 typedef DownloaderAppend = Pointer<Utf8> Function(Pointer<Utf8> downloadInfo);
+typedef CDownloaderChangeThreadCount = Int64 Function(Int64);
+typedef DownloaderChangeThreadCount = int Function(int threadCount);
 
 class NativeDownloadTask {
   final int id;
@@ -67,16 +72,26 @@ class NativeDownloader {
   DownloaderDispose downloaderDispose;
   DownloaderStatus downloaderStatus;
   DownloaderAppend downloaderAppend;
+  DownloaderChangeThreadCount downloaderChangeThreadCount;
   List<DownloadTask> downloadTasks = [];
 
   sync.Lock lock = sync.Lock();
 
+  static const platform =
+      const MethodChannel('xyz.project.violet/nativelibdir');
+  static Directory nativeDir;
+
+  static Future<Directory> getLibraryDirectory() async {
+    if (nativeDir != null) return nativeDir;
+    final String result = await platform.invokeMethod('getNativeDir');
+    print(await getApplicationSupportDirectory());
+    nativeDir = Directory(result);
+    return nativeDir;
+  }
+
   Future<void> init() async {
-    final soPath = await _checkSharedLibrary();
-    if (soPath == null) {
-      return null;
-    }
-    libviolet = DynamicLibrary.open(soPath);
+    var libdir = await getLibraryDirectory();
+    libviolet = DynamicLibrary.open(join(libdir.path, 'libviolet.so'));
 
     downloaderInit = libviolet
         .lookup<NativeFunction<CDownloaderInit>>("downloader_init")
@@ -90,8 +105,23 @@ class NativeDownloader {
     downloaderAppend = libviolet
         .lookup<NativeFunction<CDownloaderAppend>>("downloader_append")
         .asFunction();
+    downloaderChangeThreadCount = libviolet
+        .lookup<NativeFunction<CDownloaderChangeThreadCount>>(
+            "downloader_change_thread_count")
+        .asFunction();
 
-    downloaderInit(32);
+    var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
+    if (tc == null) {
+      tc = 16;
+      await (await SharedPreferences.getInstance()).setInt('thread_count', 16);
+    }
+    if (tc > 128) {
+      tc = 128;
+      await (await SharedPreferences.getInstance()).setInt('thread_count', 128);
+    }
+
+    downloaderInit(tc);
+    Logger.info('[ND] Initialized: ' + tc.toString());
   }
 
   static NativeDownloader _instance;
@@ -125,6 +155,10 @@ class NativeDownloader {
         await Future.delayed(Duration(milliseconds: 100));
       }
     });
+  }
+
+  Future<bool> tryChangeThreadCount(int cc) async {
+    return downloaderChangeThreadCount(cc) != -1;
   }
 
   Future<void> addTask(DownloadTask task) async {
