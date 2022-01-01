@@ -17,59 +17,10 @@ class HitomiManager {
   // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
   static Future<Tuple3<List<String>, List<String>, List<String>>> getImageList(
       String id) async {
-    var val = await ScriptManager.runHitomiGetImageList(int.parse(id));
-    if (val != null) return val;
-
-    var gg = await http.get('https://ltn.hitomi.la/galleries/$id.js');
-    var urls = gg.body;
-    if (urls.trim().startsWith('<html>')) return null;
-    var files = jsonDecode(urls.substring(urls.indexOf('=') + 1))
-        .cast<String, dynamic>()['files'];
-    const number_of_frontends = 3;
-    final subdomain = String.fromCharCode(
-        97 + (id[id.length - 1].codeUnitAt(0) % number_of_frontends));
-
-    var btresult = <String>[];
-    var stresult = <String>[];
-    var result = <String>[];
-    for (var row in files) {
-      var rr = row.cast<String, dynamic>();
-      var hash = rr['hash'] as String;
-      var postfix = hash.substring(hash.length - 3);
-
-      var subdomainx = subdomain;
-
-      if (rr['haswebp'] == 0 || rr['haswebp'] == null) {
-        subdomainx = 'b';
-      }
-
-      var x = int.tryParse('${postfix[0]}${postfix[1]}', radix: 16);
-
-      if (x != null && !x.isNaN) {
-        var o = 0;
-        if (x < 0x7c) o = 1;
-        subdomainx = String.fromCharCode(97 + o);
-      }
-
-      if (rr['haswebp'] == 0 || rr['haswebp'] == null) {
-        result.add(
-            'https://${subdomainx}b.hitomi.la/images/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.${(rr['name'] as String).split('.').last}');
-      } else if (hash == "")
-        result.add(
-            'https://${subdomainx}a.hitomi.la/webp/${rr['name'] as String}.webp');
-      else if (hash.length < 3)
-        result.add('https://${subdomainx}a.hitomi.la/webp/$hash.webp');
-      else {
-        result.add(
-            'https://${subdomainx}a.hitomi.la/webp/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.webp');
-      }
-      btresult.add(
-          'https://tn.hitomi.la/bigtn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
-      stresult.add(
-          'https://${subdomainx}tn.hitomi.la/smalltn/${postfix[2]}/${postfix[0]}${postfix[1]}/$hash.jpg');
-    }
+    var result = await ScriptManager.runHitomiGetImageList(int.parse(id));
+    if (result != null) return result;
     return Tuple3<List<String>, List<String>, List<String>>(
-        result, btresult, stresult);
+        <String>[], <String>[], <String>[]);
   }
 
   static int getArticleCount(String classification, String name) {
@@ -166,9 +117,6 @@ class HitomiManager {
         var po = prefix.split(':').last;
         var results = TagTranslate.containsTotal(po)
             .where((e) =>
-                // e.item1.contains(opp != 'female' && opp != 'male'
-                //     ? opp + ':'
-                //     : 'tag:' + opp + ':') &&
                 (opp != 'female' && opp != 'male'
                     ? e.group == opp
                     : e.group == 'tag' && e.name.startsWith(opp)) &&
@@ -269,10 +217,7 @@ class HitomiManager {
       if (!useTranslated) {
         if (opp == 'female' || opp == 'male') {
           ch.forEach((key, value) {
-            if (key.toLowerCase().startsWith(opp + ':')
-                // &&
-                // key.toLowerCase().contains(prefix)
-                )
+            if (key.toLowerCase().startsWith(opp + ':'))
               results.add(Tuple3<DisplayedTag, int, int>(
                   DisplayedTag(group: opp, name: key),
                   Distance.levenshteinDistance(
@@ -283,10 +228,7 @@ class HitomiManager {
           var po = prefix.split(':')[1];
           ch.forEach((key, value) {
             if (!key.toLowerCase().startsWith('female:') &&
-                    !key.toLowerCase().startsWith('male:')
-                // &&
-                // key.toLowerCase().contains(po)
-                )
+                !key.toLowerCase().startsWith('male:'))
               results.add(Tuple3<DisplayedTag, int, int>(
                   DisplayedTag(group: opp, name: key),
                   Distance.levenshteinDistance(
@@ -297,7 +239,6 @@ class HitomiManager {
           var po = prefix.split(':')[1];
 
           ch.forEach((key, value) {
-            // if (key.toLowerCase().contains(po))
             results.add(Tuple3<DisplayedTag, int, int>(
                 DisplayedTag(group: pp, name: key),
                 Distance.levenshteinDistance(
