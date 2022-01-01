@@ -10,7 +10,6 @@ import 'package:violet/cert/cert_util.dart';
 import 'package:violet/cert/root.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/script/script_runner.dart';
 
 void main() {
   setUp(() async {

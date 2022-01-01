@@ -81,34 +81,5 @@ class ScriptManager {
           st.toString());
       return null;
     }
-
-    //jResult.
-
-    /*var isolate = ScriptIsolate(_caches['hitomi_get_image_list']);
-    var isRelease = false;
-
-    try {
-      await isolate.runScript({
-        '\$id': RunVariable.fromInt(id),
-        '\$result': RunVariable(isReady: false),
-      });
-      isRelease = true;
-      if (isolate.getValue('\$result').isReady) {
-        var map = isolate.getValue('\$result').toMap();
-
-        return Tuple3<List<String>, List<String>, List<String>>(
-            (map['result'] as List<dynamic>).map((e) => e as String).toList(),
-            (map['btresult'] as List<dynamic>).map((e) => e as String).toList(),
-            (map['stresult'] as List<dynamic>)
-                .map((e) => e as String)
-                .toList());
-      }
-    } catch (e, st) {
-      Logger.error('[script-HitomiGetImageList] E: ' +
-          e.toString() +
-          '\n' +
-          st.toString());
-    }
-    return null;*/
   }
 }

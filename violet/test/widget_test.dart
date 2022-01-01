@@ -7,6 +7,7 @@
 
 // import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -34,17 +35,10 @@ import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/database.dart';
-import 'package:violet/script/parse_tree.dart';
-import 'package:violet/script/script_lexer.dart';
 import 'package:violet/script/script_manager.dart';
-import 'package:violet/script/script_parser.dart';
-import 'package:violet/script/script_runner.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
-
-import 'json/json_lexer.dart';
-import 'json/json_parser.dart';
 
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -137,6 +131,34 @@ void main() {
   });*/
 
   test('test search', () async {
+    final db =
+        await databaseFactoryFfi.openDatabase('/home/ubuntu/rawdata-korean.db');
+
+    final queryString =
+        HitomiManager.translate2query('artist:michiking (lang:korean )');
+    var count = (await db.rawQuery(
+        queryString.replaceAll('SELECT * FROM', 'SELECT COUNT(*) FROM')));
+
+    print(count);
+
+    // const url =
+    //     "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
+    // // autocompleteTarget =
+    // //     (jsonDecode((await http.get(Uri.parse(url))).body) as List<dynamic>)
+    // //         .map((e) => e as String)
+    // //         .toList();
+    // var m = jsonDecode(File('SORT-COMBINE.json').readAsStringSync())
+    //     as Map<String, dynamic>;
+
+    // var autocompleteTarget = m.entries
+    //     .map((e) => Tuple3<String, String, int>(
+    //         e.key, TagTranslate.disassembly(e.key), e.value as int))
+    //     .toList();
+
+    // autocompleteTarget.sort((x, y) => y.item3.compareTo(x.item3));
+
+    // print(autocompleteTarget);
+
     // await HisokiHash.init();
     // var x = await HisokiGetter.getImages(2013923);
     // print(x);
@@ -231,9 +253,6 @@ void main() {
 
     // print(queryString);
 
-    // final db =
-    //     await databaseFactoryFfi.openDatabase('/home/ubuntu/rawdata-korean.db');
-
     // var count = (await db.rawQuery(queryString.replaceAll(
     //         'SELECT * FROM', 'SELECT Id AS C FROM') +
     //     " ORDER BY " +
@@ -306,8 +325,8 @@ void main() {
     // print('--- TEST CERT ---');
     // print(testCert.toBase64());
 
-    var testCert = CertData.testCert();
-    print(testCert.verify(RootCert.koromoCA()));
+    // var testCert = CertData.testCert();
+    // print(testCert.verify(RootCert.koromoCA()));
 
     // print(pair.item1.modulus);
     // print(pair.item2.privateExponent);
