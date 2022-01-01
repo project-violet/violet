@@ -63,56 +63,38 @@ class Logger {
     }
   }
 
-  static Future<void> info(String msg) async {
+  static Future<void> _logMessage(
+    String msg,
+    String prefix,
+    bool isError,
+    bool isWarning,
+  ) async {
     var message =
         (msg.startsWith('[') ? msg.substring(msg.indexOf(']') + 1) : msg)
             .trim();
     events.add(LogEvent(
       dateTime: DateTime.now().toUtc(),
-      isError: false,
-      isWarning: false,
+      isError: isError,
+      isWarning: isWarning,
       message:
           message.length > 500 ? message.substring(0, 500) + '...' : message,
       detail: message.length > 500 ? message : null,
-      title: '[Info] (${DateFormat('kk:mm').format(DateTime.now())}) ' +
+      title: '[$prefix] (${DateFormat('kk:mm').format(DateTime.now())}) ' +
           (msg.startsWith('[') ? msg.split('[')[1].split(']')[0] : ''),
     ));
-    await log('[Info] ' + msg);
+    await log('[$prefix] ' + msg);
+  }
+
+  static Future<void> info(String msg) async {
+    await _logMessage(msg, 'Info', false, false);
   }
 
   static Future<void> error(String msg) async {
-    var message =
-        (msg.startsWith('[') ? msg.substring(msg.indexOf(']') + 1) : msg)
-            .trim();
-    events.add(LogEvent(
-      dateTime: DateTime.now().toUtc(),
-      isError: true,
-      isWarning: false,
-      message:
-          message.length > 500 ? message.substring(0, 500) + '...' : message,
-      detail: message.length > 500 ? message : null,
-      title: '[Error] (${DateFormat('kk:mm').format(DateTime.now())}) ' +
-          (msg.startsWith('[') ? msg.split('[')[1].split(']')[0] : ''),
-    ));
-    await log(
-        '[Error] [This message will be sent to the fc-crashlytics] ' + msg);
+    await _logMessage(msg, 'Error', true, false);
   }
 
   static Future<void> warning(String msg) async {
-    var message =
-        (msg.startsWith('[') ? msg.substring(msg.indexOf(']') + 1) : msg)
-            .trim();
-    events.add(LogEvent(
-      dateTime: DateTime.now().toUtc(),
-      isError: false,
-      isWarning: true,
-      message:
-          message.length > 500 ? message.substring(0, 500) + '...' : message,
-      detail: message.length > 500 ? message : null,
-      title: '[Warning] (${DateFormat('kk:mm').format(DateTime.now())}) ' +
-          (msg.startsWith('[') ? msg.split('[')[1].split(']')[0] : ''),
-    ));
-    await log('[Warning] ' + msg);
+    await _logMessage(msg, 'Warning', false, true);
   }
 
   static Future<void> showLogs() async {

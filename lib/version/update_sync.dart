@@ -26,6 +26,27 @@ class UpdateSyncManager {
   static String updateMessage = "";
   static String updateUrl = "";
 
+  static bool _checkIsNewVersion(List<int> ver) {
+    //
+    // Check Major Version Number
+    //
+    if (majorVersion < ver[0]) return true;
+
+    //
+    //  Check Minor Version Number
+    //
+    if (majorVersion == ver[0] && minorVersion < ver[1]) return true;
+
+    //
+    //  Check Patch Version Number
+    //
+    if (majorVersion == ver[0] &&
+        minorVersion == ver[1] &&
+        patchVersion < ver[2] &&
+        enableSensitiveUpdate) return true;
+    return false;
+  }
+
   static Future<void> checkUpdateSync() async {
     try {
       var infoJson = await http.get(updateInfoURL);
@@ -36,12 +57,7 @@ class UpdateSyncManager {
           .split('.')
           .map((e) => int.parse(e))
           .toList();
-      if (majorVersion < ver[0] ||
-          (majorVersion == ver[0] && minorVersion < ver[1]) ||
-          (majorVersion == ver[0] &&
-              minorVersion == ver[1] &&
-              patchVersion < ver[2] &&
-              enableSensitiveUpdate)) {
+      if (_checkIsNewVersion(ver)) {
         updateRequire = true;
         version = info["version"] as String;
         updateMessage = info["message"] as String;

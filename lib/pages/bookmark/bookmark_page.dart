@@ -17,6 +17,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -274,42 +275,12 @@ class _BookmarkPageState extends State<BookmarkPage>
                     )
                   : ListTile(
                       onTap: () {
-                        if (!Platform.isIOS) {
-                          Navigator.of(context).push(PageRouteBuilder(
-                              opaque: false,
-                              transitionDuration: Duration(milliseconds: 500),
-                              // transitionsBuilder: (BuildContext context,
-                              //     Animation<double> animation,
-                              //     Animation<double> secondaryAnimation,
-                              //     Widget wi) {
-                              //   // return wi;
-                              //   return FadeTransition(opacity: animation, child: wi);
-                              // },
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                var begin = Offset(0.0, 1.0);
-                                var end = Offset.zero;
-                                var curve = Curves.ease;
-
-                                var tween = Tween(begin: begin, end: end)
-                                    .chain(CurveTween(curve: curve));
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
-                              pageBuilder: (_, __, ___) => id == -1
-                                  ? RecordViewPage()
-                                  : GroupArticleListPage(
-                                      groupId: id, name: name)));
-                        } else {
-                          Navigator.of(context).push(CupertinoPageRoute(
-                              builder: (_) => id == -1
-                                  ? RecordViewPage()
-                                  : GroupArticleListPage(
-                                      groupId: id, name: name)));
-                        }
+                        PlatformNavigator.navigateSlide(
+                          context,
+                          id == -1
+                              ? RecordViewPage()
+                              : GroupArticleListPage(groupId: id, name: name),
+                        );
                       },
                       onLongPress: () async {
                         if (index == -1 ||

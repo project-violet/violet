@@ -13,6 +13,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
@@ -135,38 +136,14 @@ class ArtistListPage extends StatelessWidget {
 
                   return InkWell(
                     onTap: () async {
-                      if (!Platform.isIOS) {
-                        Navigator.of(context).push(PageRouteBuilder(
-                          transitionDuration: const Duration(milliseconds: 500),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            var begin = const Offset(0.0, 1.0);
-                            var end = Offset.zero;
-                            var curve = Curves.ease;
-
-                            var tween = Tween(begin: begin, end: end)
-                                .chain(CurveTween(curve: curve));
-
-                            return SlideTransition(
-                              position: animation.drive(tween),
-                              child: child,
-                            );
-                          },
-                          pageBuilder: (_, __, ___) => ArtistInfoPage(
-                            isGroup: isLast && classification == 'group',
-                            isUploader: false,
-                            artist: name,
-                          ),
-                        ));
-                      } else {
-                        Navigator.of(context).push(CupertinoPageRoute(
-                          builder: (_) => ArtistInfoPage(
-                            isGroup: false,
-                            isUploader: false,
-                            artist: artist,
-                          ),
-                        ));
-                      }
+                      PlatformNavigator.navigateSlide(
+                        context,
+                        ArtistInfoPage(
+                          isGroup: isLast && classification == 'group',
+                          isUploader: false,
+                          artist: name,
+                        ),
+                      );
                     },
                     child: Container(
                       height: 195,

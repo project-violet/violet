@@ -14,6 +14,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/main/views/views_page.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class ViewsCard extends StatefulWidget {
@@ -52,29 +53,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                       return;
                     }
 
-                    if (!Platform.isIOS) {
-                      Navigator.of(context).push(PageRouteBuilder(
-                        transitionDuration: Duration(milliseconds: 500),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          var begin = Offset(0.0, 1.0);
-                          var end = Offset.zero;
-                          var curve = Curves.ease;
-
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
-
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
-                          );
-                        },
-                        pageBuilder: (_, __, ___) => ViewsPage(),
-                      ));
-                    } else {
-                      Navigator.of(context).push(
-                          CupertinoPageRoute(builder: (_) => ViewsPage()));
-                    }
+                    PlatformNavigator.navigateSlide(context, ViewsPage());
                   }
                 }),
               child: Container(
