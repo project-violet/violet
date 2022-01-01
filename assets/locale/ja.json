@@ -237,5 +237,14 @@
   "restoringbookmark": "Restore Bookmark",
   "uruserappid": "Your User App Id",
   "userappmsg": "This user app id has a unique value on a per app session. Be sure to keep this user ID! If you lose your user ID, you may not be able to use important functions such as restoring bookmarks.",
-  "restorebookmarkmsg": "Before restoring bookmarks, be sure to back up your existing bookmarks by exporting bookmarks! We are not responsible for any loss caused by user negligence."
+  "restorebookmarkmsg": "Before restoring bookmarks, be sure to back up your existing bookmarks by exporting bookmarks! We are not responsible for any loss caused by user negligence.",
+  "threadcount": "Number of Threads",
+  "curthread": "Current Count",
+  "change": "Change",
+  "putonlynum": "Please enter only numbers!",
+  "toomuch": "It's too big.",
+  "threadzero": "Cannot set threads to 0",
+  "setthread": "Set Thread",
+  "remaintask": "There are still files being downloaded. Please try again after completing download!",
+  "changedthread": "Number of Threads have changed!"
 }
