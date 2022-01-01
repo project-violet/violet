@@ -28,6 +28,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/downloader/native_downloader.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
@@ -888,6 +889,117 @@ class _SettingsPageState extends State<SettingsPage>
           _buildDivider(),
           ListTile(
             leading: Icon(
+              MdiIcons.lan,
+              color: Settings.majorColor,
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  Translations.of(context).trans('threadcount'),
+                ),
+                FutureBuilder(
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Text(
+                        Translations.of(context).trans('curthread') + ': ',
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    }
+                    return Text(
+                      Translations.of(context).trans('curthread') +
+                          ': ' +
+                          snapshot.data.getInt('thread_count').toString(),
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  },
+                  future: SharedPreferences.getInstance(),
+                )
+              ],
+            ),
+            trailing: Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              // 32개 => 50mb/s
+              var tc = (await SharedPreferences.getInstance())
+                  .getInt('thread_count');
+
+              TextEditingController text =
+                  TextEditingController(text: tc.toString());
+              Widget yesButton = TextButton(
+                child: Text(Translations.of(context).trans('change'),
+                    style: TextStyle(color: Settings.majorColor)),
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                onPressed: () async {
+                  if (int.tryParse(text.text) == null) {
+                    await showOkDialog(
+                        context, Translations.of(context).trans('putonlynum'));
+                    return;
+                  }
+                  if (int.parse(text.text) > 128) {
+                    await showOkDialog(
+                        context, Translations.of(context).trans('toomuch'));
+                    return;
+                  }
+                  if (int.parse(text.text) == 0) {
+                    await showOkDialog(
+                        context, Translations.of(context).trans('threadzero'));
+                    return;
+                  }
+
+                  Navigator.pop(context, true);
+                },
+              );
+              Widget noButton = TextButton(
+                child: Text(Translations.of(context).trans('cancel'),
+                    style: TextStyle(color: Settings.majorColor)),
+                style: TextButton.styleFrom(primary: Settings.majorColor),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              );
+              var dialog = await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  title: Text(Translations.of(context).trans('setthread')),
+                  content: TextField(
+                    controller: text,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
+                  ),
+                  actions: [yesButton, noButton],
+                ),
+              );
+              if (dialog == true) {
+                if (!await (await NativeDownloader.getInstance())
+                    .tryChangeThreadCount(int.parse(text.text))) {
+                  await showOkDialog(
+                      context, Translations.of(context).trans('remaintask'));
+                  return;
+                }
+
+                await (await SharedPreferences.getInstance())
+                    .setInt('thread_count', int.parse(text.text));
+
+                FlutterToast(context).showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('changedthread'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: Duration(seconds: 4),
+                );
+
+                setState(() {});
+              }
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading: Icon(
               Icons.router,
               color: Settings.majorColor,
             ),
@@ -1245,19 +1357,13 @@ class _SettingsPageState extends State<SettingsPage>
                   },
           ),
           _buildDivider(),
-          InkWell(
-            customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8.0),
-                    topRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: Icon(
-                MdiIcons.bookArrowDownOutline,
-                color: Settings.majorColor,
-              ),
-              title: Text(Translations.of(context).trans('restoringbookmark')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+          ListTile(
+            leading: Icon(
+              MdiIcons.bookArrowDownOutline,
+              color: Settings.majorColor,
             ),
+            title: Text(Translations.of(context).trans('restoringbookmark')),
+            trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showOkDialog(
                   context,
@@ -1393,16 +1499,10 @@ class _SettingsPageState extends State<SettingsPage>
             },
           ),
           _buildDivider(),
-          InkWell(
-            customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8.0),
-                    topRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: Icon(MdiIcons.import, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('importingbookmark')),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
+          ListTile(
+            leading: Icon(MdiIcons.import, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('importingbookmark')),
+            trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
