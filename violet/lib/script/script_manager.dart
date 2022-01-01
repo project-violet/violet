@@ -14,13 +14,21 @@ class ScriptManager {
       'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js';
   static String _scriptCache;
   static JavascriptRuntime _runtime;
+  static DateTime _latestUpdate;
 
   static Future<void> init() async {
     _scriptCache = (await http.get(_scriptUrl)).body;
+    _latestUpdate = DateTime.now();
     _initRuntime();
   }
 
   static Future<bool> refresh() async {
+    if (DateTime.now().difference(_latestUpdate).inMinutes < 10) {
+      return false;
+    }
+
+    _latestUpdate = DateTime.now();
+
     var scriptTemp = _scriptCache;
     await init();
 
