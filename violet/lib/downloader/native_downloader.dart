@@ -112,8 +112,8 @@ class NativeDownloader {
 
     var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
     if (tc == null) {
-      tc = 16;
-      await (await SharedPreferences.getInstance()).setInt('thread_count', 16);
+      tc = 4;
+      await (await SharedPreferences.getInstance()).setInt('thread_count', 4);
     }
     if (tc > 128) {
       tc = 128;
