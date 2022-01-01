@@ -17,6 +17,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "xyz.project.violet/dpitunnel"
     private val VOLUME_CHANNEL = "xyz.project.violet/volume"
+    private val NATIVELIBDIR_CHANNEL = "xyz.violet.communitydownloader/nativelibdir";
     private var sink: EventChannel.EventSink? = null;
 
     //
@@ -53,6 +54,11 @@ class MainActivity: FlutterActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             // Note: this method is invoked on the main thread.
             // TODO
+            if (call.method == "getNativeDir") {
+                result.success(getApplicationContext().getApplicationInfo().nativeLibraryDir);
+            }
+            
+            result.notImplemented()
         }
     }
 
