@@ -15,7 +15,8 @@ class SearchMessageRankPage extends StatefulWidget {
 }
 
 class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
-  List<Tuple3<String, String, int>> rawSearchLists;
+  List<Tuple3<String, String, int>> rawSearchLists =
+      <Tuple3<String, String, int>>[];
   List<Tuple3<String, String, int>> searchLists;
   TextEditingController text = TextEditingController();
 
