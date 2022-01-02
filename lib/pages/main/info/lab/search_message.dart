@@ -376,8 +376,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   if (search == null || search == '') return;
 
                   text.text = search;
-
                   setState(() {});
+                  Future.delayed(Duration(milliseconds: 100))
+                      .then((value) async {
+                    _onModifiedText();
+                  });
                 },
               ),
               IconButton(
