@@ -182,44 +182,4 @@ class NativeDownloader {
       });
     });
   }
-
-  Future<String> _checkSharedLibrary() async {
-    final dir = await getTemporaryDirectory();
-    if (dir == null) {
-      return null;
-    }
-    final libFile = File(dir.path + "/libviolet.so");
-    if (await libFile.exists()) return libFile.path;
-    if (Platform.isAndroid) {
-      final devicePlugin = DeviceInfoPlugin();
-      final deviceInfo = await devicePlugin.androidInfo;
-      if (deviceInfo == null) {
-        return null;
-      }
-      String soResource = "assets/libviolet/armeabi-v7a/libviolet.so";
-      if (kDebugMode) soResource = "assets/libviolet/x86/libviolet.so";
-      final support64 = deviceInfo.supported64BitAbis;
-      if (support64 != null && support64.length > 0) {
-        if (kDebugMode)
-          soResource = "assets/libviolet/x86_64/libviolet.so";
-        else
-          soResource = "assets/libviolet/arm64-v8a/libviolet.so";
-      }
-      final data = await rootBundle.load(soResource);
-      if (data == null) {
-        return null;
-      }
-      final createFile = await libFile.create();
-      if (createFile == null) {
-        return null;
-      }
-      final writeFile = await createFile.open(mode: FileMode.write);
-      if (writeFile == null) {
-        return null;
-      }
-      await writeFile.writeFrom(Uint8List.view(data.buffer));
-      return libFile.path;
-    }
-    return null;
-  }
 }

@@ -51,7 +51,7 @@ class MainActivity: FlutterActivity() {
             }
         })
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NATIVELIBDIR_CHANNEL).setMethodCallHandler { call, result ->
             // Note: this method is invoked on the main thread.
             // TODO
             if (call.method == "getNativeDir") {
