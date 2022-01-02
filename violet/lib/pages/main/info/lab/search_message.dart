@@ -23,7 +23,9 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
+import 'package:violet/pages/main/info/lab/search_message_rank.dart';
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
@@ -365,13 +367,27 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 ),
               ),
               IconButton(
+                icon: Icon(Icons.segment),
+                color: Colors.grey,
+                onPressed: () async {
+                  var search = await PlatformNavigator.navigateSlide<String>(
+                      context, SearchMessageRankPage());
+
+                  if (search == null || search == '') return;
+
+                  text.text = search;
+
+                  setState(() {});
+                },
+              ),
+              IconButton(
                 icon: Icon(Icons.info_outline),
                 color: Colors.grey,
                 onPressed: () async {
                   await showOkDialog(
                       context,
                       '대사를 검색해 작품을 찾아보세요! 현재 2021.12.31까지 업로드된 작품들을 지원됩니다.',
-                      '대사 검색기 (베타)');
+                      '대사 검색기');
                 },
               ),
             ],
