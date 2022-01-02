@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 01, 02),
+    version: '1.17.6 Patch Update <== Latest',
+    contents: [
+      'fix hitomi.la downloader',
+      'add live thread count setter',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 12, 31),
-    version: '1.17.5 Patch Update <== Latest',
+    version: '1.17.5 Patch Update',
     contents: [
       'enhance script runner',
       'happy new year!',
