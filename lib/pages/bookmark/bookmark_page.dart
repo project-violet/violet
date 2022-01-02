@@ -280,6 +280,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                           id == -1
                               ? RecordViewPage()
                               : GroupArticleListPage(groupId: id, name: name),
+                          opaque: false,
                         );
                       },
                       onLongPress: () async {
