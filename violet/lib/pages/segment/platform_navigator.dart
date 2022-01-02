@@ -28,9 +28,11 @@ class PlatformNavigator {
     }
   }
 
-  static Future<T> navigateSlide<T>(BuildContext context, Widget page) async {
+  static Future<T> navigateSlide<T>(BuildContext context, Widget page,
+      {bool opaque = true}) async {
     if (!Platform.isIOS) {
       return await Navigator.of(context).push<T>(PageRouteBuilder(
+        opaque: opaque,
         transitionDuration: Duration(milliseconds: 500),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           var begin = Offset(0.0, 1.0);
