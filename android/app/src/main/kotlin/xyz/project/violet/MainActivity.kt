@@ -17,7 +17,7 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "xyz.project.violet/dpitunnel"
     private val VOLUME_CHANNEL = "xyz.project.violet/volume"
-    private val NATIVELIBDIR_CHANNEL = "xyz.violet.communitydownloader/nativelibdir";
+    private val NATIVELIBDIR_CHANNEL = "xyz.project.violet/nativelibdir";
     private var sink: EventChannel.EventSink? = null;
 
     //
