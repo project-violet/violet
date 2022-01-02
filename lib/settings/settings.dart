@@ -112,6 +112,11 @@ class Settings {
       await (await SharedPreferences.getInstance()).setBool('themeFlat', false);
       themeFlat = false;
     }
+
+    var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
+    if (tc == null) {
+      await (await SharedPreferences.getInstance()).setInt('thread_count', 4);
+    }
   }
 
   static Future<void> init() async {
