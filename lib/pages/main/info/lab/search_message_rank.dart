@@ -58,6 +58,7 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
                 var e = searchLists[index];
                 return ListTile(
                   title: Text(e.item1),
+                  subtitle: Text("Count: ${e.item3}"),
                   dense: true,
                   onTap: () {
                     Navigator.pop(context, e.item1);
