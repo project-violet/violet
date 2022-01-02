@@ -17,7 +17,8 @@ class SearchMessageRankPage extends StatefulWidget {
 class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
   List<Tuple3<String, String, int>> rawSearchLists =
       <Tuple3<String, String, int>>[];
-  List<Tuple3<String, String, int>> searchLists;
+  List<Tuple3<String, String, int>> searchLists =
+      <Tuple3<String, String, int>>[];
   TextEditingController text = TextEditingController();
 
   @override
@@ -58,7 +59,6 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
                 var e = searchLists[index];
                 return ListTile(
                   title: Text(e.item1),
-                  subtitle: Text("Count: ${e.item3}"),
                   dense: true,
                   onTap: () {
                     Navigator.pop(context, e.item1);
