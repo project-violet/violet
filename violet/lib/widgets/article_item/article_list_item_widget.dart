@@ -23,6 +23,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/network/wrapper.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/settings/settings.dart';
@@ -264,9 +265,7 @@ class _ArticleListItemVerySimpleWidgetState
           flareController: _flareController,
           pad: pad,
           isBlurred: isBlurred,
-          headers: {
-            "Referer": "https://hitomi.la/reader/${data.queryResult.id()}.html/"
-          },
+          headers: headers,
           isLastestRead: isLastestRead,
           latestReadPage: latestReadPage,
           disableFiltering: disableFiltering,
