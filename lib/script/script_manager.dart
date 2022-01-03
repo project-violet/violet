@@ -7,6 +7,7 @@ import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/network/wrapper.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {
@@ -52,7 +53,10 @@ class ScriptManager {
     try {
       var downloadUrl =
           _runtime.evaluate("create_download_url('$id')").stringResult;
-      var galleryInfo = await http.get(downloadUrl);
+      var galleryInfo = await http.get(downloadUrl, headers: {
+        'accept': HttpWrapper.accept,
+        'user-agent': HttpWrapper.mobileUserAgent,
+      });
       _runtime.evaluate(galleryInfo.body);
       final jResult = _runtime.evaluate("hitomi_get_image_list()").stringResult;
       final jResultObject = jsonDecode(jResult);
