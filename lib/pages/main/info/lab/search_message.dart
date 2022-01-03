@@ -19,6 +19,7 @@ import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
+import 'package:violet/network/wrapper.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
@@ -184,7 +185,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                   imageUrl: snapshot.data as String,
                                   httpHeaders: {
                                     "Referer":
-                                        'https://hitomi.la/reader/1234.html'
+                                        'https://hitomi.la/reader/1234.html',
+                                    'accept': HttpWrapper.accept,
+                                    'user-agent': HttpWrapper.mobileUserAgent,
                                   },
                                   progressIndicatorBuilder:
                                       (context, string, progress) {
@@ -434,8 +437,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   Future<Size> _calculateImageDimension(String url) {
     Completer<Size> completer = Completer();
     Image image = Image(
-        image: CachedNetworkImageProvider(url,
-            headers: {"Referer": 'https://hitomi.la/reader/1234.html'}));
+        image: CachedNetworkImageProvider(url, headers: {
+      "Referer": 'https://hitomi.la/reader/1234.html',
+      'accept': HttpWrapper.accept,
+      'user-agent': HttpWrapper.mobileUserAgent,
+    }));
     image.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
