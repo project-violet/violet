@@ -9,6 +9,10 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 
+class SearchMessageRankPageMemory {
+  static String latestSearch = '';
+}
+
 class SearchMessageRankPage extends StatefulWidget {
   @override
   _SearchMessageRankPageState createState() => _SearchMessageRankPageState();
@@ -19,7 +23,8 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
       <Tuple3<String, String, int>>[];
   List<Tuple3<String, String, int>> searchLists =
       <Tuple3<String, String, int>>[];
-  TextEditingController text = TextEditingController();
+  TextEditingController text =
+      TextEditingController(text: SearchMessageRankPageMemory.latestSearch);
 
   @override
   void initState() {
@@ -72,6 +77,8 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
               TextField(
                 controller: text,
                 onEditingComplete: () async {
+                  SearchMessageRankPageMemory.latestSearch = text.text;
+
                   searchLists = rawSearchLists
                       .where((element) => element.item2
                           .contains(TagTranslate.disassembly(text.text)))
