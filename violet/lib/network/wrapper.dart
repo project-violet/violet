@@ -87,7 +87,9 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
       HttpWrapper.throttlerEHentai.release();
       return res;
     }
-  } else if (url.contains('ltn.hitomi.la')) {
+  } else if (url.contains('ltn.hitomi.la') ||
+      url.contains(
+          'raw.githubusercontent.com/project-violet/violet-message-search')) {
     Logger.info('[Http Cache] GET: ' + url);
     if (HttpWrapper.cacheResponse.containsKey(url)) {
       return HttpWrapper.cacheResponse[url];

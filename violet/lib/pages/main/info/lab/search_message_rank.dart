@@ -3,7 +3,7 @@
 
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
@@ -29,8 +29,7 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
       const url =
           "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
 
-      var m = jsonDecode((await http.get(Uri.parse(url))).body)
-          as Map<String, dynamic>;
+      var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
       rawSearchLists = m.entries
           .map((e) => Tuple3<String, String, int>(
