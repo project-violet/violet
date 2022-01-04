@@ -28,6 +28,7 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/network/wrapper.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
@@ -483,6 +484,11 @@ class PreviewAreaWidget extends StatelessWidget {
                 .take(30)
                 .map((e) => CachedNetworkImage(
                       imageUrl: e,
+                      httpHeaders: {
+                        "Referer": 'https://hitomi.la/reader/1234.html',
+                        'accept': HttpWrapper.accept,
+                        'user-agent': HttpWrapper.mobileUserAgent,
+                      },
                     ))
                 .toList(),
           );
