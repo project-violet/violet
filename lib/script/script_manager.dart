@@ -86,4 +86,29 @@ class ScriptManager {
       return null;
     }
   }
+
+  static Future<Map<String, String>> runHitomiGetHeaderContent(
+      String id) async {
+    if (_scriptCache == null) return null;
+    try {
+      final jResult =
+          _runtime.evaluate("hitomi_get_header_content('$id')").stringResult;
+      final jResultObject = jsonDecode(jResult);
+
+      if (jResultObject is Map<dynamic, dynamic>) {
+        return Map<String, String>.from(jResultObject);
+      } else {
+        Logger.error(
+            '[script-HitomiGetHeaderContent] E: JSError\nId: $id\nMessage: ' +
+                jResult.toString());
+        return null;
+      }
+    } catch (e, st) {
+      Logger.error('[script-HitomiGetHeaderContent] E: ' +
+          e.toString() +
+          '\nId: $id\n' +
+          st.toString());
+      return null;
+    }
+  }
 }

@@ -100,6 +100,15 @@ void main() {
 
         return JSON.stringify({ btresult: btresult, stresult: stresult, result: result });
       }
+
+      
+function hitomi_get_header_content(id) {
+  return JSON.stringify({
+      'referer': `https://hitomi.la/reader/123456.html`,
+      'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+      'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.3',
+  });
+}
     ''');
 
     // var xx = flutterJs
@@ -107,17 +116,22 @@ void main() {
     //         "hitomi_get_image_list('12456',\"${tt.replaceAll('"', '\\"')}\")")
     //     .rawResult as Map<dynamic, dynamic>;
 
-    print("${tt.replaceAll('"', '\\"')}");
-    final jResult = flutterJs
-        .evaluate(
-            "hitomi_get_image_list('12456', \"${tt.replaceAll('"', '\\"')}\")")
-        .stringResult;
+    // print("${tt.replaceAll('"', '\\"')}");
+    // final jResult = flutterJs
+    //     .evaluate(
+    //         "hitomi_get_image_list('12456', \"${tt.replaceAll('"', '\\"')}\")")
+    //     .stringResult;
+    // final jResultObject = jsonDecode(jResult);
+
+    // if (jResultObject is Map<dynamic, dynamic>) {
+    //   print(jResultObject['result']);
+    // }
+
+    final jResult =
+        flutterJs.evaluate("hitomi_get_header_content('12456')").stringResult;
     final jResultObject = jsonDecode(jResult);
+    print(Map<String, String>.from(jResultObject));
 
-    if (jResultObject is Map<dynamic, dynamic>) {
-      print(jResultObject['result']);
-    }
-
-    expect(jResult, 'mm3');
+    // expect(jResult, 'mm3');
   });
 }
