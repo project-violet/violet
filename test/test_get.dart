@@ -15,7 +15,7 @@ void main() {
     var res = await http
         .get(Uri.parse('https://ltn.hitomi.la/galleries/2102839.js'), headers: {
       'accept': HttpWrapper.accept,
-      'user-agent': HttpWrapper.mobileUserAgent,
+      'user-agent': HttpWrapper.userAgent,
     });
 
     print(res.body);
