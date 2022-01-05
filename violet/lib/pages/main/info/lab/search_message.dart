@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:violet/component/image_provider.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -133,11 +134,22 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 return FutureBuilder(
                   future: Future.delayed(Duration(milliseconds: 100))
                       .then((value) async {
-                    if (_urls[index] != '') return _urls[index];
-                    _urls[index] =
-                        (await HitomiManager.getImageList(e.item2.toString()))
-                            .item1[e.item3];
-                    return _urls[index];
+                    VioletImageProvider provider;
+                    if (ProviderManager.isExists(e.item2)) {
+                      provider = ProviderManager.get(e.item2);
+                    } else {
+                      var query =
+                          (await HentaiManager.idSearch(e.item2.toString()))
+                              .item1;
+                      provider = await HentaiManager.getImageProvider(query[0]);
+                      await provider.init();
+                      ProviderManager.insert(query[0].id(), provider);
+                    }
+
+                    return [
+                      _urls[index] = await provider.getImageUrl(e.item3),
+                      await provider.getHeader(e.item3)
+                    ];
                   }),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
@@ -181,13 +193,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                   fit: BoxFit.cover,
                                   fadeInDuration: Duration(microseconds: 500),
                                   fadeInCurve: Curves.easeIn,
-                                  imageUrl: snapshot.data as String,
-                                  httpHeaders: {
-                                    "Referer":
-                                        'https://hitomi.la/reader/1234.html',
-                                    'accept': HttpWrapper.accept,
-                                    'user-agent': HttpWrapper.mobileUserAgent,
-                                  },
+                                  imageUrl: snapshot.data[0] as String,
+                                  httpHeaders:
+                                      snapshot.data[1] as Map<String, String>,
                                   progressIndicatorBuilder:
                                       (context, string, progress) {
                                     return SizedBox(
@@ -227,7 +235,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                               ),
                               FutureBuilder(
                                 future: _calculateImageDimension(
-                                    snapshot.data as String),
+                                    snapshot.data[0] as String,
+                                    snapshot.data[1] as Map<String, String>),
                                 builder:
                                     (context, AsyncSnapshot<Size> snapshot2) {
                                   if (!snapshot2.hasData) return Container();
@@ -433,14 +442,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     setState(() {});
   }
 
-  Future<Size> _calculateImageDimension(String url) {
+  Future<Size> _calculateImageDimension(
+      String url, Map<String, String> header) {
     Completer<Size> completer = Completer();
-    Image image = Image(
-        image: CachedNetworkImageProvider(url, headers: {
-      "Referer": 'https://hitomi.la/reader/1234.html',
-      'accept': HttpWrapper.accept,
-      'user-agent': HttpWrapper.mobileUserAgent,
-    }));
+    Image image =
+        Image(image: CachedNetworkImageProvider(url, headers: header));
     image.image.resolve(ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
