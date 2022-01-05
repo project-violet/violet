@@ -7,6 +7,7 @@ import 'package:violet/component/image_provider.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:violet/network/wrapper.dart';
+import 'package:violet/script/script_manager.dart';
 
 class HitomiImageProvider extends VioletImageProvider {
   Tuple3<List<String>, List<String>, List<String>> urls;
@@ -29,11 +30,13 @@ class HitomiImageProvider extends VioletImageProvider {
 
   @override
   Future<Map<String, String>> getHeader(int page) async {
-    return {
-      "Referer": 'https://hitomi.la/reader/1234.html',
-      'accept': HttpWrapper.accept,
-      'user-agent': HttpWrapper.userAgent,
-    };
+    // return {
+    //   "Referer": 'https://hitomi.la/reader/1234.html',
+    //   'accept': HttpWrapper.accept,
+    //   'user-agent': HttpWrapper.userAgent,
+    // };
+
+    return await ScriptManager.runHitomiGetHeaderContent(this.id);
   }
 
   @override
