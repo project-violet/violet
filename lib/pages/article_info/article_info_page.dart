@@ -468,7 +468,12 @@ class PreviewAreaWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (ProviderManager.isExists(queryResult.id())) {
       return FutureBuilder(
-        future: ProviderManager.get(queryResult.id()).getSmallImagesUrl(),
+        future: Future.value(1).then((value) async {
+          return [
+            await ProviderManager.get(queryResult.id()).getSmallImagesUrl(),
+            await ProviderManager.get(queryResult.id()).getHeader(0)
+          ];
+        }),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
@@ -480,15 +485,11 @@ class PreviewAreaWidget extends StatelessWidget {
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            children: (snapshot.data as List<String>)
+            children: (snapshot.data[0] as List<String>)
                 .take(30)
                 .map((e) => CachedNetworkImage(
                       imageUrl: e,
-                      httpHeaders: {
-                        "Referer": 'https://hitomi.la/reader/1234.html',
-                        'accept': HttpWrapper.accept,
-                        'user-agent': HttpWrapper.mobileUserAgent,
-                      },
+                      httpHeaders: snapshot.data[1] as Map<String, String>,
                     ))
                 .toList(),
           );
