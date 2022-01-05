@@ -32,7 +32,7 @@ class HitomiImageProvider extends VioletImageProvider {
     return {
       "Referer": 'https://hitomi.la/reader/1234.html',
       'accept': HttpWrapper.accept,
-      'user-agent': HttpWrapper.mobileUserAgent,
+      'user-agent': HttpWrapper.userAgent,
     };
   }
 
