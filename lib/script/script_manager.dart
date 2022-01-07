@@ -57,6 +57,7 @@ class ScriptManager {
         'accept': HttpWrapper.accept,
         'user-agent': HttpWrapper.mobileUserAgent,
       });
+      if (galleryInfo.statusCode != 200) return null;
       _runtime.evaluate(galleryInfo.body);
       final jResult = _runtime.evaluate("hitomi_get_image_list()").stringResult;
       final jResultObject = jsonDecode(jResult);
