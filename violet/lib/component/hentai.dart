@@ -18,6 +18,7 @@ import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 
 //
@@ -75,7 +76,10 @@ class HentaiManager {
     }
 
     try {
-      var hh = await http.get('https://ltn.hitomi.la/galleryblock/$no.html');
+      var headers =
+          await ScriptManager.runHitomiGetHeaderContent(no.toString());
+      var hh = await http.get('https://ltn.hitomi.la/galleryblock/$no.html',
+          headers: headers);
       var article = await HitomiParser.parseGalleryBlock(hh.body);
       var meta = {
         'Id': no,
