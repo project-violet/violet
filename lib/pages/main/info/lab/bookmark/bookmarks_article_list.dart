@@ -23,6 +23,7 @@ import 'package:violet/pages/main/info/lab/bookmark/bookmarks_artist_list.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
@@ -160,8 +161,12 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         cc.forEach((element) async {
           if (qr[element.article()] == null) {
             // TODO: Handle qurey not found
+            var headers = await ScriptManager.runHitomiGetHeaderContent(
+                element.article());
             var hh = await http.get(
-                'https://ltn.hitomi.la/galleryblock/${element.article()}.html');
+              'https://ltn.hitomi.la/galleryblock/${element.article()}.html',
+              headers: headers,
+            );
             var article = await HitomiParser.parseGalleryBlock(hh.body);
             var meta = {
               'Id': int.parse(element.article()),
