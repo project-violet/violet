@@ -24,6 +24,13 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 01, 08),
+    version: '1.17.10 Patch Update <== Latest',
+    contents: [
+      'fix',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 01, 05),
     version: '1.17.9 Patch Update <== Latest',
     contents: [
