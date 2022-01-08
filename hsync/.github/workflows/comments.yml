@@ -1,0 +1,22 @@
+name: comments
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build
+      run: |
+        wget https://github.com/project-violet/hsync/releases/download/2021.08.17.1/hsync
+        chmod 777 hsync
+        wget https://github.com/violet-dev/sync-data/releases/download/db_1633821555/data.db
+        mkdir ex
+        ./hsync --save-exhentai-page 0
+        zip -r a.zip ex
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Raw HTMLS
+        path: ./a.zip
