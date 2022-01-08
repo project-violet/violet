@@ -21,7 +21,7 @@ namespace hsync.Network
             => new NetTask
             {
                 Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36",
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.3",
                 TimeoutInfinite = Settings.Instance.Network.TimeoutInfinite,
                 TimeoutMillisecond = Settings.Instance.Network.TimeoutMillisecond,
                 AutoRedirection = true,
