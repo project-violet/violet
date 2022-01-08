@@ -53,10 +53,8 @@ class ScriptManager {
     try {
       var downloadUrl =
           _runtime.evaluate("create_download_url('$id')").stringResult;
-      var galleryInfo = await http.get(downloadUrl, headers: {
-        'accept': HttpWrapper.accept,
-        'user-agent': HttpWrapper.mobileUserAgent,
-      });
+      var headers = await runHitomiGetHeaderContent(id.toString());
+      var galleryInfo = await http.get(downloadUrl, headers: headers);
       if (galleryInfo.statusCode != 200) return null;
       _runtime.evaluate(galleryInfo.body);
       final jResult = _runtime.evaluate("hitomi_get_image_list()").stringResult;
