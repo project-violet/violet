@@ -42,7 +42,7 @@ import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
 import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
-import 'package:violet/pages/settings/resotre_bookmark.dart';
+import 'package:violet/pages/settings/restore_bookmark.dart';
 import 'package:violet/pages/settings/route.dart';
 import 'package:violet/pages/settings/tag_rebuild_page.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
