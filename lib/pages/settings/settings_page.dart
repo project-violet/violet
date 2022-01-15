@@ -371,7 +371,7 @@ class _SettingsPageState extends State<SettingsPage>
             leading: Icon(MdiIcons.tabletDashboard, color: Settings.majorColor),
             title: Text('Tablet 모드 사용'),
             trailing: Switch(
-              value: Settings.themeFlat,
+              value: Settings.useTabletMode,
               onChanged: (newValue) async {
                 await Settings.setUseTabletMode(newValue);
                 setState(() {
