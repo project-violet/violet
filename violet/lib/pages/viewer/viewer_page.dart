@@ -1779,6 +1779,7 @@ class _FileImage extends StatefulWidget {
 
 class __FileImageState extends State<_FileImage> {
   double _height = 300;
+  bool _loaded = false;
 
   @override
   void dispose() {
@@ -1790,37 +1791,42 @@ class __FileImageState extends State<_FileImage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
+
+    final image = ExtendedImage.file(
+      File(widget.path),
+      fit: BoxFit.cover,
+      imageCacheName: widget.path,
+      loadStateChanged: (ExtendedImageState state) {
+        final ImageInfo imageInfo = state.extendedImageInfo;
+        if ((state.extendedImageLoadState == LoadState.completed ||
+            imageInfo != null) && !_loaded) {
+          _loaded = true;
+          Future.delayed(Duration(milliseconds: 100))
+              .then((value) => setState(() {
+                    _height = width / imageInfo.image.height.toDouble();
+                  }));
+        } else if (state.extendedImageLoadState == LoadState.loading) {
+          return SizedBox(
+            height: _height != 0 ? _height : 300,
+            child: Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(),
+                width: 30,
+                height: 30,
+              ),
+            ),
+          );
+        }
+
+        return state.completedWidget;
+      },
+    );
+
     return AnimatedContainer(
       height: _height,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
-      child: ExtendedImage.file(
-        File(widget.path),
-        fit: BoxFit.cover,
-        imageCacheName: widget.path,
-        loadStateChanged: (ExtendedImageState state) {
-          final ImageInfo imageInfo = state.extendedImageInfo;
-          if (state.extendedImageLoadState == LoadState.completed ||
-              imageInfo != null) {
-            setState(() {
-              _height = width / imageInfo.image.height.toDouble();
-            });
-          } else if (state.extendedImageLoadState == LoadState.loading) {
-            return SizedBox(
-              height: _height != 0 ? _height : 300,
-              child: Center(
-                child: SizedBox(
-                  child: CircularProgressIndicator(),
-                  width: 30,
-                  height: 30,
-                ),
-              ),
-            );
-          }
-
-          return state.completedWidget;
-        },
-      ),
+      child: image,
     );
   }
 }
