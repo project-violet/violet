@@ -367,6 +367,30 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         _buildDivider(),
         InkWell(
+          child: ListTile(
+            leading: Icon(MdiIcons.tabletDashboard, color: Settings.majorColor),
+            title: Text('Tablet 모드 사용'),
+            trailing: Switch(
+              value: Settings.themeFlat,
+              onChanged: (newValue) async {
+                await Settings.setUseTabletMode(newValue);
+                setState(() {
+                  _shouldReload = true;
+                });
+              },
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+          ),
+          onTap: () async {
+            await Settings.setUseTabletMode(!Settings.useTabletMode);
+            setState(() {
+              _shouldReload = true;
+            });
+          },
+        ),
+        _buildDivider(),
+        InkWell(
           customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(8.0),

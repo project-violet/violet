@@ -747,7 +747,7 @@ class ResultPanelWidget extends StatelessWidget {
             sliver: SliverGrid(
               key: key,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: Device.get().isTablet ? mm * 2 : mm,
+                crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
                 childAspectRatio: 3 / 4,
@@ -786,7 +786,7 @@ class ResultPanelWidget extends StatelessWidget {
 
       case 2:
       case 3:
-        if (Device.get().isTablet ||
+        if (Settings.useTabletMode ||
             MediaQuery.of(context).orientation == Orientation.landscape) {
           return SliverPadding(
             padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
