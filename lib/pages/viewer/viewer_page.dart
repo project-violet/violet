@@ -45,6 +45,8 @@ import 'package:violet/widgets/toast.dart';
 
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
+typedef DoubleCallback = Future Function(double);
+
 class ViewerPage extends StatefulWidget {
   @override
   _ViewerPageState createState() => _ViewerPageState();
@@ -1396,7 +1398,9 @@ class _ViewerPageState extends State<ViewerPage>
         }),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return _FileImage(_pageInfo.uris[index]);
+            return _FileImage(_pageInfo.uris[index], (height) async {
+              _height[index] = 0;
+            });
           }
 
           return SizedBox(
@@ -1415,10 +1419,7 @@ class _ViewerPageState extends State<ViewerPage>
       // Prevent flicking when no animate jump page
       return Container(
         height: _height[index],
-        child: Image(
-          image: FileImage(File(_pageInfo.uris[index])),
-          fit: BoxFit.cover,
-        ),
+        child: _FileImage(_pageInfo.uris[index], (height) async {}),
       );
     }
   }
@@ -1770,8 +1771,9 @@ class _ViewerPageState extends State<ViewerPage>
 
 class _FileImage extends StatefulWidget {
   final String path;
+  final DoubleCallback heightCallback;
 
-  const _FileImage(this.path);
+  const _FileImage(this.path, this.heightCallback);
 
   @override
   __FileImageState createState() => __FileImageState();
@@ -1799,12 +1801,16 @@ class __FileImageState extends State<_FileImage> {
       loadStateChanged: (ExtendedImageState state) {
         final ImageInfo imageInfo = state.extendedImageInfo;
         if ((state.extendedImageLoadState == LoadState.completed ||
-            imageInfo != null) && !_loaded) {
+                imageInfo != null) &&
+            !_loaded) {
           _loaded = true;
-          Future.delayed(Duration(milliseconds: 100))
-              .then((value) => setState(() {
-                    _height = width / imageInfo.image.height.toDouble();
-                  }));
+          Future.delayed(Duration(milliseconds: 100)).then((value) {
+            final aspectRatio = imageInfo.image.width / imageInfo.image.height;
+            widget.heightCallback(width / aspectRatio);
+            setState(() {
+              _height = width / aspectRatio;
+            });
+          });
         } else if (state.extendedImageLoadState == LoadState.loading) {
           return SizedBox(
             height: _height != 0 ? _height : 300,
