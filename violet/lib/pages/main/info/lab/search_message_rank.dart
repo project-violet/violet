@@ -11,6 +11,8 @@ import 'package:violet/pages/segment/card_panel.dart';
 
 class SearchMessageRankPageMemory {
   static String latestSearch = '';
+  static List<Tuple3<String, String, int>> rawSearchLists =
+      <Tuple3<String, String, int>>[];
 }
 
 class SearchMessageRankPage extends StatefulWidget {
@@ -19,8 +21,6 @@ class SearchMessageRankPage extends StatefulWidget {
 }
 
 class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
-  List<Tuple3<String, String, int>> rawSearchLists =
-      <Tuple3<String, String, int>>[];
   List<Tuple3<String, String, int>> searchLists =
       <Tuple3<String, String, int>>[];
   TextEditingController text =
@@ -31,24 +31,26 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      const url =
-          "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
+      if (SearchMessageRankPageMemory.rawSearchLists.isEmpty) {
+        const url =
+            "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
 
-      var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
+        var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
-      rawSearchLists = m.entries
-          .map((e) => Tuple3<String, String, int>(
-              e.key, TagTranslate.disassembly(e.key), e.value as int))
-          .toList();
-
-      searchLists = rawSearchLists.toList();
-      searchLists.sort((x, y) => y.item1.length.compareTo(x.item1.length));
+        SearchMessageRankPageMemory.rawSearchLists = m.entries
+            .map((e) => Tuple3<String, String, int>(
+                e.key, TagTranslate.disassembly(e.key), e.value as int))
+            .toList();
+      }
 
       if (text.text != '') {
-        searchLists = rawSearchLists
+        searchLists = SearchMessageRankPageMemory.rawSearchLists
             .where((element) =>
                 element.item2.contains(TagTranslate.disassembly(text.text)))
             .toList();
+        searchLists.sort((x, y) => y.item1.length.compareTo(x.item1.length));
+      } else {
+        searchLists = SearchMessageRankPageMemory.rawSearchLists.toList();
         searchLists.sort((x, y) => y.item1.length.compareTo(x.item1.length));
       }
 
@@ -87,7 +89,7 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
                 onEditingComplete: () async {
                   SearchMessageRankPageMemory.latestSearch = text.text;
 
-                  searchLists = rawSearchLists
+                  searchLists = SearchMessageRankPageMemory.rawSearchLists
                       .where((element) => element.item2
                           .contains(TagTranslate.disassembly(text.text)))
                       .toList();
