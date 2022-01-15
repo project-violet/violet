@@ -728,7 +728,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       height: 60,
       child: InkWell(
         onTap: () async {
-          PlatformNavigator.navigateSlide(context, what());
+          PlatformNavigator.navigateSlide(context, what(), opaque: false);
         },
         child: Row(
           children: [Text(Translations.of(context).trans('more'))],

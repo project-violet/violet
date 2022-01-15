@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/shielder.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/settings/device_type.dart';
 
 class Settings {
   // Color Settings
@@ -23,6 +24,7 @@ class Settings {
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
   static bool themeFlat;
+  static bool useTabletMode;
 
   // Tag Settings
   static String includeTags;
@@ -421,6 +423,8 @@ class Settings {
     userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
 
     autobackupBookmark = await _getBool('autobackupbookmark', false);
+
+    useTabletMode = await _getBool('usetabletmode', Device.get().isTablet);
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
@@ -676,5 +680,11 @@ class Settings {
     autobackupBookmark = nn;
     await (await SharedPreferences.getInstance())
         .setBool('autobackupbookmark', nn);
+  }
+
+  static Future<void> setUseTabletMode(bool nn) async {
+    useTabletMode = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('usetabletmode', nn);
   }
 }
