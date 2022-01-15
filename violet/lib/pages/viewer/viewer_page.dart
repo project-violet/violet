@@ -1402,7 +1402,7 @@ class _ViewerPageState extends State<ViewerPage>
             return _FileImage(
               path: _pageInfo.uris[index],
               heightCallback: (height) async {
-                _height[index] = 0;
+                _height[index] = height;
               },
             );
           }
