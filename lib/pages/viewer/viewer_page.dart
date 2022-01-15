@@ -309,6 +309,7 @@ class _ViewerPageState extends State<ViewerPage>
                         .replaceAll('%s', e.lastPage().toString()),
                     Translations.of(context).trans('record'))) {
               if (!Settings.isHorizontal) {
+                _latestIndex = e.lastPage() - 1;
                 itemScrollController.jumpTo(
                     index: e.lastPage() - 1, alignment: 0.12);
               } else {
