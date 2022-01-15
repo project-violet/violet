@@ -44,6 +44,14 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
       searchLists = rawSearchLists.toList();
       searchLists.sort((x, y) => y.item1.length.compareTo(x.item1.length));
 
+      if (text.text != '') {
+        searchLists = rawSearchLists
+            .where((element) =>
+                element.item2.contains(TagTranslate.disassembly(text.text)))
+            .toList();
+        searchLists.sort((x, y) => y.item1.length.compareTo(x.item1.length));
+      }
+
       setState(() {});
     });
   }
