@@ -1399,9 +1399,12 @@ class _ViewerPageState extends State<ViewerPage>
         }),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return _FileImage(_pageInfo.uris[index], (height) async {
-              _height[index] = 0;
-            });
+            return _FileImage(
+              path: _pageInfo.uris[index],
+              heightCallback: (height) async {
+                _height[index] = 0;
+              },
+            );
           }
 
           return SizedBox(
@@ -1420,7 +1423,11 @@ class _ViewerPageState extends State<ViewerPage>
       // Prevent flicking when no animate jump page
       return Container(
         height: _height[index],
-        child: _FileImage(_pageInfo.uris[index], (height) async {}),
+        child: _FileImage(
+          path: _pageInfo.uris[index],
+          heightCallback: (height) async {},
+          cachedHeight: _height[index],
+        ),
       );
     }
   }
@@ -1772,17 +1779,29 @@ class _ViewerPageState extends State<ViewerPage>
 
 class _FileImage extends StatefulWidget {
   final String path;
+  final double cachedHeight;
   final DoubleCallback heightCallback;
 
-  const _FileImage(this.path, this.heightCallback);
+  const _FileImage({this.path, this.heightCallback, this.cachedHeight});
 
   @override
   __FileImageState createState() => __FileImageState();
 }
 
 class __FileImageState extends State<_FileImage> {
-  double _height = 300;
+  double _height;
   bool _loaded = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    if (widget.cachedHeight != null && widget.cachedHeight > 0)
+      _height = widget.cachedHeight;
+    else
+      _height = 300;
+  }
 
   @override
   void dispose() {
@@ -1797,9 +1816,12 @@ class __FileImageState extends State<_FileImage> {
 
     final image = ExtendedImage.file(
       File(widget.path),
-      fit: BoxFit.cover,
+      fit: BoxFit.contain,
       imageCacheName: widget.path,
       loadStateChanged: (ExtendedImageState state) {
+        if (widget.cachedHeight != null && widget.cachedHeight > 0)
+          return state.completedWidget;
+
         final ImageInfo imageInfo = state.extendedImageInfo;
         if ((state.extendedImageLoadState == LoadState.completed ||
                 imageInfo != null) &&
