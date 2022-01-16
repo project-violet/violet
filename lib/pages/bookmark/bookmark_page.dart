@@ -117,8 +117,11 @@ class _BookmarkPageState extends State<BookmarkPage>
         overlayOpacity: 0.2,
         // tooltip: 'Speed Dial',
         heroTag: 'speed-dial-hero-tag',
-        backgroundColor:
-            Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
+        backgroundColor: Settings.themeWhat
+            ? Settings.themeBlack
+                ? const Color(0xFF141414)
+                : Colors.grey.shade800
+            : Colors.white,
         foregroundColor: Settings.majorColor,
         elevation: 1.0,
         shape: CircleBorder(),
@@ -159,15 +162,21 @@ class _BookmarkPageState extends State<BookmarkPage>
           SpeedDialChild(
               child: Icon(MdiIcons.orderNumericAscending,
                   color: Settings.majorColor),
-              backgroundColor:
-                  Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
+              backgroundColor: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF141414)
+                      : Colors.grey.shade800
+                  : Colors.white,
               label: Translations.of(context).trans('editorder'),
               labelStyle: TextStyle(
                 fontSize: 14.0,
                 color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,
               ),
-              labelBackgroundColor:
-                  Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
+              labelBackgroundColor: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF141414)
+                      : Colors.grey.shade800
+                  : Colors.white,
               onTap: () {
                 setState(() {
                   reorder = !reorder;
@@ -175,15 +184,21 @@ class _BookmarkPageState extends State<BookmarkPage>
               }),
           SpeedDialChild(
             child: Icon(MdiIcons.group, color: Settings.majorColor),
-            backgroundColor:
-                Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
+            backgroundColor: Settings.themeWhat
+                ? Settings.themeBlack
+                    ? const Color(0xFF141414)
+                    : Colors.grey.shade800
+                : Colors.white,
             label: Translations.of(context).trans('newgroup'),
             labelStyle: TextStyle(
               fontSize: 14.0,
               color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,
             ),
-            labelBackgroundColor:
-                Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
+            labelBackgroundColor: Settings.themeWhat
+                ? Settings.themeBlack
+                    ? const Color(0xFF141414)
+                    : Colors.grey.shade800
+                : Colors.white,
             onTap: () async {
               (await Bookmark.getInstance()).createGroup(
                   Translations.of(context).trans('newgroup'),
