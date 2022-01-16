@@ -3,7 +3,7 @@
 
 import 'dart:io';
 
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android
 import 'package:flutter/material.dart';
