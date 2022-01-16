@@ -61,7 +61,7 @@ class ArticleInfoPage extends StatelessWidget {
     return Container(
       color: Settings.themeWhat
           ? Settings.themeBlack
-              ? const Color(0xFF141414)
+              ? const Color(0xFF0F0F0F)
               : Color(0xFF353535)
           : Colors.grey.shade200,
       padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
@@ -69,7 +69,7 @@ class ArticleInfoPage extends StatelessWidget {
         elevation: 5,
         color: Settings.themeWhat
             ? Settings.themeBlack
-                ? const Color(0xFF141414)
+                ? const Color(0xFF0F0F0F)
                 : Color(0xFF353535)
             : Colors.grey.shade200,
         child: SizedBox(
