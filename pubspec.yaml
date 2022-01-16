@@ -71,6 +71,7 @@ dependencies:
   flutter_colorpicker: ^0.6.0
   flutter_downloader: # @dependent: android
     git: https://github.com/project-violet/flutter_downloader # @dependent: android
+  flutter_image_compress: ^1.1.0
   flutter_markdown:
   flutter_mobx:
   flutter_reorderable_list:
@@ -95,7 +96,7 @@ dependencies:
   material_design_icons_flutter: ^5.0.5955-rc.1
   mdi:
   open_file: ^3.2.1
-  optimized_cached_image: ^2.0.1
+  optimized_cached_image: ^3.0.0
   path:
   path_provider:
   permission_handler: ^7.1.0

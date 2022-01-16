@@ -561,12 +561,12 @@ packages:
     source: git
     version: "1.7.0"
   flutter_image_compress:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_image_compress
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   flutter_js:
     dependency: "direct main"
     description:
@@ -938,7 +938,7 @@ packages:
       name: optimized_cached_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.1"
+    version: "3.0.0"
   package_config:
     dependency: transitive
     description:
