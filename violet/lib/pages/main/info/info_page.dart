@@ -205,7 +205,11 @@ class _InfoPageState extends State<InfoPage> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8.0),
         child: Material(
-          color: Settings.themeWhat ? Colors.black38 : Colors.white,
+          color: Settings.themeWhat
+              ? Settings.themeBlack
+                  ? const Color(0xFF141414)
+                  : Colors.black38
+              : Colors.white,
           child: ListTile(
             contentPadding:
                 EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),

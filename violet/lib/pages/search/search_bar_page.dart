@@ -124,6 +124,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                   borderRadius: BorderRadius.circular(4)),
               color: Settings.themeBlack ? const Color(0xFF141414) : null,
               child: Material(
+                color: Settings.themeBlack ? const Color(0xFF141414) : null,
                 child: Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
