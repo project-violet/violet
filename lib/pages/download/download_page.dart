@@ -124,7 +124,7 @@ class _DownloadPageState extends State<DownloadPage>
                   Material(
                     color: Settings.themeWhat
                         ? Settings.themeBlack
-                            ? const Color(0xFF0F0F0F)
+                            ? const Color(0xFF141414)
                             : Colors.grey.shade900.withOpacity(0.4)
                         : Colors.grey.shade200.withOpacity(0.4),
                     child: ListTile(

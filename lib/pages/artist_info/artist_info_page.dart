@@ -345,7 +345,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     return Container(
       color: Settings.themeWhat
           ? Settings.themeBlack
-              ? const Color(0xFF0F0F0F)
+              ? const Color(0xFF141414)
               : Color(0xFF353535)
           : Colors.grey.shade100,
       child: Padding(
@@ -361,7 +361,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               elevation: 5,
               color: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF0F0F0F)
+                      ? const Color(0xFF141414)
                       : Color(0xFF353535)
                   : Colors.grey.shade100,
               child: SizedBox(

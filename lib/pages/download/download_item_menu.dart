@@ -30,7 +30,7 @@ class DownloadImageMenu extends StatelessWidget {
             Card(
               color: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF0F0F0F)
+                      ? const Color(0xFF141414)
                       : Color(0xFF353535)
                   : Colors.grey.shade100,
               child: SizedBox(
