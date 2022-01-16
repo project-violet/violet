@@ -52,29 +52,36 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
       );
     }
 
-    Widget result = BottomNavigationBar(
-      showUnselectedLabels: false,
-      type: BottomNavigationBarType.shifting,
-      fixedColor: Settings.majorColor,
-      unselectedItemColor: Settings.themeWhat ? Colors.white : Colors.black,
-      backgroundColor: Settings.themeWhat && Settings.themeBlack
-          ? const Color(0xFF141414)
-          : null,
-      currentIndex: _currentPage,
-      onTap: (index) {
-        _pageController.animateToPage(
-          index,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-        );
-      },
-      items: <BottomNavigationBarItem>[
-        buildItem(MdiIcons.home, 'main'),
-        buildItem(Icons.search, 'search'),
-        buildItem(Icons.bookmark, 'bookmark'),
-        if (Platform.isAndroid) buildItem(Icons.file_download, 'download'),
-        buildItem(Icons.settings, 'settings'),
-      ],
+    Widget result = Theme(
+      data: Theme.of(context).copyWith(
+        canvasColor: Settings.themeWhat && Settings.themeBlack
+            ? const Color(0xFF141414)
+            : null,
+      ),
+      child: BottomNavigationBar(
+        showUnselectedLabels: false,
+        type: BottomNavigationBarType.shifting,
+        fixedColor: Settings.majorColor,
+        unselectedItemColor: Settings.themeWhat ? Colors.white : Colors.black,
+        backgroundColor: Settings.themeWhat && Settings.themeBlack
+            ? const Color(0xFF141414)
+            : null,
+        currentIndex: _currentPage,
+        onTap: (index) {
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+          );
+        },
+        items: <BottomNavigationBarItem>[
+          buildItem(MdiIcons.home, 'main'),
+          buildItem(Icons.search, 'search'),
+          buildItem(Icons.bookmark, 'bookmark'),
+          if (Platform.isAndroid) buildItem(Icons.file_download, 'download'),
+          buildItem(Icons.settings, 'settings'),
+        ],
+      ),
     );
 
     if (Platform.isAndroid) {
