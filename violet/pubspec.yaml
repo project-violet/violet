@@ -59,6 +59,7 @@ dependencies:
   encrypt: ^5.0.0
   expandable:
   ext_storage:
+    git: https://github.com/basitis/ext_storage
   extended_image: ^4.0.0
   ffi: ^1.1.2
   file_picker: ^1.9.0+1
