@@ -369,6 +369,9 @@ class _SettingsPageState extends State<SettingsPage>
                               Settings.themeBlack && Settings.themeWhat
                                   ? const Color(0xFF141414)
                                   : null,
+                          cardColor: Settings.themeBlack && Settings.themeWhat
+                              ? const Color(0xFF141414)
+                              : null,
                         ),
                       );
                       setState(() {
@@ -397,6 +400,9 @@ class _SettingsPageState extends State<SettingsPage>
                           Settings.themeBlack && Settings.themeWhat
                               ? const Color(0xFF141414)
                               : null,
+                      cardColor: Settings.themeBlack && Settings.themeWhat
+                          ? const Color(0xFF141414)
+                          : null,
                     ),
                   );
                   setState(() {
