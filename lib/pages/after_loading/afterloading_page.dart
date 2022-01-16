@@ -58,7 +58,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
       fixedColor: Settings.majorColor,
       unselectedItemColor: Settings.themeWhat ? Colors.white : Colors.black,
       backgroundColor: Settings.themeWhat && Settings.themeBlack
-          ? const Color(0xFF0F0F0F)
+          ? const Color(0xFF141414)
           : null,
       currentIndex: _currentPage,
       onTap: (index) {

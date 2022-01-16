@@ -268,7 +268,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             child: Material(
               color: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF0F0F0F)
+                      ? const Color(0xFF141414)
                       : Colors.black38
                   : Colors.white,
               child: reorder

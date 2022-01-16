@@ -96,8 +96,9 @@ void main() async {
         scaffoldBackgroundColor:
             Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
         dialogBackgroundColor: Settings.themeBlack && Settings.themeWhat
-            ? const Color(0xFF0F0F0F)
+            ? const Color(0xFF141414)
             : null,
+        cardColor: Settings.themeBlack ? const Color(0xFF141414) : null,
       ),
       themedWidgetBuilder: (context, theme) {
         return MaterialApp(

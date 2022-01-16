@@ -283,14 +283,16 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       margin: const EdgeInsets.only(bottom: 6),
       decoration: !Settings.themeFlat
           ? BoxDecoration(
-              color: Settings.themeWhat ? Colors.grey.shade800 : Colors.white70,
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF141414)
+                      : Colors.grey.shade800
+                  : Colors.white70,
               borderRadius: BorderRadius.all(Radius.circular(5)),
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat
-                      ? Settings.themeBlack
-                          ? const Color(0xFF0F0F0F)
-                          : Colors.grey.withOpacity(0.08)
+                      ? Colors.grey.withOpacity(0.08)
                       : Colors.grey.withOpacity(0.4),
                   spreadRadius: 5,
                   blurRadius: 7,

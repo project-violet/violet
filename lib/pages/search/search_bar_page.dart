@@ -109,7 +109,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     return Container(
       color: Settings.themeWhat
           ? Settings.themeBlack
-              ? const Color(0xFF0F0F0F)
+              ? const Color(0xFF141414)
               : Colors.grey.shade900
           : Colors.white,
       padding:
@@ -122,6 +122,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               elevation: 100,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4)),
+              color: Settings.themeBlack ? const Color(0xFF141414) : null,
               child: Material(
                 child: Container(
                   child: Column(

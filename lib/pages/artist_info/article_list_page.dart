@@ -58,8 +58,11 @@ class _ArticleListPageState extends State<ArticleListPage> {
         children: <Widget>[
           Card(
             elevation: 5,
-            color:
-                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+            color: Settings.themeWhat
+                ? Settings.themeBlack
+                    ? const Color(0xFF141414)
+                    : Color(0xFF353535)
+                : Colors.grey.shade100,
             child: SizedBox(
               width: width - 16,
               height: height -
