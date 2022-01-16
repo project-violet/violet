@@ -24,6 +24,7 @@ class Settings {
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
   static bool themeFlat;
+  static bool themeBlack; // default false
   static bool useTabletMode;
 
   // Tag Settings
@@ -113,6 +114,13 @@ class Settings {
     if (themeFlat == null) {
       await (await SharedPreferences.getInstance()).setBool('themeFlat', false);
       themeFlat = false;
+    }
+
+    themeBlack = (await SharedPreferences.getInstance()).getBool('themeBlack');
+    if (themeBlack == null) {
+      await (await SharedPreferences.getInstance())
+          .setBool('themeBlack', false);
+      themeBlack = false;
     }
 
     var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
@@ -464,6 +472,12 @@ class Settings {
         .setBool('themeColor', themeWhat);
   }
 
+  static Future<void> setThemeBlack(bool wh) async {
+    themeBlack = wh;
+    await (await SharedPreferences.getInstance())
+        .setBool('themeBlack', themeBlack);
+  }
+
   static Future<void> setThemeFlat(bool nn) async {
     themeFlat = nn;
     await (await SharedPreferences.getInstance()).setBool('themeFlat', nn);
@@ -684,7 +698,6 @@ class Settings {
 
   static Future<void> setUseTabletMode(bool nn) async {
     useTabletMode = nn;
-    await (await SharedPreferences.getInstance())
-        .setBool('usetabletmode', nn);
+    await (await SharedPreferences.getInstance()).setBool('usetabletmode', nn);
   }
 }
