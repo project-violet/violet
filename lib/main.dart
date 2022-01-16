@@ -91,10 +91,8 @@ void main() async {
       data: (brightness) => ThemeData(
         accentColor: Settings.majorColor,
         brightness: brightness,
-        bottomSheetTheme: BottomSheetThemeData(
-            backgroundColor: Settings.themeBlack && Settings.themeWhat
-                ? const Color(0xFF141414)
-                : Colors.black.withOpacity(0)),
+        bottomSheetTheme:
+            BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
         scaffoldBackgroundColor:
             Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
         dialogBackgroundColor: Settings.themeBlack && Settings.themeWhat
