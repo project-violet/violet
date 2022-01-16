@@ -1614,9 +1614,12 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               File file;
-              file = await FilePicker.getFile(
+              file = File((await FilePicker.platform.pickFiles(
                 type: FileType.any,
-              );
+              ))
+                  .files
+                  .single
+                  .path);
 
               if (file == null) {
                 flutterToast.showToast(
