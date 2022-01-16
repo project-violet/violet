@@ -581,7 +581,7 @@ class BodyWidget extends StatelessWidget {
               color: data.showDetail
                   ? Settings.themeWhat
                       ? Settings.themeBlack
-                          ? const Color(0xFF0F0F0F)
+                          ? const Color(0xFF141414)
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),

@@ -343,7 +343,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
     return Container(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+      color: Settings.themeWhat
+          ? Settings.themeBlack
+              ? const Color(0xFF141414)
+              : Color(0xFF353535)
+          : Colors.grey.shade100,
       child: Padding(
         // padding: EdgeInsets.all(0),
         padding: EdgeInsets.only(
@@ -355,8 +359,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           children: <Widget>[
             Card(
               elevation: 5,
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF141414)
+                      : Color(0xFF353535)
+                  : Colors.grey.shade100,
               child: SizedBox(
                 width: width - 16,
                 height: height -

@@ -8,6 +8,7 @@ import 'package:violet/database/query.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/three_article_panel.dart';
+import 'package:violet/settings/settings.dart';
 
 class SeriesListPage extends StatelessWidget {
   final String prefix;
@@ -22,6 +23,7 @@ class SeriesListPage extends StatelessWidget {
 
     return CardPanel.build(
       context,
+      enableBackgroundColor: Settings.themeBlack,
       child: Container(
         child: ListView.builder(
           padding: EdgeInsets.fromLTRB(0, 4, 0, 0),

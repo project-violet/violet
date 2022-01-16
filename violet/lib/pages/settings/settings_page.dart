@@ -249,7 +249,7 @@ class _SettingsPageState extends State<SettingsPage>
               child: Material(
                 color: Settings.themeWhat
                     ? Settings.themeBlack
-                        ? const Color(0xFF0F0F0F)
+                        ? const Color(0xFF141414)
                         : Colors.black38
                     : Colors.white,
                 child: Column(children: items),
@@ -367,7 +367,7 @@ class _SettingsPageState extends State<SettingsPage>
                                   : null,
                           dialogBackgroundColor:
                               Settings.themeBlack && Settings.themeWhat
-                                  ? const Color(0xFF0F0F0F)
+                                  ? const Color(0xFF141414)
                                   : null,
                         ),
                       );
@@ -395,7 +395,7 @@ class _SettingsPageState extends State<SettingsPage>
                               : null,
                       dialogBackgroundColor:
                           Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF0F0F0F)
+                              ? const Color(0xFF141414)
                               : null,
                     ),
                   );

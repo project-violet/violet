@@ -83,6 +83,7 @@ class SimilarListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CardPanel.build(
       context,
+      enableBackgroundColor: Settings.themeBlack,
       child: Container(
         child: ListView.builder(
           padding: EdgeInsets.fromLTRB(0, 4, 0, 0),

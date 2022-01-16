@@ -30,8 +30,11 @@ class SearchType2 extends StatelessWidget {
           Hero(
             tag: "searchtype2",
             child: Card(
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF141414)
+                      : Color(0xFF353535)
+                  : Colors.grey.shade100,
               child: SizedBox(
                 child: SizedBox(
                   width: 280,

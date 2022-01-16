@@ -25,7 +25,7 @@ class SearchType extends StatelessWidget {
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
-                  ? const Color(0xFF0F0F0F)
+                  ? const Color(0xFF141414)
                   : const Color(0xFF353535)
               : Colors.grey.shade100,
           child: Container(
