@@ -59,11 +59,19 @@ class ArticleInfoPage extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
 
     return Container(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
+      color: Settings.themeWhat
+          ? Settings.themeBlack
+              ? const Color(0xFF0F0F0F)
+              : Color(0xFF353535)
+          : Colors.grey.shade200,
       padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
       child: Card(
         elevation: 5,
-        color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade200,
+        color: Settings.themeWhat
+            ? Settings.themeBlack
+                ? const Color(0xFF0F0F0F)
+                : Color(0xFF353535)
+            : Colors.grey.shade200,
         child: SizedBox(
           width: width - 16,
           height:
