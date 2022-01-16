@@ -119,7 +119,7 @@ class _BookmarkPageState extends State<BookmarkPage>
         heroTag: 'speed-dial-hero-tag',
         backgroundColor: Settings.themeWhat
             ? Settings.themeBlack
-                ? const Color(0xFF0F0F0F)
+                ? const Color(0xFF141414)
                 : Colors.grey.shade800
             : Colors.white,
         foregroundColor: Settings.majorColor,
@@ -164,7 +164,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                   color: Settings.majorColor),
               backgroundColor: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF0F0F0F)
+                      ? const Color(0xFF141414)
                       : Colors.grey.shade800
                   : Colors.white,
               label: Translations.of(context).trans('editorder'),
@@ -174,7 +174,7 @@ class _BookmarkPageState extends State<BookmarkPage>
               ),
               labelBackgroundColor: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF0F0F0F)
+                      ? const Color(0xFF141414)
                       : Colors.grey.shade800
                   : Colors.white,
               onTap: () {
@@ -186,7 +186,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             child: Icon(MdiIcons.group, color: Settings.majorColor),
             backgroundColor: Settings.themeWhat
                 ? Settings.themeBlack
-                    ? const Color(0xFF0F0F0F)
+                    ? const Color(0xFF141414)
                     : Colors.grey.shade800
                 : Colors.white,
             label: Translations.of(context).trans('newgroup'),
@@ -196,7 +196,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             ),
             labelBackgroundColor: Settings.themeWhat
                 ? Settings.themeBlack
-                    ? const Color(0xFF0F0F0F)
+                    ? const Color(0xFF141414)
                     : Colors.grey.shade800
                 : Colors.white,
             onTap: () async {
@@ -283,7 +283,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             child: Material(
               color: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF0F0F0F)
+                      ? const Color(0xFF141414)
                       : Colors.black38
                   : Colors.white,
               child: reorder
