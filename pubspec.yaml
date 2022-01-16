@@ -96,7 +96,8 @@ dependencies:
   lottie:
   material_design_icons_flutter: ^5.0.5955-rc.1
   mdi:
-  open_file: ^3.2.1
+  open_file:
+    git: https://github.com/violet-dev/open_file
   optimized_cached_image: ^3.0.0
   path:
   path_provider:

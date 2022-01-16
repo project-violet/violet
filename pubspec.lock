@@ -930,9 +930,11 @@ packages:
   open_file:
     dependency: "direct main"
     description:
-      name: open_file
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "4c95f54fb4b36a88dd24eec93f321ddf373d3bb3"
+      url: "https://github.com/violet-dev/open_file"
+    source: git
     version: "3.2.1"
   optimized_cached_image:
     dependency: "direct main"

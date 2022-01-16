@@ -16,8 +16,6 @@ import 'package:violet/database/user/download.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
-import 'package:violet/pages/download/gallery/gallery_item.dart';
-import 'package:violet/pages/download/gallery/gallery_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
@@ -233,30 +231,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                 },
               ),
             );
-          } else {
-            var gi = GalleryItem.fromDonwloadItem(widget.item);
-
-            if (gi.length != 0) {
-              Navigator.of(context).push(PageRouteBuilder(
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  var begin = Offset(0.0, 1.0);
-                  var end = Offset.zero;
-                  var curve = Curves.ease;
-
-                  var tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: curve));
-
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-                pageBuilder: (_, __, ___) =>
-                    GalleryPage(item: gi, model: widget.item),
-              ));
-            }
           }
         }
       },
