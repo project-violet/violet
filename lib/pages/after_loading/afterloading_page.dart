@@ -45,7 +45,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
     BottomNavigationBarItem buildItem(IconData iconData, String key) {
       return BottomNavigationBarItem(
         backgroundColor: Settings.themeWhat
-            ? Colors.grey.shade900.withOpacity(0.90)
+            ? Settings.themeBlack
+                ? const Color(0xFF060606)
+                : Colors.grey.shade900.withOpacity(0.90)
             : Colors.grey.shade50,
         icon: Icon(iconData),
         label: translations.trans(key),
@@ -55,7 +57,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
     Widget result = Theme(
       data: Theme.of(context).copyWith(
         canvasColor: Settings.themeWhat && Settings.themeBlack
-            ? const Color(0xFF141414)
+            ? const Color(0xFF060606)
             : null,
       ),
       child: BottomNavigationBar(
@@ -64,7 +66,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
         fixedColor: Settings.majorColor,
         unselectedItemColor: Settings.themeWhat ? Colors.white : Colors.black,
         backgroundColor: Settings.themeWhat && Settings.themeBlack
-            ? const Color(0xFF141414)
+            ? const Color(0xFF060606)
             : null,
         currentIndex: _currentPage,
         onTap: (index) {

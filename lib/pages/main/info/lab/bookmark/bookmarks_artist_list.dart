@@ -156,7 +156,11 @@ class _GroupArtistListState extends State<LabGroupArtistList>
       child: Hero(
         tag: "searchtype3",
         child: Card(
-          color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+          color: Settings.themeWhat
+              ? Settings.themeBlack
+                  ? const Color(0xFF141414)
+                  : Color(0xFF353535)
+              : Colors.grey.shade100,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),

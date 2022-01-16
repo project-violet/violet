@@ -145,7 +145,11 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8.0),
           child: Material(
-            color: Settings.themeWhat ? Colors.black38 : Colors.white,
+            color: Settings.themeWhat
+                ? Settings.themeBlack
+                    ? const Color(0xFF141414)
+                    : Colors.black38
+                : Colors.white,
             child: ListTile(
               onTap: () {
                 PlatformNavigator.navigateSlide(
