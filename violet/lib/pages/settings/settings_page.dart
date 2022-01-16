@@ -344,6 +344,55 @@ class _SettingsPageState extends State<SettingsPage>
         _buildDivider(),
         InkWell(
           child: ListTile(
+            leading: Icon(MdiIcons.brightness3, color: Settings.majorColor),
+            title: Text('블랙 모드'),
+            trailing: Switch(
+              value: Settings.themeBlack,
+              onChanged: _themeSwitch
+                  ? (newValue) async {
+                      await Settings.setThemeFlat(newValue);
+                      DynamicTheme.of(context).setThemeData(
+                        ThemeData(
+                          accentColor: Settings.majorColor,
+                          brightness: Theme.of(context).brightness,
+                          bottomSheetTheme: BottomSheetThemeData(
+                              backgroundColor: Colors.black.withOpacity(0)),
+                          scaffoldBackgroundColor: Settings.themeBlack
+                              ? const Color(0xFFEFEFEF)
+                              : null,
+                        ),
+                      );
+                      setState(() {
+                        _shouldReload = true;
+                      });
+                    }
+                  : null,
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+          ),
+          onTap: _themeSwitch
+              ? () async {
+                  await Settings.setThemeBlack(!Settings.themeBlack);
+                  DynamicTheme.of(context).setThemeData(
+                    ThemeData(
+                      accentColor: Settings.majorColor,
+                      brightness: Theme.of(context).brightness,
+                      bottomSheetTheme: BottomSheetThemeData(
+                          backgroundColor: Colors.black.withOpacity(0)),
+                      scaffoldBackgroundColor:
+                          Settings.themeBlack ? const Color(0xFFEFEFEF) : null,
+                    ),
+                  );
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                }
+              : null,
+        ),
+        _buildDivider(),
+        InkWell(
+          child: ListTile(
             leading: Icon(MdiIcons.buffer, color: Settings.majorColor),
             title: Text('Flat 테마 사용'),
             trailing: Switch(
