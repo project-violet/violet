@@ -50,7 +50,7 @@ dependencies:
   crypto:
   # device_info: ^2.0.0
   device_info_plus: ^3.2.1
-  dio: ^4.0.4
+  dio: ^4.0.5-beta1
   division:
   draggable_scrollbar:
   # dynamic_theme: ^1.0.1
