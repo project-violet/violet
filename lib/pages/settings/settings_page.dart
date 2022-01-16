@@ -381,7 +381,7 @@ class _SettingsPageState extends State<SettingsPage>
                       bottomSheetTheme: BottomSheetThemeData(
                           backgroundColor: Colors.black.withOpacity(0)),
                       scaffoldBackgroundColor:
-                          Settings.themeBlack ? const Color(0xFFEFEFEF) : null,
+                          Settings.themeBlack ? Colors.black : null,
                     ),
                   );
                   setState(() {
