@@ -358,7 +358,11 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       child: Hero(
         tag: "searchtype2",
         child: Card(
-          color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+          color: Settings.themeWhat
+              ? Settings.themeBlack
+                  ? const Color(0xFF0F0F0F)
+                  : Color(0xFF353535)
+              : Colors.grey.shade100,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),

@@ -28,8 +28,11 @@ class DownloadImageMenu extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Card(
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF0F0F0F)
+                      : Color(0xFF353535)
+                  : Colors.grey.shade100,
               child: SizedBox(
                 child: SizedBox(
                   width: 280,

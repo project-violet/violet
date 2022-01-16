@@ -288,7 +288,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat
-                      ? Colors.grey.withOpacity(0.08)
+                      ? Settings.themeBlack
+                          ? const Color(0xFF0F0F0F)
+                          : Colors.grey.withOpacity(0.08)
                       : Colors.grey.withOpacity(0.4),
                   spreadRadius: 5,
                   blurRadius: 7,

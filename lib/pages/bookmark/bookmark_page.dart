@@ -266,7 +266,11 @@ class _BookmarkPageState extends State<BookmarkPage>
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: Material(
-              color: Settings.themeWhat ? Colors.black38 : Colors.white,
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF0F0F0F)
+                      : Colors.black38
+                  : Colors.white,
               child: reorder
                   ? ListTile(
                       title: Text(name, style: TextStyle(fontSize: 16.0)),

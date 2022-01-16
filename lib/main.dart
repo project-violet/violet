@@ -93,7 +93,11 @@ void main() async {
         brightness: brightness,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
-        scaffoldBackgroundColor: Settings.themeBlack ? Colors.black : null,
+        scaffoldBackgroundColor:
+            Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
+        dialogBackgroundColor: Settings.themeBlack && Settings.themeWhat
+            ? const Color(0xFF0F0F0F)
+            : null,
       ),
       themedWidgetBuilder: (context, theme) {
         return MaterialApp(

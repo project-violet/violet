@@ -24,7 +24,9 @@ class SearchType extends StatelessWidget {
         tag: "searchtype",
         child: Card(
           color: Settings.themeWhat
-              ? const Color(0xFF353535)
+              ? Settings.themeBlack
+                  ? const Color(0xFF0F0F0F)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
