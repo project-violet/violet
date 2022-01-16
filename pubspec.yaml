@@ -108,7 +108,7 @@ dependencies:
   provider:
   scrollable_positioned_list:
   shared_preferences:
-  sqflite:
+  sqflite: ^2.0.2
   synchronized:
   timeago:
   tuple:
