@@ -107,7 +107,11 @@ class _SearchBarPageState extends State<SearchBarPage>
       _initBottomPadding = (mediaQuery.padding + mediaQuery.viewInsets).bottom;
 
     return Container(
-      color: Settings.themeWhat ? Colors.grey.shade900 : Colors.white,
+      color: Settings.themeWhat
+          ? Settings.themeBlack
+              ? const Color(0xFF0F0F0F)
+              : Colors.grey.shade900
+          : Colors.white,
       padding:
           EdgeInsets.fromLTRB(2, statusBarHeight + 2, 0, _initBottomPadding),
       child: Stack(

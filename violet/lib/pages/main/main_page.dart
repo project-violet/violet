@@ -736,13 +736,19 @@ class _MainPage2State extends State<MainPage2>
           color: !Settings.themeFlat
               ? null
               : Settings.themeWhat
-                  ? Colors.black26
+                  ? Settings.themeBlack
+                      ? const Color(0xFF0F0F0F)
+                      : Colors.black26
                   : Colors.white,
           child: !Settings.themeFlat
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
                   child: Material(
-                      color: Settings.themeWhat ? Colors.black38 : Colors.white,
+                      color: Settings.themeWhat
+                          ? Settings.themeBlack
+                              ? const Color(0xFF0F0F0F)
+                              : Colors.black38
+                          : Colors.white,
                       child: Padding(
                           padding: EdgeInsets.all(20.0),
                           child: Column(children: content))))

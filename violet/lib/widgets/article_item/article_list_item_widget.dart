@@ -580,7 +580,9 @@ class BodyWidget extends StatelessWidget {
           ? BoxDecoration(
               color: data.showDetail
                   ? Settings.themeWhat
-                      ? Colors.grey.shade800
+                      ? Settings.themeBlack
+                          ? const Color(0xFF0F0F0F)
+                          : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),
               borderRadius: const BorderRadius.all(const Radius.circular(3)),

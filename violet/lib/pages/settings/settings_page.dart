@@ -247,7 +247,11 @@ class _SettingsPageState extends State<SettingsPage>
           ? ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Material(
-                color: Settings.themeWhat ? Colors.black38 : Colors.white,
+                color: Settings.themeWhat
+                    ? Settings.themeBlack
+                        ? const Color(0xFF0F0F0F)
+                        : Colors.black38
+                    : Colors.white,
                 child: Column(children: items),
               ))
           : Column(children: items),
@@ -357,9 +361,14 @@ class _SettingsPageState extends State<SettingsPage>
                           brightness: Theme.of(context).brightness,
                           bottomSheetTheme: BottomSheetThemeData(
                               backgroundColor: Colors.black.withOpacity(0)),
-                          scaffoldBackgroundColor: Settings.themeBlack
-                              ? const Color(0xFFEFEFEF)
-                              : null,
+                          scaffoldBackgroundColor:
+                              Settings.themeBlack && Settings.themeWhat
+                                  ? Colors.black
+                                  : null,
+                          dialogBackgroundColor:
+                              Settings.themeBlack && Settings.themeWhat
+                                  ? const Color(0xFF0F0F0F)
+                                  : null,
                         ),
                       );
                       setState(() {
@@ -381,7 +390,13 @@ class _SettingsPageState extends State<SettingsPage>
                       bottomSheetTheme: BottomSheetThemeData(
                           backgroundColor: Colors.black.withOpacity(0)),
                       scaffoldBackgroundColor:
-                          Settings.themeBlack ? Colors.black : null,
+                          Settings.themeBlack && Settings.themeWhat
+                              ? Colors.black
+                              : null,
+                      dialogBackgroundColor:
+                          Settings.themeBlack && Settings.themeWhat
+                              ? const Color(0xFF0F0F0F)
+                              : null,
                     ),
                   );
                   setState(() {

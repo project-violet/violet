@@ -352,7 +352,9 @@ class _SearchPageState extends State<SearchPage>
                   children: <Widget>[
                     Material(
                       color: Settings.themeWhat
-                          ? Colors.grey.shade900.withOpacity(0.4)
+                          ? Settings.themeBlack
+                              ? const Color(0xFF0F0F0F)
+                              : Colors.grey.shade900.withOpacity(0.4)
                           : Colors.grey.shade200.withOpacity(0.4),
                       child: ListTile(
                         title: TextFormField(
@@ -474,8 +476,11 @@ class _SearchPageState extends State<SearchPage>
         child: Hero(
           tag: "searchtype",
           child: Card(
-            color:
-                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+            color: Settings.themeWhat
+                ? Settings.themeBlack
+                    ? const Color(0xFF0F0F0F)
+                    : Color(0xFF353535)
+                : Colors.grey.shade100,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),

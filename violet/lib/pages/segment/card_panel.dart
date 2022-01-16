@@ -11,7 +11,11 @@ class CardPanel {
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
-    final color = Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100;
+    final color = Settings.themeWhat
+        ? Settings.themeBlack
+            ? Colors.black
+            : Color(0xFF353535)
+        : Colors.grey.shade100;
     final bottomPadding = (mediaQuery.padding + mediaQuery.viewInsets).bottom;
 
     return Container(

@@ -123,7 +123,9 @@ class _DownloadPageState extends State<DownloadPage>
                 children: <Widget>[
                   Material(
                     color: Settings.themeWhat
-                        ? Colors.grey.shade900.withOpacity(0.4)
+                        ? Settings.themeBlack
+                            ? const Color(0xFF0F0F0F)
+                            : Colors.grey.shade900.withOpacity(0.4)
                         : Colors.grey.shade200.withOpacity(0.4),
                     child: ListTile(
                       title: TextFormField(
