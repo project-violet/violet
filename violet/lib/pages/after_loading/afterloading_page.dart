@@ -55,7 +55,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
     Widget result = Theme(
       data: Theme.of(context).copyWith(
         canvasColor: Settings.themeWhat && Settings.themeBlack
-            ? const Color(0xFF141414)
+            ? const Color(0xFF0F0F0F)
             : null,
       ),
       child: BottomNavigationBar(
@@ -64,7 +64,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
         fixedColor: Settings.majorColor,
         unselectedItemColor: Settings.themeWhat ? Colors.white : Colors.black,
         backgroundColor: Settings.themeWhat && Settings.themeBlack
-            ? const Color(0xFF141414)
+            ? const Color(0xFF0F0F0F)
             : null,
         currentIndex: _currentPage,
         onTap: (index) {

@@ -285,7 +285,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           ? BoxDecoration(
               color: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF141414)
+                      ? const Color(0xFF0F0F0F)
                       : Colors.grey.shade800
                   : Colors.white70,
               borderRadius: BorderRadius.all(Radius.circular(5)),

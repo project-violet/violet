@@ -737,7 +737,7 @@ class _MainPage2State extends State<MainPage2>
               ? null
               : Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF141414)
+                      ? const Color(0xFF0F0F0F)
                       : Colors.black26
                   : Colors.white,
           child: !Settings.themeFlat
@@ -746,7 +746,7 @@ class _MainPage2State extends State<MainPage2>
                   child: Material(
                       color: Settings.themeWhat
                           ? Settings.themeBlack
-                              ? const Color(0xFF141414)
+                              ? const Color(0xFF0F0F0F)
                               : Colors.black38
                           : Colors.white,
                       child: Padding(
