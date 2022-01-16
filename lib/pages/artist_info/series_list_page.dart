@@ -23,7 +23,7 @@ class SeriesListPage extends StatelessWidget {
 
     return CardPanel.build(
       context,
-      enableBackgroundColor: Settings.themeBlack,
+      enableBackgroundColor: Settings.themeWhat && Settings.themeBlack,
       child: Container(
         child: ListView.builder(
           padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
