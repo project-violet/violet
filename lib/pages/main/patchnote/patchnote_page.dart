@@ -24,22 +24,31 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 01, 16),
+    version: '1.18 Minor Update <== Latest',
+    contents: [
+      'enhance download viewer',
+      'add black theme',
+      'add tablet mode option',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 01, 08),
-    version: '1.17.10 Patch Update <== Latest',
+    version: '1.17.10 Patch Update',
     contents: [
       'fix',
     ],
   ),
   PatchModel(
     dateTime: DateTime(2021, 01, 05),
-    version: '1.17.9 Patch Update <== Latest',
+    version: '1.17.9 Patch Update',
     contents: [
       'fix',
     ],
   ),
   PatchModel(
     dateTime: DateTime(2021, 01, 04),
-    version: '1.17.8 Patch Update <== Latest',
+    version: '1.17.8 Patch Update',
     contents: [
       'fix',
     ],
