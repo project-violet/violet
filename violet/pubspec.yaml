@@ -75,10 +75,11 @@ dependencies:
   flutter_mobx:
   flutter_reorderable_list:
   # flutter_statusbar_manager: ^2.0.0
+  flutter_keyboard_visibility: ^5.1.1
   flutter_speed_dial:
   flutter_staggered_animations: ^1.0.0
   flutter_svg: ^0.21.0+1
-  flutter_typeahead: ^3.2.1
+  flutter_typeahead: ^3.2.4
   flutter_js:
   fluttertoast:
   freezed_annotation:
@@ -108,7 +109,7 @@ dependencies:
   synchronized:
   timeago:
   tuple:
-  url_launcher:
+  url_launcher: ^6.0.18
   uuid:
   webview_flutter: ^2.0.14
   # archive:
