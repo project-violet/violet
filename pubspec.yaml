@@ -82,6 +82,7 @@ dependencies:
   flutter_svg: ^0.21.0+1
   flutter_typeahead: ^3.2.4
   flutter_js:
+    git: https://github.com/violet-dev/flutter_js
   fluttertoast:
   freezed_annotation:
   get: ^4.1.4
