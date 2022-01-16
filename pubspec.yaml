@@ -49,7 +49,7 @@ dependencies:
   country_pickers: ^2.0.0
   crypto:
   device_info: ^2.0.0
-  dio:
+  dio: ^4.0.4
   division:
   draggable_scrollbar:
   # dynamic_theme: ^1.0.1
