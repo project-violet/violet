@@ -62,7 +62,7 @@ dependencies:
     git: https://github.com/basitis/ext_storage
   extended_image: ^4.0.0
   ffi: ^1.1.2
-  file_picker: ^1.9.0+1
+  file_picker: ^4.3.1
   firebase_core : ^1.6.0 # @dependent: android
   firebase_analytics: ^8.3.2 # @dependent: android
   firebase_crashlytics: ^2.2.1 # @dependent: android
