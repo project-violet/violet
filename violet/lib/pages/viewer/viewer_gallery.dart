@@ -72,7 +72,9 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                         bottomLeft: Radius.circular(10.0),
                         bottomRight: Radius.circular(10.0)),
                     color: Settings.themeWhat
-                        ? Color(0xFF353535)
+                        ? Settings.themeBlack
+                            ? const Color(0xFF141414)
+                            : Color(0xFF353535)
                         : Colors.grey.shade100,
                   ),
                   child: Padding(
