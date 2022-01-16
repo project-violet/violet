@@ -640,9 +640,12 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<String> getFile() async {
     File file;
-    file = await FilePicker.getFile(
+    file = File((await FilePicker.platform.pickFiles(
       type: FileType.any,
-    );
+    ))
+        .files
+        .single
+        .path);
 
     if (file == null) {
       await showOkDialog(
