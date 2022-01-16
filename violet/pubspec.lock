@@ -570,10 +570,12 @@ packages:
   flutter_js:
     dependency: "direct main"
     description:
-      name: flutter_js
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.5.0+3"
+      path: "."
+      ref: HEAD
+      resolved-ref: "502c73b713a5ae213fa6f65f62c2fc0d12759c8c"
+      url: "https://github.com/violet-dev/flutter_js"
+    source: git
+    version: "0.5.0+5"
   flutter_keyboard_visibility:
     dependency: "direct main"
     description:
