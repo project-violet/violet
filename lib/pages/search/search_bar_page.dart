@@ -122,9 +122,9 @@ class _SearchBarPageState extends State<SearchBarPage>
               elevation: 100,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4)),
-              color: Settings.themeBlack ? const Color(0xFF141414) : null,
+              color: Settings.themeWhat && Settings.themeBlack ? const Color(0xFF141414) : null,
               child: Material(
-                color: Settings.themeBlack ? const Color(0xFF141414) : null,
+                color:Settings.themeWhat && Settings.themeBlack ? const Color(0xFF141414) : null,
                 child: Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,6 +163,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   _searchBar() {
     return Material(
+      color:Settings.themeWhat && Settings.themeBlack ? const Color(0xFF141414) : null,
       child: ListTile(
         title: TextFormField(
           cursorColor: Colors.black,
