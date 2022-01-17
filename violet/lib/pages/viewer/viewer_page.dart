@@ -801,7 +801,9 @@ class _ViewerPageState extends State<ViewerPage>
           transformationController: _transformationController,
           minScale: 1.0,
           child: Container(
-            color: Settings.themeBlack ? Colors.black : const Color(0xff444444),
+            color: Settings.themeWhat && Settings.themeBlack
+                ? Colors.black
+                : const Color(0xff444444),
             child: NotificationListener(
               child: ScrollablePositionedList.builder(
                 physics: scrollListEnable
