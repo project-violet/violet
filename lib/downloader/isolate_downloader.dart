@@ -44,6 +44,7 @@ class IsolateDownloader {
   SendPort _sendPort;
   Isolate _isolate;
   Map<int, DownloadTask> _tasks;
+  int _taskTotalCount;
   Map<int, int> _taskTotalSizes;
   Map<int, int> _taskCountSizes;
   HashSet<int> _appendedTask;
@@ -51,6 +52,16 @@ class IsolateDownloader {
   HashSet<int> _erroredTask;
   HashSet<int> _canceledTask;
   Map<int, IsolateDownloaderErrorUnit> _errorContent;
+
+  static IsolateDownloader _instance;
+  static Future<IsolateDownloader> getInstance() async {
+    if (_instance == null) {
+      _instance = IsolateDownloader();
+      await _instance.init();
+    }
+
+    return _instance;
+  }
 
   Future<void> init() async {
     _receivePort.listen((dynamic message) => _listen(message));
@@ -64,6 +75,7 @@ class IsolateDownloader {
     _erroredTask = HashSet<int>();
     _canceledTask = HashSet<int>();
     _errorContent = Map<int, IsolateDownloaderErrorUnit>();
+    _taskTotalCount = 0;
   }
 
   bool isReady() => _sendPort != null;
@@ -112,8 +124,15 @@ class IsolateDownloader {
   }
 
   void appendTask(DownloadTask task) {
+    task.taskId = _taskTotalCount++;
     _tasks[task.taskId] = task;
     _sendPort.send(SendPortData(type: SendPortType.append, data: task));
+  }
+
+  void appendTasks(List<DownloadTask> tasks) {
+    for (var task in tasks) {
+      appendTask(task);
+    }
   }
 
   DownloadTaskStatus getStatus(int taskId) {
