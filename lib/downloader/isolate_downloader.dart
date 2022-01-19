@@ -1,198 +1,41 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
-import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:violet/component/downloadable.dart';
 
-enum SendPortType {
-  init,
+part './isolate/core.dart';
+
+enum DownloadTaskState {
+  wait,
   append,
-  test,
-}
-
-class SendPortData {
-  final dynamic data;
-  final SendPortType type;
-
-  const SendPortData({this.type, this.data});
-}
-
-enum ReceivePortType {
-  append,
-  progresss,
+  downloading,
   complete,
+  error,
+  cancel,
 }
 
-class ReceivePortData {
-  final dynamic data;
-  final ReceivePortType type;
+class DownloadTaskStatus {
+  final DownloadTaskState state;
 
-  const ReceivePortData({this.type, this.data});
-}
-
-class IsolateDownloaderTask {
-  final int id;
-  final String url;
-  final String fullpath;
-  final CancelToken cancelToken;
-  final Map<String, dynamic> header;
-
-  IsolateDownloaderTask({
-    this.id,
-    this.url,
-    this.fullpath,
-    this.header,
-    this.cancelToken,
-  });
-
-  static IsolateDownloaderTask fromDownloadTask(
-      int taskId, DownloadTask task, CancelToken cancelToken) {
-    var header = Map<String, String>();
-    if (task.referer != null) header['referer'] = task.referer;
-    if (task.accept != null) header['accept'] = task.accept;
-    if (task.userAgent != null) header['user-agent'] = task.userAgent;
-    if (task.headers != null) {
-      task.headers.entries.forEach((element) {
-        header[element.key.toLowerCase()] = element.value;
-      });
-    }
-    return IsolateDownloaderTask(
-      id: taskId,
-      url: task.url,
-      fullpath: task.downloadPath,
-      header: header,
-      cancelToken: cancelToken,
-    );
-  }
-
-  String toString() {
-    return jsonEncode({
-      "id": id,
-      "url": url,
-      "fullpath": fullpath,
-      "header": header,
-    });
-  }
-}
-
-class IsolateDownloaderOption {
-  final int threadCount;
-
-  IsolateDownloaderOption({this.threadCount});
-}
-
-class IsolateDownloaderProgressProtocolUnit {
-  final int id;
-  final int countSize;
+  // downloading
   final int totalSize;
+  final int countSize;
 
-  IsolateDownloaderProgressProtocolUnit({
-    this.id,
-    this.countSize,
+  // error
+  final String errorContent;
+  final String stackTraceContent;
+
+  DownloadTaskStatus({
+    this.state,
     this.totalSize,
-  });
-}
-
-int _taskTotalCount = 0;
-int _taskCurrentCount = 0;
-int _maxTaskCount = 0;
-SendPort _sendPort;
-Queue<IsolateDownloaderTask> _dqueue;
-Map<int, IsolateDownloaderTask> _workingMap;
-
-Future<void> _processTask(IsolateDownloaderTask task) async {
-  _sendPort.send(ReceivePortData(type: ReceivePortType.append, data: task.id));
-
-  var options = BaseOptions(
-    contentType: Headers.formUrlEncodedContentType,
-  );
-  var dio = Dio(options);
-
-  for (var kv in task.header.entries) {
-    dio.options.headers[kv.key] = kv.value;
-  }
-
-  // dio.interceptors.add(DioCacheManager(
-  //   CacheConfig(
-  //     skipDiskCache: true,
-  //     maxMemoryCacheCount: 1000,
-  //   ),
-  // ).interceptor as Interceptor);
-
-  await dio.download(
-    task.url,
-    task.fullpath,
-    cancelToken: task.cancelToken,
-    onReceiveProgress: (count, total) {
-      _sendPort.send(
-        ReceivePortData(
-          type: ReceivePortType.progresss,
-          data: IsolateDownloaderProgressProtocolUnit(
-            id: task.id,
-            countSize: count,
-            totalSize: total,
-          ),
-        ),
-      );
-    },
-  );
-
-  _sendPort
-      .send(ReceivePortData(type: ReceivePortType.complete, data: task.id));
-  _taskCurrentCount -= 1;
-  _workingMap.remove(task.id);
-  _resolveQueue();
-}
-
-void _resolveQueue() {
-  if (_dqueue.isEmpty) return;
-  if (_taskCurrentCount < _maxTaskCount) {
-    _taskCurrentCount += 1;
-    final _itask = _dqueue.removeFirst();
-    _workingMap[_itask.id] = _itask;
-    _processTask(_itask);
-  }
-}
-
-void _appendTask(DownloadTask task) {
-  var token = CancelToken();
-  var itask =
-      IsolateDownloaderTask.fromDownloadTask(_taskTotalCount++, task, token);
-  _dqueue.add(itask);
-  _resolveQueue();
-}
-
-void _initIsolateDownloader(IsolateDownloaderOption option) {
-  _dqueue = Queue<IsolateDownloaderTask>();
-  _workingMap = Map<int, IsolateDownloaderTask>();
-  _maxTaskCount = option.threadCount;
-}
-
-void _downloadIsolateRoutine(SendPort sendPort) {
-  final ReceivePort _receivePort = ReceivePort();
-  sendPort.send(_receivePort.sendPort);
-  _sendPort = sendPort;
-
-  _receivePort.listen((dynamic message) async {
-    if (message is SendPortData) {
-      switch (message.type) {
-        case SendPortType.init:
-          _initIsolateDownloader(message.data as IsolateDownloaderOption);
-          break;
-        case SendPortType.append:
-          _appendTask(message.data as DownloadTask);
-          break;
-        case SendPortType.test:
-          var ttask = message.data as List<String>;
-          break;
-      }
-    }
+    this.countSize,
+    this.errorContent,
+    this.stackTraceContent,
   });
 }
 
@@ -200,11 +43,27 @@ class IsolateDownloader {
   final ReceivePort _receivePort = ReceivePort();
   SendPort _sendPort;
   Isolate _isolate;
+  Map<int, DownloadTask> _tasks;
+  Map<int, int> _taskTotalSizes;
+  Map<int, int> _taskCountSizes;
+  HashSet<int> _appendedTask;
+  HashSet<int> _completedTask;
+  HashSet<int> _erroredTask;
+  HashSet<int> _canceledTask;
+  Map<int, IsolateDownloaderErrorUnit> _errorContent;
 
   Future<void> init() async {
     _receivePort.listen((dynamic message) => _listen(message));
     _isolate =
         await Isolate.spawn(_downloadIsolateRoutine, _receivePort.sendPort);
+    _tasks = Map<int, DownloadTask>();
+    _taskTotalSizes = Map<int, int>();
+    _taskCountSizes = Map<int, int>();
+    _appendedTask = HashSet<int>();
+    _completedTask = HashSet<int>();
+    _erroredTask = HashSet<int>();
+    _canceledTask = HashSet<int>();
+    _errorContent = Map<int, IsolateDownloaderErrorUnit>();
   }
 
   bool isReady() => _sendPort != null;
@@ -222,24 +81,103 @@ class IsolateDownloader {
     } else if (message is ReceivePortData) {
       switch (message.type) {
         case ReceivePortType.append:
-          print('[append] ${message.data as int}');
+          // print('[append] ${message.data as int}');
+          _appendedTask.add(message.data as int);
           break;
         case ReceivePortType.progresss:
           var unit = message.data as IsolateDownloaderProgressProtocolUnit;
-          print('[progress] ${unit.id} ${unit.countSize}/${unit.totalSize}');
+          // print('[progress] ${unit.id} ${unit.countSize}/${unit.totalSize}');
+          _progressTask(unit);
           break;
         case ReceivePortType.complete:
-          print('[complete] ${message.data as int}');
+          // print('[complete] ${message.data as int}');
+          _completeTask(message.data as int);
+          break;
+        case ReceivePortType.error:
+          _errorTask(message.data as IsolateDownloaderErrorUnit);
           break;
       }
     }
   }
 
+  void cancel(int taskId) {
+    _sendPort.send(SendPortData(type: SendPortType.cancel, data: taskId));
+    _canceledTask.add(taskId);
+    _tasks.remove(taskId);
+  }
+
   void close() {
+    _sendPort.send(SendPortData(type: SendPortType.terminate));
     _isolate.kill(priority: Isolate.immediate);
   }
 
   void appendTask(DownloadTask task) {
+    _tasks[task.taskId] = task;
     _sendPort.send(SendPortData(type: SendPortType.append, data: task));
+  }
+
+  DownloadTaskStatus getStatus(int taskId) {
+    if (_appendedTask.contains(taskId)) {
+      if (_canceledTask.contains(taskId)) {
+        return DownloadTaskStatus(
+          state: DownloadTaskState.cancel,
+        );
+      }
+
+      if (_erroredTask.contains(taskId)) {
+        return DownloadTaskStatus(
+          state: DownloadTaskState.error,
+          errorContent: _errorContent[taskId].error,
+          stackTraceContent: _errorContent[taskId].stackTrace,
+        );
+      }
+
+      if (_completedTask.contains(taskId)) {
+        return DownloadTaskStatus(state: DownloadTaskState.complete);
+      }
+
+      if (_taskCountSizes.containsKey(taskId)) {
+        return DownloadTaskStatus(
+          state: DownloadTaskState.downloading,
+          totalSize: _taskTotalSizes[taskId],
+          countSize: _taskCountSizes[taskId],
+        );
+      }
+
+      return DownloadTaskStatus(state: DownloadTaskState.append);
+    }
+
+    return DownloadTaskStatus(state: DownloadTaskState.wait);
+  }
+
+  void _progressTask(IsolateDownloaderProgressProtocolUnit unit) {
+    if (!_tasks[unit.id].isSizeEnsued) {
+      _tasks[unit.id].isSizeEnsued = true;
+      if (_tasks[unit.id].sizeCallback != null)
+        _tasks[unit.id].sizeCallback(unit.totalSize.toDouble());
+    }
+    if (_tasks[unit.id].downloadCallback != null)
+      _tasks[unit.id].downloadCallback(
+          (unit.countSize - _tasks[unit.id].accDownloadSize).toDouble());
+    _taskTotalSizes[unit.id] = unit.totalSize;
+    _taskCountSizes[unit.id] = unit.countSize;
+    _tasks[unit.id].accDownloadSize = unit.countSize;
+  }
+
+  void _completeTask(int taskId) {
+    if (_tasks[taskId].completeCallback != null)
+      _tasks[taskId].completeCallback();
+    _tasks.remove(taskId);
+    _taskCountSizes.remove(taskId);
+    _taskTotalSizes.remove(taskId);
+    _completedTask.add(taskId);
+  }
+
+  void _errorTask(IsolateDownloaderErrorUnit unit) {
+    if (_tasks[unit.id].errorCallback != null)
+      _tasks[unit.id].errorCallback(unit.error);
+    _tasks.remove(unit.id);
+    _erroredTask.add(unit.id);
+    _errorContent[unit.id] = unit;
   }
 }
