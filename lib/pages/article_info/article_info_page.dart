@@ -33,6 +33,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
+import 'package:violet/pages/download/isolate/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
@@ -215,7 +216,7 @@ class ArticleInfoPage extends StatelessWidget {
           return;
         }
       }
-      if (!DownloadPageManager.downloadPageLoaded) {
+      if (!SecondDownloadPageManager.downloadPageLoaded) {
         FlutterToast(context).showToast(
           child: ToastWrapper(
             isCheck: false,
@@ -238,7 +239,8 @@ class ArticleInfoPage extends StatelessWidget {
         gravity: ToastGravity.BOTTOM,
         toastDuration: Duration(seconds: 4),
       );
-      await DownloadPageManager.appendTask(data.queryResult.id().toString());
+      await SecondDownloadPageManager.appendTask(
+          data.queryResult.id().toString());
       Navigator.pop(context);
     }
   }
