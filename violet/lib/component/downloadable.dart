@@ -28,7 +28,6 @@ typedef DoubleCallback = void Function(double);
 typedef DoubleDoubleCallback = Future Function(double, double);
 
 class DownloadTask {
-  final int taskId;
   final String accept;
   final String userAgent;
   final String referer;
@@ -54,6 +53,7 @@ class DownloadTask {
   // These used in isolate downloader
   int accDownloadSize = 0;
   bool isSizeEnsued = false;
+  int taskId;
 
   DownloadTask({
     this.taskId,

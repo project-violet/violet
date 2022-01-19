@@ -10,6 +10,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
+import 'package:violet/pages/download/isolate/download_page.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
@@ -253,7 +254,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
             MainPage2(),
             SearchPage(),
             BookmarkPage(),
-            if (Platform.isAndroid) DownloadPage(),
+            // if (Platform.isAndroid) DownloadPage(),
+            if (Platform.isAndroid) SecondDownloadPage(),
             SettingsPage(),
           ],
         ),
