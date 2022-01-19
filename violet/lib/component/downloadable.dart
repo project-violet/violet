@@ -51,6 +51,10 @@ class DownloadTask {
   VoidCallback startCallback;
   VoidCallback completeCallback;
 
+  // These used in isolate downloader
+  int accDownloadSize = 0;
+  bool isSizeEnsued = false;
+
   DownloadTask({
     this.taskId,
     this.accept =

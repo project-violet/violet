@@ -30,6 +30,12 @@ void main() {
       headers: {},
     );
     task.downloadPath = task.filename;
+    task.startCallback = () => print('start');
+    task.completeCallback = () => print('complete');
+    task.errorCallback = (e) => print(e);
+    task.sizeCallback = (sz) => print('sz $sz');
+    task.downloadCallback = (a) => print('d $a');
+
     downloader.appendTask(task);
 
     // downloader.appendTask(DownloadTask(
