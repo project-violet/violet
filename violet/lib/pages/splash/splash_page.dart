@@ -23,6 +23,7 @@ import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/downloader/isolate_downloader.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
@@ -192,6 +193,7 @@ class _SplashPageState extends State<SplashPage> {
     await TagTranslate.init();
     await Population.init();
     await HisokiHash.init();
+    await IsolateDownloader.getInstance();
 
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult != ConnectivityResult.none) {
