@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/downloadable.dart';
 
 part './isolate/core.dart';
@@ -51,6 +52,7 @@ class IsolateDownloader {
   HashSet<int> _completedTask;
   HashSet<int> _erroredTask;
   HashSet<int> _canceledTask;
+  int _threadCount;
   Map<int, IsolateDownloaderErrorUnit> _errorContent;
 
   static IsolateDownloader _instance;
@@ -64,6 +66,7 @@ class IsolateDownloader {
   }
 
   Future<void> init() async {
+    await _initThreadCount();
     _receivePort.listen((dynamic message) => _listen(message));
     _isolate =
         await Isolate.spawn(_downloadIsolateRoutine, _receivePort.sendPort);
@@ -78,6 +81,20 @@ class IsolateDownloader {
     _taskTotalCount = 0;
   }
 
+  Future<void> _initThreadCount() async {
+    var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
+    if (tc == null) {
+      tc = 4;
+      await (await SharedPreferences.getInstance()).setInt('thread_count', 4);
+    }
+    if (tc > 128) {
+      tc = 128;
+      await (await SharedPreferences.getInstance()).setInt('thread_count', 128);
+    }
+
+    _threadCount = tc;
+  }
+
   bool isReady() => _sendPort != null;
 
   Future<void> _listen(dynamic message) async {
@@ -87,22 +104,19 @@ class IsolateDownloader {
       _sendPort.send(
         SendPortData(
           type: SendPortType.init,
-          data: IsolateDownloaderOption(threadCount: 4),
+          data: IsolateDownloaderOption(threadCount: _threadCount),
         ),
       );
     } else if (message is ReceivePortData) {
       switch (message.type) {
         case ReceivePortType.append:
-          // print('[append] ${message.data as int}');
           _appendedTask.add(message.data as int);
           break;
         case ReceivePortType.progresss:
           var unit = message.data as IsolateDownloaderProgressProtocolUnit;
-          // print('[progress] ${unit.id} ${unit.countSize}/${unit.totalSize}');
           _progressTask(unit);
           break;
         case ReceivePortType.complete:
-          // print('[complete] ${message.data as int}');
           _completeTask(message.data as int);
           break;
         case ReceivePortType.error:
@@ -110,6 +124,12 @@ class IsolateDownloader {
           break;
       }
     }
+  }
+
+  void changeThreadCount(int threadCount) {
+    _threadCount = threadCount;
+    _sendPort
+        .send(SendPortData(type: SendPortType.tasksize, data: threadCount));
   }
 
   void cancel(int taskId) {

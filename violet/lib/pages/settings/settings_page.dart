@@ -28,6 +28,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/downloader/isolate_downloader.dart';
 import 'package:violet/downloader/native_downloader.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
@@ -1229,12 +1230,8 @@ class _SettingsPageState extends State<SettingsPage>
                 ),
               );
               if (dialog == true) {
-                if (!await (await NativeDownloader.getInstance())
-                    .tryChangeThreadCount(int.parse(text.text))) {
-                  await showOkDialog(
-                      context, Translations.of(context).trans('remaintask'));
-                  return;
-                }
+                await IsolateDownloader.getInstance()
+                  ..changeThreadCount(int.parse(text.text));
 
                 await (await SharedPreferences.getInstance())
                     .setInt('thread_count', int.parse(text.text));
