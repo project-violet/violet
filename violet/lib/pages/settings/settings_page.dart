@@ -163,7 +163,7 @@ class _SettingsPageState extends State<SettingsPage>
         ..addAll(_systemGroup())
         ..addAll(_databaseGroup())
         ..addAll(_networkingGroup())
-        ..addAll(Platform.isAndroid ? _downloadGroup() : [])
+        ..addAll(_downloadGroup())
         ..addAll(_bookmarkGroup())
         ..addAll(_componetGroup())
         ..addAll(_viewGroup())
