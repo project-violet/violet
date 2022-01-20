@@ -398,6 +398,15 @@ class Settings {
           FirebaseCrashlytics.instance.recordError(e, st);
         }
       }
+    } else if (Platform.isIOS) {
+      downloadBasePath =
+          (await SharedPreferences.getInstance()).getString('downloadbasepath');
+
+      if (downloadBasePath == null) {
+        downloadBasePath = 'not supported';
+        await (await SharedPreferences.getInstance())
+            .setString('downloadbasepath', downloadBasePath);
+      }
     }
 
     downloadRule =
