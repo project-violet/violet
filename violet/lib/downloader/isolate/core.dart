@@ -37,19 +37,18 @@ class IsolateDownloaderTask {
   final int id;
   final String url;
   final String fullpath;
-  final CancelToken cancelToken;
   final Map<String, dynamic> header;
+
+  CancelToken cancelToken;
 
   IsolateDownloaderTask({
     this.id,
     this.url,
     this.fullpath,
     this.header,
-    this.cancelToken,
   });
 
-  static IsolateDownloaderTask fromDownloadTask(
-      int taskId, DownloadTask task, CancelToken cancelToken) {
+  static IsolateDownloaderTask fromDownloadTask(int taskId, DownloadTask task) {
     var header = Map<String, String>();
     if (task.referer != null) header['referer'] = task.referer;
     if (task.accept != null) header['accept'] = task.accept;
@@ -64,7 +63,6 @@ class IsolateDownloaderTask {
       url: task.url,
       fullpath: task.downloadPath,
       header: header,
-      cancelToken: cancelToken,
     );
   }
 
@@ -161,7 +159,7 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
   } catch (e, st) {
     _sendPort.send(
       ReceivePortData(
-        type: ReceivePortType.complete,
+        type: ReceivePortType.error,
         data: IsolateDownloaderErrorUnit(
           id: task.id,
           error: e.toString(),
@@ -185,10 +183,10 @@ void _resolveQueue() {
   }
 }
 
-void _appendTask(DownloadTask task) {
+void _appendTask(IsolateDownloaderTask task) {
   var token = CancelToken();
-  var itask = IsolateDownloaderTask.fromDownloadTask(task.taskId, task, token);
-  _dqueue.add(itask);
+  task.cancelToken = token;
+  _dqueue.add(task);
   _resolveQueue();
 }
 
@@ -224,7 +222,7 @@ void _downloadIsolateRoutine(SendPort sendPort) {
           _initIsolateDownloader(message.data as IsolateDownloaderOption);
           break;
         case SendPortType.append:
-          _appendTask(message.data as DownloadTask);
+          _appendTask(message.data as IsolateDownloaderTask);
           break;
         case SendPortType.cancel:
           _cancelTask(message.data as int);

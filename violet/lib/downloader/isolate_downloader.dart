@@ -126,7 +126,12 @@ class IsolateDownloader {
   void appendTask(DownloadTask task) {
     task.taskId = _taskTotalCount++;
     _tasks[task.taskId] = task;
-    _sendPort.send(SendPortData(type: SendPortType.append, data: task));
+    _sendPort.send(
+      SendPortData(
+        type: SendPortType.append,
+        data: IsolateDownloaderTask.fromDownloadTask(task.taskId, task),
+      ),
+    );
   }
 
   void appendTasks(List<DownloadTask> tasks) {
