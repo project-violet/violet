@@ -29,6 +29,7 @@ typedef DownloaderAppend = Pointer<Utf8> Function(Pointer<Utf8> downloadInfo);
 typedef CDownloaderChangeThreadCount = Int64 Function(Int64);
 typedef DownloaderChangeThreadCount = int Function(int threadCount);
 
+@deprecated
 class NativeDownloadTask {
   final int id;
   final String url;
@@ -65,6 +66,7 @@ class NativeDownloadTask {
   }
 }
 
+@deprecated
 class NativeDownloader {
   DynamicLibrary libviolet;
   DownloaderInit downloaderInit;
