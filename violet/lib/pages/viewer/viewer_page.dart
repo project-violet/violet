@@ -995,7 +995,12 @@ class _ViewerPageState extends State<ViewerPage>
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
         ),
-        filterQuality: FilterQuality.medium,
+        filterQuality: [
+          FilterQuality.none,
+          FilterQuality.high,
+          FilterQuality.medium,
+          FilterQuality.low,
+        ][Settings.imageQuality],
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -1003,7 +1008,12 @@ class _ViewerPageState extends State<ViewerPage>
     else if (_pageInfo.useFileSystem) {
       return PhotoViewGalleryPageOptions(
         imageProvider: FileImage(File(_pageInfo.uris[index])),
-        filterQuality: FilterQuality.medium,
+        filterQuality: [
+          FilterQuality.none,
+          FilterQuality.high,
+          FilterQuality.medium,
+          FilterQuality.low,
+        ][Settings.imageQuality],
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -1043,7 +1053,12 @@ class _ViewerPageState extends State<ViewerPage>
                   _urlCache[index],
                   headers: _headerCache[index],
                 ),
-                filterQuality: FilterQuality.medium,
+                filterQuality: [
+                  FilterQuality.none,
+                  FilterQuality.high,
+                  FilterQuality.medium,
+                  FilterQuality.low,
+                ][Settings.imageQuality],
                 initialScale: PhotoViewComputedScale.contained,
                 minScale: PhotoViewComputedScale.contained * 1.0,
                 maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -1571,7 +1586,12 @@ class _ViewerPageState extends State<ViewerPage>
                 fit: BoxFit.cover,
                 fadeInDuration: Duration(microseconds: 500),
                 fadeInCurve: Curves.easeIn,
-                filterQuality: FilterQuality.medium,
+                filterQuality: [
+                  FilterQuality.none,
+                  FilterQuality.high,
+                  FilterQuality.medium,
+                  FilterQuality.low,
+                ][Settings.imageQuality],
                 imageBuilder: (context, imageProvider, child) {
                   if (_height[index] == 0 || _height[index] == 300) {
                     Future.delayed(Duration(milliseconds: 50)).then((value) {
@@ -1820,7 +1840,12 @@ class __FileImageState extends State<_FileImage> {
       File(widget.path),
       fit: BoxFit.contain,
       imageCacheName: widget.path,
-      filterQuality: FilterQuality.medium,
+      filterQuality: [
+        FilterQuality.none,
+        FilterQuality.high,
+        FilterQuality.medium,
+        FilterQuality.low,
+      ][Settings.imageQuality],
       loadStateChanged: (ExtendedImageState state) {
         if (widget.cachedHeight != null && widget.cachedHeight > 0)
           return state.completedWidget;
