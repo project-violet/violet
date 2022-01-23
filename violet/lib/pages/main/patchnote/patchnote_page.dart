@@ -24,8 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 01, 23),
+    version: '1.19 Minor Update <== Latest',
+    isMinor: true,
+    contents: [
+      'support download on ios device',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 01, 16),
-    version: '1.18 Minor Update <== Latest',
+    version: '1.18 Minor Update',
+    isMinor: true,
     contents: [
       'enhance download viewer',
       'add black theme',
