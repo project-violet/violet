@@ -813,7 +813,8 @@ class _ViewerPageState extends State<ViewerPage>
                 itemCount: _pageInfo.uris.length,
                 itemScrollController: itemScrollController,
                 itemPositionsListener: itemPositionsListener,
-                minCacheExtent: height * 3.0,
+                minCacheExtent:
+                    _pageInfo.useFileSystem ? height * 6.0 : height * 3.0,
                 itemBuilder: (context, index) {
                   Widget image;
                   if (!Settings.padding) {
@@ -879,11 +880,10 @@ class _ViewerPageState extends State<ViewerPage>
         ),
         _verticalPageLabel(),
         _touchArea(),
-        !_disableBottom &&
-                (!Settings.moveToAppBarToBottom || Settings.showSlider)
-            ? _bottomAppBar()
-            : Container(),
-        !_disableBottom ? _appBar() : Container(),
+        if (!_disableBottom &&
+            (!Settings.moveToAppBarToBottom || Settings.showSlider))
+          _bottomAppBar(),
+        if (!_disableBottom) _appBar(),
       ],
     );
   }
@@ -1393,45 +1393,44 @@ class _ViewerPageState extends State<ViewerPage>
     if (_height == null) {
       _height = List<double>.filled(_pageInfo.uris.length, 0);
     }
-    if (_height[index] == 0) {
-      return FutureBuilder(
-        // to avoid loading all images when fast scrolling
-        future: Future.delayed(Duration(milliseconds: 300)).then((value) async {
-          return 0;
-        }),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return _FileImage(
-              path: _pageInfo.uris[index],
-              heightCallback: (height) async {
-                _height[index] = height;
-              },
-            );
-          }
 
-          return SizedBox(
-            height: _height[index] != 0 ? _height[index] : 300,
-            child: Center(
-              child: SizedBox(
-                child: CircularProgressIndicator(),
-                width: 30,
-                height: 30,
-              ),
-            ),
+    Future<dynamic> future;
+
+    if (_height[index] == 0)
+      future = Future.delayed(Duration(milliseconds: 300));
+    else
+      future = Future.value(0);
+
+    return FutureBuilder(
+      // to avoid loading all images when fast scrolling
+      future: future.then((value) async {
+        return 0;
+      }),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _FileImage(
+            path: _pageInfo.uris[index],
+            cachedHeight: _height[index] != 0 ? _height[index] : null,
+            heightCallback: _height[index] != 0
+                ? null
+                : (height) async {
+                    _height[index] = height;
+                  },
           );
-        },
-      );
-    } else {
-      // Prevent flicking when no animate jump page
-      return Container(
-        height: _height[index],
-        child: _FileImage(
-          path: _pageInfo.uris[index],
-          heightCallback: (height) async {},
-          cachedHeight: _height[index],
-        ),
-      );
-    }
+        }
+
+        return SizedBox(
+          height: _height[index] != 0 ? _height[index] : 300,
+          child: Center(
+            child: SizedBox(
+              child: CircularProgressIndicator(),
+              width: 30,
+              height: 30,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // Future<Size> _calculateImageDimension(String uri) async {
@@ -1838,7 +1837,7 @@ class __FileImageState extends State<_FileImage> {
           });
         } else if (state.extendedImageLoadState == LoadState.loading) {
           return SizedBox(
-            height: _height != 0 ? _height : 300,
+            height: _height,
             child: Center(
               child: SizedBox(
                 child: CircularProgressIndicator(),
@@ -1853,11 +1852,15 @@ class __FileImageState extends State<_FileImage> {
       },
     );
 
-    return AnimatedContainer(
+    return SizedBox(
       height: _height,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-      child: image,
+      child: AnimatedContainer(
+        alignment: Alignment.center,
+        height: _height,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+        child: image,
+      ),
     );
   }
 }
