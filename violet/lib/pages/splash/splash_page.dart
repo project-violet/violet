@@ -142,6 +142,8 @@ class _SplashPageState extends State<SplashPage> {
   int chunkDownloadMax = 0;
   int chunkDownloadProgress = 0;
   bool backupBookmark = false;
+  bool showMessage = false;
+  String message = '';
 
   final imgSize = {
     'global': '320MB',
@@ -184,19 +186,34 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> navigationPage() async {
+    setState(() {
+      showMessage = true;
+    });
+
+    _changeMessage('init settings...');
     await Settings.init();
+    _changeMessage('loading bookmark...');
     await Bookmark.getInstance();
+    _changeMessage('loading userdb...');
     await User.getInstance();
     await Variables.init();
+    _changeMessage('loading index...');
     await HitomiIndexs.init();
+    _changeMessage('init logger...');
     await Logger.init();
+    _changeMessage('loading translate...');
     await TagTranslate.init();
+    _changeMessage('init population...');
     await Population.init();
-    await HisokiHash.init();
+    // await HisokiHash.init();
+    _changeMessage('init downloader...');
     await IsolateDownloader.getInstance();
 
+    // this may be slow down to loading
+    _changeMessage('check network...');
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult != ConnectivityResult.none) {
+      _changeMessage('loading script...');
       await ScriptManager.init();
     }
 
@@ -219,9 +236,12 @@ class _SplashPageState extends State<SplashPage> {
         !widget.switching) {
       if (connectivityResult != ConnectivityResult.none) {
         try {
+          _changeMessage('check sync...');
           await SyncManager.checkSync();
+
           if (!SyncManager.firstSync && SyncManager.chunkRequire) {
             setState(() {
+              showMessage = false;
               showIndicator = true;
             });
             await SyncManager.doChunkSync((_, len) async {
@@ -262,6 +282,12 @@ class _SplashPageState extends State<SplashPage> {
     }
   }
 
+  _changeMessage(String msg) {
+    setState(() {
+      message = msg;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -296,6 +322,7 @@ class _SplashPageState extends State<SplashPage> {
                 height: 100,
               ),
             ),
+            _showMessage(),
             _chunkDownload(),
             _firstPage(),
             _dbSelector(),
@@ -330,6 +357,34 @@ class _SplashPageState extends State<SplashPage> {
                           ? 'Chunk downloading...[$chunkDownloadProgress/${SyncManager.getSyncRequiredChunkCount()}]'
                           : 'Extracting...',
                   style: const TextStyle(color: Colors.white)),
+              Container(
+                height: 16,
+              ),
+              SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  color: Settings.majorColor.withAlpha(150),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _showMessage() {
+    return Visibility(
+      visible: showMessage,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 120),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(message, style: TextStyle(color: Colors.white)),
               Container(
                 height: 16,
               ),
