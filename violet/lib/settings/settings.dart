@@ -412,7 +412,7 @@ class Settings {
     downloadRule =
         (await SharedPreferences.getInstance()).getString('downloadrule');
     if (downloadRule == null) {
-      downloadRule = "%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s";
+      downloadRule = "%(extractor)s/%(id)s/%(file)s.%(ext)s";
       await (await SharedPreferences.getInstance())
           .setString('downloadrule', downloadRule);
     }
