@@ -54,6 +54,7 @@ class Settings {
   static double timerTick;
   static bool moveToAppBarToBottom;
   static bool showSlider;
+  static int imageQuality;
 
   // Download Options
   static bool useInnerStorage;
@@ -318,6 +319,7 @@ class Settings {
       await (await SharedPreferences.getInstance())
           .setBool('showslider', showSlider);
     }
+    imageQuality = await _getInt('imagequality', 4);
 
     useInnerStorage =
         (await SharedPreferences.getInstance()).getBool('useinnerstorage');
@@ -449,6 +451,15 @@ class Settings {
     if (nn == null) {
       nn = defaultValue;
       await (await SharedPreferences.getInstance()).setBool('key', nn);
+    }
+    return nn;
+  }
+
+  static Future<int> _getInt(String key, [int defaultValue = 0]) async {
+    var nn = (await SharedPreferences.getInstance()).getInt(key);
+    if (nn == null) {
+      nn = defaultValue;
+      await (await SharedPreferences.getInstance()).setInt('key', nn);
     }
     return nn;
   }
@@ -613,6 +624,12 @@ class Settings {
     moveToAppBarToBottom = nn;
     await (await SharedPreferences.getInstance())
         .setBool('movetoappbartobottom', nn);
+  }
+
+  static Future<void> setImageQuality(int nn) async {
+    imageQuality = nn;
+    await (await SharedPreferences.getInstance())
+        .setInt('imagequality', imageQuality);
   }
 
   static Future<void> setShowSlider(bool nn) async {

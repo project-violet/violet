@@ -22,6 +22,8 @@ class ViewerSettingPanel extends StatefulWidget {
 }
 
 class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
+  int imgqualityOption = Settings.imageQuality;
+
   @override
   Widget build(BuildContext context) {
     return ClipRect(
@@ -38,11 +40,13 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
                 dense: true,
                 title: Row(
                   children: [
-                    Text(Translations.instance.trans('timersetting') +
-                        ' (' +
-                        Settings.timerTick.toStringAsFixed(1) +
-                        Translations.instance.trans('second') +
-                        ')'),
+                    Text(
+                        Translations.instance.trans('timersetting') +
+                            ' (' +
+                            Settings.timerTick.toStringAsFixed(1) +
+                            Translations.instance.trans('second') +
+                            ')',
+                        style: TextStyle(color: Colors.white)),
                     Expanded(
                       child: Align(
                         child: SliderTheme(
@@ -165,6 +169,42 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
                   }
                   setState(() {});
                 },
+              ),
+              PopupMenuButton<int>(
+                onSelected: (int value) {
+                  Settings.setImageQuality(value);
+                  widget.setStateCallback.call();
+                  setState(() {
+                    imgqualityOption = value;
+                  });
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                  const PopupMenuItem<int>(
+                    value: 0,
+                    child: Text('None'),
+                  ),
+                  const PopupMenuItem<int>(
+                    value: 1,
+                    child: Text('High'),
+                  ),
+                  const PopupMenuItem<int>(
+                    value: 2,
+                    child: Text('Medium'),
+                  ),
+                  const PopupMenuItem<int>(
+                    value: 3,
+                    child: Text('Low'),
+                  ),
+                ],
+                child: ListTile(
+                  dense: true,
+                  title: Text(
+                    Translations.of(context).trans('imgquality'),
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  trailing:
+                      Text(['None', 'High', 'Medium', 'Low'][imgqualityOption]),
+                ),
               ),
             ],
           ),
