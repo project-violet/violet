@@ -200,10 +200,11 @@ class FileNameFormat {
         var type = 's';
 
         for (; i < raw.length; i++) {
-          if (raw[i] != ' ' &&
-              raw[i] != '%' &&
-              raw[i] != '(' &&
-              raw[i] != ')') {
+          if ((raw[i] != ' ' &&
+                  raw[i] != '%' &&
+                  raw[i] != '(' &&
+                  raw[i] != ')') ||
+              int.tryParse(raw[i]) != null) {
             type = raw[i];
             break;
           }
