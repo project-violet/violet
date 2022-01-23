@@ -1571,6 +1571,7 @@ class _ViewerPageState extends State<ViewerPage>
                 fit: BoxFit.cover,
                 fadeInDuration: Duration(microseconds: 500),
                 fadeInCurve: Curves.easeIn,
+                filterQuality: FilterQuality.medium,
                 imageBuilder: (context, imageProvider, child) {
                   if (_height[index] == 0 || _height[index] == 300) {
                     Future.delayed(Duration(milliseconds: 50)).then((value) {
@@ -1819,6 +1820,7 @@ class __FileImageState extends State<_FileImage> {
       File(widget.path),
       fit: BoxFit.contain,
       imageCacheName: widget.path,
+      filterQuality: FilterQuality.medium,
       loadStateChanged: (ExtendedImageState state) {
         if (widget.cachedHeight != null && widget.cachedHeight > 0)
           return state.completedWidget;
