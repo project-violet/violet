@@ -1379,8 +1379,8 @@ class _SettingsPageState extends State<SettingsPage>
                 child: Text(Translations.of(context).trans('default')),
                 onPressed: () {
                   _shouldReload = true;
-                  setState(() => text.text =
-                      '%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s');
+                  setState(() =>
+                      text.text = '%(extractor)s/%(id)s/%(file)s.%(ext)s');
                 },
               );
               var dialog = await showDialog(
