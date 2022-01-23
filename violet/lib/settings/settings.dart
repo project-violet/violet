@@ -319,7 +319,7 @@ class Settings {
       await (await SharedPreferences.getInstance())
           .setBool('showslider', showSlider);
     }
-    imageQuality = await _getInt('imagequality', 4);
+    imageQuality = await _getInt('imagequality', 3);
 
     useInnerStorage =
         (await SharedPreferences.getInstance()).getBool('useinnerstorage');
@@ -450,7 +450,7 @@ class Settings {
     var nn = (await SharedPreferences.getInstance()).getBool(key);
     if (nn == null) {
       nn = defaultValue;
-      await (await SharedPreferences.getInstance()).setBool('key', nn);
+      await (await SharedPreferences.getInstance()).setBool(key, nn);
     }
     return nn;
   }
@@ -459,7 +459,7 @@ class Settings {
     var nn = (await SharedPreferences.getInstance()).getInt(key);
     if (nn == null) {
       nn = defaultValue;
-      await (await SharedPreferences.getInstance()).setInt('key', nn);
+      await (await SharedPreferences.getInstance()).setInt(key, nn);
     }
     return nn;
   }
