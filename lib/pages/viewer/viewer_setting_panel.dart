@@ -187,7 +187,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         value: value,
         activeColor: Settings.majorColor,
       ),
-      title: Text(title),
+      title: Text(title, style: TextStyle(color: Colors.white)),
       onTap: () => onChanged(value),
     );
   }
