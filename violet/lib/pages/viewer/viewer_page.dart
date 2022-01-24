@@ -1879,15 +1879,12 @@ class __FileImageState extends State<_FileImage> {
       },
     );
 
-    return SizedBox(
+    return AnimatedContainer(
+      alignment: Alignment.center,
       height: _height,
-      child: AnimatedContainer(
-        alignment: Alignment.center,
-        height: _height,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-        child: image,
-      ),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+      child: image,
     );
   }
 }
