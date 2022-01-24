@@ -33,7 +33,7 @@ dependencies:
   animated_widgets:
   animations:
   async:
-  auto_animated: any
+  auto_animated: ^3.0.1
   badges:
   bloc: ^6.0.0
   bubble_tab_indicator: "^0.1.4"
