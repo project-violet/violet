@@ -84,63 +84,24 @@ class Settings {
   static bool autobackupBookmark;
 
   static Future<void> initFirst() async {
-    var mc = (await SharedPreferences.getInstance()).getInt('majorColor');
-    var mac =
-        (await SharedPreferences.getInstance()).getInt('majorAccentColor');
-    if (mc == null) {
-      await (await SharedPreferences.getInstance())
-          .setInt('majorColor', Colors.purple.value);
-      mc = Colors.purple.value;
-    }
-    if (mac == null) {
-      await (await SharedPreferences.getInstance())
-          .setInt('majorAccentColor', Colors.purpleAccent.value);
-      mac = Colors.purpleAccent.value;
-    }
+    var mc = await _getInt('majorColor', Colors.purple.value);
+    var mac = await _getInt('majorAccentColor', Colors.purpleAccent.value);
+
     majorColor = Color(mc);
     majorAccentColor = Color(mac);
 
-    themeWhat = (await SharedPreferences.getInstance()).getBool('themeColor');
-    if (themeWhat == null) {
-      await (await SharedPreferences.getInstance())
-          .setBool('themeColor', false);
-      themeWhat = false;
-    }
-    if (!themeWhat)
-      themeColor = Colors.white;
-    else
-      themeColor = Colors.black;
+    themeWhat = await _getBool('themeWhat');
+    themeColor = !themeWhat ? Colors.white : Colors.black;
+    themeFlat = await _getBool('themeFlat');
+    themeBlack = await _getBool('themeBlack');
 
-    themeFlat = (await SharedPreferences.getInstance()).getBool('themeFlat');
-    if (themeFlat == null) {
-      await (await SharedPreferences.getInstance()).setBool('themeFlat', false);
-      themeFlat = false;
-    }
-
-    themeBlack = (await SharedPreferences.getInstance()).getBool('themeBlack');
-    if (themeBlack == null) {
-      await (await SharedPreferences.getInstance())
-          .setBool('themeBlack', false);
-      themeBlack = false;
-    }
-
-    var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
-    if (tc == null) {
-      await (await SharedPreferences.getInstance()).setInt('thread_count', 4);
-    }
+    await _getInt('thread_count', 4);
   }
 
   static Future<void> init() async {
-    searchResultType =
-        (await SharedPreferences.getInstance()).getInt('searchResultType');
-    if (searchResultType == null) {
-      searchResultType = 0;
-      await (await SharedPreferences.getInstance())
-          .setInt('searchResultType', searchResultType);
-    }
+    searchResultType = await _getInt('searchResultType');
 
     language = (await SharedPreferences.getInstance()).getString('language');
-    // majorColor = Color(0xFF5656E7);
 
     var includetags =
         (await SharedPreferences.getInstance()).getString('includetags');
@@ -169,54 +130,15 @@ class Settings {
     includeTags = includetags;
     excludeTags = excludetags.split('|').toList();
     blurredTags = blurredtags != null ? blurredtags.split(' ').toList() : [];
+    translateTags = await _getBool('translatetags');
 
-    translateTags =
-        (await SharedPreferences.getInstance()).getBool('translatetags');
-    if (translateTags == null) {
-      translateTags = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('translatetags', translateTags);
-    }
-
-    var routingrule =
-        (await SharedPreferences.getInstance()).getString('routingrule');
-    var searchrule =
-        (await SharedPreferences.getInstance()).getString('searchrule');
-    var searchnetwork =
-        (await SharedPreferences.getInstance()).getBool('searchnetwork');
-
-    if (routingrule == null) {
-      routingrule = 'Hitomi|EHentai|ExHentai|NHentai|Hisoki';
-
-      await (await SharedPreferences.getInstance())
-          .setString('routingrule', routingrule);
-    }
-    routingRule = routingrule.split('|');
-    if (routingRule.contains('Hiyobi')) {
-      routingRule.removeWhere((element) => element == 'Hiyobi');
-      await (await SharedPreferences.getInstance())
-          .setString('routingrule', routingRule.join('|'));
-    }
-    if (!routingRule.contains("Hisoki")) {
-      routingRule.add('Hisoki');
-      routingrule = routingRule.join('|');
-      await (await SharedPreferences.getInstance())
-          .setString('routingrule', routingrule);
-    }
-    if (searchrule == null) {
-      searchrule = 'Hitomi|EHentai|ExHentai|NHentai|Hisoki';
-
-      await (await SharedPreferences.getInstance())
-          .setString('searchrule', searchrule);
-    }
-    searchRule = searchrule.split('|');
-    if (searchnetwork == null) {
-      searchnetwork = false;
-
-      await (await SharedPreferences.getInstance())
-          .setBool('searchnetwork', searchnetwork);
-    }
-    searchNetwork = searchnetwork;
+    routingRule =
+        (await _getString('routingrule', 'Hitomi|EHentai|ExHentai|NHentai'))
+            .split('|');
+    searchRule =
+        (await _getString('searchrule', 'Hitomi|EHentai|ExHentai|NHentai'))
+            .split('|');
+    searchNetwork = await _getBool('searchnetwork');
 
     var databasetype =
         (await SharedPreferences.getInstance()).getString('databasetype');
@@ -233,92 +155,18 @@ class Settings {
     }
     databaseType = databasetype;
 
-    var right2left =
-        (await SharedPreferences.getInstance()).getBool('right2left');
-    if (right2left == null) {
-      right2left = true;
-      await (await SharedPreferences.getInstance())
-          .setBool('right2left', right2left);
-    }
-    rightToLeft = right2left;
-
-    isHorizontal =
-        (await SharedPreferences.getInstance()).getBool('ishorizontal');
-    if (isHorizontal == null) {
-      isHorizontal = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('ishorizontal', isHorizontal);
-    }
-
-    scrollVertical =
-        (await SharedPreferences.getInstance()).getBool('scrollvertical');
-    if (scrollVertical == null) {
-      scrollVertical = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('scrollvertical', scrollVertical);
-    }
-
-    animation = (await SharedPreferences.getInstance()).getBool('animation');
-    if (animation == null) {
-      animation = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('animation', animation);
-    }
-
-    padding = (await SharedPreferences.getInstance()).getBool('padding');
-    if (padding == null) {
-      padding = false;
-      await (await SharedPreferences.getInstance()).setBool('padding', padding);
-    }
-
-    disableOverlayButton =
-        (await SharedPreferences.getInstance()).getBool('disableoverlaybutton');
-    if (disableOverlayButton == null) {
-      disableOverlayButton = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('disableoverlaybutton', disableOverlayButton);
-    }
-
-    disableFullScreen =
-        (await SharedPreferences.getInstance()).getBool('disablefullscreen');
-    if (disableFullScreen == null) {
-      disableFullScreen = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('disablefullscreen', disableFullScreen);
-    }
-
-    enableTimer =
-        (await SharedPreferences.getInstance()).getBool('enabletimer');
-    if (enableTimer == null) {
-      enableTimer = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('enabletimer', enableTimer);
-    }
-
-    timerTick = (await SharedPreferences.getInstance()).getDouble('timertick');
-    if (timerTick == null) {
-      timerTick = 1.0;
-      await (await SharedPreferences.getInstance())
-          .setDouble('timertick', timerTick);
-    }
-
+    rightToLeft = await _getBool('right2left', true);
+    isHorizontal = await _getBool('ishorizontal');
+    scrollVertical = await _getBool('scrollvertical');
+    animation = await _getBool('animation');
+    padding = await _getBool('padding');
+    disableOverlayButton = await _getBool('disableoverlaybutton');
+    disableFullScreen = await _getBool('disablefullscreen');
+    enableTimer = await _getBool('enabletimer');
+    timerTick = await _getDouble('timertick', 1.0);
     moveToAppBarToBottom =
-        (await SharedPreferences.getInstance()).getBool('movetoappbartobottom');
-    if (moveToAppBarToBottom == null) {
-      if (Platform.isIOS)
-        moveToAppBarToBottom = true;
-      else
-        moveToAppBarToBottom = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('movetoappbartobottom', moveToAppBarToBottom);
-    }
-
-    showSlider = (await SharedPreferences.getInstance()).getBool('showslider');
-    if (showSlider == null) {
-      showSlider = false;
-      await (await SharedPreferences.getInstance())
-          .setBool('showslider', showSlider);
-    }
+        await _getBool('movetoappbartobottom', Platform.isIOS);
+    showSlider = await _getBool('showslider');
     imageQuality = await _getInt('imagequality', 3);
 
     useInnerStorage =
@@ -401,31 +249,13 @@ class Settings {
         }
       }
     } else if (Platform.isIOS) {
-      downloadBasePath =
-          (await SharedPreferences.getInstance()).getString('downloadbasepath');
-
-      if (downloadBasePath == null) {
-        downloadBasePath = 'not supported';
-        await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', downloadBasePath);
-      }
+      downloadBasePath = await _getString('downloadbasepath', 'not supported');
     }
 
-    downloadRule =
-        (await SharedPreferences.getInstance()).getString('downloadrule');
-    if (downloadRule == null) {
-      downloadRule = "%(extractor)s/%(id)s/%(file)s.%(ext)s";
-      await (await SharedPreferences.getInstance())
-          .setString('downloadrule', downloadRule);
-    }
-
-    searchMessageAPI =
-        (await SharedPreferences.getInstance()).getString('searchmessageapi');
-    if (searchMessageAPI == null) {
-      searchMessageAPI = "https://koromo.xyz/api/search/msg";
-      await (await SharedPreferences.getInstance())
-          .setString('searchmessageapi', searchMessageAPI);
-    }
+    downloadRule = await _getString(
+        'downloadrule', "%(extractor)s/%(id)s/%(file)s.%(ext)s");
+    searchMessageAPI = await _getString(
+        'searchmessageapi', "https://koromo.xyz/api/search/msg");
 
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
@@ -460,6 +290,26 @@ class Settings {
     if (nn == null) {
       nn = defaultValue;
       await (await SharedPreferences.getInstance()).setInt(key, nn);
+    }
+    return nn;
+  }
+
+  static Future<String> _getString(String key,
+      [String defaultValue = ""]) async {
+    var nn = (await SharedPreferences.getInstance()).getString(key);
+    if (nn == null) {
+      nn = defaultValue;
+      await (await SharedPreferences.getInstance()).setString(key, nn);
+    }
+    return nn;
+  }
+
+  static Future<double> _getDouble(String key,
+      [double defaultValue = 0.0]) async {
+    var nn = (await SharedPreferences.getInstance()).getDouble(key);
+    if (nn == null) {
+      nn = defaultValue;
+      await (await SharedPreferences.getInstance()).setDouble(key, nn);
     }
     return nn;
   }
