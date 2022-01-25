@@ -2,11 +2,9 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,12 +26,10 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/network/wrapper.dart' as http;
-import 'package:violet/network/wrapper.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
-import 'package:violet/pages/download/isolate/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
@@ -216,7 +212,7 @@ class ArticleInfoPage extends StatelessWidget {
           return;
         }
       }
-      if (!SecondDownloadPageManager.downloadPageLoaded) {
+      if (!DownloadPageManager.downloadPageLoaded) {
         FlutterToast(context).showToast(
           child: ToastWrapper(
             isCheck: false,
@@ -239,8 +235,7 @@ class ArticleInfoPage extends StatelessWidget {
         gravity: ToastGravity.BOTTOM,
         toastDuration: Duration(seconds: 4),
       );
-      await SecondDownloadPageManager.appendTask(
-          data.queryResult.id().toString());
+      await DownloadPageManager.appendTask(data.queryResult.id().toString());
       Navigator.pop(context);
     }
   }

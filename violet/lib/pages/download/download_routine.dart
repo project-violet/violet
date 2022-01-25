@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/downloadable.dart' as violetd;
 import 'package:violet/database/user/download.dart';
-import 'package:violet/downloader/native_downloader.dart';
+import 'package:violet/downloader/isolate_downloader.dart';
 import 'package:violet/settings/settings.dart';
 
 class DownloadRoutine {
@@ -125,12 +125,11 @@ class DownloadRoutine {
     DoubleCallback downloadCallback,
     VoidStringCallback errorCallback,
   }) async {
-    var downloader = await NativeDownloader.getInstance();
-    // var downloader = FlutterDonwloadDonwloader.getInstance();
+    var downloader = await IsolateDownloader.getInstance();
     var basepath = Settings.downloadBasePath;
     if (Settings.useInnerStorage)
       basepath = (await getApplicationDocumentsDirectory()).path;
-    await downloader.addTasks(tasks.map((e) {
+    downloader.appendTasks(tasks.map((e) {
       e.downloadPath =
           join(basepath, e.format.formatting(extractor.defaultFormat()));
 
