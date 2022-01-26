@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -83,8 +84,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         await routine.setToStop();
         return;
       }
-
-      if (await routine.checkLoginRequire()) return;
 
       await routine.createTasks(
         progressCallback: (cur, max) async {
@@ -220,9 +219,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                 builder: (context) {
                   return Provider<ViewerPageProvider>.value(
                       value: ViewerPageProvider(
-                        uris: (jsonDecode(widget.item.files()) as List<dynamic>)
-                            .map((e) => e as String)
-                            .toList(),
+                        uris: widget.item.filesWithoutThumbnail(),
                         useFileSystem: true,
                         id: widget.item.id(),
                         title: widget.item.info(),
@@ -294,13 +291,22 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
   Widget buildThumbnail() {
     return Visibility(
       visible: widget.item.thumbnail() != null,
-      child: _ThumbnailWidget(
-        thumbnail: widget.item.thumbnail(),
-        thumbnailTag:
-            (widget.item.thumbnail() == null ? '' : widget.item.thumbnail()) +
-                widget.item.dateTime().toString(),
-        thumbnailHeader: widget.item.thumbnailHeader(),
-      ),
+      child: widget.item.tryThumbnailFile() != null
+          ? _FileThumbnailWidget(
+              thumbnailPath: widget.item.tryThumbnailFile(),
+              thumbnailTag: (widget.item.thumbnail() == null
+                      ? ''
+                      : widget.item.thumbnail()) +
+                  widget.item.dateTime().toString(),
+            )
+          : _ThumbnailWidget(
+              thumbnail: widget.item.thumbnail(),
+              thumbnailTag: (widget.item.thumbnail() == null
+                      ? ''
+                      : widget.item.thumbnail()) +
+                  widget.item.dateTime().toString(),
+              thumbnailHeader: widget.item.thumbnailHeader(),
+            ),
     );
   }
 
@@ -505,6 +511,52 @@ class _ThumbnailWidget extends StatelessWidget {
           child: Container(),
         ),
         placeholder: (b, c) {
+          return FlareActor(
+            "assets/flare/Loading2.flr",
+            alignment: Alignment.center,
+            fit: BoxFit.fitHeight,
+            animation: "Alarm",
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _FileThumbnailWidget extends StatelessWidget {
+  final String thumbnailPath;
+  final String thumbnailTag;
+
+  _FileThumbnailWidget({
+    this.thumbnailPath,
+    this.thumbnailTag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100,
+      child: thumbnailPath != null
+          ? ClipRRect(
+              borderRadius: BorderRadius.horizontal(left: Radius.circular(5.0)),
+              child: _thumbnailImage(),
+            )
+          : FlareActor(
+              "assets/flare/Loading2.flr",
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: "Alarm",
+            ),
+    );
+  }
+
+  Widget _thumbnailImage() {
+    return Hero(
+      tag: thumbnailTag,
+      child: Image.file(
+        File(thumbnailPath),
+        fit: BoxFit.cover,
+        errorBuilder: (context, obj, st) {
           return FlareActor(
             "assets/flare/Loading2.flr",
             alignment: Alignment.center,

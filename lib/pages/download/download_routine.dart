@@ -7,8 +7,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/downloadable.dart' as violetd;
+import 'package:violet/component/downloadable.dart';
+import 'package:violet/component/hentai_download_manager.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
 import 'package:violet/settings/settings.dart';
@@ -17,7 +18,6 @@ class DownloadRoutine {
   DownloadItemModel item;
   Map<String, dynamic> result;
   VoidCallback setStateCallback;
-  Downloadable extractor;
   List<violetd.DownloadTask> tasks;
 
   DownloadRoutine(this.item, this.setStateCallback) {
@@ -43,8 +43,6 @@ class DownloadRoutine {
   }
 
   Future<void> selectExtractor() async {
-    extractor = ExtractorManager.instance.getExtractor(item.url());
-    result['Extractor'] = extractor.name();
     await _setState(2);
   }
 
@@ -52,21 +50,9 @@ class DownloadRoutine {
     await _setState(6);
   }
 
-  Future<bool> checkLoginRequire() async {
-    if (extractor.loginRequire()) {
-      if (!extractor.logined()) {
-        if (!await extractor.tryLogin()) {
-          await _setState(9);
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   Future<void> createTasks({DoubleIntCallback progressCallback}) async {
     try {
-      tasks = await extractor.createTask(
+      tasks = await HentaiDonwloadManager.instance().createTask(
         item.url(),
         GeneralDownloadProgress(
           simpleInfoCallback: (info) async {
@@ -100,7 +86,8 @@ class DownloadRoutine {
     var files = tasks
         .map((e) => join(
             Settings.useInnerStorage ? inner : Settings.downloadBasePath,
-            e.format.formatting(extractor.defaultFormat())))
+            e.format
+                .formatting(HentaiDonwloadManager.instance().defaultFormat())))
         .toList();
     result['Files'] = jsonEncode(files);
     // Extract Super Path
@@ -130,8 +117,10 @@ class DownloadRoutine {
     if (Settings.useInnerStorage)
       basepath = (await getApplicationDocumentsDirectory()).path;
     downloader.appendTasks(tasks.map((e) {
-      e.downloadPath =
-          join(basepath, e.format.formatting(extractor.defaultFormat()));
+      e.downloadPath = join(
+          basepath,
+          e.format
+              .formatting(HentaiDonwloadManager.instance().defaultFormat()));
 
       e.startCallback = () {};
       e.completeCallback = completeCallback;
@@ -147,6 +136,8 @@ class DownloadRoutine {
   }
 
   Future<void> setDownloadComplete() async {
+    await Download.getInstance()
+      ..appendDownloaded(int.parse(item.url()), item);
     await _setState(0);
   }
 
