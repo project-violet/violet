@@ -1,6 +1,10 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:collection';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:violet/log/log.dart';
@@ -50,6 +54,22 @@ class DownloadItemModel {
     var db = await CommonUserDatabase.getInstance();
     await db.delete('DownloadItem', 'Id=?', [id()]);
   }
+
+  List<String> filesWithoutThumbnail() {
+    var rfiles =
+        (jsonDecode(files()) as List<dynamic>).map((e) => e as String).toList();
+    rfiles.removeWhere((element) => element.startsWith('thumbnail'));
+    return rfiles;
+  }
+
+  String tryThumbnailFile() {
+    var rfiles =
+        (jsonDecode(files()) as List<dynamic>).map((e) => e as String).toList();
+    if (rfiles.where((e) => e.startsWith('thumbnail')).isNotEmpty) {
+      return rfiles.firstWhere((element) => element.startsWith('thumbnail'));
+    }
+    return null;
+  }
 }
 
 class Download {
@@ -85,10 +105,54 @@ class Download {
           }
         }
         _instance = Download();
+        await _instance.init();
       }
     });
     return _instance;
   }
+
+  HashSet<int> _downloadedChecker = HashSet<int>();
+  Map<int, DownloadItemModel> _downloadedItems = Map<int, DownloadItemModel>();
+  Future<void> init() async {
+    var items = await getDownloadItems();
+    for (var item in items) {
+      int no = int.tryParse(item.url());
+      if (no != null && item.state() == 0) {
+        _downloadedChecker.add(no);
+        _downloadedItems[no] = item;
+      }
+    }
+  }
+
+  bool isDownloadedArticle(int id) => _downloadedChecker.contains(id);
+
+  Map<int, bool> _validDownloadedArticleCache = Map<int, bool>();
+  bool _isValidDownloadedArticle(int id) {
+    if (!isDownloadedArticle(id)) return false;
+
+    var item = _downloadedItems[id];
+    var files = jsonDecode(item.files()) as List<dynamic>;
+
+    if (!File(files[0] as String).existsSync()) return false;
+
+    return true;
+  }
+
+  bool isValidDownloadedArticle(int id) {
+    if (_validDownloadedArticleCache.containsKey(id))
+      return _validDownloadedArticleCache[id];
+
+    var v = _isValidDownloadedArticle(id);
+    _validDownloadedArticleCache[id] = v;
+    return v;
+  }
+
+  void appendDownloaded(int id, DownloadItemModel item) {
+    _downloadedChecker.add(id);
+    _downloadedItems[id] = item;
+  }
+
+  DownloadItemModel getDownloadedArticle(int id) => _downloadedItems[id];
 
   Future<List<DownloadItemModel>> getDownloadItems() async {
     return (await (await CommonUserDatabase.getInstance())
