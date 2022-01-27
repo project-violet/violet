@@ -25,6 +25,7 @@ import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
+import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/server/wsalt.dart';
 
@@ -333,6 +334,15 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     return;
                   }
                   _navigate(LabBookmarkSpyPage());
+                },
+              ),
+              _buildItem(
+                Icon(Icons.receipt, size: 40, color: Settings.themeColor),
+                '#015 Log Message',
+                'Log Message',
+                null,
+                () async {
+                  _navigate(LogPage());
                 },
               ),
             ],
