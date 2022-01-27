@@ -62,9 +62,8 @@ class _DownloadPageState extends State<DownloadPage>
     Future.delayed(Duration(milliseconds: 500), () async {
       items = await (await Download.getInstance()).getDownloadItems();
       _applyFilter();
-      setState(() {});
-
       _buildQueryResults();
+      setState(() {});
     });
   }
 
@@ -80,7 +79,7 @@ class _DownloadPageState extends State<DownloadPage>
 
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
     queryRaw += 'Id IN (' + articles.map((e) => e.item2).join(',') + ')';
-    QueryManager.query(queryRaw + ' AND ExistOnHitomi=1').then((value) async {
+    QueryManager.query(queryRaw).then((value) async {
       var qr = Map<int, QueryResult>();
       value.results.forEach((element) {
         qr[element.id()] = element;
@@ -400,10 +399,15 @@ class _DownloadPageState extends State<DownloadPage>
       if (succ) result.add(element.key);
     });
 
-    filterResult = result.map((e) => items[e]).toList();
+    if (queryResults.entries.isNotEmpty)
+      filterResult = result.map((e) => items[e]).toList();
+    else
+      filterResult = items;
 
     if (_filterController.isPopulationSort)
       Population.sortByPopulationDownloadItem(filterResult);
+
+    setState(() {});
   }
 
   static String prefix2Tag(String prefix) {
@@ -454,10 +458,21 @@ class _DownloadPageState extends State<DownloadPage>
   Future<void> appendTask(String url) async {
     var item = await (await Download.getInstance()).createNew(url);
     item.download = true;
-    setState(() {
-      items.add(item);
-      // items.insert(0, item);
-      // key = ObjectKey(Uuid().v4());
-    });
+    items.add(item);
+    await _appendQueryResults(url);
+    _applyFilter();
+  }
+
+  Future<void> _appendQueryResults(String url) async {
+    if (int.tryParse(url) == null) return;
+
+    var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+    queryRaw += 'Id = $url';
+
+    var qm = await QueryManager.query(queryRaw);
+
+    if (qm.results.isEmpty) return;
+
+    queryResults[int.parse(url)] = qm.results.first;
   }
 }
