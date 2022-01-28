@@ -8,6 +8,7 @@ import 'dart:isolate';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/downloadable.dart';
+import 'package:violet/log/log.dart';
 
 part './isolate/core.dart';
 
@@ -223,5 +224,11 @@ class IsolateDownloader {
     _tasks.remove(unit.id);
     _erroredTask.add(unit.id);
     _errorContent[unit.id] = unit;
+    Logger.error('[downloader-err] Id' +
+        _tasks[unit.id].url +
+        '\nE: ' +
+        unit.error +
+        "\n" +
+        unit.stackTrace);
   }
 }
