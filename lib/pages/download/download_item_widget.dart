@@ -207,28 +207,25 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       },
       onTap: () async {
         if (widget.item.state() == 0 && widget.item.files() != null) {
-          if (['hitomi', 'ehentai', 'exhentai', 'hentai']
-              .contains(widget.item.extractor())) {
-            if (!Settings.disableFullScreen)
-              SystemChrome.setEnabledSystemUIOverlays([]);
+          if (!Settings.disableFullScreen)
+            SystemChrome.setEnabledSystemUIOverlays([]);
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                fullscreenDialog: true,
-                builder: (context) {
-                  return Provider<ViewerPageProvider>.value(
-                      value: ViewerPageProvider(
-                        uris: widget.item.filesWithoutThumbnail(),
-                        useFileSystem: true,
-                        id: widget.item.id(),
-                        title: widget.item.info(),
-                      ),
-                      child: ViewerPage());
-                },
-              ),
-            );
-          }
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (context) {
+                return Provider<ViewerPageProvider>.value(
+                    value: ViewerPageProvider(
+                      uris: widget.item.filesWithoutThumbnail(),
+                      useFileSystem: true,
+                      id: widget.item.id(),
+                      title: widget.item.info(),
+                    ),
+                    child: ViewerPage());
+              },
+            ),
+          );
         }
       },
       onTapDown: (details) {
