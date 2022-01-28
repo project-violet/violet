@@ -61,8 +61,8 @@ class _DownloadPageState extends State<DownloadPage>
   void refresh() {
     Future.delayed(Duration(milliseconds: 500), () async {
       items = await (await Download.getInstance()).getDownloadItems();
+      await _buildQueryResults();
       _applyFilter();
-      _buildQueryResults();
       setState(() {});
     });
   }

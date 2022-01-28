@@ -91,7 +91,7 @@ void main() async {
           !Settings.themeWhat ? Brightness.light : Brightness.dark,
       data: (brightness) => ThemeData(
         accentColor: Settings.majorColor,
-        brightness: brightness,
+        brightness: !Settings.themeWhat ? Brightness.light : Brightness.dark,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
         scaffoldBackgroundColor:
