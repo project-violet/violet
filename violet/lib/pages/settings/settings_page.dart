@@ -299,7 +299,7 @@ class _SettingsPageState extends State<SettingsPage>
             else
               _flareController.play('switch_day');
             _themeSwitch = !_themeSwitch;
-            Settings.setThemeWhat(_themeSwitch);
+            await Settings.setThemeWhat(_themeSwitch);
             DynamicTheme.of(context).setBrightness(
                 Theme.of(context).brightness == Brightness.dark
                     ? Brightness.light
