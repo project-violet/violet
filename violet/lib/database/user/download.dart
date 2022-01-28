@@ -63,10 +63,13 @@ class DownloadItemModel {
   }
 
   String tryThumbnailFile() {
-    var rfiles =
-        (jsonDecode(files()) as List<dynamic>).map((e) => e as String).toList();
-    if (rfiles.where((e) => e.startsWith('thumbnail')).isNotEmpty) {
-      return rfiles.firstWhere((element) => element.startsWith('thumbnail'));
+    if (files() != null) {
+      var rfiles = (jsonDecode(files()) as List<dynamic>)
+          .map((e) => e as String)
+          .toList();
+      if (rfiles.where((e) => e.startsWith('thumbnail')).isNotEmpty) {
+        return rfiles.firstWhere((element) => element.startsWith('thumbnail'));
+      }
     }
     return null;
   }
