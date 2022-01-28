@@ -399,10 +399,7 @@ class _DownloadPageState extends State<DownloadPage>
       if (succ) result.add(element.key);
     });
 
-    if (queryResults.entries.isNotEmpty)
-      filterResult = result.map((e) => items[e]).toList();
-    else
-      filterResult = items;
+    filterResult = result.map((e) => items[e]).toList();
 
     if (_filterController.isPopulationSort)
       Population.sortByPopulationDownloadItem(filterResult);
