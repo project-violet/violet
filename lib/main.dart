@@ -87,7 +87,8 @@ void main() async {
 
   runApp(
     DynamicTheme(
-      defaultBrightness: Brightness.light,
+      defaultBrightness:
+          !Settings.themeWhat ? Brightness.light : Brightness.dark,
       data: (brightness) => ThemeData(
         accentColor: Settings.majorColor,
         brightness: brightness,
