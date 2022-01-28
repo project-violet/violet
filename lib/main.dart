@@ -87,11 +87,10 @@ void main() async {
 
   runApp(
     DynamicTheme(
-      defaultBrightness:
-          !Settings.themeWhat ? Brightness.light : Brightness.dark,
+      defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
         accentColor: Settings.majorColor,
-        brightness: !Settings.themeWhat ? Brightness.light : Brightness.dark,
+        brightness: brightness,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
         scaffoldBackgroundColor:
