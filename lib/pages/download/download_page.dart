@@ -42,6 +42,7 @@ class _DownloadPageState extends State<DownloadPage>
 
   ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = [];
+  Map<int, DownloadItemModel> itemsMap = Map<int, DownloadItemModel>();
   List<DownloadItemModel> filterResult = [];
   Map<int, QueryResult> queryResults = Map<int, QueryResult>();
   FilterController _filterController = FilterController();
@@ -74,6 +75,7 @@ class _DownloadPageState extends State<DownloadPage>
           item.extractor() == 'hentai' &&
           int.tryParse(item.url()) != null) {
         articles.add(Tuple2<int, int>(item.id(), int.parse(item.url())));
+        itemsMap[item.id()] = item;
       }
     }
 
@@ -399,7 +401,10 @@ class _DownloadPageState extends State<DownloadPage>
       if (succ) result.add(element.key);
     });
 
-    filterResult = result.map((e) => items[e]).toList();
+    if (_filterController.tagStates.isNotEmpty)
+      filterResult = result.map((e) => itemsMap[e]).toList();
+    else
+      filterResult = items;
 
     if (_filterController.isPopulationSort)
       Population.sortByPopulationDownloadItem(filterResult);
