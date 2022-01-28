@@ -72,7 +72,6 @@ class _DownloadPageState extends State<DownloadPage>
     var articles = <Tuple2<int, int>>[];
     for (var item in items) {
       if (item.state() == 0 &&
-          item.extractor() == 'hentai' &&
           int.tryParse(item.url()) != null) {
         articles.add(Tuple2<int, int>(item.id(), int.parse(item.url())));
         itemsMap[item.id()] = item;
