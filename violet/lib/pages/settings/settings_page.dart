@@ -301,9 +301,7 @@ class _SettingsPageState extends State<SettingsPage>
             _themeSwitch = !_themeSwitch;
             await Settings.setThemeWhat(_themeSwitch);
             DynamicTheme.of(context).setBrightness(
-                Theme.of(context).brightness == Brightness.dark
-                    ? Brightness.light
-                    : Brightness.dark);
+                !_themeSwitch ? Brightness.light : Brightness.dark);
             setState(() {
               _shouldReload = true;
             });
