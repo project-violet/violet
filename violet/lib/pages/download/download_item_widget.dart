@@ -22,17 +22,37 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
+class DownloadListItem {
+  bool addBottomPadding;
+  bool showDetail;
+  double width;
+
+  DownloadListItem({
+    @required this.addBottomPadding,
+    @required this.showDetail,
+    @required this.width,
+  });
+}
+
+typedef DownloadListItemCallback = void Function(DownloadListItem);
+typedef DownloadListItemCallbackCallback = void Function(
+    DownloadListItemCallback);
+
 class DownloadItemWidget extends StatefulWidget {
-  final double width;
+  // final double width;
   final DownloadItemModel item;
+  final DownloadListItem initialStyle;
   bool download;
   final VoidCallback refeshCallback;
+  final DownloadListItemCallbackCallback viewStyleCallback;
 
   DownloadItemWidget({
-    this.width,
+    // this.width,
     this.item,
+    this.initialStyle,
     this.download,
     this.refeshCallback,
+    this.viewStyleCallback,
   });
 
   @override
@@ -55,6 +75,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
   int errorFileCount = 0;
   String downloadSpeed = ' KB/S';
   bool once = false;
+  double thisWidth, thisHeight;
+  DownloadListItem style;
 
   @override
   void initState() {
@@ -65,7 +87,25 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       if (extractor != null) fav = extractor.fav();
     }
 
+    _styleCallback(widget.initialStyle);
+    widget.viewStyleCallback(_styleCallback);
+
     _downloadProcedure();
+  }
+
+  _styleCallback(DownloadListItem item) {
+    style = item;
+
+    thisWidth = item.showDetail
+        ? item.width - 16
+        : item.width - (item.addBottomPadding ? 100 : 0);
+    thisHeight = item.showDetail
+        ? 130.0
+        : item.addBottomPadding
+            ? 500.0
+            : item.width * 4 / 3;
+
+    setState(() {});
   }
 
   _downloadProcedure() {
@@ -152,22 +192,20 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    double ww = widget.width - 16;
-    double hh = 130.0;
 
     return GestureDetector(
       child: SizedBox(
-        width: ww,
-        height: hh,
+        width: thisWidth,
+        height: thisHeight,
         child: AnimatedContainer(
           // alignment: FractionalOffset.center,
           curve: Curves.easeInOut,
           duration: Duration(milliseconds: 300),
           // padding: EdgeInsets.all(pad),
           transform: Matrix4.identity()
-            ..translate(ww / 2, hh / 2)
+            ..translate(thisWidth / 2, thisHeight / 2)
             ..scale(scale)
-            ..translate(-ww / 2, -hh / 2),
+            ..translate(-thisWidth / 2, -thisHeight / 2),
           child: buildBody(),
         ),
       ),
@@ -248,14 +286,21 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
 
   Widget buildBody() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 6),
+      // margin: const EdgeInsets.only(bottom: 6),
+      margin: style.addBottomPadding
+          ? style.showDetail
+              ? const EdgeInsets.only(bottom: 6)
+              : const EdgeInsets.only(bottom: 50)
+          : EdgeInsets.zero,
       decoration: !Settings.themeFlat
           ? BoxDecoration(
-              color: Settings.themeWhat
-                  ? Settings.themeBlack
-                      ? const Color(0xFF141414)
-                      : Colors.grey.shade800
-                  : Colors.white70,
+              color: style.showDetail
+                  ? Settings.themeWhat
+                      ? Settings.themeBlack
+                          ? const Color(0xFF141414)
+                          : Colors.grey.shade800
+                      : Colors.white70
+                  : Colors.grey.withOpacity(0.3),
               borderRadius: BorderRadius.all(Radius.circular(5)),
               boxShadow: [
                 BoxShadow(
@@ -269,19 +314,21 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
               ],
             )
           : null,
-      color: !Settings.themeFlat
+      color: !Settings.themeFlat || !style.showDetail
           ? null
           : Settings.themeWhat
               ? Colors.black26
               : Colors.white,
-      child: Row(
-        children: <Widget>[
-          buildThumbnail(),
-          Expanded(
-            child: buildDetail(),
-          ),
-        ],
-      ),
+      child: style.showDetail
+          ? Row(
+              children: <Widget>[
+                buildThumbnail(),
+                Expanded(
+                  child: buildDetail(),
+                ),
+              ],
+            )
+          : buildThumbnail(),
     );
   }
 

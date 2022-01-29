@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,6 +16,7 @@ import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
+import 'package:violet/pages/download/download_view_type.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
@@ -116,12 +118,12 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   Map<int, Widget> downloadItemWidgets = Map<int, Widget>();
+  ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
-    var windowWidth = MediaQuery.of(context).size.width;
     DownloadPageManager.downloadPageLoaded = true;
 
     return Container(
@@ -146,28 +148,125 @@ class _DownloadPageState extends State<DownloadPage>
                 ),
               ),
             ),
-            SliverList(
-              delegate: SliverChildListDelegate(
-                filterResult.reversed.map((e) {
-                  if (downloadItemWidgets.containsKey(e.id()))
-                    return downloadItemWidgets[e.id()];
-                  return downloadItemWidgets[e.id()] = Align(
-                    key: Key('dp' + e.id().toString() + e.url()),
-                    alignment: Alignment.center,
-                    child: DownloadItemWidget(
-                      width: windowWidth - 4.0,
-                      item: e,
-                      download: e.download,
-                      refeshCallback: refresh,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
+            _panel(),
           ],
         ),
       ),
     );
+  }
+
+  double lastWindowWidth;
+  Widget _panel() {
+    var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
+
+    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
+      var mm = Settings.searchResultType == 0 ? 3 : 2;
+      return SliverPadding(
+          padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+          sliver: SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 3 / 4,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                var e = filterResult[index];
+                if (downloadItemWidgets.containsKey(e.id()))
+                  return downloadItemWidgets[e.id()];
+                return downloadItemWidgets[e.id()] = Align(
+                  key: Key('dp' + e.id().toString() + e.url()),
+                  alignment: Alignment.bottomCenter,
+                  child: DownloadItemWidget(
+                    initialStyle: DownloadListItem(
+                      showDetail: false,
+                      addBottomPadding: false,
+                      width: (windowWidth - 4.0) / mm,
+                    ),
+                    item: e,
+                    download: e.download,
+                    refeshCallback: refresh,
+                    viewStyleCallback: _viewStyleCallback,
+                  ),
+                );
+              },
+              childCount: filterResult.length,
+            ),
+          ));
+    } else if (Settings.downloadResultType == 2 ||
+        Settings.downloadResultType == 3) {
+      if (Settings.useTabletMode ||
+          MediaQuery.of(context).orientation == Orientation.landscape) {
+        return SliverPadding(
+          padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+          sliver: LiveSliverGrid(
+            controller: _scrollController,
+            showItemInterval: Duration(milliseconds: 50),
+            showItemDuration: Duration(milliseconds: 150),
+            visibleFraction: 0.001,
+            itemCount: filterResult.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: (windowWidth / 2) / 130,
+            ),
+            itemBuilder: (context, index, animation) {
+              var e = filterResult[index];
+              if (downloadItemWidgets.containsKey(e.id()))
+                return downloadItemWidgets[e.id()];
+              return downloadItemWidgets[e.id()] = Align(
+                key: Key('dp' + e.id().toString() + e.url()),
+                alignment: Alignment.center,
+                child: DownloadItemWidget(
+                  initialStyle: DownloadListItem(
+                    showDetail: Settings.downloadResultType == 3,
+                    addBottomPadding: true,
+                    width: windowWidth - 4.0,
+                  ),
+                  item: e,
+                  download: e.download,
+                  refeshCallback: refresh,
+                  viewStyleCallback: _viewStyleCallback,
+                ),
+              );
+            },
+          ),
+        );
+      } else {
+        return SliverList(
+          delegate: SliverChildListDelegate(
+            filterResult.reversed.map((e) {
+              if (downloadItemWidgets.containsKey(e.id()))
+                return downloadItemWidgets[e.id()];
+              return downloadItemWidgets[e.id()] = Align(
+                key: Key('dp' + e.id().toString() + e.url()),
+                alignment: Alignment.center,
+                child: DownloadItemWidget(
+                  initialStyle: DownloadListItem(
+                    showDetail: Settings.downloadResultType == 3,
+                    addBottomPadding: true,
+                    width: windowWidth - 4.0,
+                  ),
+                  item: e,
+                  download: e.download,
+                  refeshCallback: refresh,
+                  viewStyleCallback: _viewStyleCallback,
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      }
+    }
+
+    return null;
+  }
+
+  List<DownloadListItemCallback> styleCallbacks = [];
+  _viewStyleCallback(DownloadListItemCallback callback) {
+    styleCallbacks.add(callback);
   }
 
   Widget _urlBar() {
@@ -293,7 +392,7 @@ class _DownloadPageState extends State<DownloadPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "searchtype",
+          tag: "downloadtype",
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack
@@ -339,11 +438,19 @@ class _DownloadPageState extends State<DownloadPage>
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => SearchType(),
+      pageBuilder: (_, __, ___) => DownloadViewType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
         .then((value) async {
+      styleCallbacks.forEach((element) {
+        element.call(DownloadListItem(
+          addBottomPadding: Settings.downloadResultType >= 2,
+          showDetail: Settings.downloadResultType == 3,
+          width: (lastWindowWidth - 4.0) /
+              ([3, 2, 1, 1][Settings.downloadResultType]),
+        ));
+      });
       await Future.delayed(Duration(milliseconds: 50), () {
         setState(() {});
       });
