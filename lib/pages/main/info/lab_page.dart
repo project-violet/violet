@@ -337,7 +337,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(Icons.receipt, size: 40, color: Settings.themeColor),
+                Icon(Icons.receipt, size: 40, color: Settings.majorColor),
                 '#015 Log Message',
                 'Log Message',
                 null,
