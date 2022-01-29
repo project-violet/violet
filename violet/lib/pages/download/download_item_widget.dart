@@ -46,7 +46,6 @@ class DownloadItemWidget extends StatefulWidget {
   final DownloadListItem initialStyle;
   bool download;
   final VoidCallback refeshCallback;
-  final DownloadListItemCallbackCallback viewStyleCallback;
 
   DownloadItemWidget({
     // this.width,
@@ -54,7 +53,6 @@ class DownloadItemWidget extends StatefulWidget {
     this.initialStyle,
     this.download,
     this.refeshCallback,
-    this.viewStyleCallback,
   });
 
   @override
@@ -90,7 +88,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
     }
 
     _styleCallback(widget.initialStyle);
-    widget.viewStyleCallback(_styleCallback);
 
     _downloadProcedure();
   }
@@ -531,7 +528,7 @@ class _ThumbnailWidget extends StatelessWidget {
       width: 100,
       child: thumbnail != null
           ? ClipRRect(
-              borderRadius: !showDetail
+              borderRadius: showDetail
                   ? const BorderRadius.horizontal(left: Radius.circular(5.0))
                   : const BorderRadius.all(Radius.circular(5.0)),
               child: _thumbnailImage(),
@@ -640,7 +637,7 @@ class _FileThumbnailWidget extends StatelessWidget {
       width: 100,
       child: thumbnailPath != null
           ? ClipRRect(
-              borderRadius: !showDetail
+              borderRadius: showDetail
                   ? const BorderRadius.horizontal(left: Radius.circular(5.0))
                   : const BorderRadius.all(Radius.circular(5.0)),
               child: _thumbnailImage(),

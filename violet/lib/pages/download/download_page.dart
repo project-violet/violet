@@ -173,9 +173,7 @@ class _DownloadPageState extends State<DownloadPage>
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 var e = filterResult[filterResult.length - index - 1];
-                if (downloadItemWidgets.containsKey(e.id()))
-                  return downloadItemWidgets[e.id()];
-                return downloadItemWidgets[e.id()] = Align(
+                return Align(
                   key: Key('dp' + e.id().toString() + e.url()),
                   alignment: Alignment.bottomCenter,
                   child: DownloadItemWidget(
@@ -187,7 +185,6 @@ class _DownloadPageState extends State<DownloadPage>
                     item: e,
                     download: e.download,
                     refeshCallback: refresh,
-                    viewStyleCallback: _viewStyleCallback,
                   ),
                 );
               },
@@ -214,9 +211,7 @@ class _DownloadPageState extends State<DownloadPage>
             ),
             itemBuilder: (context, index, animation) {
               var e = filterResult[filterResult.length - index - 1];
-              if (downloadItemWidgets.containsKey(e.id()))
-                return downloadItemWidgets[e.id()];
-              return downloadItemWidgets[e.id()] = Align(
+              return Align(
                 key: Key('dp' + e.id().toString() + e.url()),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
@@ -228,7 +223,6 @@ class _DownloadPageState extends State<DownloadPage>
                   item: e,
                   download: e.download,
                   refeshCallback: refresh,
-                  viewStyleCallback: _viewStyleCallback,
                 ),
               );
             },
@@ -252,7 +246,6 @@ class _DownloadPageState extends State<DownloadPage>
                   item: e,
                   download: e.download,
                   refeshCallback: refresh,
-                  viewStyleCallback: _viewStyleCallback,
                 ),
               );
             }).toList(),
@@ -262,11 +255,6 @@ class _DownloadPageState extends State<DownloadPage>
     }
 
     return null;
-  }
-
-  List<DownloadListItemCallback> styleCallbacks = [];
-  _viewStyleCallback(DownloadListItemCallback callback) {
-    styleCallbacks.add(callback);
   }
 
   Widget _urlBar() {
@@ -444,14 +432,6 @@ class _DownloadPageState extends State<DownloadPage>
     ))
         .then((value) async {
       await Future.delayed(Duration(milliseconds: 50), () {
-        styleCallbacks.forEach((element) {
-          element.call(DownloadListItem(
-            addBottomPadding: Settings.downloadResultType >= 2,
-            showDetail: Settings.downloadResultType == 3,
-            width: (lastWindowWidth - 4.0) /
-                ([3, 2, 1, 1][Settings.downloadResultType]),
-          ));
-        });
         setState(() {});
       });
     });
