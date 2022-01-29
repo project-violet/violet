@@ -90,7 +90,7 @@ class Settings {
     majorColor = Color(mc);
     majorAccentColor = Color(mac);
 
-    themeWhat = await _getBool('themeWhat');
+    themeWhat = await _getBool('themeColor');
     themeColor = !themeWhat ? Colors.white : Colors.black;
     themeFlat = await _getBool('themeFlat');
     themeBlack = await _getBool('themeBlack');
