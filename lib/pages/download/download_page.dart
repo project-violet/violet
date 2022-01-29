@@ -47,7 +47,8 @@ class _DownloadPageState extends State<DownloadPage>
   Map<int, DownloadItemModel> itemsMap = Map<int, DownloadItemModel>();
   List<DownloadItemModel> filterResult = [];
   Map<int, QueryResult> queryResults = Map<int, QueryResult>();
-  FilterController _filterController = FilterController();
+  FilterController _filterController =
+      FilterController(heroKey: "downloadtype");
 
   @override
   void initState() {
