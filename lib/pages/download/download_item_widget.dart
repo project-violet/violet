@@ -257,7 +257,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                     value: ViewerPageProvider(
                       uris: widget.item.filesWithoutThumbnail(),
                       useFileSystem: true,
-                      id: widget.item.id(),
+                      id: int.tryParse(widget.item.url()),
                       title: widget.item.info(),
                     ),
                     child: ViewerPage());
