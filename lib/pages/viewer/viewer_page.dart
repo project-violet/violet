@@ -204,9 +204,9 @@ class _ViewerPageState extends State<ViewerPage>
     super.dispose();
   }
 
-  Future<void> _savePageRead() async {
+  Future<void> _savePageRead(bool useFileSystem) async {
     await (await User.getInstance()).updateUserLog(_pageInfo.id, currentPage);
-    if (Settings.useVioletServer) {
+    if (!useFileSystem && Settings.useVioletServer) {
       _report.endsTime = DateTime.now();
       _report.validSeconds =
           DateTime.now().difference(_startsTime).inSeconds - _inactivateSeconds;
@@ -332,7 +332,7 @@ class _ViewerPageState extends State<ViewerPage>
     return WillPopScope(
       onWillPop: () async {
         _isSessionOutdated = true;
-        if (!_pageInfo.useFileSystem) await _savePageRead();
+        await _savePageRead(_pageInfo.useFileSystem);
         return Future(() => true);
       },
       child: () {
@@ -454,7 +454,7 @@ class _ViewerPageState extends State<ViewerPage>
       color: Colors.white,
       onPressed: () async {
         _isSessionOutdated = true;
-        if (!_pageInfo.useFileSystem) await _savePageRead();
+        await _savePageRead(_pageInfo.useFileSystem);
         Navigator.pop(context, currentPage);
         return Future(() => false);
       },
@@ -578,7 +578,7 @@ class _ViewerPageState extends State<ViewerPage>
         ).then((value) async {
           if (value == null) return;
 
-          await _savePageRead();
+          await _savePageRead(_pageInfo.useFileSystem);
 
           await (await User.getInstance()).insertUserLog(value.id(), 0);
 
