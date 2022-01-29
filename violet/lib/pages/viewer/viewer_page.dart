@@ -511,6 +511,11 @@ class _ViewerPageState extends State<ViewerPage>
 
         final qr = search.item1[0];
 
+        if (!ProviderManager.isExists(qr.id()))
+          HentaiManager.getImageProvider(qr).then((value) async {
+            ProviderManager.insert(qr.id(), value);
+          });
+
         var prov = ProviderManager.get(_pageInfo.id);
         var thumbnail = await prov.getThumbnailUrl();
         var headers = await prov.getHeader(0);
