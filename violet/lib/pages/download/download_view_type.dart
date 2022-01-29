@@ -9,10 +9,10 @@ import 'package:violet/settings/settings.dart';
 class DownloadViewType extends StatelessWidget {
   Color getColor(int i) {
     return Settings.themeWhat
-        ? Settings.searchResultType == i
+        ? Settings.downloadResultType == i
             ? Colors.grey.shade200
             : Colors.grey.shade400
-        : Settings.searchResultType == i
+        : Settings.downloadResultType == i
             ? Colors.grey.shade900
             : Colors.grey.shade400;
   }
