@@ -71,8 +71,7 @@ class _DownloadPageState extends State<DownloadPage>
   Future<void> _buildQueryResults() async {
     var articles = <Tuple2<int, int>>[];
     for (var item in items) {
-      if (item.state() == 0 &&
-          int.tryParse(item.url()) != null) {
+      if (item.state() == 0 && int.tryParse(item.url()) != null) {
         articles.add(Tuple2<int, int>(item.id(), int.parse(item.url())));
         itemsMap[item.id()] = item;
       }
@@ -116,6 +115,8 @@ class _DownloadPageState extends State<DownloadPage>
     });
   }
 
+  Map<int, Widget> downloadItemWidgets = Map<int, Widget>();
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -148,8 +149,9 @@ class _DownloadPageState extends State<DownloadPage>
             SliverList(
               delegate: SliverChildListDelegate(
                 filterResult.reversed.map((e) {
-                  // print(e.url());
-                  return Align(
+                  if (downloadItemWidgets.containsKey(e.id()))
+                    return downloadItemWidgets[e.id()];
+                  return downloadItemWidgets[e.id()] = Align(
                     key: Key('dp' + e.id().toString() + e.url()),
                     alignment: Alignment.center,
                     child: DownloadItemWidget(
