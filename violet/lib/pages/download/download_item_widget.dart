@@ -7,6 +7,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -654,16 +655,20 @@ class _FileThumbnailWidget extends StatelessWidget {
   Widget _thumbnailImage() {
     return Hero(
       tag: thumbnailTag,
-      child: Image.file(
+      child: ExtendedImage.file(
         File(thumbnailPath),
         fit: BoxFit.cover,
-        errorBuilder: (context, obj, st) {
-          return FlareActor(
-            "assets/flare/Loading2.flr",
-            alignment: Alignment.center,
-            fit: BoxFit.fitHeight,
-            animation: "Alarm",
-          );
+        loadStateChanged: (state) {
+          if (state.extendedImageLoadState == LoadState.loading ||
+              state.extendedImageLoadState == LoadState.failed) {
+            return FlareActor(
+              "assets/flare/Loading2.flr",
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: "Alarm",
+            );
+          }
+          return state.completedWidget;
         },
       ),
     );
