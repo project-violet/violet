@@ -172,7 +172,7 @@ class _DownloadPageState extends State<DownloadPage>
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                var e = filterResult[index];
+                var e = filterResult[filterResult.length - index - 1];
                 if (downloadItemWidgets.containsKey(e.id()))
                   return downloadItemWidgets[e.id()];
                 return downloadItemWidgets[e.id()] = Align(
@@ -213,7 +213,7 @@ class _DownloadPageState extends State<DownloadPage>
               childAspectRatio: (windowWidth / 2) / 130,
             ),
             itemBuilder: (context, index, animation) {
-              var e = filterResult[index];
+              var e = filterResult[filterResult.length - index - 1];
               if (downloadItemWidgets.containsKey(e.id()))
                 return downloadItemWidgets[e.id()];
               return downloadItemWidgets[e.id()] = Align(
@@ -443,15 +443,15 @@ class _DownloadPageState extends State<DownloadPage>
       barrierDismissible: true,
     ))
         .then((value) async {
-      styleCallbacks.forEach((element) {
-        element.call(DownloadListItem(
-          addBottomPadding: Settings.downloadResultType >= 2,
-          showDetail: Settings.downloadResultType == 3,
-          width: (lastWindowWidth - 4.0) /
-              ([3, 2, 1, 1][Settings.downloadResultType]),
-        ));
-      });
       await Future.delayed(Duration(milliseconds: 50), () {
+        styleCallbacks.forEach((element) {
+          element.call(DownloadListItem(
+            addBottomPadding: Settings.downloadResultType >= 2,
+            showDetail: Settings.downloadResultType == 3,
+            width: (lastWindowWidth - 4.0) /
+                ([3, 2, 1, 1][Settings.downloadResultType]),
+          ));
+        });
         setState(() {});
       });
     });

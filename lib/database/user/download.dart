@@ -58,7 +58,8 @@ class DownloadItemModel {
   List<String> filesWithoutThumbnail() {
     var rfiles =
         (jsonDecode(files()) as List<dynamic>).map((e) => e as String).toList();
-    rfiles.removeWhere((element) => element.startsWith('thumbnail'));
+    rfiles.removeWhere(
+        (element) => element.split('/').last.startsWith('thumbnail'));
     return rfiles;
   }
 
@@ -67,8 +68,11 @@ class DownloadItemModel {
       var rfiles = (jsonDecode(files()) as List<dynamic>)
           .map((e) => e as String)
           .toList();
-      if (rfiles.where((e) => e.startsWith('thumbnail')).isNotEmpty) {
-        return rfiles.firstWhere((element) => element.startsWith('thumbnail'));
+      if (rfiles
+          .where((e) => e.split('/').last.startsWith('thumbnail'))
+          .isNotEmpty) {
+        return rfiles.firstWhere(
+            (element) => element.split('/').last.startsWith('thumbnail'));
       }
     }
     return null;

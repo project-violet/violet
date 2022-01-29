@@ -339,6 +339,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       visible: widget.item.thumbnail() != null,
       child: widget.item.tryThumbnailFile() != null
           ? _FileThumbnailWidget(
+              showDetail: style.showDetail,
               thumbnailPath: widget.item.tryThumbnailFile(),
               thumbnailTag: (widget.item.thumbnail() == null
                       ? ''
@@ -346,6 +347,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                   widget.item.dateTime().toString(),
             )
           : _ThumbnailWidget(
+              showDetail: style.showDetail,
               id: int.tryParse(widget.item.url()),
               thumbnail: widget.item.thumbnail(),
               thumbnailTag: (widget.item.thumbnail() == null
@@ -512,12 +514,14 @@ class _ThumbnailWidget extends StatelessWidget {
   final String thumbnail;
   final String thumbnailHeader;
   final String thumbnailTag;
+  final bool showDetail;
   final int id;
 
   _ThumbnailWidget({
     this.thumbnail,
     this.thumbnailHeader,
     this.thumbnailTag,
+    this.showDetail,
     this.id,
   });
 
@@ -527,7 +531,9 @@ class _ThumbnailWidget extends StatelessWidget {
       width: 100,
       child: thumbnail != null
           ? ClipRRect(
-              borderRadius: BorderRadius.horizontal(left: Radius.circular(5.0)),
+              borderRadius: !showDetail
+                  ? const BorderRadius.horizontal(left: Radius.circular(5.0))
+                  : const BorderRadius.all(Radius.circular(5.0)),
               child: _thumbnailImage(),
             )
           : FlareActor(
@@ -574,7 +580,8 @@ class _ThumbnailWidget extends StatelessWidget {
       return FutureBuilder(
         future: HitomiManager.getImageList(id.toString()).then((value) async {
           if (value == null) return null;
-          var header = ScriptManager.runHitomiGetHeaderContent(id.toString());
+          var header =
+              await ScriptManager.runHitomiGetHeaderContent(id.toString());
           return [value.item1[0], header];
         }),
         builder: (context, snapshot) {
@@ -619,10 +626,12 @@ class _ThumbnailWidget extends StatelessWidget {
 class _FileThumbnailWidget extends StatelessWidget {
   final String thumbnailPath;
   final String thumbnailTag;
+  final bool showDetail;
 
   _FileThumbnailWidget({
     this.thumbnailPath,
     this.thumbnailTag,
+    this.showDetail,
   });
 
   @override
@@ -631,7 +640,9 @@ class _FileThumbnailWidget extends StatelessWidget {
       width: 100,
       child: thumbnailPath != null
           ? ClipRRect(
-              borderRadius: BorderRadius.horizontal(left: Radius.circular(5.0)),
+              borderRadius: !showDetail
+                  ? const BorderRadius.horizontal(left: Radius.circular(5.0))
+                  : const BorderRadius.all(Radius.circular(5.0)),
               child: _thumbnailImage(),
             )
           : FlareActor(
