@@ -814,7 +814,7 @@ class _ViewerPageState extends State<ViewerPage>
                 itemScrollController: itemScrollController,
                 itemPositionsListener: itemPositionsListener,
                 minCacheExtent:
-                    _pageInfo.useFileSystem ? height * 6.0 : height * 3.0,
+                    _pageInfo.useFileSystem ? height * 3.0 : height * 3.0,
                 itemBuilder: (context, index) {
                   Widget image;
                   if (!Settings.padding) {
