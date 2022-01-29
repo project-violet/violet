@@ -13,12 +13,14 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/downloadable.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -344,6 +346,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                   widget.item.dateTime().toString(),
             )
           : _ThumbnailWidget(
+              id: int.tryParse(widget.item.url()),
               thumbnail: widget.item.thumbnail(),
               thumbnailTag: (widget.item.thumbnail() == null
                       ? ''
@@ -509,11 +512,13 @@ class _ThumbnailWidget extends StatelessWidget {
   final String thumbnail;
   final String thumbnailHeader;
   final String thumbnailTag;
+  final int id;
 
   _ThumbnailWidget({
     this.thumbnail,
     this.thumbnailHeader,
     this.thumbnailTag,
+    this.id,
   });
 
   @override
@@ -535,35 +540,79 @@ class _ThumbnailWidget extends StatelessWidget {
   }
 
   Widget _thumbnailImage() {
-    Map<String, String> headers = {};
-    if (thumbnailHeader != null) {
-      var hh = jsonDecode(thumbnailHeader) as Map<String, dynamic>;
-      hh.entries.forEach((element) {
-        headers[element.key] = element.value as String;
-      });
-    }
-    return Hero(
-      tag: thumbnailTag,
-      child: CachedNetworkImage(
-        imageUrl: thumbnail,
-        fit: BoxFit.cover,
-        httpHeaders: headers,
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+    if (id == null) {
+      Map<String, String> headers = {};
+      if (thumbnailHeader != null) {
+        var hh = jsonDecode(thumbnailHeader) as Map<String, dynamic>;
+        hh.entries.forEach((element) {
+          headers[element.key] = element.value as String;
+        });
+      }
+      return Hero(
+        tag: thumbnailTag,
+        child: CachedNetworkImage(
+          imageUrl: thumbnail,
+          fit: BoxFit.cover,
+          httpHeaders: headers,
+          imageBuilder: (context, imageProvider) => Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+            ),
+            child: Container(),
           ),
-          child: Container(),
+          placeholder: (b, c) {
+            return FlareActor(
+              "assets/flare/Loading2.flr",
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: "Alarm",
+            );
+          },
         ),
-        placeholder: (b, c) {
-          return FlareActor(
-            "assets/flare/Loading2.flr",
-            alignment: Alignment.center,
-            fit: BoxFit.fitHeight,
-            animation: "Alarm",
+      );
+    } else {
+      return FutureBuilder(
+        future: HitomiManager.getImageList(id.toString()).then((value) async {
+          if (value == null) return null;
+          var header = ScriptManager.runHitomiGetHeaderContent(id.toString());
+          return [value.item1[0], header];
+        }),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data == null) {
+            return FlareActor(
+              "assets/flare/Loading2.flr",
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: "Alarm",
+            );
+          }
+
+          return Hero(
+            tag: thumbnailTag,
+            child: CachedNetworkImage(
+              imageUrl: snapshot.data[0],
+              fit: BoxFit.cover,
+              httpHeaders: snapshot.data[1],
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+                child: Container(),
+              ),
+              placeholder: (b, c) {
+                return FlareActor(
+                  "assets/flare/Loading2.flr",
+                  alignment: Alignment.center,
+                  fit: BoxFit.fitHeight,
+                  animation: "Alarm",
+                );
+              },
+            ),
           );
         },
-      ),
-    );
+      );
+    }
   }
 }
 
