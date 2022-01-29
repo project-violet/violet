@@ -23,6 +23,7 @@ class Settings {
   static Color majorColor; // default purple
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
+  static int downloadResultType;
   static bool themeFlat;
   static bool themeBlack; // default false
   static bool useTabletMode;
@@ -100,6 +101,7 @@ class Settings {
 
   static Future<void> init() async {
     searchResultType = await _getInt('searchResultType');
+    downloadResultType = await _getInt('downloadResultType', 3);
 
     language = (await SharedPreferences.getInstance()).getString('language');
 
@@ -386,6 +388,12 @@ class Settings {
     searchResultType = wh;
     await (await SharedPreferences.getInstance())
         .setInt('searchResultType', searchResultType);
+  }
+
+  static Future<void> setDownloadResultType(int wh) async {
+    downloadResultType = wh;
+    await (await SharedPreferences.getInstance())
+        .setInt('downloadResultType', downloadResultType);
   }
 
   static Future<void> setLanguage(String lang) async {
