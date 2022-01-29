@@ -186,11 +186,26 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                   cacheWidth: width.toInt() ~/ properties[viewStyle][1],
                   filterQuality: FilterQuality.high,
                 ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: 1),
+                    width: double.infinity,
+                    color: Colors.black.withOpacity(0.7),
+                    child: Text(
+                      '${index + 1} page',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(fontSize: 11, color: Colors.white),
+                    ),
+                  ),
+                ),
                 Positioned.fill(
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pop(context, index);
+                      },
                     ),
                   ),
                 )
