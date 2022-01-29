@@ -368,6 +368,16 @@ class _DownloadPageState extends State<DownloadPage>
     var result = <int>[];
     var isOr = _filterController.isOr;
     queryResults.entries.forEach((element) {
+      // 1: Pending
+      // 2: Extracting
+      // 3: Downloading
+      // 4: Post Processing
+      if (1 <= itemsMap[element.key].state() &&
+          itemsMap[element.key].state() <= 4) {
+        result.add(element.key);
+        return;
+      }
+
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
