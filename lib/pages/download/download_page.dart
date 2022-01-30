@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
+import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/database/query.dart';
@@ -49,6 +50,7 @@ class _DownloadPageState extends State<DownloadPage>
   Map<int, QueryResult> queryResults = Map<int, QueryResult>();
   FilterController _filterController =
       FilterController(heroKey: "downloadtype");
+  ObjectKey _listKey = ObjectKey(Uuid().v4());
 
   @override
   void initState() {
@@ -165,6 +167,7 @@ class _DownloadPageState extends State<DownloadPage>
       return SliverPadding(
           padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: SliverGrid(
+            key: _listKey,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
               crossAxisSpacing: 8,
@@ -199,6 +202,7 @@ class _DownloadPageState extends State<DownloadPage>
         return SliverPadding(
           padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: LiveSliverGrid(
+            key: _listKey,
             controller: _scrollController,
             showItemInterval: Duration(milliseconds: 50),
             showItemDuration: Duration(milliseconds: 150),
@@ -231,6 +235,7 @@ class _DownloadPageState extends State<DownloadPage>
         );
       } else {
         return SliverList(
+          key: _listKey,
           delegate: SliverChildListDelegate(
             filterResult.reversed.map((e) {
               if (downloadItemWidgets.containsKey(e.id()))
@@ -433,7 +438,9 @@ class _DownloadPageState extends State<DownloadPage>
     ))
         .then((value) async {
       await Future.delayed(Duration(milliseconds: 50), () {
-        setState(() {});
+        setState(() {
+          _listKey = ObjectKey(Uuid().v4());
+        });
       });
     });
   }
