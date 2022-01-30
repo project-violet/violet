@@ -1845,6 +1845,7 @@ class __FileImageState extends State<_FileImage> {
       File(widget.path),
       fit: BoxFit.contain,
       imageCacheName: widget.path,
+      clearMemoryCacheWhenDispose: true,
       filterQuality: [
         FilterQuality.none,
         FilterQuality.high,
