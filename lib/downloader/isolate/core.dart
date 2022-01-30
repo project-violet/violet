@@ -24,6 +24,7 @@ enum ReceivePortType {
   progresss,
   error,
   complete,
+  retry,
 }
 
 class ReceivePortData {
@@ -78,8 +79,9 @@ class IsolateDownloaderTask {
 
 class IsolateDownloaderOption {
   final int threadCount;
+  final int maxRetryCount;
 
-  IsolateDownloaderOption({this.threadCount});
+  IsolateDownloaderOption({this.threadCount, this.maxRetryCount});
 }
 
 class IsolateDownloaderProgressProtocolUnit {
@@ -108,6 +110,7 @@ class IsolateDownloaderErrorUnit {
 
 int _taskCurrentCount = 0;
 int _maxTaskCount = 0;
+int _maxRetryCount = 0;
 SendPort _sendPort;
 Queue<IsolateDownloaderTask> _dqueue;
 Map<int, IsolateDownloaderTask> _workingMap;
@@ -132,23 +135,47 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
   // ).interceptor as Interceptor);
 
   try {
-    await dio.download(
-      task.url,
-      task.fullpath,
-      cancelToken: task.cancelToken,
-      onReceiveProgress: (count, total) {
-        _sendPort.send(
-          ReceivePortData(
-            type: ReceivePortType.progresss,
-            data: IsolateDownloaderProgressProtocolUnit(
-              id: task.id,
-              countSize: count,
-              totalSize: total,
+    var retryCount = 0;
+
+    do {
+      await dio.download(
+        task.url,
+        task.fullpath,
+        cancelToken: task.cancelToken,
+        onReceiveProgress: (count, total) {
+          _sendPort.send(
+            ReceivePortData(
+              type: ReceivePortType.progresss,
+              data: IsolateDownloaderProgressProtocolUnit(
+                id: task.id,
+                countSize: count,
+                totalSize: total,
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+
+      // check download file is not empty
+      var file = File(task.fullpath);
+      if (await file.exists()) {
+        if (await file.length() != 0) break;
+        await file.delete();
+      }
+
+      _sendPort.send(
+        ReceivePortData(
+          type: ReceivePortType.retry,
+          data: {
+            "id": task.id,
+            "url": task.url,
+            "count": retryCount,
+          },
+        ),
+      );
+
+      retryCount++;
+    } while (retryCount < _maxRetryCount);
 
     _sendPort.send(
       ReceivePortData(

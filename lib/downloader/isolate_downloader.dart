@@ -3,6 +3,7 @@
 
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:dio/dio.dart';
@@ -105,7 +106,10 @@ class IsolateDownloader {
       _sendPort.send(
         SendPortData(
           type: SendPortType.init,
-          data: IsolateDownloaderOption(threadCount: _threadCount),
+          data: IsolateDownloaderOption(
+            threadCount: _threadCount,
+            maxRetryCount: 10,
+          ),
         ),
       );
     } else if (message is ReceivePortData) {
@@ -122,6 +126,9 @@ class IsolateDownloader {
           break;
         case ReceivePortType.error:
           _errorTask(message.data as IsolateDownloaderErrorUnit);
+          break;
+        case ReceivePortType.retry:
+          _retryTask(message.data as Map<dynamic, dynamic>);
           break;
       }
     }
@@ -224,11 +231,26 @@ class IsolateDownloader {
     _tasks.remove(unit.id);
     _erroredTask.add(unit.id);
     _errorContent[unit.id] = unit;
-    Logger.error('[downloader-err] Id' +
+    Logger.error('[downloader-err] URL: ' +
         _tasks[unit.id].url +
+        '\nP: ' +
+        _tasks[unit.id].downloadPath +
         '\nE: ' +
         unit.error +
         "\n" +
         unit.stackTrace);
+  }
+
+  void _retryTask(Map<dynamic, dynamic> data) {
+    var id = data["id"] as int;
+    var url = data["url"] as String;
+    var count = data["count"] as int;
+
+    Logger.warning('[downloader-retry] URL: ' +
+        url +
+        '\nP: ' +
+        _tasks[id].downloadPath +
+        '\nC: ' +
+        count.toString());
   }
 }
