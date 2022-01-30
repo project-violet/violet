@@ -668,7 +668,14 @@ class _FileThumbnailWidget extends StatelessWidget {
               animation: "Alarm",
             );
           }
-          return state.completedWidget;
+
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: state.imageProvider, fit: BoxFit.cover),
+            ),
+            child: Container(),
+          );
         },
       ),
     );
