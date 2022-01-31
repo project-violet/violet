@@ -1548,7 +1548,7 @@ class _ViewerPageState extends State<ViewerPage>
         }
 
         return FutureBuilder(
-          future: Future.delayed(Duration(milliseconds: 1)).then((value) async {
+          future: Future.value(1).then((value) async {
             if (_headerCache[index] == null) {
               var header = await _pageInfo.provider.getHeader(index);
               _headerCache[index] = header;
@@ -1562,8 +1562,7 @@ class _ViewerPageState extends State<ViewerPage>
             return 1;
           }),
           builder: (context, snapshot) {
-            if (!snapshot.hasData &&
-                (_urlCache[index] == null || _headerCache[index] == null)) {
+            if (_urlCache[index] == null || _headerCache[index] == null) {
               return SizedBox(
                 height: _estimatedImageHeight[index] != 0
                     ? _estimatedImageHeight[index]
