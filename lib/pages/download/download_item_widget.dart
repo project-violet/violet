@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/user/download.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
@@ -253,6 +254,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         if (widget.item.state() == 0 && widget.item.files() != null) {
           if (!Settings.disableFullScreen)
             SystemChrome.setEnabledSystemUIOverlays([]);
+
+          await (await User.getInstance())
+              .insertUserLog(int.tryParse(widget.item.url()), 0);
 
           Navigator.push(
             context,
