@@ -55,9 +55,14 @@ class DownloadItemModel {
     await db.delete('DownloadItem', 'Id=?', [id()]);
   }
 
+  List<String> rawFiles() {
+    return (jsonDecode(files()) as List<dynamic>)
+        .map((e) => e as String)
+        .toList();
+  }
+
   List<String> filesWithoutThumbnail() {
-    var rfiles =
-        (jsonDecode(files()) as List<dynamic>).map((e) => e as String).toList();
+    var rfiles = rawFiles();
     rfiles.removeWhere(
         (element) => element.split('/').last.startsWith('thumbnail'));
     return rfiles;

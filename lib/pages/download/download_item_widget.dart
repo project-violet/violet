@@ -221,11 +221,10 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         );
 
         if (v == -1) {
-          var rfiles = (jsonDecode(widget.item.files()) as List<dynamic>)
-              .map((e) => e as String)
-              .toList();
-          for (var file in rfiles) {
-            if (await File(file).exists()) await File(file).delete();
+          if (widget.item.state() == 0) {
+            for (var file in widget.item.rawFiles()) {
+              if (await File(file).exists()) await File(file).delete();
+            }
           }
           await widget.item.delete();
           widget.refeshCallback();
