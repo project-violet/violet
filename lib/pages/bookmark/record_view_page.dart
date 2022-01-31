@@ -40,8 +40,8 @@ class RecordViewPage extends StatelessWidget {
                 var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
                 queryRaw +=
                     'Id IN (' + rr.map((e) => e.articleId()).join(',') + ')';
-                var qm =
-                    await QueryManager.query(queryRaw + ' AND ExistOnHitomi=1');
+                var qm = await QueryManager.query(queryRaw +
+                    (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                 var qr = Map<String, QueryResult>();
                 qm.results.forEach((element) {
