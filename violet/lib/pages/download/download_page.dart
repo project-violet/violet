@@ -69,7 +69,10 @@ class _DownloadPageState extends State<DownloadPage>
       items = await (await Download.getInstance()).getDownloadItems();
       await _buildQueryResults();
       _applyFilter();
-      setState(() {});
+      setState(() {
+        _shouldReload = true;
+        _listKey = ObjectKey(Uuid().v4());
+      });
     });
   }
 
@@ -122,12 +125,19 @@ class _DownloadPageState extends State<DownloadPage>
 
   Map<int, Widget> downloadItemWidgets = Map<int, Widget>();
   ScrollController _scrollController = ScrollController();
+  Widget _cachedPanel;
+  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     DownloadPageManager.downloadPageLoaded = true;
+
+    if (_cachedPanel == null || _shouldReload) {
+      _shouldReload = false;
+      _cachedPanel = _panel();
+    }
 
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
@@ -151,7 +161,7 @@ class _DownloadPageState extends State<DownloadPage>
                 ),
               ),
             ),
-            _panel(),
+            _cachedPanel,
           ],
         ),
       ),
@@ -424,6 +434,7 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   Future<void> _alignOnTap() async {
+    var rtype = Settings.downloadResultType;
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
@@ -437,11 +448,13 @@ class _DownloadPageState extends State<DownloadPage>
       barrierDismissible: true,
     ))
         .then((value) async {
-      await Future.delayed(Duration(milliseconds: 50), () {
-        setState(() {
-          _listKey = ObjectKey(Uuid().v4());
+      if (rtype != Settings.downloadResultType)
+        await Future.delayed(Duration(milliseconds: 50), () {
+          setState(() {
+            _shouldReload = true;
+            _listKey = ObjectKey(Uuid().v4());
+          });
         });
-      });
     });
   }
 
@@ -515,7 +528,10 @@ class _DownloadPageState extends State<DownloadPage>
     if (_filterController.isPopulationSort)
       Population.sortByPopulationDownloadItem(filterResult);
 
-    setState(() {});
+    setState(() {
+      _shouldReload = true;
+      _listKey = ObjectKey(Uuid().v4());
+    });
   }
 
   static String prefix2Tag(String prefix) {
