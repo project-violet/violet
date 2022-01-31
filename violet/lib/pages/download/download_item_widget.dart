@@ -342,7 +342,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
     final width = MediaQuery.of(context).size.width;
     return Visibility(
       visible: widget.item.thumbnail() != null,
-      child: widget.item.state() == 0 && widget.item.rawFiles().length > 0
+      child: widget.item.state() == 0 &&
+              widget.item.rawFiles().length > 0 &&
+              File(widget.item.rawFiles().first).existsSync()
           ? _FileThumbnailWidget(
               showDetail: style.showDetail,
               thumbnailPath: widget.item.rawFiles().first,
