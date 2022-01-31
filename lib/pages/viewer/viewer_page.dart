@@ -88,6 +88,9 @@ class _ViewerPageState extends State<ViewerPage>
   void initState() {
     super.initState();
 
+    if (!Settings.disableFullScreen)
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+
     Future.delayed(Duration(milliseconds: 100))
         .then((value) => _checkLatestRead());
 

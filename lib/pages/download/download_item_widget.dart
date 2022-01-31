@@ -251,9 +251,6 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       },
       onTap: () async {
         if (widget.item.state() == 0 && widget.item.files() != null) {
-          if (!Settings.disableFullScreen)
-            SystemChrome.setEnabledSystemUIOverlays([]);
-
           await (await User.getInstance())
               .insertUserLog(int.tryParse(widget.item.url()), 0);
 
