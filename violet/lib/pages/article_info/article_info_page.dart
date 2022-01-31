@@ -248,9 +248,6 @@ class ArticleInfoPage extends StatelessWidget {
     }
     await (await User.getInstance()).insertUserLog(data.queryResult.id(), 0);
 
-    if (!Settings.disableFullScreen)
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-
     await ProviderManager.get(data.queryResult.id()).init();
 
     Navigator.push(
