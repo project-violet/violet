@@ -18,9 +18,10 @@ class DownloadRoutine {
   DownloadItemModel item;
   Map<String, dynamic> result;
   VoidCallback setStateCallback;
+  VoidCallback thumbnailCallback;
   List<violetd.DownloadTask> tasks;
 
-  DownloadRoutine(this.item, this.setStateCallback) {
+  DownloadRoutine(this.item, this.setStateCallback, this.thumbnailCallback) {
     result = Map<String, dynamic>.from(item.result);
   }
 
@@ -62,7 +63,7 @@ class DownloadRoutine {
           thumbnailCallback: (url, header) async {
             result['Thumbnail'] = url;
             result['ThumbnailHeader'] = header;
-            setStateCallback.call();
+            thumbnailCallback.call();
           },
           progressCallback: progressCallback,
         ),
