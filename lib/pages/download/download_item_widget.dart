@@ -356,25 +356,16 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
               usingRawImage: true,
               width: width,
             )
-          : widget.item.tryThumbnailFile() != null
-              ? _FileThumbnailWidget(
-                  showDetail: style.showDetail,
-                  thumbnailPath: widget.item.tryThumbnailFile(),
-                  thumbnailTag: (widget.item.thumbnail() == null
-                          ? ''
-                          : widget.item.thumbnail()) +
-                      widget.item.dateTime().toString(),
-                )
-              : _ThumbnailWidget(
-                  showDetail: style.showDetail,
-                  id: int.tryParse(widget.item.url()),
-                  thumbnail: widget.item.thumbnail(),
-                  thumbnailTag: (widget.item.thumbnail() == null
-                          ? ''
-                          : widget.item.thumbnail()) +
-                      widget.item.dateTime().toString(),
-                  thumbnailHeader: widget.item.thumbnailHeader(),
-                ),
+          : _ThumbnailWidget(
+              showDetail: style.showDetail,
+              id: int.tryParse(widget.item.url()),
+              thumbnail: widget.item.thumbnail(),
+              thumbnailTag: (widget.item.thumbnail() == null
+                      ? ''
+                      : widget.item.thumbnail()) +
+                  widget.item.dateTime().toString(),
+              thumbnailHeader: widget.item.thumbnailHeader(),
+            ),
     );
   }
 
