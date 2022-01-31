@@ -349,9 +349,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           ? _FileThumbnailWidget(
               showDetail: style.showDetail,
               thumbnailPath: widget.item.rawFiles().first,
-              thumbnailTag: (widget.item.thumbnail() == null
-                      ? ''
-                      : widget.item.thumbnail()) +
+              thumbnailTag: (widget.item.thumbnail() ?? '') +
                   widget.item.dateTime().toString(),
               usingRawImage: true,
               width: width,
@@ -360,9 +358,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
               showDetail: style.showDetail,
               id: int.tryParse(widget.item.url()),
               thumbnail: widget.item.thumbnail(),
-              thumbnailTag: (widget.item.thumbnail() == null
-                      ? ''
-                      : widget.item.thumbnail()) +
+              thumbnailTag: (widget.item.thumbnail() ?? '') +
                   widget.item.dateTime().toString(),
               thumbnailHeader: widget.item.thumbnailHeader(),
             ),
@@ -500,14 +496,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
                   Row(children: <Widget>[
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
-                      child: fav != '' && fav != null
-                          ? CachedNetworkImage(
-                              imageUrl: fav,
-                              width: 25,
-                              height: 25,
-                              fadeInDuration: Duration(microseconds: 500),
-                              fadeInCurve: Curves.easeIn)
-                          : Container(),
+                      child: Container(),
                     ),
                   ]),
                 ],
