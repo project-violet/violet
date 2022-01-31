@@ -56,6 +56,7 @@ class DownloadItemModel {
   }
 
   List<String> rawFiles() {
+    if (files() == null || files() == "") return [];
     return (jsonDecode(files()) as List<dynamic>)
         .map((e) => e as String)
         .toList();

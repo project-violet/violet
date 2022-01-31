@@ -71,30 +71,6 @@ class HentaiDonwloadManager {
     var result = <DownloadTask>[];
 
     //
-    //    Add Thumbnail
-    //
-    result.add(
-      DownloadTask(
-        url: thumbnailUrl,
-        filename: thumbnailUrl.split('/').last,
-        headers: thumbnailHeader,
-        format: FileNameFormat(
-          title: target.title(),
-          id: target.id().toString(),
-          laugage: target.language(),
-          uploadDate: target.getDateTime().toString(),
-          filenameWithoutExtension: 'thumbnail',
-          artist: target.artists() != null
-              ? target.artists().split('|').first
-              : null,
-          extension:
-              path.extension(thumbnailUrl.split('/').last).replaceAll(".", ""),
-          extractor: 'hentai',
-        ),
-      ),
-    );
-
-    //
     //    Add Images
     //
     for (int i = 0; i < provider.length(); i++) {
