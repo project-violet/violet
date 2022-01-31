@@ -18,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:mdi/mdi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -600,6 +601,30 @@ class _SettingsPageState extends State<SettingsPage>
                   toastDuration: Duration(seconds: 4),
                 );
               }
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
+              title: Text('Pure Search'),
+              trailing: Switch(
+                value: Settings.searchPure,
+                onChanged: (newValue) async {
+                  await Settings.setSearchPure(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setSearchPure(!Settings.searchPure);
+              setState(() {
+                _shouldReload = true;
+              });
             },
           ),
           _buildDivider(),

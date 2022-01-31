@@ -63,8 +63,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   queryRaw += 'Id IN (' +
                       LDI.ldi.map((e) => e.item1).take(1500).join(',') +
                       ')';
-                  var qm = await QueryManager.query(
-                      queryRaw + ' AND ExistOnHitomi=1');
+                  var qm = await QueryManager.query(queryRaw +
+                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
                   qm.results.forEach((element) {
@@ -94,8 +94,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                           .take(1500)
                           .join(',') +
                       ')';
-                  var qm = await QueryManager.query(
-                      queryRaw + ' AND ExistOnHitomi=1');
+                  var qm = await QueryManager.query(queryRaw +
+                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
                   qm.results.forEach((element) {
@@ -131,8 +131,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   queryRaw += 'Id IN (' +
                       ll.map((e) => e.key).take(1500).join(',') +
                       ')';
-                  var qm = await QueryManager.query(
-                      queryRaw + ' AND ExistOnHitomi=1');
+                  var qm = await QueryManager.query(queryRaw +
+                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
                   qm.results.forEach((element) {
@@ -168,8 +168,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   queryRaw += 'Id IN (' +
                       ll.map((e) => e.key).take(1500).join(',') +
                       ')';
-                  var qm = await QueryManager.query(
-                      queryRaw + ' AND ExistOnHitomi=1');
+                  var qm = await QueryManager.query(queryRaw +
+                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   _navigate(ArticleListPage(
                       name: "User Read Count DESC", cc: qm.results));
@@ -297,8 +297,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                           .take(1500)
                           .join(',') +
                       ')';
-                  var qm = await QueryManager.query(
-                      queryRaw + ' AND ExistOnHitomi=1');
+                  var qm = await QueryManager.query(queryRaw +
+                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
                   qm.results.forEach((element) {

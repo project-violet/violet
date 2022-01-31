@@ -79,6 +79,7 @@ class Settings {
   static bool searchTagTranslation;
   static bool searchUseTranslated;
   static bool searchShowCount;
+  static bool searchPure;
 
   static String userAppId;
 
@@ -270,6 +271,7 @@ class Settings {
     searchTagTranslation = await _getBool('searchtagtranslation');
     searchUseTranslated = await _getBool('searchusetranslated');
     searchShowCount = await _getBool('searchshowcount', true);
+    searchPure = await _getBool('searchPure');
 
     userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
 
@@ -498,6 +500,11 @@ class Settings {
   static Future<void> setSearchOnWeb(bool nn) async {
     searchNetwork = nn;
     await (await SharedPreferences.getInstance()).setBool('searchnetwork', nn);
+  }
+
+  static Future<void> setSearchPure(bool nn) async {
+    searchPure = nn;
+    await (await SharedPreferences.getInstance()).setBool('searchPure', nn);
   }
 
   static Future<void> setUseVioletServer(bool nn) async {

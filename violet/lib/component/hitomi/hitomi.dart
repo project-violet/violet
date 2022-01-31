@@ -11,6 +11,7 @@ import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/script/script_manager.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
 class HitomiManager {
@@ -358,7 +359,8 @@ class HitomiManager {
     }
 
     if (tokens == null || tokens.trim() == "")
-      return 'SELECT * FROM HitomiColumnModel WHERE ExistOnHitomi=1';
+      return 'SELECT * FROM HitomiColumnModel WHERE ' +
+          (!Settings.searchPure ? 'ExistOnHitomi=1' : '');
 
     final split =
         splitTokens(tokens).map((x) => x.trim()).where((x) => x != '').toList();
@@ -418,7 +420,8 @@ class HitomiManager {
             prefix = 'Class';
             break;
           case 'recent':
-            return 'SELECT * FROM HitomiColumnModel WHERE ExistOnHitomi=1';
+            return 'SELECT * FROM HitomiColumnModel ' +
+                (!Settings.searchPure ? 'ExistOnHitomi=1' : '');
         }
         if (prefix == '') return '';
         if (postfix == '') postfix = ss[1].replaceAll('_', ' ');
@@ -448,6 +451,7 @@ class HitomiManager {
       }
     }
 
-    return 'SELECT * FROM HitomiColumnModel WHERE $where AND ExistOnHitomi=1';
+    return 'SELECT * FROM HitomiColumnModel WHERE $where ' +
+        (!Settings.searchPure ? ' AND ExistOnHitomi=1' : '');
   }
 }
