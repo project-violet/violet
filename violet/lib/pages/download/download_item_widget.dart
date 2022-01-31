@@ -115,7 +115,12 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       once = true;
       // var downloader = await BuiltinDownloader.getInstance();
 
-      var routine = DownloadRoutine(widget.item, () => setState(() {}));
+      var routine = DownloadRoutine(
+          widget.item,
+          () => setState(() {}),
+          () => setState(() {
+                _shouldReload = true;
+              }));
 
       if (!await routine.checkValidState() || !await routine.checkValidUrl())
         return;
@@ -246,7 +251,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           once = false;
           widget.download = true;
           _downloadProcedure();
-          setState(() {});
+          setState(() {
+            _shouldReload = true;
+          });
         }
       },
       onTap: () async {
@@ -338,11 +345,15 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
     );
   }
 
+  Widget _cachedThumbnail;
+  bool _shouldReload = false;
+
   Widget buildThumbnail() {
     final width = MediaQuery.of(context).size.width;
-    return Visibility(
-      visible: widget.item.thumbnail() != null,
-      child: widget.item.state() == 0 &&
+
+    if (_cachedThumbnail == null || _shouldReload) {
+      _shouldReload = false;
+      _cachedThumbnail = widget.item.state() == 0 &&
               widget.item.rawFiles().length > 0 &&
               File(widget.item.rawFiles().first).existsSync()
           ? _FileThumbnailWidget(
@@ -360,7 +371,12 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
               thumbnailTag: (widget.item.thumbnail() ?? '') +
                   widget.item.dateTime().toString(),
               thumbnailHeader: widget.item.thumbnailHeader(),
-            ),
+            );
+    }
+
+    return Visibility(
+      visible: widget.item.thumbnail() != null,
+      child: _cachedThumbnail,
     );
   }
 
