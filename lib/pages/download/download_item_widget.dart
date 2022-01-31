@@ -342,27 +342,39 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
   }
 
   Widget buildThumbnail() {
+    final width = MediaQuery.of(context).size.width;
     return Visibility(
       visible: widget.item.thumbnail() != null,
-      child: widget.item.tryThumbnailFile() != null
+      child: widget.item.state() == 0 && widget.item.rawFiles().length > 0
           ? _FileThumbnailWidget(
               showDetail: style.showDetail,
-              thumbnailPath: widget.item.tryThumbnailFile(),
+              thumbnailPath: widget.item.rawFiles().first,
               thumbnailTag: (widget.item.thumbnail() == null
                       ? ''
                       : widget.item.thumbnail()) +
                   widget.item.dateTime().toString(),
+              usingRawImage: true,
+              width: width,
             )
-          : _ThumbnailWidget(
-              showDetail: style.showDetail,
-              id: int.tryParse(widget.item.url()),
-              thumbnail: widget.item.thumbnail(),
-              thumbnailTag: (widget.item.thumbnail() == null
-                      ? ''
-                      : widget.item.thumbnail()) +
-                  widget.item.dateTime().toString(),
-              thumbnailHeader: widget.item.thumbnailHeader(),
-            ),
+          : widget.item.tryThumbnailFile() != null
+              ? _FileThumbnailWidget(
+                  showDetail: style.showDetail,
+                  thumbnailPath: widget.item.tryThumbnailFile(),
+                  thumbnailTag: (widget.item.thumbnail() == null
+                          ? ''
+                          : widget.item.thumbnail()) +
+                      widget.item.dateTime().toString(),
+                )
+              : _ThumbnailWidget(
+                  showDetail: style.showDetail,
+                  id: int.tryParse(widget.item.url()),
+                  thumbnail: widget.item.thumbnail(),
+                  thumbnailTag: (widget.item.thumbnail() == null
+                          ? ''
+                          : widget.item.thumbnail()) +
+                      widget.item.dateTime().toString(),
+                  thumbnailHeader: widget.item.thumbnailHeader(),
+                ),
     );
   }
 
@@ -634,11 +646,15 @@ class _FileThumbnailWidget extends StatelessWidget {
   final String thumbnailPath;
   final String thumbnailTag;
   final bool showDetail;
+  final bool usingRawImage;
+  final double width;
 
   _FileThumbnailWidget({
     this.thumbnailPath,
     this.thumbnailTag,
     this.showDetail,
+    this.usingRawImage = false,
+    this.width,
   });
 
   @override
@@ -667,6 +683,7 @@ class _FileThumbnailWidget extends StatelessWidget {
       child: ExtendedImage.file(
         File(thumbnailPath),
         fit: BoxFit.cover,
+        cacheWidth: usingRawImage ? width.toInt() : null,
         loadStateChanged: (state) {
           if (state.extendedImageLoadState == LoadState.loading ||
               state.extendedImageLoadState == LoadState.failed) {
