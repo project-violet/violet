@@ -252,8 +252,6 @@ class ArticleInfoPage extends StatelessWidget {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     await ProviderManager.get(data.queryResult.id()).init();
-    if (await ScriptManager.refresh())
-      await ProviderManager.get(data.queryResult.id()).refresh();
 
     Navigator.push(
       context,
