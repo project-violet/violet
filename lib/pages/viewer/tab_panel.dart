@@ -37,6 +37,8 @@ class _TabPanelState extends State<TabPanel> {
     // TODO: implement initState
     super.initState();
 
+    if (widget.usableTabList == null) return;
+
     widget.usableTabList
         .forEach((element) => itemKeys[element.id()] = GlobalKey());
 
