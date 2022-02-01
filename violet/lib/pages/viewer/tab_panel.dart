@@ -231,6 +231,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
   ScrollController _scrollController = ScrollController();
   Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
   bool isLoaded = false;
+  bool isJumped = false;
   List<QueryResult> articleList = [];
 
   @override
@@ -291,7 +292,11 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
       if (!articleList.any((element) => element.id() == widget.articleId))
         return;
+    });
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (isJumped) return;
+      isJumped = true;
       Future.value(1).then((value) {
         var row = articleList
                 .indexWhere((element) => element.id() == widget.articleId) ~/
