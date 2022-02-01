@@ -187,7 +187,10 @@ class BookmarkIndicatorWidget extends StatelessWidget {
                   controller: flareController,
                 );
               } else {
-                return Icon(value ? MdiIcons.heart : MdiIcons.heartOutline);
+                return Icon(
+                  value ? MdiIcons.heart : MdiIcons.heartOutline,
+                  color: value ? Color(0xFFE2264D) : null,
+                );
               }
             },
           ),
