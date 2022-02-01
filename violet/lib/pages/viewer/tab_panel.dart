@@ -287,10 +287,10 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
       articleList = queryResult;
       articleList.forEach((element) => itemKeys[element.id()] = GlobalKey());
 
-      if (!articleList.any((element) => element.id() == widget.articleId)) {
-        setState(() => isLoaded = true);
+      setState(() => isLoaded = true);
+
+      if (!articleList.any((element) => element.id() == widget.articleId))
         return;
-      }
 
       Future.value(1).then((value) {
         var row = articleList
@@ -308,8 +308,6 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
               100,
         );
       });
-
-      setState(() => isLoaded = true);
     });
   }
 
