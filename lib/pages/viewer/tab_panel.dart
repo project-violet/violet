@@ -11,19 +11,25 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
+import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class TabPanel extends StatefulWidget {
   final int articleId;
+  final double height;
   final List<QueryResult> usableTabList;
 
   TabPanel({
     this.articleId,
     this.usableTabList,
+    this.height,
   });
 
   @override
@@ -70,6 +76,7 @@ class _TabPanelState extends State<TabPanel> {
                         )
                       : Container(),
                   _ArtistsArticleTabList(
+                    height: widget.height,
                     articleId: widget.articleId,
                   ),
                 ],
@@ -208,8 +215,9 @@ class __UsableTabListState extends State<_UsableTabList>
 
 class _ArtistsArticleTabList extends StatefulWidget {
   final int articleId;
+  final double height;
 
-  const _ArtistsArticleTabList({this.articleId});
+  const _ArtistsArticleTabList({this.articleId, this.height});
 
   @override
   __ArtistsArticleTabListState createState() => __ArtistsArticleTabListState();
@@ -350,8 +358,48 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                 width: (windowWidth - 4.0) / 3.0,
                                 thumbnailTag: Uuid().v4(),
                                 selectMode: true,
-                                selectCallback: () {
-                                  Navigator.pop(context, e);
+                                selectCallback: () async {
+                                  var prov = ProviderManager.get(e.id());
+                                  var thumbnail = await prov.getThumbnailUrl();
+                                  var headers = await prov.getHeader(0);
+                                  ProviderManager.insert(e.id(), prov);
+
+                                  var isBookmarked =
+                                      await (await Bookmark.getInstance())
+                                          .isBookmark(e.id());
+
+                                  var cache;
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (_) {
+                                      return DraggableScrollableSheet(
+                                        initialChildSize: 400 / widget.height,
+                                        minChildSize: 400 / widget.height,
+                                        maxChildSize: 0.9,
+                                        expand: false,
+                                        builder: (_, controller) {
+                                          if (cache == null) {
+                                            cache = Provider<ArticleInfo>.value(
+                                              child: ArticleInfoPage(
+                                                key: ObjectKey('asdfasdf'),
+                                              ),
+                                              value:
+                                                  ArticleInfo.fromArticleInfo(
+                                                queryResult: e,
+                                                thumbnail: thumbnail,
+                                                headers: headers,
+                                                heroKey: 'zxcvzxcvzxcv',
+                                                isBookmarked: isBookmarked,
+                                                controller: controller,
+                                              ),
+                                            );
+                                          }
+                                          return cache;
+                                        },
+                                      );
+                                    },
+                                  );
                                 },
                               ),
                               child: ArticleListItemVerySimpleWidget(),
