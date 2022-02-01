@@ -550,12 +550,7 @@ class _ThumbnailWidget extends StatelessWidget {
                   : const BorderRadius.all(Radius.circular(5.0)),
               child: _thumbnailImage(),
             )
-          : FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            ),
+          : _getLoadingAnimation(),
     );
   }
 
@@ -581,12 +576,7 @@ class _ThumbnailWidget extends StatelessWidget {
             child: Container(),
           ),
           placeholder: (b, c) {
-            return FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            );
+            return _getLoadingAnimation();
           },
         ),
       );
@@ -600,12 +590,7 @@ class _ThumbnailWidget extends StatelessWidget {
         }),
         builder: (context, snapshot) {
           if (!snapshot.hasData || snapshot.data == null) {
-            return FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            );
+            return _getLoadingAnimation();
           }
 
           return Hero(
@@ -622,16 +607,32 @@ class _ThumbnailWidget extends StatelessWidget {
                 child: Container(),
               ),
               placeholder: (b, c) {
-                return FlareActor(
-                  "assets/flare/Loading2.flr",
-                  alignment: Alignment.center,
-                  fit: BoxFit.fitHeight,
-                  animation: "Alarm",
-                );
+                return _getLoadingAnimation();
               },
             ),
           );
         },
+      );
+    }
+  }
+
+  Widget _getLoadingAnimation() {
+    if (!Settings.simpleItemWidgetLoadingIcon) {
+      return const FlareActor(
+        "assets/flare/Loading2.flr",
+        alignment: Alignment.center,
+        fit: BoxFit.fitHeight,
+        animation: "Alarm",
+      );
+    } else {
+      return Center(
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(
+            color: Settings.majorColor.withAlpha(150),
+          ),
+        ),
       );
     }
   }
@@ -663,12 +664,7 @@ class _FileThumbnailWidget extends StatelessWidget {
                   : const BorderRadius.all(Radius.circular(5.0)),
               child: _thumbnailImage(),
             )
-          : FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            ),
+          : _getLoadingAnimation(),
     );
   }
 
@@ -682,12 +678,7 @@ class _FileThumbnailWidget extends StatelessWidget {
         loadStateChanged: (state) {
           if (state.extendedImageLoadState == LoadState.loading ||
               state.extendedImageLoadState == LoadState.failed) {
-            return FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            );
+            return _getLoadingAnimation();
           }
 
           return Container(
@@ -700,5 +691,26 @@ class _FileThumbnailWidget extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _getLoadingAnimation() {
+    if (!Settings.simpleItemWidgetLoadingIcon) {
+      return const FlareActor(
+        "assets/flare/Loading2.flr",
+        alignment: Alignment.center,
+        fit: BoxFit.fitHeight,
+        animation: "Alarm",
+      );
+    } else {
+      return Center(
+        child: SizedBox(
+          width: 30,
+          height: 30,
+          child: CircularProgressIndicator(
+            color: Settings.majorColor.withAlpha(150),
+          ),
+        ),
+      );
+    }
   }
 }
