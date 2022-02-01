@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/model/article_info.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
@@ -85,12 +86,22 @@ class SimpleInfoWidget extends StatelessWidget {
         : SizedBox(
             height: 4 * 50.0,
             width: 3 * 50.0,
-            child: FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            ),
+            child: !Settings.simpleItemWidgetLoadingIcon
+                ? const FlareActor(
+                    "assets/flare/Loading2.flr",
+                    alignment: Alignment.center,
+                    fit: BoxFit.fitHeight,
+                    animation: "Alarm",
+                  )
+                : Center(
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: CircularProgressIndicator(
+                        color: Settings.majorColor.withAlpha(150),
+                      ),
+                    ),
+                  ),
           );
   }
 
