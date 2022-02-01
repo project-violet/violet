@@ -158,6 +158,21 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
 
       // check download not available
       if (res.statusCode != 503) {
+        // check 404 or anythings
+        if (res.statusCode != 200) {
+          _sendPort.send(
+            ReceivePortData(
+              type: ReceivePortType.error,
+              data: IsolateDownloaderErrorUnit(
+                id: task.id,
+                error: 'Code ${res.statusCode}',
+                stackTrace: '',
+              ),
+            ),
+          );
+          break;
+        }
+
         // check download file is not empty
         var file = File(task.fullpath);
         if (await file.exists()) {
