@@ -138,7 +138,7 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
     var retryCount = 0;
 
     do {
-      await dio.download(
+      var res = await dio.download(
         task.url,
         task.fullpath,
         cancelToken: task.cancelToken,
@@ -156,11 +156,14 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
         },
       );
 
-      // check download file is not empty
-      var file = File(task.fullpath);
-      if (await file.exists()) {
-        if (await file.length() != 0) break;
-        await file.delete();
+      // check download not available
+      if (res.statusCode != 503) {
+        // check download file is not empty
+        var file = File(task.fullpath);
+        if (await file.exists()) {
+          if (await file.length() != 0) break;
+          await file.delete();
+        }
       }
 
       _sendPort.send(
@@ -170,6 +173,7 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
             "id": task.id,
             "url": task.url,
             "count": retryCount,
+            "code": res.statusCode,
           },
         ),
       );
