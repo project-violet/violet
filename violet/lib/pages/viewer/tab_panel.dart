@@ -69,12 +69,11 @@ class _TabPanelState extends State<TabPanel> {
               PageView(
                 controller: _pageController,
                 children: [
-                  widget.usableTabList != null
-                      ? _UsableTabList(
-                          articleId: widget.articleId,
-                          usableTabList: widget.usableTabList,
-                        )
-                      : Container(),
+                  if (widget.usableTabList != null)
+                    _UsableTabList(
+                      articleId: widget.articleId,
+                      usableTabList: widget.usableTabList,
+                    ),
                   _ArtistsArticleTabList(
                     height: widget.height,
                     articleId: widget.articleId,
@@ -95,7 +94,7 @@ class _TabPanelState extends State<TabPanel> {
                       child: Center(
                         child: DotsIndicator(
                           controller: _pageController,
-                          itemCount: 2,
+                          itemCount: widget.usableTabList != null ? 2 : 1,
                           onPageSelected: (int page) {
                             _pageController.animateToPage(
                               page,
