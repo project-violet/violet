@@ -245,9 +245,12 @@ class IsolateDownloader {
     var id = data["id"] as int;
     var url = data["url"] as String;
     var count = data["count"] as int;
+    var code = data["code"] as int;
 
     Logger.warning('[downloader-retry] URL: ' +
         url +
+        '\nCODE: ' +
+        code.toString() +
         '\nP: ' +
         _tasks[id].downloadPath +
         '\nC: ' +
