@@ -295,24 +295,24 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!isLoaded) return;
       if (isJumped) return;
       isJumped = true;
-      Future.value(1).then((value) {
-        var row = articleList
-                .indexWhere((element) => element.id() == widget.articleId) ~/
-            3;
-        if (row == 0) return;
-        _scrollController.jumpTo(
-          row *
-                  ((itemKeys[articleList.first.id()]
-                              .currentContext
-                              .findRenderObject() as RenderBox)
-                          .size
-                          .height +
-                      8) -
-              100,
-        );
-      });
+
+      var row = articleList
+              .indexWhere((element) => element.id() == widget.articleId) ~/
+          3;
+      if (row == 0) return;
+      _scrollController.jumpTo(
+        row *
+                ((itemKeys[articleList.first.id()]
+                            .currentContext
+                            .findRenderObject() as RenderBox)
+                        .size
+                        .height +
+                    8) -
+            100,
+      );
     });
   }
 
