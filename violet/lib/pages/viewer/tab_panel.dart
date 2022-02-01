@@ -63,10 +63,15 @@ class _TabPanelState extends State<TabPanel> {
               PageView(
                 controller: _pageController,
                 children: [
-                  _UsableTabList(
+                  widget.usableTabList != null
+                      ? _UsableTabList(
+                          articleId: widget.articleId,
+                          usableTabList: widget.usableTabList,
+                        )
+                      : Container(),
+                  _ArtistsArticleTabList(
                     articleId: widget.articleId,
-                    usableTabList: widget.usableTabList,
-                  )
+                  ),
                 ],
               ),
               FutureBuilder(
