@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/settings/settings.dart';
 
 class ThumbnailWidget extends StatelessWidget {
@@ -84,12 +85,22 @@ class ThumbnailWidget extends StatelessWidget {
                 ],
               ),
             )
-          : const FlareActor(
-              "assets/flare/Loading2.flr",
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: "Alarm",
-            ),
+          : !Settings.simpleItemWidgetLoadingIcon
+              ? const FlareActor(
+                  "assets/flare/Loading2.flr",
+                  alignment: Alignment.center,
+                  fit: BoxFit.fitHeight,
+                  animation: "Alarm",
+                )
+              : Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(
+                      color: Settings.majorColor.withAlpha(150),
+                    ),
+                  ),
+                ),
     );
   }
 }
@@ -127,12 +138,24 @@ class ThumbnailImageWidget extends StatelessWidget {
               : Container(),
         ),
         placeholder: (b, c) {
-          return const FlareActor(
-            "assets/flare/Loading2.flr",
-            alignment: Alignment.center,
-            fit: BoxFit.fitHeight,
-            animation: "Alarm",
-          );
+          if (!Settings.simpleItemWidgetLoadingIcon) {
+            return const FlareActor(
+              "assets/flare/Loading2.flr",
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: "Alarm",
+            );
+          } else {
+            return Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  color: Settings.majorColor.withAlpha(150),
+                ),
+              ),
+            );
+          }
         },
       ),
     );
@@ -157,11 +180,15 @@ class BookmarkIndicatorWidget extends StatelessWidget {
           child: ValueListenableBuilder(
             valueListenable: isBookmarked,
             builder: (BuildContext context, bool value, Widget child) {
-              return FlareActor(
-                'assets/flare/likeUtsua.flr',
-                animation: value ? "Like" : "IdleUnlike",
-                controller: flareController,
-              );
+              if (!Settings.simpleItemWidgetLoadingIcon) {
+                return FlareActor(
+                  'assets/flare/likeUtsua.flr',
+                  animation: value ? "Like" : "IdleUnlike",
+                  controller: flareController,
+                );
+              } else {
+                return Icon(value ? MdiIcons.heart : MdiIcons.heartOutline);
+              }
             },
           ),
         ),

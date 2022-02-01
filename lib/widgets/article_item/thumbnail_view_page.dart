@@ -50,12 +50,24 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
                     fit: BoxFit.cover,
                     httpHeaders: widget.headers,
                     placeholder: (b, c) {
-                      return FlareActor(
-                        "assets/flare/Loading2.flr",
-                        alignment: Alignment.center,
-                        fit: BoxFit.fitHeight,
-                        animation: "Alarm",
-                      );
+                      if (!Settings.simpleItemWidgetLoadingIcon) {
+                        return const FlareActor(
+                          "assets/flare/Loading2.flr",
+                          alignment: Alignment.center,
+                          fit: BoxFit.fitHeight,
+                          animation: "Alarm",
+                        );
+                      } else {
+                        return Center(
+                          child: SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                              color: Settings.majorColor.withAlpha(150),
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ),

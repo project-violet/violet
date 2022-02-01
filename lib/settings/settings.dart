@@ -85,6 +85,9 @@ class Settings {
 
   static bool autobackupBookmark;
 
+  // Lab
+  static bool simpleItemWidgetLoadingIcon;
+
   static Future<void> initFirst() async {
     var mc = await _getInt('majorColor', Colors.purple.value);
     var mac = await _getInt('majorAccentColor', Colors.purpleAccent.value);
@@ -278,6 +281,8 @@ class Settings {
     autobackupBookmark = await _getBool('autobackupbookmark', false);
 
     useTabletMode = await _getBool('usetabletmode', Device.get().isTablet);
+
+    simpleItemWidgetLoadingIcon = await _getBool('simpleItemWidgetLoadingIcon');
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
@@ -590,5 +595,11 @@ class Settings {
   static Future<void> setUseTabletMode(bool nn) async {
     useTabletMode = nn;
     await (await SharedPreferences.getInstance()).setBool('usetabletmode', nn);
+  }
+
+  static Future<void> setSimpleItemWidgetLoadingIcon(bool nn) async {
+    simpleItemWidgetLoadingIcon = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('simpleItemWidgetLoadingIcon', nn);
   }
 }

@@ -20,6 +20,7 @@ import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/lab/search_message.dart';
+import 'package:violet/pages/main/info/lab/setting.dart';
 import 'package:violet/pages/main/info/lab/top_recent.dart';
 import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
@@ -343,6 +344,15 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 null,
                 () async {
                   _navigate(LogPage());
+                },
+              ),
+              _buildItem(
+                Icon(MdiIcons.cog, size: 40, color: Settings.majorColor),
+                '#016 Settings',
+                'Lab Settings',
+                null,
+                () async {
+                  _navigate(LabSetting());
                 },
               ),
             ],
