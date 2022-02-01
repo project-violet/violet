@@ -292,27 +292,23 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
       if (!articleList.any((element) => element.id() == widget.articleId))
         return;
-    });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!isLoaded) return;
-      if (isJumped) return;
-      isJumped = true;
-
-      var row = articleList
-              .indexWhere((element) => element.id() == widget.articleId) ~/
-          3;
-      if (row == 0) return;
-      _scrollController.jumpTo(
-        row *
-                ((itemKeys[articleList.first.id()]
-                            .currentContext
-                            .findRenderObject() as RenderBox)
-                        .size
-                        .height +
-                    8) -
-            100,
-      );
+      Future.delayed(Duration(milliseconds: 100)).then((value) {
+        var row = articleList
+                .indexWhere((element) => element.id() == widget.articleId) ~/
+            3;
+        if (row == 0) return;
+        _scrollController.jumpTo(
+          row *
+                  ((itemKeys[articleList.first.id()]
+                              .currentContext
+                              .findRenderObject() as RenderBox)
+                          .size
+                          .height +
+                      8) -
+              100,
+        );
+      });
     });
   }
 
@@ -395,6 +391,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                                 heroKey: 'zxcvzxcvzxcv',
                                                 isBookmarked: isBookmarked,
                                                 controller: controller,
+                                                usableTabList: articleList,
                                               ),
                                             );
                                           }
