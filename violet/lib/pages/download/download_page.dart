@@ -173,7 +173,7 @@ class _DownloadPageState extends State<DownloadPage>
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
 
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
-      var mm = Settings.searchResultType == 0 ? 3 : 2;
+      var mm = Settings.downloadResultType == 0 ? 3 : 2;
       return SliverPadding(
           padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: SliverGrid(
