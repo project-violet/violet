@@ -570,6 +570,7 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   _appBarTab() {
+    final height = MediaQuery.of(context).size.height;
     return IconButton(
       icon: Icon(MdiIcons.tab),
       color: Colors.white,
@@ -582,6 +583,7 @@ class _ViewerPageState extends State<ViewerPage>
           builder: (context) => TabPanel(
             articleId: _pageInfo.id,
             usableTabList: _pageInfo.usableTabList,
+            height: height,
           ),
         ).then((value) async {
           if (value == null) return;
