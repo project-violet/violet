@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
+
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -29,7 +31,7 @@ typedef StringCallback = Future Function(String);
 
 class DownloadPageManager {
   static bool downloadPageLoaded = false;
-  static StringCallback appendTask;
+  static StreamController<String> taskController;
 }
 
 // This page must remain alive until the app is closed.
@@ -56,12 +58,17 @@ class _DownloadPageState extends State<DownloadPage>
   void initState() {
     super.initState();
     refresh();
-    DownloadPageManager.appendTask = appendTask;
+    // DownloadPageManager.appendTask = appendTask;
+    DownloadPageManager.taskController = StreamController<String>();
+    DownloadPageManager.taskController.stream.listen((event) {
+      appendTask(event);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+    DownloadPageManager.taskController.close();
   }
 
   void refresh() {

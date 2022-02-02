@@ -238,7 +238,8 @@ class ArticleInfoPage extends StatelessWidget {
         gravity: ToastGravity.BOTTOM,
         toastDuration: Duration(seconds: 4),
       );
-      await DownloadPageManager.appendTask(data.queryResult.id().toString());
+      // await DownloadPageManager.appendTask(data.queryResult.id().toString());
+      DownloadPageManager.taskController.add(data.queryResult.id().toString());
       Navigator.pop(context);
     }
   }
