@@ -87,6 +87,7 @@ class Settings {
 
   // Lab
   static bool simpleItemWidgetLoadingIcon;
+  static bool showNewViewerWhenArtistArticleListItemTap;
 
   static Future<void> initFirst() async {
     var mc = await _getInt('majorColor', Colors.purple.value);
@@ -283,6 +284,8 @@ class Settings {
     useTabletMode = await _getBool('usetabletmode', Device.get().isTablet);
 
     simpleItemWidgetLoadingIcon = await _getBool('simpleItemWidgetLoadingIcon');
+    showNewViewerWhenArtistArticleListItemTap =
+        await _getBool('showNewViewerWhenArtistArticleListItemTap');
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
@@ -601,5 +604,12 @@ class Settings {
     simpleItemWidgetLoadingIcon = nn;
     await (await SharedPreferences.getInstance())
         .setBool('simpleItemWidgetLoadingIcon', nn);
+  }
+
+  static Future<void> setShowNewViewerWhenArtistArticleListItemTap(
+      bool nn) async {
+    showNewViewerWhenArtistArticleListItemTap = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('showNewViewerWhenArtistArticleListItemTap', nn);
   }
 }

@@ -60,6 +60,29 @@ class _LabSettingState extends State<LabSetting> {
             },
           ),
           _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(MdiIcons.flask, color: Settings.majorColor),
+              title: Text('Artist article list tap option'),
+              subtitle:
+                  Text('show new viewer when artist article list item tapped'),
+              trailing: Switch(
+                value: Settings.showNewViewerWhenArtistArticleListItemTap,
+                onChanged: (newValue) async {
+                  await Settings.setShowNewViewerWhenArtistArticleListItemTap(
+                      newValue);
+                  setState(() {});
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setShowNewViewerWhenArtistArticleListItemTap(
+                  !Settings.showNewViewerWhenArtistArticleListItemTap);
+              setState(() {});
+            },
+          ),
         ],
       ),
     );
