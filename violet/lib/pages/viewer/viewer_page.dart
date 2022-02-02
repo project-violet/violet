@@ -411,37 +411,34 @@ class _ViewerPageState extends State<ViewerPage>
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
               children: [
-                BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: Container(
-                    decoration:
-                        BoxDecoration(color: Colors.black.withOpacity(0.4)),
-                    child: Material(
-                      // color: Colors.black.withOpacity(0.8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _appBarBack(),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                _appBarBookmark(),
-                                _appBarInfo(),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                Container(
+                  decoration:
+                      BoxDecoration(color: Colors.black.withOpacity(0.4)),
+                  child: Material(
+                    // color: Colors.black.withOpacity(0.8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _appBarBack(),
+                        Expanded(
+                          child: Row(
                             children: [
-                              _appBarTab(),
-                              _appBarHistory(),
-                              _appBarTimer(),
-                              _appBarGallery(),
-                              _appBarSettings(),
+                              _appBarBookmark(),
+                              _appBarInfo(),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            _appBarTab(),
+                            _appBarHistory(),
+                            _appBarTimer(),
+                            _appBarGallery(),
+                            _appBarSettings(),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -1705,89 +1702,83 @@ class _ViewerPageState extends State<ViewerPage>
                     (48) -
                     statusBarHeight -
                     (Settings.moveToAppBarToBottom ? 48 : 0)),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                // color: Colors.black.withOpacity(0.8),
-                decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
-                height: Variables.bottomBarHeight +
-                    (!Settings.moveToAppBarToBottom ? 48 : 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('$_prevPage',
-                            style: TextStyle(
-                                color: Colors.white70, fontSize: 16.0)),
-                        Container(
-                          width: 200,
-                          child: SliderTheme(
-                            data: SliderThemeData(
-                              activeTrackColor: Colors.blue,
-                              inactiveTrackColor: Color(0xffd0d2d3),
-                              trackHeight: 3,
-                              thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: 6.0),
-                              // thumbShape: SliderThumbShape(),
-                            ),
-                            child: Slider(
-                              value: _prevPage.toDouble() > 0
-                                  ? _prevPage <= _pageInfo.uris.length
-                                      ? _prevPage.toDouble()
-                                      : _pageInfo.uris.length.toDouble()
-                                  : 1,
-                              max: _pageInfo.uris.length.toDouble(),
-                              min: 1,
-                              label: _prevPage.toString(),
-                              divisions: _pageInfo.uris.length,
-                              inactiveColor:
-                                  Settings.majorColor.withOpacity(0.7),
-                              activeColor: Settings.majorColor,
-                              onChangeStart: (value) {
-                                _sliderOnChange = true;
-                              },
-                              onChangeEnd: (value) {
-                                _sliderOnChange = false;
-                              },
-                              onChanged: (value) {
-                                if (!Settings.isHorizontal) {
-                                  itemScrollController.jumpTo(
-                                      index: value.toInt() - 1,
-                                      alignment: 0.12);
-                                } else {
-                                  _pageController.jumpToPage(value.toInt() - 1);
-                                }
-                                currentPage = value.toInt();
-                                setState(() {
-                                  _prevPage = value.toInt();
-                                });
-                              },
-                            ),
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              color: Colors.black.withOpacity(0.8),
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
+              height: Variables.bottomBarHeight +
+                  (!Settings.moveToAppBarToBottom ? 48 : 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('$_prevPage',
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 16.0)),
+                      Container(
+                        width: 200,
+                        child: SliderTheme(
+                          data: SliderThemeData(
+                            activeTrackColor: Colors.blue,
+                            inactiveTrackColor: Color(0xffd0d2d3),
+                            trackHeight: 3,
+                            thumbShape:
+                                RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                            // thumbShape: SliderThumbShape(),
+                          ),
+                          child: Slider(
+                            value: _prevPage.toDouble() > 0
+                                ? _prevPage <= _pageInfo.uris.length
+                                    ? _prevPage.toDouble()
+                                    : _pageInfo.uris.length.toDouble()
+                                : 1,
+                            max: _pageInfo.uris.length.toDouble(),
+                            min: 1,
+                            label: _prevPage.toString(),
+                            divisions: _pageInfo.uris.length,
+                            inactiveColor: Settings.majorColor.withOpacity(0.7),
+                            activeColor: Settings.majorColor,
+                            onChangeStart: (value) {
+                              _sliderOnChange = true;
+                            },
+                            onChangeEnd: (value) {
+                              _sliderOnChange = false;
+                            },
+                            onChanged: (value) {
+                              if (!Settings.isHorizontal) {
+                                itemScrollController.jumpTo(
+                                    index: value.toInt() - 1, alignment: 0.12);
+                              } else {
+                                _pageController.jumpToPage(value.toInt() - 1);
+                              }
+                              currentPage = value.toInt();
+                              setState(() {
+                                _prevPage = value.toInt();
+                              });
+                            },
                           ),
                         ),
-                        Text('${_pageInfo.uris.length}',
-                            style: TextStyle(
-                                color: Colors.white70, fontSize: 15.0)),
-                      ],
-                    ),
-                    !Settings.disableFullScreen &&
-                            !Settings.moveToAppBarToBottom
-                        ? Container(
-                            height: Variables.bottomBarHeight,
-                            color: Colors.black,
-                          )
-                        : Container(
-                            height: Settings.moveToAppBarToBottom
-                                ? Variables.bottomBarHeight
-                                : 0,
-                            color: Colors.transparent,
-                          ),
-                  ],
-                ),
+                      ),
+                      Text('${_pageInfo.uris.length}',
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 15.0)),
+                    ],
+                  ),
+                  !Settings.disableFullScreen && !Settings.moveToAppBarToBottom
+                      ? Container(
+                          height: Variables.bottomBarHeight,
+                          color: Colors.black,
+                        )
+                      : Container(
+                          height: Settings.moveToAppBarToBottom
+                              ? Variables.bottomBarHeight
+                              : 0,
+                          color: Colors.transparent,
+                        ),
+                ],
               ),
             ),
           ),
