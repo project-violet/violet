@@ -405,49 +405,53 @@ class _ViewerPageState extends State<ViewerPage>
                         Variables.bottomBarHeight -
                         (48) -
                         statusBarHeight),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: Settings.moveToAppBarToBottom
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.start,
-                children: [
-                  Material(
-                    color: Colors.black.withOpacity(0.8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _appBarBack(),
-                        Expanded(
-                          child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: Settings.moveToAppBarToBottom
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
+              children: [
+                BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: Container(
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.4)),
+                    child: Material(
+                      // color: Colors.black.withOpacity(0.8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _appBarBack(),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                _appBarBookmark(),
+                                _appBarInfo(),
+                              ],
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              _appBarBookmark(),
-                              _appBarInfo(),
+                              _appBarTab(),
+                              _appBarHistory(),
+                              _appBarTimer(),
+                              _appBarGallery(),
+                              _appBarSettings(),
                             ],
                           ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            _appBarTab(),
-                            _appBarHistory(),
-                            _appBarTimer(),
-                            _appBarGallery(),
-                            _appBarSettings(),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                  !Settings.disableFullScreen && Settings.moveToAppBarToBottom
-                      ? Container(
-                          height: Variables.bottomBarHeight,
-                          color: Colors.black,
-                        )
-                      : Container(),
-                ],
-              ),
+                ),
+                !Settings.disableFullScreen && Settings.moveToAppBarToBottom
+                    ? Container(
+                        height: Variables.bottomBarHeight,
+                        color: Colors.black,
+                      )
+                    : Container(),
+              ],
             ),
           ),
         ],
@@ -1705,7 +1709,8 @@ class _ViewerPageState extends State<ViewerPage>
               filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
               child: Container(
                 alignment: Alignment.bottomCenter,
-                color: Colors.black.withOpacity(0.8),
+                // color: Colors.black.withOpacity(0.8),
+                decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
                 height: Variables.bottomBarHeight +
                     (!Settings.moveToAppBarToBottom ? 48 : 0),
                 child: Column(
