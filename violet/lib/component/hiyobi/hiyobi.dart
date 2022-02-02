@@ -16,7 +16,7 @@ class HiyobiManager {
 
     files.forEach((value) {
       if (value['haswebp'] == 1)
-        result.add('https://cdn.hiyobi.me/data/$id/${value['hash']}');
+        result.add('https://cdn.hiyobi.me/data/$id/${value['hash']}.webp');
       else
         result.add('https://rcdn.hiyobi.me/data_r/$id/${value['name']}');
     });
