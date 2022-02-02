@@ -3,7 +3,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
@@ -411,35 +410,31 @@ class _ViewerPageState extends State<ViewerPage>
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
               children: [
-                Container(
-                  decoration:
-                      BoxDecoration(color: Colors.black.withOpacity(0.4)),
-                  child: Material(
-                    // color: Colors.black.withOpacity(0.8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _appBarBack(),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              _appBarBookmark(),
-                              _appBarInfo(),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                Material(
+                  color: Colors.black.withOpacity(0.8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _appBarBack(),
+                      Expanded(
+                        child: Row(
                           children: [
-                            _appBarTab(),
-                            _appBarHistory(),
-                            _appBarTimer(),
-                            _appBarGallery(),
-                            _appBarSettings(),
+                            _appBarBookmark(),
+                            _appBarInfo(),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          _appBarTab(),
+                          _appBarHistory(),
+                          _appBarTimer(),
+                          _appBarGallery(),
+                          _appBarSettings(),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
                 !Settings.disableFullScreen && Settings.moveToAppBarToBottom
@@ -1705,7 +1700,6 @@ class _ViewerPageState extends State<ViewerPage>
             child: Container(
               alignment: Alignment.bottomCenter,
               color: Colors.black.withOpacity(0.8),
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
               height: Variables.bottomBarHeight +
                   (!Settings.moveToAppBarToBottom ? 48 : 0),
               child: Column(
