@@ -14,8 +14,12 @@ class HiyobiManager {
     var files = jsonDecode(urls) as List<dynamic>;
     var result = List<String>();
 
-    files.forEach((value) =>
-        result.add('https://rcdn.hiyobi.me/data_r/$id/${value['name']}'));
+    files.forEach((value) {
+      if (value['haswebp'] == 1)
+        result.add('https://cdn.hiyobi.me/data/$id/${value['hash']}');
+      else
+        result.add('https://rcdn.hiyobi.me/data_r/$id/${value['name']}');
+    });
 
     return Tuple2<String, List<String>>(
         'https://tn.hiyobi.me/tn/$id.jpg', result);
