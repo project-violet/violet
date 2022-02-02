@@ -24,8 +24,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2021, 2, 2),
+    version: '1.20 Minor Update <== Latest',
+    isMinor: true,
+    contents: [
+      'remake downloader page',
+      'add hiyobi router',
+      'add lab settings (Lab -> #016)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2021, 01, 23),
-    version: '1.19 Minor Update <== Latest',
+    version: '1.19 Minor Update',
     isMinor: true,
     contents: [
       'support download on ios device',
