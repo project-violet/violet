@@ -139,13 +139,19 @@ class Settings {
     blurredTags = blurredtags != null ? blurredtags.split(' ').toList() : [];
     translateTags = await _getBool('translatetags');
 
-    routingRule =
-        (await _getString('routingrule', 'Hitomi|EHentai|ExHentai|NHentai'))
-            .split('|');
+    routingRule = (await _getString(
+            'routingrule', 'Hitomi|EHentai|ExHentai|Hiyobi|NHentai'))
+        .split('|');
     searchRule =
         (await _getString('searchrule', 'Hitomi|EHentai|ExHentai|NHentai'))
             .split('|');
     searchNetwork = await _getBool('searchnetwork');
+
+    if (!routingRule.contains('Hiyobi')) {
+      routingRule.add('Hiyobi');
+      await (await SharedPreferences.getInstance())
+          .setString('routingrule', routingRule.join('|'));
+    }
 
     var databasetype =
         (await SharedPreferences.getInstance()).getString('databasetype');

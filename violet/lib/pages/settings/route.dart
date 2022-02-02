@@ -56,6 +56,7 @@ class _RouteDialogState extends State<RouteDialog> {
                       'https://ltn.hitomi.la/apple-touch-icon-180x180.png',
                   'EHentai': 'https://e-hentai.org/favicon.ico',
                   'ExHentai': 'https://exhentai.org/favicon.ico',
+                  'Hiyobi': 'https://hiyobi.me/favicon.ico',
                   'NHentai': 'https://nhentai.net/favicon.ico',
                   'Hisoki': 'https://hisoki.me/favicon.ico',
                 }[e],
