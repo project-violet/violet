@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
@@ -12,10 +13,14 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
+import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
@@ -292,7 +297,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
       if (!articleList.any((element) => element.id() == widget.articleId))
         return;
 
-      Future.delayed(Duration(milliseconds: 100)).then((value) {
+      Future.delayed(Duration(milliseconds: 50)).then((value) {
         var row = articleList
                 .indexWhere((element) => element.id() == widget.articleId) ~/
             3;
@@ -357,48 +362,12 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                 thumbnailTag: Uuid().v4(),
                                 selectMode: true,
                                 selectCallback: () async {
-                                  var prov = ProviderManager.get(e.id());
-                                  var thumbnail = await prov.getThumbnailUrl();
-                                  var headers = await prov.getHeader(0);
-                                  ProviderManager.insert(e.id(), prov);
-
-                                  var isBookmarked =
-                                      await (await Bookmark.getInstance())
-                                          .isBookmark(e.id());
-
-                                  var cache;
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    builder: (_) {
-                                      return DraggableScrollableSheet(
-                                        initialChildSize: 400 / widget.height,
-                                        minChildSize: 400 / widget.height,
-                                        maxChildSize: 0.9,
-                                        expand: false,
-                                        builder: (_, controller) {
-                                          if (cache == null) {
-                                            cache = Provider<ArticleInfo>.value(
-                                              child: ArticleInfoPage(
-                                                key: ObjectKey('asdfasdf'),
-                                              ),
-                                              value:
-                                                  ArticleInfo.fromArticleInfo(
-                                                queryResult: e,
-                                                thumbnail: thumbnail,
-                                                headers: headers,
-                                                heroKey: 'zxcvzxcvzxcv',
-                                                isBookmarked: isBookmarked,
-                                                controller: controller,
-                                                usableTabList: articleList,
-                                              ),
-                                            );
-                                          }
-                                          return cache;
-                                        },
-                                      );
-                                    },
-                                  );
+                                  if (!Settings
+                                      .showNewViewerWhenArtistArticleListItemTap) {
+                                    _showArticleInfo(e);
+                                  } else {
+                                    _showViewer(e);
+                                  }
                                 },
                               ),
                               child: ArticleListItemVerySimpleWidget(),
@@ -412,5 +381,86 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
               ),
             ],
           );
+  }
+
+  Future<void> _showArticleInfo(QueryResult e) async {
+    var prov = ProviderManager.get(e.id());
+    var thumbnail = await prov.getThumbnailUrl();
+    var headers = await prov.getHeader(0);
+    ProviderManager.insert(e.id(), prov);
+
+    var isBookmarked = await (await Bookmark.getInstance()).isBookmark(e.id());
+
+    var cache;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return DraggableScrollableSheet(
+          initialChildSize: 400 / widget.height,
+          minChildSize: 400 / widget.height,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (_, controller) {
+            if (cache == null) {
+              cache = Provider<ArticleInfo>.value(
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: e,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'zxcvzxcvzxcv',
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                  usableTabList: articleList,
+                ),
+              );
+            }
+            return cache;
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _showViewer(QueryResult e) async {
+    if (Settings.useVioletServer) {
+      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+        await VioletServer.view(e.id());
+      });
+    }
+
+    await (await User.getInstance()).insertUserLog(e.id(), 0);
+
+    await ProviderManager.get(e.id()).init();
+
+    var prov = ProviderManager.get(e.id());
+    var headers = await prov.getHeader(0);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) {
+          return Provider<ViewerPageProvider>.value(
+              value: ViewerPageProvider(
+                uris: List<String>.filled(
+                    ProviderManager.get(e.id()).length(), null),
+                useProvider: true,
+                provider: ProviderManager.get(e.id()),
+                headers: headers,
+                id: e.id(),
+                title: e.title(),
+                usableTabList: articleList,
+              ),
+              child: ViewerPage());
+        },
+      ),
+    ).then((value) async {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
+    });
   }
 }
