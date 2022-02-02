@@ -76,10 +76,7 @@ class _DownloadPageState extends State<DownloadPage>
       items = await (await Download.getInstance()).getDownloadItems();
       await _buildQueryResults();
       _applyFilter();
-      setState(() {
-        _shouldReload = true;
-        _listKey = ObjectKey(Uuid().v4());
-      });
+      setState(() {});
     });
   }
 
@@ -132,19 +129,12 @@ class _DownloadPageState extends State<DownloadPage>
 
   Map<int, Widget> downloadItemWidgets = Map<int, Widget>();
   ScrollController _scrollController = ScrollController();
-  Widget _cachedPanel;
-  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     DownloadPageManager.downloadPageLoaded = true;
-
-    // if (_cachedPanel == null || _shouldReload) {
-    //   _shouldReload = false;
-    //   _cachedPanel = _panel();
-    // }
 
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
@@ -458,10 +448,7 @@ class _DownloadPageState extends State<DownloadPage>
         .then((value) async {
       if (rtype != Settings.downloadResultType)
         await Future.delayed(Duration(milliseconds: 50), () {
-          setState(() {
-            _shouldReload = true;
-            _listKey = ObjectKey(Uuid().v4());
-          });
+          setState(() {});
         });
     });
   }
@@ -536,10 +523,7 @@ class _DownloadPageState extends State<DownloadPage>
     if (_filterController.isPopulationSort)
       Population.sortByPopulationDownloadItem(filterResult);
 
-    setState(() {
-      _shouldReload = true;
-      _listKey = ObjectKey(Uuid().v4());
-    });
+    setState(() {});
   }
 
   static String prefix2Tag(String prefix) {
