@@ -141,10 +141,10 @@ class _DownloadPageState extends State<DownloadPage>
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     DownloadPageManager.downloadPageLoaded = true;
 
-    if (_cachedPanel == null || _shouldReload) {
-      _shouldReload = false;
-      _cachedPanel = _panel();
-    }
+    // if (_cachedPanel == null || _shouldReload) {
+    //   _shouldReload = false;
+    //   _cachedPanel = _panel();
+    // }
 
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
@@ -168,7 +168,8 @@ class _DownloadPageState extends State<DownloadPage>
                 ),
               ),
             ),
-            _cachedPanel,
+            // _cachedPanel,
+            _panel(),
           ],
         ),
       ),
