@@ -250,6 +250,9 @@ class ArticleInfoPage extends StatelessWidget {
 
     await ProviderManager.get(data.queryResult.id()).init();
 
+    if (await ScriptManager.refresh())
+      await ProviderManager.get(data.queryResult.id()).refresh();
+
     Navigator.push(
       context,
       MaterialPageRoute(

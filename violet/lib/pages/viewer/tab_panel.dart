@@ -20,6 +20,7 @@ import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
@@ -435,6 +436,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
     await (await User.getInstance()).insertUserLog(e.id(), 0);
 
     await ProviderManager.get(e.id()).init();
+
+    if (await ScriptManager.refresh())
+      await ProviderManager.get(e.id()).refresh();
 
     var prov = ProviderManager.get(e.id());
     var headers = await prov.getHeader(0);
