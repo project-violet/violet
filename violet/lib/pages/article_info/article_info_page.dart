@@ -19,7 +19,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
@@ -472,10 +475,26 @@ class PreviewAreaWidget extends StatelessWidget {
     if (ProviderManager.isExists(queryResult.id())) {
       return FutureBuilder(
         future: Future.value(1).then((value) async {
-          return [
-            await ProviderManager.get(queryResult.id()).getSmallImagesUrl(),
-            await ProviderManager.get(queryResult.id()).getHeader(0)
-          ];
+          VioletImageProvider prov = ProviderManager.get(queryResult.id());
+
+          if (!ProviderManager.isExists(queryResult.id() * 1000000)) {
+            if (ProviderManager.get(queryResult.id()) is HitomiImageProvider) {
+              prov = ProviderManager.get(queryResult.id());
+              ProviderManager.insert(queryResult.id() * 1000000, prov);
+            } else {
+              try {
+                var urls = await HitomiManager.getImageList(
+                    queryResult.id().toString());
+                if (urls.item1.length != 0 && urls.item2.length != 0) {
+                  prov = HitomiImageProvider(urls, queryResult.id().toString());
+                  ProviderManager.insert(queryResult.id() * 1000000, prov);
+                }
+              } catch (e) {}
+            }
+          } else
+            prov = ProviderManager.get(queryResult.id() * 1000000);
+
+          return [await prov.getSmallImagesUrl(), await prov.getHeader(0)];
         }),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
