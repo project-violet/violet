@@ -24,7 +24,7 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2021, 2, 2),
+    dateTime: DateTime(2022, 2, 2),
     version: '1.20.1 Patch (HotFix) <== Latest',
     contents: [
       'fix download button bug',
@@ -32,7 +32,7 @@ final patches = [
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 2, 2),
+    dateTime: DateTime(2022, 2, 2),
     version: '1.20 Minor Update',
     isMinor: true,
     contents: [
@@ -42,7 +42,7 @@ final patches = [
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 01, 23),
+    dateTime: DateTime(2022, 01, 23),
     version: '1.19 Minor Update',
     isMinor: true,
     contents: [
@@ -50,7 +50,7 @@ final patches = [
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 01, 16),
+    dateTime: DateTime(2022, 01, 16),
     version: '1.18 Minor Update',
     isMinor: true,
     contents: [
@@ -60,35 +60,35 @@ final patches = [
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 01, 08),
+    dateTime: DateTime(2022, 01, 08),
     version: '1.17.10 Patch Update',
     contents: [
       'fix',
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 01, 05),
+    dateTime: DateTime(2022, 01, 05),
     version: '1.17.9 Patch Update',
     contents: [
       'fix',
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 01, 04),
+    dateTime: DateTime(2022, 01, 04),
     version: '1.17.8 Patch Update',
     contents: [
       'fix',
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 01, 03),
+    dateTime: DateTime(2022, 01, 03),
     version: '1.17.7 Patch Update',
     contents: [
       'fix',
     ],
   ),
   PatchModel(
-    dateTime: DateTime(2021, 01, 02),
+    dateTime: DateTime(2022, 01, 02),
     version: '1.17.6 Patch Update',
     contents: [
       'fix hitomi.la downloader',
