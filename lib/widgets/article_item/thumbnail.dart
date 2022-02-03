@@ -43,67 +43,70 @@ class ThumbnailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        foregroundDecoration: isLastestRead &&
-                imageCount - latestReadPage <= 2 &&
-                !disableFiltering &&
-                Settings.showArticleProgress
-            ? BoxDecoration(
-                color: Settings.themeWhat
-                    ? Colors.grey.shade800
-                    : Colors.grey.shade300,
-                backgroundBlendMode: BlendMode.saturation,
-              )
-            : null,
-        width: showDetail ? 100 - pad / 6 * 5 : null,
-        child: thumbnail != null
-            ? ClipRRect(
-                borderRadius: showDetail
-                    ? const BorderRadius.horizontal(left: Radius.circular(3.0))
-                    : BorderRadius.circular(3.0),
-                child: Stack(
-                  children: <Widget>[
-                    ThumbnailImageWidget(
-                      headers: headers,
-                      thumbnail: thumbnail,
-                      thumbnailTag: thumbnailTag,
-                      isBlurred: isBlurred,
-                    ),
-                    BookmarkIndicatorWidget(
-                      flareController: flareController,
-                      isBookmarked: isBookmarked,
-                    ),
-                    ReadProgressOverlayWidget(
-                      imageCount: imageCount,
-                      latestReadPage: latestReadPage,
-                      isLastestRead: isLastestRead,
-                    ),
-                    PagesOverlayWidget(
-                      imageCount: imageCount,
-                      showDetail: showDetail,
-                    ),
-                  ],
-                ),
-              )
-            : !Settings.simpleItemWidgetLoadingIcon
-                ? const FlareActor(
-                    "assets/flare/Loading2.flr",
-                    alignment: Alignment.center,
-                    fit: BoxFit.fitHeight,
-                    animation: "Alarm",
-                  )
-                : Center(
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: CircularProgressIndicator(
-                        color: Settings.majorColor.withAlpha(150),
-                      ),
+    final result = Container(
+      foregroundDecoration: isLastestRead &&
+              imageCount - latestReadPage <= 2 &&
+              !disableFiltering &&
+              Settings.showArticleProgress
+          ? BoxDecoration(
+              color: Settings.themeWhat
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade300,
+              backgroundBlendMode: BlendMode.saturation,
+            )
+          : null,
+      width: showDetail ? 100 - pad / 6 * 5 : null,
+      child: thumbnail != null
+          ? ClipRRect(
+              borderRadius: showDetail
+                  ? const BorderRadius.horizontal(left: Radius.circular(3.0))
+                  : BorderRadius.circular(3.0),
+              child: Stack(
+                children: <Widget>[
+                  ThumbnailImageWidget(
+                    headers: headers,
+                    thumbnail: thumbnail,
+                    thumbnailTag: thumbnailTag,
+                    isBlurred: isBlurred,
+                  ),
+                  BookmarkIndicatorWidget(
+                    flareController: flareController,
+                    isBookmarked: isBookmarked,
+                  ),
+                  ReadProgressOverlayWidget(
+                    imageCount: imageCount,
+                    latestReadPage: latestReadPage,
+                    isLastestRead: isLastestRead,
+                  ),
+                  PagesOverlayWidget(
+                    imageCount: imageCount,
+                    showDetail: showDetail,
+                  ),
+                ],
+              ),
+            )
+          : !Settings.simpleItemWidgetLoadingIcon
+              ? const FlareActor(
+                  "assets/flare/Loading2.flr",
+                  alignment: Alignment.center,
+                  fit: BoxFit.fitHeight,
+                  animation: "Alarm",
+                )
+              : Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(
+                      color: Settings.majorColor.withAlpha(150),
                     ),
                   ),
-      ),
+                ),
     );
+
+    if (showDetail)
+      return Material(child: result);
+    else
+      return result;
   }
 }
 
