@@ -142,6 +142,7 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
         task.url,
         task.fullpath,
         cancelToken: task.cancelToken,
+        deleteOnError: true,
         onReceiveProgress: (count, total) {
           _sendPort.send(
             ReceivePortData(
