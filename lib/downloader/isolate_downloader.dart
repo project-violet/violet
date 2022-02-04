@@ -125,10 +125,10 @@ class IsolateDownloader {
           _completeTask(message.data as int);
           break;
         case ReceivePortType.error:
-          _errorTask(message.data as IsolateDownloaderErrorUnit);
+          await _errorTask(message.data as IsolateDownloaderErrorUnit);
           break;
         case ReceivePortType.retry:
-          _retryTask(message.data as Map<dynamic, dynamic>);
+          await _retryTask(message.data as Map<dynamic, dynamic>);
           break;
       }
     }
@@ -225,13 +225,14 @@ class IsolateDownloader {
     _completedTask.add(taskId);
   }
 
-  void _errorTask(IsolateDownloaderErrorUnit unit) {
+  Future<void> _errorTask(IsolateDownloaderErrorUnit unit) async {
     if (_tasks[unit.id].errorCallback != null)
       _tasks[unit.id].errorCallback(unit.error);
     _tasks.remove(unit.id);
     _erroredTask.add(unit.id);
     _errorContent[unit.id] = unit;
-    Logger.error('[downloader-err] URL: ' +
+
+    await Logger.error('[downloader-err] URL: ' +
         _tasks[unit.id].url +
         '\nP: ' +
         _tasks[unit.id].downloadPath +
@@ -241,13 +242,13 @@ class IsolateDownloader {
         unit.stackTrace);
   }
 
-  void _retryTask(Map<dynamic, dynamic> data) {
+  Future<void> _retryTask(Map<dynamic, dynamic> data) async {
     var id = data["id"] as int;
     var url = data["url"] as String;
     var count = data["count"] as int;
     var code = data["code"] as int;
 
-    Logger.warning('[downloader-retry] URL: ' +
+    await Logger.warning('[downloader-retry] URL: ' +
         url +
         '\nCODE: ' +
         code.toString() +
