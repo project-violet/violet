@@ -136,6 +136,7 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
 
   try {
     var retryCount = 0;
+    var tooManyRetry = true;
 
     do {
       var res = await dio.download(
@@ -161,6 +162,7 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
       if (res.statusCode != 503) {
         // check 404 or anythings
         if (res.statusCode != 200) {
+          tooManyRetry = false;
           _sendPort.send(
             ReceivePortData(
               type: ReceivePortType.error,
@@ -177,7 +179,15 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
         // check download file is not empty
         var file = File(task.fullpath);
         if (await file.exists()) {
-          if (await file.length() != 0) break;
+          if (await file.length() != 0) {
+            _sendPort.send(
+              ReceivePortData(
+                type: ReceivePortType.complete,
+                data: task.id,
+              ),
+            );
+            break;
+          }
           await file.delete();
         }
       }
@@ -197,12 +207,18 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
       retryCount++;
     } while (retryCount < _maxRetryCount);
 
-    _sendPort.send(
-      ReceivePortData(
-        type: ReceivePortType.complete,
-        data: task.id,
-      ),
-    );
+    if (tooManyRetry) {
+      _sendPort.send(
+        ReceivePortData(
+          type: ReceivePortType.error,
+          data: IsolateDownloaderErrorUnit(
+            id: task.id,
+            error: 'Too many retry',
+            stackTrace: '',
+          ),
+        ),
+      );
+    }
   } catch (e, st) {
     _sendPort.send(
       ReceivePortData(
