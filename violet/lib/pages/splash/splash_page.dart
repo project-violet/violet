@@ -20,6 +20,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:violet/component/hisoki/hisoki_hash.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/component/hitomi/population.dart';
+import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
@@ -205,6 +206,8 @@ class _SplashPageState extends State<SplashPage> {
     await TagTranslate.init();
     _changeMessage('init population...');
     await Population.init();
+    _changeMessage('init related...');
+    await Related.init();
     // await HisokiHash.init();
     _changeMessage('init downloader...');
     await IsolateDownloader.getInstance();
