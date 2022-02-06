@@ -2,7 +2,9 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
+import 'dart:math';
 
+import 'package:auto_animated/auto_animated.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/gestures.dart';
@@ -16,11 +18,13 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
+import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
@@ -28,9 +32,11 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_info.dart';
+import 'package:violet/model/article_list_item.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/simple_info.dart';
+import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
@@ -41,6 +47,7 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
+import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -160,6 +167,36 @@ class ArticleInfoPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (Related.existsRelated(data.queryResult.id()))
+                  DividerWidget(),
+                if (Related.existsRelated(data.queryResult.id()))
+                  ExpandableNotifier(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: ScrollOnExpand(
+                        scrollOnExpand: true,
+                        scrollOnCollapse: false,
+                        child: ExpandablePanel(
+                          theme: ExpandableThemeData(
+                              iconColor: Settings.themeWhat
+                                  ? Colors.white
+                                  : Colors.grey,
+                              animationDuration:
+                                  const Duration(milliseconds: 500)),
+                          header: Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                            child: Text(
+                                Translations.of(context).trans('related') +
+                                    ' ' +
+                                    Translations.of(context).trans('articles')),
+                          ),
+                          expanded: _RelatedArea(
+                              relatedIds:
+                                  Related.getRelated(data.queryResult.id())),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -1042,5 +1079,107 @@ class _Chip extends StatelessWidget {
       ),
     );
     return fc;
+  }
+}
+
+class _RelatedArea extends StatefulWidget {
+  final List<int> relatedIds;
+  const _RelatedArea({this.relatedIds});
+
+  @override
+  __RelatedAreaState createState() => __RelatedAreaState();
+}
+
+class __RelatedAreaState extends State<_RelatedArea> {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: QueryManager.queryIds(widget.relatedIds),
+      builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
+        if (!snapshot.hasData) return Container();
+
+        return Column(children: <Widget>[
+          articleArea(snapshot.data),
+          Visibility(
+            visible: widget.relatedIds.length > 6,
+            child: more(
+              () => ArticleListPage(
+                  cc: snapshot.data,
+                  name: Translations.of(context).trans('related') +
+                      ' ' +
+                      Translations.of(context).trans('articles')),
+            ),
+          ),
+        ]);
+      },
+    );
+  }
+
+  Widget more(Widget Function() what) {
+    return SizedBox(
+      height: 60,
+      child: InkWell(
+        onTap: () async {
+          PlatformNavigator.navigateSlide(context, what(), opaque: false);
+        },
+        child: Row(
+          children: [Text(Translations.of(context).trans('more'))],
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+        ),
+      ),
+    );
+  }
+
+  Widget articleArea(List<QueryResult> cc) {
+    var windowWidth = MediaQuery.of(context).size.width;
+    return LiveGrid(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(12, 8, 12, 12),
+      showItemInterval: Duration(milliseconds: 50),
+      showItemDuration: Duration(milliseconds: 150),
+      visibleFraction: 0.001,
+      itemCount: min(cc.length, 6),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 3 / 4,
+      ),
+      itemBuilder: (context, index, animation) {
+        return FadeTransition(
+          opacity: Tween<double>(
+            begin: 0,
+            end: 1,
+          ).animate(animation),
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset(0, -0.1),
+              end: Offset.zero,
+            ).animate(animation),
+            child: Padding(
+              padding: EdgeInsets.zero,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  child: Provider<ArticleListItem>.value(
+                    value: ArticleListItem.fromArticleListItem(
+                      queryResult: cc[index],
+                      showDetail: false,
+                      addBottomPadding: false,
+                      width: (windowWidth - 4.0) / 3,
+                      thumbnailTag: Uuid().v4(),
+                      usableTabList: cc,
+                    ),
+                    child: ArticleListItemVerySimpleWidget(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

@@ -1,0 +1,40 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:violet/database/query.dart';
+import 'package:violet/database/user/download.dart';
+
+class Related {
+  static Map<int, List<int>> related;
+
+  static Future<void> init() async {
+    String data;
+
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      var file = File('/home/ubuntu/violet/assets/rank/related.json');
+      data = await file.readAsString();
+    } else
+      data = await rootBundle.loadString('assets/rank/related.json');
+
+    Map<String, dynamic> _data = json.decode(data);
+
+    related = Map<int, List<int>>();
+
+    _data.entries.forEach((element) {
+      related[int.parse(element.key)] =
+          (element.value as List<dynamic>).map((e) => e as int).toList();
+    });
+  }
+
+  static bool existsRelated(int articleId) {
+    return related.containsKey(articleId);
+  }
+
+  static List<int> getRelated(int articleId) {
+    return related[articleId];
+  }
+}

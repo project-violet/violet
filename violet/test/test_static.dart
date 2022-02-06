@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/hitomi/population.dart';
+import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 
 void main() {
@@ -29,5 +30,13 @@ void main() {
     await Population.init();
 
     expect(Population.population.length > 0, true);
+  });
+
+  test("Test Related", () async {
+    await Related.init();
+
+    print(Related.related);
+
+    expect(Related.related.length > 0, true);
   });
 }

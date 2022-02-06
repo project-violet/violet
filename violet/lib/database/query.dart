@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:violet/database/database.dart';
+import 'package:violet/settings/settings.dart';
 
 class QueryResult {
   Map<String, dynamic> result;
@@ -76,5 +77,24 @@ class QueryManager {
             "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage - 1)}"))
         .map((e) => QueryResult(result: e))
         .toList();
+  }
+
+  static Future<List<QueryResult>> queryIds(List<int> ids) async {
+    var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
+    queryRaw += 'Id IN (' + ids.join(',') + ')';
+    var qm = await QueryManager.query(
+        queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
+
+    var qr = Map<String, QueryResult>();
+    qm.results.forEach((element) {
+      qr[element.id().toString()] = element;
+    });
+
+    var rr = ids
+        .where((e) => qr.containsKey(e.toString()))
+        .map((e) => qr[e.toString()])
+        .toList();
+
+    return rr;
   }
 }
