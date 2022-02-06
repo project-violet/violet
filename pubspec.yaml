@@ -192,6 +192,7 @@ flutter:
     - assets/rank/population.json
     - assets/rank/ldi.json
     - assets/rank/comments.json
+    - assets/rank/related.json
 
     - assets/hisoki.json
     
