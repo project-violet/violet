@@ -1082,27 +1082,23 @@ class _Chip extends StatelessWidget {
   }
 }
 
-class _RelatedArea extends StatefulWidget {
+class _RelatedArea extends StatelessWidget {
   final List<int> relatedIds;
   const _RelatedArea({this.relatedIds});
 
   @override
-  __RelatedAreaState createState() => __RelatedAreaState();
-}
-
-class __RelatedAreaState extends State<_RelatedArea> {
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: QueryManager.queryIds(widget.relatedIds),
+      future: QueryManager.queryIds(relatedIds),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData) return Container();
 
         return Column(children: <Widget>[
-          articleArea(snapshot.data),
+          articleArea(context, snapshot.data),
           Visibility(
-            visible: widget.relatedIds.length > 6,
+            visible: relatedIds.length > 6,
             child: more(
+              context,
               () => ArticleListPage(
                   cc: snapshot.data,
                   name: Translations.of(context).trans('related') +
@@ -1115,12 +1111,12 @@ class __RelatedAreaState extends State<_RelatedArea> {
     );
   }
 
-  Widget more(Widget Function() what) {
+  Widget more(BuildContext context, Widget Function() what) {
     return SizedBox(
       height: 60,
       child: InkWell(
         onTap: () async {
-          PlatformNavigator.navigateSlide(context, what(), opaque: false);
+          PlatformNavigator.navigateSlide(context, what(), opaque: true);
         },
         child: Row(
           children: [Text(Translations.of(context).trans('more'))],
@@ -1131,7 +1127,7 @@ class __RelatedAreaState extends State<_RelatedArea> {
     );
   }
 
-  Widget articleArea(List<QueryResult> cc) {
+  Widget articleArea(BuildContext context, List<QueryResult> cc) {
     var windowWidth = MediaQuery.of(context).size.width;
     return LiveGrid(
       shrinkWrap: true,
