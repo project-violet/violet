@@ -1,5 +1,6 @@
 {
   "title": "Violet",
+  "notice": "Notice",
   "main": "メイン",
   "search": "検索",
   "download": "ダウンロード",
@@ -25,6 +26,8 @@
   "viewer": "閲覧者",
   "viewertype": "ビューアのタイプ",
   "currenttype": "現在のタイプ",
+  "scrollview": "Scroll View",
+  "bookview": "Book View",
   "imgquality": "画質",
   "downloader": "ダウンローダー",
   "instagram": "Instagram",
