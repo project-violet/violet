@@ -385,7 +385,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
   }
 
   Future<void> _showArticleInfo(QueryResult e) async {
-    var prov = ProviderManager.get(e.id());
+    var prov = await ProviderManager.get(e.id());
     var thumbnail = await prov.getThumbnailUrl();
     var headers = await prov.getHeader(0);
     ProviderManager.insert(e.id(), prov);
@@ -435,12 +435,10 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     await (await User.getInstance()).insertUserLog(e.id(), 0);
 
-    await ProviderManager.get(e.id()).init();
+    var prov = await ProviderManager.get(e.id());
 
-    if (await ScriptManager.refresh())
-      await ProviderManager.get(e.id()).refresh();
+    await prov.init();
 
-    var prov = ProviderManager.get(e.id());
     var headers = await prov.getHeader(0);
 
     Navigator.push(
@@ -450,10 +448,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
         builder: (context) {
           return Provider<ViewerPageProvider>.value(
               value: ViewerPageProvider(
-                uris: List<String>.filled(
-                    ProviderManager.get(e.id()).length(), null),
+                uris: List<String>.filled(prov.length(), null),
                 useProvider: true,
-                provider: ProviderManager.get(e.id()),
+                provider: prov,
                 headers: headers,
                 id: e.id(),
                 title: e.title(),

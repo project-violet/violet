@@ -519,7 +519,7 @@ class _ViewerPageState extends State<ViewerPage>
             ProviderManager.insert(qr.id(), value);
           });
 
-        var prov = ProviderManager.get(_pageInfo.id);
+        var prov = await ProviderManager.get(_pageInfo.id);
         var thumbnail = await prov.getThumbnailUrl();
         var headers = await prov.getHeader(0);
         ProviderManager.insert(qr.id(), prov);
@@ -605,12 +605,14 @@ class _ViewerPageState extends State<ViewerPage>
             _prevPage = 0;
           });
 
+          var prov = await ProviderManager.get(value.id());
+          var headers = await prov.getHeader(0);
+
           _pageInfo = ViewerPageProvider(
-            uris: List<String>.filled(
-                ProviderManager.get(value.id()).length(), null),
+            uris: List<String>.filled(prov.length(), null),
             useProvider: true,
-            provider: ProviderManager.get(value.id()),
-            headers: await ProviderManager.get(value.id()).getHeader(0),
+            provider: prov,
+            headers: headers,
             id: value.id(),
             title: value.title(),
             usableTabList: _pageInfo.usableTabList,

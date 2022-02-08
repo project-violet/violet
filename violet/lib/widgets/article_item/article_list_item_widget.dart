@@ -202,7 +202,7 @@ class _ArticleListItemVerySimpleWidgetState
       });
     } else {
       Future.delayed(Duration(milliseconds: 1)).then((v) async {
-        var provider = ProviderManager.get(data.queryResult.id());
+        var provider = await ProviderManager.get(data.queryResult.id());
         thumbnail = await provider.getThumbnailUrl();
         imageCount = provider.length();
         headers = await provider.getHeader(0);
