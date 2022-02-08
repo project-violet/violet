@@ -1742,8 +1742,6 @@ class _ViewerPageState extends State<ViewerPage>
                             },
                             onChangeEnd: (value) {
                               _sliderOnChange = false;
-                            },
-                            onChanged: (value) {
                               if (!Settings.isHorizontal) {
                                 itemScrollController.jumpTo(
                                     index: value.toInt() - 1, alignment: 0.12);
@@ -1755,6 +1753,7 @@ class _ViewerPageState extends State<ViewerPage>
                                 _prevPage = value.toInt();
                               });
                             },
+                            onChanged: (value) {},
                           ),
                         ),
                       ),
