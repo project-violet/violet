@@ -8,16 +8,26 @@ import 'package:violet/component/image_provider.dart';
 class ProviderManager {
   static HashMap<int, VioletImageProvider> _ids =
       HashMap<int, VioletImageProvider>();
+  static HashMap<int, bool> _dirty = HashMap<int, bool>();
 
   static bool isExists(int id) {
     return _ids.containsKey(id);
   }
 
   static void insert(int id, VioletImageProvider url) {
+    _dirty[id] = false;
     _ids[id] = url;
   }
 
-  static VioletImageProvider get(int id) {
+  static VioletImageProvider getIgnoreDirty(int id) {
+    return _ids[id];
+  }
+
+  static Future<VioletImageProvider> get(int id) async {
+    if (_dirty[id]) {
+      _dirty[id] = false;
+      await _ids[id].refresh();
+    }
     return _ids[id];
   }
 
@@ -26,8 +36,8 @@ class ProviderManager {
   }
 
   static void refresh() {
-    for (var v in _ids.entries) {
-      if (v.value.isRefreshable()) v.value.refresh();
+    for (var v in _dirty.entries) {
+      if (_ids[v].isRefreshable()) _dirty[v.key] = true;
     }
   }
 }

@@ -136,7 +136,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                       .then((value) async {
                     VioletImageProvider provider;
                     if (ProviderManager.isExists(e.item2)) {
-                      provider = ProviderManager.get(e.item2);
+                      provider = await ProviderManager.get(e.item2);
                     } else {
                       var query =
                           (await HentaiManager.idSearch(e.item2.toString()))

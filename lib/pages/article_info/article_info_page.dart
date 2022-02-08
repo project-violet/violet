@@ -289,10 +289,9 @@ class ArticleInfoPage extends StatelessWidget {
     }
     await (await User.getInstance()).insertUserLog(data.queryResult.id(), 0);
 
-    await ProviderManager.get(data.queryResult.id()).init();
+    var prov = await ProviderManager.get(data.queryResult.id());
 
-    if (await ScriptManager.refresh())
-      await ProviderManager.get(data.queryResult.id()).refresh();
+    await prov.init();
 
     Navigator.push(
       context,
@@ -305,10 +304,9 @@ class ArticleInfoPage extends StatelessWidget {
                 //     .item1,
                 // useWeb: true,
 
-                uris: List<String>.filled(
-                    ProviderManager.get(data.queryResult.id()).length(), null),
+                uris: List<String>.filled(prov.length(), null),
                 useProvider: true,
-                provider: ProviderManager.get(data.queryResult.id()),
+                provider: prov,
                 headers: data.headers,
                 id: data.queryResult.id(),
                 title: data.queryResult.title(),
@@ -513,11 +511,12 @@ class PreviewAreaWidget extends StatelessWidget {
     if (ProviderManager.isExists(queryResult.id())) {
       return FutureBuilder(
         future: Future.value(1).then((value) async {
-          VioletImageProvider prov = ProviderManager.get(queryResult.id());
+          VioletImageProvider prov =
+              await ProviderManager.get(queryResult.id());
 
           if (!ProviderManager.isExists(queryResult.id() * 1000000)) {
             if (ProviderManager.get(queryResult.id()) is HitomiImageProvider) {
-              prov = ProviderManager.get(queryResult.id());
+              prov = await ProviderManager.get(queryResult.id());
               ProviderManager.insert(queryResult.id() * 1000000, prov);
             } else {
               try {
@@ -530,7 +529,7 @@ class PreviewAreaWidget extends StatelessWidget {
               } catch (e) {}
             }
           } else
-            prov = ProviderManager.get(queryResult.id() * 1000000);
+            prov = await ProviderManager.get(queryResult.id() * 1000000);
 
           return [await prov.getSmallImagesUrl(), await prov.getHeader(0)];
         }),
@@ -937,8 +936,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
   Widget previewArea() {
     if (ProviderManager.isExists(widget.queryResult.id())) {
       return FutureBuilder(
-        future:
-            ProviderManager.get(widget.queryResult.id()).getSmallImagesUrl(),
+        future: ProviderManager.get(widget.queryResult.id())
+            .then((value) => value.getSmallImagesUrl()),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
