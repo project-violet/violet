@@ -36,6 +36,7 @@ import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_report.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
+import 'package:violet/pages/viewer/viewer_thumbnails.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
@@ -701,14 +702,17 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
-        PlatformNavigator.navigateSlide(
-          context,
-          Provider<ViewerPageProvider>.value(
+        await showModalBottomSheet(
+          context: context,
+          isScrollControlled: false,
+          builder: (context) => Provider<ViewerPageProvider>.value(
             value: _pageInfo,
-            child: ViewerGallery(),
+            child: ViewerThumbnail(
+              viewedPage: currentPage,
+            ),
           ),
-        ).then(
-          (value) {
+        ).then((value) async {
+          if (value != null) {
             if (value != null) {
               if (!Settings.isHorizontal) {
                 itemScrollController.jumpTo(index: value, alignment: 0.12);
@@ -720,10 +724,10 @@ class _ViewerPageState extends State<ViewerPage>
                 _prevPage = value;
               });
             }
-          },
-        );
-        startTimer();
-        _isStaring = true;
+          }
+          startTimer();
+          _isStaring = true;
+        });
       },
     );
   }
