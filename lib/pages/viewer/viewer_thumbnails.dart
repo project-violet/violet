@@ -82,6 +82,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     final width = MediaQuery.of(context).size.width;
 
     return GridView.count(
+      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
       controller: _scrollController,
       physics: ScrollPhysics(),
       shrinkWrap: true,
@@ -95,11 +96,10 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               i,
               _buildTappableItem(
                 i,
-                Image.file(
-                  File(e),
-                  cacheWidth: width.toInt() ~/ 3,
-                  filterQuality: FilterQuality.high,
-                ),
+                Image.file(File(e),
+                    cacheWidth: width.toInt() ~/ 3,
+                    filterQuality: FilterQuality.high,
+                    fit: BoxFit.contain),
               )))
           .values
           .toList(),
@@ -135,6 +135,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
           return GridView.count(
+            padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
             controller: _scrollController,
             physics: ScrollPhysics(),
             shrinkWrap: true,
@@ -151,6 +152,8 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                       CachedNetworkImage(
                         imageUrl: e,
                         httpHeaders: snapshot.data[1] as Map<String, String>,
+                        filterQuality: FilterQuality.high,
+                        fit: BoxFit.contain,
                       ),
                     )))
                 .values
@@ -186,7 +189,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       height: double.infinity,
       child: Stack(
         children: <Widget>[
-          image,
+          Container(
+            alignment: Alignment.center,
+            width: double.infinity,
+            child: image,
+          ),
           Align(
             alignment: Alignment.topCenter,
             child: Container(
