@@ -13,12 +13,14 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/database_download/decompress.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
@@ -168,7 +170,11 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       await (await SharedPreferences.getInstance())
           .setInt('synclatest', SyncManager.getLatestDB().timestamp);
 
-      // await indexing();
+      if (Settings.useOptimizeDatabase) {
+        await deleteUnused();
+
+        await indexing();
+      }
 
       if (widget.isSync != null && widget.isSync == true)
         Navigator.pop(context);
@@ -242,6 +248,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         downloading = false;
       });
 
+      if (Settings.useOptimizeDatabase) await deleteUnused();
+
       await indexing();
 
       if (widget.isSync != null && widget.isSync == true)
@@ -260,6 +268,18 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       downloading = false;
       baseString = Translations.instance.trans('dbretry');
     });
+  }
+
+  Future deleteUnused() async {
+    var sql = HitomiManager.translate2query(Settings.includeTags +
+        ' ' +
+        Settings.excludeTags
+            .where((e) => e.trim() != '')
+            .map((e) => '-$e')
+            .join(' '));
+
+    await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
+        'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
   }
 
   void insert(Map<String, int> map, dynamic qr) {
