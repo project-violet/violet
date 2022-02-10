@@ -289,9 +289,30 @@ class Settings {
 
     useTabletMode = await _getBool('usetabletmode', Device.get().isTablet);
 
-    simpleItemWidgetLoadingIcon = await _getBool('simpleItemWidgetLoadingIcon');
+    simpleItemWidgetLoadingIcon =
+        await _getBool('simpleItemWidgetLoadingIcon', true);
     showNewViewerWhenArtistArticleListItemTap =
-        await _getBool('showNewViewerWhenArtistArticleListItemTap');
+        await _getBool('showNewViewerWhenArtistArticleListItemTap', true);
+
+    await regacy1_20_2();
+  }
+
+  static Future regacy1_20_2() async {
+    if (await _checkLegacyExists('regacy1_20_2')) return;
+
+    if (!simpleItemWidgetLoadingIcon)
+      await setSimpleItemWidgetLoadingIcon(true);
+    if (!showNewViewerWhenArtistArticleListItemTap)
+      await setShowNewViewerWhenArtistArticleListItemTap(true);
+  }
+
+  static Future<bool> _checkLegacyExists(String name) async {
+    var nn = (await SharedPreferences.getInstance()).getBool(name);
+    if (nn == null) {
+      await (await SharedPreferences.getInstance()).setBool(name, true);
+      return false;
+    }
+    return true;
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
