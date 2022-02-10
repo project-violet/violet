@@ -273,7 +273,7 @@ class Settings {
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
     showArticleProgress = await _getBool('showarticleprogress');
-    useOptimizeDatabase = await _getBool('useoptimizedatabase');
+    useOptimizeDatabase = await _getBool('useoptimizedatabase', true);
 
     useLowPerf = await _getBool('uselowperf', true);
 
