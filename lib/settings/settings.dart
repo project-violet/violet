@@ -124,7 +124,7 @@ class Settings {
       else if (langcode == 'ja')
         language = 'lang:japanese';
       else if (langcode == 'zh') language = 'lang:chinese';
-      includetags = '($language or lang:n/a)';
+      includetags = '($language)';
       await (await SharedPreferences.getInstance())
           .setString('includetags', includetags);
     }
