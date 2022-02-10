@@ -37,6 +37,14 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       itemKeys.add(GlobalKey());
     });
 
+    _jumpToViewedPage();
+  }
+
+  bool _alreadyJumped = false;
+
+  _jumpToViewedPage() {
+    if (_alreadyJumped) return;
+    _alreadyJumped = true;
     Future.value(1).then((value) {
       var row = widget.viewedPage ~/ 3;
       if (row == 0) return;
@@ -134,6 +142,8 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
+          Future.delayed(Duration(milliseconds: 50))
+              .then((value) => _jumpToViewedPage());
           return GridView.count(
             padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
             controller: _scrollController,
