@@ -104,10 +104,12 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               i,
               _buildTappableItem(
                 i,
-                Image.file(File(e),
-                    cacheWidth: width.toInt() ~/ 3,
-                    filterQuality: FilterQuality.high,
-                    fit: BoxFit.contain),
+                Image.file(
+                  File(e),
+                  cacheWidth: width.toInt() ~/ 3,
+                  filterQuality: FilterQuality.high,
+                  fit: BoxFit.cover,
+                ),
               )))
           .values
           .toList(),
@@ -163,7 +165,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                         imageUrl: e,
                         httpHeaders: snapshot.data[1] as Map<String, String>,
                         filterQuality: FilterQuality.high,
-                        fit: BoxFit.contain,
+                        fit: BoxFit.cover,
                       ),
                     )))
                 .values
