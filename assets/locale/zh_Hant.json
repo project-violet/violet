@@ -249,5 +249,6 @@
   "threadzero": "Cannot set threads to 0",
   "setthread": "Set Thread",
   "remaintask": "There are still files being downloaded. Please try again after completing download!",
-  "changedthread": "Number of Threads have changed!"
+  "changedthread": "Number of Threads have changed!",
+  "exportlog": "Export Log Record"
 }
