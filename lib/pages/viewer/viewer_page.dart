@@ -705,10 +705,13 @@ class _ViewerPageState extends State<ViewerPage>
         await showModalBottomSheet(
           context: context,
           isScrollControlled: false,
-          builder: (context) => Provider<ViewerPageProvider>.value(
-            value: _pageInfo,
-            child: ViewerThumbnail(
-              viewedPage: currentPage,
+          builder: (context) => FractionallySizedBox(
+            heightFactor: 0.8,
+            child: Provider<ViewerPageProvider>.value(
+              value: _pageInfo,
+              child: ViewerThumbnail(
+                viewedPage: currentPage,
+              ),
             ),
           ),
         ).then((value) async {
