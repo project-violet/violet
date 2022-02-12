@@ -175,6 +175,33 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       while (downloadTotalFileCount != downloadedFileCount) {
         await Future.delayed(Duration(milliseconds: 500));
       }
+
+      var invalidFiles = await routine.checkDownloadFiles();
+
+      // retry download when file is invalid or downloaded fail.
+      if (invalidFiles.length != 0) {
+        downloadedFileCount -= invalidFiles.length;
+
+        await routine.retryInvalidDownloadFiles(
+          invalidFiles,
+          completeCallback: () {
+            downloadedFileCount++;
+          },
+          downloadCallback: (byte) {
+            download += byte;
+            downloadSec += byte;
+          },
+          errorCallback: (err) {
+            downloadedFileCount++;
+            errorFileCount++;
+          },
+        );
+
+        while (downloadTotalFileCount != downloadedFileCount) {
+          await Future.delayed(Duration(milliseconds: 500));
+        }
+      }
+
       _timer.cancel();
 
       await routine.setDownloadComplete();

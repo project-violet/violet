@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
@@ -118,6 +119,68 @@ class DownloadRoutine {
     if (Settings.useInnerStorage)
       basepath = (await getApplicationDocumentsDirectory()).path;
     downloader.appendTasks(tasks.map((e) {
+      e.downloadPath = join(
+          basepath,
+          e.format
+              .formatting(HentaiDonwloadManager.instance().defaultFormat()));
+
+      e.startCallback = () {};
+      e.completeCallback = completeCallback;
+
+      e.sizeCallback = (byte) {};
+      e.downloadCallback = downloadCallback;
+
+      e.errorCallback = errorCallback;
+
+      return e;
+    }).toList());
+    await _setState(3);
+  }
+
+  Future<List<int>> checkDownloadFiles() async {
+    var basepath = Settings.downloadBasePath;
+
+    if (Settings.useInnerStorage)
+      basepath = (await getApplicationDocumentsDirectory()).path;
+
+    var filenames = tasks
+        .map((e) => join(
+            basepath,
+            e.format
+                .formatting(HentaiDonwloadManager.instance().defaultFormat())))
+        .toList();
+
+    var invalidIndex = <int>[];
+
+    for (var i = 0; i < filenames.length; i++) {
+      var file = File(filenames[i]);
+
+      if (!await file.exists()) {
+        invalidIndex.add(i);
+        continue;
+      }
+
+      if (await file.length() < 5) {
+        invalidIndex.add(i);
+        await file.delete();
+        continue;
+      }
+    }
+
+    return invalidIndex;
+  }
+
+  Future<void> retryInvalidDownloadFiles(
+    List<int> invalidIndex, {
+    VoidCallback completeCallback,
+    DoubleCallback downloadCallback,
+    VoidStringCallback errorCallback,
+  }) async {
+    var downloader = await IsolateDownloader.getInstance();
+    var basepath = Settings.downloadBasePath;
+    if (Settings.useInnerStorage)
+      basepath = (await getApplicationDocumentsDirectory()).path;
+    downloader.appendTasks(invalidIndex.map((e) => tasks[e]).map((e) {
       e.downloadPath = join(
           basepath,
           e.format
