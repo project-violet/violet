@@ -783,6 +783,24 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
+            leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('exportlog')),
+            trailing: Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              await Logger.exportLog();
+
+              flutterToast.showToast(
+                child: ToastWrapper(
+                  isCheck: true,
+                  msg: Translations.of(context).trans('complete'),
+                ),
+                gravity: ToastGravity.BOTTOM,
+                toastDuration: Duration(seconds: 4),
+              );
+            },
+          ),
+          _buildDivider(),
+          ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
             trailing: Icon(Icons.keyboard_arrow_right),

@@ -249,5 +249,6 @@
   "threadzero": "스레드를 0개로 설정할 수 없습니다.",
   "setthread": "스레드 설정",
   "remaintask": "아직 다운로드 중인 파일이 있습니다. 모두 완료 후 재시도해주세요!",
-  "changedthread": "스레드 개수를 변경했습니다!"
+  "changedthread": "스레드 개수를 변경했습니다!",
+  "exportlog": "로그 기록 내보내기"
 }
