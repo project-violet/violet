@@ -144,7 +144,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
-          Future.delayed(Duration(milliseconds: 100))
+          Future.delayed(Duration(milliseconds: 150))
               .then((value) => _jumpToViewedPage());
           return GridView.count(
             padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
