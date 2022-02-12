@@ -575,6 +575,7 @@ class _DownloadPageState extends State<DownloadPage>
     var item = await (await Download.getInstance()).createNew(url);
     item.download = true;
     items.add(item);
+    itemsMap[item.id()] = item;
     await _appendQueryResults(url);
     _applyFilter();
   }
