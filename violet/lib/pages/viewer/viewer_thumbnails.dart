@@ -92,7 +92,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     return GridView.count(
       padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
       controller: _scrollController,
-      physics: ScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       shrinkWrap: true,
       crossAxisCount: 3,
       childAspectRatio: 3 / 4,
@@ -106,7 +106,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                 i,
                 Image.file(
                   File(e),
-                  cacheWidth: width.toInt() ~/ 3,
+                  cacheWidth: width.toInt() ~/ 2,
                   filterQuality: FilterQuality.high,
                   fit: BoxFit.cover,
                 ),
@@ -149,7 +149,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           return GridView.count(
             padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
             controller: _scrollController,
-            physics: ScrollPhysics(),
+            physics: BouncingScrollPhysics(),
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 3 / 4,
@@ -201,7 +201,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       height: double.infinity,
       child: Stack(
         children: <Widget>[
-          image,
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: image,
+          ),
           Align(
             alignment: Alignment.topCenter,
             child: Container(
