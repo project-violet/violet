@@ -1,4 +1,17 @@
-name: Build android/ios
+
+ - name: action-github-app-token
+  # You may pin to the exact commit or the version.
+  # uses: getsentry/action-github-app-token@38a3ce582e170ddfe8789f509597c6944f2292a9
+  uses: getsentry/action-github-app-token@v1.0.6
+  with:
+    # GitHub App ID
+    app_id: cakecnc@daum.net
+    # Private key for the GitHub App
+    private_key: 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
+    # Scope of installation account
+    scope: # optional, default is 
+  
+    
 on:
   push:
     branches: [ dev ]
