@@ -104,6 +104,9 @@ class FileNameFormat {
   final String license;
   final String genre;
   final String laugage;
+  final String downloadDate;
+  final String className;
+  final String length;
 
   FileNameFormat({
     this.title,
@@ -132,6 +135,9 @@ class FileNameFormat {
     this.license,
     this.genre,
     this.laugage,
+    this.downloadDate,
+    this.className,
+    this.length,
   });
 
   String formatting(String raw) {
@@ -164,6 +170,9 @@ class FileNameFormat {
       "license": license,
       "genre": genre,
       "laugage": laugage,
+      "downloaddate": downloadDate,
+      "classname": className,
+      "length": length,
     };
 
     var builder = StringBuffer();
