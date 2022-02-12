@@ -89,9 +89,9 @@ class HentaiDonwloadManager {
             uploadDate: target.getDateTime().toString(),
             filenameWithoutExtension: intToString(i, pad: 3),
             artist: target.artists() != null
-                ? target.artists().split('|').first
+                ? target.artists().split('|')[1]
                 : target.groups() != null
-                    ? target.groups().split('|').first
+                    ? target.groups().split('|')[1]
                     : null,
             extension: path.extension(page.split('/').last).replaceAll(".", ""),
             extractor: 'hentai',
