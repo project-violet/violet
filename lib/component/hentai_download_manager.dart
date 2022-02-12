@@ -93,6 +93,9 @@ class HentaiDonwloadManager {
                 : null,
             extension: path.extension(page.split('/').last).replaceAll(".", ""),
             extractor: 'hentai',
+            downloadDate: DateTime.now().toString(),
+            className: target.classname(),
+            length: provider.length().toString(),
           ),
         ),
       );
