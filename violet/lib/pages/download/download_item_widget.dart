@@ -176,10 +176,19 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         await Future.delayed(Duration(milliseconds: 500));
       }
 
-      var invalidFiles = await routine.checkDownloadFiles();
+      const maxRetryCount = 5;
+      var retryCount = 0;
 
       // retry download when file is invalid or downloaded fail.
-      if (invalidFiles.length != 0) {
+      while (retryCount < maxRetryCount) {
+        var invalidFiles = await routine.checkDownloadFiles();
+
+        if (invalidFiles.length == 0 || invalidFiles.length == errorFileCount)
+          break;
+
+        errorFileCount = 0;
+        retryCount += 1;
+
         downloadedFileCount -= invalidFiles.length;
 
         await routine.retryInvalidDownloadFiles(
