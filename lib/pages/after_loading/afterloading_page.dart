@@ -207,11 +207,17 @@ class AfterLoadingPageState extends State<AfterLoadingPage> {
     );
   }
 
+  bool isAlreadyUpdatePadding = false;
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
-        (mediaQuery.padding + mediaQuery.viewInsets).bottom);
+
+    if (!isAlreadyUpdatePadding) {
+      isAlreadyUpdatePadding = true;
+      Variables.updatePadding((mediaQuery.padding + mediaQuery.viewInsets).top,
+          (mediaQuery.padding + mediaQuery.viewInsets).bottom);
+    }
 
     return WillPopScope(
       onWillPop: () async {
