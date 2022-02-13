@@ -25,4 +25,9 @@ class Variables {
         bottomBarHeight = max(bottomBarHeight, bottomBar);
     }
   }
+
+  static double articleInfoHeight = 0;
+  static void setArticleInfoHeight(double pad) {
+    if (articleInfoHeight == 0 && pad > 0.1) articleInfoHeight = pad;
+  }
 }

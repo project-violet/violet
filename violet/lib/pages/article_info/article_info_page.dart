@@ -65,6 +65,9 @@ class ArticleInfoPage extends StatelessWidget {
     final data = Provider.of<ArticleInfo>(context);
     final mediaQuery = MediaQuery.of(context);
 
+    Variables.setArticleInfoHeight(
+        height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom);
+
     return Container(
       color: Settings.themeWhat
           ? Settings.themeBlack
@@ -81,8 +84,7 @@ class ArticleInfoPage extends StatelessWidget {
             : Colors.grey.shade200,
         child: SizedBox(
           width: width - 16,
-          height:
-              height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+          height: Variables.articleInfoHeight,
           child: Container(
             // width: width,
             // height: height,
