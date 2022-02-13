@@ -46,7 +46,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     if (_alreadyJumped) return;
     _alreadyJumped = true;
     Future.value(1).then((value) {
-      var row = (widget.viewedPage - 1) ~/ 3;
+      var row = widget.viewedPage ~/ 3;
       if (row == 0) return;
       _scrollController.jumpTo(
         row *
