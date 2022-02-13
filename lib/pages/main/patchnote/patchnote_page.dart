@@ -24,8 +24,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 2, 13),
+    version: '1.21 Minor Update <== Latest',
+    contents: [
+      'optimize article list item',
+      'optimize viewer functions',
+      'fix download error',
+      'add related articles',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 2, 2),
-    version: '1.20.1 Patch (HotFix) <== Latest',
+    version: '1.20.1 Patch (HotFix)',
     contents: [
       'fix download button bug',
       'fix grey thumbnail bug',
