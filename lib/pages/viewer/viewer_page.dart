@@ -578,15 +578,19 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
+        var cache;
         await showModalBottomSheet(
-          context: context,
-          isScrollControlled: false,
-          builder: (context) => TabPanel(
-            articleId: _pageInfo.id,
-            usableTabList: _pageInfo.usableTabList,
-            height: height,
-          ),
-        ).then((value) async {
+            context: context,
+            isScrollControlled: false,
+            builder: (context) {
+              if (cache == null)
+                cache = TabPanel(
+                  articleId: _pageInfo.id,
+                  usableTabList: _pageInfo.usableTabList,
+                  height: height,
+                );
+              return cache;
+            }).then((value) async {
           if (value == null) return;
 
           await _savePageRead(_pageInfo.useFileSystem);
@@ -657,13 +661,17 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
+        var cache;
         await showModalBottomSheet(
-          context: context,
-          isScrollControlled: false,
-          builder: (context) => ViewRecordPanel(
-            articleId: _pageInfo.id,
-          ),
-        ).then((value) {
+            context: context,
+            isScrollControlled: false,
+            builder: (context) {
+              if (cache == null)
+                cache = ViewRecordPanel(
+                  articleId: _pageInfo.id,
+                );
+              return cache;
+            }).then((value) {
           if (value != null) {
             if (!Settings.isHorizontal) {
               itemScrollController.jumpTo(index: value, alignment: 0.12);
@@ -702,19 +710,23 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
+        var cache;
         await showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (context) => FractionallySizedBox(
-            heightFactor: 0.8,
-            child: Provider<ViewerPageProvider>.value(
-              value: _pageInfo,
-              child: ViewerThumbnail(
-                viewedPage: currentPage,
-              ),
-            ),
-          ),
-        ).then((value) async {
+            context: context,
+            isScrollControlled: true,
+            builder: (context) {
+              if (cache == null)
+                cache = FractionallySizedBox(
+                  heightFactor: 0.8,
+                  child: Provider<ViewerPageProvider>.value(
+                    value: _pageInfo,
+                    child: ViewerThumbnail(
+                      viewedPage: currentPage,
+                    ),
+                  ),
+                );
+              return cache;
+            }).then((value) async {
           if (value != null) {
             if (value != null) {
               if (!Settings.isHorizontal) {
@@ -742,30 +754,34 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
+        var cache;
         await showModalBottomSheet(
-          context: context,
-          isScrollControlled: false,
-          builder: (context) => ViewerSettingPanel(
-            viewerStyleChangeEvent: () {
-              if (Settings.isHorizontal) {
-                _pageController =
-                    PreloadPageController(initialPage: _prevPage - 1);
-              } else {
-                var npage = _prevPage;
-                _sliderOnChange = true;
-                Future.delayed(Duration(milliseconds: 180)).then((value) {
-                  itemScrollController.jumpTo(
-                      index: npage - 1, alignment: 0.12);
-                  _sliderOnChange = false;
-                });
-              }
-              setState(() {});
-            },
-            setStateCallback: () {
-              setState(() {});
-            },
-          ),
-        );
+            context: context,
+            isScrollControlled: false,
+            builder: (context) {
+              if (cache == null)
+                cache = ViewerSettingPanel(
+                  viewerStyleChangeEvent: () {
+                    if (Settings.isHorizontal) {
+                      _pageController =
+                          PreloadPageController(initialPage: _prevPage - 1);
+                    } else {
+                      var npage = _prevPage;
+                      _sliderOnChange = true;
+                      Future.delayed(Duration(milliseconds: 180)).then((value) {
+                        itemScrollController.jumpTo(
+                            index: npage - 1, alignment: 0.12);
+                        _sliderOnChange = false;
+                      });
+                    }
+                    setState(() {});
+                  },
+                  setStateCallback: () {
+                    setState(() {});
+                  },
+                );
+              return cache;
+            });
         startTimer();
         _isStaring = true;
         return;
