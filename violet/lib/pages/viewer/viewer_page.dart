@@ -704,7 +704,7 @@ class _ViewerPageState extends State<ViewerPage>
         _isStaring = false;
         await showModalBottomSheet(
           context: context,
-          isScrollControlled: false,
+          isScrollControlled: true,
           builder: (context) => FractionallySizedBox(
             heightFactor: 0.8,
             child: Provider<ViewerPageProvider>.value(
