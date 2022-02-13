@@ -88,6 +88,7 @@ class Settings {
   // Lab
   static bool simpleItemWidgetLoadingIcon;
   static bool showNewViewerWhenArtistArticleListItemTap;
+  static bool enableViewerFunctionBackdropFilter;
 
   static Future<void> initFirst() async {
     var mc = await _getInt('majorColor', Colors.purple.value);
@@ -293,6 +294,8 @@ class Settings {
         await _getBool('simpleItemWidgetLoadingIcon', true);
     showNewViewerWhenArtistArticleListItemTap =
         await _getBool('showNewViewerWhenArtistArticleListItemTap', true);
+    enableViewerFunctionBackdropFilter =
+        await _getBool('enableViewerFunctionBackdropFilter');
 
     await regacy1_20_2();
   }
@@ -638,5 +641,11 @@ class Settings {
     showNewViewerWhenArtistArticleListItemTap = nn;
     await (await SharedPreferences.getInstance())
         .setBool('showNewViewerWhenArtistArticleListItemTap', nn);
+  }
+
+  static Future<void> setEnableViewerFunctionBackdropFilter(bool nn) async {
+    enableViewerFunctionBackdropFilter = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('enableViewerFunctionBackdropFilter', nn);
   }
 }
