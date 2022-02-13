@@ -64,61 +64,70 @@ class _TabPanelState extends State<TabPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-        child: Container(
-          decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
-          padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
-          child: Stack(
-            children: [
-              PageView(
-                controller: _pageController,
-                children: [
-                  if (widget.usableTabList != null)
-                    _UsableTabList(
-                      articleId: widget.articleId,
-                      usableTabList: widget.usableTabList,
-                    ),
-                  _ArtistsArticleTabList(
-                    height: widget.height,
-                    articleId: widget.articleId,
+    var view = Stack(
+      children: [
+        PageView(
+          controller: _pageController,
+          children: [
+            if (widget.usableTabList != null)
+              _UsableTabList(
+                articleId: widget.articleId,
+                usableTabList: widget.usableTabList,
+              ),
+            _ArtistsArticleTabList(
+              height: widget.height,
+              articleId: widget.articleId,
+            ),
+          ],
+        ),
+        FutureBuilder(
+          future: Future.value(1),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return Container();
+            return Positioned(
+              bottom: 0.0,
+              left: 0.0,
+              right: 0.0,
+              child: Container(
+                color: null,
+                padding: const EdgeInsets.all(20.0),
+                child: Center(
+                  child: DotsIndicator(
+                    controller: _pageController,
+                    itemCount: widget.usableTabList != null ? 2 : 1,
+                    onPageSelected: (int page) {
+                      _pageController.animateToPage(
+                        page,
+                        duration: _kDuration,
+                        curve: _kCurve,
+                      );
+                    },
                   ),
-                ],
+                ),
               ),
-              FutureBuilder(
-                future: Future.value(1),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return Container();
-                  return Positioned(
-                    bottom: 0.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Container(
-                      color: null,
-                      padding: const EdgeInsets.all(20.0),
-                      child: Center(
-                        child: DotsIndicator(
-                          controller: _pageController,
-                          itemCount: widget.usableTabList != null ? 2 : 1,
-                          onPageSelected: (int page) {
-                            _pageController.animateToPage(
-                              page,
-                              duration: _kDuration,
-                              curve: _kCurve,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
+            );
+          },
+        ),
+      ],
+    );
+
+    if (Settings.enableViewerFunctionBackdropFilter)
+      return ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          child: Container(
+            decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
+            padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
+            child: view,
           ),
         ),
-      ),
-    );
+      );
+    else
+      return Container(
+        color: Colors.black.withOpacity(0.8),
+        padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
+        child: view,
+      );
   }
 }
 

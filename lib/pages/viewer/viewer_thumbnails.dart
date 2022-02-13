@@ -11,6 +11,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
@@ -63,16 +64,23 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-        child: Container(
-          decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
-          padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
-          child: _buildThumbanilsList(),
+    if (Settings.enableViewerFunctionBackdropFilter)
+      return ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+          child: Container(
+            decoration: BoxDecoration(color: Colors.black.withOpacity(0.4)),
+            padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
+            child: _buildThumbanilsList(),
+          ),
         ),
-      ),
-    );
+      );
+    else
+      return Container(
+        color: Colors.black.withOpacity(0.8),
+        padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
+        child: _buildThumbanilsList(),
+      );
   }
 
   Widget _buildThumbanilsList() {

@@ -83,6 +83,30 @@ class _LabSettingState extends State<LabSetting> {
               setState(() {});
             },
           ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(MdiIcons.flask, color: Settings.majorColor),
+              title: Text('Enable viewer function backdrop filter'),
+              subtitle: Text(
+                  'apply ios style blur effect to viewer functions. this blur effect may decrease performance.'),
+              trailing: Switch(
+                value: Settings.enableViewerFunctionBackdropFilter,
+                onChanged: (newValue) async {
+                  await Settings.setEnableViewerFunctionBackdropFilter(
+                      newValue);
+                  setState(() {});
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setEnableViewerFunctionBackdropFilter(
+                  !Settings.enableViewerFunctionBackdropFilter);
+              setState(() {});
+            },
+          ),
         ],
       ),
     );
