@@ -176,7 +176,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         await Future.delayed(Duration(milliseconds: 500));
       }
 
-      const maxRetryCount = 5;
+      const maxRetryCount = 20;
       var retryCount = 0;
 
       // retry download when file is invalid or downloaded fail.
