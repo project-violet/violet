@@ -30,7 +30,7 @@ class DownloadImageMenu extends StatelessWidget {
               child: SizedBox(
                 child: SizedBox(
                   width: 280,
-                  height: (56 * 3 + 16).toDouble(),
+                  height: (56 * 4 + 16).toDouble(),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
                     child: Column(
