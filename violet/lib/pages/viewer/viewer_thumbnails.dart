@@ -114,7 +114,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                 i,
                 Image.file(
                   File(e),
-                  cacheWidth: width.toInt() ~/ 2,
+                  cacheWidth: width.toInt() ~/ 1.5,
                   filterQuality: FilterQuality.high,
                   fit: BoxFit.cover,
                 ),
