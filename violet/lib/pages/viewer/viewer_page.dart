@@ -1556,9 +1556,16 @@ class _ViewerPageState extends State<ViewerPage>
       });
     }
 
+    Future<dynamic> future;
+
+    if (_height[index] == 0)
+      future = Future.delayed(Duration(milliseconds: 300));
+    else
+      future = Future.value(0);
+
     return FutureBuilder(
       // to avoid loading all images when fast scrolling
-      future: Future.delayed(Duration(milliseconds: 300)).then((value) => 1),
+      future: future.then((value) => 1),
       builder: (context, snapshot) {
         // To prevent the scroll from being chewed,
         // it is necessary to put an empty box for the invisible part.
