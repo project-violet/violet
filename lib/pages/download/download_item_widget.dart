@@ -158,7 +158,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         });
       });
 
-      if (recoveryMode) {
+      if (!recoveryMode) {
         await routine.appendDownloadTasks(
           completeCallback: () {
             downloadedFileCount++;
