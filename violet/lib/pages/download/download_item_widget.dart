@@ -77,6 +77,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
   int errorFileCount = 0;
   String downloadSpeed = ' KB/S';
   bool once = false;
+  bool recoveryMode = false;
   double thisWidth, thisHeight;
   DownloadListItem style;
 
@@ -157,23 +158,27 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         });
       });
 
-      await routine.appendDownloadTasks(
-        completeCallback: () {
-          downloadedFileCount++;
-        },
-        downloadCallback: (byte) {
-          download += byte;
-          downloadSec += byte;
-        },
-        errorCallback: (err) {
-          downloadedFileCount++;
-          errorFileCount++;
-        },
-      );
+      if (recoveryMode) {
+        await routine.appendDownloadTasks(
+          completeCallback: () {
+            downloadedFileCount++;
+          },
+          downloadCallback: (byte) {
+            download += byte;
+            downloadSec += byte;
+          },
+          errorCallback: (err) {
+            downloadedFileCount++;
+            errorFileCount++;
+          },
+        );
 
-      // Wait for download complete
-      while (downloadTotalFileCount != downloadedFileCount) {
-        await Future.delayed(Duration(milliseconds: 500));
+        // Wait for download complete
+        while (downloadTotalFileCount != downloadedFileCount) {
+          await Future.delayed(Duration(milliseconds: 500));
+        }
+      } else {
+        downloadedFileCount = downloadTotalFileCount;
       }
 
       const maxRetryCount = 20;
@@ -214,6 +219,8 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
       _timer.cancel();
 
       await routine.setDownloadComplete();
+
+      recoveryMode = false;
 
       FlutterToast(context).showToast(
         child: ToastWrapper(
@@ -262,6 +269,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         );
 
         if (v == -1) {
+          // Delete
           if (widget.item.state() == 0) {
             for (var file in widget.item.rawFiles()) {
               if (await File(file).exists()) await File(file).delete();
@@ -270,6 +278,7 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
           await widget.item.delete();
           widget.refeshCallback();
         } else if (v == 2) {
+          // Copy Url
           Clipboard.setData(ClipboardData(text: widget.item.url()));
           FlutterToast(context).showToast(
             child: ToastWrapper(
@@ -281,11 +290,24 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
             toastDuration: Duration(seconds: 4),
           );
         } else if (v == 1) {
+          // Retry
           var copy = Map<String, dynamic>.from(widget.item.result);
           copy['State'] = 1;
           widget.item.result = copy;
           once = false;
           widget.download = true;
+          _downloadProcedure();
+          setState(() {
+            _shouldReload = true;
+          });
+        } else if (v == 3) {
+          // recovery
+          var copy = Map<String, dynamic>.from(widget.item.result);
+          copy['State'] = 1;
+          widget.item.result = copy;
+          widget.download = true;
+          once = false;
+          recoveryMode = true;
           _downloadProcedure();
           setState(() {
             _shouldReload = true;
