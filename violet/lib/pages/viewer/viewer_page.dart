@@ -1520,6 +1520,7 @@ class _ViewerPageState extends State<ViewerPage>
   List<String> _urlCache;
   List<double> _estimatedImageHeight;
   List<bool> _loadingEstimaed;
+  List<UniqueKey> _imageKey;
   int _latestIndex = 0;
   double _latestAlign = 0;
   bool _onScroll = false;
@@ -1540,6 +1541,12 @@ class _ViewerPageState extends State<ViewerPage>
     if (_estimatedImageHeight == null) {
       _estimatedImageHeight = List<double>.filled(_pageInfo.uris.length, 0);
       _loadingEstimaed = List<bool>.filled(_pageInfo.uris.length, false);
+    }
+
+    if (_imageKey == null) {
+      _imageKey = List<UniqueKey>.filled(_pageInfo.uris.length, null);
+      for (var i = 0; i < _pageInfo.uris.length; i++)
+        _imageKey[i] = UniqueKey();
     }
 
     if (_loadingEstimaed[index] == false) {
@@ -1615,6 +1622,7 @@ class _ViewerPageState extends State<ViewerPage>
             }
             return Container(
               // height: _height[index] != 0 ? _height[index] : null,
+              key: _imageKey[index],
               constraints: _height[index] != 0
                   ? BoxConstraints(minHeight: _height[index])
                   : _estimatedImageHeight[index] != 0
@@ -1667,6 +1675,30 @@ class _ViewerPageState extends State<ViewerPage>
                             CircularProgressIndicator(value: progress.progress),
                         width: 30,
                         height: 30,
+                      ),
+                    ),
+                  );
+                },
+                errorWidget: (context, url, error) {
+                  Logger.error(
+                      '[Viewer] E: image load failed\n' + error.toString());
+                  return SizedBox(
+                    height: _estimatedImageHeight[index] != 0
+                        ? _estimatedImageHeight[index]
+                        : 300,
+                    child: Center(
+                      child: SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.refresh,
+                            color: Settings.majorColor,
+                          ),
+                          onPressed: () => setState(() {
+                            _imageKey[index] = UniqueKey();
+                          }),
+                        ),
                       ),
                     ),
                   );
