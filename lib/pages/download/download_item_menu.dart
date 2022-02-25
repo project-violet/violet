@@ -39,6 +39,7 @@ class DownloadImageMenu extends StatelessWidget {
                         // _typeItem(context, Icons.grid_on, 'srt0', 0),
                         _typeItem(context, MdiIcons.contentCopy, 'Copy URL', 2),
                         _typeItem(context, MdiIcons.refresh, 'Retry', 1),
+                        _typeItem(context, MdiIcons.rotateLeft, 'Recovery', 3),
                         // _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
                         _typeItem(context, MdiIcons.trashCan, 'Delete', -1),
                         Expanded(
