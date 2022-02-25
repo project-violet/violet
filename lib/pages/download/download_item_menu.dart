@@ -7,13 +7,7 @@ import 'package:violet/settings/settings.dart';
 
 class DownloadImageMenu extends StatelessWidget {
   Color getColor(int i) {
-    return Settings.themeWhat
-        ? Settings.searchResultType == i
-            ? Colors.grey.shade200
-            : Colors.grey.shade400
-        : Settings.searchResultType == i
-            ? Colors.grey.shade900
-            : Colors.grey.shade400;
+    return Settings.themeWhat ? Colors.grey.shade200 : Colors.grey.shade900;
   }
 
   @override
