@@ -8,14 +8,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class RestoreBookmarkPage extends StatefulWidget {
   final dynamic source;
+  final bool restoreWithRecord;
 
-  RestoreBookmarkPage({this.source});
+  RestoreBookmarkPage({this.source, this.restoreWithRecord});
 
   @override
   _RestoreBookmarkPageState createState() => _RestoreBookmarkPageState();
@@ -85,6 +87,28 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
           }
           await batch.commit();
         });
+        if (widget.restoreWithRecord) {
+          var records = widget.source['record'] as List<dynamic>;
+
+          await dbraw.transaction((txn) async {
+            final batch = txn.batch();
+            for (var record in records) {
+              var ref = ArticleReadLog(result: record);
+              batch.insert(
+                  'ArticleReadLog',
+                  {
+                    'Article': ref.articleId(),
+                    'DateTimeStart': ref.datetimeStart(),
+                    'DateTimeEnd': ref.datetimeEnd(),
+                    'LastPage': ref.lastPage(),
+                    'Type': ref.type(),
+                  },
+                  conflictAlgorithm: ConflictAlgorithm.fail);
+              setState(() => progress++);
+            }
+            await batch.commit();
+          });
+        }
         await dbraw.close();
       } catch (e, st) {
         Logger.error(

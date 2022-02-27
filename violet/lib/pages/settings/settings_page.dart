@@ -1588,15 +1588,21 @@ class _SettingsPageState extends State<SettingsPage>
                   return;
                 }
 
-                // 5. 북마크 다운로드
+                // 5. 열람기록도 같이 복원할까요?
+                var restoreWithRecord =
+                    await showYesNoDialog(context, '열람기록도 같이 복원할까요?');
+
+                // 6. 북마크 다운로드
                 var bookmark = await VioletServer.resotreBookmarkWithVersion(
                     text.text, version);
 
-                // 6. 북마크만 덮어쓰기 한다.
+                // 7. 덮어쓰기 한다.
                 var rr = await showDialog(
                   context: context,
-                  builder: (BuildContext context) =>
-                      RestoreBookmarkPage(source: bookmark),
+                  builder: (BuildContext context) => RestoreBookmarkPage(
+                    source: bookmark,
+                    restoreWithRecord: restoreWithRecord,
+                  ),
                 );
 
                 if (rr != null && rr == false) {
