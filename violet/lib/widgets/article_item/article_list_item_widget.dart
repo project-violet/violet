@@ -120,21 +120,20 @@ class _ArticleListItemVerySimpleWidgetState
     if (_inited) return;
     _inited = true;
 
-    if (widget.articleListItem == null)
-      data = Provider.of<ArticleListItem>(context);
-    else
-      data = widget.articleListItem;
+    data = Provider.of<ArticleListItem>(context);
 
     disableFiltering = (data.disableFilter != null && data.disableFilter);
 
-    thisWidth = data.showDetail
-        ? data.width - 16
-        : data.width - (data.addBottomPadding ? 100 : 0);
-    thisHeight = data.showDetail
-        ? 130.0
-        : data.addBottomPadding
-            ? 500.0
-            : data.width * 4 / 3;
+    if (data.showDetail) {
+      thisWidth = data.width - 16;
+      thisHeight = 130.0;
+    } else {
+      thisWidth = data.width - (data.addBottomPadding ? 100 : 0);
+      if (data.addBottomPadding)
+        thisHeight = 500.0;
+      else
+        thisHeight = data.width * 4 / 3;
+    }
 
     _checkIsBookmarked();
     _checkLastRead();
