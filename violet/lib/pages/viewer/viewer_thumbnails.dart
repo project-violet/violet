@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/image_provider.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
@@ -236,7 +237,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                 onTap: () {
                   Navigator.pop(context, index);
                 },
-                onLongPress: () {
+                onLongPress: () async {
                   _showInfo(index);
                 },
               ),
@@ -247,47 +248,57 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     );
   }
 
-  _showInfo(i) async {
-    var infoText = '';
+  Future _showInfo(i) async {
+    try {
+      var infoText = '';
 
-    infoText += 'article: ${_pageInfo.id}\n';
-    infoText += 'title: ${_pageInfo.title}\n';
+      infoText += 'article: ${_pageInfo.id}\n';
+      infoText += 'title: ${_pageInfo.title}\n\n';
 
-    infoText +=
-        'type: ${_pageInfo.useProvider ? 'provider' : _pageInfo.useFileSystem ? 'filesys' : _pageInfo.useWeb ? 'web' : 'none'}\n';
-    infoText += 'raw-uri: ${_pageInfo.uris[i]}\n';
+      infoText +=
+          'type: ${_pageInfo.useProvider ? 'provider' : _pageInfo.useFileSystem ? 'filesys' : _pageInfo.useWeb ? 'web' : 'none'}\n';
+      infoText += 'raw-uri: ${_pageInfo.uris[i]}\n';
 
-    if (_pageInfo.useProvider || _pageInfo.useFileSystem) {
-      File file;
+      if (_pageInfo.useProvider || _pageInfo.useFileSystem) {
+        File file;
 
-      if (_pageInfo.useProvider) {
-        final headers = await _pageInfo.provider.getHeader(i);
-        infoText += 'header: ${json.encode(headers)}\n';
+        if (_pageInfo.useProvider) {
+          final headers = await _pageInfo.provider.getHeader(i);
+          infoText += 'header: ${json.encode(headers)}\n';
 
-        file = await DefaultCacheManager()
-            .getSingleFile(_pageInfo.uris[i], headers: headers);
-      } else if (_pageInfo.useFileSystem) {
-        file = File(_pageInfo.uris[i]);
+          file = await DefaultCacheManager()
+              .getSingleFile(_pageInfo.uris[i], headers: headers);
+        } else if (_pageInfo.useFileSystem) {
+          file = File(_pageInfo.uris[i]);
+        }
+
+        infoText += '\n';
+
+        final image = await decodeImageFromList(file.readAsBytesSync());
+
+        infoText +=
+            'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
+        infoText +=
+            'length: ${toStringWithComma((await file.length() ~/ 1024).toString())}KB\n';
+        infoText += 'filename: ${file.path}';
       }
 
-      final image = await decodeImageFromList(file.readAsBytesSync());
-
-      infoText +=
-          'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
-      infoText +=
-          'length: ${toStringWithComma((await file.length() ~/ 1024).toString())}KB\n';
-      infoText += 'filename: ${file.absolute}\n';
+      AlertDialog alert = AlertDialog(
+        content: SelectableText(infoText),
+      );
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    } catch (e, st) {
+      await Logger.error('[Viewer_thumbnails]\n' +
+          'E: ' +
+          e.toString() +
+          '\n' +
+          st.toString());
     }
-
-    AlertDialog alert = AlertDialog(
-      content: SelectableText(infoText),
-    );
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
   }
 }
 
