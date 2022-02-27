@@ -69,6 +69,7 @@ dependencies:
   firebase_crashlytics: ^2.2.1 # @dependent: android
   flare_dart:
   flare_flutter: ^1.8.3
+  flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^0.6.0
   flutter_downloader: # @dependent: android
     git: https://github.com/project-violet/flutter_downloader # @dependent: android
