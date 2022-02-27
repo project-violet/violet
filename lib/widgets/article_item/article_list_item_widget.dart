@@ -96,10 +96,6 @@ class _ArticleListItemVerySimpleWidgetState
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _init();
-    });
   }
 
   String artist;
@@ -112,10 +108,14 @@ class _ArticleListItemVerySimpleWidgetState
     super.dispose();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _init();
+  }
+
   bool firstChecked = false;
-
   bool _inited = false;
-
   _init() {
     if (_inited) return;
     _inited = true;
@@ -225,8 +225,6 @@ class _ArticleListItemVerySimpleWidgetState
     super.build(context);
 
     if (disposed) return null;
-
-    _init();
 
     if (data.bookmarkMode &&
         !widget.isCheckMode &&

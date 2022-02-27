@@ -55,6 +55,9 @@ class FAQPageKorean extends StatelessWidget {
             _subitem('앱에 바이러스나 해킹기능, 백도어가 포함되어있나요?', '해당 기능은 포함되어있지 않습니다.'),
             _divider(),
             _subitem(
+                '작가 북마크는 어디서 보나요?', '"미분류" 등 북마크 그룹에서 오른쪽으로 슬라이드하면 볼 수 있습니다.'),
+            _divider(),
+            _subitem(
                 '검색이 조금 빨랐으면 좋겠어요.',
                 '한국어 작품만 빠르게 검색하고 보고싶다면 일단 설정=>기본 태그를 (lang:korean or lang:n/a)에서 (lang:korean)으로 바꾸세요.' +
                     ' 그 다음 데이터베이스 최적화 옵션을 켜고 데이터베이스 리빌딩을 실행해주세요.' +
