@@ -16,6 +16,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
@@ -46,7 +47,6 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final BookmarkCheckCallback bookmarkCheckCallback;
   bool isChecked;
   final bool isCheckMode;
-  final ArticleListItem articleListItem;
 
   ArticleListItemVerySimpleWidget({
     // this.queryResult,
@@ -59,7 +59,6 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
     // this.bookmarkCheckCallback,
     this.isChecked = false,
     this.isCheckMode = false,
-    this.articleListItem,
   });
 
   @override
@@ -120,21 +119,20 @@ class _ArticleListItemVerySimpleWidgetState
     if (_inited) return;
     _inited = true;
 
-    if (widget.articleListItem == null)
-      data = Provider.of<ArticleListItem>(context);
-    else
-      data = widget.articleListItem;
+    data = Provider.of<ArticleListItem>(context);
 
     disableFiltering = (data.disableFilter != null && data.disableFilter);
 
-    thisWidth = data.showDetail
-        ? data.width - 16
-        : data.width - (data.addBottomPadding ? 100 : 0);
-    thisHeight = data.showDetail
-        ? 130.0
-        : data.addBottomPadding
-            ? 500.0
-            : data.width * 4 / 3;
+    if (data.showDetail) {
+      thisWidth = data.width - 16;
+      thisHeight = 130.0;
+    } else {
+      thisWidth = data.width - (data.addBottomPadding ? 100 : 0);
+      if (data.addBottomPadding)
+        thisHeight = 500.0;
+      else
+        thisHeight = data.width * 4 / 3;
+    }
 
     _checkIsBookmarked();
     _checkLastRead();
@@ -172,6 +170,8 @@ class _ArticleListItemVerySimpleWidgetState
         .split('|')
         .where((x) => x.length != 0)
         .join(',');
+
+    // if artist is n/a show group instead
     if (artist == 'N/A') {
       var group = data.queryResult.groups() != null
           ? data.queryResult.groups().split('|')[1]
@@ -188,30 +188,23 @@ class _ArticleListItemVerySimpleWidgetState
     if (data.showDetail) setState(() {});
   }
 
-  _setProvider() {
+  _setProvider() async {
+    VioletImageProvider provider;
+
     if (!ProviderManager.isExists(data.queryResult.id())) {
-      HentaiManager.getImageProvider(data.queryResult).then((value) async {
-        thumbnail = await value.getThumbnailUrl();
-        imageCount = value.length();
-        headers = await value.getHeader(0);
-        ProviderManager.insert(data.queryResult.id(), value);
-        if (!disposed)
-          setState(() {
-            _shouldReload = true;
-          });
+      provider = await HentaiManager.getImageProvider(data.queryResult);
+      ProviderManager.insert(data.queryResult.id(), provider);
+    } else
+      provider = await ProviderManager.get(data.queryResult.id());
+
+    thumbnail = await provider.getThumbnailUrl();
+    imageCount = provider.length();
+    headers = await provider.getHeader(0);
+
+    if (!disposed)
+      setState(() {
+        _shouldReload = true;
       });
-    } else {
-      Future.delayed(Duration(milliseconds: 1)).then((v) async {
-        var provider = await ProviderManager.get(data.queryResult.id());
-        thumbnail = await provider.getThumbnailUrl();
-        imageCount = provider.length();
-        headers = await provider.getHeader(0);
-        if (!disposed)
-          setState(() {
-            _shouldReload = true;
-          });
-      });
-    }
   }
 
   BodyWidget _body;
@@ -226,27 +219,7 @@ class _ArticleListItemVerySimpleWidgetState
 
     if (disposed) return null;
 
-    if (data.bookmarkMode &&
-        !widget.isCheckMode &&
-        !onScaling &&
-        scale != 1.0) {
-      _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
-          .then((value) => _shouldReloadCachedBuildWidget = false);
-      setState(() {
-        scale = 1.0;
-      });
-    } else if (data.bookmarkMode &&
-        widget.isCheckMode &&
-        widget.isChecked &&
-        scale != 0.95) {
-      _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
-          .then((value) => _shouldReloadCachedBuildWidget = false);
-      setState(() {
-        scale = 0.95;
-      });
-    }
+    _adjustScale();
 
     if (_cachedBuildWidget == null ||
         _shouldReloadCachedBuildWidget ||
@@ -311,19 +284,28 @@ class _ArticleListItemVerySimpleWidgetState
     return _cachedBuildWidget;
   }
 
+  _adjustScale() {
+    if (data.bookmarkMode &&
+        !widget.isCheckMode &&
+        !onScaling &&
+        scale != 1.0) {
+      _readloadCachedBuildWidget();
+    } else if (data.bookmarkMode &&
+        widget.isCheckMode &&
+        widget.isChecked &&
+        scale != 0.95) {
+      _readloadCachedBuildWidget(scale: 0.95);
+    }
+  }
+
   _onTapDown(detail) {
     if (onScaling) return;
     onScaling = true;
-    _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
-        .then((value) => _shouldReloadCachedBuildWidget = false);
-    setState(() {
-      // pad = 10.0;
-      scale = 0.95;
-    });
+    _readloadCachedBuildWidget(scale: 0.95);
   }
 
   _onTapUp(detail) {
+    // if select mode
     if (data.selectMode) {
       data.selectCallback();
       return;
@@ -331,27 +313,17 @@ class _ArticleListItemVerySimpleWidgetState
 
     onScaling = false;
 
+    // if check mode
     if (widget.isCheckMode) {
       widget.isChecked = !widget.isChecked;
       data.bookmarkCheckCallback(data.queryResult.id(), widget.isChecked);
-      _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
-          .then((value) => _shouldReloadCachedBuildWidget = false);
-      setState(() {
-        if (widget.isChecked)
-          scale = 0.95;
-        else
-          scale = 1.0;
-      });
+      _readloadCachedBuildWidget(scale: widget.isChecked ? 0.95 : 1.0);
       return;
     }
+
     if (firstChecked) return;
-    _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
-        .then((value) => _shouldReloadCachedBuildWidget = false);
-    setState(() {
-      scale = 1.0;
-    });
+
+    _readloadCachedBuildWidget();
 
     final height = MediaQuery.of(context).size.height;
 
@@ -395,22 +367,12 @@ class _ArticleListItemVerySimpleWidgetState
     if (data.bookmarkMode) {
       if (widget.isCheckMode) {
         widget.isChecked = !widget.isChecked;
-        _shouldReloadCachedBuildWidget = true;
-        Future.delayed(Duration(milliseconds: 500))
-            .then((value) => _shouldReloadCachedBuildWidget = false);
-        setState(() {
-          scale = 1.0;
-        });
+        _readloadCachedBuildWidget(scale: 1.0);
         return;
       }
       widget.isChecked = true;
       firstChecked = true;
-      _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
-          .then((value) => _shouldReloadCachedBuildWidget = false);
-      setState(() {
-        scale = 0.95;
-      });
+      _readloadCachedBuildWidget(scale: 0.95);
       data.bookmarkCallback(data.queryResult.id());
       return;
     }
@@ -451,13 +413,7 @@ class _ArticleListItemVerySimpleWidgetState
 
     await HapticFeedback.vibrate();
 
-    _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
-        .then((value) => _shouldReloadCachedBuildWidget = false);
-    setState(() {
-      pad = 0;
-      scale = 1.0;
-    });
+    _readloadCachedBuildWidget(pad: 0.0);
   }
 
   _onPressEnd(detail) {
@@ -466,23 +422,21 @@ class _ArticleListItemVerySimpleWidgetState
       firstChecked = false;
       return;
     }
-    _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
-        .then((value) => _shouldReloadCachedBuildWidget = false);
-    setState(() {
-      pad = 0;
-      scale = 1.0;
-    });
+    _readloadCachedBuildWidget(pad: 0.0);
   }
 
   _onTapCancle() {
     onScaling = false;
+    _readloadCachedBuildWidget(pad: 0.0);
+  }
+
+  _readloadCachedBuildWidget({double scale = 1.0, double pad}) {
     _shouldReloadCachedBuildWidget = true;
     Future.delayed(Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
-      pad = 0;
-      scale = 1.0;
+      if (pad != null) pad = pad;
+      scale = scale;
     });
   }
 
