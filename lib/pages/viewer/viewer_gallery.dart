@@ -38,15 +38,12 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     Future.value(1).then((value) {
       var row = widget.viewedPage ~/ 4;
       if (row == 0) return;
+      var firstItemHeight =
+          (itemKeys[0].currentContext.findRenderObject() as RenderBox)
+              .size
+              .height;
       _scrollController.jumpTo(
-        row *
-                ((itemKeys[0].currentContext.findRenderObject() as RenderBox)
-                        .size
-                        .height +
-                    2) -
-            100,
-        // duration: _kDuration,
-        // curve: _kCurve
+        row * (firstItemHeight + 2) - 100,
       );
     });
   }
