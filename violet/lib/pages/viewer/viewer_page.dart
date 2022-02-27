@@ -1680,8 +1680,8 @@ class _ViewerPageState extends State<ViewerPage>
                         : 300,
                     child: Center(
                       child: SizedBox(
-                        width: 30,
-                        height: 30,
+                        width: 50,
+                        height: 50,
                         child: IconButton(
                           icon: Icon(
                             Icons.refresh,
