@@ -163,15 +163,13 @@ class __UsableTabListState extends State<_UsableTabList>
               .indexWhere((element) => element.id() == widget.articleId) ~/
           3;
       if (row == 0) return;
+      var firstItemHeight = (itemKeys[widget.usableTabList.first.id()]
+              .currentContext
+              .findRenderObject() as RenderBox)
+          .size
+          .height;
       _scrollController.jumpTo(
-        row *
-                ((itemKeys[widget.usableTabList.first.id()]
-                            .currentContext
-                            .findRenderObject() as RenderBox)
-                        .size
-                        .height +
-                    8) -
-            100,
+        row * (firstItemHeight + 8) - 100,
       );
     });
   }
@@ -312,15 +310,13 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                 .indexWhere((element) => element.id() == widget.articleId) ~/
             3;
         if (row == 0) return;
+        var firstItemHeight = (itemKeys[articleList.first.id()]
+                .currentContext
+                .findRenderObject() as RenderBox)
+            .size
+            .height;
         _scrollController.jumpTo(
-          row *
-                  ((itemKeys[articleList.first.id()]
-                              .currentContext
-                              .findRenderObject() as RenderBox)
-                          .size
-                          .height +
-                      8) -
-              100,
+          row * (firstItemHeight + 8) - 100,
         );
       });
     });
