@@ -1,11 +1,13 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
@@ -234,6 +236,9 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                 onTap: () {
                   Navigator.pop(context, index);
                 },
+                onLongPress: () {
+                  _showInfo(index);
+                },
               ),
             ),
           )
@@ -241,4 +246,53 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       ),
     );
   }
+
+  _showInfo(i) async {
+    var infoText = '';
+
+    infoText += 'article: ${_pageInfo.id}\n';
+    infoText += 'title: ${_pageInfo.title}\n';
+
+    infoText +=
+        'type: ${_pageInfo.useProvider ? 'provider' : _pageInfo.useFileSystem ? 'filesys' : _pageInfo.useWeb ? 'web' : 'none'}\n';
+    infoText += 'raw-uri: ${_pageInfo.uris[i]}\n';
+
+    if (_pageInfo.useProvider || _pageInfo.useFileSystem) {
+      File file;
+
+      if (_pageInfo.useProvider) {
+        final headers = await _pageInfo.provider.getHeader(i);
+        infoText += 'header: ${json.encode(headers)}\n';
+
+        file = await DefaultCacheManager()
+            .getSingleFile(_pageInfo.uris[i], headers: headers);
+      } else if (_pageInfo.useFileSystem) {
+        file = File(_pageInfo.uris[i]);
+      }
+
+      final image = await decodeImageFromList(file.readAsBytesSync());
+
+      infoText +=
+          'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
+      infoText +=
+          'length: ${toStringWithComma((await file.length() ~/ 1024).toString())}KB\n';
+      infoText += 'filename: ${file.absolute}\n';
+    }
+
+    AlertDialog alert = AlertDialog(
+      content: SelectableText(infoText),
+    );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+}
+
+RegExp reg = RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))');
+String Function(Match) mathFunc = (Match match) => '${match[1]},';
+String toStringWithComma(String value) {
+  return value.replaceAllMapped(reg, mathFunc);
 }
