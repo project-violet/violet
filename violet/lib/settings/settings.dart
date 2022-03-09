@@ -102,14 +102,14 @@ class Settings {
     themeFlat = await _getBool('themeFlat');
     themeBlack = await _getBool('themeBlack');
 
+    language = (await SharedPreferences.getInstance()).getString('language');
+
     await _getInt('thread_count', 4);
   }
 
   static Future<void> init() async {
     searchResultType = await _getInt('searchResultType');
     downloadResultType = await _getInt('downloadResultType', 3);
-
-    language = (await SharedPreferences.getInstance()).getString('language');
 
     var includetags =
         (await SharedPreferences.getInstance()).getString('includetags');

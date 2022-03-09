@@ -41,6 +41,8 @@ class Translations {
       dbLanguageCode = code;
     }
 
+    print(code);
+
     String data = await rootBundle.loadString('assets/locale/$code.json');
     Map<String, dynamic> _result = json.decode(data);
 

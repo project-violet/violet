@@ -129,6 +129,7 @@ void main() async {
           ],
           localeResolutionCallback:
               (Locale locale, Iterable<Locale> supportedLocales) {
+            print(Settings.language);
             if (Settings.language != null) {
               if (Settings.language.contains('_')) {
                 var ss = Settings.language.split('_');
