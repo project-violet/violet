@@ -28,7 +28,7 @@ class _UserStatusCardState extends State<UserStatusCard>
 
   VioletCommunitySession sess;
   String _userId = 'None';
-  String _userAppId;
+  String _userAppId = '';
   String _userNickName = 'None';
   bool _logining = false;
   DateTime _latestBackup = DateTime.now();
