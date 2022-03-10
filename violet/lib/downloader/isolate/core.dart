@@ -180,6 +180,7 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
         var file = File(task.fullpath);
         if (await file.exists()) {
           if (await file.length() != 0) {
+            tooManyRetry = false;
             _sendPort.send(
               ReceivePortData(
                 type: ReceivePortType.complete,
