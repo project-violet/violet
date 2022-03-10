@@ -362,13 +362,7 @@ class _ViewerPageState extends State<ViewerPage>
               extendBodyBehindAppBar: true,
               backgroundColor: Colors.transparent,
               resizeToAvoidBottomInset: false,
-              body: Padding(
-                padding: Platform.isIOS && _disableBottom
-                    ? EdgeInsets.only(top: Variables.statusBarHeight)
-                    : EdgeInsets.zero,
-                child:
-                    Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
-              ),
+              body: Settings.isHorizontal ? _bodyHorizontal() : _bodyVertical(),
             ),
           );
         }
