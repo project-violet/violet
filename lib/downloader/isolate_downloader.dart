@@ -219,16 +219,15 @@ class IsolateDownloader {
   void _completeTask(int taskId) {
     if (_tasks[taskId].completeCallback != null)
       _tasks[taskId].completeCallback();
-    _tasks.remove(taskId);
     _taskCountSizes.remove(taskId);
     _taskTotalSizes.remove(taskId);
     _completedTask.add(taskId);
+    _tasks.remove(taskId);
   }
 
   Future<void> _errorTask(IsolateDownloaderErrorUnit unit) async {
     if (_tasks[unit.id].errorCallback != null)
       _tasks[unit.id].errorCallback(unit.error);
-    _tasks.remove(unit.id);
     _erroredTask.add(unit.id);
     _errorContent[unit.id] = unit;
 
@@ -240,6 +239,8 @@ class IsolateDownloader {
         unit.error +
         "\n" +
         unit.stackTrace);
+
+    _tasks.remove(unit.id);
   }
 
   Future<void> _retryTask(Map<dynamic, dynamic> data) async {
