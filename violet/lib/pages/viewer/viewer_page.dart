@@ -1817,17 +1817,12 @@ class _ViewerPageState extends State<ViewerPage>
                               TextStyle(color: Colors.white70, fontSize: 15.0)),
                     ],
                   ),
-                  !Settings.disableFullScreen && !Settings.moveToAppBarToBottom
-                      ? Container(
-                          height: Variables.bottomBarHeight,
-                          color: Colors.black,
-                        )
-                      : Container(
-                          height: Settings.moveToAppBarToBottom
-                              ? Variables.bottomBarHeight
-                              : 0,
-                          color: Colors.transparent,
-                        ),
+                  if (!Settings.disableFullScreen &&
+                      !Settings.moveToAppBarToBottom)
+                    Container(
+                      height: Variables.bottomBarHeight,
+                      color: Colors.black,
+                    )
                 ],
               ),
             ),
