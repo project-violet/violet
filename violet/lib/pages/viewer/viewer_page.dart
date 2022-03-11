@@ -1890,14 +1890,20 @@ class _ViewerPageState extends State<ViewerPage>
                             },
                             onChangeEnd: (value) {
                               _sliderOnChange = false;
-                            },
-                            onChanged: (value) {
-                              if (!Settings.isHorizontal) {
+                              if (_pageInfo.useFileSystem)
                                 itemScrollController.scrollTo(
                                   index: value.toInt() - 1,
                                   duration: Duration(microseconds: 1),
                                   alignment: 0.12,
                                 );
+                            },
+                            onChanged: (value) {
+                              if (!Settings.isHorizontal) {
+                                if (!_pageInfo.useFileSystem)
+                                  itemScrollController.jumpTo(
+                                    index: value.toInt() - 1,
+                                    alignment: 0.12,
+                                  );
                               } else {
                                 _pageController.jumpToPage(value.toInt() - 1);
                               }
