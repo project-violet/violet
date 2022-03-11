@@ -149,19 +149,20 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             setState(() {});
           },
         ),
-        _checkBox(
-          title: Translations.of(context).trans('disablefullscreen'),
-          value: !Settings.disableFullScreen,
-          onChanged: (value) {
-            Settings.setDisableFullScreen(!Settings.disableFullScreen);
-            widget.setStateCallback.call();
-            if (Settings.disableFullScreen) {
-              SystemChrome.setEnabledSystemUIOverlays(
-                  [SystemUiOverlay.bottom, SystemUiOverlay.top]);
-            }
-            setState(() {});
-          },
-        ),
+        if (!Platform.isIOS)
+          _checkBox(
+            title: Translations.of(context).trans('disablefullscreen'),
+            value: !Settings.disableFullScreen,
+            onChanged: (value) {
+              Settings.setDisableFullScreen(!Settings.disableFullScreen);
+              widget.setStateCallback.call();
+              if (Settings.disableFullScreen) {
+                SystemChrome.setEnabledSystemUIOverlays(
+                    [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+              }
+              setState(() {});
+            },
+          ),
         PopupMenuButton<int>(
           onSelected: (int value) {
             Settings.setImageQuality(value);
