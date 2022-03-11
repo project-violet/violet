@@ -381,10 +381,10 @@ class _ViewerPageState extends State<ViewerPage>
         padding: EdgeInsets.only(
           top: height -
               Variables.bottomBarHeight -
-              (48 + 48 + 48 + 32) -
+              (48 + 48 + 48 + 32 - 24) -
               (Settings.showSlider ? 48.0 : 0) -
               statusBarHeight,
-          bottom: 48 + 48.0 + 32 + (Settings.showSlider ? 48.0 : 0),
+          bottom: 48 + 48.0 + 32 - 24 + (Settings.showSlider ? 48.0 : 0),
         ),
         alignment: Alignment.center,
         child: SizedBox(
