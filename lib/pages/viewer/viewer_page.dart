@@ -1906,10 +1906,12 @@ class _ViewerPageState extends State<ViewerPage>
                                     .then((value) {
                                   var thumbItemWidth =
                                       ((_thumbHeight - 14.0) / 36 * 25);
+                                  var jumpOffset =
+                                      thumbItemWidth * (_prevPage - 1) -
+                                          width / 2 +
+                                          thumbItemWidth / 2;
                                   _thumbController.animateTo(
-                                    thumbItemWidth * (_prevPage - 1) -
-                                        width / 2 +
-                                        thumbItemWidth / 2,
+                                    jumpOffset > 0 ? jumpOffset : 0,
                                     duration: Duration(milliseconds: 300),
                                     curve: Curves.easeIn,
                                   );
