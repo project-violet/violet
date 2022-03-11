@@ -1838,7 +1838,7 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   bool _isThumbMode = false;
-  static const double _thumbHeight = 120.0;
+  static const double _thumbHeight = 140.0;
   _bottomAppBar() {
     final width = MediaQuery.of(context).size.width;
     final statusBarHeight =
