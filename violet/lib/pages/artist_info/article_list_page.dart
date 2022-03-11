@@ -39,6 +39,11 @@ class _ArticleListPageState extends State<ArticleListPage> {
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
+    final color = Settings.themeWhat
+        ? Settings.themeBlack
+            ? Colors.black
+            : Color(0xFF353535)
+        : Colors.grey.shade100;
 
     if (_cachedList == null || _shouldReload) {
       final list = buildList();
@@ -47,57 +52,60 @@ class _ArticleListPageState extends State<ArticleListPage> {
       _cachedList = list;
     }
 
-    return Padding(
-      // padding: EdgeInsets.all(0),
-      padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
-          bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Card(
-            elevation: 5,
-            color: Settings.themeWhat
-                ? Settings.themeBlack
-                    ? const Color(0xFF141414)
-                    : Color(0xFF353535)
-                : Colors.grey.shade100,
-            child: SizedBox(
-              width: width - 16,
-              height: height -
-                  16 -
-                  (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-              child: Container(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: <Widget>[
-                      SliverPersistentHeader(
-                        floating: true,
-                        delegate: AnimatedOpacitySliver(
-                          minExtent: 64 + 12.0,
-                          maxExtent: 64.0 + 12,
-                          searchBar: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Stack(
-                              children: <Widget>[
-                                _align(),
-                                _title(),
-                              ],
+    return Container(
+      color: color,
+      child: Padding(
+        // padding: EdgeInsets.all(0),
+        padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top,
+            bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Card(
+              elevation: 5,
+              color: Settings.themeWhat
+                  ? Settings.themeBlack
+                      ? const Color(0xFF141414)
+                      : Color(0xFF353535)
+                  : Colors.grey.shade100,
+              child: SizedBox(
+                width: width - 16,
+                height: height -
+                    16 -
+                    (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      slivers: <Widget>[
+                        SliverPersistentHeader(
+                          floating: true,
+                          delegate: AnimatedOpacitySliver(
+                            minExtent: 64 + 12.0,
+                            maxExtent: 64.0 + 12,
+                            searchBar: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Stack(
+                                children: <Widget>[
+                                  _align(),
+                                  _title(),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      _cachedList
-                    ],
+                        _cachedList
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
