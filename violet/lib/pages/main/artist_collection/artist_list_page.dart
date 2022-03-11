@@ -72,107 +72,110 @@ class ArtistListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Card(
-          elevation: 5,
-          color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
-          child: ListView.builder(
-            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-            physics: ClampingScrollPhysics(),
-            itemCount: artists.length,
-            itemBuilder: (context, index) {
-              final artist = artists[index];
+    return Material(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Card(
+            elevation: 5,
+            color:
+                Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+            child: ListView.builder(
+              padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+              physics: ClampingScrollPhysics(),
+              itemCount: artists.length,
+              itemBuilder: (context, index) {
+                final artist = artists[index];
 
-              String classification;
-              String name;
+                String classification;
+                String name;
 
-              if (isLast) {
-                final tokens = artist.split(':');
-                assert(tokens.length == 2);
+                if (isLast) {
+                  final tokens = artist.split(':');
+                  assert(tokens.length == 2);
 
-                classification = tokens.first;
-                name = tokens.last;
-              } else {
-                classification = 'artist';
-                name = artist;
-              }
+                  classification = tokens.first;
+                  name = tokens.last;
+                } else {
+                  classification = 'artist';
+                  name = artist;
+                }
 
-              return FutureBuilder<List<QueryResult>>(
-                future: _future(artist),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    print('Error: ${snapshot.error}');
-                    print(snapshot.stackTrace);
+                return FutureBuilder<List<QueryResult>>(
+                  future: _future(artist),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      print('Error: ${snapshot.error}');
+                      print(snapshot.stackTrace);
 
-                    return Container(
-                      height: 195,
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.error),
-                          Text(
-                            snapshot.error.toString(),
-                            overflow: TextOverflow.fade,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  if (!snapshot.hasData) {
-                    return Container(
-                      height: 195,
-                      child: const Center(child: CircularProgressIndicator()),
-                    );
-                  }
-
-                  final queryResults = snapshot.data;
-                  final articleCount =
-                      HitomiManager.getArticleCount(classification, name);
-
-                  return InkWell(
-                    onTap: () async {
-                      PlatformNavigator.navigateSlide(
-                        context,
-                        ArtistInfoPage(
-                          isGroup: isLast && classification == 'group',
-                          isUploader: false,
-                          artist: name,
+                      return Container(
+                        height: 195,
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error),
+                            Text(
+                              snapshot.error.toString(),
+                              overflow: TextOverflow.fade,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       );
-                    },
-                    child: Container(
-                      height: 195,
-                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Text(
-                            articleCount != null
-                                ? ' $artist ($articleCount)'
-                                : ' $artist',
-                            style: const TextStyle(fontSize: 17),
+                    }
+
+                    if (!snapshot.hasData) {
+                      return Container(
+                        height: 195,
+                        child: const Center(child: CircularProgressIndicator()),
+                      );
+                    }
+
+                    final queryResults = snapshot.data;
+                    final articleCount =
+                        HitomiManager.getArticleCount(classification, name);
+
+                    return InkWell(
+                      onTap: () async {
+                        PlatformNavigator.navigateSlide(
+                          context,
+                          ArtistInfoPage(
+                            isGroup: isLast && classification == 'group',
+                            isUploader: false,
+                            artist: name,
                           ),
-                          Expanded(
-                            child: Row(
-                              children: <Widget>[
-                                _buildImage(queryResults, 0),
-                                _buildImage(queryResults, 1),
-                                _buildImage(queryResults, 2),
-                              ],
+                        );
+                      },
+                      child: Container(
+                        height: 195,
+                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Text(
+                              articleCount != null
+                                  ? ' $artist ($articleCount)'
+                                  : ' $artist',
+                              style: const TextStyle(fontSize: 17),
                             ),
-                          ),
-                        ],
+                            Expanded(
+                              child: Row(
+                                children: <Widget>[
+                                  _buildImage(queryResults, 0),
+                                  _buildImage(queryResults, 1),
+                                  _buildImage(queryResults, 2),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       ),
