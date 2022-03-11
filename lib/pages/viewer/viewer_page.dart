@@ -47,6 +47,7 @@ import 'package:violet/widgets/toast.dart';
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
 typedef DoubleCallback = Future Function(double);
+typedef StringCallback = Future Function(String);
 
 class ViewerPage extends StatefulWidget {
   @override
@@ -264,7 +265,11 @@ class _ViewerPageState extends State<ViewerPage>
     if (next < 1 || next > _pageInfo.uris.length) return;
     if (!Settings.isHorizontal) {
       if (!Settings.animation) {
-        itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
+        await itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(microseconds: 1),
+          alignment: 0.12,
+        );
       } else {
         _sliderOnChange = true;
         await itemScrollController.scrollTo(
@@ -279,7 +284,11 @@ class _ViewerPageState extends State<ViewerPage>
       }
     } else {
       if (!Settings.animation) {
-        _pageController.jumpToPage(next - 1);
+        itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(microseconds: 1),
+          alignment: 0.12,
+        );
       } else {
         _pageController.animateToPage(
           next - 1,
@@ -314,8 +323,11 @@ class _ViewerPageState extends State<ViewerPage>
                     Translations.of(context).trans('record'))) {
               if (!Settings.isHorizontal) {
                 _latestIndex = e.lastPage() - 1;
-                itemScrollController.jumpTo(
-                    index: e.lastPage() - 1, alignment: 0.12);
+                itemScrollController.scrollTo(
+                  index: e.lastPage() - 1,
+                  duration: Duration(microseconds: 1),
+                  alignment: 0.12,
+                );
               } else {
                 _pageController.jumpToPage(e.lastPage() - 1);
               }
@@ -644,7 +656,11 @@ class _ViewerPageState extends State<ViewerPage>
           _startsTime = DateTime.now();
 
           if (!Settings.isHorizontal) {
-            itemScrollController.jumpTo(index: 0, alignment: 0.12);
+            itemScrollController.scrollTo(
+              index: 0,
+              duration: Duration(microseconds: 1),
+              alignment: 0.12,
+            );
           } else {
             _pageController.jumpToPage(0);
           }
@@ -717,7 +733,11 @@ class _ViewerPageState extends State<ViewerPage>
             }).then((value) {
           if (value != null) {
             if (!Settings.isHorizontal) {
-              itemScrollController.jumpTo(index: value, alignment: 0.12);
+              itemScrollController.scrollTo(
+                index: value,
+                duration: Duration(microseconds: 1),
+                alignment: 0.12,
+              );
             } else {
               _pageController.jumpToPage(value - 1);
             }
@@ -773,7 +793,11 @@ class _ViewerPageState extends State<ViewerPage>
           if (value != null) {
             if (value != null) {
               if (!Settings.isHorizontal) {
-                itemScrollController.jumpTo(index: value, alignment: 0.12);
+                itemScrollController.scrollTo(
+                  index: value,
+                  duration: Duration(microseconds: 1),
+                  alignment: 0.12,
+                );
               } else {
                 _pageController.jumpToPage(value - 1);
               }
@@ -812,8 +836,11 @@ class _ViewerPageState extends State<ViewerPage>
                       var npage = _prevPage;
                       _sliderOnChange = true;
                       Future.delayed(Duration(milliseconds: 180)).then((value) {
-                        itemScrollController.jumpTo(
-                            index: npage - 1, alignment: 0.12);
+                        itemScrollController.scrollTo(
+                          index: npage - 1,
+                          duration: Duration(microseconds: 1),
+                          alignment: 0.12,
+                        );
                         _sliderOnChange = false;
                       });
                     }
@@ -1330,7 +1357,11 @@ class _ViewerPageState extends State<ViewerPage>
     if (next < 1 || next > _pageInfo.uris.length) return;
     if (!Settings.isHorizontal) {
       if (!Settings.animation) {
-        itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
+        itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(microseconds: 1),
+          alignment: 0.12,
+        );
       } else {
         _sliderOnChange = true;
         await itemScrollController.scrollTo(
@@ -1384,7 +1415,11 @@ class _ViewerPageState extends State<ViewerPage>
     if (next < 1 || next > _pageInfo.uris.length) return;
     if (!Settings.isHorizontal) {
       if (!Settings.animation) {
-        itemScrollController.jumpTo(index: next - 1, alignment: 0.12);
+        itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(microseconds: 1),
+          alignment: 0.12,
+        );
       } else {
         _sliderOnChange = true;
         await itemScrollController.scrollTo(
@@ -1399,7 +1434,11 @@ class _ViewerPageState extends State<ViewerPage>
       }
     } else {
       if (!Settings.animation) {
-        _pageController.jumpToPage(next - 1);
+        itemScrollController.scrollTo(
+          index: next - 1,
+          duration: Duration(microseconds: 1),
+          alignment: 0.12,
+        );
       } else {
         _pageController.animateToPage(
           next - 1,
@@ -1770,7 +1809,11 @@ class _ViewerPageState extends State<ViewerPage>
 
   _patchHeightForDynamicLoadedImage() {
     if (_sliderOnChange) return;
-    itemScrollController.jumpTo(index: _latestIndex, alignment: _latestAlign);
+    itemScrollController.scrollTo(
+      index: _latestIndex,
+      duration: Duration(microseconds: 1),
+      alignment: _latestAlign,
+    );
   }
 
   _bottomAppBar() {
@@ -1846,8 +1889,11 @@ class _ViewerPageState extends State<ViewerPage>
                             },
                             onChanged: (value) {
                               if (!Settings.isHorizontal) {
-                                itemScrollController.jumpTo(
-                                    index: value.toInt() - 1, alignment: 0.12);
+                                itemScrollController.scrollTo(
+                                  index: value.toInt() - 1,
+                                  duration: Duration(microseconds: 1),
+                                  alignment: 0.12,
+                                );
                               } else {
                                 _pageController.jumpToPage(value.toInt() - 1);
                               }
@@ -1937,6 +1983,7 @@ class __FileImageState extends State<_FileImage> {
   void dispose() {
     super.dispose();
 
+    print(widget.path);
     clearMemoryImageCache(widget.path);
   }
 
