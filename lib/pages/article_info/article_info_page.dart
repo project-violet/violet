@@ -246,41 +246,39 @@ class ArticleInfoPage extends StatelessWidget {
   }*/
 
   _downloadButtonEvent(context, data) async {
-    if (Platform.isAndroid) {
-      if (!await Permission.storage.isGranted) {
-        if (await Permission.storage.request() == PermissionStatus.denied) {
-          await showOkDialog(context,
-              'If you do not allow file permissions, you cannot continue :(');
-          return;
-        }
-      }
-      if (!DownloadPageManager.downloadPageLoaded) {
-        FlutterToast(context).showToast(
-          child: ToastWrapper(
-            isCheck: false,
-            isWarning: true,
-            msg: 'You need to open the download tab!',
-          ),
-          gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
-        );
+    if (!Settings.useInnerStorage && !await Permission.storage.isGranted) {
+      if (await Permission.storage.request() == PermissionStatus.denied) {
+        await showOkDialog(context,
+            'If you do not allow file permissions, you cannot continue :(');
         return;
       }
+    }
+    if (!DownloadPageManager.downloadPageLoaded) {
       FlutterToast(context).showToast(
         child: ToastWrapper(
-          isCheck: true,
-          isWarning: false,
-          icon: Icons.download,
-          msg: data.queryResult.id().toString() +
-              Translations.of(context).trans('addtodownloadqueue'),
+          isCheck: false,
+          isWarning: true,
+          msg: 'You need to open the download tab!',
         ),
         gravity: ToastGravity.BOTTOM,
         toastDuration: Duration(seconds: 4),
       );
-      // await DownloadPageManager.appendTask(data.queryResult.id().toString());
-      DownloadPageManager.taskController.add(data.queryResult.id().toString());
-      Navigator.pop(context);
+      return;
     }
+    FlutterToast(context).showToast(
+      child: ToastWrapper(
+        isCheck: true,
+        isWarning: false,
+        icon: Icons.download,
+        msg: data.queryResult.id().toString() +
+            Translations.of(context).trans('addtodownloadqueue'),
+      ),
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 4),
+    );
+    // await DownloadPageManager.appendTask(data.queryResult.id().toString());
+    DownloadPageManager.taskController.add(data.queryResult.id().toString());
+    Navigator.pop(context);
   }
 
   _readButtonEvent(context, data) async {
