@@ -370,6 +370,51 @@ class _ViewerPageState extends State<ViewerPage>
     );
   }
 
+  _exitButton() {
+    final statusBarHeight =
+        Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
+    final height = MediaQuery.of(context).size.height;
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: Duration(milliseconds: 300),
+      child: Container(
+        padding: EdgeInsets.only(
+          top: height -
+              Variables.bottomBarHeight -
+              (48 + 48 + 48 + 32) -
+              (Settings.showSlider ? 48.0 : 0) -
+              statusBarHeight,
+          bottom: 48 + 48.0 + 32 + (Settings.showSlider ? 48.0 : 0),
+        ),
+        alignment: Alignment.center,
+        child: SizedBox(
+          width: 250.0,
+          child: CupertinoButton(
+            minSize: 48.0,
+            color: Colors.black.withOpacity(0.8),
+            pressedOpacity: 0.4,
+            disabledColor: CupertinoColors.quaternarySystemFill,
+            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+            onPressed: () async {
+              _isSessionOutdated = true;
+              await _savePageRead(_pageInfo.useFileSystem);
+              Navigator.pop(context, currentPage);
+              return Future(() => false);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.arrow_back, size: 20.0),
+                Container(width: 10),
+                Text('Exit'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   _appBar() {
     final statusBarHeight =
         Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
@@ -398,6 +443,7 @@ class _ViewerPageState extends State<ViewerPage>
                     top: height -
                         Variables.bottomBarHeight -
                         (48) -
+                        (Platform.isIOS ? 48 : 0) -
                         statusBarHeight),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -434,8 +480,11 @@ class _ViewerPageState extends State<ViewerPage>
                 ),
                 !Settings.disableFullScreen && Settings.moveToAppBarToBottom
                     ? Container(
-                        height: Variables.bottomBarHeight,
-                        color: Colors.black,
+                        height: Variables.bottomBarHeight +
+                            (Platform.isIOS ? 48 : 0),
+                        color: Platform.isIOS
+                            ? Colors.black.withOpacity(0.8)
+                            : Colors.black,
                       )
                     : Container(),
               ],
@@ -913,6 +962,7 @@ class _ViewerPageState extends State<ViewerPage>
             (!Settings.moveToAppBarToBottom || Settings.showSlider))
           _bottomAppBar(),
         if (!_disableBottom) _appBar(),
+        if (Platform.isIOS && !_disableBottom) _exitButton(),
       ],
     );
   }
@@ -970,6 +1020,7 @@ class _ViewerPageState extends State<ViewerPage>
             ? _bottomAppBar()
             : Container(),
         !_disableBottom ? _appBar() : Container(),
+        if (Platform.isIOS && !_disableBottom) _exitButton(),
       ],
     );
   }
@@ -1745,12 +1796,14 @@ class _ViewerPageState extends State<ViewerPage>
                 top: height -
                     Variables.bottomBarHeight -
                     (48) -
+                    (Platform.isIOS ? 48 : 0) -
                     statusBarHeight -
                     (Settings.moveToAppBarToBottom ? 48 : 0)),
             child: Container(
               alignment: Alignment.bottomCenter,
               color: Colors.black.withOpacity(0.8),
               height: Variables.bottomBarHeight +
+                  (Platform.isIOS ? 48 : 0) +
                   (!Settings.moveToAppBarToBottom ? 48 : 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1811,7 +1864,8 @@ class _ViewerPageState extends State<ViewerPage>
                               TextStyle(color: Colors.white70, fontSize: 15.0)),
                     ],
                   ),
-                  if (!Settings.disableFullScreen &&
+                  if (!Platform.isIOS &&
+                      !Settings.disableFullScreen &&
                       !Settings.moveToAppBarToBottom)
                     Container(
                       height: Variables.bottomBarHeight,
