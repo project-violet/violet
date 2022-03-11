@@ -1138,7 +1138,7 @@ packages:
       name: scrollable_positioned_list
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.7"
+    version: "0.2.3"
   shared_preferences:
     dependency: "direct main"
     description:
