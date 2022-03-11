@@ -1758,6 +1758,10 @@ class _ViewerPageState extends State<ViewerPage>
                 errorWidget: (context, url, error) {
                   Logger.error(
                       '[Viewer] E: image load failed\n' + error.toString());
+                  Future.delayed(Duration(milliseconds: 500))
+                      .then((value) => setState(() {
+                            _keys[index] = GlobalKey();
+                          }));
                   return SizedBox(
                     height: _estimatedImageHeight[index] != 0
                         ? _estimatedImageHeight[index]
