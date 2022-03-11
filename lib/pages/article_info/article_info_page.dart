@@ -276,7 +276,8 @@ class ArticleInfoPage extends StatelessWidget {
       gravity: ToastGravity.BOTTOM,
       toastDuration: Duration(seconds: 4),
     );
-    // await DownloadPageManager.appendTask(data.queryResult.id().toString());
+
+    if (await ScriptManager.refresh()) ProviderManager.refresh();
     DownloadPageManager.taskController.add(data.queryResult.id().toString());
     Navigator.pop(context);
   }
@@ -288,6 +289,8 @@ class ArticleInfoPage extends StatelessWidget {
       });
     }
     await (await User.getInstance()).insertUserLog(data.queryResult.id(), 0);
+
+    if (await ScriptManager.refresh()) ProviderManager.refresh();
 
     var prov = await ProviderManager.get(data.queryResult.id());
 
