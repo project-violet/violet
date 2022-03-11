@@ -47,8 +47,14 @@ class _ArticleListPageState extends State<ArticleListPage> {
       _cachedList = list;
     }
 
-    return Padding(
-      // padding: EdgeInsets.all(0),
+    final color = Settings.themeWhat
+        ? Settings.themeBlack
+            ? Colors.black
+            : Color(0xFF353535)
+        : Colors.grey.shade100;
+
+    return Container(
+      color: Platform.isIOS ? color : null,
       padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
           bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
