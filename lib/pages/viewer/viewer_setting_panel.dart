@@ -198,6 +198,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             trailing: Text(['None', 'High', 'Medium', 'Low'][imgqualityOption]),
           ),
         ),
+        Container(height: 24),
       ],
     );
 
