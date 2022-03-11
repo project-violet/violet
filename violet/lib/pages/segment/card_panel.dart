@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -19,7 +21,7 @@ class CardPanel {
     final bottomPadding = (mediaQuery.padding + mediaQuery.viewInsets).bottom;
 
     return Container(
-      color: enableBackgroundColor ? color : null,
+      color: enableBackgroundColor || Platform.isIOS ? color : null,
       padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top, bottom: bottomPadding),
       child: Column(
