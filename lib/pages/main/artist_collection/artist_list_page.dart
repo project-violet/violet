@@ -72,12 +72,28 @@ class ArtistListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final mediaQuery = MediaQuery.of(context);
+    final color = Settings.themeWhat
+        ? Settings.themeBlack
+            ? Colors.black
+            : Color(0xFF353535)
+        : Colors.grey.shade100;
+
+    return Container(
+      color: color,
+      padding: EdgeInsets.only(
+        top: mediaQuery.padding.top,
+        bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
         child: Card(
           elevation: 5,
-          color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+          color: Settings.themeWhat
+              ? Settings.themeBlack
+                  ? const Color(0xFF141414)
+                  : Color(0xFF353535)
+              : Colors.grey.shade100,
           child: ListView.builder(
             padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
             physics: ClampingScrollPhysics(),
