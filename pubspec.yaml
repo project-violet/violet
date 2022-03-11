@@ -109,7 +109,7 @@ dependencies:
   pimp_my_button: ^1.0.0
   pointycastle:
   provider:
-  scrollable_positioned_list: ^0.2.3
+  scrollable_positioned_list: 0.1.7
   shared_preferences: ^2.0.12
   sqflite: ^2.0.2
   synchronized:
