@@ -385,30 +385,30 @@ class _ViewerPageState extends State<ViewerPage>
               (Settings.showSlider ? 48.0 : 0) -
               statusBarHeight,
           bottom: 48 + 48.0 + 32 - 24 + (Settings.showSlider ? 48.0 : 0),
+          left: 48.0,
+          right: 48.0,
         ),
         alignment: Alignment.center,
-        child: SizedBox(
-          width: 250.0,
-          child: CupertinoButton(
-            minSize: 48.0,
-            color: Colors.black.withOpacity(0.8),
-            pressedOpacity: 0.4,
-            disabledColor: CupertinoColors.quaternarySystemFill,
-            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-            onPressed: () async {
-              _isSessionOutdated = true;
-              await _savePageRead(_pageInfo.useFileSystem);
-              Navigator.pop(context, currentPage);
-              return Future(() => false);
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.arrow_back, size: 20.0),
-                Container(width: 10),
-                Text('Exit'),
-              ],
-            ),
+        width: double.infinity,
+        child: CupertinoButton(
+          minSize: 48.0,
+          color: Colors.black.withOpacity(0.8),
+          pressedOpacity: 0.4,
+          disabledColor: CupertinoColors.quaternarySystemFill,
+          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+          onPressed: () async {
+            _isSessionOutdated = true;
+            await _savePageRead(_pageInfo.useFileSystem);
+            Navigator.pop(context, currentPage);
+            return Future(() => false);
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.arrow_back, size: 20.0),
+              Container(width: 10),
+              Text('Exit'),
+            ],
           ),
         ),
       ),
