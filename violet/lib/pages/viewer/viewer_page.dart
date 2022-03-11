@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
@@ -85,6 +86,7 @@ class _ViewerPageState extends State<ViewerPage>
   bool _isStaring = true;
   List<bool> _isImageLoaded;
   bool _isSessionOutdated = false;
+  ScrollController _thumbController = ScrollController();
 
   @override
   void initState() {
@@ -390,37 +392,44 @@ class _ViewerPageState extends State<ViewerPage>
       opacity: _opacity,
       duration: Duration(milliseconds: 300),
       child: Container(
-        padding: EdgeInsets.only(
-          top: height -
-              Variables.bottomBarHeight -
-              (48 + 48 + 48 + 32 - 24) -
-              (Settings.showSlider ? 48.0 : 0) -
-              statusBarHeight,
-          bottom: 48 + 48.0 + 32 - 24 + (Settings.showSlider ? 48.0 : 0),
-          left: 48.0,
-          right: 48.0,
-        ),
         alignment: Alignment.center,
         width: double.infinity,
-        child: CupertinoButton(
-          minSize: 48.0,
-          color: Colors.black.withOpacity(0.8),
-          pressedOpacity: 0.4,
-          disabledColor: CupertinoColors.quaternarySystemFill,
-          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-          onPressed: () async {
-            _isSessionOutdated = true;
-            await _savePageRead(_pageInfo.useFileSystem);
-            Navigator.pop(context, currentPage);
-            return Future(() => false);
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.arrow_back, size: 20.0),
-              Container(width: 10),
-              Text('Exit'),
-            ],
+        child: AnimatedPadding(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          padding: EdgeInsets.only(
+            top: height -
+                Variables.bottomBarHeight -
+                (48 + 48 + 48 + 32 - 24) -
+                (_isThumbMode ? _thumbHeight.toInt() : 0) -
+                (Settings.showSlider ? 48.0 : 0) -
+                statusBarHeight,
+            bottom: (48 + 48.0 + 32 - 24) +
+                (_isThumbMode ? _thumbHeight.toInt() : 0) +
+                (Settings.showSlider ? 48.0 : 0),
+            left: 48.0,
+            right: 48.0,
+          ),
+          child: CupertinoButton(
+            minSize: 48.0,
+            color: Colors.black.withOpacity(0.8),
+            pressedOpacity: 0.4,
+            disabledColor: CupertinoColors.quaternarySystemFill,
+            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+            onPressed: () async {
+              _isSessionOutdated = true;
+              await _savePageRead(_pageInfo.useFileSystem);
+              Navigator.pop(context, currentPage);
+              return Future(() => false);
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.arrow_back, size: 20.0),
+                Container(width: 10),
+                Text('Exit'),
+              ],
+            ),
           ),
         ),
       ),
@@ -1317,6 +1326,14 @@ class _ViewerPageState extends State<ViewerPage>
           SystemUiOverlay.bottom,
         ]);
       }
+      final width = MediaQuery.of(context).size.width;
+      if (_isThumbMode) {
+        var thumbItemWidth = ((_thumbHeight - 14.0) / 36 * 25);
+        var jumpOffset =
+            thumbItemWidth * (_prevPage - 1) - width / 2 + thumbItemWidth / 2;
+        _thumbController = ScrollController(
+            initialScrollOffset: jumpOffset > 0 ? jumpOffset : 0);
+      }
     } else {
       setState(() {
         _opacity = 0.0;
@@ -1820,7 +1837,10 @@ class _ViewerPageState extends State<ViewerPage>
     );
   }
 
+  bool _isThumbMode = false;
+  static const double _thumbHeight = 104.0;
   _bottomAppBar() {
+    final width = MediaQuery.of(context).size.width;
     final statusBarHeight =
         Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
     final height = MediaQuery.of(context).size.height;
@@ -1838,101 +1858,197 @@ class _ViewerPageState extends State<ViewerPage>
                   ),
                 )
               : Container(),
-          Padding(
+          AnimatedPadding(
+            duration: Duration(milliseconds: 300),
             padding: EdgeInsets.only(
                 top: height -
                     Variables.bottomBarHeight -
                     (48) -
                     (Platform.isIOS ? 48 - 24 : 0) -
+                    (_isThumbMode ? _thumbHeight : 0) -
                     statusBarHeight -
                     (Settings.moveToAppBarToBottom ? 48 : 0)),
-            child: Container(
+            curve: Curves.easeInOut,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 300),
               alignment: Alignment.bottomCenter,
-              color: Colors.black.withOpacity(0.8),
               height: Variables.bottomBarHeight +
                   (Platform.isIOS ? 48 : 0) +
+                  (_isThumbMode ? _thumbHeight : 0) +
                   (!Settings.moveToAppBarToBottom ? 48 : 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('$_prevPage',
-                          style:
-                              TextStyle(color: Colors.white70, fontSize: 16.0)),
-                      Container(
-                        width: 200,
-                        child: SliderTheme(
-                          data: SliderThemeData(
-                            activeTrackColor: Colors.blue,
-                            inactiveTrackColor: Color(0xffd0d2d3),
-                            trackHeight: 3,
-                            thumbShape:
-                                RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                            // thumbShape: SliderThumbShape(),
-                          ),
-                          child: Slider(
-                            value: _prevPage.toDouble() > 0
-                                ? _prevPage <= _pageInfo.uris.length
-                                    ? _prevPage.toDouble()
-                                    : _pageInfo.uris.length.toDouble()
-                                : 1,
-                            max: _pageInfo.uris.length.toDouble(),
-                            min: 1,
-                            label: _prevPage.toString(),
-                            divisions: _pageInfo.uris.length,
-                            inactiveColor: Settings.majorColor.withOpacity(0.7),
-                            activeColor: Settings.majorColor,
-                            onChangeStart: (value) {
-                              _sliderOnChange = true;
-                            },
-                            onChangeEnd: (value) {
-                              _sliderOnChange = false;
-                              if (_pageInfo.useFileSystem)
-                                itemScrollController.scrollTo(
-                                  index: value.toInt() - 1,
-                                  duration: Duration(microseconds: 1),
-                                  alignment: 0.12,
+              curve: Curves.easeInOut,
+              child: Material(
+                color: Colors.black.withOpacity(0.8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    AnimatedOpacity(
+                      opacity: _isThumbMode ? 1.0 : 0,
+                      duration: Duration(milliseconds: 300),
+                      child: AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        height: _isThumbMode ? _thumbHeight : 0,
+                        child: _thumbArea(),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          color: Colors.white,
+                          icon: Icon(Icons.keyboard_arrow_up),
+                          onPressed: () async {
+                            if (!_isThumbMode)
+                              Future.delayed(Duration(milliseconds: 10))
+                                  .then((value) {
+                                var thumbItemWidth =
+                                    ((_thumbHeight - 14.0) / 36 * 25);
+                                _thumbController.animateTo(
+                                  thumbItemWidth * (_prevPage - 1) -
+                                      width / 2 +
+                                      thumbItemWidth / 2,
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeIn,
                                 );
-                            },
-                            onChanged: (value) {
-                              if (!Settings.isHorizontal) {
-                                if (!_pageInfo.useFileSystem)
-                                  itemScrollController.jumpTo(
+                              });
+                            setState(() {
+                              _isThumbMode = !_isThumbMode;
+                            });
+                          },
+                        ),
+                        Text('$_prevPage',
+                            style: TextStyle(
+                                color: Colors.white70, fontSize: 16.0)),
+                        Container(
+                          width: 200,
+                          child: SliderTheme(
+                            data: SliderThemeData(
+                              activeTrackColor: Colors.blue,
+                              inactiveTrackColor: Color(0xffd0d2d3),
+                              trackHeight: 3,
+                              thumbShape: RoundSliderThumbShape(
+                                  enabledThumbRadius: 6.0),
+                              // thumbShape: SliderThumbShape(),
+                            ),
+                            child: Slider(
+                              value: _prevPage.toDouble() > 0
+                                  ? _prevPage <= _pageInfo.uris.length
+                                      ? _prevPage.toDouble()
+                                      : _pageInfo.uris.length.toDouble()
+                                  : 1,
+                              max: _pageInfo.uris.length.toDouble(),
+                              min: 1,
+                              label: _prevPage.toString(),
+                              divisions: _pageInfo.uris.length,
+                              inactiveColor:
+                                  Settings.majorColor.withOpacity(0.7),
+                              activeColor: Settings.majorColor,
+                              onChangeStart: (value) {
+                                _sliderOnChange = true;
+                              },
+                              onChangeEnd: (value) {
+                                _sliderOnChange = false;
+                                if (_pageInfo.useFileSystem)
+                                  itemScrollController.scrollTo(
                                     index: value.toInt() - 1,
+                                    duration: Duration(microseconds: 1),
                                     alignment: 0.12,
                                   );
-                              } else {
-                                _pageController.jumpToPage(value.toInt() - 1);
-                              }
-                              currentPage = value.toInt();
-                              setState(() {
-                                _prevPage = value.toInt();
-                              });
-                            },
+                              },
+                              onChanged: (value) {
+                                if (!Settings.isHorizontal) {
+                                  if (!_pageInfo.useFileSystem)
+                                    itemScrollController.jumpTo(
+                                      index: value.toInt() - 1,
+                                      alignment: 0.12,
+                                    );
+                                } else {
+                                  _pageController.jumpToPage(value.toInt() - 1);
+                                }
+                                var thumbItemWidth =
+                                    ((_thumbHeight - 14.0) / 36 * 25);
+                                _thumbController.jumpTo(
+                                    thumbItemWidth * (value.toInt() - 1) -
+                                        width / 2 +
+                                        thumbItemWidth / 2);
+                                currentPage = value.toInt();
+                                setState(() {
+                                  _prevPage = value.toInt();
+                                });
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      Text('${_pageInfo.uris.length}',
-                          style:
-                              TextStyle(color: Colors.white70, fontSize: 15.0)),
-                    ],
-                  ),
-                  if (!Platform.isIOS &&
-                      !Settings.disableFullScreen &&
-                      !Settings.moveToAppBarToBottom)
-                    Container(
-                      height: Variables.bottomBarHeight,
-                      color: Colors.black,
-                    )
-                ],
+                        Text('${_pageInfo.uris.length}',
+                            style: TextStyle(
+                                color: Colors.white70, fontSize: 15.0)),
+                      ],
+                    ),
+                    if (!Platform.isIOS &&
+                        !Settings.disableFullScreen &&
+                        !Settings.moveToAppBarToBottom)
+                      Container(
+                        height: Variables.bottomBarHeight,
+                        color: Colors.black,
+                      )
+                  ],
+                ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  _thumbArea() {
+    return ListView.builder(
+      controller: _thumbController,
+      scrollDirection: Axis.horizontal,
+      itemCount: _pageInfo.uris.length,
+      physics: BouncingScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Container(
+          padding: EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
+          width: (_thumbHeight - 14.0) / 36 * 25,
+          child: GestureDetector(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.file(
+                      File(_pageInfo.uris[index]),
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                      height: double.infinity,
+                      isAntiAlias: true,
+                      cacheWidth: ((_thumbHeight - 14.0) / 4 * 3 * 2).toInt(),
+                      filterQuality: FilterQuality.high,
+                    ),
+                  ),
+                ),
+                Container(height: 2.0),
+                Text((index + 1).toString(),
+                    style: TextStyle(color: Colors.white, fontSize: 12.0)),
+              ],
+            ),
+            onTap: () {
+              itemScrollController.scrollTo(
+                index: index,
+                duration: Duration(microseconds: 1),
+                alignment: 0.12,
+              );
+              currentPage = index;
+              setState(() {
+                _prevPage = index;
+              });
+            },
+          ),
+        );
+      },
     );
   }
 
