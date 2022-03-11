@@ -443,7 +443,7 @@ class _ViewerPageState extends State<ViewerPage>
                     top: height -
                         Variables.bottomBarHeight -
                         (48) -
-                        (Platform.isIOS ? 48 : 0) -
+                        (Platform.isIOS ? 48 - 24 : 0) -
                         statusBarHeight),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -481,7 +481,7 @@ class _ViewerPageState extends State<ViewerPage>
                 !Settings.disableFullScreen && Settings.moveToAppBarToBottom
                     ? Container(
                         height: Variables.bottomBarHeight +
-                            (Platform.isIOS ? 48 : 0),
+                            (Platform.isIOS ? 48 - 24 : 0),
                         color: Platform.isIOS
                             ? Colors.black.withOpacity(0.8)
                             : Colors.black,
@@ -1796,7 +1796,7 @@ class _ViewerPageState extends State<ViewerPage>
                 top: height -
                     Variables.bottomBarHeight -
                     (48) -
-                    (Platform.isIOS ? 48 : 0) -
+                    (Platform.isIOS ? 48 - 24 : 0) -
                     statusBarHeight -
                     (Settings.moveToAppBarToBottom ? 48 : 0)),
             child: Container(
