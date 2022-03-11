@@ -24,8 +24,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 3, 11),
+    version: '1.22 Minor Update <== Latest',
+    contents: [
+      'ios ui update',
+      'fix download error',
+      'add recovery button to downloader',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 2, 13),
-    version: '1.21 Minor Update <== Latest',
+    version: '1.21 Minor Update',
     contents: [
       'optimize article list item',
       'optimize viewer functions',
