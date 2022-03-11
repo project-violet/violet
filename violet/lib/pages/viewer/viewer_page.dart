@@ -1896,28 +1896,29 @@ class _ViewerPageState extends State<ViewerPage>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          color: Colors.white,
-                          icon: Icon(Icons.keyboard_arrow_up),
-                          onPressed: () async {
-                            if (!_isThumbMode)
-                              Future.delayed(Duration(milliseconds: 10))
-                                  .then((value) {
-                                var thumbItemWidth =
-                                    ((_thumbHeight - 14.0) / 36 * 25);
-                                _thumbController.animateTo(
-                                  thumbItemWidth * (_prevPage - 1) -
-                                      width / 2 +
-                                      thumbItemWidth / 2,
-                                  duration: Duration(milliseconds: 300),
-                                  curve: Curves.easeIn,
-                                );
+                        if (_pageInfo.useFileSystem)
+                          IconButton(
+                            color: Colors.white,
+                            icon: Icon(Icons.keyboard_arrow_up),
+                            onPressed: () async {
+                              if (!_isThumbMode)
+                                Future.delayed(Duration(milliseconds: 10))
+                                    .then((value) {
+                                  var thumbItemWidth =
+                                      ((_thumbHeight - 14.0) / 36 * 25);
+                                  _thumbController.animateTo(
+                                    thumbItemWidth * (_prevPage - 1) -
+                                        width / 2 +
+                                        thumbItemWidth / 2,
+                                    duration: Duration(milliseconds: 300),
+                                    curve: Curves.easeIn,
+                                  );
+                                });
+                              setState(() {
+                                _isThumbMode = !_isThumbMode;
                               });
-                            setState(() {
-                              _isThumbMode = !_isThumbMode;
-                            });
-                          },
-                        ),
+                            },
+                          ),
                         Text('$_prevPage',
                             style: TextStyle(
                                 color: Colors.white70, fontSize: 16.0)),
