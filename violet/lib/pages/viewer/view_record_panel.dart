@@ -39,7 +39,11 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
                   'View Record',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               );
             return InkWell(
@@ -56,7 +60,10 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                             : snapshot.data[index - 1].lastPage().toString() +
                                 ' Page',
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
