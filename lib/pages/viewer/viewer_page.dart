@@ -2038,6 +2038,7 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   _thumbArea() {
+    final width = MediaQuery.of(context).size.width;
     return ListView.builder(
       controller: _thumbController,
       scrollDirection: Axis.horizontal,
@@ -2076,6 +2077,16 @@ class _ViewerPageState extends State<ViewerPage>
                 duration: Duration(microseconds: 1),
                 alignment: 0.12,
               );
+
+              final jumpOffset = _thumbImageStartPos[index] -
+                  width / 2 +
+                  _thumbImageWidth[index] / 2;
+              _thumbController.animateTo(
+                jumpOffset > 0 ? jumpOffset : 0,
+                duration: Duration(milliseconds: 300),
+                curve: Curves.easeIn,
+              );
+
               currentPage = index;
               setState(() {
                 _prevPage = index;
