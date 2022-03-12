@@ -12,6 +12,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_size_getter/file_input.dart';
+import 'package:image_size_getter/image_size_getter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -87,6 +89,8 @@ class _ViewerPageState extends State<ViewerPage>
   List<bool> _isImageLoaded;
   bool _isSessionOutdated = false;
   ScrollController _thumbController = ScrollController();
+  List<double> _thumbImageWidth;
+  List<double> _thumbImageStartPos;
 
   @override
   void initState() {
@@ -175,6 +179,8 @@ class _ViewerPageState extends State<ViewerPage>
 
       _isImageLoaded = List.filled(_pageInfo.uris.length, false);
 
+      if (_pageInfo.useFileSystem) _preprocessImageInfoForFileImage();
+
       Timer.periodic(
         Duration(milliseconds: 100),
         pageReadTimerCallback,
@@ -187,6 +193,30 @@ class _ViewerPageState extends State<ViewerPage>
         _leftButtonEvent();
       }
     });
+  }
+
+  _preprocessImageInfoForFileImage() {
+    var _imageSizes = _pageInfo.uris.map((e) {
+      final image = new File(e);
+      if (!image.existsSync()) return null;
+      return ImageSizeGetter.getSize(FileInput(image));
+    }).toList();
+
+    _thumbImageStartPos = List.filled(_imageSizes.length + 1, 0);
+    _thumbImageWidth = List.filled(_imageSizes.length, 0);
+
+    for (var i = 0; i < _imageSizes.length; i++) {
+      final sz = _imageSizes[i];
+
+      if (sz != null)
+        _thumbImageStartPos[i + 1] =
+            (_thumbHeight - 14.0) * sz.width / sz.height;
+      else
+        _thumbImageStartPos[i + 1] = (_thumbHeight - 14.0) / 36 * 25;
+
+      _thumbImageWidth[i] = _thumbImageStartPos[i + 1];
+      _thumbImageStartPos[i + 1] += _thumbImageStartPos[i];
+    }
   }
 
   @override
@@ -1328,9 +1358,9 @@ class _ViewerPageState extends State<ViewerPage>
       }
       final width = MediaQuery.of(context).size.width;
       if (_isThumbMode) {
-        var thumbItemWidth = ((_thumbHeight - 14.0) / 36 * 25);
-        var jumpOffset =
-            thumbItemWidth * (_prevPage - 1) - width / 2 + thumbItemWidth / 2;
+        final jumpOffset = _thumbImageStartPos[_prevPage - 1] -
+            width / 2 +
+            _thumbImageWidth[_prevPage - 1] / 2;
         _thumbController = ScrollController(
             initialScrollOffset: jumpOffset > 0 ? jumpOffset : 0);
       }
@@ -1904,12 +1934,10 @@ class _ViewerPageState extends State<ViewerPage>
                               if (!_isThumbMode)
                                 Future.delayed(Duration(milliseconds: 10))
                                     .then((value) {
-                                  var thumbItemWidth =
-                                      ((_thumbHeight - 14.0) / 36 * 25);
-                                  var jumpOffset =
-                                      thumbItemWidth * (_prevPage - 1) -
+                                  final jumpOffset =
+                                      _thumbImageStartPos[(_prevPage - 1)] -
                                           width / 2 +
-                                          thumbItemWidth / 2;
+                                          _thumbImageWidth[(_prevPage - 1)] / 2;
                                   _thumbController.animateTo(
                                     jumpOffset > 0 ? jumpOffset : 0,
                                     duration: Duration(milliseconds: 300),
@@ -1953,7 +1981,7 @@ class _ViewerPageState extends State<ViewerPage>
                               },
                               onChangeEnd: (value) {
                                 _sliderOnChange = false;
-                                if (_pageInfo.useFileSystem)
+                                if (_pageInfo.useFileSystem && !_isThumbMode)
                                   itemScrollController.scrollTo(
                                     index: value.toInt() - 1,
                                     duration: Duration(microseconds: 1),
@@ -1970,12 +1998,15 @@ class _ViewerPageState extends State<ViewerPage>
                                 } else {
                                   _pageController.jumpToPage(value.toInt() - 1);
                                 }
-                                var thumbItemWidth =
-                                    ((_thumbHeight - 14.0) / 36 * 25);
-                                _thumbController.jumpTo(
-                                    thumbItemWidth * (value.toInt() - 1) -
-                                        width / 2 +
-                                        thumbItemWidth / 2);
+
+                                if (_isThumbMode) {
+                                  final jumpOffset = _thumbImageStartPos[
+                                          value.toInt() - 1] -
+                                      width / 2 +
+                                      _thumbImageWidth[(value.toInt() - 1)] / 2;
+                                  _thumbController.jumpTo(jumpOffset);
+                                }
+
                                 currentPage = value.toInt();
                                 setState(() {
                                   _prevPage = value.toInt();
@@ -2015,7 +2046,7 @@ class _ViewerPageState extends State<ViewerPage>
       itemBuilder: (context, index) {
         return Container(
           padding: EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
-          width: (_thumbHeight - 14.0) / 36 * 25,
+          width: _thumbImageWidth[index],
           child: GestureDetector(
             child: Column(
               children: [
@@ -2028,7 +2059,8 @@ class _ViewerPageState extends State<ViewerPage>
                       width: double.infinity,
                       height: double.infinity,
                       isAntiAlias: true,
-                      cacheWidth: ((_thumbHeight - 14.0) / 4 * 3 * 2).toInt(),
+                      // cacheWidth: ((_thumbHeight - 14.0) / 4 * 3 * 2).toInt(),
+                      cacheHeight: (_thumbHeight * 3).toInt(),
                       filterQuality: FilterQuality.high,
                     ),
                   ),
