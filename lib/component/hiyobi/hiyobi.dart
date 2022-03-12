@@ -12,13 +12,15 @@ class HiyobiManager {
     var gg = await http.get('https://cdn.hiyobi.me/json/${id}_list.json');
     var urls = gg.body;
     var files = jsonDecode(urls) as List<dynamic>;
-    var result = List<String>();
+    var result = <String>[];
 
     files.forEach((value) {
-      if (value['haswebp'] == 1)
-        result.add('https://cdn.hiyobi.me/data/$id/${value['hash']}.webp');
+      var item = value as Map<String, dynamic>;
+      if (item['haswebp'] == 1 && item.containsKey('hash'))
+        result.add('https://cdn.hiyobi.me/data/$id/${item['hash']}.webp');
       else
-        result.add('https://rcdn.hiyobi.me/data_r/$id/${value['name']}');
+        result.add('https://cdn.hiyobi.me/data/$id/${item['name']}');
+      // result.add('https://rcdn.hiyobi.me/data_r/$id/${value['name']}');
     });
 
     return Tuple2<String, List<String>>(
