@@ -250,5 +250,11 @@
   "setthread": "스레드 설정",
   "remaintask": "아직 다운로드 중인 파일이 있습니다. 모두 완료 후 재시도해주세요!",
   "changedthread": "스레드 개수를 변경했습니다!",
-  "exportlog": "로그 기록 내보내기"
+  "exportlog": "로그 기록 내보내기",
+  "thumbnailslidersize": "썸네일 슬라이드 크기",
+  "large": "크게",
+  "middle": "중간",
+  "small": "작게",
+  "high": "높음",
+  "low": "낮음"
 }

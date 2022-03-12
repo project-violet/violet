@@ -196,6 +196,8 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   _preprocessImageInfoForFileImage() {
+    _thumbHeight = [140.0, 120.0, 96.0][Settings.thumbSize];
+
     var _imageSizes = _pageInfo.uris.map((e) {
       final image = new File(e);
       if (!image.existsSync()) return null;
@@ -884,6 +886,9 @@ class _ViewerPageState extends State<ViewerPage>
                       });
                     }
                     setState(() {});
+                  },
+                  thumbSizeChangeEvent: () {
+                    _preprocessImageInfoForFileImage();
                   },
                   setStateCallback: () {
                     setState(() {});
@@ -1868,7 +1873,7 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   bool _isThumbMode = false;
-  static const double _thumbHeight = 140.0;
+  double _thumbHeight = 140.0;
   _bottomAppBar() {
     final width = MediaQuery.of(context).size.width;
     final statusBarHeight =
@@ -2056,12 +2061,12 @@ class _ViewerPageState extends State<ViewerPage>
                     borderRadius: BorderRadius.circular(8.0),
                     child: Image.file(
                       File(_pageInfo.uris[index]),
-                      fit: BoxFit.contain,
+                      fit: BoxFit.cover,
                       width: double.infinity,
                       height: double.infinity,
                       isAntiAlias: true,
                       // cacheWidth: ((_thumbHeight - 14.0) / 4 * 3 * 2).toInt(),
-                      cacheHeight: (_thumbHeight * 3).toInt(),
+                      cacheHeight: (_thumbHeight * 1.5).toInt(),
                       filterQuality: FilterQuality.high,
                     ),
                   ),
@@ -2084,7 +2089,7 @@ class _ViewerPageState extends State<ViewerPage>
               _thumbController.animateTo(
                 jumpOffset > 0 ? jumpOffset : 0,
                 duration: Duration(milliseconds: 300),
-                curve: Curves.easeIn,
+                curve: Curves.easeOut,
               );
 
               currentPage = index;

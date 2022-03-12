@@ -14,8 +14,13 @@ import 'package:violet/variables.dart';
 class ViewerSettingPanel extends StatefulWidget {
   final VoidCallback viewerStyleChangeEvent;
   final VoidCallback setStateCallback;
+  final VoidCallback thumbSizeChangeEvent;
 
-  ViewerSettingPanel({this.viewerStyleChangeEvent, this.setStateCallback});
+  ViewerSettingPanel({
+    this.viewerStyleChangeEvent,
+    this.setStateCallback,
+    this.thumbSizeChangeEvent,
+  });
 
   @override
   _ViewerSettingPanelState createState() => _ViewerSettingPanelState();
@@ -176,17 +181,17 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
               value: 0,
               child: Text('None'),
             ),
-            const PopupMenuItem<int>(
+            PopupMenuItem<int>(
               value: 1,
-              child: Text('High'),
+              child: Text(Translations.of(context).trans('high')),
             ),
-            const PopupMenuItem<int>(
+            PopupMenuItem<int>(
               value: 2,
-              child: Text('Medium'),
+              child: Text(Translations.of(context).trans('middle')),
             ),
-            const PopupMenuItem<int>(
+            PopupMenuItem<int>(
               value: 3,
-              child: Text('Low'),
+              child: Text(Translations.of(context).trans('low')),
             ),
           ],
           child: ListTile(
@@ -195,10 +200,55 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
               Translations.of(context).trans('imgquality'),
               style: TextStyle(color: Colors.white),
             ),
-            trailing: Text(['None', 'High', 'Medium', 'Low'][imgqualityOption]),
+            trailing: Text(
+              [
+                'None',
+                Translations.of(context).trans('high'),
+                Translations.of(context).trans('middle'),
+                Translations.of(context).trans('low')
+              ][imgqualityOption],
+              style: TextStyle(color: Colors.white),
+            ),
           ),
         ),
-        Container(height: 24),
+        PopupMenuButton<int>(
+          onSelected: (int value) {
+            Settings.setThumbSize(value);
+            widget.thumbSizeChangeEvent.call();
+            widget.setStateCallback.call();
+            setState(() {});
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+            PopupMenuItem<int>(
+              value: 0,
+              child: Text(Translations.of(context).trans('large')),
+            ),
+            PopupMenuItem<int>(
+              value: 1,
+              child: Text(Translations.of(context).trans('middle')),
+            ),
+            PopupMenuItem<int>(
+              value: 2,
+              child: Text(Translations.of(context).trans('small')),
+            ),
+          ],
+          child: ListTile(
+            dense: true,
+            title: Text(
+              Translations.of(context).trans('thumbnailslidersize'),
+              style: TextStyle(color: Colors.white),
+            ),
+            trailing: Text(
+              [
+                Translations.of(context).trans('large'),
+                Translations.of(context).trans('middle'),
+                Translations.of(context).trans('small')
+              ][Settings.thumbSize],
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+        if (Platform.isIOS) Container(height: 24),
       ],
     );
 
