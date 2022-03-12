@@ -2051,14 +2051,14 @@ class _ViewerPageState extends State<ViewerPage>
       physics: BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         return Container(
-          padding: EdgeInsets.only(top: 4.0, left: 4.0, right: 4.0),
+          padding: EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
           width: _thumbImageWidth[index],
           child: GestureDetector(
             child: Column(
               children: [
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(4.0),
                     child: Image.file(
                       File(_pageInfo.uris[index]),
                       fit: BoxFit.cover,
