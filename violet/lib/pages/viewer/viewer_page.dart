@@ -1954,75 +1954,90 @@ class _ViewerPageState extends State<ViewerPage>
                               });
                             },
                           ),
-                        Text('$_prevPage',
-                            style: TextStyle(
-                                color: Colors.white70, fontSize: 16.0)),
-                        Container(
-                          width: 200,
-                          child: SliderTheme(
-                            data: SliderThemeData(
-                              activeTrackColor: Colors.blue,
-                              inactiveTrackColor: Color(0xffd0d2d3),
-                              trackHeight: 3,
-                              thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: 6.0),
-                              // thumbShape: SliderThumbShape(),
-                            ),
-                            child: Slider(
-                              value: _prevPage.toDouble() > 0
-                                  ? _prevPage <= _pageInfo.uris.length
-                                      ? _prevPage.toDouble()
-                                      : _pageInfo.uris.length.toDouble()
-                                  : 1,
-                              max: _pageInfo.uris.length.toDouble(),
-                              min: 1,
-                              label: _prevPage.toString(),
-                              divisions: _pageInfo.uris.length,
-                              inactiveColor:
-                                  Settings.majorColor.withOpacity(0.7),
-                              activeColor: Settings.majorColor,
-                              onChangeStart: (value) {
-                                _sliderOnChange = true;
-                              },
-                              onChangeEnd: (value) {
-                                _sliderOnChange = false;
-                                if (_pageInfo.useFileSystem && !_isThumbMode)
-                                  itemScrollController.scrollTo(
-                                    index: value.toInt() - 1,
-                                    duration: Duration(microseconds: 1),
-                                    alignment: 0.12,
-                                  );
-                              },
-                              onChanged: (value) {
-                                if (!Settings.isHorizontal) {
-                                  if (!_pageInfo.useFileSystem)
-                                    itemScrollController.jumpTo(
+                        SizedBox(
+                          width: 30.0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text('$_prevPage',
+                                  style: TextStyle(
+                                      color: Colors.white70, fontSize: 16.0)),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            // width: 200,
+                            child: SliderTheme(
+                              data: SliderThemeData(
+                                activeTrackColor: Colors.blue,
+                                inactiveTrackColor: Color(0xffd0d2d3),
+                                trackHeight: 3,
+                                thumbShape: RoundSliderThumbShape(
+                                    enabledThumbRadius: 6.0),
+                                // thumbShape: SliderThumbShape(),
+                              ),
+                              child: Slider(
+                                value: _prevPage.toDouble() > 0
+                                    ? _prevPage <= _pageInfo.uris.length
+                                        ? _prevPage.toDouble()
+                                        : _pageInfo.uris.length.toDouble()
+                                    : 1,
+                                max: _pageInfo.uris.length.toDouble(),
+                                min: 1,
+                                label: _prevPage.toString(),
+                                divisions: _pageInfo.uris.length,
+                                inactiveColor:
+                                    Settings.majorColor.withOpacity(0.7),
+                                activeColor: Settings.majorColor,
+                                onChangeStart: (value) {
+                                  _sliderOnChange = true;
+                                },
+                                onChangeEnd: (value) {
+                                  _sliderOnChange = false;
+                                  if (_pageInfo.useFileSystem && !_isThumbMode)
+                                    itemScrollController.scrollTo(
                                       index: value.toInt() - 1,
+                                      duration: Duration(microseconds: 1),
                                       alignment: 0.12,
                                     );
-                                } else {
-                                  _pageController.jumpToPage(value.toInt() - 1);
-                                }
+                                },
+                                onChanged: (value) {
+                                  if (!Settings.isHorizontal) {
+                                    if (!_pageInfo.useFileSystem)
+                                      itemScrollController.jumpTo(
+                                        index: value.toInt() - 1,
+                                        alignment: 0.12,
+                                      );
+                                  } else {
+                                    _pageController
+                                        .jumpToPage(value.toInt() - 1);
+                                  }
 
-                                if (_isThumbMode) {
-                                  final jumpOffset = _thumbImageStartPos[
-                                          value.toInt() - 1] -
-                                      width / 2 +
-                                      _thumbImageWidth[(value.toInt() - 1)] / 2;
-                                  _thumbController.jumpTo(jumpOffset);
-                                }
+                                  if (_isThumbMode) {
+                                    final jumpOffset = _thumbImageStartPos[
+                                            value.toInt() - 1] -
+                                        width / 2 +
+                                        _thumbImageWidth[(value.toInt() - 1)] /
+                                            2;
+                                    _thumbController.jumpTo(jumpOffset);
+                                  }
 
-                                currentPage = value.toInt();
-                                setState(() {
-                                  _prevPage = value.toInt();
-                                });
-                              },
+                                  currentPage = value.toInt();
+                                  setState(() {
+                                    _prevPage = value.toInt();
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
                         Text('${_pageInfo.uris.length}',
                             style: TextStyle(
                                 color: Colors.white70, fontSize: 15.0)),
+                        Container(
+                          width: 16.0,
+                        )
                       ],
                     ),
                     if (!Platform.isIOS &&
