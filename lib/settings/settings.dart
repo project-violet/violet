@@ -56,6 +56,7 @@ class Settings {
   static bool moveToAppBarToBottom;
   static bool showSlider;
   static int imageQuality;
+  static int thumbSize;
 
   // Download Options
   static bool useInnerStorage;
@@ -182,6 +183,7 @@ class Settings {
         await _getBool('movetoappbartobottom', Platform.isIOS);
     showSlider = await _getBool('showslider');
     imageQuality = await _getInt('imagequality', 3);
+    thumbSize = await _getInt('imageQuality', 0);
 
     useInnerStorage =
         (await SharedPreferences.getInstance()).getBool('useinnerstorage');
@@ -528,6 +530,12 @@ class Settings {
     imageQuality = nn;
     await (await SharedPreferences.getInstance())
         .setInt('imagequality', imageQuality);
+  }
+
+  static Future<void> setThumbSize(int nn) async {
+    thumbSize = nn;
+    await (await SharedPreferences.getInstance())
+        .setInt('thumbSize', thumbSize);
   }
 
   static Future<void> setShowSlider(bool nn) async {

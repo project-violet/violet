@@ -250,5 +250,11 @@
   "setthread": "Set Thread",
   "remaintask": "There are still files being downloaded. Please try again after completing download!",
   "changedthread": "Number of Threads have changed!",
-  "exportlog": "Export Log Record"
+  "exportlog": "Export Log Record",
+  "thumbnailslidersize": "Thumbnail Slider Size",
+  "large": "Large",
+  "middle": "Middle",
+  "small": "Small",
+  "high": "High",
+  "low": "Low"
 }
