@@ -1,7 +1,10 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:synchronized/synchronized.dart';
@@ -26,15 +29,19 @@ class DataBaseManager {
 
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
-      _instance =
-          create((await SharedPreferences.getInstance()).getString('db_path'));
+      var dbPath = Platform.isAndroid
+          ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
+          : "${await getDatabasesPath()}/data.db";
+      _instance = create(dbPath);
     }
     return _instance;
   }
 
   static Future<void> reloadInstance() async {
-    _instance =
-        create((await SharedPreferences.getInstance()).getString('db_path'));
+    var dbPath = Platform.isAndroid
+        ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
+        : "${await getDatabasesPath()}/data.db";
+    _instance = create(dbPath);
   }
 
   Future _open() async {

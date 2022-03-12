@@ -573,7 +573,6 @@ class _SplashPageState extends State<SplashPage> {
               dbType: _database == Database.all
                   ? 'global'
                   : Translations.of(context).dbLanguageCode,
-              isExistsDataBase: false,
             )));
   }
 
@@ -594,19 +593,19 @@ class _SplashPageState extends State<SplashPage> {
                           : Colors.purpleAccent.shade100,
                       fontSize: 12.0)),
             ),
-            onTap: () async {
-              var path = await getFile();
+            // onTap: () async {
+            //   var path = await getFile();
 
-              if (path == '') return;
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => DataBaseDownloadPage(
-                        dbType: _database == Database.all
-                            ? 'global'
-                            : Translations.of(context).locale.languageCode,
-                        isExistsDataBase: true,
-                        dbPath: path,
-                      )));
-            },
+            //   if (path == '') return;
+            //   Navigator.of(context).push(MaterialPageRoute(
+            //       builder: (context) => DataBaseDownloadPage(
+            //             dbType: _database == Database.all
+            //                 ? 'global'
+            //                 : Translations.of(context).locale.languageCode,
+            //             isExistsDataBase: true,
+            //             dbPath: path,
+            //           )));
+            // },
           ),
         ),
       ),

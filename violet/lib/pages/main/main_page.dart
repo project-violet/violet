@@ -497,7 +497,6 @@ class _MainPage2State extends State<MainPage2>
                           .push(MaterialPageRoute(
                               builder: (context) => DataBaseDownloadPage(
                                     dbType: Settings.databaseType,
-                                    isExistsDataBase: false,
                                     isSync: true,
                                   )))
                           .then((value) async {

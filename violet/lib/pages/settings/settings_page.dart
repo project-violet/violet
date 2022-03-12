@@ -975,7 +975,6 @@ class _SettingsPageState extends State<SettingsPage>
                         .push(MaterialPageRoute(
                             builder: (context) => DataBaseDownloadPage(
                                   dbType: Settings.databaseType,
-                                  isExistsDataBase: false,
                                   isSync: true,
                                 )))
                         .then(

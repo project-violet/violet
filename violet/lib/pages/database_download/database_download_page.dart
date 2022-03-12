@@ -25,13 +25,11 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
-  final bool isExistsDataBase;
   final String dbPath;
   final String dbType;
   final bool isSync;
 
-  DataBaseDownloadPage(
-      {this.isExistsDataBase, this.dbPath, this.dbType, this.isSync});
+  DataBaseDownloadPage({this.dbPath, this.dbType, this.isSync});
 
   @override
   DataBaseDownloadPagepState createState() {
@@ -56,12 +54,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future checkDownload() async {
     try {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
-        if (await File(
-                (await SharedPreferences.getInstance()).getString('db_path'))
-            .exists())
-          await File(
-                  (await SharedPreferences.getInstance()).getString('db_path'))
-              .delete();
+        var dbPath = Platform.isAndroid
+            ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
+            : "${await getDatabasesPath()}/data.db";
+        if (await File(dbPath).exists()) await File(dbPath).delete();
         var dir = await getApplicationDocumentsDirectory();
         if (await Directory('${dir.path}/data').exists())
           await Directory('${dir.path}/data').delete(recursive: true);
@@ -72,27 +68,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     }
 
     if (Platform.isAndroid) {
-      if (widget.isExistsDataBase) {
-        setState(() {
-          downloading = false;
-          baseString = Translations.instance.trans('dbdcheck');
-        });
-
-        if (await DataBaseManager.create(widget.dbPath).test() == false) {
-          await showOkDialog(
-              context, Translations.instance.trans('dbdcheckerr'));
-          await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-          return;
-        }
-
-        await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-        await (await SharedPreferences.getInstance())
-            .setString('db_path', widget.dbPath);
-
-        await indexing();
-
-        return;
-      }
       downloadFileAndroid();
     } else if (Platform.isIOS) {
       // p7zip is not supported on IOS.
@@ -161,8 +136,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       await File("${dir.path}/db.sql.7z").delete();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance())
-          .setString('db_path', "${dir.path}/data/data.db");
       await (await SharedPreferences.getInstance())
           .setString('databasetype', widget.dbType);
       await (await SharedPreferences.getInstance()).setString(
@@ -235,8 +208,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       _timer.cancel();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance())
-          .setString('db_path', "$dir/data.db");
       await (await SharedPreferences.getInstance())
           .setString('databasetype', widget.dbType);
       await (await SharedPreferences.getInstance()).setString(
