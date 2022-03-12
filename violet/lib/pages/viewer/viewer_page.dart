@@ -825,7 +825,7 @@ class _ViewerPageState extends State<ViewerPage>
                   child: Provider<ViewerPageProvider>.value(
                     value: _pageInfo,
                     child: ViewerThumbnail(
-                      viewedPage: currentPage,
+                      viewedPage: currentPage - 1,
                     ),
                   ),
                 );
