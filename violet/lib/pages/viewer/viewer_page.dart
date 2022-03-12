@@ -2066,7 +2066,7 @@ class _ViewerPageState extends State<ViewerPage>
                       height: double.infinity,
                       isAntiAlias: true,
                       // cacheWidth: ((_thumbHeight - 14.0) / 4 * 3 * 2).toInt(),
-                      cacheHeight: (_thumbHeight * 1.5).toInt(),
+                      cacheHeight: (_thumbHeight * 2.0).toInt(),
                       filterQuality: FilterQuality.high,
                     ),
                   ),
