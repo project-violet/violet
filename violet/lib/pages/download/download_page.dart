@@ -2,10 +2,13 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,10 +77,48 @@ class _DownloadPageState extends State<DownloadPage>
   void refresh() {
     Future.delayed(Duration(milliseconds: 500), () async {
       items = await (await Download.getInstance()).getDownloadItems();
+      await _autoRecoveryFileName();
       await _buildQueryResults();
       _applyFilter();
       setState(() {});
     });
+  }
+
+  Future<void> _autoRecoveryFileName() async {
+    /// For ios, the app encryption name is changed when you update the app.
+    /// Therefore, it is necessary to correct this.
+    if (!Platform.isIOS) return;
+
+    /// Replace
+    /// /var/mobile/Containers/Data/Application/<old-app-code>/Documents
+    /// to
+    /// /var/mobile/Containers/Data/Application/<new-app-code>/Documents
+
+    final newPath = (await getApplicationDocumentsDirectory()).path;
+
+    for (var item in items) {
+      if (item.files() == null) continue;
+
+      if (item.files() != null &&
+          item.files().toLowerCase().contains(newPath.toLowerCase())) continue;
+      if (item.path() != null &&
+          item.path().toLowerCase().contains(newPath.toLowerCase())) continue;
+
+      final oldPath = ((jsonDecode(item.files()) as List<dynamic>)[0] as String)
+          .split('/')
+          .take(8)
+          .join('/');
+
+      Map<String, dynamic> result = Map<String, dynamic>.from(item.result);
+
+      if (item.files() != null)
+        result['Files'] = item.files().replaceAll(oldPath, newPath);
+      if (item.path() != null)
+        result['Path'] = item.path().replaceAll(oldPath, newPath);
+      item.result = result;
+
+      await item.update();
+    }
   }
 
   Future<void> _buildQueryResults() async {
