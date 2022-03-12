@@ -18,7 +18,9 @@ class VioletChecker {
       //
       //  0. get database path
       //
-      var dbPath = (await SharedPreferences.getInstance()).getString('db_path');
+      var dbPath = Platform.isAndroid
+          ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
+          : "${await getDatabasesPath()}/data.db";
 
       //
       // 1. check file exists
@@ -177,7 +179,5 @@ class VioletChecker {
     }
   }
 
-  static Future<bool> checkDownloadable() async {
-    
-  }
+  static Future<bool> checkDownloadable() async {}
 }
