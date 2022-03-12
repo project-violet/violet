@@ -1995,7 +1995,7 @@ class _ViewerPageState extends State<ViewerPage>
                                 },
                                 onChangeEnd: (value) {
                                   _sliderOnChange = false;
-                                  if (_pageInfo.useFileSystem && !_isThumbMode)
+                                  if (_pageInfo.useFileSystem)
                                     itemScrollController.scrollTo(
                                       index: value.toInt() - 1,
                                       duration: Duration(microseconds: 1),
@@ -2092,11 +2092,15 @@ class _ViewerPageState extends State<ViewerPage>
               ],
             ),
             onTap: () {
-              itemScrollController.scrollTo(
-                index: index,
-                duration: Duration(microseconds: 1),
-                alignment: 0.12,
-              );
+              if (!Settings.isHorizontal) {
+                itemScrollController.scrollTo(
+                  index: index,
+                  duration: Duration(microseconds: 1),
+                  alignment: 0.12,
+                );
+              } else {
+                _pageController.jumpToPage(index);
+              }
 
               final jumpOffset = _thumbImageStartPos[index] -
                   width / 2 +
