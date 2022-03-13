@@ -52,7 +52,7 @@ class SearchType extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: getColor(selection)),
       title: Text(Translations.of(context).trans(text),
-          style: TextStyle(color: getColor(selection))),
+          softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setSearchResultType(selection);
         Navigator.pop(context);
