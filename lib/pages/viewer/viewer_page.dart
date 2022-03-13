@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
@@ -196,6 +197,18 @@ class _ViewerPageState extends State<ViewerPage>
       _getLatestHeight();
 
       if (selected != null && _prevPage != selected + 1) {
+        if (_isThumbMode && !_sliderOnChange) {
+          final width = MediaQuery.of(context).size.width;
+          final jumpOffset = _thumbImageStartPos[selected] -
+              width / 2 +
+              _thumbImageWidth[selected] / 2;
+          _thumbController.animateTo(
+            jumpOffset > 0 ? jumpOffset : 0,
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+
         setState(() {
           _prevPage = selected + 1;
           _currentPage = _prevPage;
@@ -1422,9 +1435,10 @@ class _ViewerPageState extends State<ViewerPage>
       }
       final width = MediaQuery.of(context).size.width;
       if (_isThumbMode) {
-        final jumpOffset = _thumbImageStartPos[_prevPage - 1] -
-            width / 2 +
-            _thumbImageWidth[_prevPage - 1] / 2;
+        final jumpOffset =
+            _thumbImageStartPos[_prevPage >= 1 ? _prevPage - 1 : 0] -
+                width / 2 +
+                _thumbImageWidth[_prevPage >= 1 ? _prevPage - 1 : 0] / 2;
         _thumbController = ScrollController(
             initialScrollOffset: jumpOffset > 0 ? jumpOffset : 0);
       }
@@ -2051,7 +2065,10 @@ class _ViewerPageState extends State<ViewerPage>
                                   _sliderOnChange = true;
                                 },
                                 onChangeEnd: (value) {
-                                  _sliderOnChange = false;
+                                  Future.delayed(Duration(milliseconds: 300))
+                                      .then((value) {
+                                    _sliderOnChange = false;
+                                  });
                                   if (_pageInfo.useFileSystem)
                                     _itemScrollController.scrollTo(
                                       index: value.toInt() - 1,
@@ -2236,7 +2253,6 @@ class __FileImageState extends State<_FileImage> {
   void dispose() {
     super.dispose();
 
-    print(widget.path);
     clearMemoryImageCache(widget.path);
   }
 
