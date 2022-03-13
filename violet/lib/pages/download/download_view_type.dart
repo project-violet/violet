@@ -52,7 +52,7 @@ class DownloadViewType extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: getColor(selection)),
       title: Text(Translations.of(context).trans(text),
-          style: TextStyle(color: getColor(selection))),
+          softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setDownloadResultType(selection);
         Navigator.pop(context);
