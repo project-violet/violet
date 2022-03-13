@@ -44,24 +44,26 @@ typedef DownloadListItemCallbackCallback = void Function(
 
 class DownloadItemWidget extends StatefulWidget {
   // final double width;
+  final Key key;
   final DownloadItemModel item;
   final DownloadListItem initialStyle;
   bool download;
   final VoidCallback refeshCallback;
 
   DownloadItemWidget({
+    this.key,
     // this.width,
     this.item,
     this.initialStyle,
     this.download,
     this.refeshCallback,
-  });
+  }) : super(key: key);
 
   @override
-  _DownloadItemWidgetState createState() => _DownloadItemWidgetState();
+  DownloadItemWidgetState createState() => DownloadItemWidgetState();
 }
 
-class _DownloadItemWidgetState extends State<DownloadItemWidget>
+class DownloadItemWidgetState extends State<DownloadItemWidget>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -290,28 +292,9 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
             toastDuration: Duration(seconds: 4),
           );
         } else if (v == 1) {
-          // Retry
-          var copy = Map<String, dynamic>.from(widget.item.result);
-          copy['State'] = 1;
-          widget.item.result = copy;
-          once = false;
-          widget.download = true;
-          _downloadProcedure();
-          setState(() {
-            _shouldReload = true;
-          });
+          _retry();
         } else if (v == 3) {
-          // recovery
-          var copy = Map<String, dynamic>.from(widget.item.result);
-          copy['State'] = 1;
-          widget.item.result = copy;
-          widget.download = true;
-          once = false;
-          recoveryMode = true;
-          _downloadProcedure();
-          setState(() {
-            _shouldReload = true;
-          });
+          _recovery();
         }
       },
       onTap: () async {
@@ -353,6 +336,41 @@ class _DownloadItemWidgetState extends State<DownloadItemWidget>
         });
       },
     );
+  }
+
+  _retry() {
+    // Retry
+    var copy = Map<String, dynamic>.from(widget.item.result);
+    copy['State'] = 1;
+    widget.item.result = copy;
+    once = false;
+    widget.download = true;
+    _downloadProcedure();
+    setState(() {
+      _shouldReload = true;
+    });
+  }
+
+  _recovery() {
+    // recovery
+    var copy = Map<String, dynamic>.from(widget.item.result);
+    copy['State'] = 1;
+    widget.item.result = copy;
+    widget.download = true;
+    once = false;
+    recoveryMode = true;
+    _downloadProcedure();
+    setState(() {
+      _shouldReload = true;
+    });
+  }
+
+  retryWhenRequired() {
+    if (widget.item.state() >= 6) _retry();
+  }
+
+  recovery() {
+    _recovery();
   }
 
   Widget buildBody() {

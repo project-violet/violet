@@ -21,6 +21,7 @@ import 'package:violet/database/user/download.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/download/download_features_menu.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
 import 'package:violet/pages/download/download_view_type.dart';
 import 'package:violet/pages/search/search_type.dart';
@@ -169,6 +170,8 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   Map<int, Widget> downloadItemWidgets = Map<int, Widget>();
+  Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys =
+      Map<int, GlobalKey<DownloadItemWidgetState>>();
   ScrollController _scrollController = ScrollController();
 
   @override
@@ -195,6 +198,7 @@ class _DownloadPageState extends State<DownloadPage>
                   children: <Widget>[
                     _urlBar(),
                     _align(),
+                    _features(),
                   ],
                 ),
               ),
@@ -226,10 +230,15 @@ class _DownloadPageState extends State<DownloadPage>
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 var e = filterResult[filterResult.length - index - 1];
+                if (!downloadItemWidgetKeys
+                    .containsKey(filterResult[index].id()))
+                  downloadItemWidgetKeys[filterResult[index].id()] =
+                      GlobalKey<DownloadItemWidgetState>();
                 return Align(
                   key: Key('dp' + e.id().toString() + e.url()),
                   alignment: Alignment.bottomCenter,
                   child: DownloadItemWidget(
+                    key: downloadItemWidgetKeys[filterResult[index].id()],
                     initialStyle: DownloadListItem(
                       showDetail: false,
                       addBottomPadding: false,
@@ -265,10 +274,14 @@ class _DownloadPageState extends State<DownloadPage>
             ),
             itemBuilder: (context, index, animation) {
               var e = filterResult[filterResult.length - index - 1];
+              if (!downloadItemWidgetKeys.containsKey(filterResult[index].id()))
+                downloadItemWidgetKeys[filterResult[index].id()] =
+                    GlobalKey<DownloadItemWidgetState>();
               return Align(
                 key: Key('dp' + e.id().toString() + e.url()),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
+                  key: downloadItemWidgetKeys[filterResult[index].id()],
                   initialStyle: DownloadListItem(
                     showDetail: Settings.downloadResultType == 3,
                     addBottomPadding: true,
@@ -289,10 +302,14 @@ class _DownloadPageState extends State<DownloadPage>
             filterResult.reversed.map((e) {
               if (downloadItemWidgets.containsKey(e.id()))
                 return downloadItemWidgets[e.id()];
+              if (!downloadItemWidgetKeys.containsKey(e.id()))
+                downloadItemWidgetKeys[e.id()] =
+                    GlobalKey<DownloadItemWidgetState>();
               return downloadItemWidgets[e.id()] = Align(
                 key: Key('dp' + e.id().toString() + e.url()),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
+                  key: downloadItemWidgetKeys[e.id()],
                   initialStyle: DownloadListItem(
                     showDetail: Settings.downloadResultType == 3,
                     addBottomPadding: true,
@@ -314,7 +331,7 @@ class _DownloadPageState extends State<DownloadPage>
 
   Widget _urlBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(8, 8, 72, 0),
+      padding: EdgeInsets.fromLTRB(8, 8, 72 + 64.0 + 8, 0),
       child: SizedBox(
         height: 64,
         child: Card(
@@ -426,6 +443,75 @@ class _DownloadPageState extends State<DownloadPage>
         ),
       ),
     );
+  }
+
+  Widget _features() {
+    double width = MediaQuery.of(context).size.width;
+    return Container(
+      padding: EdgeInsets.fromLTRB(width - 8 - 64 - 64 - 8, 8, 8, 0),
+      child: SizedBox(
+        height: 64,
+        child: Hero(
+          tag: "features",
+          child: Card(
+            color: Settings.themeWhat
+                ? Settings.themeBlack
+                    ? const Color(0xFF141414)
+                    : Color(0xFF353535)
+                : Colors.grey.shade100,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(4.0),
+              ),
+            ),
+            elevation: !Settings.themeFlat ? 100 : 0,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: InkWell(
+              child: SizedBox(
+                height: 64,
+                width: 64,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Icon(
+                      MdiIcons.hammerWrench,
+                      color: Colors.grey,
+                    ),
+                  ],
+                ),
+              ),
+              onTap: _featuresOnTap,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _featuresOnTap() async {
+    var rtype = Settings.downloadResultType;
+    Navigator.of(context)
+        .push(PageRouteBuilder(
+      opaque: false,
+      transitionDuration: Duration(milliseconds: 500),
+      transitionsBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation, Widget wi) {
+        return FadeTransition(opacity: animation, child: wi);
+      },
+      pageBuilder: (_, __, ___) => DownloadFeaturesMenu(),
+      barrierColor: Colors.black12,
+      barrierDismissible: true,
+    ))
+        .then((value) async {
+      if (value == null) return;
+
+      if (value == 0)
+        downloadItemWidgetKeys
+            .forEach((key, value) => value.currentState.retryWhenRequired());
+      else if (value == 1)
+        downloadItemWidgetKeys
+            .forEach((key, value) => value.currentState.recovery());
+    });
   }
 
   Widget _align() {
