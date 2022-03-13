@@ -7,6 +7,8 @@ import 'dart:io';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -30,6 +32,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/search_bar.dart';
+import 'package:violet/widgets/toast.dart';
 
 typedef StringCallback = Future Function(String);
 
@@ -522,6 +525,19 @@ class _DownloadPageState extends State<DownloadPage>
       else if (value == 1)
         _getDownloadWidgetKey()
             .forEach((key, value) => value.currentState.recovery());
+      else if (value == 2) {
+        Clipboard.setData(ClipboardData(
+            text: filterResult.map((e) => int.tryParse(e.url())).join(", ")));
+        FlutterToast(context).showToast(
+          child: ToastWrapper(
+            isCheck: true,
+            isWarning: false,
+            msg: 'Ids Copied!',
+          ),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: Duration(seconds: 4),
+        );
+      }
     });
   }
 

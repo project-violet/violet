@@ -26,6 +26,8 @@ class DownloadFeaturesMenu extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
+                    _typeItem(context, MdiIcons.contentCopy,
+                        'Copy All URL(or Id)', 2),
                     _typeItem(
                         context, MdiIcons.refresh, 'Retry Stopped Item', 0),
                     _typeItem(context, MdiIcons.rotateLeft, 'All Recovery', 1),
