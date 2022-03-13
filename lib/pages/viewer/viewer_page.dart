@@ -240,7 +240,8 @@ class _ViewerPageState extends State<ViewerPage>
       );
       _decisecondPerPages = List.filled(_pageInfo.uris.length, 0);
 
-      _isImageLoaded = List.filled(_pageInfo.uris.length, false);
+      _isImageLoaded =
+          List.filled(_pageInfo.uris.length, _pageInfo.useFileSystem);
 
       if (_pageInfo.useFileSystem) _preprocessImageInfoForFileImage();
 
