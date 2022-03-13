@@ -63,16 +63,11 @@ class _FilterPageState extends State<FilterPage> {
     tags.forEach((key, value) {
       var group = 'tag';
       var name = key;
-      if (key.startsWith('female:')) {
-        group = 'female';
-        _groupCount['female'] += 1;
+      if (key.startsWith('female:') || key.startsWith('male:')) {
+        group = key.split(':')[0];
         name = key.split(':')[1];
-      } else if (key.startsWith('male:')) {
-        group = 'male';
-        _groupCount['male'] += 1;
-        name = key.split(':')[1];
-      } else
-        _groupCount['tag'] += 1;
+      }
+      _groupCount[group] += 1;
       _tags.add(Tuple3<String, String, int>(group, name, value));
       if (!c.tagStates.containsKey(group + '|' + name))
         c.tagStates[group + '|' + name] = false;
@@ -88,9 +83,8 @@ class _FilterPageState extends State<FilterPage> {
     append('class', 'Class');
     append('type', 'Type');
     append('uploader', 'Uploader');
-    _groupCount.forEach((key, value) {
-      _groups.add(Tuple2<String, int>(key, value));
-    });
+    _groupCount
+        .forEach((key, value) => _groups.add(Tuple2<String, int>(key, value)));
     _groups.sort((a, b) => b.item2.compareTo(a.item2));
     _tags.sort((a, b) => b.item3.compareTo(a.item3));
   }
