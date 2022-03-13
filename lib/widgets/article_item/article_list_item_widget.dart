@@ -448,7 +448,7 @@ class _ArticleListItemVerySimpleWidgetState
       _flareController.play('Like');
     }
 
-    await HapticFeedback.vibrate();
+    await HapticFeedback.lightImpact();
 
     _shouldReloadCachedBuildWidget = true;
     Future.delayed(Duration(milliseconds: 500))
