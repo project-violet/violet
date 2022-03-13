@@ -33,19 +33,24 @@ class DownloadImageMenu extends StatelessWidget {
                   height: (56 * 4 + 16).toDouble(),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        // _typeItem(context, Icons.grid_on, 'srt0', 0),
-                        _typeItem(context, MdiIcons.contentCopy, 'Copy URL', 2),
-                        _typeItem(context, MdiIcons.refresh, 'Retry', 1),
-                        _typeItem(context, MdiIcons.rotateLeft, 'Recovery', 3),
-                        // _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
-                        _typeItem(context, MdiIcons.trashCan, 'Delete', -1),
-                        Expanded(
-                          child: Container(),
-                        )
-                      ],
+                    child: SingleChildScrollView(
+                      physics: NeverScrollableScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          // _typeItem(context, Icons.grid_on, 'srt0', 0),
+                          _typeItem(
+                              context, MdiIcons.contentCopy, 'Copy URL', 2),
+                          _typeItem(context, MdiIcons.refresh, 'Retry', 1),
+                          _typeItem(
+                              context, MdiIcons.rotateLeft, 'Recovery', 3),
+                          // _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
+                          _typeItem(context, MdiIcons.trashCan, 'Delete', -1),
+                          Expanded(
+                            child: Container(),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
