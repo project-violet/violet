@@ -1872,7 +1872,7 @@ class _ViewerPageState extends State<ViewerPage>
     );
   }
 
-  bool _isThumbMode = false;
+  bool _isThumbMode = Settings.enableThumbSlider;
   double _thumbHeight = 140.0;
   _bottomAppBar() {
     final width = MediaQuery.of(context).size.width;
@@ -1949,6 +1949,8 @@ class _ViewerPageState extends State<ViewerPage>
                                     curve: Curves.easeIn,
                                   );
                                 });
+                              await Settings.setEnableThumbSlider(
+                                  !_isThumbMode);
                               setState(() {
                                 _isThumbMode = !_isThumbMode;
                               });

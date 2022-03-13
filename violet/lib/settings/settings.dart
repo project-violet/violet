@@ -57,6 +57,7 @@ class Settings {
   static bool showSlider;
   static int imageQuality;
   static int thumbSize;
+  static bool enableThumbSlider;
 
   // Download Options
   static bool useInnerStorage;
@@ -184,6 +185,7 @@ class Settings {
     showSlider = await _getBool('showslider');
     imageQuality = await _getInt('imagequality', 3);
     thumbSize = await _getInt('imageQuality', 0);
+    enableThumbSlider = await _getBool('enableThumbSlider');
 
     useInnerStorage =
         (await SharedPreferences.getInstance()).getBool('useinnerstorage');
@@ -536,6 +538,12 @@ class Settings {
     thumbSize = nn;
     await (await SharedPreferences.getInstance())
         .setInt('thumbSize', thumbSize);
+  }
+
+  static Future<void> setEnableThumbSlider(bool nn) async {
+    enableThumbSlider = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('enableThumbSlider', enableThumbSlider);
   }
 
   static Future<void> setShowSlider(bool nn) async {
