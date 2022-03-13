@@ -22,11 +22,15 @@ class DownloadFeaturesMenu extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             width: 280,
             child: IntrinsicHeight(
-              child: Column(
-                children: <Widget>[
-                  _typeItem(context, MdiIcons.refresh, 'Retry Stopped Item', 0),
-                  _typeItem(context, MdiIcons.rotateLeft, 'All Recovery', 1),
-                ],
+              child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                child: Column(
+                  children: <Widget>[
+                    _typeItem(
+                        context, MdiIcons.refresh, 'Retry Stopped Item', 0),
+                    _typeItem(context, MdiIcons.rotateLeft, 'All Recovery', 1),
+                  ],
+                ),
               ),
             ),
           ),
