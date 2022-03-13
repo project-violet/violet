@@ -573,10 +573,13 @@ class _DownloadPageState extends State<DownloadPage>
       barrierDismissible: true,
     ))
         .then((value) async {
-      if (rtype != Settings.downloadResultType)
+      if (rtype != Settings.downloadResultType) {
+        downloadItemWidgetKeys.forEach((key, value) =>
+            downloadItemWidgetKeys[key] = GlobalKey<DownloadItemWidgetState>());
         await Future.delayed(Duration(milliseconds: 50), () {
           setState(() {});
         });
+      }
     });
   }
 
