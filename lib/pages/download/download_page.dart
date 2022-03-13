@@ -441,12 +441,26 @@ class _DownloadPageState extends State<DownloadPage>
                           actions: [yesButton, noButton],
                         ),
                       );
-                      if (int.parse(text.text) == null) {
-                        await showOkDialog(context, "숫자만 입력해야 합니다!");
-                        return;
-                      }
-                      if (dialog == true) {
-                        await appendTask(text.text);
+                      if (text.text.contains(',')) {
+                        final ids = text.text.split(',').map((e) => e.trim());
+                        if (ids
+                            .any((element) => int.tryParse(element) == null)) {
+                          await showOkDialog(context, "콤마로 구분된 숫자만 입력해야 합니다!");
+                          return;
+                        }
+                        if (dialog == true) {
+                          for (var id in ids) {
+                            await appendTask(id);
+                          }
+                        }
+                      } else {
+                        if (int.parse(text.text) == null) {
+                          await showOkDialog(context, "숫자만 입력해야 합니다!");
+                          return;
+                        }
+                        if (dialog == true) {
+                          await appendTask(text.text);
+                        }
                       }
                     },
                   ),
@@ -628,16 +642,19 @@ class _DownloadPageState extends State<DownloadPage>
   void _applyFilter() {
     var result = <int>[];
     var isOr = _filterController.isOr;
-    queryResults.entries.forEach((element) {
+    itemsMap.entries.forEach((element) {
       // 1: Pending
       // 2: Extracting
       // 3: Downloading
       // 4: Post Processing
-      if (1 <= itemsMap[element.key].state() &&
-          itemsMap[element.key].state() <= 4) {
+      if (1 <= element.value.state() && element.value.state() <= 4) {
         result.add(element.key);
         return;
       }
+
+      if (int.tryParse(element.value.url()) == null) return;
+      final qr = queryResults[element.value.url()];
+      if (qr == null) return;
 
       // key := <group>:<name>
       var succ = !_filterController.isOr;
@@ -652,7 +669,7 @@ class _DownloadPageState extends State<DownloadPage>
         var dbColumn = prefix2Tag(split[0]);
 
         // There is no matched db column name
-        if (element.value.result[dbColumn] == null && !isOr) {
+        if (qr.result[dbColumn] == null && !isOr) {
           succ = false;
           return;
         }
@@ -662,12 +679,12 @@ class _DownloadPageState extends State<DownloadPage>
           var tag = split[1];
           if (['female', 'male'].contains(split[0]))
             tag = '${split[0]}:${split[1]}';
-          if ((element.value.result[dbColumn] as String).contains('|$tag|') ==
-              isOr) succ = isOr;
+          if ((qr.result[dbColumn] as String).contains('|$tag|') == isOr)
+            succ = isOr;
         }
 
         // If Multitag
-        else if ((element.value.result[dbColumn] as String == split[1]) == isOr)
+        else if ((qr.result[dbColumn] as String == split[1]) == isOr)
           succ = isOr;
       });
       if (succ) result.add(element.key);
