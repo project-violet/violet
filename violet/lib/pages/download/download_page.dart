@@ -197,8 +197,8 @@ class _DownloadPageState extends State<DownloadPage>
                 searchBar: Stack(
                   children: <Widget>[
                     _urlBar(),
-                    _align(),
                     _features(),
+                    _align(),
                   ],
                 ),
               ),
