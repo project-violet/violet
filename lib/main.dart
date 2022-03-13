@@ -125,6 +125,7 @@ void main() async {
           localizationsDelegates: [
             const TranslationsDelegate(),
             GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate
           ],
           localeResolutionCallback:
