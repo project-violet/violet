@@ -395,11 +395,7 @@ class _ViewerPageState extends State<ViewerPage>
       }
     } else {
       if (!Settings.animation) {
-        _itemScrollController.scrollTo(
-          index: next - 1,
-          duration: Duration(microseconds: 1),
-          alignment: 0.12,
-        );
+        _pageController.jumpToPage(next - 1);
       } else {
         _pageController.animateToPage(
           next - 1,
@@ -407,6 +403,17 @@ class _ViewerPageState extends State<ViewerPage>
           curve: Curves.easeInOut,
         );
       }
+    }
+    if (_isThumbMode) {
+      final width = MediaQuery.of(context).size.width;
+      final jumpOffset = _thumbImageStartPos[next - 1] -
+          width / 2 +
+          _thumbImageWidth[next - 1] / 2;
+      _thumbController.animateTo(
+        jumpOffset > 0 ? jumpOffset : 0,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
     _currentPage = next;
     setState(() {
@@ -1134,6 +1141,18 @@ class _ViewerPageState extends State<ViewerPage>
             ),
             pageController: _pageController,
             onPageChanged: (page) async {
+              if (_isThumbMode) {
+                final width = MediaQuery.of(context).size.width;
+                final jumpOffset = _thumbImageStartPos[page.toInt()] -
+                    width / 2 +
+                    _thumbImageWidth[page.toInt()] / 2;
+                _thumbController.animateTo(
+                  jumpOffset > 0 ? jumpOffset : 0,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                );
+              }
+
               _currentPage = page.toInt() + 1;
               setState(() {
                 _prevPage = page.toInt() + 1;
@@ -2069,7 +2088,8 @@ class _ViewerPageState extends State<ViewerPage>
                                       .then((value) {
                                     _sliderOnChange = false;
                                   });
-                                  if (_pageInfo.useFileSystem)
+                                  if (!Settings.isHorizontal &&
+                                      _pageInfo.useFileSystem)
                                     _itemScrollController.scrollTo(
                                       index: value.toInt() - 1,
                                       duration: Duration(microseconds: 1),
