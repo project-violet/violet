@@ -169,8 +169,6 @@ class _DownloadPageState extends State<DownloadPage>
     });
   }
 
-  Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys =
-      Map<int, GlobalKey<DownloadItemWidgetState>>();
   ScrollController _scrollController = ScrollController();
 
   @override
@@ -210,6 +208,21 @@ class _DownloadPageState extends State<DownloadPage>
     );
   }
 
+  Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys1 =
+      Map<int, GlobalKey<DownloadItemWidgetState>>();
+  Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys2 =
+      Map<int, GlobalKey<DownloadItemWidgetState>>();
+  Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys3 =
+      Map<int, GlobalKey<DownloadItemWidgetState>>();
+
+  _getDownloadWidgetKey() {
+    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1)
+      return downloadItemWidgetKeys1;
+    if (Settings.downloadResultType == 2 || Settings.downloadResultType == 3)
+      return downloadItemWidgetKeys2;
+    return downloadItemWidgetKeys3;
+  }
+
   double lastWindowWidth;
   Widget _panel() {
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
@@ -229,15 +242,15 @@ class _DownloadPageState extends State<DownloadPage>
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 var e = filterResult[filterResult.length - index - 1];
-                if (!downloadItemWidgetKeys
+                if (!downloadItemWidgetKeys1
                     .containsKey(filterResult[index].id()))
-                  downloadItemWidgetKeys[filterResult[index].id()] =
+                  downloadItemWidgetKeys1[filterResult[index].id()] =
                       GlobalKey<DownloadItemWidgetState>();
                 return Align(
                   key: Key('dp' + e.id().toString() + e.url()),
                   alignment: Alignment.bottomCenter,
                   child: DownloadItemWidget(
-                    key: downloadItemWidgetKeys[filterResult[index].id()],
+                    key: downloadItemWidgetKeys1[filterResult[index].id()],
                     initialStyle: DownloadListItem(
                       showDetail: false,
                       addBottomPadding: false,
@@ -273,14 +286,15 @@ class _DownloadPageState extends State<DownloadPage>
             ),
             itemBuilder: (context, index, animation) {
               var e = filterResult[filterResult.length - index - 1];
-              if (!downloadItemWidgetKeys.containsKey(filterResult[index].id()))
-                downloadItemWidgetKeys[filterResult[index].id()] =
+              if (!downloadItemWidgetKeys2
+                  .containsKey(filterResult[index].id()))
+                downloadItemWidgetKeys2[filterResult[index].id()] =
                     GlobalKey<DownloadItemWidgetState>();
               return Align(
                 key: Key('dp' + e.id().toString() + e.url()),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
-                  key: downloadItemWidgetKeys[filterResult[index].id()],
+                  key: downloadItemWidgetKeys2[filterResult[index].id()],
                   initialStyle: DownloadListItem(
                     showDetail: Settings.downloadResultType == 3,
                     addBottomPadding: true,
@@ -299,14 +313,14 @@ class _DownloadPageState extends State<DownloadPage>
           key: _listKey,
           delegate: SliverChildListDelegate(
             filterResult.reversed.map((e) {
-              if (!downloadItemWidgetKeys.containsKey(e.id()))
-                downloadItemWidgetKeys[e.id()] =
+              if (!downloadItemWidgetKeys3.containsKey(e.id()))
+                downloadItemWidgetKeys3[e.id()] =
                     GlobalKey<DownloadItemWidgetState>();
               return Align(
                 key: Key('dp' + e.id().toString() + e.url()),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
-                  key: downloadItemWidgetKeys[e.id()],
+                  key: downloadItemWidgetKeys3[e.id()],
                   initialStyle: DownloadListItem(
                     showDetail: Settings.downloadResultType == 3,
                     addBottomPadding: true,
@@ -503,10 +517,10 @@ class _DownloadPageState extends State<DownloadPage>
       if (value == null) return;
 
       if (value == 0)
-        downloadItemWidgetKeys
+        _getDownloadWidgetKey()
             .forEach((key, value) => value.currentState.retryWhenRequired());
       else if (value == 1)
-        downloadItemWidgetKeys
+        _getDownloadWidgetKey()
             .forEach((key, value) => value.currentState.recovery());
     });
   }
@@ -571,8 +585,9 @@ class _DownloadPageState extends State<DownloadPage>
     ))
         .then((value) async {
       if (rtype != Settings.downloadResultType) {
-        downloadItemWidgetKeys.forEach((key, value) =>
-            downloadItemWidgetKeys[key] = GlobalKey<DownloadItemWidgetState>());
+        var downloadWidgetKey = _getDownloadWidgetKey();
+        downloadWidgetKey.forEach((key, value) =>
+            downloadWidgetKey[key] = GlobalKey<DownloadItemWidgetState>());
         await Future.delayed(Duration(milliseconds: 50), () {
           setState(() {});
         });
