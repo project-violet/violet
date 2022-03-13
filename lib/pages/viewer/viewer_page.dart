@@ -3,12 +3,10 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -28,14 +26,12 @@ import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
-import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/tab_panel.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/pages/viewer/view_record_panel.dart';
-import 'package:violet/pages/viewer/viewer_gallery.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_report.dart';
 import 'package:violet/pages/viewer/viewer_setting_panel.dart';
@@ -60,37 +56,104 @@ class ViewerPage extends StatefulWidget {
 class _ViewerPageState extends State<ViewerPage>
     with SingleTickerProviderStateMixin {
   ViewerPageProvider _pageInfo;
-  Timer _clearTimer;
+  LifecycleEventHandler _lifecycleEventHandler;
+  Timer _nextPageTimer;
+  bool _isBookmarked = false;
+  bool _isSessionOutdated = false;
+  bool _sliderOnChange = false;
+
+  /// the index value of the page currently displayed on the screen
+  int _currentPage = 0;
+
+  /// user-identifiable page number
+  /// the difference from _currentPage is that the page numbering shown
+  /// to the actual user may not match the page in the current image list.
+  /// for example, when a slide is manipulated in file system mode, the value
+  /// displayed on the slider changes, but the page of the list does not change.
   int _prevPage = 1;
+
+  /// these are used for overlay
   double _opacity = 0.0;
   bool _disableBottom = true;
+  bool _overlayOpend = false;
+
+  /// these are used for page control
   PreloadPageController _pageController = PreloadPageController();
-  final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
-  bool _sliderOnChange = false;
-  TapDownDetails _doubleTapDetails;
+  ItemScrollController _itemScrollController = ItemScrollController();
+  ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+
+  /// this is used for onTap, onDoubleTap event
+  TapDownDetails _onTapDetails;
+
+  /// How many fingers are on the screen?
+  int _mpPoints = 0;
+
+  /// this is used for interactive viewer widget
+  /// double-tap a specific location to zoom in on that location.
   TransformationController _transformationController =
       TransformationController();
-  bool scrollListEnable = true;
-  int _mpPoints = 0;
   AnimationController _animationController;
   Animation<Matrix4> _animation;
-  Timer _nextPageTimer;
-  LifecycleEventHandler _lifecycleEventHandler;
-  DateTime _inactivateTime;
-  int currentPage = 0;
-  DateTime _startsTime;
-  int _inactivateSeconds = 0;
-  bool isBookmarked = false;
+
+  /// lock scroll after zoom gesture
+  /// this prevents paging on zoom gesture are performed
+  bool _scrollListEnable = true;
+
+  /// these are used for VioletServer.viewReport
   ViewerReport _report;
+  int _inactivateSeconds = 0;
+  DateTime _startsTime;
+  DateTime _inactivateTime;
   List<int> _decisecondPerPages;
-  bool _isStaring = true;
   List<bool> _isImageLoaded;
-  bool _isSessionOutdated = false;
+
+  /// check if the current user is using this app.
+  bool _isStaring = true;
+
+  /// these are used for thumbnail slider
   ScrollController _thumbController = ScrollController();
   List<double> _thumbImageWidth;
   List<double> _thumbImageStartPos;
+
+  /// these are used for double tap check
+  Timer _doubleTapCheckTimer;
+  bool isPressed = false;
+  bool isDoubleTap = false;
+  bool isSingleTap = false;
+
+  /// It is height that a widget that has an image as a child.
+  List<double> _height;
+
+  /// Image widget key
+  /// This is used to get the height of a widget that has an image as a child.
+  List<GlobalKey> _keys;
+
+  /// this is used on provider
+  /// caching image header information
+  List<Map<String, String>> _headerCache;
+
+  /// this is used on provider
+  /// caching image url
+  List<String> _urlCache;
+
+  /// this is used on provider
+  /// caching estimated image height
+  List<double> _estimatedImageHeight;
+
+  /// this is used on provider
+  /// determine estimaed height is loaded
+  List<bool> _loadingEstimaed;
+
+  /// these are used on [_patchHeightForDynamicLoadedImage]
+  int _latestIndex = 0;
+  double _latestAlign = 0;
+  bool _onScroll = false;
+
+  /// Is enabled thumbnail slider?
+  bool _isThumbMode = Settings.enableThumbSlider;
+
+  /// Thumbnail slider height including image and page text
+  double _thumbHeight = 140.0;
 
   @override
   void initState() {
@@ -103,7 +166,7 @@ class _ViewerPageState extends State<ViewerPage>
         .then((value) => _checkLatestRead());
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async =>
-        isBookmarked =
+        _isBookmarked =
             await (await Bookmark.getInstance()).isBookmark(_pageInfo.id));
 
     _animationController = AnimationController(
@@ -113,11 +176,11 @@ class _ViewerPageState extends State<ViewerPage>
         _transformationController.value = _animation.value;
       });
 
-    itemPositionsListener.itemPositions.addListener(() {
+    _itemPositionsListener.itemPositions.addListener(() {
       if (_isSessionOutdated) return;
       if (_sliderOnChange) return;
 
-      var v = itemPositionsListener.itemPositions.value.toList();
+      var v = _itemPositionsListener.itemPositions.value.toList();
       var selected;
 
       v.sort((x, y) => x.itemLeadingEdge.compareTo(y.itemLeadingEdge));
@@ -135,7 +198,7 @@ class _ViewerPageState extends State<ViewerPage>
       if (selected != null && _prevPage != selected + 1) {
         setState(() {
           _prevPage = selected + 1;
-          currentPage = _prevPage;
+          _currentPage = _prevPage;
         });
       }
     });
@@ -145,7 +208,7 @@ class _ViewerPageState extends State<ViewerPage>
         _inactivateTime = DateTime.now();
         _isStaring = false;
         await (await User.getInstance())
-            .updateUserLog(_pageInfo.id, currentPage);
+            .updateUserLog(_pageInfo.id, _currentPage);
       },
       resumeCallBack: () async {
         _inactivateSeconds +=
@@ -223,7 +286,6 @@ class _ViewerPageState extends State<ViewerPage>
 
   @override
   void dispose() {
-    if (_clearTimer != null) _clearTimer.cancel();
     if (_nextPageTimer != null) _nextPageTimer.cancel();
     PaintingBinding.instance.imageCache.clear();
     if (_pageInfo.useWeb)
@@ -244,12 +306,12 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   Future<void> _savePageRead(bool useFileSystem) async {
-    await (await User.getInstance()).updateUserLog(_pageInfo.id, currentPage);
+    await (await User.getInstance()).updateUserLog(_pageInfo.id, _currentPage);
     if (!useFileSystem && Settings.useVioletServer) {
       _report.endsTime = DateTime.now();
       _report.validSeconds =
           DateTime.now().difference(_startsTime).inSeconds - _inactivateSeconds;
-      _report.lastPage = currentPage;
+      _report.lastPage = _currentPage;
       _report.msPerPages = _decisecondPerPages;
 
       VioletServer.viewClose(
@@ -299,14 +361,14 @@ class _ViewerPageState extends State<ViewerPage>
     if (next < 1 || next > _pageInfo.uris.length) return;
     if (!Settings.isHorizontal) {
       if (!Settings.animation) {
-        await itemScrollController.scrollTo(
+        await _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(microseconds: 1),
           alignment: 0.12,
         );
       } else {
         _sliderOnChange = true;
-        await itemScrollController.scrollTo(
+        await _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -318,7 +380,7 @@ class _ViewerPageState extends State<ViewerPage>
       }
     } else {
       if (!Settings.animation) {
-        itemScrollController.scrollTo(
+        _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(microseconds: 1),
           alignment: 0.12,
@@ -331,7 +393,7 @@ class _ViewerPageState extends State<ViewerPage>
         );
       }
     }
-    currentPage = next;
+    _currentPage = next;
     setState(() {
       _prevPage = next;
     });
@@ -357,7 +419,7 @@ class _ViewerPageState extends State<ViewerPage>
                     Translations.of(context).trans('record'))) {
               if (!Settings.isHorizontal) {
                 _latestIndex = e.lastPage() - 1;
-                itemScrollController.scrollTo(
+                _itemScrollController.scrollTo(
                   index: e.lastPage() - 1,
                   duration: Duration(microseconds: 1),
                   alignment: 0.12,
@@ -451,7 +513,7 @@ class _ViewerPageState extends State<ViewerPage>
             onPressed: () async {
               _isSessionOutdated = true;
               await _savePageRead(_pageInfo.useFileSystem);
-              Navigator.pop(context, currentPage);
+              Navigator.pop(context, _currentPage);
               return Future(() => false);
             },
             child: Row(
@@ -555,7 +617,7 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         _isSessionOutdated = true;
         await _savePageRead(_pageInfo.useFileSystem);
-        Navigator.pop(context, currentPage);
+        Navigator.pop(context, _currentPage);
         return Future(() => false);
       },
     );
@@ -563,33 +625,33 @@ class _ViewerPageState extends State<ViewerPage>
 
   _appBarBookmark() {
     return IconButton(
-      icon: Icon(isBookmarked ? MdiIcons.heart : MdiIcons.heartOutline),
+      icon: Icon(_isBookmarked ? MdiIcons.heart : MdiIcons.heartOutline),
       color: Colors.white,
       onPressed: () async {
-        isBookmarked =
+        _isBookmarked =
             await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
 
-        if (isBookmarked) {
+        if (_isBookmarked) {
           if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
         }
 
         FlutterToast(context).showToast(
           child: ToastWrapper(
-            icon: isBookmarked ? Icons.delete_forever : Icons.check,
-            color: isBookmarked
+            icon: _isBookmarked ? Icons.delete_forever : Icons.check,
+            color: _isBookmarked
                 ? Colors.redAccent.withOpacity(0.8)
                 : Colors.greenAccent.withOpacity(0.8),
             ignoreDrawer: true,
             reverse: true,
             msg:
-                '${_pageInfo.id}${Translations.of(context).trans(!isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
+                '${_pageInfo.id}${Translations.of(context).trans(!_isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
           ),
           gravity: ToastGravity.TOP,
           toastDuration: Duration(seconds: 4),
         );
 
-        isBookmarked = !isBookmarked;
-        if (isBookmarked)
+        _isBookmarked = !_isBookmarked;
+        if (_isBookmarked)
           await (await Bookmark.getInstance()).bookmark(_pageInfo.id);
         else
           await (await Bookmark.getInstance()).unbookmark(_pageInfo.id);
@@ -621,7 +683,7 @@ class _ViewerPageState extends State<ViewerPage>
         var headers = await prov.getHeader(0);
         ProviderManager.insert(qr.id(), prov);
 
-        var isBookmarked =
+        var _isBookmarked =
             await (await Bookmark.getInstance()).isBookmark(qr.id());
 
         _isStaring = false;
@@ -648,7 +710,7 @@ class _ViewerPageState extends State<ViewerPage>
                       thumbnail: thumbnail,
                       headers: headers,
                       heroKey: 'zxcvzxcvzxcv',
-                      isBookmarked: isBookmarked,
+                      isBookmarked: _isBookmarked,
                       controller: controller,
                       lockRead: true,
                     ),
@@ -697,7 +759,7 @@ class _ViewerPageState extends State<ViewerPage>
           _startsTime = DateTime.now();
 
           if (!Settings.isHorizontal) {
-            itemScrollController.scrollTo(
+            _itemScrollController.scrollTo(
               index: 0,
               duration: Duration(microseconds: 1),
               alignment: 0.12,
@@ -705,7 +767,7 @@ class _ViewerPageState extends State<ViewerPage>
           } else {
             _pageController.jumpToPage(0);
           }
-          currentPage = 0;
+          _currentPage = 0;
           setState(() {
             _prevPage = 0;
           });
@@ -774,7 +836,7 @@ class _ViewerPageState extends State<ViewerPage>
             }).then((value) {
           if (value != null) {
             if (!Settings.isHorizontal) {
-              itemScrollController.scrollTo(
+              _itemScrollController.scrollTo(
                 index: value,
                 duration: Duration(microseconds: 1),
                 alignment: 0.12,
@@ -782,7 +844,7 @@ class _ViewerPageState extends State<ViewerPage>
             } else {
               _pageController.jumpToPage(value - 1);
             }
-            currentPage = value;
+            _currentPage = value;
             setState(() {
               _prevPage = value;
             });
@@ -825,7 +887,7 @@ class _ViewerPageState extends State<ViewerPage>
                   child: Provider<ViewerPageProvider>.value(
                     value: _pageInfo,
                     child: ViewerThumbnail(
-                      viewedPage: currentPage - 1,
+                      viewedPage: _currentPage - 1,
                     ),
                   ),
                 );
@@ -834,7 +896,7 @@ class _ViewerPageState extends State<ViewerPage>
           if (value != null) {
             if (value != null) {
               if (!Settings.isHorizontal) {
-                itemScrollController.scrollTo(
+                _itemScrollController.scrollTo(
                   index: value,
                   duration: Duration(microseconds: 1),
                   alignment: 0.12,
@@ -842,7 +904,7 @@ class _ViewerPageState extends State<ViewerPage>
               } else {
                 _pageController.jumpToPage(value - 1);
               }
-              currentPage = value;
+              _currentPage = value;
               setState(() {
                 _prevPage = value;
               });
@@ -877,7 +939,7 @@ class _ViewerPageState extends State<ViewerPage>
                       var npage = _prevPage;
                       _sliderOnChange = true;
                       Future.delayed(Duration(milliseconds: 180)).then((value) {
-                        itemScrollController.scrollTo(
+                        _itemScrollController.scrollTo(
                           index: npage - 1,
                           duration: Duration(microseconds: 1),
                           alignment: 0.12,
@@ -924,11 +986,11 @@ class _ViewerPageState extends State<ViewerPage>
   //         ).then((value) {
   //           if (value != null) {
   //             if (!Settings.isHorizontal) {
-  //               itemScrollController.jumpTo(index: value, alignment: 0.12);
+  //               _itemScrollController.jumpTo(index: value, alignment: 0.12);
   //             } else {
   //               _pageController.jumpToPage(value - 1);
   //             }
-  //             currentPage = value;
+  //             _currentPage = value;
   //             setState(() {
   //               _prevPage = value;
   //             });
@@ -955,13 +1017,13 @@ class _ViewerPageState extends State<ViewerPage>
                 : const Color(0xff444444),
             child: NotificationListener(
               child: ScrollablePositionedList.builder(
-                physics: scrollListEnable
+                physics: _scrollListEnable
                     ? AlwaysScrollableScrollPhysics()
                     : NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 itemCount: _pageInfo.uris.length,
-                itemScrollController: itemScrollController,
-                itemPositionsListener: itemPositionsListener,
+                itemScrollController: _itemScrollController,
+                itemPositionsListener: _itemPositionsListener,
                 minCacheExtent:
                     _pageInfo.useFileSystem ? height * 3.0 : height * 3.0,
                 itemBuilder: (context, index) {
@@ -997,9 +1059,9 @@ class _ViewerPageState extends State<ViewerPage>
                     onPointerDown: (event) {
                       _mpPoints++;
                       if (_mpPoints >= 2) {
-                        if (scrollListEnable) {
+                        if (_scrollListEnable) {
                           setState(() {
-                            scrollListEnable = false;
+                            _scrollListEnable = false;
                           });
                         }
                       }
@@ -1008,7 +1070,7 @@ class _ViewerPageState extends State<ViewerPage>
                       _mpPoints--;
                       if (_mpPoints < 1) {
                         setState(() {
-                          scrollListEnable = true;
+                          _scrollListEnable = true;
                         });
                       }
                     },
@@ -1057,7 +1119,7 @@ class _ViewerPageState extends State<ViewerPage>
             ),
             pageController: _pageController,
             onPageChanged: (page) async {
-              currentPage = page.toInt() + 1;
+              _currentPage = page.toInt() + 1;
               setState(() {
                 _prevPage = page.toInt() + 1;
               });
@@ -1237,10 +1299,6 @@ class _ViewerPageState extends State<ViewerPage>
     throw Exception('Dead Reaching');
   }
 
-  Timer _doubleTapCheckTimer;
-  bool isPressed = false;
-  bool isDoubleTap = false;
-  bool isSingleTap = false;
   _touchArea() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -1256,7 +1314,7 @@ class _ViewerPageState extends State<ViewerPage>
         // onDoubleTap: _handleDoubleTap,
         onTap: _handleTap,
         onTapDown: (TapDownDetails details) {
-          _doubleTapDetails = details;
+          _onTapDetails = details;
 
           isPressed = true;
           if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
@@ -1299,9 +1357,9 @@ class _ViewerPageState extends State<ViewerPage>
 
   void _touchEvent() {
     final width = MediaQuery.of(context).size.width;
-    if (_doubleTapDetails.localPosition.dx < width / 3) {
+    if (_onTapDetails.localPosition.dx < width / 3) {
       if (!Settings.disableOverlayButton) _leftButtonEvent();
-    } else if (width / 3 * 2 < _doubleTapDetails.localPosition.dx) {
+    } else if (width / 3 * 2 < _onTapDetails.localPosition.dx) {
       if (!Settings.disableOverlayButton) _rightButtonEvent();
     } else {
       _middleButtonEvent();
@@ -1310,7 +1368,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   void _doubleTapEvent() {
     Matrix4 _endMatrix;
-    Offset _position = _doubleTapDetails.localPosition;
+    Offset _position = _onTapDetails.localPosition;
 
     if (_transformationController.value != Matrix4.identity()) {
       _endMatrix = Matrix4.identity();
@@ -1329,7 +1387,6 @@ class _ViewerPageState extends State<ViewerPage>
     _animationController.forward(from: 0);
   }
 
-  bool _overlayOpend = false;
   _touchAreaMiddle() {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -1349,7 +1406,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   _middleButtonEvent() async {
     if (!_overlayOpend) {
-      if (!Settings.isHorizontal) _prevPage = currentPage;
+      if (!Settings.isHorizontal) _prevPage = _currentPage;
       // setState(() {});
       setState(() {
         _opacity = 1.0;
@@ -1409,14 +1466,14 @@ class _ViewerPageState extends State<ViewerPage>
     if (next < 1 || next > _pageInfo.uris.length) return;
     if (!Settings.isHorizontal) {
       if (!Settings.animation) {
-        itemScrollController.scrollTo(
+        _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(microseconds: 1),
           alignment: 0.12,
         );
       } else {
         _sliderOnChange = true;
-        await itemScrollController.scrollTo(
+        await _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -1437,7 +1494,7 @@ class _ViewerPageState extends State<ViewerPage>
         );
       }
     }
-    currentPage = next;
+    _currentPage = next;
     setState(() {
       _prevPage = next;
     });
@@ -1467,14 +1524,14 @@ class _ViewerPageState extends State<ViewerPage>
     if (next < 1 || next > _pageInfo.uris.length) return;
     if (!Settings.isHorizontal) {
       if (!Settings.animation) {
-        itemScrollController.scrollTo(
+        _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(microseconds: 1),
           alignment: 0.12,
         );
       } else {
         _sliderOnChange = true;
-        await itemScrollController.scrollTo(
+        await _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -1486,7 +1543,7 @@ class _ViewerPageState extends State<ViewerPage>
       }
     } else {
       if (!Settings.animation) {
-        itemScrollController.scrollTo(
+        _itemScrollController.scrollTo(
           index: next - 1,
           duration: Duration(microseconds: 1),
           alignment: 0.12,
@@ -1499,14 +1556,12 @@ class _ViewerPageState extends State<ViewerPage>
         );
       }
     }
-    currentPage = next;
+    _currentPage = next;
     setState(() {
       _prevPage = next;
     });
   }
 
-  List<double> _height;
-  List<GlobalKey> _keys;
   _networkImageItem(index) {
     final width =
         MediaQuery.of(context).size.width - (Settings.padding ? 8 : 0);
@@ -1652,13 +1707,6 @@ class _ViewerPageState extends State<ViewerPage>
   }
    */
 
-  List<Map<String, String>> _headerCache;
-  List<String> _urlCache;
-  List<double> _estimatedImageHeight;
-  List<bool> _loadingEstimaed;
-  int _latestIndex = 0;
-  double _latestAlign = 0;
-  bool _onScroll = false;
   _providerImageItem(index) {
     if (_headerCache == null) {
       _headerCache =
@@ -1843,8 +1891,15 @@ class _ViewerPageState extends State<ViewerPage>
     );
   }
 
+  /// This function is used for [_patchHeightForDynamicLoadedImage].
+  /// The height of the widget with the initial image is set to 300,
+  /// and when the image is loaded, the height is reset based on the
+  /// aspect ratio of the image, which automatically adjusts the page
+  /// currently being viewed by the user. This is a problem caused
+  /// by the minCacheExtent of the listview, and we could not reduce
+  /// the minCacheExtent to solve this problem.
   _getLatestHeight() {
-    var v = itemPositionsListener.itemPositions.value.toList();
+    var v = _itemPositionsListener.itemPositions.value.toList();
     var selected;
     var selectede;
 
@@ -1865,15 +1920,13 @@ class _ViewerPageState extends State<ViewerPage>
 
   _patchHeightForDynamicLoadedImage() {
     if (_sliderOnChange) return;
-    itemScrollController.scrollTo(
+    _itemScrollController.scrollTo(
       index: _latestIndex,
       duration: Duration(microseconds: 1),
       alignment: _latestAlign,
     );
   }
 
-  bool _isThumbMode = Settings.enableThumbSlider;
-  double _thumbHeight = 140.0;
   _bottomAppBar() {
     final width = MediaQuery.of(context).size.width;
     final statusBarHeight =
@@ -1998,7 +2051,7 @@ class _ViewerPageState extends State<ViewerPage>
                                 onChangeEnd: (value) {
                                   _sliderOnChange = false;
                                   if (_pageInfo.useFileSystem)
-                                    itemScrollController.scrollTo(
+                                    _itemScrollController.scrollTo(
                                       index: value.toInt() - 1,
                                       duration: Duration(microseconds: 1),
                                       alignment: 0.12,
@@ -2007,7 +2060,7 @@ class _ViewerPageState extends State<ViewerPage>
                                 onChanged: (value) {
                                   if (!Settings.isHorizontal) {
                                     if (!_pageInfo.useFileSystem)
-                                      itemScrollController.jumpTo(
+                                      _itemScrollController.jumpTo(
                                         index: value.toInt() - 1,
                                         alignment: 0.12,
                                       );
@@ -2025,7 +2078,7 @@ class _ViewerPageState extends State<ViewerPage>
                                     _thumbController.jumpTo(jumpOffset);
                                   }
 
-                                  currentPage = value.toInt();
+                                  _currentPage = value.toInt();
                                   setState(() {
                                     _prevPage = value.toInt();
                                   });
@@ -2095,7 +2148,7 @@ class _ViewerPageState extends State<ViewerPage>
             ),
             onTap: () {
               if (!Settings.isHorizontal) {
-                itemScrollController.scrollTo(
+                _itemScrollController.scrollTo(
                   index: index,
                   duration: Duration(microseconds: 1),
                   alignment: 0.12,
@@ -2113,7 +2166,7 @@ class _ViewerPageState extends State<ViewerPage>
                 curve: Curves.easeOut,
               );
 
-              currentPage = index;
+              _currentPage = index;
               setState(() {
                 _prevPage = index;
               });
