@@ -150,7 +150,7 @@ class _ViewerPageState extends State<ViewerPage>
   bool _onScroll = false;
 
   /// Is enabled thumbnail slider?
-  bool _isThumbMode = Settings.enableThumbSlider;
+  bool _isThumbMode = false;
 
   /// Thumbnail slider height including image and page text
   double _thumbHeight = 140.0;
@@ -261,6 +261,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   _preprocessImageInfoForFileImage() {
     _thumbHeight = [140.0, 120.0, 96.0][Settings.thumbSize];
+    _isThumbMode = Settings.enableThumbSlider;
 
     var _imageSizes = _pageInfo.uris.map((e) {
       final image = new File(e);
