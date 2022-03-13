@@ -14,16 +14,22 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:violet/component/downloadable.dart';
+import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/model/article_info.dart';
+import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
+import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/toast.dart';
 
 class DownloadListItem {
@@ -82,6 +88,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   bool recoveryMode = false;
   double thisWidth, thisHeight;
   DownloadListItem style;
+  bool isLastestRead = false;
+  int latestReadPage;
 
   @override
   void initState() {
@@ -94,7 +102,27 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
     _styleCallback(widget.initialStyle);
 
+    _checkLastRead();
     _downloadProcedure();
+  }
+
+  _checkLastRead() {
+    User.getInstance().then((value) => value.getUserLog().then((value) async {
+          var x = value.where((e) =>
+              e.articleId() == widget.item.url() &&
+              e.lastPage() != null &&
+              e.lastPage() > 1 &&
+              DateTime.parse(e.datetimeStart())
+                      .difference(DateTime.now())
+                      .inDays <
+                  31);
+          if (x.length == 0) return;
+          _shouldReload = true;
+          setState(() {
+            isLastestRead = true;
+            latestReadPage = x.first.lastPage();
+          });
+        }));
   }
 
   _styleCallback(DownloadListItem item) {
@@ -335,7 +363,64 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           scale = 1.0;
         });
       },
+      onDoubleTap: () {
+        setState(() {
+          scale = 1.0;
+        });
+        if (int.tryParse(widget.item.url()) != null)
+          _showArticleInfo(int.parse(widget.item.url()));
+      },
     );
+  }
+
+  void _showArticleInfo(int id) async {
+    final height = MediaQuery.of(context).size.height;
+
+    final search = await HentaiManager.idSearch(id.toString());
+    if (search.item1.length != 1) return;
+
+    final qr = search.item1[0];
+
+    HentaiManager.getImageProvider(qr).then((value) async {
+      var thumbnail = await value.getThumbnailUrl();
+      var headers = await value.getHeader(0);
+      ProviderManager.insert(qr.id(), value);
+
+      var isBookmarked =
+          await (await Bookmark.getInstance()).isBookmark(qr.id());
+
+      var cache;
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (_) {
+          return DraggableScrollableSheet(
+            initialChildSize: 400 / height,
+            minChildSize: 400 / height,
+            maxChildSize: 0.9,
+            expand: false,
+            builder: (_, controller) {
+              if (cache == null) {
+                cache = Provider<ArticleInfo>.value(
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
+                  ),
+                  value: ArticleInfo.fromArticleInfo(
+                    queryResult: qr,
+                    thumbnail: thumbnail,
+                    headers: headers,
+                    heroKey: 'zxcvzxcvzxcv',
+                    isBookmarked: isBookmarked,
+                    controller: controller,
+                  ),
+                );
+              }
+              return cache;
+            },
+          );
+        },
+      );
+    });
   }
 
   _retry() {
@@ -452,7 +537,18 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
     return Visibility(
       visible: widget.item.thumbnail() != null,
-      child: _cachedThumbnail,
+      child: Stack(children: [
+        _cachedThumbnail,
+        ReadProgressOverlayWidget(
+          imageCount: widget.item.filesWithoutThumbnail().length,
+          latestReadPage: latestReadPage,
+          isLastestRead: isLastestRead,
+        ),
+        PagesOverlayWidget(
+          imageCount: widget.item.filesWithoutThumbnail().length,
+          showDetail: style.showDetail,
+        ),
+      ]),
     );
   }
 
@@ -618,7 +714,7 @@ class _ThumbnailWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
+      width: showDetail ? 100 : double.infinity,
       child: thumbnail != null
           ? ClipRRect(
               borderRadius: showDetail
@@ -732,7 +828,7 @@ class _FileThumbnailWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
+      width: showDetail ? 100 : double.infinity,
       child: thumbnailPath != null
           ? ClipRRect(
               borderRadius: showDetail
