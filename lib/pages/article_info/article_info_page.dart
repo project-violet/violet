@@ -296,7 +296,12 @@ class ArticleInfoPage extends StatelessWidget {
 
     await prov.init();
 
-    Navigator.push(
+    dynamic navigatorFunc = Navigator.push;
+
+    if (Settings.usingPushReplacementOnArticleRead)
+      navigatorFunc = Navigator.pushReplacement;
+
+    navigatorFunc(
       context,
       MaterialPageRoute(
         fullscreenDialog: true,

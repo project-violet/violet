@@ -107,6 +107,29 @@ class _LabSettingState extends State<LabSetting> {
               setState(() {});
             },
           ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(MdiIcons.flask, color: Settings.majorColor),
+              title: Text('Using PushReplacement On Article Read'),
+              subtitle: Text(
+                  'when tap Read button in the article-info, the article-info closes.'),
+              trailing: Switch(
+                value: Settings.usingPushReplacementOnArticleRead,
+                onChanged: (newValue) async {
+                  await Settings.setUsingPushReplacementOnArticleRead(newValue);
+                  setState(() {});
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setUsingPushReplacementOnArticleRead(
+                  !Settings.usingPushReplacementOnArticleRead);
+              setState(() {});
+            },
+          ),
         ],
       ),
     );
