@@ -169,7 +169,6 @@ class _DownloadPageState extends State<DownloadPage>
     });
   }
 
-  Map<int, Widget> downloadItemWidgets = Map<int, Widget>();
   Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys =
       Map<int, GlobalKey<DownloadItemWidgetState>>();
   ScrollController _scrollController = ScrollController();
@@ -300,12 +299,10 @@ class _DownloadPageState extends State<DownloadPage>
           key: _listKey,
           delegate: SliverChildListDelegate(
             filterResult.reversed.map((e) {
-              if (downloadItemWidgets.containsKey(e.id()))
-                return downloadItemWidgets[e.id()];
               if (!downloadItemWidgetKeys.containsKey(e.id()))
                 downloadItemWidgetKeys[e.id()] =
                     GlobalKey<DownloadItemWidgetState>();
-              return downloadItemWidgets[e.id()] = Align(
+              return Align(
                 key: Key('dp' + e.id().toString() + e.url()),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
