@@ -56,6 +56,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         return widget.isRegisterMode;
       },
       child: Material(
+        color: Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
         child: Container(
           padding: EdgeInsets.all(16.0),
           width: double.infinity,
