@@ -24,6 +24,22 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 3, 0),
+    version: '1.22.1 Minor Update <== Latest',
+    contents: [
+      'fix text field long press gray scale bug on ios',
+      'fix background color to black bug for ios',
+      'fix database and download list were broken after updating app on ios',
+      'fix strong bookmark vibration on ios',
+      'fix download viewer image flickering bug on sliding',
+      'fix hiyobi image getter',
+      'fix text wrap error in menus',
+      'add read progress overlay, pages overlay to download item',
+      'add thumbnail slider in download viewer',
+      'add global retry, refresh in download page',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 3, 11),
     version: '1.22 Minor Update <== Latest',
     contents: [
