@@ -108,7 +108,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                         ),
                       )),
                   SizedBox(
-                    height: 350.0,
+                    height: 300.0,
                     child: Column(
                       children: [
                         _numberRow([
@@ -131,7 +131,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                           _button(0, '0'),
                           _button(-1, ''),
                         ]),
-                        Container(height: 64)
+                        // Container(height: 64)
                       ],
                     ),
                   ),
