@@ -93,6 +93,8 @@ class Settings {
   static bool enableViewerFunctionBackdropFilter;
   static bool usingPushReplacementOnArticleRead;
 
+  static bool useLockScreen;
+
   static Future<void> initFirst() async {
     var mc = await _getInt('majorColor', Colors.purple.value);
     var mac = await _getInt('majorAccentColor', Colors.purpleAccent.value);
@@ -106,6 +108,8 @@ class Settings {
     themeBlack = await _getBool('themeBlack');
 
     language = (await SharedPreferences.getInstance()).getString('language');
+
+    useLockScreen = await _getBool('useLockScreen', true);
 
     await _getInt('thread_count', 4);
   }
@@ -672,5 +676,10 @@ class Settings {
     usingPushReplacementOnArticleRead = nn;
     await (await SharedPreferences.getInstance())
         .setBool('usingPushReplacementOnArticleRead', nn);
+  }
+
+  static Future<void> setUseLockScreen(bool nn) async {
+    useLockScreen = nn;
+    await (await SharedPreferences.getInstance()).setBool('useLockScreen', nn);
   }
 }
