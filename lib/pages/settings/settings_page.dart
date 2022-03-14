@@ -42,6 +42,7 @@ import 'package:violet/pages/settings/bookmark_version_select.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
+import 'package:violet/pages/settings/lock_setting_page.dart';
 import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/pages/settings/login/ehentai_login.dart';
 import 'package:violet/pages/settings/restore_bookmark.dart';
@@ -162,6 +163,7 @@ class _SettingsPageState extends State<SettingsPage>
         ..add(UserStatusCard())
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
+        ..addAll(_securityGroup())
         ..addAll(_databaseGroup())
         ..addAll(_networkingGroup())
         ..addAll(_downloadGroup())
@@ -414,7 +416,7 @@ class _SettingsPageState extends State<SettingsPage>
         _buildDivider(),
         InkWell(
           child: ListTile(
-            leading: Icon(MdiIcons.buffer, color: Settings.majorColor),
+            leading: Icon(Mdi.buffer, color: Settings.majorColor),
             title: Text('Flat 테마 사용'),
             trailing: Switch(
               value: Settings.themeFlat,
@@ -836,6 +838,40 @@ class _SettingsPageState extends State<SettingsPage>
                 await showOkDialog(
                     context, 'Developer tools can only be run in debug mode.');
               }
+            },
+          ),
+        ],
+      ),
+    ];
+  }
+
+  List<Widget> _securityGroup() {
+    return [
+      _buildGroup(Translations.of(context).trans('security')),
+      _buildItems(
+        [
+          InkWell(
+            customBorder: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: ListTile(
+              // borderRadius: BorderRadius.circular(8.0),
+              leading: Icon(
+                Icons.lock_outline,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('lockapp')),
+              trailing: Icon(
+                  // Icons.message,
+                  Icons.keyboard_arrow_right),
+            ),
+            onTap: () async {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) => LockSettingPage(),
+                ),
+              );
             },
           ),
         ],

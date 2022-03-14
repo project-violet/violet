@@ -20,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
@@ -109,7 +110,7 @@ void main() async {
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
           theme: theme,
-          home: SplashPage(),
+          home: Settings.useLockScreen ? LockScreen() : SplashPage(),
           supportedLocales: [
             const Locale('en', 'US'),
             const Locale('ko', 'KR'),
@@ -121,6 +122,7 @@ void main() async {
           routes: <String, WidgetBuilder>{
             '/AfterLoading': (context) => AfterLoadingPage(),
             '/DatabaseDownload': (context) => DataBaseDownloadPage(),
+            '/SplashPage': (context) => SplashPage(),
           },
           localizationsDelegates: [
             const TranslationsDelegate(),
