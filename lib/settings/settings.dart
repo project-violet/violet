@@ -109,7 +109,7 @@ class Settings {
 
     language = (await SharedPreferences.getInstance()).getString('language');
 
-    useLockScreen = await _getBool('useLockScreen', true);
+    useLockScreen = await _getBool('useLockScreen');
 
     await _getInt('thread_count', 4);
   }
