@@ -36,7 +36,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(children: [
-            Text('위치: '),
+            Text('${Translations.of(context).trans('position')}: '),
             Expanded(
               child: TextField(
                 controller: _pageController,
@@ -69,7 +69,10 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                   }
                   if (int.parse(_pageController.text.trim()) >=
                       widget.maxPage) {
-                    await showOkDialog(context, '최대 아이템 위치보다 낮게 설정해야합니다!');
+                    await showOkDialog(
+                        context,
+                        Translations.of(context)
+                            .trans('setlowerthanmaxitemposition'));
                     return;
                   }
                   Navigator.pop(context, [

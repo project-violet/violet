@@ -351,7 +351,7 @@ class _SettingsPageState extends State<SettingsPage>
         InkWell(
           child: ListTile(
             leading: Icon(MdiIcons.brightness3, color: Settings.majorColor),
-            title: Text('블랙 모드'),
+            title: Text(Translations.of(context).trans('blackmode')),
             trailing: Switch(
               value: Settings.themeBlack,
               onChanged: _themeSwitch
@@ -417,7 +417,7 @@ class _SettingsPageState extends State<SettingsPage>
         InkWell(
           child: ListTile(
             leading: Icon(Mdi.buffer, color: Settings.majorColor),
-            title: Text('Flat 테마 사용'),
+            title: Text(Translations.of(context).trans('useflattheme')),
             trailing: Switch(
               value: Settings.themeFlat,
               onChanged: (newValue) async {
@@ -441,7 +441,7 @@ class _SettingsPageState extends State<SettingsPage>
         InkWell(
           child: ListTile(
             leading: Icon(MdiIcons.tabletDashboard, color: Settings.majorColor),
-            title: Text('Tablet 모드 사용'),
+            title: Text(Translations.of(context).trans('usetabletmode')),
             trailing: Switch(
               value: Settings.useTabletMode,
               onChanged: (newValue) async {
@@ -469,7 +469,7 @@ class _SettingsPageState extends State<SettingsPage>
                   bottomRight: Radius.circular(8.0))),
           child: ListTile(
             leading: Icon(MdiIcons.cellphoneText, color: Settings.majorColor),
-            title: Text('Drawer 사용'),
+            title: Text(Translations.of(context).trans('userdrawer')),
             trailing: Switch(
               value: Settings.useDrawer,
               onChanged: (newValue) async {
@@ -738,33 +738,35 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(Icons.translate, color: Settings.majorColor),
-            title: Text('태그 번역'),
-            trailing: Switch(
-              value: Settings.translateTags,
-              onChanged: (newValue) async {
-                await Settings.setTranslateTags(newValue);
+          if (Settings.language == 'korean') _buildDivider(),
+          if (Settings.language == 'korean')
+            ListTile(
+              leading: Icon(Icons.translate, color: Settings.majorColor),
+              title:
+                  Text(Translations.of(context).trans('translatetagtokorean')),
+              trailing: Switch(
+                value: Settings.translateTags,
+                onChanged: (newValue) async {
+                  await Settings.setTranslateTags(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+              onTap: () async {
+                await Settings.setTranslateTags(!Settings.translateTags);
                 setState(() {
                   _shouldReload = true;
                 });
               },
-              activeTrackColor: Settings.majorColor,
-              activeColor: Settings.majorAccentColor,
             ),
-            onTap: () async {
-              await Settings.setTranslateTags(!Settings.translateTags);
-              setState(() {
-                _shouldReload = true;
-              });
-            },
-          ),
           _buildDivider(),
           ListTile(
             leading:
                 Icon(MdiIcons.imageSizeSelectLarge, color: Settings.majorColor),
-            title: Text('저사양 모드'),
+            title: Text(Translations.of(context).trans('lowresmode')),
             trailing: Switch(
               value: Settings.useLowPerf,
               onChanged: (newValue) async {
@@ -1094,7 +1096,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.commentSearch,
               color: Settings.majorColor,
             ),
-            title: Text('대사 검색기 API'),
+            title: Text(Translations.of(context).trans('messagesearchapi')),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               TextEditingController text =

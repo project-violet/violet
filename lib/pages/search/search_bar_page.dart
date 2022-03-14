@@ -122,9 +122,13 @@ class _SearchBarPageState extends State<SearchBarPage>
               elevation: 100,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4)),
-              color: Settings.themeWhat && Settings.themeBlack ? const Color(0xFF141414) : null,
+              color: Settings.themeWhat && Settings.themeBlack
+                  ? const Color(0xFF141414)
+                  : null,
               child: Material(
-                color:Settings.themeWhat && Settings.themeBlack ? const Color(0xFF141414) : null,
+                color: Settings.themeWhat && Settings.themeBlack
+                    ? const Color(0xFF141414)
+                    : null,
                 child: Container(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,7 +167,9 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   _searchBar() {
     return Material(
-      color:Settings.themeWhat && Settings.themeBlack ? const Color(0xFF141414) : null,
+      color: Settings.themeWhat && Settings.themeBlack
+          ? const Color(0xFF141414)
+          : null,
       child: ListTile(
         title: TextFormField(
           cursorColor: Colors.black,
@@ -370,60 +376,65 @@ class _SearchBarPageState extends State<SearchBarPage>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.translate, color: Settings.majorColor),
-                    title:
-                        Text(Translations.of(context).trans('tagtranslation')),
-                    trailing: Switch(
-                      value: Settings.searchTagTranslation,
-                      onChanged: (newValue) async {
-                        await Settings.setSearchTagTranslation(newValue);
+                  if (Settings.language == 'korean')
+                    ListTile(
+                      leading:
+                          Icon(Icons.translate, color: Settings.majorColor),
+                      title: Text(
+                          Translations.of(context).trans('tagtranslation')),
+                      trailing: Switch(
+                        value: Settings.searchTagTranslation,
+                        onChanged: (newValue) async {
+                          await Settings.setSearchTagTranslation(newValue);
+                          setState(() {});
+                        },
+                        activeTrackColor: Settings.majorColor,
+                        activeColor: Settings.majorAccentColor,
+                      ),
+                      onTap: () async {
+                        await Settings.setSearchTagTranslation(
+                            !Settings.searchTagTranslation);
                         setState(() {});
                       },
-                      activeTrackColor: Settings.majorColor,
-                      activeColor: Settings.majorAccentColor,
                     ),
-                    onTap: () async {
-                      await Settings.setSearchTagTranslation(
-                          !Settings.searchTagTranslation);
-                      setState(() {});
-                    },
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
+                  if (Settings.language == 'korean')
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                      ),
+                      width: double.infinity,
+                      height: 1.0,
+                      color: Colors.grey.shade400,
                     ),
-                    width: double.infinity,
-                    height: 1.0,
-                    color: Colors.grey.shade400,
-                  ),
-                  ListTile(
-                    leading:
-                        Icon(MdiIcons.layersSearch, color: Settings.majorColor),
-                    title: Text('한글 검색'),
-                    trailing: Switch(
-                      value: Settings.searchUseTranslated,
-                      onChanged: (newValue) async {
-                        await Settings.setSearchUseTranslated(newValue);
+                  if (Settings.language == 'korean')
+                    ListTile(
+                      leading: Icon(MdiIcons.layersSearch,
+                          color: Settings.majorColor),
+                      title: Text('한글 검색'),
+                      trailing: Switch(
+                        value: Settings.searchUseTranslated,
+                        onChanged: (newValue) async {
+                          await Settings.setSearchUseTranslated(newValue);
+                          setState(() {});
+                        },
+                        activeTrackColor: Settings.majorColor,
+                        activeColor: Settings.majorAccentColor,
+                      ),
+                      onTap: () async {
+                        await Settings.setSearchUseTranslated(
+                            !Settings.searchUseTranslated);
                         setState(() {});
                       },
-                      activeTrackColor: Settings.majorColor,
-                      activeColor: Settings.majorAccentColor,
                     ),
-                    onTap: () async {
-                      await Settings.setSearchUseTranslated(
-                          !Settings.searchUseTranslated);
-                      setState(() {});
-                    },
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
+                  if (Settings.language == 'korean')
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                      ),
+                      width: double.infinity,
+                      height: 1.0,
+                      color: Colors.grey.shade400,
                     ),
-                    width: double.infinity,
-                    height: 1.0,
-                    color: Colors.grey.shade400,
-                  ),
                   ListTile(
                     leading: Icon(MdiIcons.counter, color: Settings.majorColor),
                     title: Text(Translations.of(context).trans('showcount')),
