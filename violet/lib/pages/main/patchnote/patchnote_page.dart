@@ -37,6 +37,7 @@ final patches = [
       'add read progress overlay, pages overlay to download item',
       'add thumbnail slider in download viewer',
       'add global retry, refresh in download page',
+      'add lock screen',
     ],
   ),
   PatchModel(

@@ -97,7 +97,8 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                       child: Center(
                         child: GestureDetector(
                           child: Text.rich(TextSpan(
-                              text: Translations.of(context).trans('pinauth'),
+                              text:
+                                  Translations.of(context).trans('missingpass'),
                               style: TextStyle(
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,
