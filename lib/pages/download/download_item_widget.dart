@@ -511,6 +511,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
   Widget buildThumbnail() {
     final width = MediaQuery.of(context).size.width;
+    final length = widget.item.filesWithoutThumbnail().length;
 
     if (_cachedThumbnail == null || _shouldReload) {
       _shouldReload = false;
@@ -537,18 +538,31 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
     return Visibility(
       visible: widget.item.thumbnail() != null,
-      child: Stack(children: [
-        _cachedThumbnail,
-        ReadProgressOverlayWidget(
-          imageCount: widget.item.filesWithoutThumbnail().length,
-          latestReadPage: latestReadPage,
-          isLastestRead: isLastestRead,
-        ),
-        PagesOverlayWidget(
-          imageCount: widget.item.filesWithoutThumbnail().length,
-          showDetail: style.showDetail,
-        ),
-      ]),
+      child: Container(
+        foregroundDecoration: isLastestRead &&
+                length > 0 &&
+                length - latestReadPage <= 2 &&
+                Settings.showArticleProgress
+            ? BoxDecoration(
+                color: Settings.themeWhat
+                    ? Colors.grey.shade800
+                    : Colors.grey.shade300,
+                backgroundBlendMode: BlendMode.saturation,
+              )
+            : null,
+        child: Stack(children: [
+          _cachedThumbnail,
+          ReadProgressOverlayWidget(
+            imageCount: widget.item.filesWithoutThumbnail().length,
+            latestReadPage: latestReadPage,
+            isLastestRead: isLastestRead,
+          ),
+          PagesOverlayWidget(
+            imageCount: widget.item.filesWithoutThumbnail().length,
+            showDetail: style.showDetail,
+          ),
+        ]),
+      ),
     );
   }
 
