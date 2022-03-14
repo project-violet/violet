@@ -25,7 +25,7 @@ class LabBookmarkSpyPage extends StatefulWidget {
 class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
   ScrollController _scrollController = ScrollController();
 
-  static const String dev = 'aee70691afaa';
+  static const String dev = '1918c652d3a9';
 
   String _latestAccessUserAppId = '';
   List<dynamic> bookmarks;
