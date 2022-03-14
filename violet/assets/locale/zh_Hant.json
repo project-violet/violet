@@ -276,5 +276,6 @@
   "setted": "Set",
   "notsetted": "Not Set",
   "useapplocksetting": "Use app lock settings",
-  "registerfinbeforeuseapplock": "Please register your PIN before locking!"
+  "registerfinbeforeuseapplock": "Please register your PIN before locking!",
+  "showpagenumberindicator": "Show Page Number Indicator"
 }

@@ -276,5 +276,6 @@
   "setted": "설정됨",
   "notsetted": "설정되지 않음",
   "useapplocksetting": "앱 잠금 설정 사용",
-  "registerfinbeforeuseapplock": "잠금 설정 전 PIN을 등록해주세요!"
+  "registerfinbeforeuseapplock": "잠금 설정 전 PIN을 등록해주세요!",
+  "showpagenumberindicator": "뷰어 하단에 페이지 번호 표시하기"
 }
