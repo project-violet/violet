@@ -154,6 +154,16 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             setState(() {});
           },
         ),
+        _checkBox(
+          value: Settings.showPageNumberIndicator,
+          title: Translations.of(context).trans('showpagenumberindicator'),
+          onChanged: (value) {
+            Settings.setShowPageNumberIndicator(
+                !Settings.showPageNumberIndicator);
+            widget.setStateCallback.call();
+            setState(() {});
+          },
+        ),
         if (!Platform.isIOS)
           _checkBox(
             title: Translations.of(context).trans('disablefullscreen'),

@@ -1111,7 +1111,7 @@ class _ViewerPageState extends State<ViewerPage>
             ),
           ),
         ),
-        _verticalPageLabel(),
+        if (Settings.showPageNumberIndicator) _verticalPageLabel(),
         _touchArea(),
         if (!_disableBottom &&
             (!Settings.moveToAppBarToBottom || Settings.showSlider))
@@ -1178,7 +1178,7 @@ class _ViewerPageState extends State<ViewerPage>
             },
           ),
         ),
-        _verticalPageLabel(),
+        if (Settings.showPageNumberIndicator) _verticalPageLabel(),
         _touchAreaMiddle(),
         !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
         !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
