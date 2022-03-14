@@ -277,5 +277,14 @@
   "notsetted": "설정되지 않음",
   "useapplocksetting": "앱 잠금 설정 사용",
   "registerfinbeforeuseapplock": "잠금 설정 전 PIN을 등록해주세요!",
-  "showpagenumberindicator": "뷰어 하단에 페이지 번호 표시하기"
+  "showpagenumberindicator": "뷰어 하단에 페이지 번호 표시하기",
+  "blackmode": "블랙 모드",
+  "useflattheme": "Flat 테마 사용",
+  "usetabletmode": "Tablet 모드 사용",
+  "userdrawer": "Drawer 사용",
+  "translatetagtokorean": "태그 번역",
+  "lowresmode": "저사양 모드",
+  "messagesearchapi": "대사 검색기 API",
+  "position": "위치",
+  "setlowerthanmaxitemposition": "최대 아이템 위치보다 낮게 설정해야합니다!"
 }
