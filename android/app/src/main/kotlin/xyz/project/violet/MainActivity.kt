@@ -8,13 +8,14 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.NonNull
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
-class MainActivity: FlutterActivity() {
+class MainActivity: FlutterFragmentActivity() {
     private val CHANNEL = "xyz.project.violet/dpitunnel"
     private val VOLUME_CHANNEL = "xyz.project.violet/volume"
     private val NATIVELIBDIR_CHANNEL = "xyz.project.violet/nativelibdir";
