@@ -221,9 +221,13 @@ class _DownloadPageState extends State<DownloadPage>
   _getDownloadWidgetKey() {
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1)
       return downloadItemWidgetKeys1;
-    if (Settings.downloadResultType == 2 || Settings.downloadResultType == 3)
-      return downloadItemWidgetKeys2;
-    return downloadItemWidgetKeys3;
+    if (Settings.downloadResultType == 2 || Settings.downloadResultType == 3) {
+      if (Settings.useTabletMode ||
+          MediaQuery.of(context).orientation == Orientation.landscape)
+        return downloadItemWidgetKeys2;
+      else
+        return downloadItemWidgetKeys3;
+    }
   }
 
   double lastWindowWidth;
