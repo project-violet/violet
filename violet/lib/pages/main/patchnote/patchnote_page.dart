@@ -24,7 +24,7 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2022, 3, 0),
+    dateTime: DateTime(2022, 3, 14),
     version: '1.23 Minor Update <== Latest',
     contents: [
       'fix text field long press gray scale bug on ios',
