@@ -306,6 +306,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
             }
           }
           await widget.item.delete();
+          await Download.getInstance()
+            ..refresh();
           widget.refeshCallback();
         } else if (v == 2) {
           // Copy Url
@@ -509,11 +511,16 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   Widget _cachedThumbnail;
   bool _shouldReload = false;
 
+  void thubmanilReload() {
+    _shouldReload = true;
+  }
+
   Widget buildThumbnail() {
     final width = MediaQuery.of(context).size.width;
     final length = widget.item.filesWithoutThumbnail().length;
 
     if (_cachedThumbnail == null || _shouldReload) {
+      print('thyumb');
       _shouldReload = false;
       _cachedThumbnail = widget.item.state() == 0 &&
               widget.item.rawFiles().length > 0 &&

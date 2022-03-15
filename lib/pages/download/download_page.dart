@@ -80,7 +80,13 @@ class _DownloadPageState extends State<DownloadPage>
 
   void refresh() {
     Future.delayed(Duration(milliseconds: 500), () async {
+      _getDownloadWidgetKey().forEach((key, value) {
+        if (value.currentState != null) value.currentState.thubmanilReload();
+      });
       items = await (await Download.getInstance()).getDownloadItems();
+      itemsMap = Map<int, DownloadItemModel>();
+      filterResult = [];
+      _listKey = ObjectKey(Uuid().v4());
       await _autoRecoveryFileName();
       await _buildQueryResults();
       _applyFilter();
@@ -657,7 +663,6 @@ class _DownloadPageState extends State<DownloadPage>
 
       if (int.tryParse(element.value.url()) == null) return;
       final qr = queryResults[int.parse(element.value.url())];
-      print(qr.result);
       if (qr == null) return;
 
       // key := <group>:<name>

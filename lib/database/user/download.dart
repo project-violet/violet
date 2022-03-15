@@ -137,6 +137,12 @@ class Download {
     }
   }
 
+  Future<void> refresh() async {
+    _downloadedChecker = HashSet<int>();
+    _downloadedItems = Map<int, DownloadItemModel>();
+    await init();
+  }
+
   bool isDownloadedArticle(int id) => _downloadedChecker.contains(id);
 
   Map<int, bool> _validDownloadedArticleCache = Map<int, bool>();
