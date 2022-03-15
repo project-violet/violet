@@ -645,6 +645,9 @@ class _DownloadPageState extends State<DownloadPage>
         ),
       ),
     ).then((value) {
+      _getDownloadWidgetKey().forEach((key, value) {
+        if (value.currentState != null) value.currentState.thubmanilReload();
+      });
       _applyFilter();
     });
   }
