@@ -738,8 +738,8 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          if (Settings.language == 'korean') _buildDivider(),
-          if (Settings.language == 'korean')
+          if (Settings.language == 'ko') _buildDivider(),
+          if (Settings.language == 'ko')
             ListTile(
               leading: Icon(Icons.translate, color: Settings.majorColor),
               title:
