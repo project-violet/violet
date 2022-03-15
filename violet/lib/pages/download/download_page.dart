@@ -126,48 +126,47 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   Future<void> _buildQueryResults() async {
-    var articles = <Tuple2<int, int>>[];
+    var articles = <int>[];
     for (var item in items) {
       if (item.state() == 0 && int.tryParse(item.url()) != null) {
-        articles.add(Tuple2<int, int>(item.id(), int.parse(item.url())));
+        articles.add(int.parse(item.url()));
         itemsMap[item.id()] = item;
       }
     }
 
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-    queryRaw += 'Id IN (' + articles.map((e) => e.item2).join(',') + ')';
+    queryRaw += 'Id IN (' + articles.map((e) => e).join(',') + ')';
     QueryManager.query(queryRaw).then((value) async {
       var qr = Map<int, QueryResult>();
       value.results.forEach((element) {
         qr[element.id()] = element;
       });
 
-      var result = <Tuple2<int, QueryResult>>[];
+      var result = <QueryResult>[];
       articles.forEach((element) async {
-        if (qr[element.item2] == null) {
+        if (qr[element] == null) {
           try {
             var headers = await ScriptManager.runHitomiGetHeaderContent(
-                element.item2.toString());
+                element.toString());
             var hh = await http.get(
-              'https://ltn.hitomi.la/galleryblock/${element.item2}.html',
+              'https://ltn.hitomi.la/galleryblock/${element}.html',
               headers: headers,
             );
             var article = await HitomiParser.parseGalleryBlock(hh.body);
             var meta = {
-              'Id': element.item2,
+              'Id': element,
               'Title': article['Title'],
               'Artists': article['Artists'].join('|'),
             };
-            result.add(Tuple2<int, QueryResult>(
-                element.item1, QueryResult(result: meta)));
+            result.add(QueryResult(result: meta));
             return;
           } catch (e, st) {}
         }
-        result.add(Tuple2<int, QueryResult>(element.item1, qr[element.item2]));
+        result.add(qr[element]);
       });
 
       result.forEach((element) {
-        queryResults[element.item1] = element.item2;
+        queryResults[element.id()] = element;
       });
     });
   }
@@ -657,7 +656,8 @@ class _DownloadPageState extends State<DownloadPage>
       }
 
       if (int.tryParse(element.value.url()) == null) return;
-      final qr = queryResults[element.value.url()];
+      final qr = queryResults[int.parse(element.value.url())];
+      print(qr.result);
       if (qr == null) return;
 
       // key := <group>:<name>
