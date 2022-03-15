@@ -258,6 +258,15 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             ),
           ),
         ),
+        _checkBox(
+          value: Settings.showRecordJumpMessage,
+          title: Translations.of(context).trans('showrecordjumpmessage'),
+          onChanged: (value) {
+            Settings.setShowRecordJumpMessage(!Settings.showRecordJumpMessage);
+            widget.setStateCallback.call();
+            setState(() {});
+          },
+        ),
         if (Platform.isIOS) Container(height: 24),
       ],
     );

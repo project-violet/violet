@@ -163,8 +163,9 @@ class _ViewerPageState extends State<ViewerPage>
     if (!Settings.disableFullScreen)
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
-    Future.delayed(Duration(milliseconds: 100))
-        .then((value) => _checkLatestRead());
+    if (Settings.showRecordJumpMessage)
+      Future.delayed(Duration(milliseconds: 100))
+          .then((value) => _checkLatestRead());
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async =>
         _isBookmarked =
