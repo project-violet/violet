@@ -287,5 +287,6 @@
   "messagesearchapi": "대사 검색기 API",
   "position": "위치",
   "setlowerthanmaxitemposition": "최대 아이템 위치보다 낮게 설정해야합니다!",
-  "showrecordjumpmessage": "최근 읽었던 페이지로 이동 메시지 보여주기"
+  "showrecordjumpmessage": "최근 읽었던 페이지로 이동 메시지 보여주기",
+  "checkalreadydownloaded":"이미 다운로드된 작품입니다. 그래도 다운로드할까요?"
 }

@@ -29,6 +29,7 @@ import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
+import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_info.dart';
@@ -265,6 +266,15 @@ class ArticleInfoPage extends StatelessWidget {
       );
       return;
     }
+
+    if ((await Download.getInstance())
+        .isDownloadedArticle(data.queryResult.id())) {
+      if (await showYesNoDialog(context, '이미 다운로드된 작품입니다. 그래도 다운로드할까요?') !=
+          true) {
+        return;
+      }
+    }
+
     FlutterToast(context).showToast(
       child: ToastWrapper(
         isCheck: true,
