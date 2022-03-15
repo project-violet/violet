@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/locale/locale.dart';
@@ -194,8 +195,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20.0)),
               ),
-              onTap: () {
+              onTap: () async {
                 var pos = _pin.indexOf(null);
+
+                SystemSound.play(SystemSoundType.click);
+                HapticFeedback.lightImpact();
 
                 if (index == -1) {
                   if (pos == -1) pos = 4;
@@ -277,6 +281,8 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         (widget.isRegisterMode &&
             _isFirstPINInserted &&
             _pin.join() != _firstPIN)) {
+      SystemSound.play(SystemSoundType.alert);
+      HapticFeedback.heavyImpact();
       _controller.forward();
       Future.delayed(Duration(milliseconds: 300)).then((value) {
         _controller.reverse();
