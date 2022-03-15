@@ -286,5 +286,6 @@
   "lowresmode": "Optimized Mode",
   "messagesearchapi": "Message Search API",
   "position": "Position",
-  "setlowerthanmaxitemposition": "You must set lower than max item position!"
+  "setlowerthanmaxitemposition": "You must set lower than max item position!",
+  "showrecordjumpmessage": "Show move to latest read page message"
 }

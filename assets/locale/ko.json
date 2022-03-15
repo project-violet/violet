@@ -286,5 +286,6 @@
   "lowresmode": "저사양 모드",
   "messagesearchapi": "대사 검색기 API",
   "position": "위치",
-  "setlowerthanmaxitemposition": "최대 아이템 위치보다 낮게 설정해야합니다!"
+  "setlowerthanmaxitemposition": "최대 아이템 위치보다 낮게 설정해야합니다!",
+  "showrecordjumpmessage": "최근 읽었던 페이지로 이동 메시지 보여주기"
 }

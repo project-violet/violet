@@ -59,6 +59,7 @@ class Settings {
   static int thumbSize;
   static bool enableThumbSlider;
   static bool showPageNumberIndicator;
+  static bool showRecordJumpMessage;
 
   // Download Options
   static bool useInnerStorage;
@@ -193,6 +194,7 @@ class Settings {
     thumbSize = await _getInt('imageQuality', 0);
     enableThumbSlider = await _getBool('enableThumbSlider');
     showPageNumberIndicator = await _getBool('showPageNumberIndicator', true);
+    showRecordJumpMessage = await _getBool('showRecordJumpMessage', true);
 
     useInnerStorage =
         (await SharedPreferences.getInstance()).getBool('useinnerstorage');
@@ -559,6 +561,12 @@ class Settings {
     showPageNumberIndicator = nn;
     await (await SharedPreferences.getInstance())
         .setBool('showPageNumberIndicator', showPageNumberIndicator);
+  }
+
+  static Future<void> setShowRecordJumpMessage(bool nn) async {
+    showRecordJumpMessage = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('showRecordJumpMessage', showRecordJumpMessage);
   }
 
   static Future<void> setShowSlider(bool nn) async {
