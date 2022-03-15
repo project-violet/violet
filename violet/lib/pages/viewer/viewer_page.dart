@@ -427,9 +427,12 @@ class _ViewerPageState extends State<ViewerPage>
           if (x.length < 2) return;
           var e = x.elementAt(1);
           if (e.lastPage() == null) return;
+          print(DateTime.parse(e.datetimeStart())
+              .difference(DateTime.now())
+              .inDays);
           if (e.lastPage() > 1 &&
-              DateTime.parse(e.datetimeStart())
-                      .difference(DateTime.now())
+              DateTime.now()
+                      .difference(DateTime.parse(e.datetimeStart()))
                       .inDays <
                   7) {
             if (moveAnywhere ||
