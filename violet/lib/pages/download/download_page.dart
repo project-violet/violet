@@ -87,6 +87,7 @@ class _DownloadPageState extends State<DownloadPage>
       itemsMap = Map<int, DownloadItemModel>();
       filterResult = [];
       _listKey = ObjectKey(Uuid().v4());
+      queryResults = Map<int, QueryResult>();
       await _autoRecoveryFileName();
       await _buildQueryResults();
       _applyFilter();
