@@ -24,8 +24,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 3, 15),
+    version: '1.23.1 Patch (HotFix)<== Latest',
+    contents: [
+      'fix right button not working on horizontal viewer',
+      'fix download filtering not working',
+      'add show latest read record message option',
+      'add check already downloaded article',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 3, 14),
-    version: '1.23 Minor Update <== Latest',
+    version: '1.23 Minor Update',
     contents: [
       'fix text field long press gray scale bug on ios',
       'fix background color to black bug for ios',
