@@ -376,7 +376,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  if (Settings.language == 'korean')
+                  if (Settings.language == 'ko')
                     ListTile(
                       leading:
                           Icon(Icons.translate, color: Settings.majorColor),
@@ -397,7 +397,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                         setState(() {});
                       },
                     ),
-                  if (Settings.language == 'korean')
+                  if (Settings.language == 'ko')
                     Container(
                       margin: const EdgeInsets.symmetric(
                         horizontal: 8.0,
@@ -406,7 +406,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                       height: 1.0,
                       color: Colors.grey.shade400,
                     ),
-                  if (Settings.language == 'korean')
+                  if (Settings.language == 'ko')
                     ListTile(
                       leading: Icon(MdiIcons.layersSearch,
                           color: Settings.majorColor),
@@ -426,7 +426,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                         setState(() {});
                       },
                     ),
-                  if (Settings.language == 'korean')
+                  if (Settings.language == 'ko')
                     Container(
                       margin: const EdgeInsets.symmetric(
                         horizontal: 8.0,
