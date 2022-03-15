@@ -1582,11 +1582,7 @@ class _ViewerPageState extends State<ViewerPage>
       }
     } else {
       if (!Settings.animation) {
-        _itemScrollController.scrollTo(
-          index: next - 1,
-          duration: Duration(microseconds: 1),
-          alignment: 0.12,
-        );
+        _pageController.jumpToPage(next - 1);
       } else {
         _pageController.animateToPage(
           next - 1,
