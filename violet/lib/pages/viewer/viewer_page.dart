@@ -48,6 +48,7 @@ import 'package:violet/widgets/toast.dart';
 const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
 
 typedef DoubleCallback = Future Function(double);
+typedef BoolCallback = Function(bool);
 typedef StringCallback = Future Function(String);
 
 class ViewerPage extends StatefulWidget {
@@ -86,9 +87,6 @@ class _ViewerPageState extends State<ViewerPage>
 
   /// this is used for onTap, onDoubleTap event
   TapDownDetails _onTapDetails;
-
-  /// How many fingers are on the screen?
-  int _mpPoints = 0;
 
   /// this is used for interactive viewer widget
   /// double-tap a specific location to zoom in on that location.
@@ -221,9 +219,6 @@ class _ViewerPageState extends State<ViewerPage>
         _inactivateSeconds +=
             DateTime.now().difference(_inactivateTime).inSeconds;
         _isStaring = true;
-        setState(() {
-          _mpPoints = 0;
-        });
         await ScriptManager.refresh();
       },
     );
@@ -1064,26 +1059,13 @@ class _ViewerPageState extends State<ViewerPage>
 
                   if (image == null) throw Exception('Dead Reaching');
 
-                  return Listener(
-                    onPointerDown: (event) {
-                      _mpPoints++;
-                      if (_mpPoints >= 2) {
-                        if (_scrollListEnable) {
-                          setState(() {
-                            _scrollListEnable = false;
-                          });
-                        }
-                      }
-                    },
-                    onPointerUp: (event) {
-                      _mpPoints--;
-                      if (_mpPoints < 1) {
-                        setState(() {
-                          _scrollListEnable = true;
-                        });
-                      }
-                    },
+                  return _DoublePointListener(
                     child: image,
+                    onStateChanged: (value) {
+                      setState(() {
+                        _scrollListEnable = value;
+                      });
+                    },
                   );
                 },
               ),
@@ -2188,6 +2170,48 @@ class _ViewerPageState extends State<ViewerPage>
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Raises an event when two or more fingers touch the screen.
+class _DoublePointListener extends StatefulWidget {
+  final Widget child;
+  final BoolCallback onStateChanged;
+
+  _DoublePointListener({this.child, this.onStateChanged});
+
+  @override
+  State<_DoublePointListener> createState() => __DoublePointListener();
+}
+
+class __DoublePointListener extends State<_DoublePointListener> {
+  /// How many fingers are on the screen?
+  int _mpPoints = 0;
+
+  ///
+  bool _onStateChanged = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      onPointerDown: (event) {
+        _mpPoints++;
+        if (_mpPoints >= 2) {
+          if (_onStateChanged) {
+            _onStateChanged = false;
+            widget.onStateChanged(false);
+          }
+        }
+      },
+      onPointerUp: (event) {
+        _mpPoints--;
+        if (_mpPoints < 1) {
+          _onStateChanged = true;
+          widget.onStateChanged(true);
+        }
+      },
+      child: widget.child,
     );
   }
 }
