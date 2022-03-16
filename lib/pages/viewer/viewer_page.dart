@@ -1131,13 +1131,12 @@ class _ViewerPageState extends State<ViewerPage>
         ),
         if (Settings.showPageNumberIndicator) _verticalPageLabel(),
         _touchAreaMiddle(),
-        !Settings.disableOverlayButton ? _touchAreaLeft() : Container(),
-        !Settings.disableOverlayButton ? _touchAreaRight() : Container(),
-        !_disableBottom &&
-                (!Settings.moveToAppBarToBottom || Settings.showSlider)
-            ? _bottomAppBar()
-            : Container(),
-        !_disableBottom ? _appBar() : Container(),
+        if (!Settings.disableOverlayButton) _touchAreaLeft(),
+        if (!Settings.disableOverlayButton) _touchAreaRight(),
+        if (!_disableBottom &&
+            (!Settings.moveToAppBarToBottom || Settings.showSlider))
+          _bottomAppBar(),
+        if (!_disableBottom) _appBar(),
         if (Platform.isIOS && !_disableBottom) _exitButton(),
       ],
     );
