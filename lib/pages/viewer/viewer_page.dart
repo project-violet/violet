@@ -8,6 +8,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -85,9 +86,6 @@ class _ViewerPageState extends State<ViewerPage>
   ItemScrollController _itemScrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
 
-  /// this is used for onTap, onDoubleTap event
-  TapDownDetails _onTapDetails;
-
   /// this is used for interactive viewer widget
   /// double-tap a specific location to zoom in on that location.
   TransformationController _transformationController =
@@ -114,12 +112,6 @@ class _ViewerPageState extends State<ViewerPage>
   ScrollController _thumbController = ScrollController();
   List<double> _thumbImageWidth;
   List<double> _thumbImageStartPos;
-
-  /// these are used for double tap check
-  Timer _doubleTapCheckTimer;
-  bool isPressed = false;
-  bool isDoubleTap = false;
-  bool isSingleTap = false;
 
   /// It is height that a widget that has an image as a child.
   List<double> _height;
@@ -1284,69 +1276,27 @@ class _ViewerPageState extends State<ViewerPage>
       color: null,
       width: width,
       height: height,
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        // onDoubleTapDown: (TapDownDetails details) {
-        //   _doubleTapDetails = details;
-        // },
-        // onDoubleTap: _handleDoubleTap,
-        onTap: _handleTap,
-        onTapDown: (TapDownDetails details) {
-          _onTapDetails = details;
-
-          isPressed = true;
-          if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
-            isDoubleTap = true;
-            _doubleTapCheckTimer.cancel();
-          } else {
-            _doubleTapCheckTimer = Timer(
-                const Duration(milliseconds: 200), _doubleTapTimerElapsed);
-          }
-        },
-        onTapCancel: () {
-          isPressed = isSingleTap = isDoubleTap = false;
-          if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
-            _doubleTapCheckTimer.cancel();
-          }
-        },
+      child: _CustomDoubleTapGestureDectector(
+        onTap: _touchEvent,
+        onDoubleTap: _doubleTapEvent,
       ),
     );
   }
 
-  void _doubleTapTimerElapsed() {
-    if (isPressed) {
-      isSingleTap = true;
-    } else {
-      _touchEvent();
-    }
-  }
-
-  void _handleTap() {
-    isPressed = false;
-    if (isSingleTap) {
-      isSingleTap = false;
-      _touchEvent();
-    }
-    if (isDoubleTap) {
-      isDoubleTap = false;
-      _doubleTapEvent();
-    }
-  }
-
-  void _touchEvent() {
+  void _touchEvent(TapDownDetails details) {
     final width = MediaQuery.of(context).size.width;
-    if (_onTapDetails.localPosition.dx < width / 3) {
+    if (details.localPosition.dx < width / 3) {
       if (!Settings.disableOverlayButton) _leftButtonEvent();
-    } else if (width / 3 * 2 < _onTapDetails.localPosition.dx) {
+    } else if (width / 3 * 2 < details.localPosition.dx) {
       if (!Settings.disableOverlayButton) _rightButtonEvent();
     } else {
       _middleButtonEvent();
     }
   }
 
-  void _doubleTapEvent() {
+  void _doubleTapEvent(TapDownDetails details) {
     Matrix4 _endMatrix;
-    Offset _position = _onTapDetails.localPosition;
+    Offset _position = details.localPosition;
 
     if (_transformationController.value != Matrix4.identity()) {
       _endMatrix = Matrix4.identity();
@@ -2213,6 +2163,83 @@ class __DoublePointListener extends State<_DoublePointListener> {
       },
       child: widget.child,
     );
+  }
+}
+
+/// GestureDetector uses a delay to distinguish between tap events
+/// and double taps. By default, this delay cannot be modified, so
+/// I created a separate class.
+class _CustomDoubleTapGestureDectector extends StatefulWidget {
+  final GestureTapDownCallback onTap;
+  final GestureTapDownCallback onDoubleTap;
+  final Duration doubleTapMaxDelay;
+
+  _CustomDoubleTapGestureDectector({
+    this.onTap,
+    this.onDoubleTap,
+    this.doubleTapMaxDelay = const Duration(milliseconds: 200),
+  });
+
+  @override
+  State<_CustomDoubleTapGestureDectector> createState() =>
+      __CustomDoubleTapGestureDectectorState();
+}
+
+class __CustomDoubleTapGestureDectectorState
+    extends State<_CustomDoubleTapGestureDectector> {
+  /// these are used for double tap check
+  Timer _doubleTapCheckTimer;
+  bool _isPressed = false;
+  bool _isDoubleTap = false;
+  bool _isSingleTap = false;
+
+  /// this is used for onTap, onDoubleTap event
+  TapDownDetails _onTapDetails;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: _handleTap,
+      onTapDown: (TapDownDetails details) {
+        _onTapDetails = details;
+
+        _isPressed = true;
+        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
+          _isDoubleTap = true;
+          _doubleTapCheckTimer.cancel();
+        } else {
+          _doubleTapCheckTimer =
+              Timer(widget.doubleTapMaxDelay, _doubleTapTimerElapsed);
+        }
+      },
+      onTapCancel: () {
+        _isPressed = _isSingleTap = _isDoubleTap = false;
+        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
+          _doubleTapCheckTimer.cancel();
+        }
+      },
+    );
+  }
+
+  void _doubleTapTimerElapsed() {
+    if (_isPressed) {
+      _isSingleTap = true;
+    } else {
+      widget.onTap(_onTapDetails);
+    }
+  }
+
+  void _handleTap() {
+    _isPressed = false;
+    if (_isSingleTap) {
+      _isSingleTap = false;
+      widget.onTap(_onTapDetails);
+    }
+    if (_isDoubleTap) {
+      _isDoubleTap = false;
+      widget.onDoubleTap(_onTapDetails);
+    }
   }
 }
 
