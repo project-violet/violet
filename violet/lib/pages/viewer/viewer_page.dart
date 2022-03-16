@@ -40,6 +40,7 @@ import 'package:violet/pages/viewer/viewer_thumbnails.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/settings/settings_wrapper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
@@ -1246,12 +1247,7 @@ class _ViewerPageState extends State<ViewerPage>
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
         ),
-        filterQuality: [
-          FilterQuality.none,
-          FilterQuality.high,
-          FilterQuality.medium,
-          FilterQuality.low,
-        ][Settings.imageQuality],
+        filterQuality: SettingsWrapper.imageQuality,
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -1259,12 +1255,7 @@ class _ViewerPageState extends State<ViewerPage>
     else if (_pageInfo.useFileSystem) {
       return PhotoViewGalleryPageOptions(
         imageProvider: FileImage(File(_pageInfo.uris[index])),
-        filterQuality: [
-          FilterQuality.none,
-          FilterQuality.high,
-          FilterQuality.medium,
-          FilterQuality.low,
-        ][Settings.imageQuality],
+        filterQuality: SettingsWrapper.imageQuality,
         initialScale: PhotoViewComputedScale.contained,
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -1304,12 +1295,7 @@ class _ViewerPageState extends State<ViewerPage>
                   _urlCache[index],
                   headers: _headerCache[index],
                 ),
-                filterQuality: [
-                  FilterQuality.none,
-                  FilterQuality.high,
-                  FilterQuality.medium,
-                  FilterQuality.low,
-                ][Settings.imageQuality],
+                filterQuality: SettingsWrapper.imageQuality,
                 initialScale: PhotoViewComputedScale.contained,
                 minScale: PhotoViewComputedScale.contained * 1.0,
                 maxScale: PhotoViewComputedScale.contained * 5.0,
@@ -1846,12 +1832,7 @@ class _ViewerPageState extends State<ViewerPage>
                 fit: BoxFit.cover,
                 fadeInDuration: Duration(microseconds: 500),
                 fadeInCurve: Curves.easeIn,
-                filterQuality: [
-                  FilterQuality.none,
-                  FilterQuality.high,
-                  FilterQuality.medium,
-                  FilterQuality.low,
-                ][Settings.imageQuality],
+                filterQuality: SettingsWrapper.imageQuality,
                 imageBuilder: (context, imageProvider, child) {
                   if (_height[index] == 0 || _height[index] == 300) {
                     Future.delayed(Duration(milliseconds: 50)).then((value) {
@@ -2284,12 +2265,7 @@ class __FileImageState extends State<_FileImage> {
       File(widget.path),
       fit: BoxFit.contain,
       imageCacheName: widget.path,
-      filterQuality: [
-        FilterQuality.none,
-        FilterQuality.high,
-        FilterQuality.medium,
-        FilterQuality.low,
-      ][Settings.imageQuality],
+      filterQuality: SettingsWrapper.imageQuality,
       loadStateChanged: (ExtendedImageState state) {
         if (widget.cachedHeight != null && widget.cachedHeight > 0)
           return state.completedWidget;
