@@ -200,15 +200,7 @@ class _ViewerPageState extends State<ViewerPage>
 
       if (selected != null && _prevPage != selected + 1) {
         if (_isThumbMode && !_sliderOnChange) {
-          final width = MediaQuery.of(context).size.width;
-          final jumpOffset = _thumbImageStartPos[selected] -
-              width / 2 +
-              _thumbImageWidth[selected] / 2;
-          _thumbController.animateTo(
-            jumpOffset > 0 ? jumpOffset : 0,
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
+          _thumbAnimateTo(selected);
         }
 
         setState(() {
@@ -406,17 +398,7 @@ class _ViewerPageState extends State<ViewerPage>
         );
       }
     }
-    if (_isThumbMode) {
-      final width = MediaQuery.of(context).size.width;
-      final jumpOffset = _thumbImageStartPos[next - 1] -
-          width / 2 +
-          _thumbImageWidth[next - 1] / 2;
-      _thumbController.animateTo(
-        jumpOffset > 0 ? jumpOffset : 0,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-    }
+    _thumbAnimateTo(next - 1);
     _currentPage = next;
     setState(() {
       _prevPage = next;
@@ -1146,17 +1128,7 @@ class _ViewerPageState extends State<ViewerPage>
             ),
             pageController: _pageController,
             onPageChanged: (page) async {
-              if (_isThumbMode) {
-                final width = MediaQuery.of(context).size.width;
-                final jumpOffset = _thumbImageStartPos[page.toInt()] -
-                    width / 2 +
-                    _thumbImageWidth[page.toInt()] / 2;
-                _thumbController.animateTo(
-                  jumpOffset > 0 ? jumpOffset : 0,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeOut,
-                );
-              }
+              _thumbAnimateTo(page.toInt());
 
               _currentPage = page.toInt() + 1;
               setState(() {
@@ -1442,15 +1414,7 @@ class _ViewerPageState extends State<ViewerPage>
           SystemUiOverlay.bottom,
         ]);
       }
-      final width = MediaQuery.of(context).size.width;
-      if (_isThumbMode) {
-        final jumpOffset =
-            _thumbImageStartPos[_prevPage >= 1 ? _prevPage - 1 : 0] -
-                width / 2 +
-                _thumbImageWidth[_prevPage >= 1 ? _prevPage - 1 : 0] / 2;
-        _thumbController = ScrollController(
-            initialScrollOffset: jumpOffset > 0 ? jumpOffset : 0);
-      }
+      _thumbJumpTo(_prevPage >= 1 ? _prevPage - 1 : 0);
     } else {
       setState(() {
         _opacity = 0.0;
@@ -1465,6 +1429,29 @@ class _ViewerPageState extends State<ViewerPage>
       });
     }
     _overlayOpend = !_overlayOpend;
+  }
+
+  _thumbJumpTo(page) {
+    if (_isThumbMode) {
+      final width = MediaQuery.of(context).size.width;
+      final jumpOffset =
+          _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
+      _thumbController = ScrollController(
+          initialScrollOffset: jumpOffset > 0 ? jumpOffset : 0);
+    }
+  }
+
+  _thumbAnimateTo(page) {
+    if (_isThumbMode) {
+      final width = MediaQuery.of(context).size.width;
+      final jumpOffset =
+          _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
+      _thumbController.animateTo(
+        jumpOffset > 0 ? jumpOffset : 0,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   _touchAreaLeft() {
@@ -2005,24 +1992,12 @@ class _ViewerPageState extends State<ViewerPage>
                             color: Colors.white,
                             icon: Icon(Icons.keyboard_arrow_up),
                             onPressed: () async {
-                              if (!_isThumbMode)
-                                Future.delayed(Duration(milliseconds: 10))
-                                    .then((value) {
-                                  final jumpOffset =
-                                      _thumbImageStartPos[(_prevPage - 1)] -
-                                          width / 2 +
-                                          _thumbImageWidth[(_prevPage - 1)] / 2;
-                                  _thumbController.animateTo(
-                                    jumpOffset > 0 ? jumpOffset : 0,
-                                    duration: Duration(milliseconds: 300),
-                                    curve: Curves.easeIn,
-                                  );
-                                });
-                              await Settings.setEnableThumbSlider(
-                                  !_isThumbMode);
-                              setState(() {
-                                _isThumbMode = !_isThumbMode;
-                              });
+                              _isThumbMode = !_isThumbMode;
+                              if (_isThumbMode)
+                                Future.delayed(Duration(milliseconds: 10)).then(
+                                    (value) => _thumbAnimateTo(_prevPage - 1));
+                              await Settings.setEnableThumbSlider(_isThumbMode);
+                              setState(() {});
                             },
                           ),
                         SizedBox(
@@ -2089,14 +2064,7 @@ class _ViewerPageState extends State<ViewerPage>
                                         .jumpToPage(value.toInt() - 1);
                                   }
 
-                                  if (_isThumbMode) {
-                                    final jumpOffset = _thumbImageStartPos[
-                                            value.toInt() - 1] -
-                                        width / 2 +
-                                        _thumbImageWidth[(value.toInt() - 1)] /
-                                            2;
-                                    _thumbController.jumpTo(jumpOffset);
-                                  }
+                                  _thumbJumpTo(value.toInt() - 1);
 
                                   _currentPage = value.toInt();
                                   setState(() {
