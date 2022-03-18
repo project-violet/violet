@@ -10,6 +10,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
+import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
@@ -23,8 +24,43 @@ class AfterLoadingPage extends StatefulWidget {
   AfterLoadingPageState createState() => AfterLoadingPageState();
 }
 
-class AfterLoadingPageState extends State<AfterLoadingPage> {
+class AfterLoadingPageState extends State<AfterLoadingPage>
+    with WidgetsBindingObserver {
   static int defaultInitialPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  bool _alreadyLocked = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        break;
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        if (Settings.useLockScreen &&
+            Settings.useSecureMode &&
+            !_alreadyLocked) {
+          _alreadyLocked = true;
+          Navigator.of(context)
+              .push(MaterialPageRoute(
+                builder: (context) => LockScreen(
+                  isSecureMode: true,
+                ),
+              ))
+              .then((value) => _alreadyLocked = false);
+        }
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
 
   PageController _pageController =
       PageController(initialPage: defaultInitialPage);
