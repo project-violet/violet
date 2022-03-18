@@ -96,6 +96,7 @@ class Settings {
   static bool usingPushReplacementOnArticleRead;
 
   static bool useLockScreen;
+  static bool useSecureMode;
 
   static Future<void> initFirst() async {
     var mc = await _getInt('majorColor', Colors.purple.value);
@@ -112,6 +113,7 @@ class Settings {
     language = (await SharedPreferences.getInstance()).getString('language');
 
     useLockScreen = await _getBool('useLockScreen');
+    useSecureMode = await _getBool('useSecureMode');
 
     await _getInt('thread_count', 4);
   }
@@ -697,5 +699,10 @@ class Settings {
   static Future<void> setUseLockScreen(bool nn) async {
     useLockScreen = nn;
     await (await SharedPreferences.getInstance()).setBool('useLockScreen', nn);
+  }
+
+  static Future<void> setUseSecureMode(bool nn) async {
+    useSecureMode = nn;
+    await (await SharedPreferences.getInstance()).setBool('useSecureMode', nn);
   }
 }
