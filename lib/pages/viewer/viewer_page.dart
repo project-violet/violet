@@ -75,6 +75,7 @@ class _ViewerPageState extends State<ViewerPage>
   /// for example, when a slide is manipulated in file system mode, the value
   /// displayed on the slider changes, but the page of the list does not change.
   int _prevPage = 1;
+  ValueNotifier<int> _vPrevPage = ValueNotifier(0);
 
   /// these are used for overlay
   double _opacity = 0.0;
@@ -193,10 +194,9 @@ class _ViewerPageState extends State<ViewerPage>
           _thumbAnimateTo(selected);
         }
 
-        setState(() {
-          _prevPage = selected + 1;
-          _currentPage = _prevPage;
-        });
+        _prevPage = selected + 1;
+        _vPrevPage.value = _prevPage;
+        _currentPage = _prevPage;
       }
     });
 
@@ -387,9 +387,8 @@ class _ViewerPageState extends State<ViewerPage>
     }
     _thumbAnimateTo(next - 1);
     _currentPage = next;
-    setState(() {
-      _prevPage = next;
-    });
+    _prevPage = next;
+    _vPrevPage.value = next;
   }
 
   void _checkLatestRead([bool moveAnywhere = false]) {
@@ -764,9 +763,8 @@ class _ViewerPageState extends State<ViewerPage>
             _pageController.jumpToPage(0);
           }
           _currentPage = 0;
-          setState(() {
-            _prevPage = 0;
-          });
+          _prevPage = 0;
+          _vPrevPage.value = 0;
 
           var prov = await ProviderManager.get(value.id());
           var headers = await prov.getHeader(0);
@@ -841,9 +839,8 @@ class _ViewerPageState extends State<ViewerPage>
               _pageController.jumpToPage(value - 1);
             }
             _currentPage = value;
-            setState(() {
-              _prevPage = value;
-            });
+            _prevPage = value;
+            _vPrevPage.value = value;
           }
         });
         startTimer();
@@ -901,9 +898,8 @@ class _ViewerPageState extends State<ViewerPage>
                 _pageController.jumpToPage(value - 1);
               }
               _currentPage = value;
-              setState(() {
-                _prevPage = value;
-              });
+              _prevPage = value;
+              _vPrevPage.value = value;
             }
           }
           startTimer();
@@ -1105,9 +1101,8 @@ class _ViewerPageState extends State<ViewerPage>
               _thumbAnimateTo(page.toInt());
 
               _currentPage = page.toInt() + 1;
-              setState(() {
-                _prevPage = page.toInt() + 1;
-              });
+              _prevPage = page.toInt() + 1;
+              _vPrevPage.value = page.toInt() + 1;
               await _precache(page.toInt() - 1);
               await _precache(page.toInt() + 1);
             },
@@ -1363,17 +1358,16 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   _thumbJumpTo(page) {
-    if (_isThumbMode) {
+    if (!_disableBottom && _isThumbMode) {
       final width = MediaQuery.of(context).size.width;
       final jumpOffset =
           _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
-      _thumbController = ScrollController(
-          initialScrollOffset: jumpOffset > 0 ? jumpOffset : 0);
+      _thumbController.jumpTo(jumpOffset > 0 ? jumpOffset : 0);
     }
   }
 
   _thumbAnimateTo(page) {
-    if (_isThumbMode) {
+    if (!_disableBottom && _isThumbMode) {
       final width = MediaQuery.of(context).size.width;
       final jumpOffset =
           _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
@@ -1438,9 +1432,8 @@ class _ViewerPageState extends State<ViewerPage>
       }
     }
     _currentPage = next;
-    setState(() {
-      _prevPage = next;
-    });
+    _prevPage = next;
+    _vPrevPage.value = next;
   }
 
   _touchAreaRight() {
@@ -1496,9 +1489,8 @@ class _ViewerPageState extends State<ViewerPage>
       }
     }
     _currentPage = next;
-    setState(() {
-      _prevPage = next;
-    });
+    _prevPage = next;
+    _vPrevPage.value = next;
   }
 
   _networkImageItem(index) {
@@ -1936,9 +1928,15 @@ class _ViewerPageState extends State<ViewerPage>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text('$_prevPage',
-                                  style: TextStyle(
-                                      color: Colors.white70, fontSize: 16.0)),
+                              ValueListenableBuilder(
+                                  valueListenable: _vPrevPage,
+                                  builder: (BuildContext context, int value,
+                                      Widget child) {
+                                    return Text('$value',
+                                        style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 16.0));
+                                  }),
                             ],
                           ),
                         ),
@@ -1954,53 +1952,59 @@ class _ViewerPageState extends State<ViewerPage>
                                     enabledThumbRadius: 6.0),
                                 // thumbShape: SliderThumbShape(),
                               ),
-                              child: Slider(
-                                value: _prevPage.toDouble() > 0
-                                    ? _prevPage <= _pageInfo.uris.length
-                                        ? _prevPage.toDouble()
-                                        : _pageInfo.uris.length.toDouble()
-                                    : 1,
-                                max: _pageInfo.uris.length.toDouble(),
-                                min: 1,
-                                label: _prevPage.toString(),
-                                divisions: _pageInfo.uris.length,
-                                inactiveColor:
-                                    Settings.majorColor.withOpacity(0.7),
-                                activeColor: Settings.majorColor,
-                                onChangeStart: (value) {
-                                  _sliderOnChange = true;
-                                },
-                                onChangeEnd: (value) {
-                                  Future.delayed(Duration(milliseconds: 300))
-                                      .then((value) {
-                                    _sliderOnChange = false;
-                                  });
-                                  if (!Settings.isHorizontal &&
-                                      _pageInfo.useFileSystem)
-                                    _itemScrollController.scrollTo(
-                                      index: value.toInt() - 1,
-                                      duration: Duration(microseconds: 1),
-                                      alignment: 0.12,
-                                    );
-                                },
-                                onChanged: (value) {
-                                  if (!Settings.isHorizontal) {
-                                    if (!_pageInfo.useFileSystem)
-                                      _itemScrollController.jumpTo(
-                                        index: value.toInt() - 1,
-                                        alignment: 0.12,
-                                      );
-                                  } else {
-                                    _pageController
-                                        .jumpToPage(value.toInt() - 1);
-                                  }
+                              child: ValueListenableBuilder(
+                                valueListenable: _vPrevPage,
+                                builder: (BuildContext context, int value,
+                                    Widget child) {
+                                  return Slider(
+                                    value: value.toDouble() > 0
+                                        ? value <= _pageInfo.uris.length
+                                            ? value.toDouble()
+                                            : _pageInfo.uris.length.toDouble()
+                                        : 1,
+                                    max: _pageInfo.uris.length.toDouble(),
+                                    min: 1,
+                                    label: value.toString(),
+                                    divisions: _pageInfo.uris.length,
+                                    inactiveColor:
+                                        Settings.majorColor.withOpacity(0.7),
+                                    activeColor: Settings.majorColor,
+                                    onChangeStart: (value) {
+                                      _sliderOnChange = true;
+                                    },
+                                    onChangeEnd: (value) {
+                                      Future.delayed(
+                                              Duration(milliseconds: 300))
+                                          .then((value) {
+                                        _sliderOnChange = false;
+                                      });
+                                      if (!Settings.isHorizontal &&
+                                          _pageInfo.useFileSystem)
+                                        _itemScrollController.scrollTo(
+                                          index: value.toInt() - 1,
+                                          duration: Duration(microseconds: 1),
+                                          alignment: 0.12,
+                                        );
+                                    },
+                                    onChanged: (value) {
+                                      if (!Settings.isHorizontal) {
+                                        if (!_pageInfo.useFileSystem)
+                                          _itemScrollController.jumpTo(
+                                            index: value.toInt() - 1,
+                                            alignment: 0.12,
+                                          );
+                                      } else {
+                                        _pageController
+                                            .jumpToPage(value.toInt() - 1);
+                                      }
 
-                                  _thumbJumpTo(value.toInt() - 1);
+                                      _thumbJumpTo(value.toInt() - 1);
 
-                                  _currentPage = value.toInt();
-                                  setState(() {
-                                    _prevPage = value.toInt();
-                                  });
+                                      _currentPage = value.toInt();
+                                      _prevPage = value.toInt();
+                                      _vPrevPage.value = value.toInt();
+                                    },
+                                  );
                                 },
                               ),
                             ),
@@ -2086,9 +2090,8 @@ class _ViewerPageState extends State<ViewerPage>
               );
 
               _currentPage = index;
-              setState(() {
-                _prevPage = index;
-              });
+              _prevPage = index;
+              _vPrevPage.value = index;
             },
           ),
         );
@@ -2100,24 +2103,29 @@ class _ViewerPageState extends State<ViewerPage>
     return Container(
       alignment: Alignment.bottomCenter,
       padding: EdgeInsets.all(8),
-      child: Stack(
-        children: [
-          Text(
-            '$_prevPage/${_pageInfo.uris.length}',
-            style: TextStyle(
-              foreground: Paint()
-                ..style = PaintingStyle.stroke
-                ..strokeWidth = 2
-                ..color = Colors.black,
-            ),
-          ),
-          Text(
-            '$_prevPage/${_pageInfo.uris.length}',
-            style: TextStyle(
-              color: Colors.grey.shade300,
-            ),
-          ),
-        ],
+      child: ValueListenableBuilder(
+        valueListenable: _vPrevPage,
+        builder: (BuildContext context, int value, Widget child) {
+          return Stack(
+            children: [
+              Text(
+                '$value/${_pageInfo.uris.length}',
+                style: TextStyle(
+                  foreground: Paint()
+                    ..style = PaintingStyle.stroke
+                    ..strokeWidth = 2
+                    ..color = Colors.black,
+                ),
+              ),
+              Text(
+                '$value/${_pageInfo.uris.length}',
+                style: TextStyle(
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
