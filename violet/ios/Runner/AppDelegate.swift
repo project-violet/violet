@@ -15,13 +15,9 @@ import Flutter
   override func applicationWillResignActive(
     _ application: UIApplication
   ) {
-    let preferences = NSUserDefaults.standardUserDefaults()
-    let secureKey = "useSecureMode"
-    if preferences.objectForKey(secureKey) != nil {
-      let secureMode = preferences.integerForKey(secureKey)
-      if secureMode == true {
-        self.window.isHidden = true;
-      }
+    let secureKey = "flutter.useSecureMode"
+    if UserDefaults.standard.bool(forKey: secureKey) {
+      self.window.isHidden = true;
     }
   }
   override func applicationDidBecomeActive(
