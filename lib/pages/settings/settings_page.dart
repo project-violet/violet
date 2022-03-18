@@ -16,6 +16,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
@@ -854,8 +855,9 @@ class _SettingsPageState extends State<SettingsPage>
         [
           InkWell(
             customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               // borderRadius: BorderRadius.circular(8.0),
               leading: Icon(
@@ -876,9 +878,51 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
+          _buildDivider(),
+          InkWell(
+            customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Icon(
+                MdiIcons.shieldLockOutline,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('securemode')),
+              trailing: Switch(
+                value: Settings.useSecureMode,
+                onChanged: (newValue) async {
+                  await Settings.setUseSecureMode(newValue);
+                  await _setSecureMode();
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setUseSecureMode(!Settings.useSecureMode);
+              await _setSecureMode();
+              setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
         ],
       ),
     ];
+  }
+
+  Future<void> _setSecureMode() async {
+    if (Platform.isAndroid) {
+      if (Settings.useSecureMode)
+        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+      else
+        await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+    }
   }
 
   List<Widget> _databaseGroup() {

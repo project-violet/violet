@@ -85,6 +85,7 @@ dependencies:
   flutter_typeahead: ^3.2.4
   flutter_js:
     git: https://github.com/violet-dev/flutter_js
+  flutter_windowmanager: ^0.2.0
   fluttertoast:
   freezed_annotation:
   get: ^4.1.4
