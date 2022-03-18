@@ -12,8 +12,9 @@ import 'package:violet/widgets/toast.dart';
 
 class LockScreen extends StatefulWidget {
   final bool isRegisterMode;
+  final bool isSecureMode;
 
-  LockScreen({this.isRegisterMode = false});
+  LockScreen({this.isRegisterMode = false, this.isSecureMode = false});
 
   @override
   State<LockScreen> createState() => _LockScreenState();
@@ -274,7 +275,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         (await SharedPreferences.getInstance()).getString('pinPass');
 
     if (!widget.isRegisterMode && _pin.join() == pinPass) {
-      Navigator.pushReplacementNamed(context, '/SplashPage');
+      if (widget.isSecureMode)
+        Navigator.of(context).pop();
+      else
+        Navigator.pushReplacementNamed(context, '/SplashPage');
+      return;
     }
 
     if ((!widget.isRegisterMode && _pin.join() != pinPass) ||
