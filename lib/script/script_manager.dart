@@ -24,16 +24,15 @@ class ScriptManager {
   }
 
   static Future<bool> refresh() async {
-    if (DateTime.now().difference(_latestUpdate).inMinutes < 10) {
+    if (DateTime.now().difference(_latestUpdate).inMinutes < 5) {
       return false;
     }
 
-    _latestUpdate = DateTime.now();
-
-    var scriptTemp = _scriptCache;
-    await init();
+    var scriptTemp = (await http.get(_scriptUrl)).body;
 
     if (_scriptCache != scriptTemp) {
+      _scriptCache = scriptTemp;
+      _latestUpdate = DateTime.now();
       _initRuntime();
       ProviderManager.refresh();
       return true;
