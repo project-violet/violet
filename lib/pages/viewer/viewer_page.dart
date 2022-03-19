@@ -62,7 +62,7 @@ class _ViewerPageState extends State<ViewerPage>
   ViewerPageProvider _pageInfo;
   LifecycleEventHandler _lifecycleEventHandler;
   Timer _nextPageTimer;
-  bool _isBookmarked = false;
+  ValueNotifier<bool> _vIsBookmarked = ValueNotifier(false);
   bool _isSessionOutdated = false;
   bool _sliderOnChange = false;
 
@@ -160,7 +160,7 @@ class _ViewerPageState extends State<ViewerPage>
           .then((value) => _checkLatestRead());
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async =>
-        _isBookmarked =
+        _vIsBookmarked.value =
             await (await Bookmark.getInstance()).isBookmark(_pageInfo.id));
 
     _animationController = AnimationController(
@@ -619,39 +619,42 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   _appBarBookmark() {
-    return IconButton(
-      icon: Icon(_isBookmarked ? MdiIcons.heart : MdiIcons.heartOutline),
-      color: Colors.white,
-      onPressed: () async {
-        _isBookmarked =
-            await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
+    return ValueListenableBuilder(
+      valueListenable: _vIsBookmarked,
+      builder: (BuildContext context, bool value, Widget child) {
+        return IconButton(
+          icon: Icon(value ? MdiIcons.heart : MdiIcons.heartOutline),
+          color: Colors.white,
+          onPressed: () async {
+            _vIsBookmarked.value =
+                await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
 
-        if (_isBookmarked) {
-          if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
-        }
+            if (_vIsBookmarked.value) {
+              if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
+            }
 
-        FlutterToast(context).showToast(
-          child: ToastWrapper(
-            icon: _isBookmarked ? Icons.delete_forever : Icons.check,
-            color: _isBookmarked
-                ? Colors.redAccent.withOpacity(0.8)
-                : Colors.greenAccent.withOpacity(0.8),
-            ignoreDrawer: true,
-            reverse: true,
-            msg:
-                '${_pageInfo.id}${Translations.of(context).trans(!_isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
-          ),
-          gravity: ToastGravity.TOP,
-          toastDuration: Duration(seconds: 4),
+            FlutterToast(context).showToast(
+              child: ToastWrapper(
+                icon: _vIsBookmarked.value ? Icons.delete_forever : Icons.check,
+                color: _vIsBookmarked.value
+                    ? Colors.redAccent.withOpacity(0.8)
+                    : Colors.greenAccent.withOpacity(0.8),
+                ignoreDrawer: true,
+                reverse: true,
+                msg:
+                    '${_pageInfo.id}${Translations.of(context).trans(!_vIsBookmarked.value ? 'addtobookmark' : 'removetobookmark')}',
+              ),
+              gravity: ToastGravity.TOP,
+              toastDuration: Duration(seconds: 4),
+            );
+
+            _vIsBookmarked.value = !_vIsBookmarked.value;
+            if (_vIsBookmarked.value)
+              await (await Bookmark.getInstance()).bookmark(_pageInfo.id);
+            else
+              await (await Bookmark.getInstance()).unbookmark(_pageInfo.id);
+          },
         );
-
-        _isBookmarked = !_isBookmarked;
-        if (_isBookmarked)
-          await (await Bookmark.getInstance()).bookmark(_pageInfo.id);
-        else
-          await (await Bookmark.getInstance()).unbookmark(_pageInfo.id);
-
-        setState(() {});
       },
     );
   }
@@ -1359,23 +1362,27 @@ class _ViewerPageState extends State<ViewerPage>
 
   _thumbJumpTo(page) {
     if (!_disableBottom && _isThumbMode) {
-      final width = MediaQuery.of(context).size.width;
-      final jumpOffset =
-          _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
-      _thumbController.jumpTo(jumpOffset > 0 ? jumpOffset : 0);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final width = MediaQuery.of(context).size.width;
+        final jumpOffset =
+            _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
+        _thumbController.jumpTo(jumpOffset > 0 ? jumpOffset : 0);
+      });
     }
   }
 
   _thumbAnimateTo(page) {
     if (!_disableBottom && _isThumbMode) {
-      final width = MediaQuery.of(context).size.width;
-      final jumpOffset =
-          _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
-      _thumbController.animateTo(
-        jumpOffset > 0 ? jumpOffset : 0,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final width = MediaQuery.of(context).size.width;
+        final jumpOffset =
+            _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
+        _thumbController.animateTo(
+          jumpOffset > 0 ? jumpOffset : 0,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      });
     }
   }
 
