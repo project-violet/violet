@@ -1904,16 +1904,17 @@ class _ViewerPageState extends State<ViewerPage>
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    AnimatedOpacity(
-                      opacity: _isThumbMode ? 1.0 : 0,
-                      duration: Duration(milliseconds: 300),
-                      child: AnimatedContainer(
+                    if (_pageInfo.useFileSystem)
+                      AnimatedOpacity(
+                        opacity: _isThumbMode ? 1.0 : 0,
                         duration: Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        height: _isThumbMode ? _thumbHeight : 0,
-                        child: _thumbArea(),
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          height: _isThumbMode ? _thumbHeight : 0,
+                          child: _thumbArea(),
+                        ),
                       ),
-                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
