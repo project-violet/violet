@@ -24,7 +24,7 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2022, 3, 0),
+    dateTime: DateTime(2022, 3, 21),
     version: '1.23.2 Patch <== Latest',
     contents: [
       'optimize viewer overlay',
