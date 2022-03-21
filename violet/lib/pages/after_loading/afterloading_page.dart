@@ -55,6 +55,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                 ),
               ))
               .then((value) => _alreadyLocked = false);
+          setState(() {});
         }
         break;
       case AppLifecycleState.detached:
