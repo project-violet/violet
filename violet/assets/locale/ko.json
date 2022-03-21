@@ -289,5 +289,6 @@
   "setlowerthanmaxitemposition": "최대 아이템 위치보다 낮게 설정해야합니다!",
   "showrecordjumpmessage": "최근 읽었던 페이지로 이동 메시지 보여주기",
   "checkalreadydownloaded":"이미 다운로드된 작품입니다. 그래도 다운로드할까요?",
-  "securemode": "앱 목록에서 앱 가리기"
+  "securemode": "앱 목록에서 앱 가리기",
+  "copied": "복사되었습니다!"
 }
