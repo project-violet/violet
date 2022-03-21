@@ -287,7 +287,8 @@ class ArticleInfoPage extends StatelessWidget {
       toastDuration: Duration(seconds: 4),
     );
 
-    if (await ScriptManager.refresh()) ProviderManager.refresh();
+    await ScriptManager.refresh();
+
     DownloadPageManager.taskController.add(data.queryResult.id().toString());
     Navigator.pop(context);
   }
@@ -300,7 +301,7 @@ class ArticleInfoPage extends StatelessWidget {
     }
     await (await User.getInstance()).insertUserLog(data.queryResult.id(), 0);
 
-    if (await ScriptManager.refresh()) ProviderManager.refresh();
+    await ScriptManager.refresh();
 
     var prov = await ProviderManager.get(data.queryResult.id());
 
