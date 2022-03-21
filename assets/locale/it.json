@@ -289,5 +289,6 @@
   "setlowerthanmaxitemposition": "You must set lower than max item position!",
   "showrecordjumpmessage": "Show move to latest read page message",
   "checkalreadydownloaded":"This article have already been downloaded. Continue?",
-  "securemode": "Hide app from the app list"
+  "securemode": "Hide app from the app list",
+  "copied": "Copied!"
 }

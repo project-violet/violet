@@ -1092,6 +1092,17 @@ class _Chip extends StatelessWidget {
                 artist: name,
               ),
             );
+          } else if (group == 'id') {
+            Clipboard.setData(ClipboardData(text: name));
+            FlutterToast(context).showToast(
+              child: ToastWrapper(
+                isCheck: true,
+                isWarning: false,
+                msg: Translations.of(context).trans('copied'),
+              ),
+              gravity: ToastGravity.BOTTOM,
+              toastDuration: Duration(seconds: 4),
+            );
           }
         },
       ),
