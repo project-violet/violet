@@ -24,8 +24,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 3, 0),
+    version: '1.23.2 Patch <== Latest',
+    contents: [
+      'optimize viewer overlay',
+      'fix hitomi script refersh error',
+      'add secure mode',
+      'add copy article id on tap',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 3, 15),
-    version: '1.23.1 Patch (HotFix)<== Latest',
+    version: '1.23.1 Patch (HotFix)',
     contents: [
       'fix right button not working on horizontal viewer',
       'fix download filtering not working',

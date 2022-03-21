@@ -41,9 +41,6 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
-        break;
-      case AppLifecycleState.paused:
-      case AppLifecycleState.inactive:
         if (Settings.useLockScreen &&
             Settings.useSecureMode &&
             !_alreadyLocked) {
@@ -55,8 +52,10 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                 ),
               ))
               .then((value) => _alreadyLocked = false);
-          setState(() {});
         }
+        break;
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
         break;
       case AppLifecycleState.detached:
         break;
