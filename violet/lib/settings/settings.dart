@@ -7,6 +7,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android
 import 'package:flutter/material.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -114,8 +115,18 @@ class Settings {
 
     useLockScreen = await _getBool('useLockScreen');
     useSecureMode = await _getBool('useSecureMode');
+    await _setSecureMode();
 
     await _getInt('thread_count', 4);
+  }
+
+  static Future<void> _setSecureMode() async {
+    if (Platform.isAndroid) {
+      if (Settings.useSecureMode)
+        await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+      else
+        await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+    }
   }
 
   static Future<void> init() async {
