@@ -37,7 +37,7 @@ class ProviderManager {
 
   static void refresh() {
     for (var v in _dirty.entries) {
-      if (_ids[v].isRefreshable()) _dirty[v.key] = true;
+      if (_ids[v.key].isRefreshable()) _dirty[v.key] = true;
     }
   }
 }
