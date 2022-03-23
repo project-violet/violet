@@ -24,6 +24,7 @@ import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:wakelock/wakelock.dart';
 
 import 'locale/locale.dart';
 
@@ -85,6 +86,7 @@ void main() async {
 
   await Settings.initFirst();
   await warmupFlare();
+  Wakelock.enable();
 
   runApp(
     DynamicTheme(

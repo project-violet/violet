@@ -24,8 +24,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 3, 23),
+    version: '1.23.3 Patch <== Latest',
+    contents: [
+      'fix hitomi script refersh error',
+      'add keep screen awake',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 3, 21),
-    version: '1.23.2 Patch <== Latest',
+    version: '1.23.2 Patch',
     contents: [
       'optimize viewer overlay',
       'fix hitomi script refersh error',
