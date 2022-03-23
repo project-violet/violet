@@ -29,6 +29,7 @@ import 'package:violet/pages/main/info/lab/search_message_rank.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
+import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
@@ -69,6 +70,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
             List<GlobalKey>.generate(messages.length, (index) => GlobalKey());
         _urls = List<String>.filled(messages.length, '');
       }
+
+      await ScriptManager.refresh();
 
       setState(() {});
     });
@@ -438,6 +441,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     _height = List<double>.filled(messages.length, 0);
     _keys = List<GlobalKey>.generate(messages.length, (index) => GlobalKey());
     _urls = List<String>.filled(messages.length, '');
+
+    await ScriptManager.refresh();
 
     setState(() {});
   }
