@@ -43,5 +43,6 @@
 	<false/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Used to set app lock.</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key><true/>
 </dict>
 </plist>
