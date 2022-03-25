@@ -4,7 +4,7 @@ import Flutter
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
   var displayLink : CADisplayLink?
-  
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -16,7 +16,7 @@ import Flutter
     displayLink = CADisplayLink(target: self, selector: #selector(displayLinkCallback))
     displayLink!.add(to: .current, forMode: .default)
       if #available(iOS 15.0, *) {
-          displayLink!.preferredFrameRateRange = CAFrameRateRange(minimum:120, maximum:120, preferred:120)
+          displayLink!.preferredFrameRateRange = CAFrameRateRange(minimum:80, maximum:120, preferred:120)
       } else {
           // Fallback on earlier versions
       }
