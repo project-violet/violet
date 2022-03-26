@@ -533,22 +533,22 @@ class PreviewAreaWidget extends StatelessWidget {
           VioletImageProvider prov =
               await ProviderManager.get(queryResult.id());
 
-          if (!ProviderManager.isExists(queryResult.id() * 1000000)) {
-            if (ProviderManager.get(queryResult.id()) is HitomiImageProvider) {
-              prov = await ProviderManager.get(queryResult.id());
-              ProviderManager.insert(queryResult.id() * 1000000, prov);
-            } else {
-              try {
-                var urls = await HitomiManager.getImageList(
-                    queryResult.id().toString());
-                if (urls.item1.length != 0 && urls.item2.length != 0) {
-                  prov = HitomiImageProvider(urls, queryResult.id().toString());
-                  ProviderManager.insert(queryResult.id() * 1000000, prov);
-                }
-              } catch (e) {}
-            }
-          } else
-            prov = await ProviderManager.get(queryResult.id() * 1000000);
+          // if (!ProviderManager.isExists(queryResult.id() * 1000000)) {
+          //   if (ProviderManager.get(queryResult.id()) is HitomiImageProvider) {
+          //     prov = await ProviderManager.get(queryResult.id());
+          //     ProviderManager.insert(queryResult.id() * 1000000, prov);
+          //   } else {
+          //     try {
+          //       var urls = await HitomiManager.getImageList(
+          //           queryResult.id().toString());
+          //       if (urls.item1.length != 0 && urls.item2.length != 0) {
+          //         prov = HitomiImageProvider(urls, queryResult.id().toString());
+          //         ProviderManager.insert(queryResult.id() * 1000000, prov);
+          //       }
+          //     } catch (e) {}
+          //   }
+          // } else
+          //   prov = await ProviderManager.get(queryResult.id() * 1000000);
 
           return [await prov.getSmallImagesUrl(), await prov.getHeader(0)];
         }),
@@ -625,7 +625,7 @@ class __CommentAreaState extends State<_CommentArea> {
         if (cookie != null) {
           try {
             var html = await EHSession.requestString(
-                'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/');
+                'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l');
             var article = EHParser.parseArticleData(html);
             setState(() {
               comments = article.comment;
@@ -634,7 +634,7 @@ class __CommentAreaState extends State<_CommentArea> {
           } catch (e) {}
         }
         var html = (await http.get(
-                'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/'))
+                'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l'))
             .body;
         if (html.contains('This gallery has been removed or is unavailable.'))
           return;

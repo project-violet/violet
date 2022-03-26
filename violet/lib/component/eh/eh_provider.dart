@@ -37,9 +37,8 @@ class EHentaiImageProvider extends VioletImageProvider {
 
   @override
   Future<List<String>> getSmallImagesUrl() async {
-    // https://e-hentai.org/g/1740744/2944a0ec84/
-    // https://ehgt.org/m/001740/1740744-00.jpg
-    throw UnimplementedError();
+    var phtml = await EHSession.requestString('${pagesUrl[0]}&inline_set=ts_l');
+    return EHParser.getThumbnailImages(phtml);
   }
 
   @override
@@ -64,12 +63,13 @@ class EHentaiImageProvider extends VioletImageProvider {
 
     if (urls[page] == null) {
       // 20item per page
-      var ppage = page ~/ 20;
-      var phtml = await EHSession.requestString(pagesUrl[ppage]);
+      var ppage = page ~/ (isEHentai ? 40 : 20);
+      var phtml =
+          await EHSession.requestString('${pagesUrl[ppage]}&inline_set=ts_l');
       var pages = EHParser.getImagesUrl(phtml);
 
       for (int i = 0; i < pages.length; i++) {
-        urls[ppage * 20 + i] = pages[i];
+        urls[ppage * (isEHentai ? 40 : 20) + i] = pages[i];
       }
     }
 
