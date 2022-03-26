@@ -23,6 +23,7 @@ import 'package:violet/database/user/download.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/download/download_align_type.dart';
 import 'package:violet/pages/download/download_features_menu.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
 import 'package:violet/pages/download/download_view_type.dart';
@@ -601,6 +602,7 @@ class _DownloadPageState extends State<DownloadPage>
                 ),
               ),
               onTap: _alignOnTap,
+              onDoubleTap: _alignDoubleTap,
               onLongPress: _alignLongPress,
             ),
           ),
@@ -635,6 +637,30 @@ class _DownloadPageState extends State<DownloadPage>
     });
   }
 
+  Future<void> _alignDoubleTap() async {
+    var rtype = Settings.downloadAlignType;
+    Navigator.of(context)
+        .push(PageRouteBuilder(
+      opaque: false,
+      transitionDuration: Duration(milliseconds: 500),
+      transitionsBuilder: (BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation, Widget wi) {
+        return FadeTransition(opacity: animation, child: wi);
+      },
+      pageBuilder: (_, __, ___) => DownloadAlignType(),
+      barrierColor: Colors.black12,
+      barrierDismissible: true,
+    ))
+        .then((value) async {
+      if (rtype != Settings.downloadAlignType) {
+        _getDownloadWidgetKey().forEach((key, value) {
+          if (value.currentState != null) value.currentState.thubmanilReload();
+        });
+        _applyFilter();
+      }
+    });
+  }
+
   Future<void> _alignLongPress() async {
     PlatformNavigator.navigateFade(
       context,
@@ -653,6 +679,7 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   void _applyFilter() {
+    var downloading = <int>[];
     var result = <int>[];
     var isOr = _filterController.isOr;
     itemsMap.entries.forEach((element) {
@@ -661,7 +688,7 @@ class _DownloadPageState extends State<DownloadPage>
       // 3: Downloading
       // 4: Post Processing
       if (1 <= element.value.state() && element.value.state() <= 4) {
-        result.add(element.key);
+        downloading.add(element.key);
         return;
       }
 
@@ -710,6 +737,64 @@ class _DownloadPageState extends State<DownloadPage>
 
     if (_filterController.isPopulationSort)
       Population.sortByPopulationDownloadItem(filterResult);
+
+    if (Settings.downloadAlignType > 0) {
+      filterResult.sort((x, y) {
+        if (int.tryParse(x.url()) == null) return 1;
+        if (int.tryParse(y.url()) == null) return -1;
+
+        var xx = int.tryParse(x.url());
+        var yy = int.tryParse(y.url());
+
+        if (Settings.downloadAlignType == 3)
+          return x
+              .filesWithoutThumbnail()
+              .length
+              .compareTo(y.filesWithoutThumbnail().length);
+        else if (Settings.downloadAlignType == 2) {
+          if (!queryResults.containsKey(xx)) return 1;
+          if (!queryResults.containsKey(yy)) return -1;
+
+          final a1 = queryResults[xx].groups();
+          final a2 = queryResults[yy].groups();
+
+          if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
+          if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
+
+          final aa1 =
+              (a1 as String).split('|').firstWhere((element) => element != '');
+          final aa2 =
+              (a2 as String).split('|').firstWhere((element) => element != '');
+
+          return aa1.compareTo(aa2);
+        } else if (Settings.downloadAlignType == 1) {
+          if (!queryResults.containsKey(xx)) return 1;
+          if (!queryResults.containsKey(yy)) return -1;
+
+          final a1 = queryResults[xx].artists();
+          final a2 = queryResults[yy].artists();
+
+          if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
+          if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
+
+          final aa1 =
+              (a1 as String).split('|').firstWhere((element) => element != '');
+          final aa2 =
+              (a2 as String).split('|').firstWhere((element) => element != '');
+
+          return aa1.compareTo(aa2);
+        }
+
+        return 0;
+      });
+      filterResult = filterResult.reversed.toList();
+    }
+
+    filterResult.forEach(
+        (element) => print(queryResults[int.parse(element.url())].artists()));
+
+    if (_filterController.tagStates.isNotEmpty && downloading.length > 0)
+      filterResult.addAll(downloading.map((e) => itemsMap[e]).toList());
 
     setState(() {});
   }

@@ -73,7 +73,7 @@ class HentaiDonwloadManager {
     //
     //    Add Images
     //
-    for (int i = 0; i < provider.length() && i < 3; i++) {
+    for (int i = 0; i < provider.length(); i++) {
       var page = await provider.getImageUrl(i);
       var header = await provider.getHeader(i);
 

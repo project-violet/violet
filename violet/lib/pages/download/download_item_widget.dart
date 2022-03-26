@@ -523,7 +523,6 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     final length = widget.item.filesWithoutThumbnail().length;
 
     if (_cachedThumbnail == null || _shouldReload) {
-      print('thyumb');
       _shouldReload = false;
       _cachedThumbnail = widget.item.state() == 0 &&
               widget.item.rawFiles().length > 0 &&
