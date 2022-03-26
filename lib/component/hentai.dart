@@ -230,7 +230,7 @@ class HentaiManager {
           case 'EHentai':
             if (qr.ehash() != null) {
               var html = await EHSession.requestString(
-                  'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/');
+                  'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?inline_set=ts_l');
               var article = EHParser.parseArticleData(html);
               return EHentaiImageProvider(
                 count: article.length,
@@ -243,7 +243,7 @@ class HentaiManager {
           case 'ExHentai':
             if (qr.ehash() != null) {
               var html = await EHSession.requestString(
-                  'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/');
+                  'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?inline_set=ts_l');
               var article = EHParser.parseArticleData(html);
               return EHentaiImageProvider(
                 count: article.length,
