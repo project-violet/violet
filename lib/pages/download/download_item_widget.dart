@@ -519,7 +519,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   }
 
   Widget buildThumbnail() {
-    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     final length = widget.item.filesWithoutThumbnail().length;
 
     if (_cachedThumbnail == null || _shouldReload) {
@@ -534,7 +534,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               thumbnailTag: (widget.item.thumbnail() ?? '') +
                   widget.item.dateTime().toString(),
               usingRawImage: true,
-              width: width,
+              height: height,
             )
           : _ThumbnailWidget(
               showDetail: style.showDetail,
@@ -839,14 +839,14 @@ class _FileThumbnailWidget extends StatelessWidget {
   final String thumbnailTag;
   final bool showDetail;
   final bool usingRawImage;
-  final double width;
+  final double height;
 
   _FileThumbnailWidget({
     this.thumbnailPath,
     this.thumbnailTag,
     this.showDetail,
     this.usingRawImage = false,
-    this.width,
+    this.height,
   });
 
   @override
@@ -870,7 +870,7 @@ class _FileThumbnailWidget extends StatelessWidget {
       child: ExtendedImage.file(
         File(thumbnailPath),
         fit: BoxFit.cover,
-        cacheWidth: usingRawImage ? width.toInt() : null,
+        cacheWidth: usingRawImage ? height.toInt() * 2 : null,
         loadStateChanged: (state) {
           if (state.extendedImageLoadState == LoadState.loading ||
               state.extendedImageLoadState == LoadState.failed) {

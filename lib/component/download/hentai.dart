@@ -83,7 +83,6 @@ class HentaiDonwloadManager extends Downloadable {
       result.add(
         DownloadTask(
           url: page,
-          filename: page.split('/').last,
           headers: header,
           format: FileNameFormat(
             title: target.title(),

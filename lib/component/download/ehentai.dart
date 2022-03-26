@@ -86,7 +86,6 @@ class EHentaiManager extends Downloadable {
       result.add(
         DownloadTask(
           url: img,
-          filename: img.split('/').last,
           referer: 'https://hitomi.la/reader/$id.html',
           format: FileNameFormat(
             title: article.title(),

@@ -39,7 +39,6 @@ class DownloadTask {
   final List<String> failUrls;
   final Map<String, String> headers;
   final Map<String, String> query;
-  final String filename;
   final FileNameFormat format;
 
   // This callback used in downloader
@@ -70,7 +69,6 @@ class DownloadTask {
     this.failUrls,
     this.headers,
     this.query,
-    this.filename,
     this.format,
   });
 }
