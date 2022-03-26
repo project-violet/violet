@@ -125,6 +125,7 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
                   'EHentai': 'https://e-hentai.org/favicon.ico',
                   'ExHentai': 'https://exhentai.org/favicon.ico',
                   'NHentai': 'https://nhentai.net/favicon.ico',
+                  'Hiyobi': 'https://hiyobi.me/favicon.ico',
                   'Hisoki': 'https://hisoki.me/favicon.ico',
                 }[e],
                 height: 25,
