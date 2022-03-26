@@ -25,6 +25,7 @@ class Settings {
   static Color majorAccentColor;
   static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
   static int downloadResultType;
+  static int downloadAlignType;
   static bool themeFlat;
   static bool themeBlack; // default false
   static bool useTabletMode;
@@ -133,6 +134,7 @@ class Settings {
   static Future<void> init() async {
     searchResultType = await _getInt('searchResultType');
     downloadResultType = await _getInt('downloadResultType', 3);
+    downloadAlignType = await _getInt('downloadAlignType', 0);
 
     var includetags =
         (await SharedPreferences.getInstance()).getString('includetags');
@@ -464,6 +466,12 @@ class Settings {
     downloadResultType = wh;
     await (await SharedPreferences.getInstance())
         .setInt('downloadResultType', downloadResultType);
+  }
+
+  static Future<void> setDownloadAlignType(int wh) async {
+    downloadAlignType = wh;
+    await (await SharedPreferences.getInstance())
+        .setInt('downloadAlignType', downloadAlignType);
   }
 
   static Future<void> setLanguage(String lang) async {
