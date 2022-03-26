@@ -72,6 +72,13 @@ class EHParser {
     return result;
   }
 
+  // ex: https://exhentai.org/g/1212168/421ef300a8/?inline_set=ts_l
+  static List<String> getThumbnailImages(String html) {
+    final RegExp regex = RegExp(
+        r'\"(https://e[-x]hentai.org/t/.*?|https://ehgt.org/.{2}/.{2}/.*?)\"');
+    return regex.allMatches(html).map((e) => e.group(1)).toList();
+  }
+
   // ex: https://exhentai.org/s/df24b19548/1212549-2
   static String getImageAddress(String html) {
     var doc = parse(html).querySelector("div[id='i1']");

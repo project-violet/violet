@@ -230,8 +230,9 @@ class HentaiManager {
           case 'EHentai':
             if (qr.ehash() != null) {
               var html = await EHSession.requestString(
-                  'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?inline_set=ts_l');
+                  'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_l');
               var article = EHParser.parseArticleData(html);
+              print(article.title);
               return EHentaiImageProvider(
                 count: article.length,
                 thumbnail: article.thumbnail,
@@ -243,7 +244,7 @@ class HentaiManager {
           case 'ExHentai':
             if (qr.ehash() != null) {
               var html = await EHSession.requestString(
-                  'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?inline_set=ts_l');
+                  'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_l');
               var article = EHParser.parseArticleData(html);
               return EHentaiImageProvider(
                 count: article.length,
@@ -282,7 +283,12 @@ class HentaiManager {
             }
             break;
         }
-      } catch (e) {}
+      } catch (e, st) {
+        Logger.error('[hentai-getImageProvider] E: ' +
+            e.toString() +
+            '\n' +
+            st.toString());
+      }
     }
 
     throw Exception('gallery not found');
