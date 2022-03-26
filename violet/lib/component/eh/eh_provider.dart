@@ -1,10 +1,12 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:html_unescape/html_unescape.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/image_provider.dart';
+import 'package:violet/network/wrapper.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 
@@ -77,8 +79,11 @@ class EHentaiImageProvider extends VioletImageProvider {
 
     var img = await EHSession.requestString(urls[page]);
 
-    if (Settings.downloadEhRawImage)
-      return imgUrls[page] = EHParser.getOriginalImageAddress(img);
+    if (Settings.downloadEhRawImage) {
+      var unescape = HtmlUnescape();
+      return imgUrls[page] =
+          unescape.convert(EHParser.getOriginalImageAddress(img));
+    }
     return imgUrls[page] = EHParser.getImageAddress(img);
   }
 

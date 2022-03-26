@@ -273,10 +273,12 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
 
         infoText += '\n';
 
-        final image = await decodeImageFromList(file.readAsBytesSync());
+        try {
+          final image = await decodeImageFromList(file.readAsBytesSync());
 
-        infoText +=
-            'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
+          infoText +=
+              'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
+        } catch (e) {}
         infoText +=
             'length: ${toStringWithComma((await file.length() ~/ 1024).toString())}KB\n';
         infoText += 'filename: ${file.path}';

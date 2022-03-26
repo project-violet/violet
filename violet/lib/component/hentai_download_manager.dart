@@ -73,14 +73,13 @@ class HentaiDonwloadManager {
     //
     //    Add Images
     //
-    for (int i = 0; i < provider.length(); i++) {
+    for (int i = 0; i < provider.length() && i < 3; i++) {
       var page = await provider.getImageUrl(i);
       var header = await provider.getHeader(i);
 
       result.add(
         DownloadTask(
           url: page,
-          filename: page.split('/').last,
           headers: header,
           format: FileNameFormat(
             title: target.title(),
@@ -93,7 +92,9 @@ class HentaiDonwloadManager {
                 : target.groups() != null
                     ? target.groups().split('|')[1]
                     : null,
-            extension: path.extension(page.split('/').last).replaceAll(".", ""),
+            extension: page.contains('fullimg.php')
+                ? 'jpg'
+                : path.extension(page.split('/').last).replaceAll(".", ""),
             extractor: 'hentai',
             downloadDate: DateTime.now().toString(),
             className: target.classname(),
