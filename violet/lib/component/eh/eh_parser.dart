@@ -73,9 +73,15 @@ class EHParser {
   }
 
   // ex: https://exhentai.org/s/df24b19548/1212549-2
-  static String getImagesAddress(String html) {
+  static String getImageAddress(String html) {
     var doc = parse(html).querySelector("div[id='i1']");
     return doc.querySelector("div[id='i3'] a img").attributes['src'];
+  }
+
+  // ex: https://exhentai.org/s/df24b19548/1212549-2
+  static String getOriginalImageAddress(String html) {
+    final RegExp regex = RegExp(r'\<a href="(.*?fullimg\.php.*?)"\>');
+    return regex.allMatches(html).first.group(1);
   }
 
   // ex: https://exhentai.org/g/1212168/421ef300a8/

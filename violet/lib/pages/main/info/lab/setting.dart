@@ -130,6 +130,29 @@ class _LabSettingState extends State<LabSetting> {
               setState(() {});
             },
           ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(MdiIcons.flask, color: Settings.majorColor),
+              title: Text('Download E(x)hentai Raw Image'),
+              subtitle: Text(
+                  'download the original image. many network errors (connection reset ... etc) can occur during this operation.'),
+              trailing: Switch(
+                value: Settings.downloadEhRawImage,
+                onChanged: (newValue) async {
+                  await Settings.setDownloadEhRawImage(newValue);
+                  setState(() {});
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setDownloadEhRawImage(
+                  !Settings.downloadEhRawImage);
+              setState(() {});
+            },
+          ),
         ],
       ),
     );
