@@ -747,10 +747,10 @@ class _DownloadPageState extends State<DownloadPage>
         var yy = int.tryParse(y.url());
 
         if (Settings.downloadAlignType == 3)
-          return x
+          return y
               .filesWithoutThumbnail()
               .length
-              .compareTo(y.filesWithoutThumbnail().length);
+              .compareTo(x.filesWithoutThumbnail().length);
         else if (Settings.downloadAlignType == 2) {
           if (!queryResults.containsKey(xx)) return 1;
           if (!queryResults.containsKey(yy)) return -1;
