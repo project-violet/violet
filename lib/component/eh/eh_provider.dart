@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/image_provider.dart';
+import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 
 class EHentaiImageProvider extends VioletImageProvider {
@@ -77,7 +78,10 @@ class EHentaiImageProvider extends VioletImageProvider {
     pageThrottler.release();
 
     var img = await EHSession.requestString(urls[page]);
-    return imgUrls[page] = EHParser.getImagesAddress(img);
+
+    if (Settings.downloadEhRawImage)
+      return imgUrls[page] = EHParser.getOriginalImageAddress(img);
+    return imgUrls[page] = EHParser.getImageAddress(img);
   }
 
   @override

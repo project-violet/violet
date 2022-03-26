@@ -95,6 +95,7 @@ class Settings {
   static bool showNewViewerWhenArtistArticleListItemTap;
   static bool enableViewerFunctionBackdropFilter;
   static bool usingPushReplacementOnArticleRead;
+  static bool downloadEhRawImage;
 
   static bool useLockScreen;
   static bool useSecureMode;
@@ -324,6 +325,7 @@ class Settings {
         await _getBool('enableViewerFunctionBackdropFilter');
     usingPushReplacementOnArticleRead =
         await _getBool('usingPushReplacementOnArticleRead', true);
+    downloadEhRawImage = await _getBool('downloadEhRawImage');
 
     await regacy1_20_2();
   }
@@ -705,6 +707,12 @@ class Settings {
     usingPushReplacementOnArticleRead = nn;
     await (await SharedPreferences.getInstance())
         .setBool('usingPushReplacementOnArticleRead', nn);
+  }
+
+  static Future<void> setDownloadEhRawImage(bool nn) async {
+    downloadEhRawImage = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('downloadEhRawImage', nn);
   }
 
   static Future<void> setUseLockScreen(bool nn) async {
