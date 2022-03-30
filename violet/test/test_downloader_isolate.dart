@@ -24,12 +24,11 @@ void main() {
 
     var task = DownloadTask(
       taskId: 0,
-      filename: 't1.db',
+      downloadPath: 't1.db',
       url:
           'https://search.naver.com/search.naver?where=nexearch&sm=top_sug.mbk&fbm=1&acr=1&acq=%EC%95%88%EC%B2%A1%EC%88%98+&qdt=0&ie=utf8&query=%EC%95%88%EC%B2%A0%EC%88%98+%EC%A7%80%EC%A7%80%EC%9C%A8',
       headers: {},
     );
-    task.downloadPath = task.filename;
     task.startCallback = () => print('start');
     task.completeCallback = () => print('complete');
     task.errorCallback = (e) => print(e);
