@@ -20,6 +20,7 @@ import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/download.dart';
+import 'package:violet/database/user/record.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
@@ -678,7 +679,7 @@ class _DownloadPageState extends State<DownloadPage>
     });
   }
 
-  void _applyFilter() {
+  Future<void> _applyFilter() async {
     var downloading = <int>[];
     var result = <int>[];
     var isOr = _filterController.isOr;
@@ -739,6 +740,16 @@ class _DownloadPageState extends State<DownloadPage>
       Population.sortByPopulationDownloadItem(filterResult);
 
     if (Settings.downloadAlignType > 0) {
+      final user = await User.getInstance();
+      final userlog = await user.getUserLog();
+      final articlereadlog = Map<int, DateTime>();
+
+      userlog.forEach((element) {
+        if (!articlereadlog.containsKey(int.tryParse(element.articleId())))
+          articlereadlog[int.tryParse(element.articleId())] =
+              DateTime.parse(element.datetimeStart());
+      });
+
       filterResult.sort((x, y) {
         if (int.tryParse(x.url()) == null) return 1;
         if (int.tryParse(y.url()) == null) return -1;
@@ -783,15 +794,17 @@ class _DownloadPageState extends State<DownloadPage>
               (a2 as String).split('|').firstWhere((element) => element != '');
 
           return aa1.compareTo(aa2);
+        } else if (Settings.downloadAlignType == 4) {
+          if (!articlereadlog.containsKey(xx)) return 1;
+          if (!articlereadlog.containsKey(yy)) return -1;
+
+          return articlereadlog[yy].compareTo(articlereadlog[xx]);
         }
 
         return 0;
       });
       filterResult = filterResult.reversed.toList();
     }
-
-    filterResult.forEach(
-        (element) => print(queryResults[int.parse(element.url())].artists()));
 
     if (_filterController.tagStates.isNotEmpty && downloading.length > 0)
       filterResult.addAll(downloading.map((e) => itemsMap[e]).toList());

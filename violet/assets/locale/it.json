@@ -290,5 +290,10 @@
   "showrecordjumpmessage": "Show move to latest read page message",
   "checkalreadydownloaded":"This article have already been downloaded. Continue?",
   "securemode": "Hide app from the app list",
-  "copied": "Copied!"
+  "copied": "Copied!",
+  "alignnone": "Align None",
+  "alignartist": "Sort by Artist Name",
+  "aligngroup": "Sort by Group",
+  "alignpage": "Sort by Page Count",
+  "alignrecentread": "Sort by Recent Read"
 }
