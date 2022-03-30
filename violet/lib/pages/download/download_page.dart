@@ -734,7 +734,7 @@ class _DownloadPageState extends State<DownloadPage>
     if (_filterController.tagStates.isNotEmpty)
       filterResult = result.map((e) => itemsMap[e]).toList();
     else
-      filterResult = items;
+      filterResult = items.toList();
 
     if (_filterController.isPopulationSort)
       Population.sortByPopulationDownloadItem(filterResult);
