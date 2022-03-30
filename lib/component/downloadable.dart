@@ -70,6 +70,7 @@ class DownloadTask {
     this.headers,
     this.query,
     this.format,
+    this.downloadPath,
   });
 }
 

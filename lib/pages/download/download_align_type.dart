@@ -36,12 +36,16 @@ class DownloadAlignType extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
-                    _typeItem(
-                        context, MdiIcons.clipboardListOutline, '일반 정렬', 0),
-                    _typeItem(context, MdiIcons.accountOutline, '작가순으로 정렬', 1),
+                    _typeItem(context, MdiIcons.clipboardListOutline,
+                        Translations.of(context).trans('alignnone'), 0),
+                    _typeItem(context, MdiIcons.accountOutline,
+                        Translations.of(context).trans('alignartist'), 1),
                     _typeItem(context, MdiIcons.accountMultipleOutline,
-                        '그룹순으로 정렬', 2),
-                    _typeItem(context, MdiIcons.fileOutline, '페이지순으로 정렬', 3),
+                        Translations.of(context).trans('aligngroup'), 2),
+                    _typeItem(context, MdiIcons.fileOutline,
+                        Translations.of(context).trans('alignpage'), 3),
+                    _typeItem(context, MdiIcons.calendarClockOutline,
+                        Translations.of(context).trans('alignrecentread'), 4),
                   ],
                 ),
               ),
