@@ -195,7 +195,7 @@ void main() {
       var task = DownloadTask(
         url: urls[i],
         // filename: urls[i].split('/').last,
-        filename: 'test/download/' +
+        downloadPath: 'test/download/' +
             intToString(i, pad: 3) +
             '.' +
             path.extension(urls[i].split('/').last).replaceAll(".", ""),
@@ -208,7 +208,6 @@ void main() {
         },
       );
       tasks.add(task);
-      task.downloadPath = task.filename;
       task.startCallback = () => print('$i start');
       task.completeCallback = () => print('$i complete');
       task.errorCallback = (e) => print('$i $e');
