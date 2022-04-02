@@ -519,7 +519,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   }
 
   Widget buildThumbnail() {
-    final height = MediaQuery.of(context).size.height;
+    final height = MediaQuery.of(context).size.width / 3 * 4 / 3;
     final length = widget.item.filesWithoutThumbnail().length;
 
     if (_cachedThumbnail == null || _shouldReload) {
