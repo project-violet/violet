@@ -127,13 +127,39 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     super.dispose();
   }
 
+  void _rebuild() {
+    _shouldRebuild = true;
+    setState(() {
+      _shouldRebuild = true;
+      key = ObjectKey(Uuid().v4());
+    });
+  }
+
+  Future<QueryResult> _tryGetArticleFromHitomi(String id) async {
+    var headers = await ScriptManager.runHitomiGetHeaderContent(id);
+    var hh = await http.get(
+      'https://ltn.hitomi.la/galleryblock/$id.html',
+      headers: headers,
+    );
+    var article = await HitomiParser.parseGalleryBlock(hh.body);
+    var meta = {
+      'Id': int.parse(id),
+      'Title': article['Title'],
+      'Artists': article['Artists'].join('|'),
+    };
+    return QueryResult(result: meta);
+  }
+
+  Future<void> _loadBookmarkAlignType() async {
+    nowType = (await SharedPreferences.getInstance())
+        .getInt('bookmark_${widget.groupId}');
+    if (nowType == null) nowType = 3;
+  }
+
   void refresh() {
+    _loadBookmarkAlignType();
     Bookmark.getInstance()
         .then((value) => value.getArticle().then((value) async {
-              nowType = (await SharedPreferences.getInstance())
-                  .getInt('bookmark_${widget.groupId}');
-              if (nowType == null) nowType = 3;
-              var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
               var cc = value
                   .where((e) => e.group() == widget.groupId)
                   .toList()
@@ -143,57 +169,29 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               if (cc.length == 0) {
                 queryResult = <QueryResult>[];
                 filterResult = queryResult;
-                _shouldRebuild = true;
-                setState(() {
-                  _shouldRebuild = true;
-                  key = ObjectKey(Uuid().v4());
-                });
+                _rebuild();
                 return;
               }
 
-              //queryRaw += cc.map((e) => 'Id=${e.article()}').join(' OR ');
-              queryRaw +=
-                  'Id IN (' + cc.map((e) => e.article()).join(',') + ')';
-              QueryManager.query(queryRaw +
-                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''))
+              QueryManager.queryIds(cc.map((e) => int.parse(e.article())))
                   .then((value) async {
                 var qr = Map<String, QueryResult>();
-                value.results.forEach((element) {
+                value.forEach((element) {
                   qr[element.id().toString()] = element;
                 });
 
                 var result = <QueryResult>[];
                 cc.forEach((element) async {
-                  if (qr[element.article()] == null) {
-                    var headers = await ScriptManager.runHitomiGetHeaderContent(
-                        element.article());
-                    var hh = await http.get(
-                      'https://ltn.hitomi.la/galleryblock/${element.article()}.html',
-                      headers: headers,
-                    );
-                    var article = await HitomiParser.parseGalleryBlock(hh.body);
-                    var meta = {
-                      'Id': int.parse(element.article()),
-                      'Title': article['Title'],
-                      'Artists': article['Artists'].join('|'),
-                    };
-                    result.add(QueryResult(result: meta));
-                    _shouldRebuild = true;
-                    setState(() {
-                      _shouldRebuild = true;
-                    });
-                    return;
+                  var article = qr[element.article()];
+                  if (article == null) {
+                    article = await _tryGetArticleFromHitomi(element.article());
                   }
-                  result.add(qr[element.article()]);
+                  result.add(article);
                 });
 
                 queryResult = result;
                 _applyFilter();
-                _shouldRebuild = true;
-                setState(() {
-                  _shouldRebuild = true;
-                  key = ObjectKey(Uuid().v4());
-                });
+                _rebuild();
               });
             }));
   }
