@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Button,
   Card,
   Col,
   Container,
@@ -9,9 +8,7 @@ import {
   Row,
   Tooltip,
 } from "react-bootstrap";
-import { initSearchData, findSearchItemByPart } from "../../utils/searchData";
 import {
-  dummyMessageResult,
   searchMessage,
   SearchMessageResultType,
 } from "../../utils/searchMessage";
@@ -20,7 +17,6 @@ import "./HomeSearchResult.scss";
 function HomeSearchResultImage(dto: { result: SearchMessageResultType }) {
   const [isLoading, setIsLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState("");
-  const [imgHeight, setImageHegiht] = useState(0);
   const [imgWidth, setImageWidth] = useState(0);
 
   const [width, setWidth] = useState(0);
@@ -34,7 +30,6 @@ function HomeSearchResultImage(dto: { result: SearchMessageResultType }) {
 
   useEffect(() => {
     axios.get(`/imageurl/${dto.result.Id}/${dto.result.Page + 1}`).then((e) => {
-      setImageHegiht(e.data.size.height);
       setImageWidth(e.data.size.width);
       setImageUrl("/static/" + e.data.url);
       setIsLoading(false);
@@ -108,6 +103,120 @@ function HomeSearchResultImage(dto: { result: SearchMessageResultType }) {
   );
 }
 
+function NavigateButton(dto: {
+  id: number;
+  ehash: string;
+  tooltip: string;
+  alphabet: string;
+  background: string;
+  color: string;
+}) {
+  return (
+    <OverlayTrigger
+      overlay={<Tooltip id="tooltip-disabled">{dto.tooltip}</Tooltip>}
+    >
+      <a
+        href={`https://exhentai.org/g/${dto.id}/${dto.ehash}`}
+        target="_blank"
+        rel="noreferrer"
+        style={{ textDecoration: "none" }}
+      >
+        <div
+          className="site-icon"
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: "18%",
+            margin: "0 4px 0 0",
+            background: dto.background,
+            color: dto.color,
+            padding: "1px 0 0 0",
+          }}
+        >
+          {dto.alphabet}
+        </div>
+      </a>
+    </OverlayTrigger>
+  );
+}
+
+function BookmarkOutline() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="black"
+      viewBox="0 0 16 16"
+      style={{
+        padding: "0 0 2px 0",
+      }}
+    >
+      <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1H4z" />
+      <path d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z" />
+    </svg>
+  );
+}
+
+function BookmarkFill() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 16 16"
+    >
+      <path d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4z" />
+      <path d="M4.268 1A2 2 0 0 1 6 0h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L13 13.768V2a1 1 0 0 0-1-1H4.268z" />
+    </svg>
+  );
+}
+
+function BookmarkButton(dto: { e: SearchMessageResultType }) {
+  const [bookmarked, setBookmarked] = useState(false);
+  const [readyToBookmarked, setReadyToBookmarked] = useState(false);
+
+  useEffect(() => {
+    if (readyToBookmarked) return;
+    axios.post("/isbookmarked", dto.e).then((e) => {
+      if (parseInt(e.data) > 0)
+        setBookmarked(true);
+      setReadyToBookmarked(true);
+    })
+  }, [dto, readyToBookmarked]);
+
+  const toggleBookmarked = (e: any) => {
+    if (!bookmarked)
+      axios.post("/bookmark", dto.e);
+    else
+      axios.post("/unbookmark", dto.e);
+    setBookmarked(!bookmarked);
+  };
+
+  return (
+    <OverlayTrigger overlay={<Tooltip id="tooltip-disabled">북마크</Tooltip>}>
+      <div
+        className="site-icon"
+        onClick={toggleBookmarked}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: "18%",
+          margin: "0 4px 0 0",
+          background: "white",
+          color: "#fd758c",
+        }}
+      >
+       <div style={{
+          transform: "translateY(-1px)"}}>
+            {bookmarked ? <BookmarkFill/> : <BookmarkOutline />}
+         </div> 
+      </div>
+    </OverlayTrigger>
+  );
+}
+
 function HomeSearchResultCard(dto: { e: SearchMessageResultType }) {
   const [artist, setArtist] = useState("");
   const [ehash, setEHash] = useState("");
@@ -125,7 +234,24 @@ function HomeSearchResultCard(dto: { e: SearchMessageResultType }) {
         <HomeSearchResultImage result={dto.e} />
         <Card.Body>
           <Card.Title>
-            Id: {dto.e.Id} (Page: {dto.e.Page + 1}p)
+            <div style={{ display: "flex", position: "relative" }}>
+              <div>
+                Id: {dto.e.Id} (Page: {dto.e.Page + 1}p)
+              </div>
+
+              <div
+                style={{
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  display: "flex",
+                }}
+              >
+                <BookmarkButton e={dto.e} />
+              </div>
+            </div>
           </Card.Title>
           <Card.Text>
             <div style={{ display: "flex", position: "relative" }}>
@@ -146,115 +272,30 @@ function HomeSearchResultCard(dto: { e: SearchMessageResultType }) {
                   display: "flex",
                 }}
               >
-                <OverlayTrigger
-                  overlay={
-                    <Tooltip id="tooltip-disabled">익헨 바로가기</Tooltip>
-                  }
-                >
-                  <a
-                    href={`https://exhentai.org/g/${dto.e.Id}/${ehash}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ textDecoration: "none" }}
-                  >
-                    {/* <img
-                  className="site-icon"
-                  width={28}
-                  src={"./logo-hiyobi.png"}
-                  alt=""
-                  style={{ borderRadius: "18%", margin: "0 4px 0 0" }}
-                /> */}
-                    <div
-                      className="site-icon"
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: "18%",
-                        margin: "0 4px 0 0",
-                        background: "#650612",
-                        color: "#fd758c",
-                        padding: "1px 0 0 0",
-                      }}
-                    >
-                      E
-                    </div>
-                  </a>
-                </OverlayTrigger>
-                <OverlayTrigger
-                  overlay={
-                    <Tooltip id="tooltip-disabled">히요비 바로가기</Tooltip>
-                  }
-                >
-                  <a
-                    href={`https://hiyobi.me/reader/${dto.e.Id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ textDecoration: "none" }}
-                  >
-                    {/* <img
-                    className="site-icon"
-                    width={28}
-                    src={"./logo-hiyobi.png"}
-                    alt=""
-                    style={{ borderRadius: "18%", margin: "0 4px 0 0" }}
-                  /> */}
-                    <div
-                      className="site-icon"
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: "18%",
-                        margin: "0 4px 0 0",
-                        background: "pink",
-                        color: "#fd758c",
-                        padding: "1px 0 0 0",
-                      }}
-                    >
-                      H
-                    </div>
-                  </a>
-                </OverlayTrigger>
-                <OverlayTrigger
-                  overlay={
-                    <Tooltip id="tooltip-disabled">히토미 바로가기</Tooltip>
-                  }
-                >
-                  <a
-                    href={`https://hitomi.la/galleries/${dto.e.Id}.html`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ textDecoration: "none" }}
-                  >
-                    {/* <img
-                    className="site-icon"
-                    width={28}
-                    src={"./logo-hitomi.png"}
-                    alt=""
-                    style={{ borderRadius: "18%", margin: "0 4px 0 0" }}
-                  /> */}
-                    <div
-                      className="site-icon"
-                      style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: "18%",
-                        margin: "0 4px 0 0",
-                        background: "#29313e",
-                        color: "white",
-                        padding: "1px 0 0 0",
-                      }}
-                    >
-                      L
-                    </div>
-                  </a>
-                </OverlayTrigger>
-                {/* <img
-                  className="site-icon"
-                  width={28}
-                  src={"./logo-eh.png"}
-                  alt=""
-                  style={{ borderRadius: "18%" }}
-                /> */}
+                <NavigateButton
+                  tooltip="익헨 바로가기"
+                  id={dto.e.Id}
+                  ehash={ehash}
+                  background="#650612"
+                  color="#fd758c"
+                  alphabet="E"
+                />
+                <NavigateButton
+                  tooltip="히요비 바로가기"
+                  id={dto.e.Id}
+                  ehash={ehash}
+                  background="pink"
+                  color="#fd758c"
+                  alphabet="H"
+                />
+                <NavigateButton
+                  tooltip="히토미 바로가기"
+                  id={dto.e.Id}
+                  ehash={ehash}
+                  background="#29313e"
+                  color="white"
+                  alphabet="L"
+                />
               </div>
             </div>
           </Card.Text>
