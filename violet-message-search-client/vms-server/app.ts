@@ -77,6 +77,48 @@ app.get(
   }
 );
 
+function createUserDB() {
+  const db = new sqlite3.Database("./user.db");
+  db.run("CREATE TABLE BOOK (id INTEGER  PRIMARY KEY, hash TEXT, body TEXT)");
+}
+
+// createUserDB();
+
+const crypto = require("crypto");
+app.post(
+  "/bookmark",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const db = new sqlite3.Database("./user.db");
+    const body = JSON.stringify(req.body);
+    const hash = crypto.createHash("md5").update(body).digest("hex");
+    db.run("INSERT INTO BOOK(hash, body) VALUES (?, ?)", hash, body);
+    res.status(200).send();
+  }
+);
+
+app.post(
+  "/unbookmark",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const db = new sqlite3.Database("./user.db");
+    const body = JSON.stringify(req.body);
+    const hash = crypto.createHash("md5").update(body).digest("hex");
+    db.run("DELETE FROM BOOK WHERE hash=? AND body=?", hash, body);
+    res.status(200).send();
+  }
+);
+
+app.post(
+  "/isbookmarked",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const db = new sqlite3.Database("./user.db");
+    const body = JSON.stringify(req.body);
+    const hash = crypto.createHash("md5").update(body).digest("hex");
+    db.all("SELECT * FROM BOOK WHERE hash=?", [hash], (err: any, rows: any) => {
+      res.status(200).send(rows.length.toString());
+    });
+  }
+);
+
 app.get("/", async (req: Request, res: Response, next: NextFunction) => {
   res.redirect("/home");
 });

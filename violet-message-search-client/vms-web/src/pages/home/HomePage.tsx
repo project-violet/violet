@@ -1,25 +1,18 @@
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
-  Button,
-  Col,
   Container,
   Dropdown,
   DropdownButton,
   Form,
-  FormControl,
   InputGroup,
   Navbar,
-  Offcanvas,
   OverlayTrigger,
   Pagination,
-  Row,
   Tooltip,
 } from "react-bootstrap";
-import { AsyncTypeahead, Typeahead, useAsync } from "react-bootstrap-typeahead";
+import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import { findSearchItemByPart, initSearchData } from "../../utils/searchData";
-import { dummyMessageResult, searchMessage } from "../../utils/searchMessage";
 import HomeNavbar from "./HomeNavbar";
-import styles from "./HomePage.module.scss";
 import HomeSearchResult from "./HomeSearchResult";
 
 function HighlightedSearchItem(dto: { option: any; query: string }) {
@@ -187,11 +180,6 @@ function PaginationBar(dto: {
   curPage: number;
   setCurPage: (page: number) => void;
 }) {
-  const minPage = 1;
-  const maxPage = 50;
-
-  const maxViewNum = 9;
-
   if (dto.curPage <= 5) {
     return (
       <Pagination>

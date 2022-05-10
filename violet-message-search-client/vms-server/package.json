@@ -19,6 +19,7 @@
   "dependencies": {
     "@types/express-http-proxy": "^1.6.3",
     "@types/image-size": "^0.8.0",
+    "crypto": "^1.0.1",
     "express": "^4.18.1",
     "express-http-proxy": "^1.6.3",
     "image-size": "^1.0.1",

@@ -124,7 +124,7 @@ export interface SearchMessageResultType {
 }
 
 export async function searchMessage(keyword: string, searchType: number): Promise<SearchMessageResultType[]> {
-  // return dummyMessageResult as SearchMessageResultType[];
+  return dummyMessageResult as SearchMessageResultType[];
   const url = `/search/${['contains', 'similar', 'lcs'][searchType]}/${keyword}`;
   return (await axios.get(url)).data as SearchMessageResultType[];
 }
