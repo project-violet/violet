@@ -183,6 +183,130 @@ function HomePageSearchBar(dto: {
   );
 }
 
+function PaginationBar(dto: {
+  curPage: number;
+  setCurPage: (page: number) => void;
+}) {
+  const minPage = 1;
+  const maxPage = 50;
+
+  const maxViewNum = 9;
+
+  if (dto.curPage <= 5) {
+    return (
+      <Pagination>
+        <Pagination.Prev
+          disabled={dto.curPage === 1}
+          onClick={(_) => dto.setCurPage(dto.curPage - 1)}
+        />
+
+        {range(1, 5).map((e) => {
+          return (
+            <Pagination.Item
+              key={e}
+              active={e === dto.curPage}
+              onClick={(_) => dto.setCurPage(e)}
+            >
+              {e}
+            </Pagination.Item>
+          );
+        })}
+
+        {range(6, 7).map((e) => {
+          return (
+            <Pagination.Item
+              key={e}
+              active={e === dto.curPage}
+              onClick={(_) => dto.setCurPage(e)}
+            >
+              {e}
+            </Pagination.Item>
+          );
+        })}
+
+        <Pagination.Ellipsis onClick={(_) => dto.setCurPage(8)}/>
+        <Pagination.Item onClick={(_) => dto.setCurPage(50)}>{50}</Pagination.Item>
+        <Pagination.Next
+          disabled={dto.curPage === 50}
+          onClick={(_) => dto.setCurPage(dto.curPage + 1)}
+        />
+      </Pagination>
+    );
+  } else if (dto.curPage >= 46) {
+    return (
+      <Pagination>
+        <Pagination.Prev
+          disabled={dto.curPage === 1}
+          onClick={(_) => dto.setCurPage(dto.curPage - 1)}
+        />
+        <Pagination.Item onClick={(_) => dto.setCurPage(1)}>{1}</Pagination.Item>
+        <Pagination.Ellipsis onClick={(_) => dto.setCurPage(43)}/>
+
+        {range(44, 45).map((e) => {
+          return (
+            <Pagination.Item
+              key={e}
+              active={e === dto.curPage}
+              onClick={(_) => dto.setCurPage(e)}
+            >
+              {e}
+            </Pagination.Item>
+          );
+        })}
+
+        {range(46, 50).map((e) => {
+          return (
+            <Pagination.Item
+              key={e}
+              active={e === dto.curPage}
+              onClick={(_) => dto.setCurPage(e)}
+            >
+              {e}
+            </Pagination.Item>
+          );
+        })}
+
+        <Pagination.Next
+          disabled={dto.curPage === 50}
+          onClick={(_) => dto.setCurPage(dto.curPage + 1)}
+        />
+      </Pagination>
+    );
+  }
+   
+  return (
+    <Pagination>
+      <Pagination.Prev
+        disabled={dto.curPage === 1}
+        onClick={(_) => dto.setCurPage(dto.curPage - 1)}
+      />
+      <Pagination.Item onClick={(_) => dto.setCurPage(1)}>{1}</Pagination.Item>
+      <Pagination.Ellipsis onClick={(_) => dto.setCurPage(dto.curPage - 3)}/>
+
+      {range(dto.curPage - 2, dto.curPage + 2).map((e) => {
+        return (
+          <Pagination.Item
+            key={e}
+            active={e === dto.curPage}
+            onClick={(_) => dto.setCurPage(e)}
+          >
+            {e}
+          </Pagination.Item>
+        );
+      })}
+
+      <Pagination.Ellipsis onClick={(_) => dto.setCurPage(dto.curPage + 3)}/>
+      <Pagination.Item onClick={(_) => dto.setCurPage(50)}>
+        {50}
+      </Pagination.Item>
+      <Pagination.Next
+        disabled={dto.curPage === 50}
+        onClick={(_) => dto.setCurPage(dto.curPage + 1)}
+      />
+    </Pagination>
+  );
+}
+
 const range = (start: number, stop: number, step: number = 1) =>
   Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
 
@@ -205,7 +329,11 @@ export default function HomePage() {
           </Form>
         </Container>
       </Navbar>
-      <HomeSearchResult keyword={keyword} page={curPage} searchType={searchType}/>
+      <HomeSearchResult
+        keyword={keyword}
+        page={curPage}
+        searchType={searchType}
+      />
       <div
         style={{
           display: "flex",
@@ -215,19 +343,7 @@ export default function HomePage() {
           margin: "36px 0 0 0",
         }}
       >
-        <Pagination>
-          {range(1, 20).map((e) => {
-            return (
-              <Pagination.Item
-                key={e}
-                active={e === curPage}
-                onClick={(_) => setCurPage(e)}
-              >
-                {e}
-              </Pagination.Item>
-            );
-          })}
-        </Pagination>
+        <PaginationBar curPage={curPage} setCurPage={setCurPage} />
       </div>
     </div>
   );
