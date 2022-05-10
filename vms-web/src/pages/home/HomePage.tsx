@@ -216,7 +216,7 @@ export default function HomePage() {
         }}
       >
         <Pagination>
-          {range(1, 10).map((e) => {
+          {range(1, 20).map((e) => {
             return (
               <Pagination.Item
                 key={e}

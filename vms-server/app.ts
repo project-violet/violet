@@ -11,10 +11,12 @@ app.use(express.json());
 const proxy = require("express-http-proxy");
 const { exec } = require("child_process");
 
-function replaceAll(str: string, searchStr: string, replaceStr: string) {
-  return str.split(searchStr).join(replaceStr);
-}
+const sqlite3 = require("sqlite3").verbose();
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log("request: " + req.originalUrl);
+  next();
+});
 app.use("/home", express.static(path.join(__dirname, "../vms-web/build")));
 app.use("/static", express.static(path.join(__dirname, "./")));
 app.use("/search", proxy("localhost:8864"));
@@ -38,6 +40,38 @@ app.get(
         // #: 이미 존재
         const size = sizeOf(stdout.replace("#", "").trim());
         res.json({ url: stdout.replace("#", "").trim(), size: size });
+      }
+    );
+  }
+);
+
+app.get(
+  "/info/:article",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const db = new sqlite3.Database("./data.db");
+    const article = req.params["article"];
+
+    db.all(
+      `SELECT * FROM HitomiColumnModel WHERE Id=${article}`,
+      [],
+      (err: any, rows: any) => {
+        res.send(rows[0]);
+      }
+    );
+  }
+);
+
+app.get(
+  "/ehash/:article",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const db = new sqlite3.Database("./data.db");
+    const article = req.params["article"];
+
+    db.all(
+      `SELECT EHash FROM HitomiColumnModel WHERE Id=${article}`,
+      [],
+      (err: any, rows: any) => {
+        res.send(rows[0]["EHash"]);
       }
     );
   }

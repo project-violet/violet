@@ -1,6 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Card, Col, Container, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  OverlayTrigger,
+  Row,
+  Tooltip,
+} from "react-bootstrap";
 import { initSearchData, findSearchItemByPart } from "../../utils/searchData";
 import {
   dummyMessageResult,
@@ -9,7 +17,7 @@ import {
 } from "../../utils/searchMessage";
 import "./HomeSearchResult.scss";
 
-function HomeSearchResultItem(dto: { result: SearchMessageResultType }) {
+function HomeSearchResultImage(dto: { result: SearchMessageResultType }) {
   const [isLoading, setIsLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState("");
   const [imgHeight, setImageHegiht] = useState(0);
@@ -54,9 +62,17 @@ function HomeSearchResultItem(dto: { result: SearchMessageResultType }) {
 
   return (
     <>
-    {/* https://bootsnipp.com/snippets/50blB */}
+      {/* https://bootsnipp.com/snippets/50blB */}
       {isLoading ? (
-        <div ref={ref} style={{height: "350px"}}>
+        <div
+          ref={ref}
+          style={{
+            height: "350px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
           <div className="loader"></div>
         </div>
       ) : (
@@ -92,6 +108,162 @@ function HomeSearchResultItem(dto: { result: SearchMessageResultType }) {
   );
 }
 
+function HomeSearchResultCard(dto: { e: SearchMessageResultType }) {
+  const [artist, setArtist] = useState("");
+  const [ehash, setEHash] = useState("");
+
+  useEffect(() => {
+    axios.get(`/info/${dto.e.Id}`).then((e) => {
+      setEHash(e.data.EHash);
+      setArtist((e.data.Artists as string).split("|")[1]);
+    });
+  }, [dto, setEHash]);
+
+  return (
+    <Col>
+      <Card>
+        <HomeSearchResultImage result={dto.e} />
+        <Card.Body>
+          <Card.Title>
+            Id: {dto.e.Id} (Page: {dto.e.Page + 1}p)
+          </Card.Title>
+          <Card.Text>
+            <div style={{ display: "flex", position: "relative" }}>
+              <div>
+                Artist: {artist}
+                <br />
+                Score: {dto.e.MatchScore}
+                <br />
+                Correctness: {dto.e.Correctness}
+              </div>
+              <div
+                style={{
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                  display: "flex",
+                }}
+              >
+                <OverlayTrigger
+                  overlay={
+                    <Tooltip id="tooltip-disabled">익헨 바로가기</Tooltip>
+                  }
+                >
+                  <a
+                    href={`https://exhentai.org/g/${dto.e.Id}/${ehash}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {/* <img
+                  className="site-icon"
+                  width={28}
+                  src={"./logo-hiyobi.png"}
+                  alt=""
+                  style={{ borderRadius: "18%", margin: "0 4px 0 0" }}
+                /> */}
+                    <div
+                      className="site-icon"
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: "18%",
+                        margin: "0 4px 0 0",
+                        background: "#650612",
+                        color: "#fd758c",
+                        padding: "1px 0 0 0",
+                      }}
+                    >
+                      E
+                    </div>
+                  </a>
+                </OverlayTrigger>
+                <OverlayTrigger
+                  overlay={
+                    <Tooltip id="tooltip-disabled">히요비 바로가기</Tooltip>
+                  }
+                >
+                  <a
+                    href={`https://hiyobi.me/reader/${dto.e.Id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {/* <img
+                    className="site-icon"
+                    width={28}
+                    src={"./logo-hiyobi.png"}
+                    alt=""
+                    style={{ borderRadius: "18%", margin: "0 4px 0 0" }}
+                  /> */}
+                    <div
+                      className="site-icon"
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: "18%",
+                        margin: "0 4px 0 0",
+                        background: "pink",
+                        color: "#fd758c",
+                        padding: "1px 0 0 0",
+                      }}
+                    >
+                      H
+                    </div>
+                  </a>
+                </OverlayTrigger>
+                <OverlayTrigger
+                  overlay={
+                    <Tooltip id="tooltip-disabled">히토미 바로가기</Tooltip>
+                  }
+                >
+                  <a
+                    href={`https://hitomi.la/galleries/${dto.e.Id}.html`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {/* <img
+                    className="site-icon"
+                    width={28}
+                    src={"./logo-hitomi.png"}
+                    alt=""
+                    style={{ borderRadius: "18%", margin: "0 4px 0 0" }}
+                  /> */}
+                    <div
+                      className="site-icon"
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: "18%",
+                        margin: "0 4px 0 0",
+                        background: "#29313e",
+                        color: "white",
+                        padding: "1px 0 0 0",
+                      }}
+                    >
+                      L
+                    </div>
+                  </a>
+                </OverlayTrigger>
+                {/* <img
+                  className="site-icon"
+                  width={28}
+                  src={"./logo-eh.png"}
+                  alt=""
+                  style={{ borderRadius: "18%" }}
+                /> */}
+              </div>
+            </div>
+          </Card.Text>
+        </Card.Body>
+      </Card>
+    </Col>
+  );
+}
+
 export default function HomeSearchResult(dto: {
   keyword: string;
   page: number;
@@ -106,6 +278,7 @@ export default function HomeSearchResult(dto: {
   const [currentTimeoutId, setCurrentTimeoutId] = useState<
     NodeJS.Timeout | undefined
   >();
+  const countShowArticleOnOnePage = 8;
 
   useEffect(() => {
     if (savedPage !== dto.page && totalResult.length > 0) {
@@ -113,11 +286,16 @@ export default function HomeSearchResult(dto: {
       setResult([]);
 
       const timeout = setTimeout(() => {
-        setResult(totalResult.slice((dto.page - 1) * 20, dto.page * 20));
+        setResult(
+          totalResult.slice(
+            (dto.page - 1) * countShowArticleOnOnePage,
+            dto.page * countShowArticleOnOnePage
+          )
+        );
         if (currentTimeoutId != null) {
           clearTimeout(currentTimeoutId);
         }
-      }, 500);
+      }, 100);
 
       setCurrentTimeoutId(timeout);
     }
@@ -140,7 +318,12 @@ export default function HomeSearchResult(dto: {
       setIsLoading(false);
       searchMessage(dto.keyword, dto.searchType).then((e) => {
         setTotalResult(e);
-        setResult(e.slice((dto.page - 1) * 20, dto.page * 20));
+        setResult(
+          e.slice(
+            (dto.page - 1) * countShowArticleOnOnePage,
+            dto.page * countShowArticleOnOnePage
+          )
+        );
       });
     }
   }, [
@@ -155,25 +338,9 @@ export default function HomeSearchResult(dto: {
   return (
     <Container>
       <Row xs={1} md={2} xl={2} className="g-4">
-        {result.map((e) => {
-          return (
-            <Col>
-              <Card>
-                <HomeSearchResultItem result={e} />
-                <Card.Body>
-                  <Card.Title>
-                    Id: {e.Id} (Page: {e.Page + 1}p)
-                  </Card.Title>
-                  <Card.Text>
-                    Score: {e.MatchScore}
-                    <br />
-                    Correctness: {e.Correctness}
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          );
-        })}
+        {result.map((e) => (
+          <HomeSearchResultCard e={e} />
+        ))}
       </Row>
     </Container>
   );
