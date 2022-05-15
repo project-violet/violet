@@ -1151,6 +1151,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.2"
+  semaphore:
+    dependency: "direct main"
+    description:
+      name: semaphore
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   shared_preferences:
     dependency: "direct main"
     description:
