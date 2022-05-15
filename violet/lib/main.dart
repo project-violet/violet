@@ -89,7 +89,6 @@ void main() async {
     DynamicTheme(
       defaultThemeMode: ThemeMode.light,
       data: (themeMode) => ThemeData(
-        accentColor: Settings.majorColor,
         brightness:
             themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light,
         bottomSheetTheme:
@@ -102,6 +101,8 @@ void main() async {
         cardColor: Settings.themeBlack && Settings.themeWhat
             ? const Color(0xFF141414)
             : null,
+        colorScheme:
+            ColorScheme.fromSwatch().copyWith(secondary: Settings.majorColor),
       ),
       themedWidgetBuilder: (context, themeMode, theme) {
         return MaterialApp(
