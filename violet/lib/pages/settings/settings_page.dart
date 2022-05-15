@@ -177,14 +177,12 @@ class _SettingsPageState extends State<SettingsPage>
     }
 
     return Container(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: EdgeInsets.only(top: statusBarHeight),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: _cachedGroups,
-          ),
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: _cachedGroups,
         ),
       ),
     );
