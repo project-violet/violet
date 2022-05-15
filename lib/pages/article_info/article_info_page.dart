@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
@@ -22,8 +21,6 @@ import 'package:uuid/uuid.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';

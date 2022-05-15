@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
-import 'package:violet/server/violet.dart';
 
 void main() {
   setUp(() async {

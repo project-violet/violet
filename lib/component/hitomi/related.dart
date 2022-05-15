@@ -5,8 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:violet/database/query.dart';
-import 'package:violet/database/user/download.dart';
 
 class Related {
   static Map<int, List<int>> related;
