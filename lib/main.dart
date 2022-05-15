@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/firebase_options.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
@@ -72,7 +73,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(); // @dependent: android
   FlareCache.doesPrune = false;
-  await Firebase.initializeApp(); // @dependent: android
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform); // @dependent: android
   FlutterError.onError = recordFlutterError; // @dependent: android
 
   var analytics = FirebaseAnalytics(); // @dependent: android
