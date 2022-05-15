@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:semaphore/semaphore.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
@@ -31,7 +32,6 @@ import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/thread/semaphore.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 
@@ -599,7 +599,7 @@ class _SearchPageState extends State<SearchPage>
   ObjectKey key = ObjectKey(Uuid().v4());
 
   bool queryEnd = false;
-  Semaphore _querySem = Semaphore(maxCount: 1);
+  Semaphore _querySem = LocalSemaphore(1);
 
   Future<void> loadNextQuery() async {
     await _querySem.acquire().timeout(
