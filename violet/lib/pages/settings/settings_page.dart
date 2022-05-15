@@ -301,8 +301,8 @@ class _SettingsPageState extends State<SettingsPage>
               _flareController.play('switch_day');
             _themeSwitch = !_themeSwitch;
             await Settings.setThemeWhat(_themeSwitch);
-            DynamicTheme.of(context).setBrightness(
-                !_themeSwitch ? Brightness.light : Brightness.dark);
+            DynamicTheme.of(context)
+                .setThemeMode(!_themeSwitch ? ThemeMode.light : ThemeMode.dark);
             setState(() {
               _shouldReload = true;
             });
@@ -2259,8 +2259,9 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             onTap: () async {
               const url = 'https://discord.gg/K8qny6E';
-              if (await canLaunch(url)) {
-                await launch(url);
+              final Uri uri = Uri.tryParse(url);
+              if (uri != null && await canLaunchUrl(uri)) {
+                await launchUrl(uri);
               }
             },
           ),
@@ -2274,8 +2275,9 @@ class _SettingsPageState extends State<SettingsPage>
             trailing: Icon(Icons.open_in_new),
             onTap: () async {
               const url = 'https://github.com/project-violet/';
-              if (await canLaunch(url)) {
-                await launch(url);
+              final Uri uri = Uri.tryParse(url);
+              if (uri != null && await canLaunchUrl(uri)) {
+                await launchUrl(uri);
               }
             },
           ),
@@ -2290,8 +2292,9 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               const url =
                   'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-              if (await canLaunch(url)) {
-                await launch(url);
+              final Uri uri = Uri.tryParse(url);
+              if (uri != null && await canLaunchUrl(uri)) {
+                await launchUrl(uri);
               }
             },
           ),

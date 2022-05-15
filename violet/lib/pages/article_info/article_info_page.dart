@@ -163,6 +163,7 @@ class ArticleInfoPage extends StatelessWidget {
                         ),
                         expanded:
                             PreviewAreaWidget(queryResult: data.queryResult),
+                        collapsed: Container(),
                       ),
                     ),
                   ),
@@ -193,6 +194,7 @@ class ArticleInfoPage extends StatelessWidget {
                           expanded: _RelatedArea(
                               relatedIds:
                                   Related.getRelated(data.queryResult.id())),
+                          collapsed: Container(),
                         ),
                       ),
                     ),
@@ -681,6 +683,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                   '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
             ),
             expanded: commentArea(context),
+            collapsed: Container(),
           ),
         ),
       ),
@@ -862,8 +865,11 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       var match = ehPattern.allMatches(url);
       var id = match.first.namedGroup('id').trim();
       _showArticleInfo(int.parse(id));
-    } else if (await canLaunch(url)) {
-      await launch(url);
+    } else {
+      final Uri uri = Uri.tryParse(url);
+      if (uri != null && await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      }
     }
   }
 
