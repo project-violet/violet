@@ -106,8 +106,7 @@ class _BookmarkPageState extends State<BookmarkPage>
       ),
       // floatingActionButtonLocation: FloatingActionButtonLocation.,
       floatingActionButton: SpeedDial(
-        marginRight: 18,
-        marginBottom: 20,
+        childMargin: const EdgeInsets.only(right: 18, bottom: 20),
         animatedIcon: AnimatedIcons.menu_close,
         animatedIconTheme: IconThemeData(size: 22.0),
         visible: true,
