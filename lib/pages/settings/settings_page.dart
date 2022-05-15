@@ -140,17 +140,21 @@ class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage> {
   FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
-  FlutterToast flutterToast;
+
+  List<Widget> _cachedGroups;
+  bool _shouldReload = false;
+
+  FToast _toast;
 
   @override
   void initState() {
     super.initState();
-    _themeSwitch = Settings.themeWhat;
-    flutterToast = FlutterToast(context);
-  }
 
-  List<Widget> _cachedGroups;
-  bool _shouldReload = false;
+    _toast = FToast();
+    _toast.init(context);
+
+    _themeSwitch = Settings.themeWhat;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -590,7 +594,7 @@ class _SettingsPageState extends State<SettingsPage>
                 await HitomiIndexs.init();
                 HitomiManager.reloadIndex();
 
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('tagrebuild') +
@@ -791,7 +795,7 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               await Logger.exportLog();
 
-              flutterToast.showToast(
+              _toast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('complete'),
@@ -967,7 +971,7 @@ class _SettingsPageState extends State<SettingsPage>
                   builder: (BuildContext context) => DBRebuildPage(),
                 );
 
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('dbrebuild') +
@@ -1029,7 +1033,7 @@ class _SettingsPageState extends State<SettingsPage>
                     if (lastDB != null &&
                         latestDB.difference(DateTime.parse(lastDB)).inHours <
                             1) {
-                      flutterToast.showToast(
+                      _toast.showToast(
                         child: ToastWrapper(
                           isCheck: true,
                           msg: Translations.of(context)
@@ -1066,7 +1070,7 @@ class _SettingsPageState extends State<SettingsPage>
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
 
-                        flutterToast.showToast(
+                        _toast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context).trans('synccomplete'),
@@ -1355,7 +1359,7 @@ class _SettingsPageState extends State<SettingsPage>
                 await (await SharedPreferences.getInstance())
                     .setInt('thread_count', int.parse(text.text));
 
-                FlutterToast(context).showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('changedthread'),
@@ -1677,7 +1681,7 @@ class _SettingsPageState extends State<SettingsPage>
                     e.toString() +
                     '\n' +
                     st.toString());
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     msg: "Bookmark Restoring Error!",
@@ -1690,7 +1694,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               await Bookmark.getInstance();
 
-              flutterToast.showToast(
+              _toast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('importbookmark'),
@@ -1709,7 +1713,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
                     PermissionStatus.denied) {
-                  flutterToast.showToast(
+                  _toast.showToast(
                     child: ToastWrapper(
                       isCheck: false,
                       msg: Translations.of(context).trans('noauth'),
@@ -1730,7 +1734,7 @@ class _SettingsPageState extends State<SettingsPage>
                   .path);
 
               if (file == null) {
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     msg: Translations.of(context).trans('noselectedb'),
@@ -1748,7 +1752,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               await Bookmark.getInstance();
 
-              flutterToast.showToast(
+              _toast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('importbookmark'),
@@ -1770,7 +1774,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
                     PermissionStatus.denied) {
-                  flutterToast.showToast(
+                  _toast.showToast(
                     child: ToastWrapper(
                       isCheck: false,
                       msg: Translations.of(context).trans('noauth'),
@@ -1789,7 +1793,7 @@ class _SettingsPageState extends State<SettingsPage>
               var extpath = '${ext.path}/bookmark.db';
               await dbfile.copy(extpath);
 
-              flutterToast.showToast(
+              _toast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('exportbookmark'),
@@ -1814,7 +1818,7 @@ class _SettingsPageState extends State<SettingsPage>
                   .getString('eh_cookies');
 
               if (ehc == null || ehc == '') {
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     msg: Translations.of(context).trans('setcookiefirst'),
@@ -1831,7 +1835,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
 
               if (EHBookmark.bookmarkInfo == null) {
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     isWarning: true,
@@ -1870,7 +1874,7 @@ class _SettingsPageState extends State<SettingsPage>
                   }
                 }
 
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     isWarning: false,
@@ -2055,7 +2059,7 @@ class _SettingsPageState extends State<SettingsPage>
                     .setString('eh_cookies', result);
 
                 if (result != null) {
-                  flutterToast.showToast(
+                  _toast.showToast(
                     child: ToastWrapper(
                       isCheck: true,
                       msg: 'Login Success!',
@@ -2214,7 +2218,7 @@ class _SettingsPageState extends State<SettingsPage>
               await UpdateSyncManager.checkUpdateSync();
 
               if (UpdateSyncManager.updateRequire) {
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('newupdate'),
@@ -2223,7 +2227,7 @@ class _SettingsPageState extends State<SettingsPage>
                   toastDuration: Duration(seconds: 4),
                 );
               } else {
-                flutterToast.showToast(
+                _toast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('latestver'),

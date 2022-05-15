@@ -44,9 +44,6 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage>
     with AutomaticKeepAliveClientMixin<SearchPage> {
-  @override
-  bool get wantKeepAlive => true;
-
   Color color = Colors.green;
   bool into = false;
 
@@ -70,8 +67,10 @@ class _SearchPageState extends State<SearchPage>
   int baseCount = 0; // using for user custom page index
   List<int> scrollQueue = <int>[];
 
+  FToast _toast;
+
   void _showErrorToast(String message) {
-    FlutterToast(context).showToast(
+    _toast.showToast(
       toastDuration: const Duration(seconds: 10),
       child: Container(
         padding: const EdgeInsets.all(8.0),
@@ -86,8 +85,14 @@ class _SearchPageState extends State<SearchPage>
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
+
+    _toast = FToast();
+    _toast.init(context);
 
     (() async {
       asset =

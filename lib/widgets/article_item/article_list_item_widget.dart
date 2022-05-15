@@ -70,9 +70,6 @@ class _ArticleListItemVerySimpleWidgetState
         AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
   ArticleListItem data;
 
-  @override
-  bool get wantKeepAlive => true;
-
   String thumbnail;
   int imageCount = 0;
   double pad = 0.0;
@@ -89,14 +86,22 @@ class _ArticleListItemVerySimpleWidgetState
   final FlareControls _flareController = FlareControls();
   double thisWidth, thisHeight;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   String artist;
   String title;
   String dateTime;
+
+  FToast _toast;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _toast = FToast();
+    _toast.init(context);
+  }
 
   @override
   void dispose() {
@@ -414,7 +419,7 @@ class _ArticleListItemVerySimpleWidgetState
       if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
     }
     try {
-      FlutterToast(context).showToast(
+      _toast.showToast(
         child: ToastWrapper(
           icon: isBookmarked.value ? Icons.delete_forever : Icons.check,
           color: isBookmarked.value

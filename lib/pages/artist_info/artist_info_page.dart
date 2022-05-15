@@ -85,9 +85,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   bool isBookmarked = false;
   FlareControls flareController = FlareControls();
 
+  FToast _toast;
+
   @override
   void initState() {
     super.initState();
+
+    _toast = FToast();
+    _toast.init(context);
+
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       //
       // Check bookmark
@@ -447,7 +453,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         ? 4
                         : 0;
 
-        FlutterToast(context).showToast(
+        _toast.showToast(
           child: ToastWrapper(
             isCheck: true,
             msg:

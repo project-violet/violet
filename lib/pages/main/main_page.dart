@@ -53,16 +53,25 @@ class MainPage2 extends StatefulWidget {
 
 class _MainPage2State extends State<MainPage2>
     with AutomaticKeepAliveClientMixin<MainPage2> {
-  @override
-  bool get wantKeepAlive => true;
   // int count = 0;
   // bool ee = false;
   int _current = 0;
   bool _syncAvailable = false;
 
+  List<Widget> _cachedGroups;
+  bool _shouldReload = false;
+
+  FToast _toast;
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
+
+    _toast = FToast();
+    _toast.init(context);
 
     Future.delayed(Duration(milliseconds: 200)).then((value) async {
       // var latestDB = SyncManager.getLatestDB().getDateTime();
@@ -95,9 +104,6 @@ class _MainPage2State extends State<MainPage2>
       }
     });
   }
-
-  List<Widget> _cachedGroups;
-  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
@@ -460,7 +466,7 @@ class _MainPage2State extends State<MainPage2>
                       if (lastDB != null &&
                           latestDB.difference(DateTime.parse(lastDB)).inHours <
                               1) {
-                        FlutterToast(context).showToast(
+                        _toast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context)
@@ -501,7 +507,7 @@ class _MainPage2State extends State<MainPage2>
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
 
-                        FlutterToast(context).showToast(
+                        _toast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context).trans('synccomplete'),
