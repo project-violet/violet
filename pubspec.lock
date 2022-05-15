@@ -538,12 +538,10 @@ packages:
   flutter_downloader:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "8616aa7e9c173095b380f8f640a1de5b1b9a28f9"
-      url: "https://github.com/project-violet/flutter_downloader"
-    source: git
-    version: "1.7.0"
+      name: flutter_downloader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.7.3"
   flutter_image_compress:
     dependency: transitive
     description:

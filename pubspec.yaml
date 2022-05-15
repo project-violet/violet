@@ -57,8 +57,7 @@ dependencies:
   flare_flutter: ^1.8.3
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^1.0.3
-  flutter_downloader: # @dependent: android
-    git: https://github.com/project-violet/flutter_downloader # @dependent: android
+  flutter_downloader: ^1.7.3 # @dependent: android
   flutter_markdown: ^0.6.10
   flutter_speed_dial: ^6.0.0
   flutter_staggered_animations:
