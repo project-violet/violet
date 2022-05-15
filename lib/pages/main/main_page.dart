@@ -177,14 +177,12 @@ class _MainPage2State extends State<MainPage2>
     }
 
     return Container(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: EdgeInsets.only(top: statusBarHeight),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: _cachedGroups,
-          ),
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _cachedGroups,
         ),
       ),
     );
