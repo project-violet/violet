@@ -24,9 +24,12 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2022, 5, 0),
-    version: '1.23.3 Patch',
+    dateTime: DateTime(2022, 5, 15),
+    version: '1.24 Minor Update',
+    isMinor: true,
     contents: [
+      'apply flutter 3.0 (ios pro-motion, firebase)',
+      'fix ios empty padding bug when custom keyboard opening',
       'fix hitomi script refersh error',
       'fix download tab thumbnail memory leak',
       'add keep screen awake',
@@ -55,6 +58,7 @@ final patches = [
   PatchModel(
     dateTime: DateTime(2022, 3, 14),
     version: '1.23 Minor Update',
+    isMinor: true,
     contents: [
       'fix text field long press gray scale bug on ios',
       'fix background color to black bug for ios',
