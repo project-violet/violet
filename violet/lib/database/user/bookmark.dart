@@ -116,8 +116,8 @@ class Bookmark {
   static Bookmark _instance;
   static Lock lock = Lock();
   static Future<Bookmark> getInstance() async {
-    await lock.synchronized(() async {
-      if (_instance == null) {
+    if (_instance == null) {
+      await lock.synchronized(() async {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkGroup';");
@@ -179,8 +179,8 @@ class Bookmark {
               ''');
         }
         _instance = Bookmark();
-      }
-    });
+      });
+    }
     return _instance;
   }
 
