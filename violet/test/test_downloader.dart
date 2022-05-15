@@ -1,13 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:violet/downloader/isolate_downloader.dart';
-import 'package:violet/server/violet.dart';
 
 void main() {
   setUp(() async {

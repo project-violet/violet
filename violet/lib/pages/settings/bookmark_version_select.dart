@@ -1,26 +1,15 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:violet/component/eh/eh_bookmark.dart';
-import 'package:violet/database/database.dart';
-import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/widgets/toast.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 bool alreadyInit = false;

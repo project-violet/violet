@@ -4,7 +4,6 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class PlatformNavigator {
   static Future<T> navigateFade<T>(BuildContext context, Widget page) async {

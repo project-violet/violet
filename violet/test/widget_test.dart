@@ -5,46 +5,10 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-// import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pointycastle/export.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:tuple/tuple.dart';
-import 'package:violet/cert/cert_data.dart';
-import 'package:violet/cert/cert_util.dart';
-import 'package:violet/cert/root.dart';
-import 'package:violet/component/hentai.dart';
-// import 'package:violet/component/download/hitomi.dart';
-import 'package:http/http.dart' as http;
-import 'package:violet/component/hisoki/hisoki_getter.dart';
-import 'package:violet/component/hisoki/hisoki_hash.dart';
-
-// import 'package:violet/main.dart';
-// import 'package:violet/component/download/twitter.dart';
-// import 'package:violet/component/downloadable.dart';
-// import 'package:violet/component/eh/eh_parser.dart';
-// import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/ldi.dart';
-import 'package:violet/component/hitomi/population.dart';
-import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/database/database.dart';
-import 'package:violet/script/script_manager.dart';
-import 'package:violet/server/community/anon.dart';
-import 'package:violet/server/violet.dart';
-import 'package:violet/server/wsalt.dart';
-
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-// import 'package:violet/database/query.dart';
-// import 'package:violet/server/community/session.dart';
-// import 'package:violet/server/violet.dart';
 
 void main() {
   sqfliteFfiInit();
