@@ -1,9 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:violet/pages/segment/card_panel.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/widgets.dart';
+// import 'package:violet/pages/segment/card_panel.dart';
 
 // class ArtistPanel extends StatelessWidget {
 //   final String author;

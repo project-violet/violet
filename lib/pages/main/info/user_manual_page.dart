@@ -7,7 +7,6 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/pages/segment/card_panel.dart';
-import 'package:violet/settings/settings.dart';
 
 class UserManualPage extends StatefulWidget {
   @override

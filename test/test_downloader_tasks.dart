@@ -1,21 +1,13 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_js/flutter_js.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/downloadable.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
-import 'package:violet/script/script_manager.dart';
-import 'package:violet/server/violet.dart';
-import 'package:violet/network/wrapper.dart' as http;
 
 String intToString(int i, {int pad: 0}) {
   var str = i.toString();

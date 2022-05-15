@@ -1,17 +1,12 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/database/user/bookmark.dart';
-import 'package:violet/other/dialogs.dart';
-import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
-import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';

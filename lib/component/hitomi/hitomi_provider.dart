@@ -6,7 +6,6 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:image_size_getter/image_size_getter.dart';
-import 'package:violet/network/wrapper.dart';
 import 'package:violet/script/script_manager.dart';
 
 class HitomiImageProvider extends VioletImageProvider {

@@ -1,17 +1,9 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:violet/cert/cert_data.dart';
-import 'package:violet/cert/cert_util.dart';
-import 'package:violet/cert/root.dart';
 import 'package:violet/component/eh/eh_parser.dart';
-import 'package:violet/component/hentai.dart';
-import 'package:violet/component/hitomi/hitomi.dart';
-import 'package:violet/network/wrapper.dart';
 
 void main() {
   setUp(() async {

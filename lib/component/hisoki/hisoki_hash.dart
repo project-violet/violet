@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:tuple/tuple.dart';
 
 class HisokiHash {
   static Map<String, String> hash;

@@ -31,7 +31,6 @@ import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
-import 'package:violet/downloader/native_downloader.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
