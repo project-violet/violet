@@ -9,7 +9,6 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';

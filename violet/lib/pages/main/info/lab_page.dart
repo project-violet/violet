@@ -1,9 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +9,6 @@ import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/bookmark_spy.dart';
@@ -23,7 +19,6 @@ import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/info/lab/setting.dart';
 import 'package:violet/pages/main/info/lab/top_recent.dart';
 import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
-import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/log_page.dart';

@@ -1,9 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -12,11 +9,9 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
-import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/server/community/anon.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 

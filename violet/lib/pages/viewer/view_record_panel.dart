@@ -3,7 +3,6 @@
 
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/settings/settings.dart';

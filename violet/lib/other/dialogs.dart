@@ -1,7 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';

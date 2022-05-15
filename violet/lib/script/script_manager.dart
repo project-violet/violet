@@ -7,7 +7,6 @@ import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
-import 'package:violet/network/wrapper.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {

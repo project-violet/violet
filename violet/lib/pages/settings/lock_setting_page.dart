@@ -4,7 +4,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:mdi/mdi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
