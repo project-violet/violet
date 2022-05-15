@@ -54,11 +54,9 @@ class DataBaseManager {
 
   Future<List<Map<String, dynamic>>> query(String str) async {
     List<Map<String, dynamic>> result;
-    await lock.synchronized(() async {
-      await _open();
-      result = await db.rawQuery(str);
-      await _close();
-    });
+    var db = await openDatabase(dbPath);
+    result = await db.rawQuery(str);
+    await db.close();
     return result;
   }
 

@@ -158,42 +158,42 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   void refresh() {
     _loadBookmarkAlignType();
-    Bookmark.getInstance()
-        .then((value) => value.getArticle().then((value) async {
-              var cc = value
-                  .where((e) => e.group() == widget.groupId)
-                  .toList()
-                  .reversed
-                  .toList();
+    Bookmark.getInstance().then((value) =>
+        value.getArticle().then((value) async {
+          var cc = value
+              .where((e) => e.group() == widget.groupId)
+              .toList()
+              .reversed
+              .toList();
 
-              if (cc.length == 0) {
-                queryResult = <QueryResult>[];
-                filterResult = queryResult;
-                _rebuild();
-                return;
+          if (cc.length == 0) {
+            queryResult = <QueryResult>[];
+            filterResult = queryResult;
+            _rebuild();
+            return;
+          }
+
+          QueryManager.queryIds(cc.map((e) => int.parse(e.article())).toList())
+              .then((value) async {
+            var qr = Map<String, QueryResult>();
+            value.forEach((element) {
+              qr[element.id().toString()] = element;
+            });
+
+            var result = <QueryResult>[];
+            cc.forEach((element) async {
+              var article = qr[element.article()];
+              if (article == null) {
+                article = await _tryGetArticleFromHitomi(element.article());
               }
+              result.add(article);
+            });
 
-              QueryManager.queryIds(cc.map((e) => int.parse(e.article())))
-                  .then((value) async {
-                var qr = Map<String, QueryResult>();
-                value.forEach((element) {
-                  qr[element.id().toString()] = element;
-                });
-
-                var result = <QueryResult>[];
-                cc.forEach((element) async {
-                  var article = qr[element.article()];
-                  if (article == null) {
-                    article = await _tryGetArticleFromHitomi(element.article());
-                  }
-                  result.add(article);
-                });
-
-                queryResult = result;
-                _applyFilter();
-                _rebuild();
-              });
-            }));
+            queryResult = result;
+            _applyFilter();
+            _rebuild();
+          });
+        }));
   }
 
   bool _shouldRebuild = false;
