@@ -29,8 +29,9 @@ class _DiscordCardState extends State<DiscordCard> {
           })
           ..onTapUp((detail) async {
             const url = 'https://discord.gg/K8qny6E';
-            if (await canLaunch(url)) {
-              await launch(url);
+            final Uri uri = Uri.tryParse(url);
+            if (uri != null && await canLaunchUrl(uri)) {
+              await launchUrl(uri);
             }
           }),
         child: Container(

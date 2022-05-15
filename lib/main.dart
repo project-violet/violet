@@ -86,10 +86,11 @@ void main() async {
 
   runApp(
     DynamicTheme(
-      defaultBrightness: Brightness.light,
-      data: (brightness) => ThemeData(
+      defaultThemeMode: ThemeMode.light,
+      data: (themeMode) => ThemeData(
         accentColor: Settings.majorColor,
-        brightness: brightness,
+        brightness:
+            themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
         scaffoldBackgroundColor:
@@ -101,11 +102,12 @@ void main() async {
             ? const Color(0xFF141414)
             : null,
       ),
-      themedWidgetBuilder: (context, theme) {
+      themedWidgetBuilder: (context, themeMode, theme) {
         return MaterialApp(
           navigatorObservers: [
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
+          themeMode: themeMode,
           theme: theme,
           home: Settings.useLockScreen ? LockScreen() : SplashPage(),
           supportedLocales: [

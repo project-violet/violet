@@ -41,6 +41,7 @@ class LibvioletPage extends StatelessWidget {
                         ],
                       ),
                     ),
+                    collapsed: Container(),
                   ),
                 ),
               ),
@@ -57,8 +58,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/sfackler/rust-openssl';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -74,8 +76,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/rust-lang/futures-rs';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -91,8 +94,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/sfackler/hyper-native-tls';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -108,8 +112,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/seanmonstar/reqwest';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -126,8 +131,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/tokio-rs/tokio';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -143,8 +149,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/serde-rs/serde';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -160,8 +167,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/serde-rs/json';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -177,8 +185,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/stjepang/concurrent-queue';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -195,8 +204,9 @@ class LibvioletPage extends StatelessWidget {
               onTap: () async {
                 const url =
                     'https://github.com/rust-lang-nursery/lazy-static.rs';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
@@ -212,8 +222,9 @@ class LibvioletPage extends StatelessWidget {
               trailing: Icon(Icons.open_in_new),
               onTap: () async {
                 const url = 'https://github.com/hyperium/http';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final Uri uri = Uri.tryParse(url);
+                if (uri != null && await canLaunchUrl(uri)) {
+                  await launchUrl(uri);
                 }
               },
             ),
