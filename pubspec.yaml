@@ -53,8 +53,7 @@ dependencies:
   firebase_core: ^1.17.0
   firebase_analytics: ^9.1.8
   firebase_crashlytics: ^2.8.0
-  flare_dart:
-  flare_flutter: ^1.8.3
+  flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^1.0.3
   flutter_downloader: ^1.7.3 # @dependent: android

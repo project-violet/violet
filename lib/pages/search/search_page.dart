@@ -5,9 +5,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
-import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controls.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +24,6 @@ import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
-import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
@@ -51,7 +51,7 @@ class _SearchPageState extends State<SearchPage>
   bool into = false;
 
   final FlareControls heroFlareControls = FlareControls();
-  FlutterActorArtboard artboard;
+  AssetFlare asset;
 
   bool isFilterUsed = false;
   bool searchbarVisible = true;
@@ -90,12 +90,9 @@ class _SearchPageState extends State<SearchPage>
     super.initState();
 
     (() async {
-      var asset =
-          await cachedActor(rootBundle, 'assets/flare/search_close.flr');
-      asset.ref();
-      artboard = asset.actor.artboard.makeInstance() as FlutterActorArtboard;
-      artboard.initializeGraphics();
-      artboard.advance(0);
+      asset =
+          AssetFlare(bundle: rootBundle, name: 'assets/flare/search_close.flr');
+      await cachedActor(asset);
     })();
     Future.delayed(Duration(milliseconds: 500),
         () => heroFlareControls.play('close2search'));
@@ -370,7 +367,7 @@ class _SearchPageState extends State<SearchPage>
                         leading: SizedBox(
                           width: 25,
                           height: 25,
-                          child: FlareArtboard(artboard,
+                          child: FlareActor.asset(asset,
                               controller: heroFlareControls),
                         ),
                       ),
@@ -425,7 +422,7 @@ class _SearchPageState extends State<SearchPage>
       MaterialPageRoute(
         builder: (context) {
           return SearchBarPage(
-            artboard: artboard,
+            assetProvider: asset,
             initText: latestQuery != null ? latestQuery.item2 : '',
             heroController: heroFlareControls,
           );
