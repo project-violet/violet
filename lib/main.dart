@@ -6,10 +6,10 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:firebase_analytics/firebase_analytics.dart'; // @dependent: android [
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android ]
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +65,6 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
       '\n' +
       flutterErrorDetails.stack.toString());
 
-  // @dependent: android =>
   await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
 }
 
@@ -73,18 +72,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(); // @dependent: android
   FlareCache.doesPrune = false;
-  await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform); // @dependent: android
-  FlutterError.onError = recordFlutterError; // @dependent: android
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FlutterError.onError = recordFlutterError;
 
-  var analytics = FirebaseAnalytics(); // @dependent: android
+  var analytics = FirebaseAnalytics.instance;
   var id = (await SharedPreferences.getInstance()).getString('fa_userid');
   if (id == null) {
     var ii = sha1.convert(utf8.encode(DateTime.now().toString()));
     id = ii.toString();
     (await SharedPreferences.getInstance()).setString('fa_userid', id);
   }
-  await analytics.setUserId(id); // @dependent: android
+  await analytics.setUserId(id: id);
 
   await Settings.initFirst();
   await warmupFlare();
@@ -110,7 +108,6 @@ void main() async {
       themedWidgetBuilder: (context, theme) {
         return MaterialApp(
           navigatorObservers: [
-            // @dependent: android =>
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
           theme: theme,

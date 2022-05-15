@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ext_storage/ext_storage.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:path/path.dart';
@@ -287,7 +287,6 @@ class Settings {
           }
         } catch (e, st) {
           Logger.error('[Settings] E: ' + e.toString() + '\n' + st.toString());
-          // @dependent: android =>
           FirebaseCrashlytics.instance.recordError(e, st);
         }
       }

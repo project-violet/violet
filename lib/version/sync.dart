@@ -4,7 +4,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart'; // @dependent: android
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
@@ -226,7 +226,7 @@ class SyncManager {
     } catch (e, st) {
       // If an error occurs, stops synchronization immediately.
       Logger.error('[Sync-chunk] E: ' + e.toString() + '\n' + st.toString());
-      FirebaseCrashlytics.instance.recordError(e, st); // @dependent: android
+      FirebaseCrashlytics.instance.recordError(e, st);
     }
   }
 
