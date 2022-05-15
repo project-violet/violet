@@ -28,9 +28,14 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   String _firstPIN;
   String _message;
 
+  FToast _toast;
+
   @override
   void initState() {
     super.initState();
+
+    _toast = FToast();
+    _toast.init(context);
 
     _controller = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this)
@@ -301,7 +306,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         await (await SharedPreferences.getInstance())
             .setString('pinPass', _pin.join());
         Future.delayed(Duration(milliseconds: 300)).then((value) {
-          FlutterToast(context).showToast(
+          _toast.showToast(
             child: ToastWrapper(
               isCheck: true,
               isWarning: false,
