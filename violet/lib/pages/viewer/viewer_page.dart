@@ -27,8 +27,6 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
-import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
-import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/tab_panel.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/pages/viewer/view_record_panel.dart';
@@ -81,7 +79,7 @@ class _ViewerPageState extends State<ViewerPage>
   bool _overlayOpend = false;
 
   /// these are used for page control
-  PreloadPageController _pageController = PreloadPageController();
+  PageController _pageController = PageController();
   ItemScrollController _itemScrollController = ItemScrollController();
   ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
 
@@ -927,7 +925,7 @@ class _ViewerPageState extends State<ViewerPage>
                   viewerStyleChangeEvent: () {
                     if (Settings.isHorizontal) {
                       _pageController =
-                          PreloadPageController(initialPage: _prevPage - 1);
+                          PageController(initialPage: _prevPage - 1);
                     } else {
                       var npage = _prevPage;
                       _sliderOnChange = true;
@@ -1090,7 +1088,7 @@ class _ViewerPageState extends State<ViewerPage>
           constraints: BoxConstraints.expand(
             height: MediaQuery.of(context).size.height,
           ),
-          child: VPhotoViewGallery.builder(
+          child: PhotoViewGallery.builder(
             scrollPhysics: const AlwaysScrollableScrollPhysics(),
             builder: _buildItem,
             itemCount: _pageInfo.uris.length,
