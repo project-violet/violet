@@ -37,7 +37,7 @@ dependencies:
   badges:
   bloc: ^6.0.0
   bubble_tab_indicator: "^0.1.4"
-  cached_network_image: ^3.0.0
+  cached_network_image: ^3.2.0
   carousel_slider: ^2.3.4
   # charts_flutter: ^0.11.0
   charts_flutter: # https://github.com/google/charts/issues/678
@@ -61,7 +61,7 @@ dependencies:
   expandable:
   ext_storage:
     git: https://github.com/violet-dev/ext_storage
-  extended_image: ^4.0.0
+  extended_image: ^6.2.0
   ffi: ^1.1.2
   file_picker: ^4.3.1
   firebase_core : ^1.6.0 # @dependent: android
@@ -79,10 +79,11 @@ dependencies:
   flutter_reorderable_list:
   # flutter_statusbar_manager: ^2.0.0
   flutter_keyboard_visibility: ^5.1.1
-  flutter_speed_dial:
-  flutter_staggered_animations: ^1.0.0
+  flutter_speed_dial: ^6.0.0
+  flutter_staggered_animations:
+    git: https://github.com/mfrischbutter/flutter_staggered_animations
   flutter_svg: ^0.21.0+1
-  flutter_typeahead: ^3.2.4
+  flutter_typeahead: ^3.2.5
   flutter_js:
     git: https://github.com/violet-dev/flutter_js
   flutter_windowmanager: ^0.2.0
@@ -110,7 +111,7 @@ dependencies:
   platform: ^3.1.0
   pimp_my_button: ^1.0.0
   pointycastle:
-  provider:
+  provider: ^6.0.2
   scrollable_positioned_list: 0.1.7
   shared_preferences: ^2.0.12
   sqflite: ^2.0.2
@@ -151,7 +152,7 @@ dependencies:
   # syncfusion_flutter_core:
   # syncfusion_flutter_sliders:
   # usage:
-  # visibility_detector:
+  # visibility_detector: ^0.3.3
   # web_socket_channel:
   # connectivity:
   # keyboard_visibility:
