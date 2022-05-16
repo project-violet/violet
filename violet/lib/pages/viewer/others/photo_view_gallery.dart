@@ -1,4 +1,5 @@
 // from https://github.com/fireslime/photo_view
+// @dart = 2.17
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -13,9 +14,9 @@ typedef PhotoViewGalleryPageChangedCallback = void Function(int index);
 typedef PhotoViewGalleryBuilder = PhotoViewGalleryPageOptions Function(
     BuildContext context, int index);
 
-/// A [StatefulWidget] that shows multiple [PhotoView] widgets in a [PageView]
+/// A [StatefulWidget] that shows multiple [PhotoView] widgets in a [PreloadPageView]
 ///
-/// Some of [PhotoView] constructor options are passed direct to [PhotoViewGallery] constructor. Those options will affect the gallery in a whole.
+/// Some of [PhotoView] constructor options are passed direct to [VPhotoViewGallery] constructor. Those options will affect the gallery in a whole.
 ///
 /// Some of the options may be defined to each image individually, such as `initialScale` or `heroAttributes`. Those must be passed via each [PhotoViewGalleryPageOptions].
 ///
@@ -91,10 +92,11 @@ typedef PhotoViewGalleryBuilder = PhotoViewGalleryPageOptions Function(
 class VPhotoViewGallery extends StatefulWidget {
   /// Construct a gallery with static items through a list of [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery({
-    Key key,
-    this.pageOptions,
+    Key? key,
+    required this.pageOptions,
     this.loadingBuilder,
     this.backgroundDecoration,
+    this.wantKeepAlive = false,
     this.gaplessPlayback = false,
     this.reverse = false,
     this.pageController,
@@ -104,6 +106,7 @@ class VPhotoViewGallery extends StatefulWidget {
     this.scrollPhysics,
     this.scrollDirection = Axis.horizontal,
     this.customSize,
+    this.allowImplicitScrolling = false,
   })  : itemCount = null,
         builder = null,
         super(key: key);
@@ -112,11 +115,12 @@ class VPhotoViewGallery extends StatefulWidget {
   ///
   /// The builder must return a [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery.builder({
-    Key key,
-    this.itemCount,
-    this.builder,
+    Key? key,
+    required this.itemCount,
+    required this.builder,
     this.loadingBuilder,
     this.backgroundDecoration,
+    this.wantKeepAlive = false,
     this.gaplessPlayback = false,
     this.reverse = false,
     this.pageController,
@@ -126,85 +130,85 @@ class VPhotoViewGallery extends StatefulWidget {
     this.scrollPhysics,
     this.scrollDirection = Axis.horizontal,
     this.customSize,
+    this.allowImplicitScrolling = false,
   })  : pageOptions = null,
         assert(itemCount != null),
         assert(builder != null),
         super(key: key);
 
   /// A list of options to describe the items in the gallery
-  final List<PhotoViewGalleryPageOptions> pageOptions;
+  final List<PhotoViewGalleryPageOptions>? pageOptions;
 
   /// The count of items in the gallery, only used when constructed via [PhotoViewGallery.builder]
-  final int itemCount;
+  final int? itemCount;
 
   /// Called to build items for the gallery when using [PhotoViewGallery.builder]
-  final PhotoViewGalleryBuilder builder;
+  final PhotoViewGalleryBuilder? builder;
 
-  /// [ScrollPhysics] for the internal [PageView]
-  final ScrollPhysics scrollPhysics;
+  /// [ScrollPhysics] for the internal [PreloadPageView]
+  final ScrollPhysics? scrollPhysics;
 
   /// Mirror to [PhotoView.loadingBuilder]
-  final LoadingBuilder loadingBuilder;
+  final LoadingBuilder? loadingBuilder;
 
   /// Mirror to [PhotoView.backgroundDecoration]
-  final BoxDecoration backgroundDecoration;
+  final BoxDecoration? backgroundDecoration;
+
+  /// Mirror to [PhotoView.wantKeepAlive]
+  final bool wantKeepAlive;
 
   /// Mirror to [PhotoView.gaplessPlayback]
   final bool gaplessPlayback;
 
-  /// Mirror to [PageView.reverse]
+  /// Mirror to [PreloadPageView.reverse]
   final bool reverse;
 
-  /// An object that controls the [PageView] inside [PhotoViewGallery]
-  final PreloadPageController pageController;
+  /// An object that controls the [PreloadPageView] inside [PhotoViewGallery]
+  final PreloadPageController? pageController;
 
   /// An callback to be called on a page change
-  final PhotoViewGalleryPageChangedCallback onPageChanged;
+  final PhotoViewGalleryPageChangedCallback? onPageChanged;
 
   /// Mirror to [PhotoView.scaleStateChangedCallback]
-  final ValueChanged<PhotoViewScaleState> scaleStateChangedCallback;
+  final ValueChanged<PhotoViewScaleState>? scaleStateChangedCallback;
 
   /// Mirror to [PhotoView.enableRotation]
   final bool enableRotation;
 
   /// Mirror to [PhotoView.customSize]
-  final Size customSize;
+  final Size? customSize;
 
-  /// The axis along which the [PageView] scrolls. Mirror to [PageView.scrollDirection]
+  /// The axis along which the [PreloadPageView] scrolls. Mirror to [PreloadPageView.scrollDirection]
   final Axis scrollDirection;
+
+  /// When user attempts to move it to the next element, focus will traverse to the next page in the page view.
+  final bool allowImplicitScrolling;
 
   bool get _isBuilder => builder != null;
 
   @override
-  State<StatefulWidget> createState() {
-    return _VPhotoViewGalleryState();
-  }
+  State<VPhotoViewGallery> createState() => _VPhotoViewGalleryState();
 }
 
 class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
-  PreloadPageController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = widget.pageController ?? PreloadPageController();
-  }
+  late final PreloadPageController _controller =
+      widget.pageController ?? PreloadPageController();
 
   void scaleStateChangedCallback(PhotoViewScaleState scaleState) {
     if (widget.scaleStateChangedCallback != null) {
-      widget.scaleStateChangedCallback(scaleState);
+      widget.scaleStateChangedCallback!(scaleState);
     }
   }
 
   int get actualPage {
-    return _controller.hasClients ? _controller.page.floor() : 0;
+    return _controller.hasClients ? _controller.page!.floor() : 0;
   }
 
   int get itemCount {
     if (widget._isBuilder) {
-      return widget.itemCount;
+      return widget.itemCount!;
     }
-    return widget.pageOptions.length;
+    return widget.pageOptions!.length;
   }
 
   @override
@@ -220,6 +224,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
         itemBuilder: _buildItem,
         scrollDirection: widget.scrollDirection,
         physics: widget.scrollPhysics,
+        allowImplicitScrolling: widget.allowImplicitScrolling,
         preloadPagesCount: 3,
       ),
     );
@@ -235,6 +240,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             child: pageOption.child,
             childSize: pageOption.childSize,
             backgroundDecoration: widget.backgroundDecoration,
+            wantKeepAlive: widget.wantKeepAlive,
             controller: pageOption.controller,
             scaleStateController: pageOption.scaleStateController,
             customSize: widget.customSize,
@@ -247,6 +253,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             scaleStateCycle: pageOption.scaleStateCycle,
             onTapUp: pageOption.onTapUp,
             onTapDown: pageOption.onTapDown,
+            onScaleEnd: pageOption.onScaleEnd,
             gestureDetectorBehavior: pageOption.gestureDetectorBehavior,
             tightMode: pageOption.tightMode,
             filterQuality: pageOption.filterQuality,
@@ -258,6 +265,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             imageProvider: pageOption.imageProvider,
             loadingBuilder: widget.loadingBuilder,
             backgroundDecoration: widget.backgroundDecoration,
+            wantKeepAlive: widget.wantKeepAlive,
             controller: pageOption.controller,
             scaleStateController: pageOption.scaleStateController,
             customSize: widget.customSize,
@@ -271,6 +279,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             scaleStateCycle: pageOption.scaleStateCycle,
             onTapUp: pageOption.onTapUp,
             onTapDown: pageOption.onTapDown,
+            onScaleEnd: pageOption.onScaleEnd,
             gestureDetectorBehavior: pageOption.gestureDetectorBehavior,
             tightMode: pageOption.tightMode,
             filterQuality: pageOption.filterQuality,
@@ -287,8 +296,8 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
   PhotoViewGalleryPageOptions _buildPageOption(
       BuildContext context, int index) {
     if (widget._isBuilder) {
-      return widget.builder(context, index);
+      return widget.builder!(context, index);
     }
-    return widget.pageOptions[index];
+    return widget.pageOptions![index];
   }
 }

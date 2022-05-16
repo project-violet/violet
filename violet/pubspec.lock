@@ -1063,9 +1063,11 @@ packages:
   photo_view:
     dependency: "direct main"
     description:
-      name: photo_view
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: HEAD
+      resolved-ref: "23063d535909027b8e198c2cffa83bf8f0480c96"
+      url: "https://github.com/bluefireteam/photo_view"
+    source: git
     version: "0.13.0"
   pimp_my_button:
     dependency: "direct main"

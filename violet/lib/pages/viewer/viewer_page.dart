@@ -1104,13 +1104,13 @@ class _ViewerPageState extends State<ViewerPage>
             ),
             pageController: _pageController,
             onPageChanged: (page) async {
-              _thumbAnimateTo(page.toInt());
+              _thumbAnimateTo(page);
 
-              _currentPage = page.toInt() + 1;
-              _prevPage = page.toInt() + 1;
-              _vPrevPage.value = page.toInt() + 1;
-              await _precache(page.toInt() - 1);
-              await _precache(page.toInt() + 1);
+              _currentPage = page + 1;
+              _prevPage = page + 1;
+              _vPrevPage.value = page + 1;
+              await _precache(page - 1);
+              await _precache(page + 1);
             },
             scrollDirection:
                 Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
@@ -1120,8 +1120,8 @@ class _ViewerPageState extends State<ViewerPage>
                 child: SizedBox(
                   child: CircularProgressIndicator(
                       value: imageChunkEvent == null
-                          ? 0
-                          : imageChunkEvent.cumulativeBytesLoaded /
+                          ? 0.0
+                          : imageChunkEvent.cumulativeBytesLoaded.toDouble() /
                               imageChunkEvent.expectedTotalBytes.toDouble()),
                   width: 30,
                   height: 30,
@@ -1374,7 +1374,7 @@ class _ViewerPageState extends State<ViewerPage>
     }
   }
 
-  _thumbAnimateTo(page) {
+  _thumbAnimateTo(int page) {
     if (!_disableBottom && _isThumbMode) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final width = MediaQuery.of(context).size.width;
