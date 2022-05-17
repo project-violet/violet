@@ -110,7 +110,7 @@ class EHParser {
         });
       } else {
         url.add(
-            '${doc.querySelector("table tbody tr td.ptds").querySelector('a').attributes['href']}?p=0');
+            '${doc.querySelector('table tbody tr td.ptds').querySelector('a').attributes['href']}?p=0');
       }
     } catch (_) {
       url.add(

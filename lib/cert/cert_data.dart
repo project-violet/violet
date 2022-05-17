@@ -20,8 +20,8 @@ class CertData {
   String signedData() => data['SignedData'];
 
   String getRawData() => data.containsKey('Others')
-      ? "${data['AuthStarts']}|${data['AuthEnds']}|${data['AuthVersion']}|${data['Owner']}|${data['Others']}"
-      : "${data['AuthStarts']}|${data['AuthEnds']}|${data['AuthVersion']}|${data['Owner']}";
+      ? '${data['AuthStarts']}|${data['AuthEnds']}|${data['AuthVersion']}|${data['Owner']}|${data['Others']}'
+      : '${data['AuthStarts']}|${data['AuthEnds']}|${data['AuthVersion']}|${data['Owner']}';
 
   bool verify(RootCert rootCA) {
     var rawData = getRawData();
