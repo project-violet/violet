@@ -27,20 +27,19 @@ class DataBaseDownloadPage extends StatefulWidget {
   final String dbType;
   final bool isSync;
 
-  DataBaseDownloadPage({this.dbPath, this.dbType, this.isSync});
+  const DataBaseDownloadPage({Key key, this.dbPath, this.dbType, this.isSync})
+      : super(key: key);
 
   @override
-  DataBaseDownloadPagepState createState() {
-    return DataBaseDownloadPagepState();
-  }
+  State<DataBaseDownloadPage> createState() => DataBaseDownloadPagepState();
 }
 
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   bool downloading = false;
-  var baseString = "";
-  var progressString = "";
-  var downString = "";
-  var speedString = "";
+  var baseString = '';
+  var progressString = '';
+  var downString = '';
+  var speedString = '';
 
   @override
   void initState() {
@@ -49,20 +48,21 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         .addPostFrameCallback((_) async => checkDownload());
   }
 
-  Future checkDownload() async {
+  Future<void> checkDownload() async {
     try {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
         var dbPath = Platform.isAndroid
-            ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
-            : "${await getDatabasesPath()}/data.db";
+            ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+            : '${await getDatabasesPath()}/data.db';
         if (await File(dbPath).exists()) await File(dbPath).delete();
         var dir = await getApplicationDocumentsDirectory();
-        if (await Directory('${dir.path}/data').exists())
+        if (await Directory('${dir.path}/data').exists()) {
           await Directory('${dir.path}/data').delete(recursive: true);
+        }
       }
     } catch (e, st) {
-      Logger.error(
-          '[DBDownload-Check] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[DBDownload-Check] E: $e\n'
+          '$st');
     }
 
     if (Platform.isAndroid) {
@@ -77,42 +77,43 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future<void> downloadFileAndroid() async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
-    int _nu = 0;
+    int nu = 0;
     int latest = 0;
-    int _tlatest = 0;
-    int _tnu = 0;
+    int tlatest = 0;
+    int tnu = 0;
 
     try {
       var dir = await getApplicationDocumentsDirectory();
-      if (await File("${dir.path}/db.sql.7z").exists())
-        await File("${dir.path}/db.sql.7z").delete();
-      Timer _timer = Timer.periodic(
-          Duration(seconds: 1),
+      if (await File('${dir.path}/db.sql.7z').exists()) {
+        await File('${dir.path}/db.sql.7z').delete();
+      }
+      Timer timer = Timer.periodic(
+          const Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = (_tlatest / 1024).toString() + " KB/S";
-                _tlatest = _tnu;
-                _tnu = 0;
+                speedString = '${tlatest / 1024} KB/S';
+                tlatest = tnu;
+                tnu = 0;
               }));
       await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType),
-          "${dir.path}/db.sql.7z", onReceiveProgress: (rec, total) {
-        _nu += rec - latest;
-        _tnu += rec - latest;
+          '${dir.path}/db.sql.7z', onReceiveProgress: (rec, total) {
+        nu += rec - latest;
+        tnu += rec - latest;
         latest = rec;
-        if (_nu <= oneMega) return;
+        if (nu <= oneMega) return;
 
-        _nu = 0;
+        nu = 0;
 
         setState(
           () {
             downloading = true;
-            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-            downString = "[${numberWithComma(rec)}/${numberWithComma(total)}]";
+            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
+            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
           },
         );
       });
-      _timer.cancel();
+      timer.cancel();
 
       setState(() {
         baseString = Translations.instance.trans('dbdunzip');
@@ -121,17 +122,20 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       });
 
       var pp = P7zip();
-      if (await Directory("${dir.path}/data2").exists())
-        await Directory("${dir.path}/data2").delete(recursive: true);
-      await pp.decompress(["${dir.path}/db.sql.7z"], path: "${dir.path}/data2");
+      if (await Directory('${dir.path}/data2').exists()) {
+        await Directory('${dir.path}/data2').delete(recursive: true);
+      }
+      await pp.decompress(['${dir.path}/db.sql.7z'], path: '${dir.path}/data2');
       Variables.databaseDecompressed = true;
-      if (await Directory('${dir.path}/data').exists())
+      if (await Directory('${dir.path}/data').exists()) {
         await Directory('${dir.path}/data').delete(recursive: true);
-      await Directory("${dir.path}/data2").rename("${dir.path}/data");
-      if (await Directory("${dir.path}/data2").exists())
-        await Directory("${dir.path}/data2").delete(recursive: true);
+      }
+      await Directory('${dir.path}/data2').rename('${dir.path}/data');
+      if (await Directory('${dir.path}/data2').exists()) {
+        await Directory('${dir.path}/data2').delete(recursive: true);
+      }
 
-      await File("${dir.path}/db.sql.7z").delete();
+      await File('${dir.path}/db.sql.7z').delete();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
@@ -146,17 +150,20 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
         await indexing();
       }
+      if (!mounted) return;
 
-      if (widget.isSync != null && widget.isSync == true)
+      if (widget.isSync != null && widget.isSync == true) {
         Navigator.pop(context);
-      else
+      } else {
         setState(() {
           baseString = Translations.instance.trans('dbdcomplete');
         });
+      }
 
       return;
     } catch (e, st) {
-      Logger.error('[DBDownload] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[DBDownload] E: $e\n'
+          '$st');
     }
 
     setState(() {
@@ -168,42 +175,43 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future<void> downloadFileIOS() async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
-    int _nu = 0;
+    int nu = 0;
     int latest = 0;
-    int _tlatest = 0;
-    int _tnu = 0;
+    int tlatest = 0;
+    int tnu = 0;
 
     try {
       var dir = await getDatabasesPath();
-      if (await File("$dir/data.db").exists())
-        await File("$dir/data.db").delete();
-      Timer _timer = Timer.periodic(
-          Duration(seconds: 1),
+      if (await File('$dir/data.db').exists()) {
+        await File('$dir/data.db').delete();
+      }
+      Timer timer = Timer.periodic(
+          const Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = (_tlatest / 1024).toString() + " KB/S";
-                _tlatest = _tnu;
-                _tnu = 0;
+                speedString = '${tlatest / 1024} KB/S';
+                tlatest = tnu;
+                tnu = 0;
               }));
       await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType),
-          "$dir/data.db", onReceiveProgress: (rec, total) {
-        _nu += rec - latest;
-        _tnu += rec - latest;
+          '$dir/data.db', onReceiveProgress: (rec, total) {
+        nu += rec - latest;
+        tnu += rec - latest;
         latest = rec;
-        if (_nu <= oneMega) return;
+        if (nu <= oneMega) return;
 
-        _nu = 0;
+        nu = 0;
 
         setState(
           () {
             downloading = true;
-            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-            downString = "[${numberWithComma(rec)}/${numberWithComma(total)}]";
+            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
+            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
           },
         );
       });
-      _timer.cancel();
+      timer.cancel();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
@@ -220,17 +228,20 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       if (Settings.useOptimizeDatabase) await deleteUnused();
 
       await indexing();
+      if (!mounted) return;
 
-      if (widget.isSync != null && widget.isSync == true)
+      if (widget.isSync != null && widget.isSync == true) {
         Navigator.pop(context);
-      else
+      } else {
         setState(() {
           baseString = Translations.instance.trans('dbdcomplete');
         });
+      }
 
       return;
     } catch (e, st) {
-      Logger.error('[DBDownload] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[DBDownload] E: $e\n'
+          '$st');
     }
 
     setState(() {
@@ -239,13 +250,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     });
   }
 
-  Future deleteUnused() async {
-    var sql = HitomiManager.translate2query(Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+  Future<void> deleteUnused() async {
+    var sql = HitomiManager.translate2query(
+        '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
     await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
         'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
@@ -253,17 +260,18 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
-    for (var tag in (qr as String).split('|'))
+    if (qr as String == '') return;
+    for (var tag in (qr as String).split('|')) {
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
         map[tag] += 1;
       }
+    }
   }
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     var str = qr as String;
     if (str != null && str != '') {
       if (!map.containsKey(str)) map[str] = 0;
@@ -271,38 +279,38 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     }
   }
 
-  Future indexing() async {
+  Future<void> indexing() async {
     QueryManager qm;
     qm = QueryManager.queryPagination('SELECT * FROM HitomiColumnModel');
     qm.itemsPerPage = 50000;
 
-    var tags = Map<String, int>();
-    var languages = Map<String, int>();
-    var artists = Map<String, int>();
-    var groups = Map<String, int>();
-    var types = Map<String, int>();
-    var uploaders = Map<String, int>();
-    var series = Map<String, int>();
-    var characters = Map<String, int>();
-    var classes = Map<String, int>();
+    var tags = <String, int>{};
+    var languages = <String, int>{};
+    var artists = <String, int>{};
+    var groups = <String, int>{};
+    var types = <String, int>{};
+    var uploaders = <String, int>{};
+    var series = <String, int>{};
+    var characters = <String, int>{};
+    var classes = <String, int>{};
 
-    var tagIndex = Map<String, int>();
-    var tagArtist = Map<String, Map<String, int>>();
-    var tagGroup = Map<String, Map<String, int>>();
-    var tagUploader = Map<String, Map<String, int>>();
-    var tagSeries = Map<String, Map<String, int>>();
-    var tagCharacter = Map<String, Map<String, int>>();
+    var tagIndex = <String, int>{};
+    var tagArtist = <String, Map<String, int>>{};
+    var tagGroup = <String, Map<String, int>>{};
+    var tagUploader = <String, Map<String, int>>{};
+    var tagSeries = <String, Map<String, int>>{};
+    var tagCharacter = <String, Map<String, int>>{};
 
-    var seriesSeries = Map<String, Map<String, int>>();
-    var seriesCharacter = Map<String, Map<String, int>>();
+    var seriesSeries = <String, Map<String, int>>{};
+    var seriesCharacter = <String, Map<String, int>>{};
 
-    var characterCharacter = Map<String, Map<String, int>>();
-    var characterSeries = Map<String, Map<String, int>>();
+    var characterCharacter = <String, Map<String, int>>{};
+    var characterSeries = <String, Map<String, int>>{};
 
     int i = 0;
     while (true) {
       setState(() {
-        baseString = Translations.instance.trans('dbdindexing') + '[$i/13]';
+        baseString = '${Translations.instance.trans('dbdindexing')}[$i/13]';
       });
 
       var ll = await qm.next();
@@ -320,81 +328,103 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.tags() == null) continue;
 
         if (item.artists() != null) {
-          for (var artist in item.artists().split('|'))
-            if (artist != '') if (!tagArtist.containsKey(artist))
-              tagArtist[artist] = Map<String, int>();
+          for (var artist in item.artists().split('|')) {
+            if (artist != '') {
+              if (!tagArtist.containsKey(artist)) {
+                tagArtist[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.artists().split('|')) {
               if (artist == '') continue;
-              if (!tagArtist[artist].containsKey(index))
+              if (!tagArtist[artist].containsKey(index)) {
                 tagArtist[artist][index] = 0;
+              }
               tagArtist[artist][index] += 1;
             }
           }
         }
 
         if (item.groups() != null) {
-          for (var artist in item.groups().split('|'))
-            if (artist != '') if (!tagGroup.containsKey(artist))
-              tagGroup[artist] = Map<String, int>();
+          for (var artist in item.groups().split('|')) {
+            if (artist != '') {
+              if (!tagGroup.containsKey(artist)) {
+                tagGroup[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.groups().split('|')) {
               if (artist == '') continue;
-              if (!tagGroup[artist].containsKey(index))
+              if (!tagGroup[artist].containsKey(index)) {
                 tagGroup[artist][index] = 0;
+              }
               tagGroup[artist][index] += 1;
             }
           }
         }
 
         if (item.uploader() != null) {
-          if (!tagUploader.containsKey(item.uploader()))
-            tagUploader[item.uploader()] = Map<String, int>();
+          if (!tagUploader.containsKey(item.uploader())) {
+            tagUploader[item.uploader()] = <String, int>{};
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
-            if (!tagUploader[item.uploader()].containsKey(index))
+            if (!tagUploader[item.uploader()].containsKey(index)) {
               tagUploader[item.uploader()][index] = 0;
+            }
             tagUploader[item.uploader()][index] += 1;
           }
         }
 
         if (item.series() != null) {
-          for (var artist in item.series().split('|'))
-            if (artist != '') if (!tagSeries.containsKey(artist))
-              tagSeries[artist] = Map<String, int>();
+          for (var artist in item.series().split('|')) {
+            if (artist != '') {
+              if (!tagSeries.containsKey(artist)) {
+                tagSeries[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.series().split('|')) {
               if (artist == '') continue;
-              if (!tagSeries[artist].containsKey(index))
+              if (!tagSeries[artist].containsKey(index)) {
                 tagSeries[artist][index] = 0;
+              }
               tagSeries[artist][index] += 1;
             }
           }
         }
 
         if (item.characters() != null) {
-          for (var artist in item.characters().split('|'))
-            if (artist != '') if (!tagCharacter.containsKey(artist))
-              tagCharacter[artist] = Map<String, int>();
+          for (var artist in item.characters().split('|')) {
+            if (artist != '') {
+              if (!tagCharacter.containsKey(artist)) {
+                tagCharacter[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.characters().split('|')) {
               if (artist == '') continue;
-              if (!tagCharacter[artist].containsKey(index))
+              if (!tagCharacter[artist].containsKey(index)) {
                 tagCharacter[artist][index] = 0;
+              }
               tagCharacter[artist][index] += 1;
             }
           }
@@ -403,24 +433,28 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.series() != null && item.characters() != null) {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
-            if (!characterSeries.containsKey(series))
-              characterSeries[series] = Map<String, int>();
+            if (!characterSeries.containsKey(series)) {
+              characterSeries[series] = <String, int>{};
+            }
             for (var character in item.characters().split('|')) {
               if (character == '') continue;
-              if (!characterSeries[series].containsKey(character))
+              if (!characterSeries[series].containsKey(character)) {
                 characterSeries[series][character] = 0;
+              }
               characterSeries[series][character] += 1;
             }
           }
 
           for (var character in item.series().split('|')) {
             if (character == '') continue;
-            if (!seriesCharacter.containsKey(character))
-              seriesCharacter[character] = Map<String, int>();
+            if (!seriesCharacter.containsKey(character)) {
+              seriesCharacter[character] = <String, int>{};
+            }
             for (var series in item.characters().split('|')) {
               if (series == '') continue;
-              if (!seriesCharacter[character].containsKey(series))
+              if (!seriesCharacter[character].containsKey(series)) {
                 seriesCharacter[character][series] = 0;
+              }
               seriesCharacter[character][series] += 1;
             }
           }
@@ -429,12 +463,14 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.series() != null) {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
-            if (!seriesSeries.containsKey(series))
-              seriesSeries[series] = Map<String, int>();
+            if (!seriesSeries.containsKey(series)) {
+              seriesSeries[series] = <String, int>{};
+            }
             for (var series2 in item.series().split('|')) {
               if (series2 == '' || series == series2) continue;
-              if (!seriesSeries[series].containsKey(series2))
+              if (!seriesSeries[series].containsKey(series2)) {
                 seriesSeries[series][series2] = 0;
+              }
               seriesSeries[series][series2] += 1;
             }
           }
@@ -443,29 +479,31 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.characters() != null) {
           for (var character in item.characters().split('|')) {
             if (character == '') continue;
-            if (!characterCharacter.containsKey(character))
-              characterCharacter[character] = Map<String, int>();
+            if (!characterCharacter.containsKey(character)) {
+              characterCharacter[character] = <String, int>{};
+            }
             for (var character2 in item.characters().split('|')) {
               if (character2 == '' || series == character2) continue;
-              if (!characterCharacter[character].containsKey(character2))
+              if (!characterCharacter[character].containsKey(character2)) {
                 characterCharacter[character][character2] = 0;
+              }
               characterCharacter[character][character2] += 1;
             }
           }
         }
       }
 
-      if (ll.length == 0) {
+      if (ll.isEmpty) {
         var index = {
-          "tag": tags,
-          "artist": artists,
-          "group": groups,
-          "series": series,
-          "lang": languages,
-          "type": types,
-          "uploader": uploaders,
-          "character": characters,
-          "class": classes,
+          'tag': tags,
+          'artist': artists,
+          'group': groups,
+          'series': series,
+          'lang': languages,
+          'type': types,
+          'uploader': uploaders,
+          'character': characters,
+          'class': classes,
         };
 
         final directory = await getApplicationDocumentsDirectory();
@@ -509,8 +547,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (baseString == '')
+    if (baseString == '') {
       baseString = Translations.of(context).trans('dbdwaitforrequest');
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(Translations.of(context).trans('dbdname')),
@@ -518,7 +557,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       ),
       body: Center(
         child: downloading
-            ? Container(
+            ? SizedBox(
                 height: 170.0,
                 width: 240.0,
                 child: Card(
@@ -526,25 +565,25 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      CircularProgressIndicator(),
-                      SizedBox(
+                      const CircularProgressIndicator(),
+                      const SizedBox(
                         height: 20.0,
                       ),
                       Text(
                         "${Translations.of(context).trans('dbddownloading')} $progressString",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
                       Text(
                         downString ?? '',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
                       Text(
                         speedString ?? '',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       )

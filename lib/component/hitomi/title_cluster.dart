@@ -1,7 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import "package:collection/collection.dart";
+import 'package:collection/collection.dart';
 import 'package:kdtree/kdtree.dart';
 import 'package:violet/algorithm/disjointset.dart';
 import 'package:violet/algorithm/distance.dart';
@@ -20,6 +20,7 @@ class Idata {
     return title.compareTo(id.title) < 0;
   }
 
+  @override
   String toString() {
     return title;
   }
@@ -52,7 +53,7 @@ class HitomiTitleCluster {
     var ctitles = <Map<String, Idata>>[];
 
     for (int i = 0; i < titles.length; i++) {
-      var mm = Map<String, Idata>();
+      var mm = <String, Idata>{};
       mm['t'] = Idata(title: titles[i], index: i);
       ctitles.add(mm);
     }
@@ -63,17 +64,17 @@ class HitomiTitleCluster {
     if (maxnode > 100) maxnode = 100;
 
     var groups = <List<int>>[];
-    ctitles.forEach((element) {
+    for (var element in ctitles) {
       var near = tree.nearest(element, maxnode, 8);
 
       var rr = <int>[];
-      near.forEach((element) {
+      for (var element in near) {
         rr.add(element[0]['t'].index);
-      });
+      }
 
       rr.sort();
       groups.add(rr);
-    });
+    }
 
     // Group By Same Lists
     var gg = groupBy(groups, (x) => x.join(','));
@@ -81,13 +82,13 @@ class HitomiTitleCluster {
 
     // Join groups
     gg.forEach((key, value) {
-      value[0].forEach((element) {
-        if (value[0][0] == element) return;
+      for (var element in value[0]) {
+        if (value[0][0] == element) continue;
         ds.union(value[0][0], element);
-      });
+      }
     });
 
-    var join = Map<int, List<int>>();
+    var join = <int, List<int>>{};
     for (int i = 0; i < titles.length; i++) {
       var v = ds.find(i);
       if (!join.containsKey(v)) join[v] = <int>[];

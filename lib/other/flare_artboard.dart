@@ -12,9 +12,11 @@ class FlareArtboard extends LeafRenderObjectWidget {
   final FlareController controller;
 
   const FlareArtboard(this.artboard,
-      {this.fit = BoxFit.contain,
+      {Key key,
+      this.fit = BoxFit.contain,
       this.alignment = Alignment.center,
-      this.controller});
+      this.controller})
+      : super(key: key);
 
   @override
   RenderObject createRenderObject(BuildContext context) {

@@ -16,7 +16,7 @@ class HitomiParser {
           .querySelector('div.artists-list')
           .querySelectorAll('li')
           .map((e) => e.querySelector('a').text.trim());
-    } catch (e) {}
+    } catch (_) {}
 
     return {'Title': title, 'Artists': artists};
   }

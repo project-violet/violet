@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 
 class SearchNavPage extends StatefulWidget {
+  const SearchNavPage({Key key}) : super(key: key);
+
   @override
-  _SearchNavPageState createState() => _SearchNavPageState();
+  State<SearchNavPage> createState() => _SearchNavPageState();
 }
 
 class _SearchNavPageState extends State<SearchNavPage> {

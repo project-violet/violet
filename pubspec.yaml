@@ -45,6 +45,7 @@ dependencies:
       url: https://github.com/google/charts
       path: charts_flutter
   connectivity:
+  collection: ^1.16.0
   convert:
   country_pickers: ^2.0.0
   crypto:
@@ -101,6 +102,7 @@ dependencies:
   lottie:
   material_design_icons_flutter: ^5.0.6595
   mdi:
+  octo_image: ^1.0.2
   open_file:
     git: https://github.com/violet-dev/open_file
   optimized_cached_image: ^3.0.0
@@ -160,6 +162,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^2.0.1
   build_runner: ^1.0.0
   json_serializable: ^4.1.4
   freezed: ^0.14.1+1

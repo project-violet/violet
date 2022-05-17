@@ -16,10 +16,10 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class LabSearchCommentsAuthor extends StatefulWidget {
   final String author;
 
-  LabSearchCommentsAuthor(this.author);
+  const LabSearchCommentsAuthor(this.author, {Key key}) : super(key: key);
 
   @override
-  _LabSearchCommentsAuthorState createState() =>
+  State<LabSearchCommentsAuthor> createState() =>
       _LabSearchCommentsAuthorState();
 }
 
@@ -31,7 +31,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var tcomments = (await VioletServer.searchCommentAuthor(widget.author))
           as List<dynamic>;
       comments = tcomments
@@ -47,8 +47,8 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
       context,
       enableBackgroundColor: true,
       child: ListView.builder(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.all(0),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(0),
         itemBuilder: (BuildContext ctxt, int index) {
           var e = comments[index];
           return InkWell(
@@ -66,8 +66,9 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item2.toLocal())}',
-                          style: TextStyle(fontSize: 12)),
+                          DateFormat('yyyy-MM-dd HH:mm')
+                              .format(e.item2.toLocal()),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ],
@@ -121,7 +122,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo> cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -132,21 +133,19 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
             maxChildSize: 0.9,
             expand: false,
             builder: (_, controller) {
-              if (cache == null) {
-                cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
-                  value: ArticleInfo.fromArticleInfo(
-                    queryResult: qr,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: 'zxcvzxcvzxcv',
-                    isBookmarked: isBookmarked,
-                    controller: controller,
-                  ),
-                );
-              }
+              cache ??= Provider<ArticleInfo>.value(
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: qr,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'zxcvzxcvzxcv',
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                ),
+                child: const ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+              );
               return cache;
             },
           );

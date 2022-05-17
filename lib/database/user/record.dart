@@ -63,7 +63,7 @@ class User {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='ArticleReadLog';");
-        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
           try {
             await db.execute('''CREATE TABLE ArticleReadLog (
               Id integer primary key autoincrement, 
@@ -74,8 +74,8 @@ class User {
               Type integer);
               ''');
           } catch (e, st) {
-            Logger.error(
-                '[Record-Instance] E: ' + e.toString() + '\n' + st.toString());
+            Logger.error('[Record-Instance] E: $e\n'
+                '$st');
           }
         }
         _instance = User();

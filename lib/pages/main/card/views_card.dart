@@ -13,17 +13,14 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class ViewsCard extends StatefulWidget {
+  const ViewsCard({Key key}) : super(key: key);
+
   @override
-  _ViewsCardState createState() => _ViewsCardState();
+  State<ViewsCard> createState() => _ViewsCardState();
 }
 
 class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
   bool pressed = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +45,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                       return;
                     }
 
-                    PlatformNavigator.navigateSlide(context, ViewsPage());
+                    PlatformNavigator.navigateSlide(context, const ViewsPage());
                   }
                 }),
               child: Container(
@@ -59,7 +56,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 8),
+                      offset: const Offset(0, 8),
                       color:
                           Gradients.cosmicFusion.colors.first.withOpacity(.3),
                       spreadRadius: -9,
@@ -68,36 +65,34 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                 ),
                 child: GradientCard(
                   gradient: Gradients.cosmicFusion,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // SizedBox(
-                          //   width: 50,
-                          //   height: 50,
-                          //   child: Transform.translate(
-                          //     offset: Offset(-20, 0),
-                          //     child: Transform.scale(
-                          //       scale: 1.3,
-                          //       child: Center(
-                          //         child: Lottie.asset(
-                          //           'assets/lottie/5040-shooting-star.json',
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   // Icon(
-                          //   //   MdiIcons.group,
-                          //   //   color: Colors.white,
-                          //   //   size: 30,
-                          //   // ),
-                          // ),
-                          Text(
-                            Translations.of(context).trans('realtimebest'),
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ]),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(
+                        //   width: 50,
+                        //   height: 50,
+                        //   child: Transform.translate(
+                        //     offset: Offset(-20, 0),
+                        //     child: Transform.scale(
+                        //       scale: 1.3,
+                        //       child: Center(
+                        //         child: Lottie.asset(
+                        //           'assets/lottie/5040-shooting-star.json',
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        //   // Icon(
+                        //   //   MdiIcons.group,
+                        //   //   color: Colors.white,
+                        //   //   size: 30,
+                        //   // ),
+                        // ),
+                        Text(
+                          Translations.of(context).trans('realtimebest'),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ]),
                 ),
               ));
         },
@@ -105,7 +100,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -116,7 +111,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)

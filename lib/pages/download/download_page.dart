@@ -43,8 +43,10 @@ class DownloadPageManager {
 
 // This page must remain alive until the app is closed.
 class DownloadPage extends StatefulWidget {
+  const DownloadPage({Key key}) : super(key: key);
+
   @override
-  _DownloadPageState createState() => _DownloadPageState();
+  State<DownloadPage> createState() => _DownloadPageState();
 }
 
 class _DownloadPageState extends State<DownloadPage>
@@ -52,14 +54,14 @@ class _DownloadPageState extends State<DownloadPage>
   @override
   bool get wantKeepAlive => true;
 
-  ScrollController _scroll = ScrollController();
+  final ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = [];
-  Map<int, DownloadItemModel> itemsMap = Map<int, DownloadItemModel>();
+  Map<int, DownloadItemModel> itemsMap = <int, DownloadItemModel>{};
   List<DownloadItemModel> filterResult = [];
-  Map<int, QueryResult> queryResults = Map<int, QueryResult>();
-  FilterController _filterController =
-      FilterController(heroKey: "downloadtype");
-  ObjectKey _listKey = ObjectKey(Uuid().v4());
+  Map<int, QueryResult> queryResults = <int, QueryResult>{};
+  final FilterController _filterController =
+      FilterController(heroKey: 'downloadtype');
+  ObjectKey _listKey = ObjectKey(const Uuid().v4());
 
   @override
   void initState() {
@@ -74,20 +76,20 @@ class _DownloadPageState extends State<DownloadPage>
 
   @override
   void dispose() {
-    super.dispose();
     DownloadPageManager.taskController.close();
+    super.dispose();
   }
 
   void refresh() {
-    Future.delayed(Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       _getDownloadWidgetKey().forEach((key, value) {
         if (value.currentState != null) value.currentState.thubmanilReload();
       });
       items = await (await Download.getInstance()).getDownloadItems();
-      itemsMap = Map<int, DownloadItemModel>();
+      itemsMap = <int, DownloadItemModel>{};
       filterResult = [];
-      _listKey = ObjectKey(Uuid().v4());
-      queryResults = Map<int, QueryResult>();
+      _listKey = ObjectKey(const Uuid().v4());
+      queryResults = <int, QueryResult>{};
       await _autoRecoveryFileName();
       await _buildQueryResults();
       _applyFilter();
@@ -122,10 +124,12 @@ class _DownloadPageState extends State<DownloadPage>
 
       Map<String, dynamic> result = Map<String, dynamic>.from(item.result);
 
-      if (item.files() != null)
+      if (item.files() != null) {
         result['Files'] = item.files().replaceAll(oldPath, newPath);
-      if (item.path() != null)
+      }
+      if (item.path() != null) {
         result['Path'] = item.path().replaceAll(oldPath, newPath);
+      }
       item.result = result;
 
       await item.update();
@@ -142,21 +146,21 @@ class _DownloadPageState extends State<DownloadPage>
     }
 
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-    queryRaw += 'Id IN (' + articles.map((e) => e).join(',') + ')';
+    queryRaw += 'Id IN (${articles.map((e) => e).join(',')})';
     QueryManager.query(queryRaw).then((value) async {
-      var qr = Map<int, QueryResult>();
-      value.results.forEach((element) {
+      var qr = <int, QueryResult>{};
+      for (var element in value.results) {
         qr[element.id()] = element;
-      });
+      }
 
       var result = <QueryResult>[];
-      articles.forEach((element) async {
+      Future.forEach<int>(articles, (element) async {
         if (qr[element] == null) {
           try {
             var headers = await ScriptManager.runHitomiGetHeaderContent(
                 element.toString());
             var hh = await http.get(
-              'https://ltn.hitomi.la/galleryblock/${element}.html',
+              'https://ltn.hitomi.la/galleryblock/$element.html',
               headers: headers,
             );
             var article = await HitomiParser.parseGalleryBlock(hh.body);
@@ -167,18 +171,18 @@ class _DownloadPageState extends State<DownloadPage>
             };
             result.add(QueryResult(result: meta));
             return;
-          } catch (e, st) {}
+          } catch (_) {}
         }
         result.add(qr[element]);
       });
 
-      result.forEach((element) {
+      for (var element in result) {
         queryResults[element.id()] = element;
-      });
+      }
     });
   }
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -198,8 +202,6 @@ class _DownloadPageState extends State<DownloadPage>
             SliverPersistentHeader(
               floating: true,
               delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
                 searchBar: Stack(
                   children: <Widget>[
                     _urlBar(),
@@ -218,21 +220,23 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys1 =
-      Map<int, GlobalKey<DownloadItemWidgetState>>();
+      <int, GlobalKey<DownloadItemWidgetState>>{};
   Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys2 =
-      Map<int, GlobalKey<DownloadItemWidgetState>>();
+      <int, GlobalKey<DownloadItemWidgetState>>{};
   Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys3 =
-      Map<int, GlobalKey<DownloadItemWidgetState>>();
+      <int, GlobalKey<DownloadItemWidgetState>>{};
 
   _getDownloadWidgetKey() {
-    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1)
+    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
       return downloadItemWidgetKeys1;
+    }
     if (Settings.downloadResultType == 2 || Settings.downloadResultType == 3) {
       if (Settings.useTabletMode ||
-          MediaQuery.of(context).orientation == Orientation.landscape)
+          MediaQuery.of(context).orientation == Orientation.landscape) {
         return downloadItemWidgetKeys2;
-      else
+      } else {
         return downloadItemWidgetKeys3;
+      }
     }
   }
 
@@ -243,7 +247,7 @@ class _DownloadPageState extends State<DownloadPage>
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
       var mm = Settings.downloadResultType == 0 ? 3 : 2;
       return SliverPadding(
-          padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: SliverGrid(
             key: _listKey,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -256,11 +260,12 @@ class _DownloadPageState extends State<DownloadPage>
               (BuildContext context, int index) {
                 var e = filterResult[filterResult.length - index - 1];
                 if (!downloadItemWidgetKeys1
-                    .containsKey(filterResult[index].id()))
+                    .containsKey(filterResult[index].id())) {
                   downloadItemWidgetKeys1[filterResult[index].id()] =
                       GlobalKey<DownloadItemWidgetState>();
+                }
                 return Align(
-                  key: Key('dp' + e.id().toString() + e.url()),
+                  key: Key('dp${e.id()}${e.url()}'),
                   alignment: Alignment.bottomCenter,
                   child: DownloadItemWidget(
                     key: downloadItemWidgetKeys1[filterResult[index].id()],
@@ -283,12 +288,12 @@ class _DownloadPageState extends State<DownloadPage>
       if (Settings.useTabletMode ||
           MediaQuery.of(context).orientation == Orientation.landscape) {
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: LiveSliverGrid(
             key: _listKey,
             controller: _scrollController,
-            showItemInterval: Duration(milliseconds: 50),
-            showItemDuration: Duration(milliseconds: 150),
+            showItemInterval: const Duration(milliseconds: 50),
+            showItemDuration: const Duration(milliseconds: 150),
             visibleFraction: 0.001,
             itemCount: filterResult.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -300,11 +305,12 @@ class _DownloadPageState extends State<DownloadPage>
             itemBuilder: (context, index, animation) {
               var e = filterResult[filterResult.length - index - 1];
               if (!downloadItemWidgetKeys2
-                  .containsKey(filterResult[index].id()))
+                  .containsKey(filterResult[index].id())) {
                 downloadItemWidgetKeys2[filterResult[index].id()] =
                     GlobalKey<DownloadItemWidgetState>();
+              }
               return Align(
-                key: Key('dp' + e.id().toString() + e.url()),
+                key: Key('dp${e.id()}${e.url()}'),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys2[filterResult[index].id()],
@@ -326,11 +332,12 @@ class _DownloadPageState extends State<DownloadPage>
           key: _listKey,
           delegate: SliverChildListDelegate(
             filterResult.reversed.map((e) {
-              if (!downloadItemWidgetKeys3.containsKey(e.id()))
+              if (!downloadItemWidgetKeys3.containsKey(e.id())) {
                 downloadItemWidgetKeys3[e.id()] =
                     GlobalKey<DownloadItemWidgetState>();
+              }
               return Align(
-                key: Key('dp' + e.id().toString() + e.url()),
+                key: Key('dp${e.id()}${e.url()}'),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys3[e.id()],
@@ -355,11 +362,11 @@ class _DownloadPageState extends State<DownloadPage>
 
   Widget _urlBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(8, 8, 72 + 64.0 + 8, 0),
+      padding: const EdgeInsets.fromLTRB(8, 8, 72 + 64.0 + 8, 0),
       child: SizedBox(
         height: 64,
         child: Card(
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(4.0),
             ),
@@ -385,11 +392,11 @@ class _DownloadPageState extends State<DownloadPage>
                             enabledBorder: InputBorder.none,
                             errorBorder: InputBorder.none,
                             disabledBorder: InputBorder.none,
-                            contentPadding: EdgeInsets.only(
+                            contentPadding: const EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
                             hintText: Translations.of(context).trans('addurl')),
                       ),
-                      leading: SizedBox(
+                      leading: const SizedBox(
                         width: 25,
                         height: 25,
                         child: Icon(MdiIcons.instagram),
@@ -415,11 +422,15 @@ class _DownloadPageState extends State<DownloadPage>
                             .setBool('checkauthalready', true);
                         if (await Permission.storage.request() ==
                             PermissionStatus.denied) {
-                          await showOkDialog(context,
-                              "You cannot use downloader, if you not allow external storage permission.");
+                          if (mounted) {
+                            await showOkDialog(context,
+                                'You cannot use downloader, if you not allow external storage permission.');
+                          }
                           return;
                         }
                       }
+
+                      if (!mounted) return;
                       Widget yesButton = TextButton(
                         style:
                             TextButton.styleFrom(primary: Settings.majorColor),
@@ -441,7 +452,8 @@ class _DownloadPageState extends State<DownloadPage>
                         useRootNavigator: false,
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-                          contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           title:
                               Text(Translations.of(context).trans('writeurl')),
                           content: TextField(
@@ -455,7 +467,10 @@ class _DownloadPageState extends State<DownloadPage>
                         final ids = text.text.split(',').map((e) => e.trim());
                         if (ids
                             .any((element) => int.tryParse(element) == null)) {
-                          await showOkDialog(context, "콤마로 구분된 숫자만 입력해야 합니다!");
+                          if (mounted) {
+                            await showOkDialog(
+                                context, '콤마로 구분된 숫자만 입력해야 합니다!');
+                          }
                           return;
                         }
                         if (dialog == true) {
@@ -465,7 +480,9 @@ class _DownloadPageState extends State<DownloadPage>
                         }
                       } else {
                         if (int.parse(text.text) == null) {
-                          await showOkDialog(context, "숫자만 입력해야 합니다!");
+                          if (mounted) {
+                            await showOkDialog(context, '숫자만 입력해야 합니다!');
+                          }
                           return;
                         }
                         if (dialog == true) {
@@ -490,14 +507,14 @@ class _DownloadPageState extends State<DownloadPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "features",
+          tag: 'features',
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack
                     ? const Color(0xFF141414)
-                    : Color(0xFF353535)
+                    : const Color(0xFF353535)
                 : Colors.grey.shade100,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -505,12 +522,13 @@ class _DownloadPageState extends State<DownloadPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _featuresOnTap,
               child: SizedBox(
                 height: 64,
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(
                       MdiIcons.hammerWrench,
                       color: Colors.grey,
@@ -518,7 +536,6 @@ class _DownloadPageState extends State<DownloadPage>
                   ],
                 ),
               ),
-              onTap: _featuresOnTap,
             ),
           ),
         ),
@@ -527,39 +544,38 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   Future<void> _featuresOnTap() async {
-    var rtype = Settings.downloadResultType;
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => DownloadFeaturesMenu(),
+      pageBuilder: (_, __, ___) => const DownloadFeaturesMenu(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
         .then((value) async {
       if (value == null) return;
 
-      if (value == 0)
+      if (value == 0) {
         _getDownloadWidgetKey()
             .forEach((key, value) => value.currentState.retryWhenRequired());
-      else if (value == 1)
+      } else if (value == 1) {
         _getDownloadWidgetKey()
             .forEach((key, value) => value.currentState.recovery());
-      else if (value == 2) {
+      } else if (value == 2) {
         Clipboard.setData(ClipboardData(
-            text: filterResult.map((e) => int.tryParse(e.url())).join(", ")));
+            text: filterResult.map((e) => int.tryParse(e.url())).join(', ')));
         FlutterToast(context).showToast(
-          child: ToastWrapper(
+          child: const ToastWrapper(
             isCheck: true,
             isWarning: false,
             msg: 'Ids Copied!',
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
       }
     });
@@ -572,14 +588,14 @@ class _DownloadPageState extends State<DownloadPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "downloadtype",
+          tag: 'downloadtype',
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack
                     ? const Color(0xFF141414)
-                    : Color(0xFF353535)
+                    : const Color(0xFF353535)
                 : Colors.grey.shade100,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -587,12 +603,15 @@ class _DownloadPageState extends State<DownloadPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _alignOnTap,
+              onDoubleTap: _alignDoubleTap,
+              onLongPress: _alignLongPress,
               child: SizedBox(
                 height: 64,
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(
                       MdiIcons.formatListText,
                       color: Colors.grey,
@@ -600,9 +619,6 @@ class _DownloadPageState extends State<DownloadPage>
                   ],
                 ),
               ),
-              onTap: _alignOnTap,
-              onDoubleTap: _alignDoubleTap,
-              onLongPress: _alignLongPress,
             ),
           ),
         ),
@@ -615,12 +631,12 @@ class _DownloadPageState extends State<DownloadPage>
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => DownloadViewType(),
+      pageBuilder: (_, __, ___) => const DownloadViewType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
@@ -629,7 +645,7 @@ class _DownloadPageState extends State<DownloadPage>
         var downloadWidgetKey = _getDownloadWidgetKey();
         downloadWidgetKey.forEach((key, value) =>
             downloadWidgetKey[key] = GlobalKey<DownloadItemWidgetState>());
-        await Future.delayed(Duration(milliseconds: 50), () {
+        await Future.delayed(const Duration(milliseconds: 50), () {
           setState(() {});
         });
       }
@@ -641,12 +657,12 @@ class _DownloadPageState extends State<DownloadPage>
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => DownloadAlignType(),
+      pageBuilder: (_, __, ___) => const DownloadAlignType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
@@ -681,19 +697,19 @@ class _DownloadPageState extends State<DownloadPage>
     var downloading = <int>[];
     var result = <int>[];
     var isOr = _filterController.isOr;
-    itemsMap.entries.forEach((element) {
+    for (var element in itemsMap.entries) {
       // 1: Pending
       // 2: Extracting
       // 3: Downloading
       // 4: Post Processing
       if (1 <= element.value.state() && element.value.state() <= 4) {
         downloading.add(element.key);
-        return;
+        continue;
       }
 
-      if (int.tryParse(element.value.url()) == null) return;
+      if (int.tryParse(element.value.url()) == null) continue;
       final qr = queryResults[int.parse(element.value.url())];
-      if (qr == null) return;
+      if (qr == null) continue;
 
       // key := <group>:<name>
       var succ = !_filterController.isOr;
@@ -716,37 +732,43 @@ class _DownloadPageState extends State<DownloadPage>
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (['female', 'male'].contains(split[0]))
+          if (['female', 'male'].contains(split[0])) {
             tag = '${split[0]}:${split[1]}';
-          if ((qr.result[dbColumn] as String).contains('|$tag|') == isOr)
+          }
+          if ((qr.result[dbColumn] as String).contains('|$tag|') == isOr) {
             succ = isOr;
+          }
         }
 
         // If Multitag
-        else if ((qr.result[dbColumn] as String == split[1]) == isOr)
+        else if ((qr.result[dbColumn] as String == split[1]) == isOr) {
           succ = isOr;
+        }
       });
       if (succ) result.add(element.key);
-    });
+    }
 
-    if (_filterController.tagStates.isNotEmpty)
+    if (_filterController.tagStates.isNotEmpty) {
       filterResult = result.map((e) => itemsMap[e]).toList();
-    else
+    } else {
       filterResult = items.toList();
+    }
 
-    if (_filterController.isPopulationSort)
+    if (_filterController.isPopulationSort) {
       Population.sortByPopulationDownloadItem(filterResult);
+    }
 
     if (Settings.downloadAlignType > 0) {
       final user = await User.getInstance();
       final userlog = await user.getUserLog();
-      final articlereadlog = Map<int, DateTime>();
+      final articlereadlog = <int, DateTime>{};
 
-      userlog.forEach((element) {
-        if (!articlereadlog.containsKey(int.tryParse(element.articleId())))
+      for (var element in userlog) {
+        if (!articlereadlog.containsKey(int.tryParse(element.articleId()))) {
           articlereadlog[int.tryParse(element.articleId())] =
               DateTime.parse(element.datetimeStart());
-      });
+        }
+      }
 
       filterResult.sort((x, y) {
         if (int.tryParse(x.url()) == null) return 1;
@@ -755,20 +777,20 @@ class _DownloadPageState extends State<DownloadPage>
         var xx = int.tryParse(x.url());
         var yy = int.tryParse(y.url());
 
-        if (Settings.downloadAlignType == 3)
+        if (Settings.downloadAlignType == 3) {
           return y
               .filesWithoutThumbnail()
               .length
               .compareTo(x.filesWithoutThumbnail().length);
-        else if (Settings.downloadAlignType == 2) {
+        } else if (Settings.downloadAlignType == 2) {
           if (!queryResults.containsKey(xx)) return 1;
           if (!queryResults.containsKey(yy)) return -1;
 
           final a1 = queryResults[xx].groups();
           final a2 = queryResults[yy].groups();
 
-          if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
-          if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
+          if (a1 == null || a1 == '' || a1 == '|N/A|') return 1;
+          if (a2 == null || a2 == '' || a2 == '|N/A|') return -1;
 
           final aa1 =
               (a1 as String).split('|').firstWhere((element) => element != '');
@@ -783,8 +805,8 @@ class _DownloadPageState extends State<DownloadPage>
           final a1 = queryResults[xx].artists();
           final a2 = queryResults[yy].artists();
 
-          if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
-          if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
+          if (a1 == null || a1 == '' || a1 == '|N/A|') return 1;
+          if (a2 == null || a2 == '' || a2 == '|N/A|') return -1;
 
           final aa1 =
               (a1 as String).split('|').firstWhere((element) => element != '');
@@ -804,8 +826,9 @@ class _DownloadPageState extends State<DownloadPage>
       filterResult = filterResult.reversed.toList();
     }
 
-    if (_filterController.tagStates.isNotEmpty && downloading.length > 0)
+    if (_filterController.tagStates.isNotEmpty && downloading.isNotEmpty) {
       filterResult.addAll(downloading.map((e) => itemsMap[e]).toList());
+    }
 
     setState(() {});
   }

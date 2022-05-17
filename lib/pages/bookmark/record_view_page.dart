@@ -14,6 +14,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class RecordViewPage extends StatelessWidget {
+  const RecordViewPage({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -26,27 +28,26 @@ class RecordViewPage extends StatelessWidget {
 
   Widget future(context, double width) {
     var windowWidth = MediaQuery.of(context).size.width;
-    return FutureBuilder(
+    return FutureBuilder<List<QueryResult>>(
       future: User.getInstance()
           .then((value) => value.getUserLog().then((value) async {
                 var overap = HashSet<String>();
                 var rr = <ArticleReadLog>[];
-                value.forEach((element) {
-                  if (overap.contains(element.articleId())) return;
+                for (var element in value) {
+                  if (overap.contains(element.articleId())) continue;
                   rr.add(element);
                   overap.add(element.articleId());
-                });
+                }
 
                 var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                queryRaw +=
-                    'Id IN (' + rr.map((e) => e.articleId()).join(',') + ')';
+                queryRaw += 'Id IN (${rr.map((e) => e.articleId()).join(',')})';
                 var qm = await QueryManager.query(queryRaw +
                     (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                var qr = Map<String, QueryResult>();
-                qm.results.forEach((element) {
+                var qr = <String, QueryResult>{};
+                for (var element in qm.results) {
                   qr[element.id().toString()] = element;
-                });
+                }
 
                 return rr
                     .where((e) => qr.containsKey(e.articleId()))
@@ -59,9 +60,9 @@ class RecordViewPage extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -71,7 +72,7 @@ class RecordViewPage extends StatelessWidget {
                   snapshot.data.map(
                     (e) {
                       return Padding(
-                        key: Key('record/' + e.id().toString()),
+                        key: Key('record/${e.id()}'),
                         padding: EdgeInsets.zero,
                         child: Align(
                           alignment: Alignment.bottomCenter,
@@ -86,10 +87,11 @@ class RecordViewPage extends StatelessWidget {
                                         addBottomPadding: false,
                                         showDetail: false,
                                         width: (windowWidth - 4.0 - 48) / 3,
-                                        thumbnailTag: Uuid().v4(),
+                                        thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),
-                                      child: ArticleListItemVerySimpleWidget(),
+                                      child:
+                                          const ArticleListItemVerySimpleWidget(),
                                     )
                                   : Container()
                             ],

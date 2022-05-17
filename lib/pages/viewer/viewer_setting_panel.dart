@@ -15,14 +15,15 @@ class ViewerSettingPanel extends StatefulWidget {
   final VoidCallback setStateCallback;
   final VoidCallback thumbSizeChangeEvent;
 
-  ViewerSettingPanel({
+  const ViewerSettingPanel({
+    Key key,
     this.viewerStyleChangeEvent,
     this.setStateCallback,
     this.thumbSizeChangeEvent,
-  });
+  }) : super(key: key);
 
   @override
-  _ViewerSettingPanelState createState() => _ViewerSettingPanelState();
+  State<ViewerSettingPanel> createState() => _ViewerSettingPanelState();
 }
 
 class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
@@ -39,16 +40,12 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           title: Row(
             children: [
               Text(
-                  Translations.instance.trans('timersetting') +
-                      ' (' +
-                      Settings.timerTick.toStringAsFixed(1) +
-                      Translations.instance.trans('second') +
-                      ')',
-                  style: TextStyle(color: Colors.white)),
+                  '${Translations.instance.trans('timersetting')} (${Settings.timerTick.toStringAsFixed(1)}${Translations.instance.trans('second')})',
+                  style: const TextStyle(color: Colors.white)),
               Expanded(
                 child: Align(
                   child: SliderTheme(
-                    data: SliderThemeData(
+                    data: const SliderThemeData(
                       activeTrackColor: Colors.blue,
                       inactiveTrackColor: Color(0xffd0d2d3),
                       trackHeight: 3,
@@ -171,8 +168,8 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
               Settings.setDisableFullScreen(!Settings.disableFullScreen);
               widget.setStateCallback.call();
               if (Settings.disableFullScreen) {
-                SystemChrome.setEnabledSystemUIOverlays(
-                    [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+                SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                    overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
               }
               setState(() {});
             },
@@ -207,7 +204,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             dense: true,
             title: Text(
               Translations.of(context).trans('imgquality'),
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             trailing: Text(
               [
@@ -216,7 +213,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
                 Translations.of(context).trans('middle'),
                 Translations.of(context).trans('low')
               ][imgqualityOption],
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -245,7 +242,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             dense: true,
             title: Text(
               Translations.of(context).trans('thumbnailslidersize'),
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             trailing: Text(
               [
@@ -253,7 +250,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
                 Translations.of(context).trans('middle'),
                 Translations.of(context).trans('small')
               ][Settings.thumbSize],
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -270,7 +267,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
       ],
     );
 
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -281,12 +278,13 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: listview,
       );
+    }
   }
 
   _checkBox({
@@ -303,7 +301,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         value: value,
         activeColor: Settings.majorColor,
       ),
-      title: Text(title, style: TextStyle(color: Colors.white)),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
       onTap: () => onChanged(value),
     );
   }

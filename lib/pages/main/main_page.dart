@@ -47,8 +47,10 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
 class MainPage2 extends StatefulWidget {
+  const MainPage2({Key key}) : super(key: key);
+
   @override
-  _MainPage2State createState() => _MainPage2State();
+  State<MainPage2> createState() => _MainPage2State();
 }
 
 class _MainPage2State extends State<MainPage2>
@@ -64,7 +66,7 @@ class _MainPage2State extends State<MainPage2>
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 200)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 200)).then((value) async {
       // var latestDB = SyncManager.getLatestDB().getDateTime();
       // var lastDB =
       //     (await SharedPreferences.getInstance()).getString('databasesync');
@@ -105,9 +107,9 @@ class _MainPage2State extends State<MainPage2>
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     final cardList = [
-      DiscordCard(),
-      ContactCard(),
-      GithubCard(),
+      const DiscordCard(),
+      const ContactCard(),
+      const GithubCard(),
     ];
 
     if (_cachedGroups == null || _shouldReload) {
@@ -124,8 +126,8 @@ class _MainPage2State extends State<MainPage2>
             enableInfiniteScroll: false,
             reverse: false,
             autoPlay: true,
-            autoPlayInterval: Duration(seconds: 10),
-            autoPlayAnimationDuration: Duration(milliseconds: 800),
+            autoPlayInterval: const Duration(seconds: 10),
+            autoPlayAnimationDuration: const Duration(milliseconds: 800),
             autoPlayCurve: Curves.fastOutSlowIn,
             enlargeCenterPage: true,
             scrollDirection: Axis.horizontal,
@@ -149,16 +151,17 @@ class _MainPage2State extends State<MainPage2>
             return Container(
               width: 8.0,
               height: 8.0,
-              margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: _current == index
                     ? Settings.themeWhat
-                        ? Color.fromRGBO(255, 255, 255, 0.9)
-                        : Color.fromRGBO(0, 0, 0, 0.9)
+                        ? const Color.fromRGBO(255, 255, 255, 0.9)
+                        : const Color.fromRGBO(0, 0, 0, 0.9)
                     : Settings.themeWhat
-                        ? Color.fromRGBO(255, 255, 255, 0.4)
-                        : Color.fromRGBO(0, 0, 0, 0.4),
+                        ? const Color.fromRGBO(255, 255, 255, 0.4)
+                        : const Color.fromRGBO(0, 0, 0, 0.4),
               ),
             );
           }).toList(),
@@ -171,14 +174,12 @@ class _MainPage2State extends State<MainPage2>
       ];
     }
 
-    return Container(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(top: statusBarHeight),
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _cachedGroups,
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(top: statusBarHeight),
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _cachedGroups,
       ),
     );
   }
@@ -267,13 +268,13 @@ class _MainPage2State extends State<MainPage2>
                 },
               ), builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Text('??',
+                  return const Text('??',
                       style: TextStyle(
-                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
                 }
                 return Text(numberWithComma(snapshot.data.length),
-                    style: TextStyle(
-                        fontFamily: "Calibre-Semibold", fontSize: 18));
+                    style: const TextStyle(
+                        fontFamily: 'Calibre-Semibold', fontSize: 18));
               }),
             ],
           ),
@@ -287,13 +288,13 @@ class _MainPage2State extends State<MainPage2>
                 },
               ), builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Text('??',
+                  return const Text('??',
                       style: TextStyle(
-                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
                 }
                 return Text(numberWithComma(snapshot.data.length),
-                    style: TextStyle(
-                        fontFamily: "Calibre-Semibold", fontSize: 18));
+                    style: const TextStyle(
+                        fontFamily: 'Calibre-Semibold', fontSize: 18));
               }),
             ],
           ),
@@ -308,13 +309,13 @@ class _MainPage2State extends State<MainPage2>
                 },
               ), builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Text('??',
+                  return const Text('??',
                       style: TextStyle(
-                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
                 }
                 return Text(numberWithComma(snapshot.data.length),
-                    style: TextStyle(
-                        fontFamily: "Calibre-Semibold", fontSize: 18));
+                    style: const TextStyle(
+                        fontFamily: 'Calibre-Semibold', fontSize: 18));
               }),
             ],
           ),
@@ -334,8 +335,8 @@ class _MainPage2State extends State<MainPage2>
               Row(
                 children: [
                   Text(Translations.of(context).trans('curversion'),
-                      style: TextStyle(color: Colors.grey)),
-                  Text(
+                      style: const TextStyle(color: Colors.grey)),
+                  const Text(
                       ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}'),
                 ],
               ),
@@ -344,14 +345,14 @@ class _MainPage2State extends State<MainPage2>
                   ? Row(
                       children: [
                         Text(Translations.of(context).trans('latestversion'),
-                            style: TextStyle(color: Colors.grey)),
+                            style: const TextStyle(color: Colors.grey)),
                         Text(' ${UpdateSyncManager.latestVersion}'),
                       ],
                     )
                   : Row(
                       children: [
                         Text(Translations.of(context).trans('curlatestversion'),
-                            style: TextStyle(color: Colors.grey)),
+                            style: const TextStyle(color: Colors.grey)),
                       ],
                     ),
             ],
@@ -362,18 +363,18 @@ class _MainPage2State extends State<MainPage2>
           //   height: 50,
           //   width: 100,
           // )
-          Container(
+          SizedBox(
+            height: 40,
+            width: 105,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Settings.majorColor.withAlpha(220),
               ),
               onPressed: () {
-                PlatformNavigator.navigateSlide(context, PatchNotePage());
+                PlatformNavigator.navigateSlide(context, const PatchNotePage());
               },
               child: Text(Translations.of(context).trans('patchnote')),
             ),
-            height: 40,
-            width: 105,
           ),
         ],
       ),
@@ -382,7 +383,7 @@ class _MainPage2State extends State<MainPage2>
       Row(
         children: [
           Text(Translations.of(context).trans('database'),
-              style: TextStyle(fontWeight: FontWeight.bold)),
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           Expanded(child: Container()),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,17 +392,15 @@ class _MainPage2State extends State<MainPage2>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(Translations.of(context).trans('local'),
-                      style: TextStyle(color: Colors.grey)),
+                      style: const TextStyle(color: Colors.grey)),
                   FutureBuilder(
                       future: SharedPreferences.getInstance(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return Text(' ??');
+                          return const Text(' ??');
                         }
                         return Text(
-                          ' ' +
-                              DateFormat('yyyy.MM.dd').format(DateTime.parse(
-                                  snapshot.data.getString('databasesync'))),
+                          ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(snapshot.data.getString('databasesync')))}',
                         );
                       }),
                 ],
@@ -410,11 +409,9 @@ class _MainPage2State extends State<MainPage2>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(Translations.of(context).trans('latest'),
-                      style: TextStyle(color: Colors.grey)),
+                      style: const TextStyle(color: Colors.grey)),
                   Text(
-                    ' ' +
-                        DateFormat('yyyy.MM.dd')
-                            .format(SyncManager.getLatestDB().getDateTime()),
+                    ' ${DateFormat('yyyy.MM.dd').format(SyncManager.getLatestDB().getDateTime())}',
                   ),
                 ],
               ),
@@ -434,7 +431,7 @@ class _MainPage2State extends State<MainPage2>
                 ? null
                 : () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => SplashPage(
+                        builder: (context) => const SplashPage(
                               switching: true,
                             )));
                   },
@@ -443,7 +440,7 @@ class _MainPage2State extends State<MainPage2>
           ),
           Badge(
             showBadge: _syncAvailable,
-            badgeContent: Text('N',
+            badgeContent: const Text('N',
                 style: TextStyle(color: Colors.white, fontSize: 12.0)),
             // badgeColor: Settings.majorAccentColor,
             child: ElevatedButton(
@@ -460,15 +457,17 @@ class _MainPage2State extends State<MainPage2>
                       if (lastDB != null &&
                           latestDB.difference(DateTime.parse(lastDB)).inHours <
                               1) {
-                        FlutterToast(context).showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context)
-                                .trans('thisislatestbookmark'),
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
+                        if (mounted) {
+                          FlutterToast(context).showToast(
+                            child: ToastWrapper(
+                              isCheck: true,
+                              msg: Translations.of(context)
+                                  .trans('thisislatestbookmark'),
+                            ),
+                            gravity: ToastGravity.BOTTOM,
+                            toastDuration: const Duration(seconds: 4),
+                          );
+                        }
                         return;
                       }
 
@@ -479,37 +478,43 @@ class _MainPage2State extends State<MainPage2>
                         await deleteDatabase('${dir.path}/data/data.db');
                         await Directory('${dir.path}/data')
                             .delete(recursive: true);
-                      } catch (e) {}
+                      } catch (_) {}
 
                       setState(() {
                         _shouldReload = true;
                         _syncAvailable = false;
                       });
 
-                      await Navigator.of(context)
-                          .push(MaterialPageRoute(
-                              builder: (context) => DataBaseDownloadPage(
-                                    dbType: Settings.databaseType,
-                                    isSync: true,
-                                  )))
-                          .then((value) async {
-                        HitomiIndexs.init();
-                        final directory =
-                            await getApplicationDocumentsDirectory();
-                        final path = File('${directory.path}/data/index.json');
-                        final text = path.readAsStringSync();
-                        HitomiManager.tagmap = jsonDecode(text);
-                        await DataBaseManager.reloadInstance();
+                      if (mounted) {
+                        await Navigator.of(context)
+                            .push(MaterialPageRoute(
+                                builder: (context) => DataBaseDownloadPage(
+                                      dbType: Settings.databaseType,
+                                      isSync: true,
+                                    )))
+                            .then((value) async {
+                          HitomiIndexs.init();
+                          final directory =
+                              await getApplicationDocumentsDirectory();
+                          final path =
+                              File('${directory.path}/data/index.json');
+                          final text = path.readAsStringSync();
+                          HitomiManager.tagmap = jsonDecode(text);
+                          await DataBaseManager.reloadInstance();
 
-                        FlutterToast(context).showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context).trans('synccomplete'),
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
-                      });
+                          if (mounted) {
+                            FlutterToast(context).showToast(
+                              child: ToastWrapper(
+                                isCheck: true,
+                                msg: Translations.of(context)
+                                    .trans('synccomplete'),
+                              ),
+                              gravity: ToastGravity.BOTTOM,
+                              toastDuration: const Duration(seconds: 4),
+                            );
+                          }
+                        });
+                      }
                     },
               child: Text('    ${Translations.of(context).trans('sync')}    '),
             ),
@@ -539,7 +544,7 @@ class _MainPage2State extends State<MainPage2>
               style: buttonStyle,
               onPressed: () {
                 PlatformNavigator.navigateSlide(
-                    context, ArtistCollectionPage());
+                    context, const ArtistCollectionPage());
               },
               child: const Icon(MdiIcons.star),
             ),
@@ -549,7 +554,7 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () {
-                PlatformNavigator.navigateSlide(context, ViewsPage());
+                PlatformNavigator.navigateSlide(context, const ViewsPage());
               },
               child: const Icon(MdiIcons.starShooting),
             ),
@@ -559,7 +564,7 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () {
-                PlatformNavigator.navigateSlide(context, InfoPage());
+                PlatformNavigator.navigateSlide(context, const InfoPage());
               },
               child: const Icon(MdiIcons.heart),
             ),
@@ -575,7 +580,8 @@ class _MainPage2State extends State<MainPage2>
             child: ElevatedButton(
               style: buttonStyle,
               onPressed: () async {
-                PlatformNavigator.navigateSlide(context, LabRecentRecordsU());
+                PlatformNavigator.navigateSlide(
+                    context, const LabRecentRecordsU());
               },
               child: const Icon(MdiIcons.accessPointNetwork),
             ),
@@ -600,14 +606,15 @@ class _MainPage2State extends State<MainPage2>
           // ),
           Badge(
             showBadge: true,
-            badgeContent: Text('N',
+            badgeContent: const Text('N',
                 style: TextStyle(color: Colors.white, fontSize: 12.0)),
             child: Tooltip(
               message: '댓글',
               child: ElevatedButton(
                 style: buttonStyle,
                 onPressed: () async {
-                  PlatformNavigator.navigateSlide(context, LabGlobalComments());
+                  PlatformNavigator.navigateSlide(
+                      context, const LabGlobalComments());
                 },
                 child: const Icon(MdiIcons.commentTextMultiple),
               ),
@@ -615,7 +622,7 @@ class _MainPage2State extends State<MainPage2>
           ),
           Badge(
             showBadge: true,
-            badgeContent: Text('N',
+            badgeContent: const Text('N',
                 style: TextStyle(color: Colors.white, fontSize: 12.0)),
             // badgeColor: Settings.majorAccentColor,
             child: Tooltip(
@@ -623,7 +630,8 @@ class _MainPage2State extends State<MainPage2>
               child: ElevatedButton(
                 style: buttonStyle,
                 onPressed: () async {
-                  PlatformNavigator.navigateSlide(context, LabSearchMessage());
+                  PlatformNavigator.navigateSlide(
+                      context, const LabSearchMessage());
                 },
                 child: const Icon(MdiIcons.commentSearch),
               ),
@@ -688,7 +696,7 @@ class _MainPage2State extends State<MainPage2>
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.fromLTRB(32, 20, 32, 0),
+          padding: const EdgeInsets.fromLTRB(32, 20, 32, 0),
           alignment: Alignment.centerLeft,
           child: Text(
             name,
@@ -700,7 +708,7 @@ class _MainPage2State extends State<MainPage2>
           ),
         ),
         Container(
-          margin: EdgeInsets.fromLTRB(32, 20, 32, 10),
+          margin: const EdgeInsets.fromLTRB(32, 20, 32, 10),
           // margin: EdgeInsets.only(left: 30, top: 100, right: 30, bottom: 50),
           // height: double.infinity,
           width: double.infinity,
@@ -708,7 +716,7 @@ class _MainPage2State extends State<MainPage2>
               ? BoxDecoration(
                   // color: Colors.white,
                   color: Settings.themeWhat ? Colors.black26 : Colors.white,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8),
                       topRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),
@@ -720,7 +728,7 @@ class _MainPage2State extends State<MainPage2>
                           : Colors.grey.withOpacity(0.1),
                       spreadRadius: Settings.themeWhat ? 0 : 5,
                       blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset: const Offset(0, 3), // changes position of shadow
                     ),
                   ],
                 )
@@ -742,10 +750,10 @@ class _MainPage2State extends State<MainPage2>
                               : Colors.black38
                           : Colors.white,
                       child: Padding(
-                          padding: EdgeInsets.all(20.0),
+                          padding: const EdgeInsets.all(20.0),
                           child: Column(children: content))))
               : Padding(
-                  padding: EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(children: content)),
         ),
       ],
@@ -766,7 +774,7 @@ class _MainPage2State extends State<MainPage2>
   }
 
   // @dependent: android [
-  ReceivePort _port = ReceivePort();
+  final ReceivePort _port = ReceivePort();
 
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
@@ -777,23 +785,21 @@ class _MainPage2State extends State<MainPage2>
 
   void updateCheckAndDownload() {
     bool updateContinued = false;
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
-        var bb = await showYesNoDialog(
-            context,
-            Translations.of(context).trans('newupdate') +
-                ' ' +
-                UpdateSyncManager.updateMessage +
-                ' ' +
-                Translations.of(context).trans('wouldyouupdate'));
+        var bb = await showYesNoDialog(context,
+            '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
         if (bb == null || bb == false) return;
-      } else
+      } else {
         return;
+      }
 
       if (!await Permission.storage.isGranted) {
         if (await Permission.storage.request() == PermissionStatus.denied) {
-          await showOkDialog(context,
-              'If you do not allow file permissions, you cannot continue :(');
+          if (mounted) {
+            await showOkDialog(context,
+                'If you do not allow file permissions, you cannot continue :(');
+          }
           return;
         }
       }
@@ -826,7 +832,7 @@ class _MainPage2State extends State<MainPage2>
       FlutterDownloader.registerCallback(downloadCallback);
       await FlutterDownloader.enqueue(
         url: UpdateSyncManager.updateUrl,
-        savedDir: '${ext.path}',
+        savedDir: ext.path,
         fileName: UpdateSyncManager.updateUrl.split('/').last,
         showNotification:
             true, // show download progress in status bar (for Android)
@@ -856,7 +862,6 @@ class _MainPage2State extends State<MainPage2>
   @override
   void dispose() {
     IsolateNameServer.removePortNameMapping('downloader_send_port');
-    // TODO: implement dispose
     super.dispose();
   }
   // @dependent: android ]

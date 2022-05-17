@@ -11,18 +11,15 @@ import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 
 class ArtistCollectionCard extends StatefulWidget {
+  const ArtistCollectionCard({Key key}) : super(key: key);
+
   @override
-  _ArtistCollectionCarddState createState() => _ArtistCollectionCarddState();
+  State<ArtistCollectionCard> createState() => _ArtistCollectionCarddState();
 }
 
 class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
     with TickerProviderStateMixin {
   bool pressed = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +39,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                     controller.forward(from: 0.0);
 
                     PlatformNavigator.navigateSlide(
-                        context, ArtistCollectionPage());
+                        context, const ArtistCollectionPage());
                   }
                 }),
               child: Container(
@@ -53,7 +50,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 8),
+                      offset: const Offset(0, 8),
                       color: Gradients.coldLinear.colors.first.withOpacity(.3),
                       spreadRadius: -9,
                     ),
@@ -61,39 +58,37 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                 ),
                 child: GradientCard(
                   gradient: Gradients.coldLinear,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // SizedBox(
-                          //   width: 50,
-                          //   height: 50,
-                          //   child: Transform.translate(
-                          //     offset: Offset(-10, -20),
-                          //     child: Transform.scale(
-                          //       scale: 3.8,
-                          //       child: Center(
-                          //         child: Lottie.asset(
-                          //           'assets/lottie/28446-floward-gift-box.json',
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   // Icon(
-                          //   //   MdiIcons.group,
-                          //   //   color: Colors.white,
-                          //   //   size: 30,
-                          //   // ),
-                          // ),
-                          Text(
-                            Translations.of(context).trans('artistcollection'),
-                            style: TextStyle(
-                                // fontFamily: "Calibre-Semibold",
-                                // fontSize: 18,
-                                color: Colors.white),
-                          ),
-                        ]),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(
+                        //   width: 50,
+                        //   height: 50,
+                        //   child: Transform.translate(
+                        //     offset: Offset(-10, -20),
+                        //     child: Transform.scale(
+                        //       scale: 3.8,
+                        //       child: Center(
+                        //         child: Lottie.asset(
+                        //           'assets/lottie/28446-floward-gift-box.json',
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        //   // Icon(
+                        //   //   MdiIcons.group,
+                        //   //   color: Colors.white,
+                        //   //   size: 30,
+                        //   // ),
+                        // ),
+                        Text(
+                          Translations.of(context).trans('artistcollection'),
+                          style: const TextStyle(
+                              // fontFamily: "Calibre-Semibold",
+                              // fontSize: 18,
+                              color: Colors.white),
+                        ),
+                      ]),
                 ),
               ));
         },
@@ -101,7 +96,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -112,7 +107,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)

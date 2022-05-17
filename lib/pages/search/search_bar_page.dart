@@ -27,18 +27,18 @@ class SearchBarPage extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SearchBarPageState createState() => _SearchBarPageState();
+  State<SearchBarPage> createState() => _SearchBarPageState();
 }
 
 class _SearchBarPageState extends State<SearchBarPage>
     with SingleTickerProviderStateMixin {
-  PageController _bottomController = PageController(
+  final PageController _bottomController = PageController(
     initialPage: 0,
   );
-  PageController _topController = PageController(
+  final PageController _topController = PageController(
     initialPage: 0,
   );
-  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   AnimationController controller;
@@ -50,15 +50,15 @@ class _SearchBarPageState extends State<SearchBarPage>
   String _searchText;
   bool _nothing = false;
 
-  int _searchResultMaximum = 60;
+  final int _searchResultMaximum = 60;
 
   @override
   void initState() {
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
-      reverseDuration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
+      reverseDuration: const Duration(milliseconds: 400),
     );
     _searchController = TextEditingController(text: widget.initText ?? '');
   }
@@ -78,7 +78,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     final mediaQuery = MediaQuery.of(context);
     controller.forward();
 
-    if (_searchLists.length == 0 && !_nothing) {
+    if (_searchLists.isEmpty && !_nothing) {
       const prefixList = [
         'female',
         'male',
@@ -95,16 +95,15 @@ class _SearchBarPageState extends State<SearchBarPage>
         'random'
       ];
 
-      prefixList.forEach(
-        (element) => _searchLists.add(
+      for (var element in prefixList) {
+        _searchLists.add(
           Tuple2<DisplayedTag, int>(
               DisplayedTag(group: 'prefix', name: element), 0),
-        ),
-      );
+        );
+      }
     }
 
-    if (_initBottomPadding == null)
-      _initBottomPadding = (mediaQuery.padding + mediaQuery.viewInsets).bottom;
+    _initBottomPadding ??= (mediaQuery.padding + mediaQuery.viewInsets).bottom;
 
     return Container(
       color: Settings.themeWhat
@@ -117,7 +116,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       child: Stack(
         children: <Widget>[
           Hero(
-            tag: "searchbar",
+            tag: 'searchbar',
             child: Card(
               elevation: 100,
               shape: RoundedRectangleBorder(
@@ -129,23 +128,21 @@ class _SearchBarPageState extends State<SearchBarPage>
                 color: Settings.themeWhat && Settings.themeBlack
                     ? const Color(0xFF141414)
                     : null,
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      _searchBar(),
-                      _seperator(),
-                      _searchButton(),
-                      _seperator(),
-                      Expanded(
-                        child: _searchTopPanel(),
-                      ),
-                      _seperator(),
-                      Expanded(
-                        child: _searchBottomPanel(),
-                      ),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    _searchBar(),
+                    _seperator(),
+                    _searchButton(),
+                    _seperator(),
+                    Expanded(
+                      child: _searchTopPanel(),
+                    ),
+                    _seperator(),
+                    Expanded(
+                      child: _searchBottomPanel(),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -157,7 +154,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   _seperator() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Container(
         height: 1.0,
         color: Colors.black12,
@@ -187,13 +184,13 @@ class _SearchBarPageState extends State<SearchBarPage>
               onPressed: () async {
                 _searchController.clear();
                 _searchController.selection =
-                    TextSelection(baseOffset: 0, extentOffset: 0);
+                    const TextSelection(baseOffset: 0, extentOffset: 0);
                 await searchProcess('', _searchController.selection);
               },
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
             ),
             contentPadding:
-                EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+                const EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
             hintText: Translations.of(context).trans('search'),
           ),
         ),
@@ -206,7 +203,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               onPressed: () {
                 Navigator.pop(context);
               },
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
               child: Transform.scale(
                 scale: 0.65,
                 child: FlareArtboard(widget.artboard,
@@ -222,7 +219,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   _searchButton() {
     return Container(
       height: 40,
-      padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+      padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: Settings.majorColor,
@@ -232,7 +229,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           var search = _searchController.text;
           if (search.split(' ').any((x) => x == 'random')) {
             search = search.split(' ').where((x) => x != 'random').join(' ');
-            search += ' random:${new Random().nextDouble() + 1}';
+            search += ' random:${Random().nextDouble() + 1}';
           }
           Navigator.pop(context, search);
         },
@@ -249,7 +246,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           _searchRelatedPanel(),
         ],
       ),
-      FutureBuilder(
+      FutureBuilder<int>(
         future: Future.value(1),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Container();
@@ -282,14 +279,15 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchAutoCompletePanel() {
-    if (_searchLists.length == 0 || _nothing)
+    if (_searchLists.isEmpty || _nothing) {
       return Center(
           child: Text(_nothing
               ? Translations.of(context).trans('nosearchresult')
               : Translations.of(context).trans('inputsearchtoken')));
+    }
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      physics: BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      physics: const BouncingScrollPhysics(),
       children: [
         Wrap(
           spacing: 4.0,
@@ -301,12 +299,13 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchRelatedPanel() {
-    if (_relatedLists.length == 0)
+    if (_relatedLists.isEmpty) {
       return Center(
           child: Text(Translations.of(context).trans('nosearchresult')));
+    }
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      physics: BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      physics: const BouncingScrollPhysics(),
       children: [
         Wrap(
           spacing: 4.0,
@@ -327,7 +326,7 @@ class _SearchBarPageState extends State<SearchBarPage>
             _searchHistory(),
           ],
         ),
-        FutureBuilder(
+        FutureBuilder<int>(
           future: Future.value(1),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return Container();
@@ -361,7 +360,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   _searchOptionPage() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+      padding: const EdgeInsets.fromLTRB(10, 4, 10, 4),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
@@ -410,7 +409,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                     ListTile(
                       leading: Icon(MdiIcons.layersSearch,
                           color: Settings.majorColor),
-                      title: Text('한글 검색'),
+                      title: const Text('한글 검색'),
                       trailing: Switch(
                         value: Settings.searchUseTranslated,
                         onChanged: (newValue) async {
@@ -534,7 +533,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                                       : Colors.grey,
                                   onPrimary: Colors.black,
                                 ),
-                                child: Icon(MdiIcons.keyboardBackspace),
+                                child: const Icon(MdiIcons.keyboardBackspace),
                                 onPressed: () {
                                   deleteProcess();
                                 },
@@ -549,7 +548,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                                       : Colors.grey,
                                   onPrimary: Colors.black,
                                 ),
-                                child: Icon(MdiIcons.keyboardSpace),
+                                child: const Icon(MdiIcons.keyboardSpace),
                                 onPressed: () {
                                   spaceProcess();
                                 },
@@ -570,27 +569,28 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchHistory() {
-    return FutureBuilder(
+    return FutureBuilder<List<SearchLog>>(
       future: SearchLogDatabase.getInstance()
           .then((value) async => await value.getSearchLog()),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return Container();
-        var logs = (snapshot.data as List<SearchLog>)
+        var logs = snapshot.data
             .where((element) => element.searchWhat() != null)
             .toList();
         return ListView.builder(
           padding: EdgeInsets.zero,
           itemExtent: 50.0,
           itemBuilder: (context, index) {
-            if (index == 0)
+            if (index == 0) {
               return Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Text(
                   'Search Log',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               );
+            }
             return InkWell(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -598,16 +598,16 @@ class _SearchBarPageState extends State<SearchBarPage>
                 children: [
                   Flexible(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         logs[index - 1].searchWhat(),
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       logs[index - 1].datetime().toString(),
                       style: TextStyle(color: Colors.grey.shade600),
@@ -639,11 +639,12 @@ class _SearchBarPageState extends State<SearchBarPage>
     }
 
     int pos = selection.base.offset - 1;
-    for (; pos > 0; pos--)
+    for (; pos > 0; pos--) {
       if (target[pos] == ' ') {
         pos++;
         break;
       }
+    }
 
     var last = target.indexOf(' ', pos);
     var token =
@@ -695,7 +696,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               token, Settings.searchUseTranslated))
           .take(_searchResultMaximum)
           .toList();
-      if (result.length == 0) _nothing = true;
+      if (result.isEmpty) _nothing = true;
       setState(() {
         _searchLists = result;
       });
@@ -704,7 +705,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               token, Settings.searchUseTranslated))
           .take(_searchResultMaximum)
           .toList();
-      if (result.length == 0) _nothing = true;
+      if (result.isEmpty) _nothing = true;
       setState(() {
         _searchLists = result;
       });
@@ -721,17 +722,19 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     // Delete one token
     int fpos = selection.base.offset - 1;
-    for (; fpos < text.length; fpos++)
+    for (; fpos < text.length; fpos++) {
       if (text[fpos] == ' ') {
         break;
       }
+    }
 
     int pos = fpos - 1;
-    for (; pos > 0; pos--)
+    for (; pos > 0; pos--) {
       if (text[pos] == ' ') {
         pos++;
         break;
       }
+    }
 
     text = text.substring(0, pos) + text.substring(fpos);
     _searchController.text = text;
@@ -746,9 +749,8 @@ class _SearchBarPageState extends State<SearchBarPage>
     var text = _searchController.text;
     var selection = _searchController.selection;
 
-    _searchController.text = text.substring(0, selection.base.offset) +
-        ' ' +
-        text.substring(selection.base.offset + 1);
+    _searchController.text =
+        '${text.substring(0, selection.base.offset)} ${text.substring(selection.base.offset + 1)}';
     _searchController.selection = TextSelection(
       baseOffset: selection.baseOffset + 1,
       extentOffset: selection.baseOffset + 1,
@@ -763,26 +765,31 @@ class _SearchBarPageState extends State<SearchBarPage>
     var count = '';
     Color color = Colors.grey;
 
-    if (Settings.searchTagTranslation || Settings.searchUseTranslated)
+    if (Settings.searchTagTranslation || Settings.searchUseTranslated) {
       tagDisplayed = info.item1.getTranslated();
+    }
 
-    if (info.item2 > 0 && Settings.searchShowCount)
+    if (info.item2 > 0 && Settings.searchShowCount) {
       count =
           ' (${info.item2.toString() + (related && info.item1.group == 'tag' ? '%' : '')})';
+    }
 
-    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:'))
+    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:')) {
       color = Colors.pink;
-    else if (info.item1.group == 'tag' && info.item1.name.startsWith('male:'))
+    } else if (info.item1.group == 'tag' &&
+        info.item1.name.startsWith('male:')) {
       color = Colors.blue;
-    else if (info.item1.group == 'prefix')
+    } else if (info.item1.group == 'prefix') {
       color = Colors.orange;
-    else if (info.item1.group == 'language')
+    } else if (info.item1.group == 'language') {
       color = Colors.teal;
-    else if (info.item1.group == 'series')
+    } else if (info.item1.group == 'series') {
       color = Colors.cyan;
-    else if (info.item1.group == 'artist' || info.item1.group == 'group')
+    } else if (info.item1.group == 'artist' || info.item1.group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    else if (info.item1.group == 'type') color = Colors.orange;
+    } else if (info.item1.group == 'type') {
+      color = Colors.orange;
+    }
 
     var ts = <TextSpan>[];
     var accColor = Colors.pink;
@@ -794,7 +801,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         tagDisplayed.contains(latestToken) &&
         !related) {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken)[0]));
@@ -805,7 +812,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           ),
           text: latestToken));
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken)[1]));
@@ -815,7 +822,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         tagDisplayed.contains(latestToken.split(':')[1]) &&
         !related) {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken.split(':')[1])[0]));
@@ -826,7 +833,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           ),
           text: latestToken.split(':')[1]));
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken.split(':')[1])[1]));
@@ -834,7 +841,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         !Settings.searchUseTranslated &&
         !related) {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed));
@@ -852,14 +859,14 @@ class _SearchBarPageState extends State<SearchBarPage>
       }
     } else {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed));
     }
 
     var fc = RawChip(
-      labelPadding: EdgeInsets.all(0.0),
+      labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
         child: Text(info.item1.group == 'tag' &&
@@ -870,18 +877,18 @@ class _SearchBarPageState extends State<SearchBarPage>
       ),
       label: RichText(
           text: TextSpan(
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
               ),
               children: [
-            TextSpan(text: ' '),
+            const TextSpan(text: ' '),
             TextSpan(children: ts),
             TextSpan(text: count),
           ])),
       backgroundColor: color,
       elevation: 6.0,
       shadowColor: Colors.grey[60],
-      padding: EdgeInsets.all(6.0),
+      padding: const EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {

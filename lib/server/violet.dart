@@ -35,12 +35,14 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error('[API-top] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-top] E: $e\n'
+          '$st');
 
       return 900;
     }
   }
 
+  // ignore: non_constant_identifier_names
   static Future<dynamic> top_recent(int s) async {
     var gg = await http.get('$api/top_recent?s=$s');
 
@@ -57,13 +59,14 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error(
-          '[API-top-recent] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-top-recent] E: $e\n'
+          '$st');
 
       return 900;
     }
   }
 
+  // ignore: non_constant_identifier_names
   static Future<dynamic> top_ts(int s) async {
     var gg = await http.get('$api/top_ts?s=$s');
 
@@ -78,12 +81,14 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error('[API-top-ts] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-top-ts] E: $e\n'
+          '$st');
 
       return 900;
     }
   }
 
+  // ignore: non_constant_identifier_names
   static Future<dynamic> cur_ts() async {
     var gg = await http.get('$api/cur_ts');
 
@@ -98,7 +103,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error('[API-cur-ts] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-cur-ts] E: $e\n'
+          '$st');
 
       return 900;
     }
@@ -117,14 +123,15 @@ class VioletServer {
               headers: {
                 'v-token': vToken.toString(),
                 'v-valid': vValid,
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
               },
               body: jsonEncode({'no': articleid.toString(), 'user': userId}))
           .then((value) {
         print(value.statusCode);
       });
     } catch (e, st) {
-      Logger.error('[API-view] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-view] E: $e\n'
+          '$st');
     }
   }
 
@@ -141,7 +148,7 @@ class VioletServer {
               headers: {
                 'v-token': vToken.toString(),
                 'v-valid': vValid,
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
               },
               body: jsonEncode({
                 'no': articleid.toString(),
@@ -152,7 +159,8 @@ class VioletServer {
         print(value.statusCode);
       });
     } catch (e, st) {
-      Logger.error('[API-close] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-close] E: $e\n'
+          '$st');
     }
   }
 
@@ -179,7 +187,7 @@ class VioletServer {
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         },
         body: jsonEncode(body),
       )
@@ -187,7 +195,8 @@ class VioletServer {
         print(value.statusCode);
       });
     } catch (e, st) {
-      Logger.error('[API-report] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-report] E: $e\n'
+          '$st');
     }
   }
 
@@ -227,7 +236,7 @@ class VioletServer {
               headers: {
                 'v-token': vToken.toString(),
                 'v-valid': vValid,
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json'
               },
               body: jsonEncode({
                 'user': userId,
@@ -243,15 +252,15 @@ class VioletServer {
 
       return res.statusCode == 200;
     } catch (e, st) {
-      Logger.error('[API-upload] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-upload] E: $e\n'
+          '$st');
     }
     return false;
   }
 
   static String _userId;
   static Future<String> getUserAppId() async {
-    if (_userId == null)
-      _userId = (await SharedPreferences.getInstance()).getString('fa_userid');
+    _userId ??= (await SharedPreferences.getInstance()).getString('fa_userid');
     return _userId;
   }
 
@@ -274,7 +283,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error('[API-record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-record] E: $e\n'
+          '$st');
 
       return 900;
     }
@@ -290,7 +300,7 @@ class VioletServer {
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         });
 
     if (gg.statusCode != 200) {
@@ -309,7 +319,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error('[API-record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-record] E: $e\n'
+          '$st');
 
       return 900;
     }
@@ -325,7 +336,7 @@ class VioletServer {
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         });
 
     if (gg.statusCode != 200) {
@@ -341,7 +352,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error('[API-record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-record] E: $e\n'
+          '$st');
 
       return 900;
     }
@@ -352,10 +364,10 @@ class VioletServer {
     var vValid = wsalt.getValid(vToken.toString());
 
     var gg = await http
-        .get('$api/excomment/find?q=' + Uri.encodeFull(param), headers: {
+        .get('$api/excomment/find?q=${Uri.encodeFull(param)}', headers: {
       'v-token': vToken.toString(),
       'v-valid': vValid,
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     });
 
     if (gg.statusCode != 200) {
@@ -374,8 +386,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error(
-          '[API-searchComment] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-searchComment] E: $e\n'
+          '$st');
 
       return 900;
     }
@@ -386,10 +398,10 @@ class VioletServer {
     var vValid = wsalt.getValid(vToken.toString());
 
     var gg = await http
-        .get('$api/excomment/author?q=' + Uri.encodeFull(author), headers: {
+        .get('$api/excomment/author?q=${Uri.encodeFull(author)}', headers: {
       'v-token': vToken.toString(),
       'v-valid': vValid,
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     });
 
     if (gg.statusCode != 200) {
@@ -408,8 +420,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error(
-          '[API-searchComment] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-searchComment] E: $e\n'
+          '$st');
 
       return 900;
     }
@@ -420,11 +432,11 @@ class VioletServer {
     var vValid = wsalt.getValid(vToken.toString());
 
     var gg = await http.get(
-        '${Settings.searchMessageAPI}/$type/' + Uri.encodeFull(what),
+        '${Settings.searchMessageAPI}/$type/${Uri.encodeFull(what)}',
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         });
 
     if (gg.statusCode != 200) {
@@ -437,8 +449,8 @@ class VioletServer {
     } catch (e, st) {
       print(e);
       print(st);
-      Logger.error(
-          '[API-searchMessage] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-searchMessage] E: $e\n'
+          '$st');
 
       return 900;
     }
@@ -454,7 +466,7 @@ class VioletServer {
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         },
       ).then((value) {
         print(value.statusCode);
@@ -467,7 +479,8 @@ class VioletServer {
 
       return jsonDecode(res.body)['result'] as Map<String, dynamic>;
     } catch (e, st) {
-      Logger.error('[API-restore] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-restore] E: $e\n'
+          '$st');
     }
     return false;
   }
@@ -482,7 +495,7 @@ class VioletServer {
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         },
       ).then((value) {
         print(value.statusCode);
@@ -495,7 +508,8 @@ class VioletServer {
 
       return jsonDecode(res.body)['result'] as List<dynamic>;
     } catch (e, st) {
-      Logger.error('[API-bookmarks] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-bookmarks] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -510,7 +524,7 @@ class VioletServer {
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         },
       ).then((value) {
         print(value.statusCode);
@@ -523,7 +537,8 @@ class VioletServer {
 
       return jsonDecode(res.body)['result'] as List<dynamic>;
     } catch (e, st) {
-      Logger.error('[API-versions] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-versions] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -539,7 +554,7 @@ class VioletServer {
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json'
         },
       ).then((value) {
         print(value.statusCode);
@@ -552,7 +567,8 @@ class VioletServer {
 
       return jsonDecode(res.body)['result'] as Map<String, dynamic>;
     } catch (e, st) {
-      Logger.error('[API-restore_v] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-restore_v] E: $e\n'
+          '$st');
     }
     return false;
   }

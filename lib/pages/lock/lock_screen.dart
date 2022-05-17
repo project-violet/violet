@@ -14,7 +14,9 @@ class LockScreen extends StatefulWidget {
   final bool isRegisterMode;
   final bool isSecureMode;
 
-  LockScreen({this.isRegisterMode = false, this.isSecureMode = false});
+  const LockScreen(
+      {Key key, this.isRegisterMode = false, this.isSecureMode = false})
+      : super(key: key);
 
   @override
   State<LockScreen> createState() => _LockScreenState();
@@ -42,13 +44,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
 
-    if (_message == null)
-      _message = widget.isRegisterMode
-          ? Translations.of(context).trans('insertpinforregister')
-          : Translations.of(context).trans('insertpinforcheck');
+    _message ??= widget.isRegisterMode
+        ? Translations.of(context).trans('insertpinforregister')
+        : Translations.of(context).trans('insertpinforcheck');
   }
 
   @override
@@ -60,7 +60,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       child: Material(
         color: Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
         child: Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           width: double.infinity,
           height: double.infinity,
           // color: Colors.white,
@@ -71,7 +71,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                 children: [
                   Text(
                     Translations.of(context).trans('pinauth'),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                     ),
@@ -79,9 +79,9 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                   Container(height: 8.0),
                   Text(_message),
                   Container(height: 36),
-                  Icon(Icons.lock),
-                  Spacer(),
-                  Container(
+                  const Icon(Icons.lock),
+                  const Spacer(),
+                  SizedBox(
                     width: 200.0,
                     height: 30.0,
                     child: Row(
@@ -94,19 +94,19 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   SizedBox(
                       height: 64.0,
                       child: Center(
                         child: GestureDetector(
+                          onTap: _passwordMissing,
                           child: Text.rich(TextSpan(
                               text:
                                   Translations.of(context).trans('missingpass'),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,
                               ))),
-                          onTap: _passwordMissing,
                         ),
                       )),
                   SizedBox(
@@ -147,8 +147,8 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   }
 
   _pinIcon(index) {
-    if (_pin[index] == null)
-      return Container(
+    if (_pin[index] == null) {
+      return const SizedBox(
         width: 10.0,
         height: 10.0,
         child: Material(
@@ -156,10 +156,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
           type: MaterialType.circle,
         ),
       );
+    }
 
     return Text(
       _pin[index].toString(),
-      style: TextStyle(
+      style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20.0,
       ),
@@ -184,16 +185,16 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         color: Colors.transparent,
         child: SizedBox(
           child: Ink(
-            decoration: BoxDecoration(shape: BoxShape.circle),
+            decoration: const BoxDecoration(shape: BoxShape.circle),
             child: InkWell(
-              customBorder: CircleBorder(),
+              customBorder: const CircleBorder(),
               child: Center(
                 child: index == -1
-                    ? Icon(Icons.backspace)
+                    ? const Icon(Icons.backspace)
                     // : index == -2
                     //     ? Icon(Icons.fingerprint)
                     : Text(text,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20.0)),
               ),
               onTap: () async {
@@ -206,7 +207,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                   if (pos == -1) pos = 4;
                   if (pos != 0) setState(() => _pin[pos - 1] = null);
                 } else if (index >= 0) {
-                  if (pos == null) pos = 0;
+                  pos ??= 0;
                   setState(() => _pin[pos] = index);
 
                   if (pos == 3) {
@@ -241,7 +242,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       useRootNavigator: false,
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+        contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
         title: Text(Translations.of(context).trans('entersecondpass')),
         content: TextField(
           controller: text,
@@ -252,20 +253,28 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     );
     if (dialog == true) {
       if (text.text == 'violet.jjang') {
-        await showOkDialog(context, Translations.of(context).trans('resetpin'),
-            Translations.of(context).trans('authmanager'));
+        if (mounted) {
+          await showOkDialog(
+              context,
+              Translations.of(context).trans('resetpin'),
+              Translations.of(context).trans('authmanager'));
+        }
 
-        Navigator.pushReplacementNamed(context, '/SplashPage');
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/SplashPage');
+        }
       } else {
         _controller.forward();
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           _controller.reverse();
           setState(() {});
         });
-        await showOkDialog(
-            context,
-            Translations.of(context).trans('notcorrectsecondpass'),
-            Translations.of(context).trans('authmanager'));
+        if (mounted) {
+          await showOkDialog(
+              context,
+              Translations.of(context).trans('notcorrectsecondpass'),
+              Translations.of(context).trans('authmanager'));
+        }
       }
     }
   }
@@ -275,10 +284,13 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         (await SharedPreferences.getInstance()).getString('pinPass');
 
     if (!widget.isRegisterMode && _pin.join() == pinPass) {
-      if (widget.isSecureMode)
-        Navigator.of(context).pop();
-      else
-        Navigator.pushReplacementNamed(context, '/SplashPage');
+      if (mounted) {
+        if (widget.isSecureMode) {
+          Navigator.of(context).pop();
+        } else {
+          Navigator.pushReplacementNamed(context, '/SplashPage');
+        }
+      }
       return;
     }
 
@@ -289,7 +301,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       SystemSound.play(SystemSoundType.alert);
       HapticFeedback.heavyImpact();
       _controller.forward();
-      Future.delayed(Duration(milliseconds: 300)).then((value) {
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
         _controller.reverse();
         _pin = List.filled(4, null);
         setState(() {
@@ -300,7 +312,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       if (_isFirstPINInserted) {
         await (await SharedPreferences.getInstance())
             .setString('pinPass', _pin.join());
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           FlutterToast(context).showToast(
             child: ToastWrapper(
               isCheck: true,
@@ -308,16 +320,16 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
               msg: Translations.of(context).trans('pinisregistered'),
             ),
             gravity: ToastGravity.BOTTOM,
-            toastDuration: Duration(seconds: 4),
+            toastDuration: const Duration(seconds: 4),
           );
           Navigator.pop(context);
         });
-      } else {
+      } else if (mounted) {
         _isFirstPINInserted = true;
         _firstPIN = _pin.join();
         _pin = List.filled(4, null);
         _message = Translations.of(context).trans('retrypin');
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           setState(() {});
         });
       }

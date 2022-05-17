@@ -113,8 +113,8 @@ class VPhotoViewGallery extends StatefulWidget {
   /// The builder must return a [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery.builder({
     Key key,
-    this.itemCount,
-    this.builder,
+    @required this.itemCount,
+    @required this.builder,
     this.loadingBuilder,
     this.backgroundDecoration,
     this.gaplessPlayback = false,
@@ -176,9 +176,7 @@ class VPhotoViewGallery extends StatefulWidget {
   bool get _isBuilder => builder != null;
 
   @override
-  State<StatefulWidget> createState() {
-    return _VPhotoViewGalleryState();
-  }
+  State<StatefulWidget> createState() => _VPhotoViewGalleryState();
 }
 
 class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
@@ -232,7 +230,6 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
     final PhotoView photoView = isCustomChild
         ? PhotoView.customChild(
             key: ObjectKey(index),
-            child: pageOption.child,
             childSize: pageOption.childSize,
             backgroundDecoration: widget.backgroundDecoration,
             controller: pageOption.controller,
@@ -252,6 +249,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             filterQuality: pageOption.filterQuality,
             basePosition: pageOption.basePosition,
             disableGestures: pageOption.disableGestures,
+            child: pageOption.child,
           )
         : PhotoView(
             key: ObjectKey(index),

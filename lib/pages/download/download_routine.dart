@@ -69,14 +69,14 @@ class DownloadRoutine {
           progressCallback: progressCallback,
         ),
       );
-    } catch (e) {
+    } catch (_) {
       _setState(7);
       return;
     }
   }
 
   Future<bool> checkNothingToDownload() async {
-    if (tasks == null || tasks.length == 0) {
+    if (tasks == null || tasks.isEmpty) {
       await _setState(11);
       return true;
     }
@@ -116,8 +116,9 @@ class DownloadRoutine {
   }) async {
     var downloader = await IsolateDownloader.getInstance();
     var basepath = Settings.downloadBasePath;
-    if (Settings.useInnerStorage)
+    if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
+    }
     downloader.appendTasks(tasks.map((e) {
       e.downloadPath = join(
           basepath,
@@ -140,8 +141,9 @@ class DownloadRoutine {
   Future<List<int>> checkDownloadFiles() async {
     var basepath = Settings.downloadBasePath;
 
-    if (Settings.useInnerStorage)
+    if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
+    }
 
     var filenames = tasks
         .map((e) => join(
@@ -178,8 +180,9 @@ class DownloadRoutine {
   }) async {
     var downloader = await IsolateDownloader.getInstance();
     var basepath = Settings.downloadBasePath;
-    if (Settings.useInnerStorage)
+    if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
+    }
     downloader.appendTasks(invalidIndex.map((e) => tasks[e]).map((e) {
       e.downloadPath = join(
           basepath,
@@ -200,8 +203,8 @@ class DownloadRoutine {
   }
 
   Future<void> setDownloadComplete() async {
-    await Download.getInstance()
-      ..appendDownloaded(int.parse(item.url()), item);
+    (await Download.getInstance())
+        .appendDownloaded(int.parse(item.url()), item);
     await _setState(0);
   }
 

@@ -30,8 +30,10 @@ Map<String, String> parseCookies(String cookies) {
 // Or cookie?
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key key}) : super(key: key);
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -43,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Login"),
+        title: const Text('Login'),
       ),
       body: WebView(
         initialUrl: _loginUrl,
@@ -71,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
         cookies.containsKey('ipb_pass_hash')) {
       // await sessionStore.setSession(cookieString);
       // await _cookieManager.clearCookies();
+      if (!mounted) return;
       Navigator.pop(context, cookieString);
     } else if (cookies.containsKey('ipb_member_id')) {
       controller.loadUrl('https://exhentai.org');

@@ -18,10 +18,10 @@ class HisokiHash {
       data = await rootBundle.loadString('assets/hisoki.json');
     }
 
-    Map<String, dynamic> _hashs = json.decode(data);
-    hash = Map<String, String>();
+    Map<String, dynamic> hashs = json.decode(data);
+    hash = <String, String>{};
     hash.addEntries(
-        _hashs.entries.map((e) => MapEntry(e.key, e.value as String)).toList());
+        hashs.entries.map((e) => MapEntry(e.key, e.value as String)).toList());
   }
 
   static String getHash(String id) {

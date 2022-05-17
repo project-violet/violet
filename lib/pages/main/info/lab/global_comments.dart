@@ -15,21 +15,23 @@ import 'package:violet/server/community/anon.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabGlobalComments extends StatefulWidget {
+  const LabGlobalComments({Key key}) : super(key: key);
+
   @override
-  _LabGlobalCommentsState createState() => _LabGlobalCommentsState();
+  State<LabGlobalComments> createState() => _LabGlobalCommentsState();
 }
 
 class _LabGlobalCommentsState extends State<LabGlobalComments> {
   List<Tuple5<int, DateTime, String, String, int>> comments =
       <Tuple5<int, DateTime, String, String, int>>[];
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   FocusNode myFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100))
+    Future.delayed(const Duration(milliseconds: 100))
         .then((value) async => await readComments());
   }
 
@@ -48,7 +50,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
             e['Parent']))
         .toList();
 
-    if (comments.length > 0) setState(() {});
+    if (comments.isNotEmpty) setState(() {});
   }
 
   @override
@@ -63,9 +65,9 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
           Expanded(
             child: ListView.separated(
               controller: _controller,
-              padding: EdgeInsets.only(top: 16.0),
+              padding: const EdgeInsets.only(top: 16.0),
               reverse: true,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemBuilder: (context, index) {
                 return CommentUnit(
                   id: pureComments[index].item1,
@@ -100,28 +102,27 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
             ),
           ),
           Container(
-            margin: EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             height: 36.0,
             child: Ink(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              decoration: new BoxDecoration(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              decoration: BoxDecoration(
                   color: Settings.themeWhat
                       ? Colors.grey.shade800
-                      : Color(0xffe2e4e7),
-                  borderRadius:
-                      new BorderRadius.all(const Radius.circular(6.0))),
+                      : const Color(0xffe2e4e7),
+                  borderRadius: const BorderRadius.all(Radius.circular(6.0))),
               child: Row(
                 children: [
                   if (modReply)
                     IconButton(
-                      padding: EdgeInsets.only(right: 4.0),
-                      constraints: BoxConstraints(),
+                      padding: const EdgeInsets.only(right: 4.0),
+                      constraints: const BoxConstraints(),
                       icon: Icon(
                         Mdi.commentTextMultiple,
                         size: 15.0,
                         color: Settings.themeWhat
                             ? Colors.grey.shade600
-                            : Color(0xff3a4e66),
+                            : const Color(0xff3a4e66),
                       ),
                       onPressed: () async {
                         replyParent = null;
@@ -132,8 +133,9 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                   Expanded(
                     child: TextField(
                       focusNode: myFocusNode,
-                      style: TextStyle(fontSize: 14.0, color: Colors.grey),
-                      decoration: new InputDecoration.collapsed(
+                      style:
+                          const TextStyle(fontSize: 14.0, color: Colors.grey),
+                      decoration: const InputDecoration.collapsed(
                           hintText: '500자까지 입력할 수 있습니다.'),
                       controller: text,
                       // onEditingComplete: () async {},
@@ -145,11 +147,11 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                       style: TextButton.styleFrom(
                         primary: Settings.themeWhat
                             ? Colors.grey.shade600
-                            : Color(0xff3a4e66),
+                            : const Color(0xff3a4e66),
                         padding: EdgeInsets.zero,
                         minimumSize: const Size(50, 36),
                       ),
-                      child: Text(
+                      child: const Text(
                         '작성',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -172,6 +174,8 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                           modReply = false;
                         }
                         text.text = '';
+
+                        if (!mounted) return;
                         FocusScope.of(context).unfocus();
                         setState(() {});
                         await readComments();
@@ -212,6 +216,7 @@ class CommentUnit extends StatelessWidget {
   static const String dev = '1918c652d3a9';
 
   const CommentUnit({
+    Key key,
     this.id,
     this.author,
     this.body,
@@ -219,13 +224,24 @@ class CommentUnit extends StatelessWidget {
     this.reply,
     this.replies,
     this.isReply = false,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
             InkWell(
+              onDoubleTap: () {
+                if (!author.startsWith(dev)) {
+                  PlatformNavigator.navigateSlide(
+                      context, LabUserRecentRecords(author));
+                }
+              },
+              onLongPress: !isReply
+                  ? () {
+                      reply(id);
+                    }
+                  : null,
               child: Padding(
                 padding: isReply
                     ? const EdgeInsets.only(
@@ -243,45 +259,45 @@ class CommentUnit extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                             color: Settings.themeWhat
                                 ? Colors.grey.shade300
-                                : Color(0xff373a3c),
+                                : const Color(0xff373a3c),
                             fontSize: 15.0,
                           ),
                         ),
                         Container(width: 4.0),
                         if (author.startsWith(dev))
-                          Icon(
+                          const Icon(
                             MdiIcons.starCheckOutline,
                             size: 15.0,
-                            color: const Color(0xffffd700),
+                            color: Color(0xffffd700),
                           ),
                         if (author.startsWith(dev)) Container(width: 4.0),
                         if (author == Settings.userAppId)
-                          Icon(
+                          const Icon(
                             MdiIcons.pencilOutline,
                             size: 15.0,
-                            color: const Color(0xffffa500),
+                            color: Color(0xffffa500),
                           )
                       ],
                     ),
                     RichText(
-                      text: new TextSpan(
+                      text: TextSpan(
                         style: TextStyle(
                           color: Settings.themeWhat
                               ? Colors.grey.shade300
-                              : Color(0xff373a3c),
+                              : const Color(0xff373a3c),
                           fontSize: 12.0,
                         ),
                         children: <TextSpan>[
-                          new TextSpan(text: body),
-                          new TextSpan(text: ' '),
-                          new TextSpan(
+                          TextSpan(text: body),
+                          const TextSpan(text: ' '),
+                          TextSpan(
                             text:
-                                '${DateFormat('yyyy.MM.dd HH:mm').format(dateTime)}',
+                                DateFormat('yyyy.MM.dd HH:mm').format(dateTime),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Settings.themeWhat
                                   ? Colors.grey.shade500
-                                  : Color(0xff989dab),
+                                  : const Color(0xff989dab),
                             ),
                           ),
                         ],
@@ -290,16 +306,6 @@ class CommentUnit extends StatelessWidget {
                   ],
                 ),
               ),
-              onDoubleTap: () {
-                if (!author.startsWith(dev))
-                  PlatformNavigator.navigateSlide(
-                      context, LabUserRecentRecords(author));
-              },
-              onLongPress: !isReply
-                  ? () {
-                      reply(id);
-                    }
-                  : null,
             )
           ] +
           replies
@@ -310,7 +316,7 @@ class CommentUnit extends StatelessWidget {
                   author: x.item3,
                   body: x.item4,
                   isReply: true,
-                  replies: [],
+                  replies: const [],
                 ),
               )
               .toList(),

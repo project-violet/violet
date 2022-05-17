@@ -28,8 +28,8 @@ import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 import 'package:violet/widgets/toast.dart';
 
-typedef void BookmarkCallback(int article);
-typedef void BookmarkCheckCallback(int article, bool check);
+typedef BookmarkCallback = void Function(int article);
+typedef BookmarkCheckCallback = void Function(int article, bool check);
 
 class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final bool addBottomPadding;
@@ -40,11 +40,12 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final bool bookmarkMode;
   // final BookmarkCallback bookmarkCallback;
   // final BookmarkCheckCallback bookmarkCheckCallback;
-  bool isChecked;
+  final bool isChecked;
   final bool isCheckMode;
   final ArticleListItem articleListItem;
 
-  ArticleListItemVerySimpleWidget({
+  const ArticleListItemVerySimpleWidget({
+    Key key,
     // this.queryResult,
     // this.addBottomPadding,
     // this.showDetail,
@@ -56,10 +57,10 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
     this.isChecked = false,
     this.isCheckMode = false,
     this.articleListItem,
-  });
+  }) : super(key: key);
 
   @override
-  _ArticleListItemVerySimpleWidgetState createState() =>
+  State<ArticleListItemVerySimpleWidget> createState() =>
       _ArticleListItemVerySimpleWidgetState();
 }
 
@@ -69,9 +70,6 @@ class _ArticleListItemVerySimpleWidgetState
         TickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
   ArticleListItem data;
-
-  @override
-  bool get wantKeepAlive => true;
 
   String thumbnail;
   int imageCount = 0;
@@ -89,19 +87,19 @@ class _ArticleListItemVerySimpleWidgetState
   final FlareControls _flareController = FlareControls();
   double thisWidth, thisHeight;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   String artist;
   String title;
   String dateTime;
 
+  bool _isChecked = false;
+
   @override
-  void dispose() {
-    disposed = true;
-    super.dispose();
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _isChecked = widget.isChecked;
   }
 
   @override
@@ -110,9 +108,15 @@ class _ArticleListItemVerySimpleWidgetState
     _init();
   }
 
+  @override
+  void dispose() {
+    disposed = true;
+    super.dispose();
+  }
+
   bool firstChecked = false;
   bool _inited = false;
-  _init() {
+  void _init() {
     if (_inited) return;
     _inited = true;
 
@@ -125,10 +129,11 @@ class _ArticleListItemVerySimpleWidgetState
       thisHeight = 130.0;
     } else {
       thisWidth = data.width - (data.addBottomPadding ? 100 : 0);
-      if (data.addBottomPadding)
+      if (data.addBottomPadding) {
         thisHeight = 500.0;
-      else
+      } else {
         thisHeight = data.width * 4 / 3;
+      }
     }
 
     _checkIsBookmarked();
@@ -137,13 +142,13 @@ class _ArticleListItemVerySimpleWidgetState
     _setProvider();
   }
 
-  _checkIsBookmarked() {
+  void _checkIsBookmarked() {
     Bookmark.getInstance().then((value) async {
       isBookmarked.value = await value.isBookmark(data.queryResult.id());
     });
   }
 
-  _checkLastRead() {
+  void _checkLastRead() {
     User.getInstance().then((value) => value.getUserLog().then((value) async {
           var x = value.where((e) =>
               e.articleId() == data.queryResult.id().toString() &&
@@ -153,7 +158,7 @@ class _ArticleListItemVerySimpleWidgetState
                       .difference(DateTime.now())
                       .inDays <
                   31);
-          if (x.length == 0) return;
+          if (x.isEmpty) return;
           _shouldReload = true;
           setState(() {
             isLastestRead = true;
@@ -162,10 +167,10 @@ class _ArticleListItemVerySimpleWidgetState
         }));
   }
 
-  _initTexts() {
+  void _initTexts() {
     artist = (data.queryResult.artists() as String)
         .split('|')
-        .where((x) => x.length != 0)
+        .where((x) => x.isNotEmpty)
         .join(',');
     if (artist == 'N/A') {
       var group = data.queryResult.groups() != null
@@ -183,28 +188,30 @@ class _ArticleListItemVerySimpleWidgetState
     if (data.showDetail) setState(() {});
   }
 
-  _setProvider() {
+  void _setProvider() {
     if (!ProviderManager.isExists(data.queryResult.id())) {
       HentaiManager.getImageProvider(data.queryResult).then((value) async {
         thumbnail = await value.getThumbnailUrl();
         imageCount = value.length();
         headers = await value.getHeader(0);
         ProviderManager.insert(data.queryResult.id(), value);
-        if (!disposed)
+        if (!disposed) {
           setState(() {
             _shouldReload = true;
           });
+        }
       });
     } else {
-      Future.delayed(Duration(milliseconds: 1)).then((v) async {
+      Future.delayed(const Duration(milliseconds: 1)).then((v) async {
         var provider = await ProviderManager.get(data.queryResult.id());
         thumbnail = await provider.getThumbnailUrl();
         imageCount = provider.length();
         headers = await provider.getHeader(0);
-        if (!disposed)
+        if (!disposed) {
           setState(() {
             _shouldReload = true;
           });
+        }
       });
     }
   }
@@ -226,7 +233,7 @@ class _ArticleListItemVerySimpleWidgetState
         !onScaling &&
         scale != 1.0) {
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 1.0;
@@ -236,7 +243,7 @@ class _ArticleListItemVerySimpleWidgetState
         widget.isChecked &&
         scale != 0.95) {
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 0.95;
@@ -276,6 +283,14 @@ class _ArticleListItemVerySimpleWidgetState
           particle: Rectangle2DemoParticle(),
           pimpedWidgetBuilder: (context, controller) {
             return GestureDetector(
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onLongPress: () async {
+                await _onLongPress(controller);
+              },
+              onLongPressEnd: _onPressEnd,
+              onTapCancel: _onTapCancle,
+              onDoubleTap: _onDoubleTap,
               child: SizedBox(
                 width: thisWidth,
                 height: thisHeight,
@@ -289,14 +304,6 @@ class _ArticleListItemVerySimpleWidgetState
                   child: _body,
                 ),
               ),
-              onTapDown: _onTapDown,
-              onTapUp: _onTapUp,
-              onLongPress: () async {
-                await _onLongPress(controller);
-              },
-              onLongPressEnd: _onPressEnd,
-              onTapCancel: _onTapCancle,
-              onDoubleTap: _onDoubleTap,
             );
           },
         ),
@@ -306,11 +313,11 @@ class _ArticleListItemVerySimpleWidgetState
     return _cachedBuildWidget;
   }
 
-  _onTapDown(detail) {
+  void _onTapDown(detail) {
     if (onScaling) return;
     onScaling = true;
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       // pad = 10.0;
@@ -318,7 +325,7 @@ class _ArticleListItemVerySimpleWidgetState
     });
   }
 
-  _onTapUp(detail) {
+  void _onTapUp(detail) {
     if (data.selectMode) {
       data.selectCallback();
       return;
@@ -326,23 +333,26 @@ class _ArticleListItemVerySimpleWidgetState
 
     onScaling = false;
 
-    if (widget.isCheckMode) {
-      widget.isChecked = !widget.isChecked;
-      data.bookmarkCheckCallback(data.queryResult.id(), widget.isChecked);
+    if (_isChecked) {
+      _isChecked = !_isChecked;
+      data.bookmarkCheckCallback(data.queryResult.id(), _isChecked);
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
-        if (widget.isChecked)
+        if (_isChecked) {
           scale = 0.95;
-        else
+        } else {
           scale = 1.0;
+        }
       });
       return;
     }
+
     if (firstChecked) return;
+
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       scale = 1.0;
@@ -351,7 +361,7 @@ class _ArticleListItemVerySimpleWidgetState
     final height = MediaQuery.of(context).size.height;
 
     // https://github.com/flutter/flutter/issues/67219
-    var cache;
+    Provider<ArticleInfo> cache;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -362,22 +372,20 @@ class _ArticleListItemVerySimpleWidgetState
           maxChildSize: 0.9,
           expand: false,
           builder: (_, controller) {
-            if (cache == null) {
-              cache = Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: data.queryResult,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: data.thumbnailTag,
-                  isBookmarked: isBookmarked.value,
-                  controller: controller,
-                  usableTabList: data.usableTabList,
-                ),
-              );
-            }
+            cache ??= Provider<ArticleInfo>.value(
+              value: ArticleInfo.fromArticleInfo(
+                queryResult: data.queryResult,
+                thumbnail: thumbnail,
+                headers: headers,
+                heroKey: data.thumbnailTag,
+                isBookmarked: isBookmarked.value,
+                controller: controller,
+                usableTabList: data.usableTabList,
+              ),
+              child: const ArticleInfoPage(
+                key: ObjectKey('asdfasdf'),
+              ),
+            );
             return cache;
           },
         );
@@ -385,23 +393,23 @@ class _ArticleListItemVerySimpleWidgetState
     );
   }
 
-  Future<void> _onLongPress(controller) async {
+  Future<void> _onLongPress(AnimationController controller) async {
     onScaling = false;
     if (data.bookmarkMode) {
-      if (widget.isCheckMode) {
-        widget.isChecked = !widget.isChecked;
+      if (_isChecked) {
+        _isChecked = !_isChecked;
         _shouldReloadCachedBuildWidget = true;
-        Future.delayed(Duration(milliseconds: 500))
+        Future.delayed(const Duration(milliseconds: 500))
             .then((value) => _shouldReloadCachedBuildWidget = false);
         setState(() {
           scale = 1.0;
         });
         return;
       }
-      widget.isChecked = true;
+      _isChecked = true;
       firstChecked = true;
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 0.95;
@@ -414,32 +422,35 @@ class _ArticleListItemVerySimpleWidgetState
       if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
     }
     try {
-      FlutterToast(context).showToast(
-        child: ToastWrapper(
-          icon: isBookmarked.value ? Icons.delete_forever : Icons.check,
-          color: isBookmarked.value
-              ? Colors.redAccent.withOpacity(0.8)
-              : Colors.greenAccent.withOpacity(0.8),
-          msg:
-              '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
-        ),
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: Duration(seconds: 4),
-      );
+      if (mounted) {
+        FlutterToast(context).showToast(
+          child: ToastWrapper(
+            icon: isBookmarked.value ? Icons.delete_forever : Icons.check,
+            color: isBookmarked.value
+                ? Colors.redAccent.withOpacity(0.8)
+                : Colors.greenAccent.withOpacity(0.8),
+            msg:
+                '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
+          ),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: const Duration(seconds: 4),
+        );
+      }
     } catch (e, st) {
-      Logger.error(
-          '[ArticleList-LongPress] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[ArticleList-LongPress] E: $e\n'
+          '$st');
     }
     isBookmarked.value = !isBookmarked.value;
 
-    if (isBookmarked.value)
+    if (isBookmarked.value) {
       await (await Bookmark.getInstance()).bookmark(data.queryResult.id());
-    else
+    } else {
       await (await Bookmark.getInstance()).unbookmark(data.queryResult.id());
+    }
 
-    if (!isBookmarked.value)
+    if (!isBookmarked.value) {
       _flareController.play('Unlike');
-    else {
+    } else {
       controller.forward(from: 0.0);
       _flareController.play('Like');
     }
@@ -447,7 +458,7 @@ class _ArticleListItemVerySimpleWidgetState
     await HapticFeedback.lightImpact();
 
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -462,7 +473,7 @@ class _ArticleListItemVerySimpleWidgetState
       return;
     }
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -473,7 +484,7 @@ class _ArticleListItemVerySimpleWidgetState
   _onTapCancle() {
     onScaling = false;
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -486,26 +497,30 @@ class _ArticleListItemVerySimpleWidgetState
 
     if (data.doubleTapCallback == null) {
       var sz = await _calculateImageDimension(thumbnail);
-      Navigator.of(context).push(PageRouteBuilder(
-        opaque: false,
-        transitionDuration: Duration(milliseconds: 500),
-        transitionsBuilder: (BuildContext context, Animation<double> animation,
-            Animation<double> secondaryAnimation, Widget wi) {
-          return FadeTransition(opacity: animation, child: wi);
-        },
-        pageBuilder: (_, __, ___) => ThumbnailViewPage(
-          size: sz,
-          thumbnail: thumbnail,
-          headers: headers,
-          heroKey: data.thumbnailTag,
-        ),
-      ));
+      if (mounted) {
+        Navigator.of(context).push(PageRouteBuilder(
+          opaque: false,
+          transitionDuration: const Duration(milliseconds: 500),
+          transitionsBuilder: (BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+              Widget wi) {
+            return FadeTransition(opacity: animation, child: wi);
+          },
+          pageBuilder: (_, __, ___) => ThumbnailViewPage(
+            size: sz,
+            thumbnail: thumbnail,
+            headers: headers,
+            heroKey: data.thumbnailTag,
+          ),
+        ));
+      }
     } else {
       data.doubleTapCallback();
     }
 
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -515,7 +530,7 @@ class _ArticleListItemVerySimpleWidgetState
   Future<Size> _calculateImageDimension(String url) {
     Completer<Size> completer = Completer();
     Image image = Image(image: CachedNetworkImageProvider(url));
-    image.image.resolve(ImageConfiguration()).addListener(
+    image.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
           var myImage = image.image;
@@ -544,7 +559,8 @@ class BodyWidget extends StatelessWidget {
   final String title;
   final String dateTime;
 
-  BodyWidget({
+  const BodyWidget({
+    Key key,
     this.data,
     this.thumbnail,
     this.imageCount,
@@ -559,7 +575,7 @@ class BodyWidget extends StatelessWidget {
     this.artist,
     this.title,
     this.dateTime,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -578,7 +594,7 @@ class BodyWidget extends StatelessWidget {
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),
-              borderRadius: const BorderRadius.all(const Radius.circular(3)),
+              borderRadius: const BorderRadius.all(Radius.circular(3)),
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat
@@ -653,7 +669,7 @@ class _DetailWidget extends StatelessWidget {
   final int viewed;
   final int seconds;
 
-  _DetailWidget({
+  const _DetailWidget({
     this.title,
     this.artist,
     this.imageCount,

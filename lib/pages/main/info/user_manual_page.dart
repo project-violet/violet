@@ -9,8 +9,10 @@ import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/pages/segment/card_panel.dart';
 
 class UserManualPage extends StatefulWidget {
+  const UserManualPage({Key key}) : super(key: key);
+
   @override
-  _UserManualPageState createState() => _UserManualPageState();
+  State<UserManualPage> createState() => _UserManualPageState();
 }
 
 class _UserManualPageState extends State<UserManualPage> {
@@ -19,7 +21,7 @@ class _UserManualPageState extends State<UserManualPage> {
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
-      child: FutureBuilder(
+      child: FutureBuilder<String>(
         future: http
             .get(
                 'https://raw.githubusercontent.com/project-violet/violet/dev/manual/ko.md')
@@ -27,14 +29,14 @@ class _UserManualPageState extends State<UserManualPage> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Container();
           return Markdown(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               selectable: true,
               onTapLink: (text, href, title) async {
                 if (await canLaunch(href)) {
                   await launch(href);
                 }
               },
-              data: (snapshot.data as String).replaceAll('![](',
+              data: snapshot.data.replaceAll('![](',
                   '![](https://github.com/project-violet/violet/raw/dev/manual/'));
         },
       ),

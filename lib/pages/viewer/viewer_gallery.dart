@@ -16,24 +16,26 @@ import 'package:violet/widgets/search_bar.dart';
 class ViewerGallery extends StatefulWidget {
   final int viewedPage;
 
-  ViewerGallery({this.viewedPage});
+  const ViewerGallery({Key key, this.viewedPage}) : super(key: key);
 
   @override
-  _ViewerGalleryState createState() => _ViewerGalleryState();
+  State<ViewerGallery> createState() => _ViewerGalleryState();
 }
 
 class _ViewerGalleryState extends State<ViewerGallery> {
+  final ScrollController _scrollController = ScrollController();
+
   ViewerPageProvider _pageInfo;
-  ScrollController _scrollController = ScrollController();
   List<GlobalKey> itemKeys = <GlobalKey>[];
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    List.generate(_pageInfo.uris.length, (index) => index).forEach((element) {
+
+    for (int i = 0; i < _pageInfo.uris.length; i++) {
       itemKeys.add(GlobalKey());
-    });
+    }
 
     Future.value(1).then((value) {
       var row = widget.viewedPage ~/ 4;
@@ -53,57 +55,53 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
-      child: Container(
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverPersistentHeader(
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
-                searchBar: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10.0),
-                        bottomRight: Radius.circular(10.0)),
-                    color: Settings.themeWhat
-                        ? Settings.themeBlack
-                            ? const Color(0xFF141414)
-                            : Color(0xFF353535)
-                        : Colors.grey.shade100,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _title()),
-                        _view(),
-                        // _clustering(),
-                      ],
-                    ),
+      child: CustomScrollView(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverPersistentHeader(
+            floating: true,
+            delegate: AnimatedOpacitySliver(
+              searchBar: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0)),
+                  color: Settings.themeWhat
+                      ? Settings.themeBlack
+                          ? const Color(0xFF141414)
+                          : const Color(0xFF353535)
+                      : Colors.grey.shade100,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _title()),
+                      _view(),
+                      // _clustering(),
+                    ],
                   ),
                 ),
               ),
             ),
-            SliverPadding(
-              padding: EdgeInsets.all(4),
-              sliver: _delegate(),
-            ),
-          ],
-        ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(4),
+            sliver: _delegate(),
+          ),
+        ],
       ),
     );
   }
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.only(top: 24, left: 12),
+      padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(
         _pageInfo.title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         overflow: TextOverflow.ellipsis,
       ),
     );
@@ -129,25 +127,25 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     return Align(
       alignment: Alignment.center,
       child: RawMaterialButton(
-        constraints: BoxConstraints(),
+        constraints: const BoxConstraints(),
+        padding: const EdgeInsets.all(12),
+        shape: const CircleBorder(),
+        onPressed: () async {
+          setState(() {
+            viewStyle = (viewStyle + 1) % icons.length;
+          });
+        },
         child: Center(
           child: Icon(
             icons[viewStyle],
             size: 28,
           ),
         ),
-        padding: EdgeInsets.all(12),
-        shape: CircleBorder(),
-        onPressed: () async {
-          setState(() {
-            viewStyle = (viewStyle + 1) % icons.length;
-          });
-        },
       ),
     );
   }
 
-  _delegate() {
+  Widget _delegate() {
     if (_pageInfo.useFileSystem) {
       return _filesystemDelegate();
     } else if (_pageInfo.useWeb) {
@@ -155,9 +153,11 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     } else if (_pageInfo.useProvider) {
       return _providerDelegate();
     }
+
+    return const SizedBox.shrink();
   }
 
-  _filesystemDelegate() {
+  Widget _filesystemDelegate() {
     final width = MediaQuery.of(context).size.width;
     return SliverGrid(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -168,7 +168,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       ),
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          return Container(
+          return SizedBox(
             key: itemKeys[index],
             width: double.infinity,
             height: double.infinity,
@@ -186,13 +186,13 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                 Align(
                   alignment: Alignment.topCenter,
                   child: Container(
-                    padding: EdgeInsets.only(bottom: 1),
+                    padding: const EdgeInsets.only(bottom: 1),
                     width: double.infinity,
                     color: Colors.black.withOpacity(0.7),
                     child: Text(
                       '${index + 1} page',
                       textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 11, color: Colors.white),
+                      style: const TextStyle(fontSize: 11, color: Colors.white),
                     ),
                   ),
                 ),
@@ -215,7 +215,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     );
   }
 
-  _webDelegate() {
+  Widget _webDelegate() {
     final width = MediaQuery.of(context).size.width;
 
     return SliverGrid(
@@ -227,7 +227,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       ),
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          return Container(
+          return SizedBox(
             key: itemKeys[index],
             width: double.infinity,
             height: double.infinity,
@@ -259,12 +259,12 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     );
   }
 
-  _providerDelegate() {
+  Widget _providerDelegate() {
     final width = MediaQuery.of(context).size.width;
 
-    return FutureBuilder(
+    return FutureBuilder<Tuple2<List<String>, Map<String, String>>>(
       future: Future.sync(() async {
-        return Tuple2<dynamic, dynamic>(
+        return Tuple2<List<String>, Map<String, String>>(
           await _pageInfo.provider.getSmallImagesUrl(),
           await _pageInfo.provider.getHeader(0),
         );
@@ -294,7 +294,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
           ),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Container(
+              return SizedBox(
                 key: itemKeys[index],
                 width: double.infinity,
                 height: double.infinity,
@@ -312,13 +312,14 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: Container(
-                        padding: EdgeInsets.only(bottom: 1),
+                        padding: const EdgeInsets.only(bottom: 1),
                         width: double.infinity,
                         color: Colors.black.withOpacity(0.7),
                         child: Text(
                           '${index + 1} page',
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 11, color: Colors.white),
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.white),
                         ),
                       ),
                     ),

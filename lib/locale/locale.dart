@@ -17,10 +17,11 @@ class Translations {
 
   static Translations of(BuildContext context) {
     var trans = Localizations.of<Translations>(context, Translations);
-    if (trans != null)
+    if (trans != null) {
       return Localizations.of<Translations>(context, Translations);
-    else
+    } else {
       return instance;
+    }
   }
 
   Map<String, String> _sentences;
@@ -32,8 +33,9 @@ class Translations {
       code = locale.languageCode;
       dbLanguageCode = code;
       if (!code.contains('_')) {
-        if (locale.scriptCode != null && locale.scriptCode != '')
-          code += '_' + this.locale.scriptCode;
+        if (locale.scriptCode != null && locale.scriptCode != '') {
+          code += '_${locale.scriptCode}';
+        }
       }
     } else if (code.contains('_')) {
       dbLanguageCode = code.split('_')[0];
@@ -44,11 +46,11 @@ class Translations {
     print(code);
 
     String data = await rootBundle.loadString('assets/locale/$code.json');
-    Map<String, dynamic> _result = json.decode(data);
+    Map<String, dynamic> result = json.decode(data);
 
-    this._sentences = Map();
-    _result.forEach((String key, dynamic value) {
-      this._sentences[key] = value.toString();
+    _sentences = <String, String>{};
+    result.forEach((String key, dynamic value) {
+      _sentences[key] = value.toString();
     });
 
     instance = this;
@@ -57,7 +59,7 @@ class Translations {
   }
 
   String trans(String key) {
-    return this._sentences[key];
+    return _sentences[key];
   }
 }
 
@@ -83,7 +85,7 @@ class TranslationsDelegate extends LocalizationsDelegate<Translations> {
       await localizations.load('en');
     }
 
-    print("Load ${locale.languageCode}");
+    print('Load ${locale.languageCode}');
 
     return localizations;
   }

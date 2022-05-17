@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
 
-String intToString(int i, {int pad: 0}) {
+String intToString(int i, {int pad = 0}) {
   var str = i.toString();
   var paddingToAdd = pad - str.length;
   return (paddingToAdd > 0)
@@ -22,7 +22,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Test Downloader Isolate", () async {
+  test('Test Downloader Isolate', () async {
     // 2116987
     // const urls = [
     //   "https://ba.hitomi.la/webp/1641389178/1666/e6e25716f0e9147570fe5c2dc1fe7b8371e7052155c6699d31ac243813c2d826.webp",
@@ -138,41 +138,41 @@ void main() {
 
     // 2073818 thumbnails
     const urls = [
-      "https://tn.hitomi.la/avifsmalltn/6/74/8315dc8c1b9a90d89ac5604f9c472f7212ab9717b6329f2b3bd762790530f746.avif",
-      "https://tn.hitomi.la/avifsmalltn/4/cc/b3732b0f6a797f90e72e0b5722d670310b79b00beb34305795dce9916f8d7cc4.avif",
-      "https://tn.hitomi.la/avifsmalltn/1/8d/682f404807650bdc9add07c44040b3105706b185ca037cb1fbea7445a27ab8d1.avif",
-      "https://tn.hitomi.la/avifsmalltn/a/a6/36e7400964627f9d5c2e4205bbfc98cc274d98bf3d30a884aa8bb9565c8e9a6a.avif",
-      "https://tn.hitomi.la/avifsmalltn/4/95/51d887d157533e06cfcfebd7de8a2be867a2b1c8941f88f7ffabb4546a318954.avif",
-      "https://tn.hitomi.la/avifsmalltn/2/e0/b5b0ca26910f1974082298640f4c6902228910340ad15f726178f7cba6c03e02.avif",
-      "https://tn.hitomi.la/avifsmalltn/0/6a/e97a47dd698aa36a39ba5a0cbf959daeac6d88217c0dbaef3c33e2354df0d6a0.avif",
-      "https://tn.hitomi.la/avifsmalltn/3/f6/d8c94c4e950306ad0c6932c09861096626b2ec7817c5796e2d8cf0645473ef63.avif",
-      "https://tn.hitomi.la/avifsmalltn/a/f9/b870ff8bce90e78b2441232522a2108ff816e66975bf5deb13e19e05ed590f9a.avif",
-      "https://tn.hitomi.la/avifsmalltn/1/ab/59231ba41fc747294460aa56a4238f60f3edca7e157f2ccc735e16c8c68afab1.avif",
-      "https://tn.hitomi.la/avifsmalltn/c/21/b9ce38aac47a63a7b071db1e2263876775d878d2b93dcdef978eb148c228121c.avif",
-      "https://tn.hitomi.la/avifsmalltn/f/4e/fc637fcdffc159ed4a5a07fc571975d91268083baa000c2f0e58911e18f224ef.avif",
-      "https://tn.hitomi.la/avifsmalltn/d/3e/952489d51f3b73a8e9f242c7e53250f169205d0f573389bbcc8a7c35f536a3ed.avif",
-      "https://tn.hitomi.la/avifsmalltn/6/ef/e7be7105ae5160d166f3c165c91b228bec5e606951832d282fee9e2cd6a4aef6.avif",
-      "https://tn.hitomi.la/avifsmalltn/8/0a/cb99f13161101d57a279b864bb7a945f08b1c722f31928ebc2ff48baee2350a8.avif",
-      "https://tn.hitomi.la/avifsmalltn/d/77/6d74500b2bd2d1d7010129c919d7eeb76f2d7ebbc88afd87da59badaf653777d.avif",
-      "https://tn.hitomi.la/avifsmalltn/2/b0/ef526e63e7b99c2216eed920f2b8191ab955a0e1d33cffd01c5bb7decf6abb02.avif",
-      "https://tn.hitomi.la/avifsmalltn/e/6f/670182bb7eb0ab86f52f3fdfd5794284f2d1266c033d5d4ade1bc4ed145976fe.avif",
-      "https://tn.hitomi.la/avifsmalltn/6/bf/5b568f3c6a32d63ad083078e94c741cb53cb9dc55fe7b337df20b7ea76881bf6.avif",
-      "https://tn.hitomi.la/avifsmalltn/c/1a/2d9ca34325f33ca9d8dffeb11401176a9819119fef7342438449e6e680cf01ac.avif",
-      "https://tn.hitomi.la/avifsmalltn/a/08/f04bf792ff02379ec96ee00c6da0edd11a650330211a4e0a73632e41ea3e808a.avif",
-      "https://tn.hitomi.la/avifsmalltn/3/79/5b40f6be6dd08131e0de46b300c5504c610c064c8b5523bc3ccc371e2bfe1793.avif",
-      "https://tn.hitomi.la/avifsmalltn/7/e2/3b135efe9954b0bc5e38d81c1cea6fcf95df8317681eb8f8ac7336862a830e27.avif",
-      "https://tn.hitomi.la/avifsmalltn/d/c5/18e25accda28351115067235bc6460e3bdd2828df95d9c53a7977a45e4ba9c5d.avif",
-      "https://tn.hitomi.la/avifsmalltn/1/44/b73daee63cc53a7f13cf2f9a1866fc86a902f263a322b41279adf9bf34443441.avif",
-      "https://tn.hitomi.la/avifsmalltn/c/d6/30421846e32b9d546328e569ee967b2b26e3ea1f4dbefa65331d671513568d6c.avif",
-      "https://tn.hitomi.la/avifsmalltn/3/1b/fbf0b92111414137eec213e59b2db29a05e8b5fd646cb11a0b189c0cb441c1b3.avif",
-      "https://tn.hitomi.la/avifsmalltn/3/40/b5dda21908a9f56174150615319a3c51aad25995ecdaa3ce7f571afeb5695403.avif",
-      "https://tn.hitomi.la/avifsmalltn/f/29/24be8ea197aa4c611b2cf80330de8d7d725d34181216ce03a77bad1af6ee429f.avif",
-      "https://tn.hitomi.la/avifsmalltn/1/bc/02ee1e1bdf43368e03971d0f609e32f163e2c3b0211d245934a4fcb3a0828bc1.avif",
-      "https://tn.hitomi.la/avifsmalltn/5/f8/8b008983172c8232c87963c3a0f627e20d5764b73dde8998d34af616d34d4f85.avif",
-      "https://tn.hitomi.la/avifsmalltn/e/69/4bee8bf49269363c5cec22cc7448f406db72ba56c138d554defe8c195ca1369e.avif",
-      "https://tn.hitomi.la/avifsmalltn/5/30/ade340febf8a8a5d6b2af62e4eb176f8778c4adbb72315becdd224341b879305.avif",
-      "https://tn.hitomi.la/avifsmalltn/9/cb/843020159cfb5550a2d17db2c249ba3fdd89d14897b125952ad6c5390a32ecb9.avif",
-      "https://tn.hitomi.la/avifsmalltn/7/11/a2b2b56a43124cb96d699140da697be6ce69697259757f505e50cec497cf4117.avif"
+      'https://tn.hitomi.la/avifsmalltn/6/74/8315dc8c1b9a90d89ac5604f9c472f7212ab9717b6329f2b3bd762790530f746.avif',
+      'https://tn.hitomi.la/avifsmalltn/4/cc/b3732b0f6a797f90e72e0b5722d670310b79b00beb34305795dce9916f8d7cc4.avif',
+      'https://tn.hitomi.la/avifsmalltn/1/8d/682f404807650bdc9add07c44040b3105706b185ca037cb1fbea7445a27ab8d1.avif',
+      'https://tn.hitomi.la/avifsmalltn/a/a6/36e7400964627f9d5c2e4205bbfc98cc274d98bf3d30a884aa8bb9565c8e9a6a.avif',
+      'https://tn.hitomi.la/avifsmalltn/4/95/51d887d157533e06cfcfebd7de8a2be867a2b1c8941f88f7ffabb4546a318954.avif',
+      'https://tn.hitomi.la/avifsmalltn/2/e0/b5b0ca26910f1974082298640f4c6902228910340ad15f726178f7cba6c03e02.avif',
+      'https://tn.hitomi.la/avifsmalltn/0/6a/e97a47dd698aa36a39ba5a0cbf959daeac6d88217c0dbaef3c33e2354df0d6a0.avif',
+      'https://tn.hitomi.la/avifsmalltn/3/f6/d8c94c4e950306ad0c6932c09861096626b2ec7817c5796e2d8cf0645473ef63.avif',
+      'https://tn.hitomi.la/avifsmalltn/a/f9/b870ff8bce90e78b2441232522a2108ff816e66975bf5deb13e19e05ed590f9a.avif',
+      'https://tn.hitomi.la/avifsmalltn/1/ab/59231ba41fc747294460aa56a4238f60f3edca7e157f2ccc735e16c8c68afab1.avif',
+      'https://tn.hitomi.la/avifsmalltn/c/21/b9ce38aac47a63a7b071db1e2263876775d878d2b93dcdef978eb148c228121c.avif',
+      'https://tn.hitomi.la/avifsmalltn/f/4e/fc637fcdffc159ed4a5a07fc571975d91268083baa000c2f0e58911e18f224ef.avif',
+      'https://tn.hitomi.la/avifsmalltn/d/3e/952489d51f3b73a8e9f242c7e53250f169205d0f573389bbcc8a7c35f536a3ed.avif',
+      'https://tn.hitomi.la/avifsmalltn/6/ef/e7be7105ae5160d166f3c165c91b228bec5e606951832d282fee9e2cd6a4aef6.avif',
+      'https://tn.hitomi.la/avifsmalltn/8/0a/cb99f13161101d57a279b864bb7a945f08b1c722f31928ebc2ff48baee2350a8.avif',
+      'https://tn.hitomi.la/avifsmalltn/d/77/6d74500b2bd2d1d7010129c919d7eeb76f2d7ebbc88afd87da59badaf653777d.avif',
+      'https://tn.hitomi.la/avifsmalltn/2/b0/ef526e63e7b99c2216eed920f2b8191ab955a0e1d33cffd01c5bb7decf6abb02.avif',
+      'https://tn.hitomi.la/avifsmalltn/e/6f/670182bb7eb0ab86f52f3fdfd5794284f2d1266c033d5d4ade1bc4ed145976fe.avif',
+      'https://tn.hitomi.la/avifsmalltn/6/bf/5b568f3c6a32d63ad083078e94c741cb53cb9dc55fe7b337df20b7ea76881bf6.avif',
+      'https://tn.hitomi.la/avifsmalltn/c/1a/2d9ca34325f33ca9d8dffeb11401176a9819119fef7342438449e6e680cf01ac.avif',
+      'https://tn.hitomi.la/avifsmalltn/a/08/f04bf792ff02379ec96ee00c6da0edd11a650330211a4e0a73632e41ea3e808a.avif',
+      'https://tn.hitomi.la/avifsmalltn/3/79/5b40f6be6dd08131e0de46b300c5504c610c064c8b5523bc3ccc371e2bfe1793.avif',
+      'https://tn.hitomi.la/avifsmalltn/7/e2/3b135efe9954b0bc5e38d81c1cea6fcf95df8317681eb8f8ac7336862a830e27.avif',
+      'https://tn.hitomi.la/avifsmalltn/d/c5/18e25accda28351115067235bc6460e3bdd2828df95d9c53a7977a45e4ba9c5d.avif',
+      'https://tn.hitomi.la/avifsmalltn/1/44/b73daee63cc53a7f13cf2f9a1866fc86a902f263a322b41279adf9bf34443441.avif',
+      'https://tn.hitomi.la/avifsmalltn/c/d6/30421846e32b9d546328e569ee967b2b26e3ea1f4dbefa65331d671513568d6c.avif',
+      'https://tn.hitomi.la/avifsmalltn/3/1b/fbf0b92111414137eec213e59b2db29a05e8b5fd646cb11a0b189c0cb441c1b3.avif',
+      'https://tn.hitomi.la/avifsmalltn/3/40/b5dda21908a9f56174150615319a3c51aad25995ecdaa3ce7f571afeb5695403.avif',
+      'https://tn.hitomi.la/avifsmalltn/f/29/24be8ea197aa4c611b2cf80330de8d7d725d34181216ce03a77bad1af6ee429f.avif',
+      'https://tn.hitomi.la/avifsmalltn/1/bc/02ee1e1bdf43368e03971d0f609e32f163e2c3b0211d245934a4fcb3a0828bc1.avif',
+      'https://tn.hitomi.la/avifsmalltn/5/f8/8b008983172c8232c87963c3a0f627e20d5764b73dde8998d34af616d34d4f85.avif',
+      'https://tn.hitomi.la/avifsmalltn/e/69/4bee8bf49269363c5cec22cc7448f406db72ba56c138d554defe8c195ca1369e.avif',
+      'https://tn.hitomi.la/avifsmalltn/5/30/ade340febf8a8a5d6b2af62e4eb176f8778c4adbb72315becdd224341b879305.avif',
+      'https://tn.hitomi.la/avifsmalltn/9/cb/843020159cfb5550a2d17db2c249ba3fdd89d14897b125952ad6c5390a32ecb9.avif',
+      'https://tn.hitomi.la/avifsmalltn/7/11/a2b2b56a43124cb96d699140da697be6ce69697259757f505e50cec497cf4117.avif'
     ];
 
     var downloader = IsolateDownloader();
@@ -180,17 +180,15 @@ void main() {
 
     // while (!downloader.isReady()) {}
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     var tasks = <DownloadTask>[];
     for (int i = 0; i < urls.length; i++) {
       var task = DownloadTask(
         url: urls[i],
         // filename: urls[i].split('/').last,
-        downloadPath: 'test/download/' +
-            intToString(i, pad: 3) +
-            '.' +
-            path.extension(urls[i].split('/').last).replaceAll(".", ""),
+        downloadPath:
+            'test/download/${intToString(i, pad: 3)}.${path.extension(urls[i].split('/').last).replaceAll(".", "")}',
         headers: {
           'referer': 'https://hitomi.la/reader/2116987.html',
           'accept':
@@ -216,13 +214,13 @@ void main() {
     //   ),
     // );
 
-    tasks.forEach((element) {
+    for (var element in tasks) {
       print(element.url);
-    });
+    }
 
     downloader.appendTasks(tasks);
 
-    await Future.delayed(Duration(seconds: 100));
-    sleep(Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 100));
+    sleep(const Duration(seconds: 10));
   });
 }

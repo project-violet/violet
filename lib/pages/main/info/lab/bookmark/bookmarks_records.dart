@@ -16,7 +16,7 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 class LabRecordViewPage extends StatelessWidget {
   final List<dynamic> records;
 
-  LabRecordViewPage({this.records});
+  const LabRecordViewPage({Key key, this.records}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +30,9 @@ class LabRecordViewPage extends StatelessWidget {
 
   Widget future(context, double width) {
     var windowWidth = MediaQuery.of(context).size.width;
-    return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    return FutureBuilder<List<QueryResult>>(
+      future:
+          Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         var overap = HashSet<String>();
         var rr = <ArticleReadLog>[];
 
@@ -42,14 +43,14 @@ class LabRecordViewPage extends StatelessWidget {
         });
 
         var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-        queryRaw += 'Id IN (' + rr.map((e) => e.articleId()).join(',') + ')';
+        queryRaw += 'Id IN (${rr.map((e) => e.articleId()).join(',')})';
         var qm = await QueryManager.query(
             queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-        var qr = Map<String, QueryResult>();
-        qm.results.forEach((element) {
+        var qr = <String, QueryResult>{};
+        for (var element in qm.results) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         return rr
             .where((e) => qr.containsKey(e.articleId()))
@@ -62,9 +63,9 @@ class LabRecordViewPage extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -74,7 +75,7 @@ class LabRecordViewPage extends StatelessWidget {
                   snapshot.data.map(
                     (e) {
                       return Padding(
-                        key: Key('lab_record/' + e.id().toString()),
+                        key: Key('lab_record/${e.id()}'),
                         padding: EdgeInsets.zero,
                         child: Align(
                           alignment: Alignment.bottomCenter,
@@ -89,10 +90,11 @@ class LabRecordViewPage extends StatelessWidget {
                                         addBottomPadding: false,
                                         showDetail: false,
                                         width: (windowWidth - 4.0 - 48) / 3,
-                                        thumbnailTag: Uuid().v4(),
+                                        thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),
-                                      child: ArticleListItemVerySimpleWidget(),
+                                      child:
+                                          const ArticleListItemVerySimpleWidget(),
                                     )
                                   : Container()
                             ],

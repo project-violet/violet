@@ -15,7 +15,8 @@ class SeriesListPage extends StatelessWidget {
   final List<List<int>> series;
   final List<QueryResult> cc;
 
-  SeriesListPage({this.prefix, this.series, this.cc});
+  const SeriesListPage({Key key, this.prefix, this.series, this.cc})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +25,21 @@ class SeriesListPage extends StatelessWidget {
     return CardPanel.build(
       context,
       enableBackgroundColor: Settings.themeWhat && Settings.themeBlack,
-      child: Container(
-        child: ListView.builder(
-          padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-          physics: ClampingScrollPhysics(),
-          itemCount: series.length,
-          itemBuilder: (BuildContext ctxt, int index) {
-            var e = series[index];
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+        physics: const ClampingScrollPhysics(),
+        itemCount: series.length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          var e = series[index];
 
-            return ThreeArticlePanel(
-              tappedRoute: () => ArticleListPage(
-                  cc: e.map((e) => cc[e]).toList(), name: 'Series'),
-              title: ' ${unescape.convert(cc[e[0]].title())}',
-              count: '${e.length} ',
-              articles: e.map((e) => cc[e]).toList(),
-            );
-          },
-        ),
+          return ThreeArticlePanel(
+            tappedRoute: () => ArticleListPage(
+                cc: e.map((e) => cc[e]).toList(), name: 'Series'),
+            title: ' ${unescape.convert(cc[e[0]].title())}',
+            count: '${e.length} ',
+            articles: e.map((e) => cc[e]).toList(),
+          );
+        },
       ),
     );
   }

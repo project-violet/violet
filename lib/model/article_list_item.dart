@@ -4,10 +4,10 @@
 import 'package:flutter/material.dart';
 import 'package:violet/database/query.dart';
 
-typedef void SelectCallback();
-typedef void BookmarkCallback(int article);
-typedef void BookmarkCheckCallback(int article, bool check);
-typedef void DoubleTapCallback();
+typedef SelectCallback = void Function();
+typedef BookmarkCallback = void Function(int article);
+typedef BookmarkCheckCallback = void Function(int article, bool check);
+typedef DoubleTapCallback = void Function();
 
 class ArticleListItem {
   final String key;

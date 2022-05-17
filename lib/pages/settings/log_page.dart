@@ -6,16 +6,13 @@ import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 
 class LogPage extends StatefulWidget {
+  const LogPage({Key key}) : super(key: key);
+
   @override
-  _LogPageState createState() => _LogPageState();
+  State<LogPage> createState() => _LogPageState();
 }
 
 class _LogPageState extends State<LogPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
@@ -33,7 +30,7 @@ class _LogPageState extends State<LogPage> {
             !(errors[j].message.startsWith('GET:') ||
                 errors[j].message.startsWith('GETS:'))) break;
         if (errors[j].message.length < 200) {
-          errors[i].message += '\n' + errors[j].message;
+          errors[i].message += '\n${errors[j].message}';
           errors.removeAt(j--);
         }
       }
@@ -45,7 +42,7 @@ class _LogPageState extends State<LogPage> {
             top: statusBarHeight + 16, bottom: mediaQuery.padding.bottom),
         child: Column(
           children: [
-            Text(
+            const Text(
               'Log Record',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -54,8 +51,8 @@ class _LogPageState extends State<LogPage> {
             ),
             Expanded(
               child: ListView.separated(
-                physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.all(8),
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(8),
                 // addAutomaticKeepAlives: false,
                 itemBuilder: (c, i) {
                   var ii = errors[i];
@@ -81,12 +78,12 @@ class _LogPageState extends State<LogPage> {
                                 : ii.isWarning
                                     ? Icons.warning
                                     : Icons.cancel),
-                            SizedBox(
+                            const SizedBox(
                               width: 12.0,
                             ),
                             Text(
                               ii.title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15),
                             ),
                             ii.detail != null
@@ -98,7 +95,7 @@ class _LogPageState extends State<LogPage> {
                                         width: 18.0,
                                         child: IconButton(
                                           padding: EdgeInsets.zero,
-                                          icon: Icon(
+                                          icon: const Icon(
                                             Icons.keyboard_arrow_right,
                                             size: 24,
                                           ),

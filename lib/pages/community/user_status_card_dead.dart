@@ -16,8 +16,10 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
+  const UserStatusCard({Key key}) : super(key: key);
+
   @override
-  _UserStatusCardState createState() => _UserStatusCardState();
+  State<UserStatusCard> createState() => _UserStatusCardState();
 }
 
 class _UserStatusCardState extends State<UserStatusCard>
@@ -36,7 +38,7 @@ class _UserStatusCardState extends State<UserStatusCard>
     super.initState();
 
     // load boards
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var id = (await SharedPreferences.getInstance())
           .getString('saved_community_id');
       var pw = (await SharedPreferences.getInstance())
@@ -50,9 +52,8 @@ class _UserStatusCardState extends State<UserStatusCard>
         setState(() {
           _logining = true;
         });
-        sess = VioletCommunitySession.lastSession != null
-            ? VioletCommunitySession.lastSession
-            : await VioletCommunitySession.signIn(id, pw);
+        sess = VioletCommunitySession.lastSession ??
+            await VioletCommunitySession.signIn(id, pw);
         _userNickName =
             (await VioletCommunitySession.getUserInfo(id))['NickName'];
         setState(() {
@@ -73,7 +74,7 @@ class _UserStatusCardState extends State<UserStatusCard>
     var pw =
         (await SharedPreferences.getInstance()).getString('saved_community_pw');
 
-    _userId = id != null ? id : 'None';
+    _userId = id ?? 'None';
     _userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
     setState(() {});
 
@@ -88,14 +89,14 @@ class _UserStatusCardState extends State<UserStatusCard>
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           alignment: Alignment.centerLeft,
           height: 80,
           decoration: !Settings.themeFlat
               ? BoxDecoration(
                   // color: Colors.white,
                   color: Settings.themeWhat ? Colors.black26 : Colors.white,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8),
                       topRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),
@@ -107,7 +108,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                           : Colors.grey.withOpacity(0.1),
                       spreadRadius: Settings.themeWhat ? 0 : 5,
                       blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset: const Offset(0, 3), // changes position of shadow
                     ),
                   ],
                 )
@@ -191,24 +192,26 @@ class _UserStatusCardState extends State<UserStatusCard>
           ),
         ),
         _buildDivider(),
-        Container(
+        SizedBox(
           height: double.infinity,
           width: 88,
           child: _logining
               ? SizedBox(
                   height: 48,
                   width: 48,
-                  child: Stack(alignment: Alignment.center, children: <Widget>[
-                    SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.grey),
-                        ))
-                  ]))
+                  child: Stack(
+                      alignment: Alignment.center,
+                      children: const <Widget>[
+                        SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                            ))
+                      ]))
               : InkWell(
-                  customBorder: RoundedRectangleBorder(
+                  customBorder: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(10.0),
                         bottomRight: Radius.circular(10.0)),
@@ -217,7 +220,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                     alignment: Alignment.center,
                     child: Badge(
                       showBadge: false,
-                      badgeContent: Text('N',
+                      badgeContent: const Text('N',
                           style:
                               TextStyle(color: Colors.white, fontSize: 12.0)),
                       // badgeColor: Settings.majorAccentColor,
@@ -235,6 +238,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                       });
 
                       var resc = await VioletServer.uploadBookmark();
+                      if (!mounted) return;
 
                       setState(() {
                         _logining = false;
@@ -242,22 +246,22 @@ class _UserStatusCardState extends State<UserStatusCard>
 
                       if (resc) {
                         FlutterToast(context).showToast(
-                          child: ToastWrapper(
+                          child: const ToastWrapper(
                             isCheck: true,
                             msg: 'Bookmark Backup Success!',
                           ),
                           gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
+                          toastDuration: const Duration(seconds: 4),
                         );
                       } else {
                         FlutterToast(context).showToast(
-                          child: ToastWrapper(
+                          child: const ToastWrapper(
                             isCheck: false,
                             isWarning: false,
                             msg: 'Bookmark Backup Fail!',
                           ),
                           gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
+                          toastDuration: const Duration(seconds: 4),
                         );
                       }
 
@@ -266,8 +270,8 @@ class _UserStatusCardState extends State<UserStatusCard>
 
                     var ync = await showYesNoDialog(
                         context,
-                        'You need to log in to use the community feature. ' +
-                            'If you have an existing id, press "YES" to log in. ' +
+                        'You need to log in to use the community feature. '
+                            'If you have an existing id, press "YES" to log in. '
                             'If you do not have an existing id, press "NO" to register for a new one.',
                         'Sign In/Up');
 
@@ -280,7 +284,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                       var r = await showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return SignInDialog();
+                            return const SignInDialog();
                           });
                       if (r == null) return;
                       id = r[0];
@@ -290,17 +294,19 @@ class _UserStatusCardState extends State<UserStatusCard>
                       if (await VioletCommunitySession.checkUserAppId(
                               _userAppId) !=
                           'success') {
-                        await showOkDialog(
-                            context,
-                            'You cannot continue, there is an account registered with your UserAppId.' +
-                                ' If you have already registered as a member, please sign in with your existing id.' +
-                                ' If you forgot your login information, please contact developer.');
+                        if (mounted) {
+                          await showOkDialog(
+                              context,
+                              'You cannot continue, there is an account registered with your UserAppId. '
+                              'If you have already registered as a member, please sign in with your existing id. '
+                              'If you forgot your login information, please contact developer.');
+                        }
                         return;
                       }
                       var r = await showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return SignUpDialog();
+                            return const SignUpDialog();
                           });
 
                       if (r == null) return;
@@ -311,12 +317,16 @@ class _UserStatusCardState extends State<UserStatusCard>
                       if (await VioletCommunitySession.signUp(
                               r[0], r[1], _userAppId, r[2]) ==
                           'success') {
-                        await showOkDialog(context, 'Sign up is complete!');
+                        if (mounted) {
+                          await showOkDialog(context, 'Sign up is complete!');
+                        }
                         id = r[0];
                         pw = r[1];
                       } else {
-                        await showOkDialog(
-                            context, 'Registration has been declined!');
+                        if (mounted) {
+                          await showOkDialog(
+                              context, 'Registration has been declined!');
+                        }
                         return;
                       }
                     }

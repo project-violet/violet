@@ -49,14 +49,13 @@ typedef DownloadListItemCallbackCallback = void Function(
 
 class DownloadItemWidget extends StatefulWidget {
   // final double width;
-  final Key key;
   final DownloadItemModel item;
   final DownloadListItem initialStyle;
-  bool download;
+  final bool download;
   final VoidCallback refeshCallback;
 
-  DownloadItemWidget({
-    this.key,
+  const DownloadItemWidget({
+    Key key,
     // this.width,
     this.item,
     this.initialStyle,
@@ -65,13 +64,11 @@ class DownloadItemWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  DownloadItemWidgetState createState() => DownloadItemWidgetState();
+  State<DownloadItemWidget> createState() => DownloadItemWidgetState();
 }
 
 class DownloadItemWidgetState extends State<DownloadItemWidget>
     with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
   double scale = 1.0;
   String fav = '';
   int cur = 0;
@@ -90,9 +87,16 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   bool isLastestRead = false;
   int latestReadPage;
 
+  bool _download = false;
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
+
+    _download = widget.download;
 
     if (ExtractorManager.instance.existsExtractor(widget.item.url())) {
       var extractor = ExtractorManager.instance.getExtractor(widget.item.url());
@@ -115,7 +119,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                       .difference(DateTime.now())
                       .inDays <
                   31);
-          if (x.length == 0) return;
+          if (x.isEmpty) return;
           _shouldReload = true;
           setState(() {
             isLastestRead = true;
@@ -140,7 +144,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   }
 
   _downloadProcedure() {
-    Future.delayed(Duration(milliseconds: 500)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 500)).then((value) async {
       if (once) return;
       once = true;
       // var downloader = await BuiltinDownloader.getInstance();
@@ -152,11 +156,12 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                 _shouldReload = true;
               }));
 
-      if (!await routine.checkValidState() || !await routine.checkValidUrl())
+      if (!await routine.checkValidState() || !await routine.checkValidUrl()) {
         return;
+      }
       await routine.selectExtractor();
 
-      if (!widget.download) {
+      if (!_download) {
         await routine.setToStop();
         return;
       }
@@ -176,13 +181,15 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       await routine.extractFilePath();
 
-      var _timer = Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
+      var timer =
+          Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
         setState(() {
-          if (downloadSec / 1024 < 500.0)
-            downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";
-          else
+          if (downloadSec / 1024 < 500.0) {
+            downloadSpeed = '${(downloadSec / 1024).toStringAsFixed(1)} KB/S';
+          } else {
             downloadSpeed =
-                (downloadSec / 1024 / 1024).toStringAsFixed(1) + " MB/S";
+                '${(downloadSec / 1024 / 1024).toStringAsFixed(1)} MB/S';
+          }
           downloadSec = 0;
         });
       });
@@ -204,7 +211,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
         // Wait for download complete
         while (downloadTotalFileCount != downloadedFileCount) {
-          await Future.delayed(Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
       } else {
         downloadedFileCount = downloadTotalFileCount;
@@ -217,8 +224,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       while (retryCount < maxRetryCount) {
         var invalidFiles = await routine.checkDownloadFiles();
 
-        if (invalidFiles.length == 0 || invalidFiles.length == errorFileCount)
+        if (invalidFiles.isEmpty || invalidFiles.length == errorFileCount) {
           break;
+        }
 
         errorFileCount = 0;
         retryCount += 1;
@@ -241,28 +249,27 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         );
 
         while (downloadTotalFileCount != downloadedFileCount) {
-          await Future.delayed(Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
       }
 
-      _timer.cancel();
+      timer.cancel();
 
       await routine.setDownloadComplete();
 
       recoveryMode = false;
 
+      if (!mounted) return;
       FlutterToast(context).showToast(
         child: ToastWrapper(
           isCheck: true,
           isWarning: false,
           icon: Icons.download,
-          msg: widget.item.info().split('[')[1].split(']').first +
-              Translations.of(context).trans('download') +
-              " " +
-              Translations.of(context).trans('complete'),
+          msg:
+              "${widget.item.info().split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}",
         ),
         gravity: ToastGravity.BOTTOM,
-        toastDuration: Duration(seconds: 4),
+        toastDuration: const Duration(seconds: 4),
       );
     });
   }
@@ -278,7 +285,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         child: AnimatedContainer(
           // alignment: FractionalOffset.center,
           curve: Curves.easeInOut,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           // padding: EdgeInsets.all(pad),
           transform: Matrix4.identity()
             ..translate(thisWidth / 2, thisHeight / 2)
@@ -294,7 +301,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
         var v = await showDialog(
           context: context,
-          builder: (BuildContext context) => DownloadImageMenu(),
+          builder: (BuildContext context) => const DownloadImageMenu(),
         );
 
         if (v == -1) {
@@ -305,21 +312,23 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
             }
           }
           await widget.item.delete();
-          await Download.getInstance()
-            ..refresh();
+          (await Download.getInstance()).refresh();
           widget.refeshCallback();
         } else if (v == 2) {
           // Copy Url
           Clipboard.setData(ClipboardData(text: widget.item.url()));
-          FlutterToast(context).showToast(
-            child: ToastWrapper(
-              isCheck: true,
-              isWarning: false,
-              msg: 'URL Copied!',
-            ),
-            gravity: ToastGravity.BOTTOM,
-            toastDuration: Duration(seconds: 4),
-          );
+
+          if (mounted) {
+            FlutterToast(context).showToast(
+              child: const ToastWrapper(
+                isCheck: true,
+                isWarning: false,
+                msg: 'URL Copied!',
+              ),
+              gravity: ToastGravity.BOTTOM,
+              toastDuration: const Duration(seconds: 4),
+            );
+          }
         } else if (v == 1) {
           _retry();
         } else if (v == 3) {
@@ -331,22 +340,24 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           await (await User.getInstance())
               .insertUserLog(int.tryParse(widget.item.url()), 0);
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              fullscreenDialog: true,
-              builder: (context) {
-                return Provider<ViewerPageProvider>.value(
-                    value: ViewerPageProvider(
-                      uris: widget.item.filesWithoutThumbnail(),
-                      useFileSystem: true,
-                      id: int.tryParse(widget.item.url()),
-                      title: widget.item.info(),
-                    ),
-                    child: ViewerPage());
-              },
-            ),
-          );
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) {
+                  return Provider<ViewerPageProvider>.value(
+                      value: ViewerPageProvider(
+                        uris: widget.item.filesWithoutThumbnail(),
+                        useFileSystem: true,
+                        id: int.tryParse(widget.item.url()),
+                        title: widget.item.info(),
+                      ),
+                      child: const ViewerPage());
+                },
+              ),
+            );
+          }
         }
       },
       onTapDown: (details) {
@@ -368,8 +379,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         setState(() {
           scale = 1.0;
         });
-        if (int.tryParse(widget.item.url()) != null)
+        if (int.tryParse(widget.item.url()) != null) {
           _showArticleInfo(int.parse(widget.item.url()));
+        }
       },
     );
   }
@@ -390,7 +402,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo> cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -401,21 +413,19 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
             maxChildSize: 0.9,
             expand: false,
             builder: (_, controller) {
-              if (cache == null) {
-                cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
-                  value: ArticleInfo.fromArticleInfo(
-                    queryResult: qr,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: 'zxcvzxcvzxcv',
-                    isBookmarked: isBookmarked,
-                    controller: controller,
-                  ),
-                );
-              }
+              cache ??= Provider<ArticleInfo>.value(
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: qr,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'zxcvzxcvzxcv',
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                ),
+                child: const ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+              );
               return cache;
             },
           );
@@ -430,7 +440,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     copy['State'] = 1;
     widget.item.result = copy;
     once = false;
-    widget.download = true;
+    _download = true;
     _downloadProcedure();
     setState(() {
       _shouldReload = true;
@@ -442,7 +452,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     var copy = Map<String, dynamic>.from(widget.item.result);
     copy['State'] = 1;
     widget.item.result = copy;
-    widget.download = true;
+    _download = true;
     once = false;
     recoveryMode = true;
     _downloadProcedure();
@@ -479,7 +489,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),
-              borderRadius: BorderRadius.all(Radius.circular(5)),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat
@@ -487,7 +497,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                       : Colors.grey.withOpacity(0.4),
                   spreadRadius: 5,
                   blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             )
@@ -524,7 +534,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     if (_cachedThumbnail == null || _shouldReload) {
       _shouldReload = false;
       _cachedThumbnail = widget.item.state() == 0 &&
-              widget.item.rawFiles().length > 0 &&
+              widget.item.rawFiles().isNotEmpty &&
               File(widget.item.rawFiles().first).existsSync()
           ? _FileThumbnailWidget(
               showDetail: style.showDetail,
@@ -583,7 +593,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
     var state = 'None';
     var pp =
-        '${Translations.instance.trans('date')}: ' + widget.item.dateTime();
+        '${Translations.instance.trans('date')}: ${widget.item.dateTime()}';
 
     var statecolor = !Settings.themeWhat ? Colors.black : Colors.white;
     var statebold = FontWeight.normal;
@@ -594,21 +604,17 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         break;
       case 1:
         state = Translations.instance.trans('waitqueue');
-        pp = Translations.instance.trans('progress') +
-            ': ' +
-            Translations.instance.trans('waitdownload');
+        pp =
+            '${Translations.instance.trans('progress')}: ${Translations.instance.trans('waitdownload')}';
         break;
       case 2:
         if (max == 0) {
           state = Translations.instance.trans('extracting');
-          pp = Translations.instance.trans('progress') +
-              ': ' +
-              Translations.instance
-                  .trans('count')
-                  .replaceAll('%s', cur.toString());
+          pp =
+              '${Translations.instance.trans('progress')}: ${Translations.instance.trans('count').replaceAll('%s', cur.toString())}';
         } else {
-          state = Translations.instance.trans('extracting') + '[$cur/$max]';
-          pp = Translations.instance.trans('progress') + ': ';
+          state = '${Translations.instance.trans('extracting')}[$cur/$max]';
+          pp = '${Translations.instance.trans('progress')}: ';
         }
         break;
 
@@ -616,7 +622,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         // state =
         //     '[$downloadedFileCount/$downloadTotalFileCount] ($downloadSpeed ${(download / 1024.0 / 1024.0).toStringAsFixed(1)} MB)';
         state = '[$downloadedFileCount/$downloadTotalFileCount]';
-        pp = Translations.instance.trans('progress') + ': ';
+        pp = '${Translations.instance.trans('progress')}: ';
         break;
 
       case 6:
@@ -652,19 +658,20 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     }
 
     return AnimatedContainer(
-      margin: EdgeInsets.fromLTRB(8, 4, 4, 4),
-      duration: Duration(milliseconds: 300),
+      margin: const EdgeInsets.fromLTRB(8, 4, 4, 4),
+      duration: const Duration(milliseconds: 300),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(Translations.instance.trans('dinfo') + ': ' + title,
+          Text('${Translations.instance.trans('dinfo')}: $title',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           Container(
             height: 2,
           ),
-          Text(Translations.instance.trans('state') + ': ' + state,
+          Text('${Translations.instance.trans('state')}: $state',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -676,17 +683,17 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               ? Text(pp,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 15))
+                  style: const TextStyle(fontSize: 15))
               : Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(pp,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15)),
+                        style: const TextStyle(fontSize: 15)),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(right: 16),
+                        padding: const EdgeInsets.only(right: 16),
                         child: LinearProgressIndicator(
                           value: downloadedFileCount / downloadTotalFileCount,
                           minHeight: 18,
@@ -704,7 +711,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                 children: [
                   Row(children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
                       child: Container(),
                     ),
                   ]),
@@ -725,7 +732,7 @@ class _ThumbnailWidget extends StatelessWidget {
   final bool showDetail;
   final int id;
 
-  _ThumbnailWidget({
+  const _ThumbnailWidget({
     this.thumbnail,
     this.thumbnailHeader,
     this.thumbnailTag,
@@ -735,7 +742,7 @@ class _ThumbnailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: showDetail ? 100 : double.infinity,
       child: thumbnail != null
           ? ClipRRect(
@@ -753,9 +760,9 @@ class _ThumbnailWidget extends StatelessWidget {
       Map<String, String> headers = {};
       if (thumbnailHeader != null) {
         var hh = jsonDecode(thumbnailHeader) as Map<String, dynamic>;
-        hh.entries.forEach((element) {
+        for (var element in hh.entries) {
           headers[element.key] = element.value as String;
-        });
+        }
       }
       return Hero(
         tag: thumbnailTag,
@@ -775,7 +782,7 @@ class _ThumbnailWidget extends StatelessWidget {
         ),
       );
     } else {
-      return FutureBuilder(
+      return FutureBuilder<List<Object>>(
         future: HitomiManager.getImageList(id.toString()).then((value) async {
           if (value == null) return null;
           var header =
@@ -813,10 +820,10 @@ class _ThumbnailWidget extends StatelessWidget {
   Widget _getLoadingAnimation() {
     if (!Settings.simpleItemWidgetLoadingIcon) {
       return const FlareActor(
-        "assets/flare/Loading2.flr",
+        'assets/flare/Loading2.flr',
         alignment: Alignment.center,
         fit: BoxFit.fitHeight,
-        animation: "Alarm",
+        animation: 'Alarm',
       );
     } else {
       return Center(
@@ -839,7 +846,7 @@ class _FileThumbnailWidget extends StatelessWidget {
   final bool usingRawImage;
   final double height;
 
-  _FileThumbnailWidget({
+  const _FileThumbnailWidget({
     this.thumbnailPath,
     this.thumbnailTag,
     this.showDetail,
@@ -849,7 +856,7 @@ class _FileThumbnailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: showDetail ? 100 : double.infinity,
       child: thumbnailPath != null
           ? ClipRRect(
@@ -890,10 +897,10 @@ class _FileThumbnailWidget extends StatelessWidget {
   Widget _getLoadingAnimation() {
     if (!Settings.simpleItemWidgetLoadingIcon) {
       return const FlareActor(
-        "assets/flare/Loading2.flr",
+        'assets/flare/Loading2.flr',
         alignment: Alignment.center,
         fit: BoxFit.fitHeight,
-        animation: "Alarm",
+        animation: 'Alarm',
       );
     } else {
       return Center(

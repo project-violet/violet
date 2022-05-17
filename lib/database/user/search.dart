@@ -29,7 +29,7 @@ class SearchLogDatabase {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='SearchLog';");
-        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
           try {
             await db.execute('''CREATE TABLE SearchLog (
               Id integer primary key autoincrement, 
@@ -37,8 +37,8 @@ class SearchLogDatabase {
               DateTime text);
               ''');
           } catch (e, st) {
-            Logger.error(
-                '[Record-Instance] E: ' + e.toString() + '\n' + st.toString());
+            Logger.error('[Record-Instance] E: $e\n'
+                '$st');
           }
         }
         _instance = SearchLogDatabase();

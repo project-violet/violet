@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
-  AnimatedOpacitySliver(
-      {this.minExtent, @required this.maxExtent, this.searchBar});
-  final double minExtent;
-  final double maxExtent;
+  AnimatedOpacitySliver({this.searchBar});
 
   Widget searchBar;
 
@@ -21,13 +18,19 @@ class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
       fit: StackFit.expand,
       children: [
         AnimatedOpacity(
-          child: searchBar,
           opacity: 1.0 - max(0.0, shrinkOffset - 20) / (maxExtent - 20),
-          duration: Duration(milliseconds: 100),
+          duration: const Duration(milliseconds: 100),
+          child: searchBar,
         )
       ],
     );
   }
+
+  @override
+  double get minExtent => 64.0 + 12.0;
+
+  @override
+  double get maxExtent => 64.0 + 12.0;
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {

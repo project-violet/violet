@@ -8,7 +8,7 @@ import 'package:violet/network/wrapper.dart' as http;
 
 class UpdateSyncManager {
   static const String updateInfoURL =
-      "https://raw.githubusercontent.com/project-violet/violet-app/master/version.json";
+      'https://raw.githubusercontent.com/project-violet/violet-app/master/version.json';
 
   static bool enableSensitiveUpdate = true;
 
@@ -21,10 +21,10 @@ class UpdateSyncManager {
       '$majorVersion.$minorVersion.$patchVersion';
 
   static bool updateRequire = false;
-  static String latestVersion = "";
-  static String version = "";
-  static String updateMessage = "";
-  static String updateUrl = "";
+  static String latestVersion = '';
+  static String version = '';
+  static String updateMessage = '';
+  static String updateUrl = '';
 
   static bool _checkIsNewVersion(List<int> ver) {
     //
@@ -53,20 +53,21 @@ class UpdateSyncManager {
 
       var info = jsonDecode(infoJson.body).cast<String, dynamic>();
 
-      var ver = (info["version"] as String)
+      var ver = (info['version'] as String)
           .split('.')
           .map((e) => int.parse(e))
           .toList();
       if (_checkIsNewVersion(ver)) {
         updateRequire = true;
-        version = info["version"] as String;
-        updateMessage = info["message"] as String;
-        updateUrl = info["download_link"] as String;
+        version = info['version'] as String;
+        updateMessage = info['message'] as String;
+        updateUrl = info['download_link'] as String;
         print(info);
       }
-      latestVersion = info["version"] as String;
+      latestVersion = info['version'] as String;
     } catch (e, st) {
-      Logger.error('[Update-check] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Update-check] E: $e\n'
+          '$st');
     }
   }
 }

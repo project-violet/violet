@@ -13,8 +13,10 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class InfoPage extends StatefulWidget {
+  const InfoPage({Key key}) : super(key: key);
+
   @override
-  _InfoPageState createState() => _InfoPageState();
+  State<InfoPage> createState() => _InfoPageState();
 }
 
 class _InfoPageState extends State<InfoPage> {
@@ -26,7 +28,7 @@ class _InfoPageState extends State<InfoPage> {
       child: Padding(
         padding: EdgeInsets.zero,
         child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
               Container(height: 16),
@@ -47,30 +49,30 @@ class _InfoPageState extends State<InfoPage> {
                   await showDialog(
                     context: context,
                     builder: (BuildContext context) {
-                      return VioletPage();
+                      return const VioletPage();
                     },
                   );
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.bookOpenPageVariant,
+                const Icon(MdiIcons.bookOpenPageVariant,
                     size: 40, color: Colors.brown),
                 // 'User Manual',
                 // 'Check out the user manual here!',
                 '유저 메뉴얼',
                 '여기서 사용법을 확인하세요!',
-                UserManualPage(),
+                const UserManualPage(),
               ),
               _buildItem(
-                Icon(MdiIcons.frequentlyAskedQuestions,
+                const Icon(MdiIcons.frequentlyAskedQuestions,
                     size: 40, color: Colors.orange),
                 'FAQ',
                 // 'Frequently Asked Questions',
                 '자주 묻는 질문',
-                FAQPageKorean(),
+                const FAQPageKorean(),
               ),
               _buildItem(
-                Icon(MdiIcons.routes, size: 40, color: Colors.yellow),
+                const Icon(MdiIcons.routes, size: 40, color: Colors.yellow),
                 'Violet WalkRoad',
                 '향후 동향과 역사를 살펴보세요!',
                 null,
@@ -83,13 +85,13 @@ class _InfoPageState extends State<InfoPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.flask, size: 40, color: Color(0xFF73BE1E)),
+                const Icon(MdiIcons.flask, size: 40, color: Color(0xFF73BE1E)),
                 '실험실',
                 '새로운 기능들을 체험해보세요!',
-                LaboratoryPage(),
+                const LaboratoryPage(),
               ),
               _buildItem(
-                Icon(MdiIcons.gmail, size: 40, color: Colors.redAccent),
+                const Icon(MdiIcons.gmail, size: 40, color: Colors.redAccent),
                 'Gmail',
                 // 'Contact the developer',
                 '개발자에게 연락해보세요!',
@@ -103,7 +105,8 @@ class _InfoPageState extends State<InfoPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.discord, size: 40, color: Color(0xFF7189da)),
+                const Icon(MdiIcons.discord,
+                    size: 40, color: Color(0xFF7189da)),
                 // 'Discord Channel',
                 // 'Communicate with developers',
                 '디스코드 채널',
@@ -117,7 +120,7 @@ class _InfoPageState extends State<InfoPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.github, size: 40, color: Colors.black),
+                const Icon(MdiIcons.github, size: 40, color: Colors.black),
                 // 'GitHub Repository',
                 // 'Contribute to the project',
                 'GitHub 저장소',
@@ -139,7 +142,7 @@ class _InfoPageState extends State<InfoPage> {
 
   _buildTitle() {
     return Container(
-      margin: EdgeInsets.all(40),
+      margin: const EdgeInsets.all(40),
       child: Center(
         child: Column(
           children: <Widget>[
@@ -150,7 +153,7 @@ class _InfoPageState extends State<InfoPage> {
                 height: 100,
               ),
             ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 12),
             ),
             Text(
@@ -158,7 +161,7 @@ class _InfoPageState extends State<InfoPage> {
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 16.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),
@@ -167,7 +170,7 @@ class _InfoPageState extends State<InfoPage> {
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),
@@ -179,11 +182,11 @@ class _InfoPageState extends State<InfoPage> {
 
   _buildItem(image, title, subtitle, [warp, run]) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Settings.themeWhat ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
             bottomLeft: Radius.circular(8),
@@ -195,7 +198,7 @@ class _InfoPageState extends State<InfoPage> {
                 : Colors.grey.withOpacity(0.1),
             spreadRadius: Settings.themeWhat ? 0 : 5,
             blurRadius: 7,
-            offset: Offset(0, 3), // changes position of shadow
+            offset: const Offset(0, 3), // changes position of shadow
           ),
         ],
       ),
@@ -209,9 +212,9 @@ class _InfoPageState extends State<InfoPage> {
               : Colors.white,
           child: ListTile(
             contentPadding:
-                EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
             leading: image,
-            title: Text(title, style: TextStyle(fontSize: 16.0)),
+            title: Text(title, style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(subtitle),
             onTap: () async {
               if (warp != null) {

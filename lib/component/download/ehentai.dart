@@ -25,7 +25,7 @@ class EHentaiManager extends Downloadable {
 
   @override
   String defaultFormat() {
-    return "%(extractor)s/%(artist)s/[%(id)s] %(title)s/%(file)s.%(ext)s";
+    return '%(extractor)s/%(artist)s/[%(id)s] %(title)s/%(file)s.%(ext)s';
   }
 
   @override
@@ -63,11 +63,11 @@ class EHentaiManager extends Downloadable {
     var id = match.first.namedGroup('id').trim();
 
     var articles = (await (await DataBaseManager.getInstance()).query(
-            "SELECT * FROM HitomiColumnModel WHERE Id=$id ORDER BY Id DESC LIMIT 1 OFFSET 0"))
+            'SELECT * FROM HitomiColumnModel WHERE Id=$id ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
 
-    if (articles == null || articles.length == 0) {
+    if (articles == null || articles.isEmpty) {
       return null;
     }
 
@@ -93,7 +93,7 @@ class EHentaiManager extends Downloadable {
             laugage: article.language(),
             uploadDate: article.getDateTime().toString(),
             filenameWithoutExtension: intToString(i, pad: 3),
-            extension: path.extension(img.split('/').last).replaceAll(".", ""),
+            extension: path.extension(img.split('/').last).replaceAll('.', ''),
             extractor: 'hitomi',
           ),
         ),
@@ -104,7 +104,7 @@ class EHentaiManager extends Downloadable {
   }
 
   // https://stackoverflow.com/questions/15193983/is-there-a-built-in-method-to-pad-a-string
-  static String intToString(int i, {int pad: 0}) {
+  static String intToString(int i, {int pad = 0}) {
     var str = i.toString();
     var paddingToAdd = pad - str.length;
     return (paddingToAdd > 0)

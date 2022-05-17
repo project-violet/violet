@@ -121,7 +121,7 @@ class Bookmark {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkGroup';");
-        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
           try {
             await db.execute(
                 'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer, Gorder integer)');
@@ -150,15 +150,13 @@ class Bookmark {
               'Gorder': 1,
             });
           } catch (e, st) {
-            Logger.error('[Bookmark Instance] E: ' +
-                e.toString() +
-                '\n' +
-                st.toString());
+            Logger.error('[Bookmark Instance] E: $e\n'
+                '$st');
           }
         }
         var ex = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkUser';");
-        if (ex == null || ex.length == 0 || ex[0].length == 0) {
+        if (ex == null || ex.isEmpty || ex[0].isEmpty) {
           await db.execute('''CREATE TABLE BookmarkUser (
               Id integer primary key autoincrement, 
               User text,
@@ -171,7 +169,7 @@ class Bookmark {
         }
         var ex2 = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='HistoryUser';");
-        if (ex2 == null || ex2.length == 0 || ex2[0].length == 0) {
+        if (ex2 == null || ex2.isEmpty || ex2[0].isEmpty) {
           await db.execute('''CREATE TABLE HistoryUser (
               Id integer primary key autoincrement, 
               User text,
@@ -288,7 +286,7 @@ class Bookmark {
   }
 
   Future<void> positionSwap(int from, int to) async {
-    print(from.toString() + "|" + to.toString());
+    print('$from|$to');
     var groups = await getGroup();
     void swap(int x, int y) {
       var tmp = groups[x];
@@ -296,9 +294,9 @@ class Bookmark {
       groups[y] = tmp;
     }
 
-    groups.forEach((element) {
+    for (var element in groups) {
       print(element.gorder());
-    });
+    }
 
     if (from < to) {
       for (; from < to; from++) {
@@ -312,9 +310,9 @@ class Bookmark {
       }
     }
 
-    groups.forEach((element) {
+    for (var element in groups) {
       print(element.gorder());
-    });
+    }
   }
 
   Future<List<BookmarkArticle>> getArticle() async {
@@ -365,9 +363,9 @@ class Bookmark {
       if (bookmarkSet == null) {
         var article = await getArticle();
         bookmarkSet = HashSet<int>();
-        article.forEach((element) {
+        for (var element in article) {
           bookmarkSet.add(int.parse(element.article()));
-        });
+        }
       }
     });
 
@@ -392,15 +390,15 @@ class Bookmark {
     await lock.synchronized(() async {
       if (bookmarkArtistSet == null) {
         var artist = await getArtist();
-        bookmarkArtistSet = Map<int, HashSet<String>>();
+        bookmarkArtistSet = <int, HashSet<String>>{};
         bookmarkArtistSet[0] = HashSet<String>();
         bookmarkArtistSet[1] = HashSet<String>();
         bookmarkArtistSet[2] = HashSet<String>();
         bookmarkArtistSet[3] = HashSet<String>();
         bookmarkArtistSet[4] = HashSet<String>();
-        artist.forEach((element) {
+        for (var element in artist) {
           bookmarkArtistSet[element.type()].add(element.artist());
-        });
+        }
       }
     });
 
@@ -413,9 +411,9 @@ class Bookmark {
       if (bookmarkUserSet == null) {
         var user = await getUser();
         bookmarkUserSet = HashSet<String>();
-        user.forEach((element) {
+        for (var element in user) {
           bookmarkUserSet.add(element.user());
-        });
+        }
       }
     });
 
@@ -428,9 +426,9 @@ class Bookmark {
       if (historyUserSet == null) {
         var user = await getHistoryUser();
         historyUserSet = HashSet<String>();
-        user.forEach((element) {
+        for (var element in user) {
           historyUserSet.add(element.user());
-        });
+        }
       }
     });
 

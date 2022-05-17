@@ -17,17 +17,19 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabTopRecent extends StatefulWidget {
+  const LabTopRecent({Key key}) : super(key: key);
+
   @override
-  _LabTopRecentState createState() => _LabTopRecentState();
+  State<LabTopRecent> createState() => _LabTopRecentState();
 }
 
 class _LabTopRecentState extends State<LabTopRecent> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int limit = 10;
   Timer timer;
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   bool isTop = false;
-  String desc = "로딩";
+  String desc = '로딩';
 
   @override
   void initState() {
@@ -40,14 +42,15 @@ class _LabTopRecentState extends State<LabTopRecent> {
         } else {
           isTop = true;
         }
-      } else
+      } else {
         isTop = false;
+      }
     });
 
-    Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
-            _controller.animateTo(0.0,
-                duration: Duration(milliseconds: 300),
+    Future.delayed(const Duration(milliseconds: 100)).then(updateRercord).then(
+        (value) => Future.delayed(const Duration(milliseconds: 100)).then(
+            (value) => _controller.animateTo(0.0,
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn)));
   }
 
@@ -58,40 +61,35 @@ class _LabTopRecentState extends State<LabTopRecent> {
 
       var xrecords = trecords as List<Tuple2<int, int>>;
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += 'Id IN (' + xrecords.map((e) => e.item1).join(',') + ')';
+      queryRaw += 'Id IN (${xrecords.map((e) => e.item1).join(',')})';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results.length == 0) return;
+      if (query.results.isEmpty) return;
 
-      var qr = Map<String, QueryResult>();
-      query.results.forEach((element) {
+      var qr = <String, QueryResult>{};
+      for (var element in query.results) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple2<QueryResult, int>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item1.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple2<QueryResult, int>(
             qr[element.item1.toString()], element.item2));
-      });
+      }
 
       records = result;
 
       setState(() {});
-      Future.delayed(Duration(milliseconds: 50)).then((x) {
+      Future.delayed(const Duration(milliseconds: 50)).then((x) {
         _controller.animateTo(
           0.0,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.fastOutSlowIn,
         );
       });
@@ -102,18 +100,19 @@ class _LabTopRecentState extends State<LabTopRecent> {
       var x = cts.difference(sts);
 
       setState(() {
-        if (x.inHours > 0)
-          desc = x.inHours.toString() + "시간";
-        else if (x.inMinutes > 0)
-          desc = x.inMinutes.toString() + "분";
-        else if (x.inSeconds > 0)
-          desc = x.inSeconds.toString() + "초";
-        else
-          desc = "?";
+        if (x.inHours > 0) {
+          desc = '${x.inHours}시간';
+        } else if (x.inMinutes > 0) {
+          desc = '${x.inMinutes}분';
+        } else if (x.inSeconds > 0) {
+          desc = '${x.inSeconds}초';
+        } else {
+          desc = '?';
+        }
       });
     } catch (e, st) {
-      Logger.error(
-          '[lab-top_recent] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-top_recent] E: $e\n'
+          '$st');
     }
   }
 
@@ -127,16 +126,13 @@ class _LabTopRecentState extends State<LabTopRecent> {
         children: [
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               controller: _controller,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: records.length,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
-                  key: Key('records' +
-                      index.toString() +
-                      '/' +
-                      records[index].item1.id().toString()),
+                  key: Key('records$index/${records[index].item1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
@@ -144,10 +140,10 @@ class _LabTopRecentState extends State<LabTopRecent> {
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       viewed: records[index].item2,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
@@ -162,7 +158,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
                   dense: true,
                   title: Align(
                     child: SliderTheme(
-                      data: SliderThemeData(
+                      data: const SliderThemeData(
                         activeTrackColor: Colors.blue,
                         inactiveTrackColor: Color(0xffd0d2d3),
                         trackHeight: 3,

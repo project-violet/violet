@@ -15,17 +15,18 @@ class Related {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       var file = File('/home/ubuntu/violet/assets/rank/related.json');
       data = await file.readAsString();
-    } else
+    } else {
       data = await rootBundle.loadString('assets/rank/related.json');
+    }
 
-    Map<String, dynamic> _data = json.decode(data);
+    Map<String, dynamic> dataInfo = json.decode(data);
 
-    related = Map<int, List<int>>();
+    related = <int, List<int>>{};
 
-    _data.entries.forEach((element) {
+    for (var element in dataInfo.entries) {
       related[int.parse(element.key)] =
           (element.value as List<dynamic>).map((e) => e as int).toList();
-    });
+    }
   }
 
   static bool existsRelated(int articleId) {

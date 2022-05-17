@@ -87,6 +87,7 @@ class ExCountry extends Country {
     return country;
   }
 
+  @override
   String toString() {
     final dict = {
       'KR': 'ko',
@@ -132,13 +133,15 @@ class ExCountry extends Country {
 }
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({Key key}) : super(key: key);
+
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage> {
-  FlareControls _flareController = FlareControls();
+  final FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
   FlutterToast flutterToast;
 
@@ -160,7 +163,7 @@ class _SettingsPageState extends State<SettingsPage>
     if (_cachedGroups == null || _shouldReload) {
       _shouldReload = false;
       _cachedGroups = _themeGroup()
-        ..add(UserStatusCard())
+        ..add(const UserStatusCard())
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
         ..addAll(_securityGroup())
@@ -175,14 +178,12 @@ class _SettingsPageState extends State<SettingsPage>
         ..add(_bottomInfo());
     }
 
-    return Container(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(top: statusBarHeight),
-        physics: BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: _cachedGroups,
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(top: statusBarHeight),
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: _cachedGroups,
       ),
     );
   }
@@ -200,7 +201,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   Padding _buildGroup(String name) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -208,7 +209,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 24.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               )),
         ],
@@ -218,12 +219,12 @@ class _SettingsPageState extends State<SettingsPage>
 
   Container _buildItems(List<Widget> items) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: !Settings.themeFlat
           ? BoxDecoration(
               color: Settings.themeWhat ? Colors.black26 : Colors.white,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(8),
                   topRight: Radius.circular(8),
                   bottomLeft: Radius.circular(8),
@@ -235,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage>
                       : Colors.grey.withOpacity(0.1),
                   spreadRadius: Settings.themeWhat ? 0 : 5,
                   blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             )
@@ -268,19 +269,19 @@ class _SettingsPageState extends State<SettingsPage>
       _buildGroup(Translations.of(context).trans('theme')),
       _buildItems([
         InkWell(
-          customBorder: RoundedRectangleBorder(
+          customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8.0),
                   topRight: Radius.circular(8.0))),
           child: ListTile(
             leading: ShaderMask(
-              shaderCallback: (bounds) => RadialGradient(
+              shaderCallback: (bounds) => const RadialGradient(
                 center: Alignment.topLeft,
                 radius: 1.0,
                 colors: [Colors.black, Colors.white],
                 tileMode: TileMode.clamp,
               ).createShader(bounds),
-              child: Icon(MdiIcons.themeLightDark, color: Colors.white),
+              child: const Icon(MdiIcons.themeLightDark, color: Colors.white),
             ),
             title: Text(Translations.of(context).trans('darkmode')),
             trailing: SizedBox(
@@ -288,19 +289,22 @@ class _SettingsPageState extends State<SettingsPage>
               height: 50,
               child: FlareActor(
                 'assets/flare/switch_daytime.flr',
-                animation: _themeSwitch ? "night_idle" : "day_idle",
+                animation: _themeSwitch ? 'night_idle' : 'day_idle',
                 controller: _flareController,
                 snapToEnd: true,
               ),
             ),
           ),
           onTap: () async {
-            if (!_themeSwitch)
+            if (!_themeSwitch) {
               _flareController.play('switch_night');
-            else
+            } else {
               _flareController.play('switch_day');
+            }
             _themeSwitch = !_themeSwitch;
             await Settings.setThemeWhat(_themeSwitch);
+
+            if (!mounted) return;
             DynamicTheme.of(context).setBrightness(
                 !_themeSwitch ? Brightness.light : Brightness.dark);
             setState(() {
@@ -311,16 +315,16 @@ class _SettingsPageState extends State<SettingsPage>
         _buildDivider(),
         ListTile(
           leading: ShaderMask(
-            shaderCallback: (bounds) => RadialGradient(
+            shaderCallback: (bounds) => const RadialGradient(
               center: Alignment.bottomLeft,
               radius: 1.2,
               colors: [Colors.orange, Colors.pink],
               tileMode: TileMode.clamp,
             ).createShader(bounds),
-            child: Icon(MdiIcons.formatColorFill, color: Colors.white),
+            child: const Icon(MdiIcons.formatColorFill, color: Colors.white),
           ),
           title: Text(Translations.of(context).trans('colorsetting')),
-          trailing: Icon(
+          trailing: const Icon(
               // Icons.message,
               Icons.keyboard_arrow_right),
           onTap: () {
@@ -347,48 +351,13 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         _buildDivider(),
         InkWell(
-          child: ListTile(
-            leading: Icon(MdiIcons.brightness3, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('blackmode')),
-            trailing: Switch(
-              value: Settings.themeBlack,
-              onChanged: _themeSwitch
-                  ? (newValue) async {
-                      await Settings.setThemeFlat(newValue);
-                      DynamicTheme.of(context).setThemeData(
-                        ThemeData(
-                          accentColor: Settings.majorColor,
-                          brightness: Theme.of(context).brightness,
-                          bottomSheetTheme: BottomSheetThemeData(
-                              backgroundColor: Colors.black.withOpacity(0)),
-                          scaffoldBackgroundColor:
-                              Settings.themeBlack && Settings.themeWhat
-                                  ? Colors.black
-                                  : null,
-                          dialogBackgroundColor:
-                              Settings.themeBlack && Settings.themeWhat
-                                  ? const Color(0xFF141414)
-                                  : null,
-                          cardColor: Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF141414)
-                              : null,
-                        ),
-                      );
-                      setState(() {
-                        _shouldReload = true;
-                      });
-                    }
-                  : null,
-              activeTrackColor: Settings.majorColor,
-              activeColor: Settings.majorAccentColor,
-            ),
-          ),
           onTap: _themeSwitch
               ? () async {
                   await Settings.setThemeBlack(!Settings.themeBlack);
+
+                  if (!mounted) return;
                   DynamicTheme.of(context).setThemeData(
                     ThemeData(
-                      accentColor: Settings.majorColor,
                       brightness: Theme.of(context).brightness,
                       bottomSheetTheme: BottomSheetThemeData(
                           backgroundColor: Colors.black.withOpacity(0)),
@@ -403,6 +372,8 @@ class _SettingsPageState extends State<SettingsPage>
                       cardColor: Settings.themeBlack && Settings.themeWhat
                           ? const Color(0xFF141414)
                           : null,
+                      colorScheme: ColorScheme.fromSwatch()
+                          .copyWith(secondary: Settings.majorColor),
                     ),
                   );
                   setState(() {
@@ -410,6 +381,45 @@ class _SettingsPageState extends State<SettingsPage>
                   });
                 }
               : null,
+          child: ListTile(
+            leading: Icon(MdiIcons.brightness3, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('blackmode')),
+            trailing: Switch(
+              value: Settings.themeBlack,
+              onChanged: _themeSwitch
+                  ? (newValue) async {
+                      await Settings.setThemeFlat(newValue);
+
+                      if (!mounted) return;
+                      DynamicTheme.of(context).setThemeData(
+                        ThemeData(
+                          brightness: Theme.of(context).brightness,
+                          bottomSheetTheme: BottomSheetThemeData(
+                              backgroundColor: Colors.black.withOpacity(0)),
+                          scaffoldBackgroundColor:
+                              Settings.themeBlack && Settings.themeWhat
+                                  ? Colors.black
+                                  : null,
+                          dialogBackgroundColor:
+                              Settings.themeBlack && Settings.themeWhat
+                                  ? const Color(0xFF141414)
+                                  : null,
+                          cardColor: Settings.themeBlack && Settings.themeWhat
+                              ? const Color(0xFF141414)
+                              : null,
+                          colorScheme: ColorScheme.fromSwatch()
+                              .copyWith(secondary: Settings.majorColor),
+                        ),
+                      );
+                      setState(() {
+                        _shouldReload = true;
+                      });
+                    }
+                  : null,
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+          ),
         ),
         _buildDivider(),
         InkWell(
@@ -461,7 +471,7 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         _buildDivider(),
         InkWell(
-          customBorder: RoundedRectangleBorder(
+          customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(8.0),
                   bottomRight: Radius.circular(8.0))),
@@ -472,6 +482,8 @@ class _SettingsPageState extends State<SettingsPage>
               value: Settings.useDrawer,
               onChanged: (newValue) async {
                 await Settings.setUseDrawer(newValue);
+                if (!mounted) return;
+
                 setState(() {
                   _shouldReload = true;
                 });
@@ -488,10 +500,11 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           onTap: () async {
             await Settings.setUseDrawer(!Settings.useDrawer);
+            if (!mounted) return;
+
             setState(() {
               _shouldReload = true;
             });
-
             final afterLoadingPageState =
                 context.findAncestorStateOfType<AfterLoadingPageState>();
             afterLoadingPageState.setState(() {
@@ -509,7 +522,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
@@ -529,13 +542,13 @@ class _SettingsPageState extends State<SettingsPage>
                   ),
                 ],
               ),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               final vv = await showDialog(
                 context: context,
                 builder: (BuildContext context) =>
-                    TagSelectorDialog(what: 'include'),
+                    const TagSelectorDialog(what: 'include'),
               );
 
               if (vv != null && vv.item1 == 1) {
@@ -553,12 +566,12 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('excludetag')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               final vv = await showDialog(
                 context: context,
                 builder: (BuildContext context) =>
-                    TagSelectorDialog(what: 'exclude'),
+                    const TagSelectorDialog(what: 'exclude'),
               );
 
               if (vv.item1 == 1) {
@@ -576,7 +589,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('tagrebuild')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               if (await showYesNoDialog(
                   context,
@@ -584,21 +597,21 @@ class _SettingsPageState extends State<SettingsPage>
                   Translations.of(context).trans('tagrebuild'))) {
                 await showDialog(
                   context: context,
-                  builder: (BuildContext context) => TagRebuildPage(),
+                  builder: (BuildContext context) => const TagRebuildPage(),
                 );
 
                 await HitomiIndexs.init();
                 HitomiManager.reloadIndex();
 
+                if (!mounted) return;
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
-                    msg: Translations.of(context).trans('tagrebuild') +
-                        ' ' +
-                        Translations.of(context).trans('complete'),
+                    msg:
+                        '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
@@ -607,7 +620,7 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             child: ListTile(
               leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
-              title: Text('Pure Search'),
+              title: const Text('Pure Search'),
               trailing: Switch(
                 value: Settings.searchPure,
                 onChanged: (newValue) async {
@@ -629,7 +642,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -669,36 +682,36 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(Icons.receipt, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('logrecord')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {
-              PlatformNavigator.navigateSlide(context, LogPage());
+              PlatformNavigator.navigateSlide(context, const LogPage());
             },
           ),
           _buildDivider(),
           ListTile(
             leading: Icon(Icons.language, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('language')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) => Theme(
                     data: Theme.of(context).copyWith(primaryColor: Colors.pink),
                     child: CountryPickerDialog(
-                        titlePadding: EdgeInsets.symmetric(vertical: 16),
+                        titlePadding: const EdgeInsets.symmetric(vertical: 16),
                         // searchCursorColor: Colors.pinkAccent,
                         // searchInputDecoration:
                         //     InputDecoration(hintText: 'Search...'),
                         // isSearchable: true,
-                        title: Text('Select Language'),
+                        title: const Text('Select Language'),
                         onValuePicked: (Country country) async {
                           var exc = country as ExCountry;
                           await Translations.of(context).load(exc.toString());
@@ -719,18 +732,15 @@ class _SettingsPageState extends State<SettingsPage>
                           // CountryPickerUtils.getCountryByIsoCode('RU'),
                         ],
                         itemBuilder: (Country country) {
-                          return Container(
-                            child: Row(
-                              children: <Widget>[
-                                CountryPickerUtils.getDefaultFlagImage(country),
-                                SizedBox(
-                                  width: 8.0,
-                                  height: 30,
-                                ),
-                                Text(
-                                    "${(country as ExCountry).getDisplayLanguage()}"),
-                              ],
-                            ),
+                          return Row(
+                            children: <Widget>[
+                              CountryPickerUtils.getDefaultFlagImage(country),
+                              const SizedBox(
+                                width: 8.0,
+                                height: 30,
+                              ),
+                              Text((country as ExCountry).getDisplayLanguage()),
+                            ],
                           );
                         })),
               );
@@ -787,17 +797,18 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('exportlog')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await Logger.exportLog();
 
+              if (!mounted) return;
               flutterToast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('complete'),
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
+                toastDuration: const Duration(seconds: 4),
               );
             },
           ),
@@ -805,26 +816,26 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return VersionViewPage();
+                  return const VersionViewPage();
                 },
               );
             },
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
             child: ListTile(
-              leading: Icon(Icons.developer_mode, color: Colors.orange),
+              leading: const Icon(Icons.developer_mode, color: Colors.orange),
               title: Text(Translations.of(context).trans('devtool')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               if (kDebugMode) {
@@ -851,7 +862,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
@@ -862,7 +873,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('lockapp')),
-              trailing: Icon(
+              trailing: const Icon(
                   // Icons.message,
                   Icons.keyboard_arrow_right),
             ),
@@ -870,14 +881,14 @@ class _SettingsPageState extends State<SettingsPage>
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                  builder: (context) => LockSettingPage(),
+                  builder: (context) => const LockSettingPage(),
                 ),
               );
             },
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -915,10 +926,11 @@ class _SettingsPageState extends State<SettingsPage>
 
   Future<void> _setSecureMode() async {
     if (Platform.isAndroid) {
-      if (Settings.useSecureMode)
+      if (Settings.useSecureMode) {
         await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-      else
+      } else {
         await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+      }
     }
   }
 
@@ -928,24 +940,24 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading:
-                  Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('switching')),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => SplashPage(
+                        builder: (context) => const SplashPage(
                               switching: true,
                             )));
                   },
+            child: ListTile(
+              leading:
+                  Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('switching')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
           ),
           _buildDivider(),
           InkWell(
@@ -955,7 +967,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('dbrebuild')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               if (await showYesNoDialog(
@@ -964,18 +976,18 @@ class _SettingsPageState extends State<SettingsPage>
                   Translations.of(context).trans('dbrebuild'))) {
                 await showDialog(
                   context: context,
-                  builder: (BuildContext context) => DBRebuildPage(),
+                  builder: (BuildContext context) => const DBRebuildPage(),
                 );
 
+                if (!mounted) return;
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
-                    msg: Translations.of(context).trans('dbrebuild') +
-                        ' ' +
-                        Translations.of(context).trans('complete'),
+                    msg:
+                        '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
@@ -1010,15 +1022,10 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('syncmanual')),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
@@ -1029,15 +1036,17 @@ class _SettingsPageState extends State<SettingsPage>
                     if (lastDB != null &&
                         latestDB.difference(DateTime.parse(lastDB)).inHours <
                             1) {
-                      flutterToast.showToast(
-                        child: ToastWrapper(
-                          isCheck: true,
-                          msg: Translations.of(context)
-                              .trans('thisislatestbookmark'),
-                        ),
-                        gravity: ToastGravity.BOTTOM,
-                        toastDuration: Duration(seconds: 4),
-                      );
+                      if (mounted) {
+                        flutterToast.showToast(
+                          child: ToastWrapper(
+                            isCheck: true,
+                            msg: Translations.of(context)
+                                .trans('thisislatestbookmark'),
+                          ),
+                          gravity: ToastGravity.BOTTOM,
+                          toastDuration: const Duration(seconds: 4),
+                        );
+                      }
                       return;
                     }
 
@@ -1048,35 +1057,46 @@ class _SettingsPageState extends State<SettingsPage>
                       await deleteDatabase('${dir.path}/data/data.db');
                       await Directory('${dir.path}/data')
                           .delete(recursive: true);
-                    } catch (e) {}
+                    } catch (_) {}
 
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(
-                            builder: (context) => DataBaseDownloadPage(
-                                  dbType: Settings.databaseType,
-                                  isSync: true,
-                                )))
-                        .then(
-                      (value) async {
-                        HitomiIndexs.init();
-                        final directory =
-                            await getApplicationDocumentsDirectory();
-                        final path = File('${directory.path}/data/index.json');
-                        final text = path.readAsStringSync();
-                        HitomiManager.tagmap = jsonDecode(text);
-                        await DataBaseManager.reloadInstance();
+                    if (mounted) {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => DataBaseDownloadPage(
+                                    dbType: Settings.databaseType,
+                                    isSync: true,
+                                  )))
+                          .then(
+                        (value) async {
+                          HitomiIndexs.init();
+                          final directory =
+                              await getApplicationDocumentsDirectory();
+                          final path =
+                              File('${directory.path}/data/index.json');
+                          final text = path.readAsStringSync();
+                          HitomiManager.tagmap = jsonDecode(text);
+                          await DataBaseManager.reloadInstance();
 
-                        flutterToast.showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context).trans('synccomplete'),
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
-                        );
-                      },
-                    );
+                          if (mounted) {
+                            flutterToast.showToast(
+                              child: ToastWrapper(
+                                isCheck: true,
+                                msg: Translations.of(context)
+                                    .trans('synccomplete'),
+                              ),
+                              gravity: ToastGravity.BOTTOM,
+                              toastDuration: const Duration(seconds: 4),
+                            );
+                          }
+                        },
+                      );
+                    }
                   },
+            child: ListTile(
+              leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('syncmanual')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
           ),
         ],
       ),
@@ -1089,14 +1109,14 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
-              title: Text('VPN'),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              title: const Text('VPN'),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {},
           ),
@@ -1107,11 +1127,11 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('routing_rule')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => RouteDialog(),
+                builder: (BuildContext context) => const RouteDialog(),
               );
             },
           ),
@@ -1122,12 +1142,12 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title:
-                Text('Image ' + Translations.of(context).trans('routing_rule')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+                Text('Image ${Translations.of(context).trans('routing_rule')}'),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => ImageRouteDialog(),
+                builder: (BuildContext context) => const ImageRouteDialog(),
               );
             },
           ),
@@ -1138,7 +1158,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('messagesearchapi')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               TextEditingController text =
                   TextEditingController(text: Settings.searchMessageAPI);
@@ -1169,8 +1189,8 @@ class _SettingsPageState extends State<SettingsPage>
                 useRootNavigator: false,
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                  title: Text('대사 검색기 API'),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  title: const Text('대사 검색기 API'),
                   content: TextField(
                     controller: text,
                     autofocus: true,
@@ -1186,7 +1206,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -1227,10 +1247,19 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
+            onTap: Platform.isIOS
+                ? null
+                : () async {
+                    await Settings.setUserInnerStorage(
+                        !Settings.useInnerStorage);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
             child: ListTile(
               leading: Icon(
                 MdiIcons.downloadLock,
@@ -1251,15 +1280,6 @@ class _SettingsPageState extends State<SettingsPage>
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: Platform.isIOS
-                ? null
-                : () async {
-                    await Settings.setUserInnerStorage(
-                        !Settings.useInnerStorage);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
           ),
           _buildDivider(),
           ListTile(
@@ -1273,36 +1293,33 @@ class _SettingsPageState extends State<SettingsPage>
                 Text(
                   Translations.of(context).trans('threadcount'),
                 ),
-                FutureBuilder(
+                FutureBuilder<SharedPreferences>(
+                  future: SharedPreferences.getInstance(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
                       return Text(
-                        Translations.of(context).trans('curthread') + ': ',
+                        '${Translations.of(context).trans('curthread')}: ',
                         overflow: TextOverflow.ellipsis,
                       );
                     }
                     return Text(
-                      Translations.of(context).trans('curthread') +
-                          ': ' +
-                          snapshot.data.getInt('thread_count').toString(),
+                      '${Translations.of(context).trans('curthread')}: ${snapshot.data.getInt('thread_count')}',
                       overflow: TextOverflow.ellipsis,
                     );
                   },
-                  future: SharedPreferences.getInstance(),
                 )
               ],
             ),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               // 32개 => 50mb/s
               var tc = (await SharedPreferences.getInstance())
                   .getInt('thread_count');
 
+              if (!mounted) return;
               TextEditingController text =
                   TextEditingController(text: tc.toString());
               Widget yesButton = TextButton(
-                child: Text(Translations.of(context).trans('change'),
-                    style: TextStyle(color: Settings.majorColor)),
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 onPressed: () async {
                   if (int.tryParse(text.text) == null) {
@@ -1323,19 +1340,21 @@ class _SettingsPageState extends State<SettingsPage>
 
                   Navigator.pop(context, true);
                 },
+                child: Text(Translations.of(context).trans('change'),
+                    style: TextStyle(color: Settings.majorColor)),
               );
               Widget noButton = TextButton(
-                child: Text(Translations.of(context).trans('cancel'),
-                    style: TextStyle(color: Settings.majorColor)),
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
+                child: Text(Translations.of(context).trans('cancel'),
+                    style: TextStyle(color: Settings.majorColor)),
               );
               var dialog = await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                   title: Text(Translations.of(context).trans('setthread')),
                   content: TextField(
                     controller: text,
@@ -1349,19 +1368,20 @@ class _SettingsPageState extends State<SettingsPage>
                 ),
               );
               if (dialog == true) {
-                await IsolateDownloader.getInstance()
-                  ..changeThreadCount(int.parse(text.text));
+                (await IsolateDownloader.getInstance())
+                    .changeThreadCount(int.parse(text.text));
 
                 await (await SharedPreferences.getInstance())
                     .setInt('thread_count', int.parse(text.text));
 
+                if (!mounted) return;
                 FlutterToast(context).showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('changedthread'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
 
                 setState(() {});
@@ -1375,23 +1395,6 @@ class _SettingsPageState extends State<SettingsPage>
             //       Radius.circular(8.0),
             //     ),
             //   ),
-            child: ListTile(
-              leading:
-                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(Translations.of(context).trans('downloadpath')),
-                  Text(
-                    Translations.of(context).trans('curdownloadpath') +
-                        ': ' +
-                        Settings.downloadBasePath,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Settings.useInnerStorage
                 ? null
                 : () async {
@@ -1424,7 +1427,7 @@ class _SettingsPageState extends State<SettingsPage>
                       useRootNavigator: false,
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                        contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                         title: Text(
                             Translations.of(context).trans('downloadpath')),
                         content: TextField(
@@ -1443,15 +1446,35 @@ class _SettingsPageState extends State<SettingsPage>
                             await prevDir.rename(text.text);
                           }
                         }
-                      } catch (e) {}
+                      } catch (_) {}
 
                       await Settings.setBaseDownloadPath(text.text);
                     }
                   },
+            //   customBorder: RoundedRectangleBorder(
+            //     borderRadius: BorderRadius.all(
+            //       Radius.circular(8.0),
+            //     ),
+            //   ),
+            child: ListTile(
+              leading:
+                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(Translations.of(context).trans('downloadpath')),
+                  Text(
+                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -1467,14 +1490,12 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Text(Translations.of(context).trans('downloadrule')),
                   Text(
-                    Translations.of(context).trans('curdownloadrule') +
-                        ': ' +
-                        Settings.downloadRule,
+                    '${Translations.of(context).trans('curdownloadrule')}: ${Settings.downloadRule}',
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               TextEditingController text =
@@ -1506,7 +1527,7 @@ class _SettingsPageState extends State<SettingsPage>
                 useRootNavigator: false,
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                   title: Text(Translations.of(context).trans('downloadrule')),
                   content: TextField(
                     controller: text,
@@ -1532,10 +1553,19 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
+            // onTap: true
+            //     ? null
+            //     : () async {
+            //         await Settings.setAutoBackupBookmark(
+            //             !Settings.autobackupBookmark);
+            //         setState(() {
+            //           _shouldReload = true;
+            //         });
+            //       },
             child: ListTile(
               leading: Icon(
                 MdiIcons.bookArrowUpOutline,
@@ -1544,27 +1574,19 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('autobackupbookmark')),
               trailing: Switch(
                 value: Settings.autobackupBookmark,
-                onChanged: true
-                    ? null
-                    : (newValue) async {
-                        await Settings.setAutoBackupBookmark(newValue);
-                        setState(() {
-                          _shouldReload = true;
-                        });
-                      },
+                onChanged: (bool value) {},
+                // onChanged: true
+                //     ? null
+                //     : (newValue) async {
+                //         await Settings.setAutoBackupBookmark(newValue);
+                //         setState(() {
+                //           _shouldReload = true;
+                //         });
+                //       },
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: true
-                ? null
-                : () async {
-                    await Settings.setAutoBackupBookmark(
-                        !Settings.autobackupBookmark);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
           ),
           _buildDivider(),
           ListTile(
@@ -1573,7 +1595,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('restoringbookmark')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showOkDialog(
                   context,
@@ -1583,6 +1605,7 @@ class _SettingsPageState extends State<SettingsPage>
               var myappid = (await SharedPreferences.getInstance())
                   .getString('fa_userid');
 
+              if (!mounted) return;
               // 1. 북마크 유저 아이디 선택
               TextEditingController text = TextEditingController(text: myappid);
               Widget okButton = TextButton(
@@ -1603,8 +1626,8 @@ class _SettingsPageState extends State<SettingsPage>
                 useRootNavigator: false,
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                  title: Text('Enter User App Id'),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  title: const Text('Enter User App Id'),
                   content: TextField(
                     controller: text,
                     autofocus: true,
@@ -1621,23 +1644,30 @@ class _SettingsPageState extends State<SettingsPage>
               try {
                 // 2. 유효한 유저 아이디 인지 확인(서버 요청 및 다운로드)
                 var result = await VioletServer.resotreBookmark(text.text);
+
                 if (result == null) {
-                  await showOkDialog(
-                      context,
-                      "Invalid User-App-Id! If you're still getting this error, contact the developer.",
-                      Translations.of(context).trans('restoringbookmark'));
+                  if (mounted) {
+                    await showOkDialog(
+                        context,
+                        "Invalid User-App-Id! If you're still getting this error, contact the developer.",
+                        Translations.of(context).trans('restoringbookmark'));
+                  }
                   return;
                 }
 
                 // 3. 북마크 버전 가져오기
                 var versions = await VioletServer.versionsBookmark(text.text);
                 if (versions == null) {
-                  await showOkDialog(
-                      context,
-                      "북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.",
-                      Translations.of(context).trans('restoringbookmark'));
+                  if (mounted) {
+                    await showOkDialog(
+                        context,
+                        '북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.',
+                        Translations.of(context).trans('restoringbookmark'));
+                  }
                   return;
                 }
+
+                if (!mounted) return;
 
                 // 4. 버전 선택 및 북마크 확인 (이 북마크를 복원할까요?)
                 var version = await PlatformNavigator.navigateSlide(
@@ -1648,7 +1678,7 @@ class _SettingsPageState extends State<SettingsPage>
                   ),
                 );
 
-                if (version == null) {
+                if (version == null || !mounted) {
                   return;
                 }
 
@@ -1673,30 +1703,29 @@ class _SettingsPageState extends State<SettingsPage>
                   return;
                 }
               } catch (e, st) {
-                Logger.error('[Restore Bookmark] ' +
-                    e.toString() +
-                    '\n' +
-                    st.toString());
+                Logger.error('[Restore Bookmark] $e\n'
+                    '$st');
                 flutterToast.showToast(
-                  child: ToastWrapper(
+                  child: const ToastWrapper(
                     isCheck: false,
-                    msg: "Bookmark Restoring Error!",
+                    msg: 'Bookmark Restoring Error!',
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
                 return;
               }
 
               await Bookmark.getInstance();
 
+              if (!mounted) return;
               flutterToast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('importbookmark'),
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
+                toastDuration: const Duration(seconds: 4),
               );
             },
           ),
@@ -1704,7 +1733,7 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading: Icon(MdiIcons.import, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('importingbookmark')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
@@ -1715,7 +1744,7 @@ class _SettingsPageState extends State<SettingsPage>
                       msg: Translations.of(context).trans('noauth'),
                     ),
                     gravity: ToastGravity.BOTTOM,
-                    toastDuration: Duration(seconds: 4),
+                    toastDuration: const Duration(seconds: 4),
                   );
                   return;
                 }
@@ -1730,15 +1759,16 @@ class _SettingsPageState extends State<SettingsPage>
                   .path);
 
               if (file == null) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: false,
-                    msg: Translations.of(context).trans('noselectedb'),
-                  ),
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
-                );
-
+                if (mounted) {
+                  flutterToast.showToast(
+                    child: ToastWrapper(
+                      isCheck: false,
+                      msg: Translations.of(context).trans('noselectedb'),
+                    ),
+                    gravity: ToastGravity.BOTTOM,
+                    toastDuration: const Duration(seconds: 4),
+                  );
+                }
                 return;
               }
 
@@ -1748,14 +1778,16 @@ class _SettingsPageState extends State<SettingsPage>
 
               await Bookmark.getInstance();
 
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  msg: Translations.of(context).trans('importbookmark'),
-                ),
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
-              );
+              if (mounted) {
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('importbookmark'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
+              }
             },
           ),
           _buildDivider(),
@@ -1765,7 +1797,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('exportingbookmark')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
@@ -1776,7 +1808,7 @@ class _SettingsPageState extends State<SettingsPage>
                       msg: Translations.of(context).trans('noauth'),
                     ),
                     gravity: ToastGravity.BOTTOM,
-                    toastDuration: Duration(seconds: 4),
+                    toastDuration: const Duration(seconds: 4),
                   );
 
                   return;
@@ -1789,14 +1821,16 @@ class _SettingsPageState extends State<SettingsPage>
               var extpath = '${ext.path}/bookmark.db';
               await dbfile.copy(extpath);
 
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  msg: Translations.of(context).trans('exportbookmark'),
-                ),
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
-              );
+              if (mounted) {
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('exportbookmark'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
+              }
             },
           ),
           _buildDivider(),
@@ -1807,12 +1841,13 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('importfromeh')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               var ehc = (await SharedPreferences.getInstance())
                   .getString('eh_cookies');
 
+              if (!mounted) return;
               if (ehc == null || ehc == '') {
                 flutterToast.showToast(
                   child: ToastWrapper(
@@ -1820,16 +1855,17 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('setcookiefirst'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
                 return;
               }
 
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => ImportFromEHPage(),
+                builder: (BuildContext context) => const ImportFromEHPage(),
               );
 
+              if (!mounted) return;
               if (EHBookmark.bookmarkInfo == null) {
                 flutterToast.showToast(
                   child: ToastWrapper(
@@ -1838,15 +1874,15 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('bookmarkisempty'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
                 return;
               }
 
               int count = 0;
-              EHBookmark.bookmarkInfo.forEach((element) {
+              for (var element in EHBookmark.bookmarkInfo) {
                 count += element.length;
-              });
+              }
 
               var qqq = await showYesNoDialog(
                   context,
@@ -1870,6 +1906,7 @@ class _SettingsPageState extends State<SettingsPage>
                   }
                 }
 
+                if (!mounted) return;
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
@@ -1878,14 +1915,14 @@ class _SettingsPageState extends State<SettingsPage>
                         .trans('completeimportbookmark'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(8.0),
                   bottomRight: Radius.circular(8.0)),
@@ -1896,21 +1933,21 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('importfromjson')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               TextEditingController textController = TextEditingController();
 
               Widget importButton = TextButton(
                 style: TextButton.styleFrom(primary: Settings.majorColor),
-                child: Text('Import'),
+                child: const Text('Import'),
                 onPressed: () async {
                   Navigator.pop(context, textController.text);
                 },
               );
               Widget cancelButton = TextButton(
                 style: TextButton.styleFrom(primary: Settings.majorColor),
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
                 onPressed: () {
                   Navigator.pop(context, null);
                 },
@@ -1922,7 +1959,7 @@ class _SettingsPageState extends State<SettingsPage>
                   return AlertDialog(
                     title:
                         Text(Translations.of(context).trans('importfromjson')),
-                    contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                     actions: [
                       importButton,
                       cancelButton,
@@ -1938,10 +1975,10 @@ class _SettingsPageState extends State<SettingsPage>
                               .trans('pasteyourbookmarktext')),
                           Row(
                             children: [
-                              Text('JSON: '),
+                              const Text('JSON: '),
                               Expanded(
                                 child: TextField(
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintText:
                                           'ex: ["1207894", "artist:michiking", ...]'),
@@ -1973,22 +2010,22 @@ class _SettingsPageState extends State<SettingsPage>
                     .id();
                 for (int j = 0; j < json.length; j++) {
                   var tar = json.elementAt(j).toString();
-                  if (int.tryParse(tar) != null)
+                  if (int.tryParse(tar) != null) {
                     await bookmark.insertArticle(tar, DateTime.now(), group);
-                  else if (tar.contains(':') &&
+                  } else if (tar.contains(':') &&
                       ['artist', 'group'].contains(tar.split(':')[0])) {
                     await bookmark.bookmarkArtist(tar.split(':')[1],
                         tar.split(':')[0] == 'artist' ? 0 : 1, group);
                   }
                 }
 
+                if (!mounted) return;
                 await showOkDialog(context, 'Success!');
               } catch (e, st) {
-                Logger.error('[Import from hiyobi] ' +
-                    e.toString() +
-                    '\n' +
-                    st.toString());
+                Logger.error('[Import from hiyobi] $e\n'
+                    '$st');
 
+                if (!mounted) return;
                 await showOkDialog(context,
                     'Bookmark format is not correct. Please refer to Log Record for details.');
               }
@@ -2005,7 +2042,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             child: ListTile(
@@ -2013,15 +2050,15 @@ class _SettingsPageState extends State<SettingsPage>
                 imageUrl: 'https://e-hentai.org/favicon.ico',
                 width: 25,
               ),
-              title: Text('E-Hentai/ExHentai'),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              title: const Text('E-Hentai/ExHentai'),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               var dialog = await showDialog(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title: Text('E-Hentai Login'),
-                  contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                  title: const Text('E-Hentai Login'),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2030,14 +2067,14 @@ class _SettingsPageState extends State<SettingsPage>
                         style: ElevatedButton.styleFrom(
                           primary: Settings.majorColor,
                         ),
-                        child: Text('Login From WebPage'),
+                        child: const Text('Login From WebPage'),
                         onPressed: () => Navigator.pop(context, 1),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           primary: Settings.majorColor,
                         ),
-                        child: Text('Enter Cookie Information'),
+                        child: const Text('Enter Cookie Information'),
                         onPressed: () => Navigator.pop(context, 2),
                       ),
                     ],
@@ -2045,28 +2082,30 @@ class _SettingsPageState extends State<SettingsPage>
                 ),
               );
 
-              if (dialog == null) return;
+              if (dialog == null || !mounted) return;
 
               if (dialog == 1) {
-                var result = await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+                var result = await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const LoginScreen()));
 
                 await (await SharedPreferences.getInstance())
                     .setString('eh_cookies', result);
 
                 if (result != null) {
                   flutterToast.showToast(
-                    child: ToastWrapper(
+                    child: const ToastWrapper(
                       isCheck: true,
                       msg: 'Login Success!',
                     ),
                     gravity: ToastGravity.BOTTOM,
-                    toastDuration: Duration(seconds: 4),
+                    toastDuration: const Duration(seconds: 4),
                   );
                 }
               } else if (dialog == 2) {
                 var cookie = (await SharedPreferences.getInstance())
                     .getString('eh_cookies');
+
+                if (!mounted) return;
 
                 var iController = TextEditingController(
                     text:
@@ -2097,13 +2136,13 @@ class _SettingsPageState extends State<SettingsPage>
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
                     actions: [okButton, cancelButton],
-                    title: Text('E-Hentai Login'),
-                    contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    title: const Text('E-Hentai Login'),
+                    contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Row(children: [
-                          Text('igneous: '),
+                          const Text('igneous: '),
                           Expanded(
                             child: TextField(
                               controller: iController,
@@ -2111,7 +2150,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ]),
                         Row(children: [
-                          Text('ipb_member_id: '),
+                          const Text('ipb_member_id: '),
                           Expanded(
                             child: TextField(
                               controller: imiController,
@@ -2119,7 +2158,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ]),
                         Row(children: [
-                          Text('ipb_pass_hash: '),
+                          const Text('ipb_pass_hash: '),
                           Expanded(
                             child: TextField(
                               controller: iphController,
@@ -2156,7 +2195,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
@@ -2206,13 +2245,14 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('checkupdate')),
-              trailing: Icon(
+              trailing: const Icon(
                   // Icons.message,
                   Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               await UpdateSyncManager.checkUpdateSync();
 
+              if (!mounted) return;
               if (UpdateSyncManager.updateRequire) {
                 flutterToast.showToast(
                   child: ToastWrapper(
@@ -2220,7 +2260,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('newupdate'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               } else {
                 flutterToast.showToast(
@@ -2229,7 +2269,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('latestver'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
@@ -2245,17 +2285,17 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
-              leading: Icon(
+              leading: const Icon(
                 MdiIcons.discord,
                 color: Color(0xFF7189da),
               ),
               title: Text(Translations.of(context).trans('discord')),
-              trailing: Icon(Icons.open_in_new),
+              trailing: const Icon(Icons.open_in_new),
             ),
             onTap: () async {
               const url = 'https://discord.gg/K8qny6E';
@@ -2266,12 +2306,12 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               MdiIcons.github,
               color: Colors.black,
             ),
-            title: Text("GitHub " + Translations.of(context).trans('project')),
-            trailing: Icon(Icons.open_in_new),
+            title: Text("GitHub ${Translations.of(context).trans('project')}"),
+            trailing: const Icon(Icons.open_in_new),
             onTap: () async {
               const url = 'https://github.com/project-violet/';
               if (await canLaunch(url)) {
@@ -2281,12 +2321,12 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               MdiIcons.gmail,
               color: Colors.redAccent,
             ),
             title: Text(Translations.of(context).trans('contact')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               const url =
                   'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
@@ -2297,12 +2337,12 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               MdiIcons.heart,
               color: Colors.orange,
             ),
             title: Text(Translations.of(context).trans('donate')),
-            trailing: Icon(
+            trailing: const Icon(
                 // Icons.email,
                 Icons.open_in_new),
             onTap: () async {
@@ -2318,8 +2358,8 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.humanHandsup,
               color: Settings.majorColor,
             ),
-            title: Text('Developers'),
-            trailing: Icon(
+            title: const Text('Developers'),
+            trailing: const Icon(
                 // Icons.email,
                 Icons.keyboard_arrow_right),
             onTap: () async {
@@ -2331,7 +2371,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -2341,13 +2381,13 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('license')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                  builder: (context) => VioletLicensePage(),
+                  builder: (context) => const VioletLicensePage(),
                 ),
               );
             },
@@ -2359,7 +2399,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   _bottomInfo() {
     return Container(
-      margin: EdgeInsets.all(40),
+      margin: const EdgeInsets.all(40),
       child: Center(
         child: Column(
           children: <Widget>[
@@ -2378,7 +2418,7 @@ class _SettingsPageState extends State<SettingsPage>
               //onTap: () {},
             ),
             // ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 12),
             ),
             Text(
@@ -2386,7 +2426,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 16.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),
@@ -2395,7 +2435,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),

@@ -55,31 +55,30 @@ class ScriptManager {
       var galleryInfo = await http.get(downloadUrl, headers: headers);
       if (galleryInfo.statusCode != 200) return null;
       _runtime.evaluate(galleryInfo.body);
-      final jResult = _runtime.evaluate("hitomi_get_image_list()").stringResult;
+      final jResult = _runtime.evaluate('hitomi_get_image_list()').stringResult;
       final jResultObject = jsonDecode(jResult);
 
       if (jResultObject is Map<dynamic, dynamic>) {
         return Tuple3<List<String>, List<String>, List<String>>(
-            (jResultObject["result"] as List<dynamic>)
+            (jResultObject['result'] as List<dynamic>)
                 .map((e) => e as String)
                 .toList(),
-            (jResultObject["btresult"] as List<dynamic>)
+            (jResultObject['btresult'] as List<dynamic>)
                 .map((e) => e as String)
                 .toList(),
-            (jResultObject["stresult"] as List<dynamic>)
+            (jResultObject['stresult'] as List<dynamic>)
                 .map((e) => e as String)
                 .toList());
       } else {
-        Logger.error(
-            '[script-HitomiGetImageList] E: JSError\nId: $id\nMessage: ' +
-                jResult.toString());
+        Logger.error('[script-HitomiGetImageList] E: JSError\n'
+            'Id: $id\n'
+            'Message: $jResult');
         return null;
       }
     } catch (e, st) {
-      Logger.error('[script-HitomiGetImageList] E: ' +
-          e.toString() +
-          '\nId: $id\n' +
-          st.toString());
+      Logger.error('[script-HitomiGetImageList] E: $e\n'
+          'Id: $id\n'
+          '$st');
       return null;
     }
   }
@@ -95,16 +94,15 @@ class ScriptManager {
       if (jResultObject is Map<dynamic, dynamic>) {
         return Map<String, String>.from(jResultObject);
       } else {
-        Logger.error(
-            '[script-HitomiGetHeaderContent] E: JSError\nId: $id\nMessage: ' +
-                jResult.toString());
+        Logger.error('[script-HitomiGetHeaderContent] E: JSError\n'
+            'Id: $id\n'
+            'Message: $jResult');
         return null;
       }
     } catch (e, st) {
-      Logger.error('[script-HitomiGetHeaderContent] E: ' +
-          e.toString() +
-          '\nId: $id\n' +
-          st.toString());
+      Logger.error('[script-HitomiGetHeaderContent] E: $e\n'
+          'Id: $id\n'
+          '$st');
       return null;
     }
   }

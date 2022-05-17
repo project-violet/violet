@@ -35,7 +35,7 @@ class HitomiImageProvider extends VioletImageProvider {
     //   'user-agent': HttpWrapper.userAgent,
     // };
 
-    return await ScriptManager.runHitomiGetHeaderContent(this.id);
+    return await ScriptManager.runHitomiGetHeaderContent(id);
   }
 
   @override
@@ -54,9 +54,11 @@ class HitomiImageProvider extends VioletImageProvider {
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
     if (urls.item3 == null || urls.item3.length <= page) return -1;
 
-    if (_estimatedCache == null)
+    if (_estimatedCache == null) {
       _estimatedCache = List<double>.filled(urls.item3.length, 0);
-    else if (_estimatedCache[page] != 0) return _estimatedCache[page];
+    } else if (_estimatedCache[page] != 0) {
+      return _estimatedCache[page];
+    }
 
     final header = await getHeader(page);
     final image = (await http.get(urls.item3[page], headers: header)).bodyBytes;

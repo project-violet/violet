@@ -16,8 +16,10 @@ class SearchMessageRankPageMemory {
 }
 
 class SearchMessageRankPage extends StatefulWidget {
+  const SearchMessageRankPage({Key key}) : super(key: key);
+
   @override
-  _SearchMessageRankPageState createState() => _SearchMessageRankPageState();
+  State<SearchMessageRankPage> createState() => _SearchMessageRankPageState();
 }
 
 class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
@@ -30,10 +32,10 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       if (SearchMessageRankPageMemory.rawSearchLists.isEmpty) {
         const url =
-            "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
+            'https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json';
 
         var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
@@ -67,8 +69,8 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
         children: [
           Expanded(
             child: ListView.builder(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.all(0),
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(0),
               itemBuilder: (BuildContext ctxt, int index) {
                 var e = searchLists[index];
                 return ListTile(

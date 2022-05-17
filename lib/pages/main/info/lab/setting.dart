@@ -7,8 +7,10 @@ import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabSetting extends StatefulWidget {
+  const LabSetting({Key key}) : super(key: key);
+
   @override
-  _LabSettingState createState() => _LabSettingState();
+  State<LabSetting> createState() => _LabSettingState();
 }
 
 class _LabSettingState extends State<LabSetting> {
@@ -22,8 +24,8 @@ class _LabSettingState extends State<LabSetting> {
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.flask, color: Settings.majorColor),
-              title: Text('Simple item widget loading icon'),
-              subtitle: Text('using circular bar instead of flare'),
+              title: const Text('Simple item widget loading icon'),
+              subtitle: const Text('using circular bar instead of flare'),
               trailing: Switch(
                 value: Settings.simpleItemWidgetLoadingIcon,
                 onChanged: (newValue) async {
@@ -44,9 +46,9 @@ class _LabSettingState extends State<LabSetting> {
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.flask, color: Settings.majorColor),
-              title: Text('Artist article list tap option'),
-              subtitle:
-                  Text('show new viewer when artist article list item tapped'),
+              title: const Text('Artist article list tap option'),
+              subtitle: const Text(
+                  'show new viewer when artist article list item tapped'),
               trailing: Switch(
                 value: Settings.showNewViewerWhenArtistArticleListItemTap,
                 onChanged: (newValue) async {
@@ -68,8 +70,8 @@ class _LabSettingState extends State<LabSetting> {
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.flask, color: Settings.majorColor),
-              title: Text('Enable viewer function backdrop filter'),
-              subtitle: Text(
+              title: const Text('Enable viewer function backdrop filter'),
+              subtitle: const Text(
                   'apply ios style blur effect to viewer functions. this blur effect may decrease performance.'),
               trailing: Switch(
                 value: Settings.enableViewerFunctionBackdropFilter,
@@ -92,8 +94,8 @@ class _LabSettingState extends State<LabSetting> {
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.flask, color: Settings.majorColor),
-              title: Text('Using PushReplacement On Article Read'),
-              subtitle: Text(
+              title: const Text('Using PushReplacement On Article Read'),
+              subtitle: const Text(
                   'when tap Read button in the article-info, the article-info closes.'),
               trailing: Switch(
                 value: Settings.usingPushReplacementOnArticleRead,
@@ -115,8 +117,8 @@ class _LabSettingState extends State<LabSetting> {
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.flask, color: Settings.majorColor),
-              title: Text('Download E(x)hentai Raw Image'),
-              subtitle: Text(
+              title: const Text('Download E(x)hentai Raw Image'),
+              subtitle: const Text(
                   'download the original image. many network errors (connection reset ... etc) can occur during this operation.'),
               trailing: Switch(
                 value: Settings.downloadEhRawImage,

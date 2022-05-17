@@ -41,16 +41,17 @@ class ArtistInfoPage extends StatefulWidget {
   final bool isSeries;
   final bool isCharacter;
 
-  ArtistInfoPage({
+  const ArtistInfoPage({
+    Key key,
     @required this.artist,
     this.isGroup = false,
     this.isUploader = false,
     this.isSeries = false,
     this.isCharacter = false,
-  });
+  }) : super(key: key);
 
   @override
-  _ArtistInfoPageState createState() => _ArtistInfoPageState();
+  State<ArtistInfoPage> createState() => _ArtistInfoPageState();
 }
 
 class _ArtistInfoPageState extends State<ArtistInfoPage> {
@@ -88,7 +89,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       //
       // Check bookmark
       //
@@ -125,25 +126,26 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //
       //  Statistics
       //
-      var ffstat = Map<String, int>();
+      var ffstat = <String, int>{};
 
-      cc.forEach((element) {
-        if (element.tags() == null) return;
+      for (var element in cc) {
+        if (element.tags() == null) continue;
         (element.tags() as String)
             .split('|')
             .where((element) => element != '')
             .forEach((element) {
-          if (element.startsWith('female:'))
+          if (element.startsWith('female:')) {
             femaleTags += 1;
-          else if (element.startsWith('male:'))
+          } else if (element.startsWith('male:')) {
             maleTags += 1;
-          else
+          } else {
             tags += 1;
+          }
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] += 1;
         });
-      });
+      }
 
       ffstat.forEach((key, value) {
         lff.add(Tuple2<String, int>(key, value));
@@ -159,28 +161,31 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //  Similar Artists (or group, uploader)
       //
 
-      if (widget.isGroup)
+      if (widget.isGroup) {
         similars = HitomiIndexs.calculateSimilarGroups(widget.artist);
-      else if (widget.isUploader)
+      } else if (widget.isUploader) {
         similars = HitomiIndexs.calculateSimilarUploaders(widget.artist);
-      else if (widget.isSeries)
+      } else if (widget.isSeries) {
         similars = HitomiIndexs.calculateSimilarSeries(widget.artist);
-      else if (widget.isCharacter)
+      } else if (widget.isCharacter) {
         similars = HitomiIndexs.calculateSimilarCharacter(widget.artist);
-      else
+      } else {
         similars = HitomiIndexs.calculateSimilarArtists(widget.artist);
+      }
 
       similarsAll = similars;
       similars = similars.take(6).toList();
 
       prefix = 'artist:';
-      if (widget.isGroup)
+      if (widget.isGroup) {
         prefix = 'group:';
-      else if (widget.isUploader)
+      } else if (widget.isUploader) {
         prefix = 'uploader:';
-      else if (widget.isSeries)
+      } else if (widget.isSeries) {
         prefix = 'series:';
-      else if (widget.isCharacter) prefix = 'character:';
+      } else if (widget.isCharacter) {
+        prefix = 'character:';
+      }
 
       await querySimilars(similars, prefix, qrs);
 
@@ -215,12 +220,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         qureyLoaded = true;
       });
 
-      Future.delayed(Duration(milliseconds: 300)).then((value) {
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
         ec.expanded = true;
         commentAreaEC.expanded = true;
       });
 
-      Future.delayed(Duration(microseconds: 100))
+      Future.delayed(const Duration(microseconds: 100))
           .then((value) async => await readComments());
     });
   }
@@ -245,7 +250,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         .reversed
         .toList();
 
-    if (comments.length > 0) setState(() {});
+    if (comments.isNotEmpty) setState(() {});
   }
 
   Future<void> querySimilars(List<Tuple2<String, double>> similars,
@@ -253,36 +258,33 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var unescape = HtmlUnescape();
     for (int i = 0; i < similars.length; i++) {
       var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
-      var queryString = HitomiManager.translate2query(prefix +
-          postfix +
-          ' ' +
-          Settings.includeTags +
-          ' ' +
-          Settings.excludeTags
-              .where((e) => e.trim() != '')
-              .map((e) => '-$e')
-              .join(' '));
+      var queryString = HitomiManager.translate2query(
+          '$prefix$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 10;
 
       var x = await qm.next();
-      if (x == null || x.length == 0) {
+      if (x == null || x.isEmpty) {
         qrs.add(<QueryResult>[]);
         continue;
       }
       var y = [x[0]];
 
       var titles = [unescape.convert((x[0].title() as String).trim())];
-      if (titles[0].contains('Ch.'))
+      if (titles[0].contains('Ch.')) {
         titles[0] = titles[0].split('Ch.')[0];
-      else if (titles[0].contains('ch.')) titles[0] = titles[0].split('ch.')[0];
+      } else if (titles[0].contains('ch.')) {
+        titles[0] = titles[0].split('ch.')[0];
+      }
 
       for (int i = 1; i < x.length; i++) {
         var skip = false;
         var ff = unescape.convert((x[i].title() as String).trim());
-        if (ff.contains('Ch.'))
+        if (ff.contains('Ch.')) {
           ff = ff.split('Ch.')[0];
-        else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
+        } else if (ff.contains('ch.')) {
+          ff = ff.split('ch.')[0];
+        }
         for (int j = 0; j < titles.length; j++) {
           var tt = titles[j];
           if (Distance.levenshteinDistanceComparable(
@@ -309,25 +311,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var isSeries = obj[3] as bool;
     var isCharacter = obj[4] as bool;
 
-    var query = HitomiManager.translate2query((isGroup
-            ? 'group:'
-            : isUploader
-                ? 'uploader:'
-                : isSeries
-                    ? 'series:'
-                    : isCharacter
-                        ? 'character:'
-                        : 'artist:') +
-        '${artist.replaceAll(' ', '_')} ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+    var query = HitomiManager.translate2query(
+        '${isGroup ? 'group:' : isUploader ? 'uploader:' : isSeries ? 'series:' : isCharacter ? 'character:' : 'artist:'}${artist.replaceAll(' ', '_')} ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
     // DateTime dt = DateTime.now();
-    QueryManager qm = await QueryManager.query(query + ' ORDER BY Id DESC');
+    QueryManager qm = await QueryManager.query('$query ORDER BY Id DESC');
     // print((DateTime.now().difference(dt)).inSeconds);
 
     return qm.results;
@@ -343,7 +331,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       color: Settings.themeWhat
           ? Settings.themeBlack
               ? const Color(0xFF141414)
-              : Color(0xFF353535)
+              : const Color(0xFF353535)
           : Colors.grey.shade100,
       child: Padding(
         // padding: EdgeInsets.all(0),
@@ -359,7 +347,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               color: Settings.themeWhat
                   ? Settings.themeBlack
                       ? const Color(0xFF141414)
-                      : Color(0xFF353535)
+                      : const Color(0xFF353535)
                   : Colors.grey.shade100,
               child: SizedBox(
                 width: width - 16,
@@ -385,7 +373,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                               height: 16,
                             ),
                             nameArea(),
-                            Expanded(
+                            const Expanded(
                               child: Align(
                                 alignment: Alignment.center,
                                 child: SizedBox(
@@ -416,7 +404,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             height: 28,
             child: FlareActor(
               'assets/flare/likeUtsua.flr',
-              animation: isBookmarked ? "Like" : "IdleUnlike",
+              animation: isBookmarked ? 'Like' : 'IdleUnlike',
               controller: flareController,
             ),
           ),
@@ -431,7 +419,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                   ? 'Character: '
                                   : 'Artist: ') +
                   widget.artist,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
       ),
       onTap: () async {
@@ -454,7 +443,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 '${widget.artist}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
 
         if (!isBookmarked) {
@@ -479,248 +468,219 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             labelStyle: charts.TextStyleSpec(
                 fontSize: isExpanded ? 10 : 14,
                 color: charts.MaterialPalette.white),
-            lineStyle: charts.LineStyleSpec(
+            lineStyle: const charts.LineStyleSpec(
                 color: charts.MaterialPalette.transparent)));
-    var axis2 = charts.NumericAxisSpec(
+    var axis2 = const charts.NumericAxisSpec(
         renderSpec: charts.GridlineRendererSpec(
       labelStyle: charts.TextStyleSpec(
           fontSize: 10, color: charts.MaterialPalette.white),
     ));
-    return Container(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.fromLTRB(64, 16, 64, 0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                      flex: femaleTags,
-                      child: Container(
-                        height: 8,
-                        color: Colors.pink,
-                      )),
-                  Expanded(
-                      flex: maleTags,
-                      child: Container(
-                        height: 8,
-                        color: Colors.blue,
-                      )),
-                  Expanded(
-                      flex: tags,
-                      child: Container(
-                        height: 8,
-                        color: Colors.grey,
-                      )),
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(64, 16, 64, 0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                    flex: femaleTags,
+                    child: Container(
+                      height: 8,
+                      color: Colors.pink,
+                    )),
+                Expanded(
+                    flex: maleTags,
+                    child: Container(
+                      height: 8,
+                      color: Colors.blue,
+                    )),
+                Expanded(
+                    flex: tags,
+                    child: Container(
+                      height: 8,
+                      color: Colors.grey,
+                    )),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(4),
+        ),
+        InkWell(
+          child: SizedBox(
+              width: width - 16 - 32,
+              height:
+                  isExpanded ? lff.length * 14.0 + 10 : lff.length * 22.0 + 10,
+              child: charts.BarChart(
+                [
+                  charts.Series<Tuple2<String, int>, String>(
+                      id: 'Sales',
+                      data: lff,
+                      domainFn: (Tuple2<String, int> sales, f) =>
+                          sales.item1.contains(':')
+                              ? sales.item1.split(':')[1]
+                              : sales.item1,
+                      measureFn: (Tuple2<String, int> sales, _) => sales.item2,
+                      colorFn: (Tuple2<String, int> sales, _) {
+                        if (sales.item1.startsWith('female:')) {
+                          return charts.MaterialPalette.pink.shadeDefault;
+                        } else if (sales.item1.startsWith('male:')) {
+                          return charts.MaterialPalette.blue.shadeDefault;
+                        } else {
+                          return charts.MaterialPalette.gray.shadeDefault;
+                        }
+                      }),
                 ],
-              ),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(4),
-          ),
-          InkWell(
-            child: SizedBox(
-                width: width - 16 - 32,
-                height: isExpanded
-                    ? lff.length * 14.0 + 10
-                    : lff.length * 22.0 + 10,
-                child: charts.BarChart(
-                  [
-                    charts.Series<Tuple2<String, int>, String>(
-                        id: 'Sales',
-                        data: lff,
-                        domainFn: (Tuple2<String, int> sales, f) =>
-                            sales.item1.contains(':')
-                                ? sales.item1.split(':')[1]
-                                : sales.item1,
-                        measureFn: (Tuple2<String, int> sales, _) =>
-                            sales.item2,
-                        colorFn: (Tuple2<String, int> sales, _) {
-                          if (sales.item1.startsWith('female:'))
-                            return charts.MaterialPalette.pink.shadeDefault;
-                          else if (sales.item1.startsWith('male:'))
-                            return charts.MaterialPalette.blue.shadeDefault;
-                          else
-                            return charts.MaterialPalette.gray.shadeDefault;
-                        }),
-                  ],
-                  primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
-                  domainAxis: Settings.themeWhat ? axis1 : null,
-                  animate: true,
-                  vertical: false,
-                )),
-            onTap: () {},
-            onTapCancel: () {
-              isExpanded = !isExpanded;
-              if (isExpanded)
-                lff = lffOrigin;
-              else
-                lff = lffOrigin.take(5).toList();
-              setState(() {});
-            },
-          ),
-          ExpandableNotifier(
-            controller: ec,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: ScrollOnExpand(
-                child: ExpandablePanel(
-                  theme: ExpandableThemeData(
-                      iconColor:
-                          Settings.themeWhat ? Colors.white : Colors.grey,
-                      animationDuration: const Duration(milliseconds: 500)),
-                  header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(
-                        '${Translations.of(context).trans('articles')} (${cc.length})'),
-                  ),
-                  expanded: Column(children: <Widget>[
-                    articleArea(),
-                    Visibility(
-                        visible: cc.length > 6,
-                        child: more(() => ArticleListPage(
-                            cc: cc,
-                            name: (widget.isGroup
-                                    ? 'Groups: '
-                                    : widget.isUploader
-                                        ? 'Uploader: '
-                                        : widget.isSeries
-                                            ? 'Series: '
-                                            : widget.isCharacter
-                                                ? 'Character: '
-                                                : 'Artist: ') +
-                                widget.artist)))
-                  ]),
+                primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
+                domainAxis: Settings.themeWhat ? axis1 : null,
+                animate: true,
+                vertical: false,
+              )),
+          onTap: () {},
+          onTapCancel: () {
+            isExpanded = !isExpanded;
+            if (isExpanded) {
+              lff = lffOrigin;
+            } else {
+              lff = lffOrigin.take(5).toList();
+            }
+            setState(() {});
+          },
+        ),
+        ExpandableNotifier(
+          controller: ec,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: ScrollOnExpand(
+              child: ExpandablePanel(
+                theme: ExpandableThemeData(
+                    iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
+                    animationDuration: const Duration(milliseconds: 500)),
+                header: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                  child: Text(
+                      '${Translations.of(context).trans('articles')} (${cc.length})'),
                 ),
+                expanded: Column(children: <Widget>[
+                  articleArea(),
+                  Visibility(
+                      visible: cc.length > 6,
+                      child: more(() => ArticleListPage(
+                          cc: cc,
+                          name: (widget.isGroup
+                                  ? 'Groups: '
+                                  : widget.isUploader
+                                      ? 'Uploader: '
+                                      : widget.isSeries
+                                          ? 'Series: '
+                                          : widget.isCharacter
+                                              ? 'Character: '
+                                              : 'Artist: ') +
+                              widget.artist)))
+                ]),
               ),
             ),
           ),
-          ExpandableNotifier(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: ScrollOnExpand(
-                child: ExpandablePanel(
-                  theme: ExpandableThemeData(
-                      iconColor:
-                          Settings.themeWhat ? Colors.white : Colors.grey,
-                      animationDuration: const Duration(milliseconds: 500)),
-                  header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(Translations.of(context).trans('comment') +
-                        ' (${(comments != null ? comments.length : 0)})'),
-                  ),
-                  expanded: commentArea(),
+        ),
+        ExpandableNotifier(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: ScrollOnExpand(
+              child: ExpandablePanel(
+                theme: ExpandableThemeData(
+                    iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
+                    animationDuration: const Duration(milliseconds: 500)),
+                header: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                  child: Text(
+                      '${Translations.of(context).trans('comment')} (${(comments != null ? comments.length : 0)})'),
                 ),
+                expanded: commentArea(),
               ),
             ),
           ),
-          widget.isCharacter || widget.isSeries
-              ? ExpandableNotifier(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4.0),
-                    child: ScrollOnExpand(
-                      child: ExpandablePanel(
-                        theme: ExpandableThemeData(
-                            iconColor:
-                                Settings.themeWhat ? Colors.white : Colors.grey,
-                            animationDuration:
-                                const Duration(milliseconds: 500)),
-                        header: Padding(
-                          padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                          child: Text(Translations.of(context)
-                                  .trans('related') +
-                              ' ' +
-                              (widget.isSeries
-                                  ? Translations.of(context).trans('iseries')
-                                  : Translations.of(context)
-                                      .trans('icharacter'))),
-                        ),
-                        expanded: relatedArea(),
+        ),
+        widget.isCharacter || widget.isSeries
+            ? ExpandableNotifier(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: ScrollOnExpand(
+                    child: ExpandablePanel(
+                      theme: ExpandableThemeData(
+                          iconColor:
+                              Settings.themeWhat ? Colors.white : Colors.grey,
+                          animationDuration: const Duration(milliseconds: 500)),
+                      header: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                        child: Text(
+                            '${Translations.of(context).trans('related')} ${widget.isSeries ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                       ),
+                      expanded: relatedArea(),
                     ),
                   ),
-                )
-              : Container(),
-          widget.isCharacter || widget.isSeries
-              ? ExpandableNotifier(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4.0),
-                    child: ScrollOnExpand(
-                      child: ExpandablePanel(
-                        theme: ExpandableThemeData(
-                            iconColor:
-                                Settings.themeWhat ? Colors.white : Colors.grey,
-                            animationDuration:
-                                const Duration(milliseconds: 500)),
-                        header: Padding(
-                          padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                          child: Text(Translations.of(context)
-                                  .trans('related') +
-                              ' ' +
-                              (widget.isCharacter
-                                  ? Translations.of(context).trans('iseries')
-                                  : Translations.of(context)
-                                      .trans('icharacter'))),
-                        ),
-                        expanded: relatedSingleArea(),
+                ),
+              )
+            : Container(),
+        widget.isCharacter || widget.isSeries
+            ? ExpandableNotifier(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: ScrollOnExpand(
+                    child: ExpandablePanel(
+                      theme: ExpandableThemeData(
+                          iconColor:
+                              Settings.themeWhat ? Colors.white : Colors.grey,
+                          animationDuration: const Duration(milliseconds: 500)),
+                      header: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                        child: Text(
+                            '${Translations.of(context).trans('related')} ${widget.isCharacter ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                       ),
+                      expanded: relatedSingleArea(),
                     ),
                   ),
-                )
-              : Container(),
-          ExpandableNotifier(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: ScrollOnExpand(
-                child: ExpandablePanel(
-                  theme: ExpandableThemeData(
-                      iconColor:
-                          Settings.themeWhat ? Colors.white : Colors.grey,
-                      animationDuration: const Duration(milliseconds: 500)),
-                  header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(Translations.of(context).trans('similar') +
-                        ' ' +
-                        (widget.isGroup
-                            ? Translations.of(context).trans('igroups')
-                            : widget.isUploader
-                                ? Translations.of(context).trans('iuploader')
-                                : widget.isSeries
-                                    ? Translations.of(context).trans('iseries')
-                                    : widget.isCharacter
-                                        ? Translations.of(context)
-                                            .trans('icharacter')
-                                        : Translations.of(context)
-                                            .trans('iartists'))),
-                  ),
-                  expanded: similarArea(),
                 ),
+              )
+            : Container(),
+        ExpandableNotifier(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: ScrollOnExpand(
+              child: ExpandablePanel(
+                theme: ExpandableThemeData(
+                    iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
+                    animationDuration: const Duration(milliseconds: 500)),
+                header: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                  child: Text(
+                      '${Translations.of(context).trans('similar')} ${widget.isGroup ? Translations.of(context).trans('igroups') : widget.isUploader ? Translations.of(context).trans('iuploader') : widget.isSeries ? Translations.of(context).trans('iseries') : widget.isCharacter ? Translations.of(context).trans('icharacter') : Translations.of(context).trans('iartists')}'),
+                ),
+                expanded: similarArea(),
               ),
             ),
           ),
-          ExpandableNotifier(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
-              child: ScrollOnExpand(
-                child: ExpandablePanel(
-                  theme: ExpandableThemeData(
-                      iconColor:
-                          Settings.themeWhat ? Colors.white : Colors.grey,
-                      animationDuration: const Duration(milliseconds: 500)),
-                  header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(Translations.of(context).trans('series') +
-                        ' (${series.length})'),
-                  ),
-                  expanded: seriesArea(),
+        ),
+        ExpandableNotifier(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: ScrollOnExpand(
+              child: ExpandablePanel(
+                theme: ExpandableThemeData(
+                    iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
+                    animationDuration: const Duration(milliseconds: 500)),
+                header: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
+                  child: Text(
+                      '${Translations.of(context).trans('series')} (${series.length})'),
                 ),
+                expanded: seriesArea(),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -735,9 +695,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           PlatformNavigator.navigateSlide(context, what(), opaque: false);
         },
         child: Row(
-          children: [Text(Translations.of(context).trans('more'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('more'))],
         ),
       ),
     );
@@ -747,13 +707,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var windowWidth = MediaQuery.of(context).size.width;
     return LiveGrid(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-      showItemInterval: Duration(milliseconds: 50),
-      showItemDuration: Duration(milliseconds: 150),
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      showItemInterval: const Duration(milliseconds: 50),
+      showItemDuration: const Duration(milliseconds: 150),
       visibleFraction: 0.001,
       itemCount: min(cc.length, 6),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
@@ -767,7 +727,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           ).animate(animation),
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: Offset(0, -0.1),
+              begin: const Offset(0, -0.1),
               end: Offset.zero,
             ).animate(animation),
             child: Padding(
@@ -781,10 +741,10 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       showDetail: false,
                       addBottomPadding: false,
                       width: (windowWidth - 4.0) / 3,
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 ),
               ),
@@ -797,9 +757,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Widget similarArea() {
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: similars.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == similars.length) {
@@ -816,13 +776,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         var qq = qrs[index];
 
         var type = 'artist';
-        if (widget.isGroup)
+        if (widget.isGroup) {
           type = 'group';
-        else if (widget.isUploader)
+        } else if (widget.isUploader) {
           type = 'uploader';
-        else if (widget.isSeries)
+        } else if (widget.isSeries) {
           type = 'series';
-        else if (widget.isCharacter) type = 'character';
+        } else if (widget.isCharacter) {
+          type = 'character';
+        }
 
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
@@ -845,9 +807,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   Widget seriesArea() {
     var unescape = HtmlUnescape();
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: min(series.length, 6) + (series.length > 6 ? 1 : 0),
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == 6) {
@@ -871,7 +833,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   Widget commentArea() {
-    if (comments != null && comments.length > 0) {
+    if (comments != null && comments.isNotEmpty) {
       var children = List<Widget>.from(comments.map((e) {
         return InkWell(
           onTap: () async {
@@ -895,8 +857,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1.toLocal())}',
-                          style: TextStyle(fontSize: 12)),
+                          DateFormat('yyyy-MM-dd HH:mm')
+                              .format(e.item1.toLocal()),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ]),
@@ -906,7 +869,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       }));
 
       return Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: children + [comment(context)],
@@ -920,7 +883,10 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
+              SizedBox(
+                // alignment: Alignment.center,
+                width: 100,
+                height: 100,
                 // alignment: Alignment.center,
                 child: Align(
                   // alignment: Alignment.center,
@@ -929,8 +895,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                width: 100,
-                height: 100,
               )
             ],
           ),
@@ -981,7 +945,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           useRootNavigator: false,
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+            contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
             title: Text(Translations.of(context).trans('writecomment')),
             content: TextField(
               controller: text,
@@ -994,9 +958,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       splashColor: Colors.white,
       child: ListTile(
         title: Row(
-          children: [Text(Translations.of(context).trans('writecomment'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('writecomment'))],
         ),
       ),
     );
@@ -1004,9 +968,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Widget relatedArea() {
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: relatedCharacterOrSeries.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCharacterOrSeries.length) {
@@ -1045,9 +1009,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Widget relatedSingleArea() {
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: relatedCOSSingle.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCOSSingle.length) {

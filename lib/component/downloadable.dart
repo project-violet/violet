@@ -57,9 +57,9 @@ class DownloadTask {
   DownloadTask({
     this.taskId,
     this.accept =
-        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+        'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
     this.userAgent =
-        "Mozilla/5.0 (Android 7.0; Mobile; rv:54.0) Gecko/54.0 Firefox/54.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/603.2.4",
+        'Mozilla/5.0 (Android 7.0; Mobile; rv:54.0) Gecko/54.0 Firefox/54.0 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/603.2.4',
     this.referer,
     this.autoRedirection,
     this.retryWhenFail,
@@ -141,37 +141,37 @@ class FileNameFormat {
 
   String formatting(String raw) {
     var format = {
-      "title": title,
-      "id": id,
-      "originalTitle": originalTitle,
-      "extractor": extractor,
-      "user": user,
-      "account": account,
-      "author": author,
-      "englishAuthor": englishAuthor,
-      "group": group,
-      "artist": artist,
-      "search": search,
-      "uploadDate": uploadDate,
-      "uploader": uploader,
-      "uploaderId": uploaderId,
-      "character": character,
-      "gallery": gallery,
-      "series": series,
-      "seasonNumber": seasonNumber,
-      "episode": episode,
-      "episodeNumber": episodeNumber,
-      "filenameWithoutExtension": filenameWithoutExtension,
-      "extension": extension,
-      "file": filenameWithoutExtension,
-      "ext": extension,
-      "url": url,
-      "license": license,
-      "genre": genre,
-      "laugage": laugage,
-      "downloaddate": downloadDate,
-      "classname": className,
-      "length": length,
+      'title': title,
+      'id': id,
+      'originalTitle': originalTitle,
+      'extractor': extractor,
+      'user': user,
+      'account': account,
+      'author': author,
+      'englishAuthor': englishAuthor,
+      'group': group,
+      'artist': artist,
+      'search': search,
+      'uploadDate': uploadDate,
+      'uploader': uploader,
+      'uploaderId': uploaderId,
+      'character': character,
+      'gallery': gallery,
+      'series': series,
+      'seasonNumber': seasonNumber,
+      'episode': episode,
+      'episodeNumber': episodeNumber,
+      'filenameWithoutExtension': filenameWithoutExtension,
+      'extension': extension,
+      'file': filenameWithoutExtension,
+      'ext': extension,
+      'url': url,
+      'license': license,
+      'genre': genre,
+      'laugage': laugage,
+      'downloaddate': downloadDate,
+      'classname': className,
+      'length': length,
     };
 
     var builder = StringBuffer();
@@ -185,8 +185,9 @@ class FileNameFormat {
           continue;
         }
 
-        if (raw[i++] != '(')
-          throw Exception("Filename formatting error! pos=" + i.toString());
+        if (raw[i++] != '(') {
+          throw Exception('Filename formatting error! pos=$i');
+        }
 
         var tokenb = StringBuffer();
 
@@ -222,16 +223,17 @@ class FileNameFormat {
         var pptk = pp.toString();
 
         if (type == 's') {
-          if (pptk != "")
+          if (pptk != '') {
             builder.write(literal
                 .substring(0, int.parse(pptk))
                 .replaceAll('|', 'ㅣ')
                 .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
-          else
+          } else {
             builder.write(literal
                 .toString()
                 .replaceAll('|', 'ㅣ')
                 .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
+          }
         }
         // else if (type == 'd')
         // {
@@ -245,8 +247,9 @@ class FileNameFormat {
         // {
         //     builder.Append(float.Parse(literal).ToString(pptk));
         // }
-      } else
+      } else {
         builder.write(raw[i]);
+      }
     }
 
     var result = builder.toString();

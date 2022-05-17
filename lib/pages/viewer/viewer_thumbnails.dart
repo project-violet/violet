@@ -21,25 +21,26 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class ViewerThumbnail extends StatefulWidget {
   final int viewedPage;
 
-  ViewerThumbnail({this.viewedPage});
+  const ViewerThumbnail({Key key, this.viewedPage}) : super(key: key);
 
   @override
-  _ViewerThumbnailState createState() => _ViewerThumbnailState();
+  State<ViewerThumbnail> createState() => _ViewerThumbnailState();
 }
 
 class _ViewerThumbnailState extends State<ViewerThumbnail> {
+  final ScrollController _scrollController = ScrollController();
+
   ViewerPageProvider _pageInfo;
   List<GlobalKey> itemKeys = <GlobalKey>[];
-  ScrollController _scrollController = ScrollController();
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    List.generate(_pageInfo.uris.length, (index) => index).forEach((element) {
+    for (int i = 0; i < _pageInfo.uris.length; i++) {
       itemKeys.add(GlobalKey());
-    });
+    }
 
     if (_pageInfo.useFileSystem) _jumpToViewedPage();
   }
@@ -64,7 +65,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
 
   @override
   Widget build(BuildContext context) {
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -75,12 +76,13 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: _buildThumbanilsList(),
       );
+    }
   }
 
   Widget _buildThumbanilsList() {
@@ -92,15 +94,16 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     } else if (_pageInfo.useProvider) {
       return _buildProviderThumbnailList();
     }
+    return const SizedBox.shrink();
   }
 
   Widget _buildFileSystemThumbnailList() {
     final width = MediaQuery.of(context).size.width;
 
     return GridView.count(
-      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+      padding: const EdgeInsets.all(8),
       controller: _scrollController,
-      physics: BouncingScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       shrinkWrap: true,
       crossAxisCount: 3,
       childAspectRatio: 3 / 4,
@@ -126,7 +129,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
 
   Widget _buildProviderThumbnailList() {
     if (ProviderManager.isExists(_pageInfo.id)) {
-      return FutureBuilder(
+      return FutureBuilder<List<Object>>(
         future: Future.value(1).then((value) async {
           VioletImageProvider prov = await ProviderManager.get(_pageInfo.id);
 
@@ -138,26 +141,28 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               try {
                 var urls =
                     await HitomiManager.getImageList(_pageInfo.id.toString());
-                if (urls.item1.length != 0 && urls.item2.length != 0) {
+                if (urls.item1.isNotEmpty && urls.item2.isNotEmpty) {
                   prov = HitomiImageProvider(urls, _pageInfo.id.toString());
                   ProviderManager.insert(_pageInfo.id * 1000000, prov);
                 }
-              } catch (e) {}
+              } catch (_) {}
             }
-          } else
+          } else {
             prov = await ProviderManager.get(_pageInfo.id * 1000000);
+          }
 
           return [await prov.getSmallImagesUrl(), await prov.getHeader(0)];
         }),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Container(child: CircularProgressIndicator());
-          Future.delayed(Duration(milliseconds: 50))
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
+          Future.delayed(const Duration(milliseconds: 50))
               .then((value) => _jumpToViewedPage());
           return GridView.count(
-            padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+            padding: const EdgeInsets.all(8),
             controller: _scrollController,
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 3 / 4,
@@ -185,8 +190,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Container(
+      children: const [
+        SizedBox(
+          // alignment: Alignment.center,
+          width: 100,
+          height: 100,
           // alignment: Alignment.center,
           child: Align(
             // alignment: Alignment.center,
@@ -195,21 +203,19 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               textAlign: TextAlign.center,
             ),
           ),
-          width: 100,
-          height: 100,
         )
       ],
     );
   }
 
   Widget _buildTappableItem(int index, Widget image) {
-    return Container(
+    return SizedBox(
       key: itemKeys[index],
       width: double.infinity,
       height: double.infinity,
       child: Stack(
         children: <Widget>[
-          Container(
+          SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: image,
@@ -217,13 +223,13 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           Align(
             alignment: Alignment.topCenter,
             child: Container(
-              padding: EdgeInsets.only(bottom: 1),
+              padding: const EdgeInsets.only(bottom: 1),
               width: double.infinity,
               color: Colors.black.withOpacity(0.7),
               child: Text(
                 '${index + 1} page',
                 textAlign: TextAlign.right,
-                style: TextStyle(fontSize: 11, color: Colors.white),
+                style: const TextStyle(fontSize: 11, color: Colors.white),
               ),
             ),
           ),
@@ -245,7 +251,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     );
   }
 
-  Future _showInfo(i) async {
+  Future<void> _showInfo(i) async {
     try {
       var infoText = '';
 
@@ -278,7 +284,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
 
           infoText +=
               'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
-        } catch (e) {}
+        } catch (_) {}
         infoText +=
             'length: ${toStringWithComma((await file.length() ~/ 1024).toString())}KB\n';
         infoText += 'filename: ${file.path}';
@@ -294,11 +300,8 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         },
       );
     } catch (e, st) {
-      await Logger.error('[Viewer_thumbnails]\n' +
-          'E: ' +
-          e.toString() +
-          '\n' +
-          st.toString());
+      await Logger.error('[Viewer_thumbnails]\nE: $e\n'
+          '$st');
     }
   }
 }

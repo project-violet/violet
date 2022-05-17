@@ -25,12 +25,13 @@ import 'package:violet/widgets/search_bar.dart';
 
 // https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
 class DotsIndicator extends AnimatedWidget {
-  DotsIndicator({
+  const DotsIndicator({
+    Key key,
     this.controller,
     this.itemCount,
     this.onPageSelected,
-    this.color: Colors.white,
-  }) : super(listenable: controller);
+    this.color = Colors.white,
+  }) : super(key: key, listenable: controller);
 
   /// The PageController that this DotsIndicator is representing.
   final PageController controller;
@@ -63,14 +64,16 @@ class DotsIndicator extends AnimatedWidget {
       ),
     );
     double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness;
-    return Container(
+    return SizedBox(
       width: _kDotSpacing,
       child: Center(
         child: Material(
-          color: (Settings.themeWhat ? Colors.grey.shade100 : Color(0xFF353535))
+          color: (Settings.themeWhat
+                  ? Colors.grey.shade100
+                  : const Color(0xFF353535))
               .withAlpha((max(zoom - 1, 0.5) * 255).toInt()),
           type: MaterialType.circle,
-          child: Container(
+          child: SizedBox(
             width: _kDotSize * zoom,
             height: _kDotSize * zoom,
             child: InkWell(
@@ -82,6 +85,7 @@ class DotsIndicator extends AnimatedWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -96,19 +100,20 @@ class LabGroupArticleListPage extends StatefulWidget {
   final String name;
   final int groupId;
 
-  LabGroupArticleListPage(
-      {this.articles, this.artists, this.name, this.groupId});
+  const LabGroupArticleListPage(
+      {Key key, this.articles, this.artists, this.name, this.groupId})
+      : super(key: key);
 
   @override
-  _GroupArticleListPageState createState() => _GroupArticleListPageState();
+  State<LabGroupArticleListPage> createState() => _GroupArticleListPageState();
 }
 
 class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
-  PageController _controller = PageController(
+  final PageController _controller = PageController(
     initialPage: 0,
   );
 
-  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   @override
@@ -124,7 +129,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
   }
 
   void refresh() {
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
       var cc = widget.articles
           .where((e) => e.group() == widget.groupId)
@@ -132,29 +137,29 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
           .reversed
           .toList();
 
-      if (cc.length == 0) {
+      if (cc.isEmpty) {
         queryResult = <QueryResult>[];
         filterResult = queryResult;
         _shouldRebuild = true;
         setState(() {
           _shouldRebuild = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
         return;
       }
 
       //queryRaw += cc.map((e) => 'Id=${e.article()}').join(' OR ');
-      queryRaw += 'Id IN (' + cc.map((e) => e.article()).join(',') + ')';
+      queryRaw += 'Id IN (${cc.map((e) => e.article()).join(',')})';
       QueryManager.query(
               queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''))
           .then((value) async {
-        var qr = Map<String, QueryResult>();
-        value.results.forEach((element) {
+        var qr = <String, QueryResult>{};
+        for (var element in value.results) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         var result = <QueryResult>[];
-        cc.forEach((element) async {
+        Future.forEach<BookmarkArticle>(cc, (element) async {
           if (qr[element.article()] == null) {
             // TODO: Handle qurey not found
             var headers = await ScriptManager.runHitomiGetHeaderContent(
@@ -184,7 +189,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         _shouldRebuild = true;
         setState(() {
           _shouldRebuild = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
       });
     });
@@ -212,17 +217,16 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               Scaffold(
                 resizeToAvoidBottomInset: false,
                 body: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: <Widget>[
                       SliverPersistentHeader(
                         floating: true,
                         delegate: AnimatedOpacitySliver(
-                          minExtent: 64 + 12.0,
-                          maxExtent: 64.0 + 12,
                           searchBar: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(children: <Widget>[
                                 _filter(),
                                 _title(),
@@ -271,14 +275,14 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
     return Align(
       alignment: Alignment.centerRight,
       child: Hero(
-        tag: "searchtype2",
+        tag: 'searchtype2',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -291,7 +295,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               width: 48,
               child: Stack(
                 alignment: Alignment.center,
-                children: <Widget>[
+                children: const <Widget>[
                   Icon(
                     MdiIcons.formatListText,
                     color: Colors.grey,
@@ -303,7 +307,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               Navigator.of(context)
                   .push(PageRouteBuilder(
                 opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
+                transitionDuration: const Duration(milliseconds: 500),
                 transitionsBuilder: (BuildContext context,
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
@@ -317,7 +321,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                   .then((value) async {
                 if (value == null) return;
                 nowType = value;
-                await Future.delayed(Duration(milliseconds: 50), () {
+                await Future.delayed(const Duration(milliseconds: 50), () {
                   _shouldRebuild = true;
                   setState(() {
                     _shouldRebuild = true;
@@ -341,7 +345,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                 _shouldRebuild = true;
                 setState(() {
                   _shouldRebuild = true;
-                  key = ObjectKey(Uuid().v4());
+                  key = ObjectKey(const Uuid().v4());
                 });
               });
             },
@@ -353,15 +357,16 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.only(top: 24, left: 12),
+      padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(widget.name,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
   }
 
-  ObjectKey key = ObjectKey(Uuid().v4());
+  ObjectKey key = ObjectKey(const Uuid().v4());
 
-  FilterController _filterController = FilterController(heroKey: "searchtype2");
+  final FilterController _filterController =
+      FilterController(heroKey: 'searchtype2');
 
   bool isFilterUsed = false;
 
@@ -371,7 +376,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -393,24 +398,28 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (['female', 'male'].contains(split[0]))
+          if (['female', 'male'].contains(split[0])) {
             tag = '${split[0]}:${split[1]}';
-          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+          }
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr) {
             succ = isOr;
+          }
         }
 
         // If Multitag
-        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+        else if ((element.result[dbColumn] as String == split[1]) == isOr) {
           succ = isOr;
+        }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;
 
-    if (_filterController.isPopulationSort)
+    if (_filterController.isPopulationSort) {
       Population.sortByPopulation(filterResult);
+    }
   }
 
   static String prefix2Tag(String prefix) {
@@ -472,7 +481,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
       case 0:
       case 1:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverGrid(
             key: key,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -483,12 +492,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
             ),
             delegate: SliverChildListDelegate(filterResult.map((e) {
               return Padding(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    e.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${e.id()}'),
                 padding: EdgeInsets.zero,
                 child: Align(
                   alignment: Alignment.bottomCenter,
@@ -499,12 +503,12 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                         showDetail: false,
                         addBottomPadding: false,
                         width: (windowWidth - 4.0) / mm,
-                        thumbnailTag: Uuid().v4(),
+                        thumbnailTag: const Uuid().v4(),
                         usableTabList: filterResult,
                         // isCheckMode: checkMode,
                         // isChecked: checked.contains(e.id()),
                       ),
-                      child: ArticleListItemVerySimpleWidget(),
+                      child: const ArticleListItemVerySimpleWidget(),
                     ),
                   ),
                 ),
@@ -516,17 +520,12 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
       case 2:
       case 3:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverList(
             key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
               return Align(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    x.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${x.id()}'),
                 alignment: Alignment.center,
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
@@ -534,12 +533,12 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                     showDetail: nowType == 3,
                     addBottomPadding: true,
                     width: (windowWidth - 4.0),
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     usableTabList: filterResult,
                     // isCheckMode: checkMode,
                     // isChecked: checked.contains(x.id()),
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemVerySimpleWidget(),
                 ),
               );
             }).toList()),
@@ -547,10 +546,8 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         );
 
       default:
-        return Container(
-          child: Center(
-            child: Text('Error :('),
-          ),
+        return const Center(
+          child: Text('Error :('),
         );
     }
   }

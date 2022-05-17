@@ -11,16 +11,16 @@ import 'package:violet/variables.dart';
 class ViewRecordPanel extends StatefulWidget {
   final int articleId;
 
-  ViewRecordPanel({this.articleId});
+  const ViewRecordPanel({Key key, this.articleId}) : super(key: key);
 
   @override
-  _ViewRecordPanelState createState() => _ViewRecordPanelState();
+  State<ViewRecordPanel> createState() => _ViewRecordPanelState();
 }
 
 class _ViewRecordPanelState extends State<ViewRecordPanel> {
   @override
   Widget build(BuildContext context) {
-    var records = FutureBuilder(
+    var records = FutureBuilder<List<ArticleReadLog>>(
       future: User.getInstance().then((value) => value.getUserLog().then(
           (value) => value
               .where((e) => e.articleId() == widget.articleId.toString())
@@ -28,15 +28,15 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) return Container();
         return ListView.builder(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.zero,
           itemExtent: 50.0,
           itemBuilder: (context, index) {
-            if (index == 0)
+            if (index == 0) {
               return Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Text(
                   'View Record',
                   style: TextStyle(
                     fontSize: 16,
@@ -45,6 +45,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                   ),
                 ),
               );
+            }
             return InkWell(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,14 +53,13 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                 children: [
                   Flexible(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         snapshot.data[index - 1].lastPage() == null
                             ? '??'
-                            : snapshot.data[index - 1].lastPage().toString() +
-                                ' Page',
+                            : '${snapshot.data[index - 1].lastPage()} Page',
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                         ),
@@ -67,7 +67,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       snapshot.data[index - 1].datetimeStart().toString(),
                       style: TextStyle(color: Colors.grey.shade600),
@@ -85,7 +85,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
       },
     );
 
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -96,11 +96,12 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: records,
       );
+    }
   }
 }

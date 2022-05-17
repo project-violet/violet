@@ -50,11 +50,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
 class ArticleInfoPage extends StatelessWidget {
-  final Key key;
-
-  ArticleInfoPage({
-    this.key,
-  }) : super(key: key);
+  const ArticleInfoPage({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +66,7 @@ class ArticleInfoPage extends StatelessWidget {
       color: Settings.themeWhat
           ? Settings.themeBlack
               ? const Color(0xFF141414)
-              : Color(0xFF353535)
+              : const Color(0xFF353535)
           : Colors.grey.shade200,
       padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
       child: Card(
@@ -78,7 +74,7 @@ class ArticleInfoPage extends StatelessWidget {
         color: Settings.themeWhat
             ? Settings.themeBlack
                 ? const Color(0xFF141414)
-                : Color(0xFF353535)
+                : const Color(0xFF353535)
             : Colors.grey.shade200,
         child: SizedBox(
           width: width - 16,
@@ -106,44 +102,44 @@ class ArticleInfoPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ElevatedButton(
-                      child: Container(
+                      style: ElevatedButton.styleFrom(
+                        primary: Settings.majorColor.withAlpha(230),
+                      ),
+                      onPressed: () async =>
+                          await _downloadButtonEvent(context, data),
+                      child: SizedBox(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
                           Translations.of(context).trans('download'),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Settings.majorColor.withAlpha(230),
-                      ),
-                      onPressed: () async =>
-                          await _downloadButtonEvent(context, data),
                     ),
                     const SizedBox(width: 4.0),
                     ElevatedButton(
-                      child: Container(
-                        width: (width - 32 - 64 - 32) / 2,
-                        child: Text(
-                          Translations.of(context).trans('read'),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
                       style: ElevatedButton.styleFrom(
                         primary: Settings.majorColor,
                       ),
                       onPressed: data.lockRead
                           ? null
                           : () async => await _readButtonEvent(context, data),
+                      child: SizedBox(
+                        width: (width - 32 - 64 - 32) / 2,
+                        child: Text(
+                          Translations.of(context).trans('read'),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                   ],
                 ),
                 TagInfoAreaWidget(queryResult: data.queryResult),
-                DividerWidget(),
+                const DividerWidget(),
                 _CommentArea(
                   headers: data.headers,
                   queryResult: data.queryResult,
                 ),
-                DividerWidget(),
+                const DividerWidget(),
                 ExpandableNotifier(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -168,7 +164,7 @@ class ArticleInfoPage extends StatelessWidget {
                   ),
                 ),
                 if (Related.existsRelated(data.queryResult.id()))
-                  DividerWidget(),
+                  const DividerWidget(),
                 if (Related.existsRelated(data.queryResult.id()))
                   ExpandableNotifier(
                     child: Padding(
@@ -186,9 +182,7 @@ class ArticleInfoPage extends StatelessWidget {
                           header: Padding(
                             padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                             child: Text(
-                                Translations.of(context).trans('related') +
-                                    ' ' +
-                                    Translations.of(context).trans('articles')),
+                                '${Translations.of(context).trans('related')} ${Translations.of(context).trans('articles')}'),
                           ),
                           expanded: _RelatedArea(
                               relatedIds:
@@ -253,13 +247,13 @@ class ArticleInfoPage extends StatelessWidget {
     }
     if (!DownloadPageManager.downloadPageLoaded) {
       FlutterToast(context).showToast(
-        child: ToastWrapper(
+        child: const ToastWrapper(
           isCheck: false,
           isWarning: true,
           msg: 'You need to open the download tab!',
         ),
         gravity: ToastGravity.BOTTOM,
-        toastDuration: Duration(seconds: 4),
+        toastDuration: const Duration(seconds: 4),
       );
       return;
     }
@@ -281,7 +275,7 @@ class ArticleInfoPage extends StatelessWidget {
             Translations.of(context).trans('addtodownloadqueue'),
       ),
       gravity: ToastGravity.BOTTOM,
-      toastDuration: Duration(seconds: 4),
+      toastDuration: const Duration(seconds: 4),
     );
 
     await ScriptManager.refresh();
@@ -292,7 +286,7 @@ class ArticleInfoPage extends StatelessWidget {
 
   _readButtonEvent(context, data) async {
     if (Settings.useVioletServer) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         await VioletServer.view(data.queryResult.id());
       });
     }
@@ -306,8 +300,9 @@ class ArticleInfoPage extends StatelessWidget {
 
     dynamic navigatorFunc = Navigator.push;
 
-    if (Settings.usingPushReplacementOnArticleRead)
+    if (Settings.usingPushReplacementOnArticleRead) {
       navigatorFunc = Navigator.pushReplacement;
+    }
 
     navigatorFunc(
       context,
@@ -328,7 +323,7 @@ class ArticleInfoPage extends StatelessWidget {
                 title: data.queryResult.title(),
                 usableTabList: data.usableTabList,
               ),
-              child: ViewerPage());
+              child: const ViewerPage());
         },
       ),
     ).then((value) async {
@@ -339,7 +334,7 @@ class ArticleInfoPage extends StatelessWidget {
 }
 
 class DividerWidget extends StatelessWidget {
-  const DividerWidget();
+  const DividerWidget({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -357,12 +352,12 @@ class DividerWidget extends StatelessWidget {
 class TagInfoAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  const TagInfoAreaWidget({this.queryResult});
+  const TagInfoAreaWidget({Key key, this.queryResult}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView(
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       children: [
         MultiChipWidget(
@@ -440,10 +435,10 @@ class TagInfoAreaWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 10.0),
+          padding: const EdgeInsets.only(top: 10.0),
           child: Text(
             '    $name: ',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
@@ -463,17 +458,18 @@ class SingleChipWidget extends StatelessWidget {
   final String name;
   final String raw;
 
-  SingleChipWidget(this.target, this.name, this.raw);
+  const SingleChipWidget(this.target, this.name, this.raw, {Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (target == null) return Container();
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
       Padding(
-        padding: EdgeInsets.only(top: 10.0),
+        padding: const EdgeInsets.only(top: 10.0),
         child: Text(
           '    $name: ',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ),
       Wrap(
@@ -488,7 +484,8 @@ class MultiChipWidget extends StatelessWidget {
   final String name;
   final String target;
 
-  const MultiChipWidget(this.target, this.name, this.groupName);
+  const MultiChipWidget(this.target, this.name, this.groupName, {Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -497,10 +494,10 @@ class MultiChipWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 10.0),
+          padding: const EdgeInsets.only(top: 10.0),
           child: Text(
             '    $name: ',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
@@ -520,12 +517,12 @@ class MultiChipWidget extends StatelessWidget {
 class PreviewAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  PreviewAreaWidget({this.queryResult});
+  const PreviewAreaWidget({Key key, this.queryResult}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (ProviderManager.isExists(queryResult.id())) {
-      return FutureBuilder(
+      return FutureBuilder<List<Object>>(
         future: Future.value(1).then((value) async {
           VioletImageProvider prov =
               await ProviderManager.get(queryResult.id());
@@ -542,7 +539,7 @@ class PreviewAreaWidget extends StatelessWidget {
           //         prov = HitomiImageProvider(urls, queryResult.id().toString());
           //         ProviderManager.insert(queryResult.id() * 1000000, prov);
           //       }
-          //     } catch (e) {}
+          //     } catch (_) {}
           //   }
           // } else
           //   prov = await ProviderManager.get(queryResult.id() * 1000000);
@@ -550,11 +547,12 @@ class PreviewAreaWidget extends StatelessWidget {
           return [await prov.getSmallImagesUrl(), await prov.getHeader(0)];
         }),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Container(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
           return GridView.count(
             controller: null,
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 3 / 4,
@@ -574,8 +572,11 @@ class PreviewAreaWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Container(
+      children: const [
+        SizedBox(
+          // alignment: Alignment.center,
+          width: 100,
+          height: 100,
           // alignment: Alignment.center,
           child: Align(
             // alignment: Alignment.center,
@@ -584,8 +585,6 @@ class PreviewAreaWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          width: 100,
-          height: 100,
         )
       ],
     );
@@ -603,10 +602,10 @@ class _CommentArea extends StatefulWidget {
   final QueryResult queryResult;
   final Map<String, String> headers;
 
-  _CommentArea({this.queryResult, this.headers});
+  const _CommentArea({this.queryResult, this.headers});
 
   @override
-  __CommentAreaState createState() => __CommentAreaState();
+  State<_CommentArea> createState() => __CommentAreaState();
 }
 
 class __CommentAreaState extends State<_CommentArea> {
@@ -616,7 +615,7 @@ class __CommentAreaState extends State<_CommentArea> {
   void initState() {
     super.initState();
     if (widget.queryResult.ehash() != null) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         var cookie =
             (await SharedPreferences.getInstance()).getString('eh_cookies');
         if (cookie != null) {
@@ -628,13 +627,14 @@ class __CommentAreaState extends State<_CommentArea> {
               comments = article.comment;
             });
             return;
-          } catch (e) {}
+          } catch (_) {}
         }
         var html = (await http.get(
                 'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l'))
             .body;
-        if (html.contains('This gallery has been removed or is unavailable.'))
+        if (html.contains('This gallery has been removed or is unavailable.')) {
           return;
+        }
         var article = EHParser.parseArticleData(html);
         setState(() {
           comments = article.comment;
@@ -658,10 +658,11 @@ class _InfoAreaWidget extends StatefulWidget {
   final Map<String, String> headers;
   final List<Tuple3<DateTime, String, String>> comments;
 
-  _InfoAreaWidget({@required this.queryResult, this.headers, this.comments});
+  const _InfoAreaWidget(
+      {@required this.queryResult, this.headers, this.comments});
 
   @override
-  __InfoAreaWidgetState createState() => __InfoAreaWidgetState();
+  State<_InfoAreaWidget> createState() => __InfoAreaWidgetState();
 }
 
 class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
@@ -669,14 +670,14 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
   Widget build(BuildContext context) {
     return ExpandableNotifier(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: ScrollOnExpand(
           child: ExpandablePanel(
             theme: ExpandableThemeData(
                 iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
                 animationDuration: const Duration(milliseconds: 500)),
             header: Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+              padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
               child: Text(
                   '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
             ),
@@ -688,15 +689,18 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
   }
 
   Widget commentArea(BuildContext context) {
-    if (widget.comments.length == 0) {
+    if (widget.comments.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
+            children: const [
+              SizedBox(
+                // alignment: Alignment.center,
+                width: 100,
+                height: 100,
                 // alignment: Alignment.center,
                 child: Align(
                   // alignment: Alignment.center,
@@ -705,8 +709,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                width: 100,
-                height: 100,
               )
             ],
           ),
@@ -746,8 +748,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1)}',
-                          style: TextStyle(fontSize: 12)),
+                          DateFormat('yyyy-MM-dd HH:mm').format(e.item1),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ]),
@@ -757,7 +759,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       }));
 
       return Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
         child: Column(
             // mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -820,8 +822,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           useRootNavigator: false,
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-            title: Text('Write Comment'),
+            contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+            title: const Text('Write Comment'),
             content: TextField(
               controller: text,
               autofocus: true,
@@ -835,9 +837,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         // dense: true,
         // contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
         title: Row(
-          children: [Text('Write Comment')],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [Text('Write Comment')],
         ),
       ),
     );
@@ -845,7 +847,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
 
   TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
         text: text,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.blueAccent,
           decoration: TextDecoration.underline,
         ),
@@ -883,7 +885,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo> cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -894,21 +896,19 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             maxChildSize: 0.9,
             expand: false,
             builder: (_, controller) {
-              if (cache == null) {
-                cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
-                  value: ArticleInfo.fromArticleInfo(
-                    queryResult: qr,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: 'zxcvzxcvzxcv',
-                    isBookmarked: isBookmarked,
-                    controller: controller,
-                  ),
-                );
-              }
+              cache ??= Provider<ArticleInfo>.value(
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: qr,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'zxcvzxcvzxcv',
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                ),
+                child: const ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+              );
               return cache;
             },
           );
@@ -951,21 +951,22 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
 
   Widget previewArea() {
     if (ProviderManager.isExists(widget.queryResult.id())) {
-      return FutureBuilder(
+      return FutureBuilder<List<String>>(
         future: ProviderManager.get(widget.queryResult.id())
             .then((value) => value.getSmallImagesUrl()),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
-            return Container(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
           return GridView.count(
             controller: null,
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            children: (snapshot.data as List<String>)
+            children: snapshot.data
                 .map((e) => CachedNetworkImage(
                       imageUrl: e,
                     ))
@@ -977,8 +978,11 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
     return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
+        children: const [
+          SizedBox(
+            // alignment: Alignment.center,
+            width: 100,
+            height: 100,
             // alignment: Alignment.center,
             child: Align(
               // alignment: Alignment.center,
@@ -987,8 +991,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                 textAlign: TextAlign.center,
               ),
             ),
-            width: 100,
-            height: 100,
           )
         ]);
   }
@@ -996,76 +998,87 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
 
 // Create tag-chip
 // group, name
-class _Chip extends StatelessWidget {
+class _Chip extends StatefulWidget {
   final String name;
   final String group;
 
   const _Chip({this.name, this.group});
 
+  @override
+  State<_Chip> createState() => _ChipState();
+}
+
+class _ChipState extends State<_Chip> {
   String normalize(String tag) {
-    if (tag == "groups") return "group";
+    if (tag == 'groups') return 'group';
     if (tag == 'artists') return 'artist';
     return tag;
   }
 
   @override
   Widget build(BuildContext context) {
-    var tagDisplayed = name;
+    var tagDisplayed = widget.name;
     var color = Colors.grey;
 
-    if (Settings.translateTags)
+    if (Settings.translateTags) {
       tagDisplayed =
           TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
+    }
 
-    if (group == 'female')
+    if (widget.group == 'female') {
       color = Colors.pink;
-    else if (group == 'male')
+    } else if (widget.group == 'male') {
       color = Colors.blue;
-    else if (group == 'prefix')
+    } else if (widget.group == 'prefix') {
       color = Colors.orange;
-    else if (group == 'id') color = Colors.orange;
+    } else if (widget.group == 'id') {
+      color = Colors.orange;
+    }
 
-    Widget avatar = Text(group[0].toUpperCase());
+    Widget avatar = Text(widget.group[0].toUpperCase());
 
-    if (group == 'female')
-      avatar = Icon(MdiIcons.genderFemale, size: 18.0);
-    else if (group == 'male')
-      avatar = Icon(MdiIcons.genderMale, size: 18.0);
-    else if (group == 'language')
-      avatar = Icon(Icons.language, size: 18.0);
-    else if (group == 'artists')
-      avatar = Icon(MdiIcons.account, size: 18.0);
-    else if (group == 'groups')
-      avatar = Icon(MdiIcons.accountGroup, size: 15.0);
+    if (widget.group == 'female') {
+      avatar = const Icon(MdiIcons.genderFemale, size: 18.0);
+    } else if (widget.group == 'male') {
+      avatar = const Icon(MdiIcons.genderMale, size: 18.0);
+    } else if (widget.group == 'language') {
+      avatar = const Icon(Icons.language, size: 18.0);
+    } else if (widget.group == 'artists') {
+      avatar = const Icon(MdiIcons.account, size: 18.0);
+    } else if (widget.group == 'groups') {
+      avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
+    }
 
     var fc = Transform.scale(
       scale: 0.95,
       child: GestureDetector(
         child: RawChip(
-          labelPadding: EdgeInsets.all(0.0),
+          labelPadding: const EdgeInsets.all(0.0),
           avatar: CircleAvatar(
             backgroundColor: Colors.grey.shade600,
             child: avatar,
           ),
           label: Text(
-            ' ' + tagDisplayed,
-            style: TextStyle(
+            ' $tagDisplayed',
+            style: const TextStyle(
               color: Colors.white,
             ),
           ),
           backgroundColor: color,
           elevation: 6.0,
           // shadowColor: Colors.grey[60],
-          padding: EdgeInsets.all(6.0),
+          padding: const EdgeInsets.all(6.0),
         ),
         onLongPress: () async {
-          if (!Settings.excludeTags
-              .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
+          if (!Settings.excludeTags.contains(
+              '${normalize(widget.group)}:${widget.name.replaceAll(' ', '_')}')) {
             var yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
             if (yn != null && yn) {
-              Settings.excludeTags
-                  .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
+              Settings.excludeTags.add(
+                  '${normalize(widget.group)}:${widget.name.replaceAll(' ', '_')}');
               await Settings.setExcludeTags(Settings.excludeTags.join(' '));
+
+              if (!mounted) return;
               await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
             }
           } else {
@@ -1073,24 +1086,24 @@ class _Chip extends StatelessWidget {
           }
         },
         onTap: () async {
-          if ((group == 'groups' ||
-                  group == 'artists' ||
-                  group == 'uploader' ||
-                  group == 'series' ||
-                  group == 'character') &&
-              name.toLowerCase() != 'n/a') {
+          if ((widget.group == 'groups' ||
+                  widget.group == 'artists' ||
+                  widget.group == 'uploader' ||
+                  widget.group == 'series' ||
+                  widget.group == 'character') &&
+              widget.name.toLowerCase() != 'n/a') {
             PlatformNavigator.navigateSlide(
               context,
               ArtistInfoPage(
-                isGroup: group == 'groups',
-                isUploader: group == 'uploader',
-                isCharacter: group == 'character',
-                isSeries: group == 'series',
-                artist: name,
+                isGroup: widget.group == 'groups',
+                isUploader: widget.group == 'uploader',
+                isCharacter: widget.group == 'character',
+                isSeries: widget.group == 'series',
+                artist: widget.name,
               ),
             );
-          } else if (group == 'id') {
-            Clipboard.setData(ClipboardData(text: name));
+          } else if (widget.group == 'id') {
+            Clipboard.setData(ClipboardData(text: widget.name));
             FlutterToast(context).showToast(
               child: ToastWrapper(
                 isCheck: true,
@@ -1098,7 +1111,7 @@ class _Chip extends StatelessWidget {
                 msg: Translations.of(context).trans('copied'),
               ),
               gravity: ToastGravity.BOTTOM,
-              toastDuration: Duration(seconds: 4),
+              toastDuration: const Duration(seconds: 4),
             );
           }
         },
@@ -1114,7 +1127,7 @@ class _RelatedArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<List<QueryResult>>(
       future: QueryManager.queryIds(relatedIds),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData) return Container();
@@ -1127,9 +1140,8 @@ class _RelatedArea extends StatelessWidget {
               context,
               () => ArticleListPage(
                   cc: snapshot.data,
-                  name: Translations.of(context).trans('related') +
-                      ' ' +
-                      Translations.of(context).trans('articles')),
+                  name:
+                      '${Translations.of(context).trans('related')} ${Translations.of(context).trans('articles')}'),
             ),
           ),
         ]);
@@ -1145,9 +1157,9 @@ class _RelatedArea extends StatelessWidget {
           PlatformNavigator.navigateSlide(context, what(), opaque: true);
         },
         child: Row(
-          children: [Text(Translations.of(context).trans('more'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('more'))],
         ),
       ),
     );
@@ -1157,13 +1169,13 @@ class _RelatedArea extends StatelessWidget {
     var windowWidth = MediaQuery.of(context).size.width;
     return LiveGrid(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(12, 8, 12, 12),
-      showItemInterval: Duration(milliseconds: 50),
-      showItemDuration: Duration(milliseconds: 150),
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      showItemInterval: const Duration(milliseconds: 50),
+      showItemDuration: const Duration(milliseconds: 150),
       visibleFraction: 0.001,
       itemCount: min(cc.length, 6),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
@@ -1177,7 +1189,7 @@ class _RelatedArea extends StatelessWidget {
           ).animate(animation),
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: Offset(0, -0.1),
+              begin: const Offset(0, -0.1),
               end: Offset.zero,
             ).animate(animation),
             child: Padding(
@@ -1191,10 +1203,10 @@ class _RelatedArea extends StatelessWidget {
                       showDetail: false,
                       addBottomPadding: false,
                       width: (windowWidth - 4.0) / 3,
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 ),
               ),

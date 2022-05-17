@@ -6,7 +6,14 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
-class DownloadViewType extends StatelessWidget {
+class DownloadViewType extends StatefulWidget {
+  const DownloadViewType({Key key}) : super(key: key);
+
+  @override
+  State<DownloadViewType> createState() => _DownloadViewTypeState();
+}
+
+class _DownloadViewTypeState extends State<DownloadViewType> {
   Color getColor(int i) {
     return Settings.themeWhat
         ? Settings.downloadResultType == i
@@ -21,7 +28,7 @@ class DownloadViewType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "downloadtype",
+        tag: 'downloadtype',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
@@ -33,7 +40,7 @@ class DownloadViewType extends StatelessWidget {
             width: 280,
             child: IntrinsicHeight(
               child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
                     _typeItem(context, Icons.grid_on, 'srt0', 0),
@@ -58,6 +65,8 @@ class DownloadViewType extends StatelessWidget {
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setDownloadResultType(selection);
+
+        if (!mounted) return;
         Navigator.pop(context);
       },
     );

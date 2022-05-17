@@ -18,16 +18,13 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ViewsPage extends StatefulWidget {
+  const ViewsPage({Key key}) : super(key: key);
+
   @override
-  _ViewsPageState createState() => _ViewsPageState();
+  State<ViewsPage> createState() => _ViewsPageState();
 }
 
 class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return CardPanel.build(
@@ -43,11 +40,12 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                 indicatorHeight: 40.0,
                 indicatorColor: Settings.majorColor,
                 tabBarIndicatorSize: TabBarIndicatorSize.tab,
-                insets: EdgeInsets.only(left: 8, right: 8, top: 21),
+                insets: const EdgeInsets.only(left: 8, right: 8, top: 21),
               ),
               tabs: [
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -56,13 +54,13 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('daily'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -71,13 +69,13 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('weekly'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -86,13 +84,13 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('monthly'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -101,14 +99,13 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('alltime'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
               ],
             ),
-            Expanded(
+            const Expanded(
               child: TabBarView(
                 children: [
                   _Tab(0),
@@ -128,10 +125,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
 class _Tab extends StatefulWidget {
   final int index;
 
-  _Tab(this.index);
+  const _Tab(this.index, {Key key}) : super(key: key);
 
   @override
-  __TabState createState() => __TabState();
+  State<_Tab> createState() => __TabState();
 }
 
 class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
@@ -141,7 +138,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FutureBuilder(
+    return FutureBuilder<Object>(
       future: VioletServer.top(
               0, 600, ['daily', 'week', 'month', 'alltime'][widget.index])
           .then((value) async {
@@ -149,23 +146,16 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
 
         if (value == null || value.length == 0) return 900;
 
-        var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-                ' ' +
-                Settings.excludeTags
-                    .where((e) => e.trim() != '')
-                    .map((e) => '-$e')
-                    .join(' ')) +
-            ' AND ';
-        // var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-        queryRaw += '(' + value.map((e) => 'Id=${e.item1}').join(' OR ') + ')';
+        var queryRaw =
+            '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND (${value.map((e) => 'Id=${e.item1}').join(' OR ')})';
         var query = await QueryManager.query(queryRaw);
 
-        if (query.results.length == 0) return 901;
+        if (query.results.isEmpty) return 901;
 
-        var qr = Map<String, QueryResult>();
-        query.results.forEach((element) {
+        var qr = <String, QueryResult>{};
+        for (var element in query.results) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         var result = <Tuple2<QueryResult, int>>[];
         value.forEach((element) {
@@ -181,7 +171,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
       }),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -210,20 +200,18 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   ),
                 ),
                 Container(height: 16),
-                Text(
+                const Text(
                   'Oops! Something was wrong!',
                   style: TextStyle(fontSize: 24),
                 ),
                 Container(height: 2),
-                Text(
+                const Text(
                   'If you still encounter this error, please contact the developer!',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
                 ),
-                Text('Error' +
-                    (errmsg[snapshot.data.toString()] != null
-                        ? ': ' + errmsg[snapshot.data.toString()]
-                        : ' Code: ' + snapshot.data.toString()))
+                Text(
+                    'Error${errmsg[snapshot.data.toString()] != null ? ': ${errmsg[snapshot.data.toString()]}' : ' Code: ${snapshot.data}'}')
               ],
             ),
           );
@@ -244,13 +232,10 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         var results = snapshot.data as List<Tuple2<QueryResult, int>>;
 
         return ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           children: results.map((x) {
             return Align(
-              key: Key('views' +
-                  widget.index.toString() +
-                  '/' +
-                  x.item1.id().toString()),
+              key: Key('views${widget.index}/${x.item1.id()}'),
               alignment: Alignment.center,
               child: Provider<ArticleListItem>.value(
                 value: ArticleListItem.fromArticleListItem(
@@ -258,13 +243,13 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   showDetail: true,
                   addBottomPadding: true,
                   width: (windowWidth - 4.0),
-                  thumbnailTag: Uuid().v4(),
+                  thumbnailTag: const Uuid().v4(),
                   viewed: x.item2,
                   usableTabList: results.map((e) => e.item1).toList(),
                   // isCheckMode: checkMode,
                   // isChecked: checked.contains(x.id()),
                 ),
-                child: ArticleListItemVerySimpleWidget(),
+                child: const ArticleListItemVerySimpleWidget(),
               ),
             );
           }).toList(),

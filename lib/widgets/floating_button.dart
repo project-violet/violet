@@ -33,7 +33,7 @@ class AnimatedFloatingActionButton extends StatefulWidget {
   final AnimatedIconData animatedIconData;
   final VoidCallback exitCallback;
 
-  AnimatedFloatingActionButton({
+  const AnimatedFloatingActionButton({
     Key key,
     this.fabButtons,
     this.animatedIconData,
@@ -41,7 +41,7 @@ class AnimatedFloatingActionButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AnimatedFloatingActionButtonState createState() =>
+  State<AnimatedFloatingActionButton> createState() =>
       _AnimatedFloatingActionButtonState();
 }
 
@@ -52,16 +52,17 @@ class _AnimatedFloatingActionButtonState
   AnimationController _animationController;
   Animation<double> _animateIcon;
   Animation<double> _translateButton;
-  Curve _curve = Curves.easeOut;
-  double _fabHeight = 56.0;
+  final Curve _curve = Curves.easeOut;
+  final double _fabHeight = 56.0;
 
   @override
-  initState() {
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300))
-          ..addListener(() {
-            setState(() {});
-          });
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300))
+      ..addListener(() {
+        setState(() {});
+      });
     _animateIcon =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _translateButton = Tween<double>(
@@ -75,17 +76,24 @@ class _AnimatedFloatingActionButtonState
         curve: _curve,
       ),
     ));
-    super.initState();
     _animationController.forward();
   }
 
   @override
-  dispose() {
+  void dispose() {
     _animationController.dispose();
     super.dispose();
   }
 
-  animate() {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: _setFabButtons(),
+    );
+  }
+
+  void animate() {
     if (!isOpened) {
       _animationController.forward();
     } else {
@@ -96,17 +104,15 @@ class _AnimatedFloatingActionButtonState
   }
 
   Widget toggle() {
-    return Container(
-      child: FloatingActionButton(
-        backgroundColor:
-            Settings.themeWhat ? Colors.grey.shade800 : Colors.grey.shade100,
-        onPressed: animate,
-        elevation: 2,
-        foregroundColor: Settings.majorColor,
-        child: AnimatedIcon(
-          icon: widget.animatedIconData,
-          progress: _animateIcon,
-        ),
+    return FloatingActionButton(
+      backgroundColor:
+          Settings.themeWhat ? Colors.grey.shade800 : Colors.grey.shade100,
+      onPressed: animate,
+      elevation: 2,
+      foregroundColor: Settings.majorColor,
+      child: AnimatedIcon(
+        icon: widget.animatedIconData,
+        progress: _animateIcon,
       ),
     );
   }
@@ -121,13 +127,5 @@ class _AnimatedFloatingActionButtonState
     }
     processButtons.add(toggle());
     return processButtons;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: _setFabButtons(),
-    );
   }
 }

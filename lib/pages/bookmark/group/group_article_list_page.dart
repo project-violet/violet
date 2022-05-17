@@ -30,12 +30,13 @@ import 'package:violet/widgets/search_bar.dart';
 
 // https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
 class DotsIndicator extends AnimatedWidget {
-  DotsIndicator({
+  const DotsIndicator({
+    Key key,
     this.controller,
     this.itemCount,
     this.onPageSelected,
-    this.color: Colors.white,
-  }) : super(listenable: controller);
+    this.color = Colors.white,
+  }) : super(key: key, listenable: controller);
 
   /// The PageController that this DotsIndicator is representing.
   final PageController controller;
@@ -68,14 +69,16 @@ class DotsIndicator extends AnimatedWidget {
       ),
     );
     double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness;
-    return Container(
+    return SizedBox(
       width: _kDotSpacing,
       child: Center(
         child: Material(
-          color: (Settings.themeWhat ? Colors.grey.shade100 : Color(0xFF353535))
+          color: (Settings.themeWhat
+                  ? Colors.grey.shade100
+                  : const Color(0xFF353535))
               .withAlpha((max(zoom - 1, 0.5) * 255).toInt()),
           type: MaterialType.circle,
-          child: Container(
+          child: SizedBox(
             width: _kDotSize * zoom,
             height: _kDotSize * zoom,
             child: InkWell(
@@ -87,6 +90,7 @@ class DotsIndicator extends AnimatedWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -99,18 +103,19 @@ class GroupArticleListPage extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArticleListPage({this.name, this.groupId});
+  const GroupArticleListPage({Key key, this.name, this.groupId})
+      : super(key: key);
 
   @override
-  _GroupArticleListPageState createState() => _GroupArticleListPageState();
+  State<GroupArticleListPage> createState() => _GroupArticleListPageState();
 }
 
 class _GroupArticleListPageState extends State<GroupArticleListPage> {
-  PageController _controller = PageController(
+  final PageController _controller = PageController(
     initialPage: 0,
   );
 
-  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   @override
@@ -129,7 +134,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     _shouldRebuild = true;
     setState(() {
       _shouldRebuild = true;
-      key = ObjectKey(Uuid().v4());
+      key = ObjectKey(const Uuid().v4());
     });
   }
 
@@ -151,7 +156,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   Future<void> _loadBookmarkAlignType() async {
     nowType = (await SharedPreferences.getInstance())
         .getInt('bookmark_${widget.groupId}');
-    if (nowType == null) nowType = 3;
+    nowType ??= 3;
   }
 
   void refresh() {
@@ -164,7 +169,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               .reversed
               .toList();
 
-          if (cc.length == 0) {
+          if (cc.isEmpty) {
             queryResult = <QueryResult>[];
             filterResult = queryResult;
             _rebuild();
@@ -173,17 +178,15 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
           QueryManager.queryIds(cc.map((e) => int.parse(e.article())).toList())
               .then((value) async {
-            var qr = Map<String, QueryResult>();
-            value.forEach((element) {
+            var qr = <String, QueryResult>{};
+            for (var element in value) {
               qr[element.id().toString()] = element;
-            });
+            }
 
             var result = <QueryResult>[];
-            cc.forEach((element) async {
+            await Future.forEach<BookmarkArticle>(cc, (element) async {
               var article = qr[element.article()];
-              if (article == null) {
-                article = await _tryGetArticleFromHitomi(element.article());
-              }
+              article ??= await _tryGetArticleFromHitomi(element.article());
               result.add(article);
             });
 
@@ -220,23 +223,22 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   visible: checkMode,
                   child: AnimatedOpacity(
                     opacity: checkModePre ? 1.0 : 0.0,
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     child: _floatingButton(),
                   ),
                 ),
                 // floatingActionButton: Container(child: Text('asdf')),
                 body: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: <Widget>[
                       SliverPersistentHeader(
                         floating: true,
                         delegate: AnimatedOpacitySliver(
-                          minExtent: 64 + 12.0,
-                          maxExtent: 64.0 + 12,
                           searchBar: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(children: <Widget>[
                                 _filter(),
                                 _title(),
@@ -283,51 +285,44 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   Widget _floatingButton() {
     return AnimatedFloatingActionButton(
       fabButtons: <Widget>[
-        Container(
-          child: FloatingActionButton(
-            onPressed: () {
-              filterResult.forEach((element) {
-                checked.add(element.id());
-              });
+        FloatingActionButton(
+          onPressed: () {
+            for (var element in filterResult) {
+              checked.add(element.id());
+            }
+            _shouldRebuild = true;
+            setState(() {
               _shouldRebuild = true;
-              setState(() {
-                _shouldRebuild = true;
-              });
-            },
-            elevation: 4,
-            heroTag: 'a',
-            child: Icon(MdiIcons.checkAll),
-          ),
+            });
+          },
+          elevation: 4,
+          heroTag: 'a',
+          child: const Icon(MdiIcons.checkAll),
         ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: () async {
-              if (await showYesNoDialog(
-                  context,
-                  Translations.of(context)
-                      .trans('deletebookmarkmsg')
-                      .replaceAll('%s', checked.length.toString()),
-                  Translations.of(context).trans('bookmark'))) {
-                var bookmark = await Bookmark.getInstance();
-                checked.forEach((element) async {
-                  bookmark.unbookmark(element);
-                });
-                checked.clear();
-                refresh();
-              }
-            },
-            elevation: 4,
-            heroTag: 'b',
-            child: Icon(MdiIcons.delete),
-          ),
+        FloatingActionButton(
+          onPressed: () async {
+            if (await showYesNoDialog(
+                context,
+                Translations.of(context)
+                    .trans('deletebookmarkmsg')
+                    .replaceAll('%s', checked.length.toString()),
+                Translations.of(context).trans('bookmark'))) {
+              var bookmark = await Bookmark.getInstance();
+              Future.forEach<int>(
+                  checked, (element) => bookmark.unbookmark(element));
+              checked.clear();
+              refresh();
+            }
+          },
+          elevation: 4,
+          heroTag: 'b',
+          child: const Icon(MdiIcons.delete),
         ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: moveChecked,
-            elevation: 4,
-            heroTag: 'c',
-            child: Icon(MdiIcons.folderMove),
-          ),
+        FloatingActionButton(
+          onPressed: moveChecked,
+          elevation: 4,
+          heroTag: 'c',
+          child: const Icon(MdiIcons.folderMove),
         ),
       ],
       animatedIconData: AnimatedIcons.menu_close,
@@ -338,7 +333,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           _shouldRebuild = true;
           setState(() {
             _shouldRebuild = true;
@@ -353,14 +348,14 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     return Align(
       alignment: Alignment.centerRight,
       child: Hero(
-        tag: "searchtype2",
+        tag: 'searchtype2',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -373,7 +368,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               width: 48,
               child: Stack(
                 alignment: Alignment.center,
-                children: <Widget>[
+                children: const <Widget>[
                   Icon(
                     MdiIcons.formatListText,
                     color: Colors.grey,
@@ -386,7 +381,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               Navigator.of(context)
                   .push(PageRouteBuilder(
                 opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
+                transitionDuration: const Duration(milliseconds: 500),
                 transitionsBuilder: (BuildContext context,
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
@@ -402,7 +397,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 nowType = value;
                 await (await SharedPreferences.getInstance())
                     .setInt('bookmark_${widget.groupId}', value);
-                await Future.delayed(Duration(milliseconds: 50), () {
+                await Future.delayed(const Duration(milliseconds: 50), () {
                   _shouldRebuild = true;
                   setState(() {
                     _shouldRebuild = true;
@@ -427,7 +422,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 _shouldRebuild = true;
                 setState(() {
                   _shouldRebuild = true;
-                  key = ObjectKey(Uuid().v4());
+                  key = ObjectKey(const Uuid().v4());
                 });
               });
             },
@@ -439,15 +434,16 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.only(top: 24, left: 12),
+      padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(widget.name,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
   }
 
-  ObjectKey key = ObjectKey(Uuid().v4());
+  ObjectKey key = ObjectKey(const Uuid().v4());
 
-  FilterController _filterController = FilterController(heroKey: "searchtype2");
+  final FilterController _filterController =
+      FilterController(heroKey: 'searchtype2');
 
   bool isFilterUsed = false;
 
@@ -457,7 +453,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -479,24 +475,28 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (['female', 'male'].contains(split[0]))
+          if (['female', 'male'].contains(split[0])) {
             tag = '${split[0]}:${split[1]}';
-          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+          }
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr) {
             succ = isOr;
+          }
         }
 
         // If Multitag
-        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+        else if ((element.result[dbColumn] as String == split[1]) == isOr) {
           succ = isOr;
+        }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;
 
-    if (_filterController.isPopulationSort)
+    if (_filterController.isPopulationSort) {
       Population.sortByPopulation(filterResult);
+    }
   }
 
   static String prefix2Tag(String prefix) {
@@ -558,7 +558,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 0:
       case 1:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverGrid(
             key: key,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -569,12 +569,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             ),
             delegate: SliverChildListDelegate(filterResult.map((e) {
               return Padding(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    e.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${e.id()}'),
                 padding: EdgeInsets.zero,
                 child: Align(
                   alignment: Alignment.bottomCenter,
@@ -585,7 +580,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                         showDetail: false,
                         addBottomPadding: false,
                         width: (windowWidth - 4.0) / mm,
-                        thumbnailTag: Uuid().v4(),
+                        thumbnailTag: const Uuid().v4(),
                         bookmarkMode: true,
                         bookmarkCallback: longpress,
                         bookmarkCheckCallback: check,
@@ -608,17 +603,12 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 2:
       case 3:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverList(
             key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
               return Align(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    x.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${x.id()}'),
                 alignment: Alignment.center,
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
@@ -626,7 +616,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     showDetail: nowType == 3,
                     addBottomPadding: true,
                     width: (windowWidth - 4.0),
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     bookmarkMode: true,
                     bookmarkCallback: longpress,
                     bookmarkCheckCallback: check,
@@ -645,10 +635,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         );
 
       default:
-        return Container(
-          child: Center(
-            child: Text('Error :('),
-          ),
+        return const Center(
+          child: Text('Error :('),
         );
     }
   }
@@ -671,18 +659,18 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   void check(int article, bool check) {
-    if (check)
+    if (check) {
       checked.add(article);
-    else {
+    } else {
       checked.removeWhere((element) => element == article);
-      if (checked.length == 0) {
+      if (checked.isEmpty) {
         _shouldRebuild = true;
         setState(() {
           _shouldRebuild = true;
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           _shouldRebuild = true;
           setState(() {
             _shouldRebuild = true;
@@ -733,6 +721,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   ),
                 )) ==
         1) {
+      if (!mounted) return;
       if (await showYesNoDialog(
           context,
           Translations.of(context)
@@ -745,9 +734,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
         // Atomic!!
         // 0. Sort Checked
-        var invIdIndex = Map<int, int>();
-        for (int i = 0; i < queryResult.length; i++)
+        var invIdIndex = <int, int>{};
+        for (int i = 0; i < queryResult.length; i++) {
           invIdIndex[queryResult[i].id()] = i;
+        }
         checked.sort((x, y) => invIdIndex[x].compareTo(invIdIndex[y]));
 
         // 1. Get bookmark articles on source groupid
@@ -771,6 +761,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         }
 
         // 5. Update UI
+        if (!mounted) return;
         _shouldRebuild = true;
         setState(() {
           _shouldRebuild = true;
@@ -778,7 +769,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           checked.clear();
         });
         _shouldRebuild = true;
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             _shouldRebuild = true;
             checkMode = false;
@@ -786,6 +777,6 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         });
         refresh();
       }
-    } else {}
+    }
   }
 }

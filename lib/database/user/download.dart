@@ -47,7 +47,7 @@ class DownloadItemModel {
 
   Future<void> test() async {
     var db = await CommonUserDatabase.getInstance();
-    await db.query('SELECT * FROM DownloadItem WHERE Id=' + id().toString());
+    await db.query('SELECT * FROM DownloadItem WHERE Id=${id()}');
   }
 
   Future<void> delete() async {
@@ -56,7 +56,7 @@ class DownloadItemModel {
   }
 
   List<String> rawFiles() {
-    if (files() == null || files() == "") return [];
+    if (files() == null || files() == '') return [];
     return (jsonDecode(files()) as List<dynamic>)
         .map((e) => e as String)
         .toList();
@@ -94,7 +94,7 @@ class Download {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='DownloadItem';");
-        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
           try {
             await db.execute('''CREATE TABLE DownloadItem (
               Id integer primary key autoincrement, 
@@ -111,10 +111,8 @@ class Download {
               );
               ''');
           } catch (e, st) {
-            Logger.error('[Download-Instance] E: ' +
-                e.toString() +
-                '\n' +
-                st.toString());
+            Logger.error('[Download-Instance] E: $e\n'
+                '$st');
           }
         }
         _instance = Download();
@@ -125,7 +123,7 @@ class Download {
   }
 
   HashSet<int> _downloadedChecker = HashSet<int>();
-  Map<int, DownloadItemModel> _downloadedItems = Map<int, DownloadItemModel>();
+  Map<int, DownloadItemModel> _downloadedItems = <int, DownloadItemModel>{};
   Future<void> init() async {
     var items = await getDownloadItems();
     for (var item in items) {
@@ -139,13 +137,13 @@ class Download {
 
   Future<void> refresh() async {
     _downloadedChecker = HashSet<int>();
-    _downloadedItems = Map<int, DownloadItemModel>();
+    _downloadedItems = <int, DownloadItemModel>{};
     await init();
   }
 
   bool isDownloadedArticle(int id) => _downloadedChecker.contains(id);
 
-  Map<int, bool> _validDownloadedArticleCache = Map<int, bool>();
+  final Map<int, bool> _validDownloadedArticleCache = <int, bool>{};
   bool _isValidDownloadedArticle(int id) {
     if (!isDownloadedArticle(id)) return false;
 
@@ -158,8 +156,9 @@ class Download {
   }
 
   bool isValidDownloadedArticle(int id) {
-    if (_validDownloadedArticleCache.containsKey(id))
+    if (_validDownloadedArticleCache.containsKey(id)) {
       return _validDownloadedArticleCache[id];
+    }
 
     var v = _isValidDownloadedArticle(id);
     _validDownloadedArticleCache[id] = v;

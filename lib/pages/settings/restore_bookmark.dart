@@ -15,10 +15,11 @@ class RestoreBookmarkPage extends StatefulWidget {
   final dynamic source;
   final bool restoreWithRecord;
 
-  RestoreBookmarkPage({this.source, this.restoreWithRecord});
+  const RestoreBookmarkPage({Key key, this.source, this.restoreWithRecord})
+      : super(key: key);
 
   @override
-  _RestoreBookmarkPageState createState() => _RestoreBookmarkPageState();
+  State<RestoreBookmarkPage> createState() => _RestoreBookmarkPageState();
 }
 
 class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
@@ -29,14 +30,14 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       try {
         var articles = widget.source['article'] as List<dynamic>;
         var artists = widget.source['artist'] as List<dynamic>;
         var groups = widget.source['group'] as List<dynamic>;
 
         // 북마크 그룹 생성
-        var groupInv = Map<int, int>();
+        var groupInv = <int, int>{};
 
         total += articles.length + artists.length + groups.length;
 
@@ -109,20 +110,21 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         }
         await dbraw.close();
       } catch (e, st) {
-        Logger.error(
-            '[Restore Bookmark] ' + e.toString() + '\n' + st.toString());
+        Logger.error('[Restore Bookmark] $e\n'
+            '$st');
         FlutterToast(context).showToast(
-          child: ToastWrapper(
+          child: const ToastWrapper(
             isCheck: false,
-            msg: "Bookmark Restoring Error!",
+            msg: 'Bookmark Restoring Error!',
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
         Navigator.pop(context, false);
         return;
       }
 
+      if (!mounted) return;
       Navigator.pop(context, true);
     });
   }
@@ -134,20 +136,34 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         return false;
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.4)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: const Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Card(
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              color: Settings.themeWhat
+                  ? const Color(0xFF353535)
+                  : Colors.grey.shade100,
               elevation: 100,
               child: SizedBox(
                 child: SizedBox(
                   width: 280,
                   height: (56 * 4 + 16).toDouble(),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                     // child: Column(
                     //   mainAxisAlignment: MainAxisAlignment.center,
                     //   children: <Widget>[
@@ -159,10 +175,10 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
                     // ),
                     child: Stack(
                       children: [
-                        Center(
+                        const Center(
                           child: CircularProgressIndicator(),
                         ),
-                        Align(
+                        const Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 33),
@@ -174,7 +190,7 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
-                            padding: EdgeInsets.only(bottom: 15),
+                            padding: const EdgeInsets.only(bottom: 15),
                             child: Text(
                               '$progress/$total',
                             ),
@@ -185,19 +201,6 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
             ),
           ],
         ),

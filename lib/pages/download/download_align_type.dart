@@ -6,7 +6,14 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
-class DownloadAlignType extends StatelessWidget {
+class DownloadAlignType extends StatefulWidget {
+  const DownloadAlignType({Key key}) : super(key: key);
+
+  @override
+  State<DownloadAlignType> createState() => _DownloadAlignTypeState();
+}
+
+class _DownloadAlignTypeState extends State<DownloadAlignType> {
   Color getColor(int i) {
     return Settings.themeWhat
         ? Settings.downloadAlignType == i
@@ -21,7 +28,7 @@ class DownloadAlignType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "downloadtype",
+        tag: 'downloadtype',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
@@ -33,7 +40,7 @@ class DownloadAlignType extends StatelessWidget {
             width: 280,
             child: IntrinsicHeight(
               child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
                     _typeItem(context, MdiIcons.clipboardListOutline,
@@ -64,6 +71,8 @@ class DownloadAlignType extends StatelessWidget {
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setDownloadAlignType(selection);
+
+        if (!mounted) return;
         Navigator.pop(context);
       },
     );

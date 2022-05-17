@@ -6,9 +6,9 @@ import 'dart:collection';
 import 'package:violet/component/image_provider.dart';
 
 class ProviderManager {
-  static HashMap<int, VioletImageProvider> _ids =
+  static final HashMap<int, VioletImageProvider> _ids =
       HashMap<int, VioletImageProvider>();
-  static HashMap<int, bool> _dirty = HashMap<int, bool>();
+  static final HashMap<int, bool> _dirty = HashMap<int, bool>();
 
   static bool isExists(int id) {
     return _ids.containsKey(id);

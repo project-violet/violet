@@ -26,8 +26,10 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class LabSearchMessage extends StatefulWidget {
+  const LabSearchMessage({Key key}) : super(key: key);
+
   @override
-  _LabSearchMessageState createState() => _LabSearchMessageState();
+  State<LabSearchMessage> createState() => _LabSearchMessageState();
 }
 
 class _LabSearchMessageState extends State<LabSearchMessage> {
@@ -41,7 +43,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var tmessages = (await VioletServer.searchMessage('contains', text.text))
           as List<dynamic>;
       messages = tmessages
@@ -67,9 +69,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       setState(() {});
     });
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       const url =
-          "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
+          'https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json';
 
       var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
@@ -89,9 +91,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();
     imageCache.clear();
-    _urls.forEach((element) async {
-      await CachedNetworkImageProvider(element).evict();
-    });
+    Future.forEach<String>(
+        _urls, (element) => CachedNetworkImageProvider(element).evict());
     super.dispose();
   }
 
@@ -102,10 +103,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
 
   @override
   Widget build(BuildContext context) {
-    ImageCache _imageCache = PaintingBinding.instance.imageCache;
-    if (_imageCache.currentSizeBytes >= (1024 + 256) << 20) {
-      _imageCache.clear();
-      _imageCache.clearLiveImages();
+    ImageCache imageCache = PaintingBinding.instance.imageCache;
+    if (imageCache.currentSizeBytes >= (1024 + 256) << 20) {
+      imageCache.clear();
+      imageCache.clearLiveImages();
     }
 
     final height = MediaQuery.of(context).size.height;
@@ -117,16 +118,16 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
         children: [
           Expanded(
             child: ListView.builder(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.all(0),
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(0),
               cacheExtent: height * 3.0,
               itemCount: messages.length,
               itemBuilder: (BuildContext ctxt, int index) {
                 // if (messages.length == 0) return Container();
                 var e = messages[index];
 
-                return FutureBuilder(
-                  future: Future.delayed(Duration(milliseconds: 100))
+                return FutureBuilder<List<Object>>(
+                  future: Future.delayed(const Duration(milliseconds: 100))
                       .then((value) async {
                     VioletImageProvider provider;
                     if (ProviderManager.isExists(e.item2)) {
@@ -151,7 +152,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                         children: [
                           SizedBox(
                             height: _height[index] != 0 ? _height[index] : 300,
-                            child: Align(
+                            child: const Align(
                               alignment: Alignment.center,
                               child: SizedBox(
                                 width: 50,
@@ -161,8 +162,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             ),
                           ),
                           ListTile(
-                            title: Text("${e.item2} (${e.item3 + 1} Page)"),
-                            subtitle: Text("Score: ${e.item1}"),
+                            title: Text('${e.item2} (${e.item3 + 1} Page)'),
+                            subtitle: Text('Score: ${e.item1}'),
                           ),
                         ],
                       );
@@ -185,7 +186,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                 child: VCachedNetworkImage(
                                   key: _keys[index],
                                   fit: BoxFit.cover,
-                                  fadeInDuration: Duration(microseconds: 500),
+                                  fadeInDuration:
+                                      const Duration(microseconds: 500),
                                   fadeInCurve: Curves.easeIn,
                                   imageUrl: snapshot.data[0] as String,
                                   httpHeaders:
@@ -196,10 +198,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                       height: 300,
                                       child: Center(
                                         child: SizedBox(
-                                          child: CircularProgressIndicator(
-                                              value: progress.progress),
                                           width: 30,
                                           height: 30,
+                                          child: CircularProgressIndicator(
+                                              value: progress.progress),
                                         ),
                                       ),
                                     );
@@ -208,7 +210,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                       (context, imageProvider, child) {
                                     if (_height[index] == 0 ||
                                         _height[index] == 300) {
-                                      Future.delayed(Duration(milliseconds: 50))
+                                      Future.delayed(
+                                              const Duration(milliseconds: 50))
                                           .then((value) {
                                         try {
                                           final RenderBox renderBoxRed =
@@ -220,7 +223,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                             _height[index] =
                                                 width / sizeRender.aspectRatio;
                                           }
-                                        } catch (e) {}
+                                        } catch (_) {}
                                       });
                                     }
                                     return child;
@@ -265,8 +268,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             ],
                           ),
                           ListTile(
-                            title: Text("${e.item2} (${e.item3 + 1} Page)"),
-                            subtitle: Text("Score: ${e.item1}"),
+                            title: Text('${e.item2} (${e.item3 + 1} Page)'),
+                            subtitle: Text('Score: ${e.item1}'),
                           ),
                         ],
                       ),
@@ -282,7 +285,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               DropdownButtonHideUnderline(
                 child: DropdownButton(
                   items: ['Contains', 'Similar']
-                      .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                       .toList(),
                   value: selected,
                   onChanged: (value) async {
@@ -307,9 +310,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .toList()))
                         .toList();
 
-                    _urls.forEach((element) async {
-                      await CachedNetworkImageProvider(element).evict();
-                    });
+                    Future.forEach<String>(
+                        _urls,
+                        (element) =>
+                            CachedNetworkImageProvider(element).evict());
 
                     _height = List<double>.filled(messages.length, 0);
                     _keys = List<GlobalKey>.generate(
@@ -324,8 +328,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               Expanded(
                 child: TypeAheadField(
                   suggestionsCallback: (pattern) async {
-                    if (autocompleteTarget == null)
+                    if (autocompleteTarget == null) {
                       return <Tuple3<String, String, int>>[];
+                    }
 
                     var ppattern = TagTranslate.disassembly(pattern);
 
@@ -341,12 +346,13 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   itemBuilder:
                       (context, Tuple3<String, String, int> suggestion) {
                     return ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 0.0, horizontal: 16.0),
                       title: Text(suggestion.item1),
                       trailing: Text(
-                        suggestion.item3.toString() + '회',
-                        style: TextStyle(color: Colors.grey, fontSize: 10.0),
+                        '${suggestion.item3}회',
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 10.0),
                       ),
                       dense: true,
                     );
@@ -355,7 +361,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   onSuggestionSelected: (suggestion) {
                     text.text = suggestion.item1;
                     setState(() {});
-                    Future.delayed(Duration(milliseconds: 100))
+                    Future.delayed(const Duration(milliseconds: 100))
                         .then((value) async {
                       _onModifiedText();
                     });
@@ -364,7 +370,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   hideOnLoading: true,
                   textFieldConfiguration: TextFieldConfiguration(
                     decoration:
-                        new InputDecoration.collapsed(hintText: '대사 입력'),
+                        const InputDecoration.collapsed(hintText: '대사 입력'),
                     controller: text,
                     // autofocus: true,
                     onEditingComplete: _onModifiedText,
@@ -372,24 +378,24 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.segment),
+                icon: const Icon(Icons.segment),
                 color: Colors.grey,
                 onPressed: () async {
                   var search = await PlatformNavigator.navigateSlide<String>(
-                      context, SearchMessageRankPage());
+                      context, const SearchMessageRankPage());
 
                   if (search == null || search == '') return;
 
                   text.text = search;
                   setState(() {});
-                  Future.delayed(Duration(milliseconds: 100))
+                  Future.delayed(const Duration(milliseconds: 100))
                       .then((value) async {
                     _onModifiedText();
                   });
                 },
               ),
               IconButton(
-                icon: Icon(Icons.info_outline),
+                icon: const Icon(Icons.info_outline),
                 color: Colors.grey,
                 onPressed: () async {
                   await showOkDialog(
@@ -425,9 +431,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 .toList()))
         .toList();
 
-    _urls.forEach((element) async {
-      await CachedNetworkImageProvider(element).evict();
-    });
+    Future.forEach<String>(
+        _urls, (element) => CachedNetworkImageProvider(element).evict());
 
     _height = List<double>.filled(messages.length, 0);
     _keys = List<GlobalKey>.generate(messages.length, (index) => GlobalKey());
@@ -443,7 +448,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     Completer<Size> completer = Completer();
     Image image =
         Image(image: CachedNetworkImageProvider(url, headers: header));
-    image.image.resolve(ImageConfiguration()).addListener(
+    image.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
           var myImage = image.image;
@@ -471,7 +476,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo> cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -482,21 +487,19 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
             maxChildSize: 0.9,
             expand: false,
             builder: (_, controller) {
-              if (cache == null) {
-                cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
-                  value: ArticleInfo.fromArticleInfo(
-                    queryResult: qr,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: 'zxcvzxcvzxcv',
-                    isBookmarked: isBookmarked,
-                    controller: controller,
-                  ),
-                );
-              }
+              cache ??= Provider<ArticleInfo>.value(
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: qr,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'zxcvzxcvzxcv',
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                ),
+                child: const ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+              );
               return cache;
             },
           );

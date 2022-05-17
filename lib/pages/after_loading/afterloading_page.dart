@@ -20,6 +20,8 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
 class AfterLoadingPage extends StatefulWidget {
+  const AfterLoadingPage({Key key}) : super(key: key);
+
   @override
   AfterLoadingPageState createState() => AfterLoadingPageState();
 }
@@ -47,7 +49,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           _alreadyLocked = true;
           Navigator.of(context)
               .push(MaterialPageRoute(
-                builder: (context) => LockScreen(
+                builder: (context) => const LockScreen(
                   isSecureMode: true,
                 ),
               ))
@@ -62,7 +64,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     }
   }
 
-  PageController _pageController =
+  final PageController _pageController =
       PageController(initialPage: defaultInitialPage);
 
   int get _currentPage => _pageController.hasClients
@@ -173,7 +175,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             ),
             onTap: () {
               setState(() {
-                this._pageController.jumpToPage(page);
+                _pageController.jumpToPage(page);
               });
               Navigator.pop(context);
             },
@@ -205,14 +207,14 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                     style: TextStyle(
                       color: Settings.themeWhat ? Colors.white : Colors.black87,
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 1.0,
                     ),
                   ),
                   Text(
-                    '${UpdateSyncManager.currentVersion}',
+                    UpdateSyncManager.currentVersion,
                     style: const TextStyle(
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       fontSize: 17.0,
                       letterSpacing: 1.0,
                     ),
@@ -231,7 +233,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
               textAlign: TextAlign.center,
@@ -268,7 +270,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             msg: Translations.of(context).trans('closedoubletap'),
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
 
         return false;
@@ -280,11 +282,11 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         drawer: _usesDrawer ? _buildDrawer(context) : null,
         body: PageView(
           controller: _pageController,
-          physics: _usesDrawer ? NeverScrollableScrollPhysics() : null,
+          physics: _usesDrawer ? const NeverScrollableScrollPhysics() : null,
           onPageChanged: (newPage) {
             setState(() {});
           },
-          children: <Widget>[
+          children: const <Widget>[
             MainPage2(),
             SearchPage(),
             BookmarkPage(),

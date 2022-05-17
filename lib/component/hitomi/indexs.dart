@@ -68,17 +68,18 @@ class HitomiIndexs {
       final path11 = File('${directory.path}$subdir/series-series.json');
       seriesSeries = jsonDecode(await path11.readAsString());
     } catch (e, st) {
-      Logger.error('[Hitomi-Indexs] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Hitomi-Indexs] E: $e\n'
+          '$st');
     }
 
     var relatedData = json.decode(await rootBundle.loadString(
             'assets/locale/tag/related-tag-${TagTranslate.defaultLanguage}.json'))
         as List<dynamic>;
-    relatedTag = Map<String, dynamic>();
-    relatedData.forEach((element) {
+    relatedTag = <String, dynamic>{};
+    for (var element in relatedData) {
       var kv = (element as Map<String, dynamic>).entries.first;
       relatedTag[kv.key] = kv.value;
-    });
+    }
   }
 
   static List<Tuple2<String, double>> _calculateSimilars(
@@ -123,11 +124,11 @@ class HitomiIndexs {
 
   static List<Tuple2<String, double>> calculateRelatedCharacterSeries(
       String series) {
-    if (seriesSeries == null)
+    if (seriesSeries == null) {
       return _calculateSimilars(characterSeries, series)
           .where((element) => element.item2 >= 0.000001)
           .toList();
-    else {
+    } else {
       var ll = (seriesSeries[series] as Map<String, dynamic>)
           .entries
           .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
@@ -139,11 +140,11 @@ class HitomiIndexs {
 
   static List<Tuple2<String, double>> calculateRelatedSeriesCharacter(
       String character) {
-    if (characterCharacter == null)
+    if (characterCharacter == null) {
       return _calculateSimilars(seriesCharacter, character)
           .where((element) => element.item2 >= 0.000001)
           .toList();
-    else {
+    } else {
       var ll = (characterCharacter[character] as Map<String, dynamic>)
           .entries
           .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
@@ -164,8 +165,9 @@ class HitomiIndexs {
   }
 
   static List<Tuple2<String, double>> getRelatedSeries(String character) {
-    if (!seriesCharacter.containsKey(character))
+    if (!seriesCharacter.containsKey(character)) {
       return <Tuple2<String, double>>[];
+    }
     var ll = (seriesCharacter[character] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))

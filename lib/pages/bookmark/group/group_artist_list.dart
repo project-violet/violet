@@ -24,10 +24,10 @@ class GroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistList({this.name, this.groupId});
+  const GroupArtistList({Key key, this.name, this.groupId}) : super(key: key);
 
   @override
-  _GroupArtistListState createState() => _GroupArtistListState();
+  State<GroupArtistList> createState() => _GroupArtistListState();
 }
 
 class _GroupArtistListState extends State<GroupArtistList>
@@ -46,15 +46,12 @@ class _GroupArtistListState extends State<GroupArtistList>
     for (int i = 0; i < artists.length; i++) {
       var postfix = artists[i].artist().toLowerCase().replaceAll(' ', '_');
       var queryString = HitomiManager.translate2query('${[
-            'artist',
-            'group',
-            'uploader',
-            'series',
-            'character'
-          ][artists[i].type()]}:' +
-          postfix +
-          ' ' +
-          Settings.includeTags);
+        'artist',
+        'group',
+        'uploader',
+        'series',
+        'character'
+      ][artists[i].type()]}:$postfix ${Settings.includeTags}');
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 1;
       var query = (await qm.next())[0].id();
@@ -72,11 +69,13 @@ class _GroupArtistListState extends State<GroupArtistList>
 
   Future<List<QueryResult>> _future(String e, int type) async {
     var postfix = e.toLowerCase().replaceAll(' ', '_');
-    var queryString = HitomiManager.translate2query(
-        '${['artist', 'group', 'uploader', 'series', 'character'][type]}:' +
-            postfix +
-            ' ' +
-            Settings.includeTags);
+    var queryString = HitomiManager.translate2query('${[
+      'artist',
+      'group',
+      'uploader',
+      'series',
+      'character'
+    ][type]}:$postfix ${Settings.includeTags}');
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 3;
     return await qm.next();
@@ -100,7 +99,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         visible: checkMode,
         child: AnimatedOpacity(
           opacity: checkModePre ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           child: _floatingButton(),
         ),
       ),
@@ -115,10 +114,8 @@ class _GroupArtistListState extends State<GroupArtistList>
               SliverPersistentHeader(
                 floating: true,
                 delegate: AnimatedOpacitySliver(
-                  minExtent: 64 + 12.0,
-                  maxExtent: 64.0 + 12,
                   searchBar: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Stack(children: <Widget>[
                         _filter(),
                         _title(),
@@ -135,10 +132,11 @@ class _GroupArtistListState extends State<GroupArtistList>
                       builder: (BuildContext context,
                           AsyncSnapshot<List<QueryResult>> snapshot) {
                         var qq = snapshot.data;
-                        if (!snapshot.hasData)
+                        if (!snapshot.hasData) {
                           return Container(
                             height: 195,
                           );
+                        }
                         return _listItem(context, e, qq);
                       },
                     );
@@ -159,14 +157,14 @@ class _GroupArtistListState extends State<GroupArtistList>
     return Align(
       alignment: Alignment.centerRight,
       child: Hero(
-        tag: "searchtype3",
+        tag: 'searchtype3',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -174,6 +172,18 @@ class _GroupArtistListState extends State<GroupArtistList>
           elevation: !Settings.themeFlat ? 100 : 0,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: InkWell(
+            onTap: _progressingFilter
+                ? null
+                : () async {
+                    setState(() {
+                      _progressingFilter = true;
+                    });
+                    await _sortByLatest();
+                    setState(() {
+                      _progressingFilter = false;
+                      _filterLevel = (_filterLevel + 1) % 2;
+                    });
+                  },
             child: SizedBox(
               height: 48,
               width: 48,
@@ -181,7 +191,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                 alignment: Alignment.center,
                 children: <Widget>[
                   _progressingFilter
-                      ? SizedBox(
+                      ? const SizedBox(
                           height: 30,
                           width: 30,
                           child: CircularProgressIndicator(
@@ -198,18 +208,6 @@ class _GroupArtistListState extends State<GroupArtistList>
                 ],
               ),
             ),
-            onTap: _progressingFilter
-                ? null
-                : () async {
-                    setState(() {
-                      _progressingFilter = true;
-                    });
-                    await _sortByLatest();
-                    setState(() {
-                      _progressingFilter = false;
-                      _filterLevel = (_filterLevel + 1) % 2;
-                    });
-                  },
           ),
         ),
       ),
@@ -217,7 +215,7 @@ class _GroupArtistListState extends State<GroupArtistList>
   }
 
   Widget _title() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.only(top: 24, left: 12),
       child: Text('Artists Collection',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -230,25 +228,22 @@ class _GroupArtistListState extends State<GroupArtistList>
     return Container(
       color: checkMode &&
               checked
-                      .where((element) =>
-                          element.item1 == e.type() &&
-                          element.item2 == e.artist())
-                      .length !=
-                  0
+                  .where((element) =>
+                      element.item1 == e.type() && element.item2 == e.artist())
+                  .isNotEmpty
           ? Colors.amber
           : Colors.transparent,
       child: InkWell(
-        onTap: () async {
+        onTap: () {
           if (checkMode) {
             check(
                 e.type(),
                 e.artist(),
                 checked
-                        .where((element) =>
-                            element.item1 == e.type() &&
-                            element.item2 == e.artist())
-                        .length ==
-                    0);
+                    .where((element) =>
+                        element.item1 == e.type() &&
+                        element.item2 == e.artist())
+                    .isEmpty);
             setState(() {});
             return;
           }
@@ -272,7 +267,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         child: SizedBox(
           height: 195,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
@@ -281,26 +276,19 @@ class _GroupArtistListState extends State<GroupArtistList>
                   children: <Widget>[
                     Text(
                         ' ${[
+                          'artist',
+                          'group',
+                          'uploader',
+                          'series',
+                          'character'
+                        ][e.type()]}:${e.artist()} (${HitomiManager.getArticleCount([
                               'artist',
                               'group',
                               'uploader',
                               'series',
                               'character'
-                            ][e.type()]}:' +
-                            e.artist() +
-                            ' (' +
-                            HitomiManager.getArticleCount(
-                                    [
-                                      'artist',
-                                      'group',
-                                      'uploader',
-                                      'series',
-                                      'character'
-                                    ][e.type()],
-                                    e.artist())
-                                .toString() +
-                            ')',
-                        style: TextStyle(fontSize: 17)),
+                            ][e.type()], e.artist())})',
+                        style: const TextStyle(fontSize: 17)),
                   ],
                 ),
                 SizedBox(
@@ -327,22 +315,19 @@ class _GroupArtistListState extends State<GroupArtistList>
         flex: 1,
         child: qq.length > index
             ? Padding(
-                key: Key(qq[index].id().toString() +
-                    '/' +
-                    index.toString() +
-                    '_thumbnail_bookmark'),
-                padding: EdgeInsets.all(4),
+                key: Key('${qq[index].id()}/${index}_thumbnail_bookmark'),
+                padding: const EdgeInsets.all(4),
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
                     queryResult: qq[index],
                     showDetail: false,
                     addBottomPadding: false,
                     width: (windowWidth - 16 - 4.0 - 16.0) / 3,
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     disableFilter: true,
                     usableTabList: qq,
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemVerySimpleWidget(),
                 ),
               )
             : Container());
@@ -351,58 +336,53 @@ class _GroupArtistListState extends State<GroupArtistList>
   Widget _floatingButton() {
     return AnimatedFloatingActionButton(
       fabButtons: <Widget>[
-        Container(
-          child: FloatingActionButton(
-            onPressed: () {
-              artists.forEach((element) {
-                checked
-                    .add(Tuple2<int, String>(element.type(), element.artist()));
-              });
-              setState(() {});
-            },
-            elevation: 4,
-            heroTag: 'a',
-            child: Icon(MdiIcons.checkAll),
-          ),
+        FloatingActionButton(
+          onPressed: () {
+            for (var element in artists) {
+              checked
+                  .add(Tuple2<int, String>(element.type(), element.artist()));
+            }
+            setState(() {});
+          },
+          elevation: 4,
+          heroTag: 'a',
+          child: const Icon(MdiIcons.checkAll),
         ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: () async {
-              if (await showYesNoDialog(
-                  context,
-                  Translations.of(context)
-                      .trans('deletebookmarkmsg')
-                      .replaceAll('%s', checked.length.toString()),
-                  Translations.of(context).trans('bookmark'))) {
-                var bookmark = await Bookmark.getInstance();
-                checked.forEach((element) async {
-                  bookmark.unbookmarkArtist(element.item2, element.item1);
-                });
+        FloatingActionButton(
+          onPressed: () async {
+            if (await showYesNoDialog(
+                context,
+                Translations.of(context)
+                    .trans('deletebookmarkmsg')
+                    .replaceAll('%s', checked.length.toString()),
+                Translations.of(context).trans('bookmark'))) {
+              var bookmark = await Bookmark.getInstance();
+              Future.forEach<Tuple2<int, String>>(
+                  checked,
+                  (element) =>
+                      bookmark.unbookmarkArtist(element.item2, element.item1));
+              checked.clear();
+              refresh();
+              setState(() {
+                checkModePre = false;
                 checked.clear();
-                refresh();
+              });
+              Future.delayed(const Duration(milliseconds: 500)).then((value) {
                 setState(() {
-                  checkModePre = false;
-                  checked.clear();
+                  checkMode = false;
                 });
-                Future.delayed(Duration(milliseconds: 500)).then((value) {
-                  setState(() {
-                    checkMode = false;
-                  });
-                });
-              }
-            },
-            elevation: 4,
-            heroTag: 'b',
-            child: Icon(MdiIcons.delete),
-          ),
+              });
+            }
+          },
+          elevation: 4,
+          heroTag: 'b',
+          child: const Icon(MdiIcons.delete),
         ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: moveChecked,
-            elevation: 4,
-            heroTag: 'c',
-            child: Icon(MdiIcons.folderMove),
-          ),
+        FloatingActionButton(
+          onPressed: moveChecked,
+          elevation: 4,
+          heroTag: 'c',
+          child: const Icon(MdiIcons.folderMove),
         ),
       ],
       animatedIconData: AnimatedIcons.menu_close,
@@ -411,7 +391,7 @@ class _GroupArtistListState extends State<GroupArtistList>
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             checkMode = false;
           });
@@ -434,17 +414,17 @@ class _GroupArtistListState extends State<GroupArtistList>
   }
 
   void check(int type, String artist, bool check) {
-    if (check)
+    if (check) {
       checked.add(Tuple2<int, String>(type, artist));
-    else {
+    } else {
       checked.removeWhere(
           (element) => element.item1 == type && element.item2 == artist);
-      if (checked.length == 0) {
+      if (checked.isEmpty) {
         setState(() {
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             checkMode = false;
           });
@@ -493,6 +473,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                   ),
                 )) ==
         1) {
+      if (!mounted) return;
       if (await showYesNoDialog(
           context,
           Translations.of(context)
@@ -505,12 +486,12 @@ class _GroupArtistListState extends State<GroupArtistList>
 
         // Atomic!!
         // 0. Sort Checked
-        var invIdIndex = Map<String, int>();
-        for (int i = 0; i < artists.length; i++)
-          invIdIndex[artists[i].artist() + '|' + artists[i].type().toString()] =
-              i;
-        checked.sort((x, y) => invIdIndex[x.item2 + '|' + x.item1.toString()]
-            .compareTo(invIdIndex[y.item2 + '|' + y.item1.toString()]));
+        var invIdIndex = <String, int>{};
+        for (int i = 0; i < artists.length; i++) {
+          invIdIndex['${artists[i].artist()}|${artists[i].type()}'] = i;
+        }
+        checked.sort((x, y) => invIdIndex['${x.item2}|${x.item1}']
+            .compareTo(invIdIndex['${y.item2}|${y.item1}']));
 
         // 1. Get bookmark articles on source groupid
         var bm = await Bookmark.getInstance();
@@ -533,11 +514,12 @@ class _GroupArtistListState extends State<GroupArtistList>
         }
 
         // 5. Update UI
+        if (!mounted) return;
         setState(() {
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             checkMode = false;
           });
@@ -545,6 +527,6 @@ class _GroupArtistListState extends State<GroupArtistList>
         await refresh();
         setState(() {});
       }
-    } else {}
+    }
   }
 }

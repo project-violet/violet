@@ -13,8 +13,10 @@ import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
 class CommunityPage extends StatefulWidget {
+  const CommunityPage({Key key}) : super(key: key);
+
   @override
-  _CommunityPageState createState() => _CommunityPageState();
+  State<CommunityPage> createState() => _CommunityPageState();
 }
 
 class _CommunityPageState extends State<CommunityPage>
@@ -33,13 +35,13 @@ class _CommunityPageState extends State<CommunityPage>
     super.initState();
 
     // load boards
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var id = (await SharedPreferences.getInstance())
           .getString('saved_community_id');
       var pw = (await SharedPreferences.getInstance())
           .getString('saved_community_pw');
 
-      _userId = id != null ? id : 'None';
+      _userId = id ?? 'None';
       _userAppId =
           (await SharedPreferences.getInstance()).getString('fa_userid');
       setState(() {});
@@ -48,9 +50,8 @@ class _CommunityPageState extends State<CommunityPage>
         setState(() {
           _logining = true;
         });
-        sess = VioletCommunitySession.lastSession != null
-            ? VioletCommunitySession.lastSession
-            : await VioletCommunitySession.signIn(id, pw);
+        sess = VioletCommunitySession.lastSession ??
+            await VioletCommunitySession.signIn(id, pw);
         _userNickName =
             (await VioletCommunitySession.getUserInfo(id))['NickName'];
         setState(() {
@@ -71,7 +72,7 @@ class _CommunityPageState extends State<CommunityPage>
     var pw =
         (await SharedPreferences.getInstance()).getString('saved_community_pw');
 
-    _userId = id != null ? id : 'None';
+    _userId = id ?? 'None';
     _userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
     setState(() {});
 
@@ -87,7 +88,7 @@ class _CommunityPageState extends State<CommunityPage>
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
       child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -103,14 +104,14 @@ class _CommunityPageState extends State<CommunityPage>
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           alignment: Alignment.centerLeft,
           height: 80,
           // decoration:
           child: Ink(
             decoration: BoxDecoration(
               color: Settings.themeWhat ? Colors.black26 : Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat
@@ -118,7 +119,7 @@ class _CommunityPageState extends State<CommunityPage>
                       : Colors.grey.withOpacity(0.1),
                   spreadRadius: Settings.themeWhat ? 0 : 5,
                   blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             ),
@@ -126,23 +127,23 @@ class _CommunityPageState extends State<CommunityPage>
               children: [
                 Expanded(
                   child: InkWell(
-                    customBorder: RoundedRectangleBorder(
+                    customBorder: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10.0),
                           bottomLeft: Radius.circular(10.0)),
                     ),
                     child: Container(
-                      padding: EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Text('User: ',
+                              const Text('User: ',
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 16)),
                               Text(' $_userNickName ($_userId)',
-                                  style: TextStyle(fontSize: 16)),
+                                  style: const TextStyle(fontSize: 16)),
                             ],
                           ),
                           Container(
@@ -150,16 +151,12 @@ class _CommunityPageState extends State<CommunityPage>
                           ),
                           Row(
                             children: [
-                              Text('User App Id: ',
+                              const Text('User App Id: ',
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 16)),
                               Text(
-                                  ' ' +
-                                      (_userAppId != null
-                                          ? _userAppId.substring(0, 16)
-                                          : '') +
-                                      '...',
-                                  style: TextStyle(fontSize: 16)),
+                                  ' ${_userAppId != null ? _userAppId.substring(0, 16) : ''}...',
+                                  style: const TextStyle(fontSize: 16)),
                             ],
                           )
                         ],
@@ -174,7 +171,7 @@ class _CommunityPageState extends State<CommunityPage>
                   ),
                 ),
                 _buildDivider(),
-                Container(
+                SizedBox(
                   height: double.infinity,
                   width: 88,
                   child: _logining
@@ -183,7 +180,7 @@ class _CommunityPageState extends State<CommunityPage>
                           width: 48,
                           child: Stack(
                               alignment: Alignment.center,
-                              children: <Widget>[
+                              children: const <Widget>[
                                 SizedBox(
                                     height: 30,
                                     width: 30,
@@ -193,7 +190,7 @@ class _CommunityPageState extends State<CommunityPage>
                                     ))
                               ]))
                       : InkWell(
-                          customBorder: RoundedRectangleBorder(
+                          customBorder: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
                                 topRight: Radius.circular(10.0),
                                 bottomRight: Radius.circular(10.0)),
@@ -202,7 +199,7 @@ class _CommunityPageState extends State<CommunityPage>
                             alignment: Alignment.center,
                             child: Badge(
                               showBadge: false,
-                              badgeContent: Text('N',
+                              badgeContent: const Text('N',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 12.0)),
                               // badgeColor: Settings.majorAccentColor,
@@ -220,8 +217,8 @@ class _CommunityPageState extends State<CommunityPage>
 
                             var ync = await showYesNoDialog(
                                 context,
-                                'You need to log in to use the community feature. ' +
-                                    'If you have an existing id, press "YES" to log in. ' +
+                                'You need to log in to use the community feature. '
+                                    'If you have an existing id, press "YES" to log in. '
                                     'If you do not have an existing id, press "NO" to register for a new one.',
                                 'Sign In/Up');
 
@@ -234,7 +231,7 @@ class _CommunityPageState extends State<CommunityPage>
                               var r = await showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return SignInDialog();
+                                    return const SignInDialog();
                                   });
                               if (r == null) return;
                               id = r[0];
@@ -244,17 +241,19 @@ class _CommunityPageState extends State<CommunityPage>
                               if (await VioletCommunitySession.checkUserAppId(
                                       _userAppId) !=
                                   'success') {
-                                await showOkDialog(
-                                    context,
-                                    'You cannot continue, there is an account registered with your UserAppId.' +
-                                        ' If you have already registered as a member, please sign in with your existing id.' +
-                                        ' If you forgot your login information, please contact developer.');
+                                if (mounted) {
+                                  await showOkDialog(
+                                      context,
+                                      'You cannot continue, there is an account registered with your UserAppId. '
+                                      'If you have already registered as a member, please sign in with your existing id. '
+                                      'If you forgot your login information, please contact developer.');
+                                }
                                 return;
                               }
                               var r = await showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return SignUpDialog();
+                                    return const SignUpDialog();
                                   });
 
                               if (r == null) return;
@@ -265,13 +264,17 @@ class _CommunityPageState extends State<CommunityPage>
                               if (await VioletCommunitySession.signUp(
                                       r[0], r[1], _userAppId, r[2]) ==
                                   'success') {
-                                await showOkDialog(
-                                    context, 'Sign up is complete!');
+                                if (mounted) {
+                                  await showOkDialog(
+                                      context, 'Sign up is complete!');
+                                }
                                 id = r[0];
                                 pw = r[1];
                               } else {
-                                await showOkDialog(
-                                    context, 'Registration has been declined!');
+                                if (mounted) {
+                                  await showOkDialog(context,
+                                      'Registration has been declined!');
+                                }
                                 return;
                               }
                             }

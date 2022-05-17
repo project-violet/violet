@@ -12,8 +12,10 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
 class TagRebuildPage extends StatefulWidget {
+  const TagRebuildPage({Key key}) : super(key: key);
+
   @override
-  _TagRebuildPageState createState() => _TagRebuildPageState();
+  State<TagRebuildPage> createState() => _TagRebuildPageState();
 }
 
 class _TagRebuildPageState extends State<TagRebuildPage> {
@@ -21,12 +23,12 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       await indexing();
 
+      if (!mounted) return;
       Navigator.pop(context);
     });
   }
@@ -38,29 +40,43 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         return false;
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.4)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: const Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Card(
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              color: Settings.themeWhat
+                  ? const Color(0xFF353535)
+                  : Colors.grey.shade100,
               elevation: 100,
               child: SizedBox(
                 child: SizedBox(
                   width: 280,
                   height: (56 * 4 + 16).toDouble(),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                     child: Stack(
                       children: [
-                        Center(
+                        const Center(
                           child: CircularProgressIndicator(),
                         ),
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
-                            padding: EdgeInsets.only(bottom: 33),
+                            padding: const EdgeInsets.only(bottom: 33),
                             child: Text(
                               baseString,
                             ),
@@ -74,36 +90,24 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
             ),
           ],
         ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
       ),
     );
   }
 
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
-    for (var tag in (qr as String).split('|'))
+    if (qr as String == '') return;
+    for (var tag in (qr as String).split('|')) {
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
         map[tag] += 1;
       }
+    }
   }
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     var str = qr as String;
     if (str != null && str != '') {
       if (!map.containsKey(str)) map[str] = 0;
@@ -111,44 +115,39 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
     }
   }
 
-  Future indexing() async {
+  Future<void> indexing() async {
     QueryManager qm;
     qm = QueryManager.queryPagination(HitomiManager.translate2query(
-        Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' ')));
+        '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}'));
     qm.itemsPerPage = 50000;
 
-    var tags = Map<String, int>();
-    var languages = Map<String, int>();
-    var artists = Map<String, int>();
-    var groups = Map<String, int>();
-    var types = Map<String, int>();
-    var uploaders = Map<String, int>();
-    var series = Map<String, int>();
-    var characters = Map<String, int>();
-    var classes = Map<String, int>();
+    var tags = <String, int>{};
+    var languages = <String, int>{};
+    var artists = <String, int>{};
+    var groups = <String, int>{};
+    var types = <String, int>{};
+    var uploaders = <String, int>{};
+    var series = <String, int>{};
+    var characters = <String, int>{};
+    var classes = <String, int>{};
 
-    var tagIndex = Map<String, int>();
-    var tagArtist = Map<String, Map<String, int>>();
-    var tagGroup = Map<String, Map<String, int>>();
-    var tagUploader = Map<String, Map<String, int>>();
-    var tagSeries = Map<String, Map<String, int>>();
-    var tagCharacter = Map<String, Map<String, int>>();
+    var tagIndex = <String, int>{};
+    var tagArtist = <String, Map<String, int>>{};
+    var tagGroup = <String, Map<String, int>>{};
+    var tagUploader = <String, Map<String, int>>{};
+    var tagSeries = <String, Map<String, int>>{};
+    var tagCharacter = <String, Map<String, int>>{};
 
-    var seriesSeries = Map<String, Map<String, int>>();
-    var seriesCharacter = Map<String, Map<String, int>>();
+    var seriesSeries = <String, Map<String, int>>{};
+    var seriesCharacter = <String, Map<String, int>>{};
 
-    var characterCharacter = Map<String, Map<String, int>>();
-    var characterSeries = Map<String, Map<String, int>>();
+    var characterCharacter = <String, Map<String, int>>{};
+    var characterSeries = <String, Map<String, int>>{};
 
     int i = 0;
     while (true) {
       setState(() {
-        baseString = Translations.instance.trans('dbdindexing') + '[$i/20]';
+        baseString = '${Translations.instance.trans('dbdindexing')}[$i/20]';
       });
 
       var ll = await qm.next();
@@ -167,81 +166,103 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.tags() == null) continue;
 
         if (item.artists() != null) {
-          for (var artist in item.artists().split('|'))
-            if (artist != '') if (!tagArtist.containsKey(artist))
-              tagArtist[artist] = Map<String, int>();
+          for (var artist in item.artists().split('|')) {
+            if (artist != '') {
+              if (!tagArtist.containsKey(artist)) {
+                tagArtist[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.artists().split('|')) {
               if (artist == '') continue;
-              if (!tagArtist[artist].containsKey(index))
+              if (!tagArtist[artist].containsKey(index)) {
                 tagArtist[artist][index] = 0;
+              }
               tagArtist[artist][index] += 1;
             }
           }
         }
 
         if (item.groups() != null) {
-          for (var artist in item.groups().split('|'))
-            if (artist != '') if (!tagGroup.containsKey(artist))
-              tagGroup[artist] = Map<String, int>();
+          for (var artist in item.groups().split('|')) {
+            if (artist != '') {
+              if (!tagGroup.containsKey(artist)) {
+                tagGroup[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.groups().split('|')) {
               if (artist == '') continue;
-              if (!tagGroup[artist].containsKey(index))
+              if (!tagGroup[artist].containsKey(index)) {
                 tagGroup[artist][index] = 0;
+              }
               tagGroup[artist][index] += 1;
             }
           }
         }
 
         if (item.uploader() != null) {
-          if (!tagUploader.containsKey(item.uploader()))
-            tagUploader[item.uploader()] = Map<String, int>();
+          if (!tagUploader.containsKey(item.uploader())) {
+            tagUploader[item.uploader()] = <String, int>{};
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
-            if (!tagUploader[item.uploader()].containsKey(index))
+            if (!tagUploader[item.uploader()].containsKey(index)) {
               tagUploader[item.uploader()][index] = 0;
+            }
             tagUploader[item.uploader()][index] += 1;
           }
         }
 
         if (item.series() != null) {
-          for (var artist in item.series().split('|'))
-            if (artist != '') if (!tagSeries.containsKey(artist))
-              tagSeries[artist] = Map<String, int>();
+          for (var artist in item.series().split('|')) {
+            if (artist != '') {
+              if (!tagSeries.containsKey(artist)) {
+                tagSeries[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.series().split('|')) {
               if (artist == '') continue;
-              if (!tagSeries[artist].containsKey(index))
+              if (!tagSeries[artist].containsKey(index)) {
                 tagSeries[artist][index] = 0;
+              }
               tagSeries[artist][index] += 1;
             }
           }
         }
 
         if (item.characters() != null) {
-          for (var artist in item.characters().split('|'))
-            if (artist != '') if (!tagCharacter.containsKey(artist))
-              tagCharacter[artist] = Map<String, int>();
+          for (var artist in item.characters().split('|')) {
+            if (artist != '') {
+              if (!tagCharacter.containsKey(artist)) {
+                tagCharacter[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.characters().split('|')) {
               if (artist == '') continue;
-              if (!tagCharacter[artist].containsKey(index))
+              if (!tagCharacter[artist].containsKey(index)) {
                 tagCharacter[artist][index] = 0;
+              }
               tagCharacter[artist][index] += 1;
             }
           }
@@ -250,24 +271,28 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.series() != null && item.characters() != null) {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
-            if (!characterSeries.containsKey(series))
-              characterSeries[series] = Map<String, int>();
+            if (!characterSeries.containsKey(series)) {
+              characterSeries[series] = <String, int>{};
+            }
             for (var character in item.characters().split('|')) {
               if (character == '') continue;
-              if (!characterSeries[series].containsKey(character))
+              if (!characterSeries[series].containsKey(character)) {
                 characterSeries[series][character] = 0;
+              }
               characterSeries[series][character] += 1;
             }
           }
 
           for (var character in item.characters().split('|')) {
             if (character == '') continue;
-            if (!seriesCharacter.containsKey(character))
-              seriesCharacter[character] = Map<String, int>();
+            if (!seriesCharacter.containsKey(character)) {
+              seriesCharacter[character] = <String, int>{};
+            }
             for (var series in item.series().split('|')) {
               if (series == '') continue;
-              if (!seriesCharacter[character].containsKey(series))
+              if (!seriesCharacter[character].containsKey(series)) {
                 seriesCharacter[character][series] = 0;
+              }
               seriesCharacter[character][series] += 1;
             }
           }
@@ -276,12 +301,14 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.series() != null) {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
-            if (!seriesSeries.containsKey(series))
-              seriesSeries[series] = Map<String, int>();
+            if (!seriesSeries.containsKey(series)) {
+              seriesSeries[series] = <String, int>{};
+            }
             for (var series2 in item.series().split('|')) {
               if (series2 == '' || series == series2) continue;
-              if (!seriesSeries[series].containsKey(series2))
+              if (!seriesSeries[series].containsKey(series2)) {
                 seriesSeries[series][series2] = 0;
+              }
               seriesSeries[series][series2] += 1;
             }
           }
@@ -290,29 +317,31 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.characters() != null) {
           for (var character in item.characters().split('|')) {
             if (character == '') continue;
-            if (!characterCharacter.containsKey(character))
-              characterCharacter[character] = Map<String, int>();
+            if (!characterCharacter.containsKey(character)) {
+              characterCharacter[character] = <String, int>{};
+            }
             for (var character2 in item.characters().split('|')) {
               if (character2 == '' || character == character2) continue;
-              if (!characterCharacter[character].containsKey(character2))
+              if (!characterCharacter[character].containsKey(character2)) {
                 characterCharacter[character][character2] = 0;
+              }
               characterCharacter[character][character2] += 1;
             }
           }
         }
       }
 
-      if (ll.length == 0) {
+      if (ll.isEmpty) {
         var index = {
-          "tag": tags,
-          "artist": artists,
-          "group": groups,
-          "series": series,
-          "lang": languages,
-          "type": types,
-          "uploader": uploaders,
-          "character": characters,
-          "class": classes,
+          'tag': tags,
+          'artist': artists,
+          'group': groups,
+          'series': series,
+          'lang': languages,
+          'type': types,
+          'uploader': uploaders,
+          'character': characters,
+          'class': classes,
         };
         final subdir = Platform.isAndroid ? '/data' : '';
 

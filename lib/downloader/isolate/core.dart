@@ -50,14 +50,14 @@ class IsolateDownloaderTask {
   });
 
   static IsolateDownloaderTask fromDownloadTask(int taskId, DownloadTask task) {
-    var header = Map<String, String>();
+    var header = <String, String>{};
     if (task.referer != null) header['referer'] = task.referer;
     if (task.accept != null) header['accept'] = task.accept;
     if (task.userAgent != null) header['user-agent'] = task.userAgent;
     if (task.headers != null) {
-      task.headers.entries.forEach((element) {
+      for (var element in task.headers.entries) {
         header[element.key.toLowerCase()] = element.value;
-      });
+      }
     }
     return IsolateDownloaderTask(
       id: taskId,
@@ -67,12 +67,13 @@ class IsolateDownloaderTask {
     );
   }
 
+  @override
   String toString() {
     return jsonEncode({
-      "id": id,
-      "url": url,
-      "fullpath": fullpath,
-      "header": header,
+      'id': id,
+      'url': url,
+      'fullpath': fullpath,
+      'header': header,
     });
   }
 }
@@ -197,10 +198,10 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
         ReceivePortData(
           type: ReceivePortType.retry,
           data: {
-            "id": task.id,
-            "url": task.url,
-            "count": retryCount,
-            "code": res.statusCode,
+            'id': task.id,
+            'url': task.url,
+            'count': retryCount,
+            'code': res.statusCode,
           },
         ),
       );
@@ -241,9 +242,9 @@ void _resolveQueue() {
   if (_dqueue.isEmpty) return;
   if (_taskCurrentCount < _maxTaskCount) {
     _taskCurrentCount += 1;
-    final _itask = _dqueue.removeFirst();
-    _workingMap[_itask.id] = _itask;
-    _processTask(_itask);
+    final itask = _dqueue.removeFirst();
+    _workingMap[itask.id] = itask;
+    _processTask(itask);
   }
 }
 
@@ -256,7 +257,7 @@ void _appendTask(IsolateDownloaderTask task) {
 
 void _initIsolateDownloader(IsolateDownloaderOption option) {
   _dqueue = Queue<IsolateDownloaderTask>();
-  _workingMap = Map<int, IsolateDownloaderTask>();
+  _workingMap = <int, IsolateDownloaderTask>{};
   _maxTaskCount = option.threadCount;
 }
 
@@ -267,7 +268,9 @@ void _cancelTask(int taskId) {
 /// cancel all tasks and remove dqueue
 void _terminate() {
   _dqueue.clear();
-  _workingMap.entries.forEach((element) => element.value.cancelToken.cancel());
+  for (var element in _workingMap.entries) {
+    element.value.cancelToken.cancel();
+  }
 }
 
 void _modifyTaskPoolSize(int sz) {
@@ -275,11 +278,11 @@ void _modifyTaskPoolSize(int sz) {
 }
 
 void _downloadIsolateRoutine(SendPort sendPort) {
-  final ReceivePort _receivePort = ReceivePort();
-  sendPort.send(_receivePort.sendPort);
+  final ReceivePort receivePort = ReceivePort();
+  sendPort.send(receivePort.sendPort);
   _sendPort = sendPort;
 
-  _receivePort.listen((dynamic message) async {
+  receivePort.listen((dynamic message) async {
     if (message is SendPortData) {
       switch (message.type) {
         case SendPortType.init:
@@ -298,7 +301,7 @@ void _downloadIsolateRoutine(SendPort sendPort) {
           _modifyTaskPoolSize(message.data as int);
           break;
         case SendPortType.test:
-          var ttask = message.data as List<String>;
+          //var ttask = message.data as List<String>;
           break;
       }
     }

@@ -34,19 +34,19 @@ class BookmarkVersionSelectPage extends StatefulWidget {
   final String userAppId;
   final List<dynamic> versions;
 
-  BookmarkVersionSelectPage({this.userAppId, this.versions});
+  const BookmarkVersionSelectPage({Key key, this.userAppId, this.versions})
+      : super(key: key);
 
   @override
-  _BookmarkVersionSelectPageState createState() =>
+  State<BookmarkVersionSelectPage> createState() =>
       _BookmarkVersionSelectPageState();
 }
 
 class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setLocalMessages();
   }
@@ -57,8 +57,8 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
       context,
       enableBackgroundColor: true,
       child: ListView.builder(
-        padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
-        physics: BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+        physics: const BouncingScrollPhysics(),
         controller: _scrollController,
         itemCount: widget.versions.length,
         itemBuilder: (BuildContext ctxt, int index) {
@@ -69,21 +69,19 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
   }
 
   static String formatBytes(int bytes, int decimals) {
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    if (bytes <= 0) return '0 B';
+    const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
-        ' ' +
-        suffixes[i];
+    return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
   }
 
   _buildItem(Map<String, dynamic> data) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Settings.themeWhat ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
             bottomLeft: Radius.circular(8),
@@ -95,7 +93,7 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
                 : Colors.grey.withOpacity(0.1),
             spreadRadius: Settings.themeWhat ? 0 : 5,
             blurRadius: 7,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -107,7 +105,7 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
             title: Text(
                 timeago.format(DateTime.parse(data['dt']).toLocal(),
                     locale: Translations.of(context).locale.languageCode),
-                style: TextStyle(fontSize: 16.0)),
+                style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
             onTap: () async {
               await PlatformNavigator.navigateSlide(
@@ -117,6 +115,7 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
                     version: data['vid'] as String,
                   ));
 
+              if (!mounted) return;
               if (await showYesNoDialog(context, '이 북마크 버전을 선택할까요?')) {
                 Navigator.pop(context, data['vid']);
               }

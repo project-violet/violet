@@ -38,8 +38,10 @@ import 'package:violet/widgets/search_bar.dart';
 bool blurred = false;
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({Key key}) : super(key: key);
+
   @override
-  _SearchPageState createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage>
@@ -78,7 +80,7 @@ class _SearchPageState extends State<SearchPage>
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(),
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
         ),
         child: Text(message),
       ),
@@ -98,7 +100,7 @@ class _SearchPageState extends State<SearchPage>
       artboard.advance(0);
     })();
 
-    Future.delayed(Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       try {
         final result =
             await HentaiManager.search('').timeout(const Duration(seconds: 5));
@@ -106,27 +108,28 @@ class _SearchPageState extends State<SearchPage>
         latestQuery =
             Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
         queryResult = latestQuery.item1.item1;
-        if (_filterController.isPopulationSort)
+        if (_filterController.isPopulationSort) {
           Population.sortByPopulation(queryResult);
+        }
         _shouldReload = true;
         setState(() {});
 
         if (searchTotalResultCount == 0) {
-          Future.delayed(Duration(milliseconds: 100)).then((value) async {
+          Future.delayed(const Duration(milliseconds: 100)).then((value) async {
             searchTotalResultCount = await HentaiManager.countSearch('');
             setState(() {});
           });
         }
       } catch (e, st) {
-        Logger.error(
-            '[Initial-Search] E: ' + e.toString() + '\n' + st.toString());
+        Logger.error('[Initial-Search] E: $e\n'
+            '$st');
         print('Initial search failed: $e');
         _showErrorToast('Failed to search all: $e');
       }
     }).catchError((e, st) {
       // It happened!
-      Logger.error(
-          '[Initial-SearchI] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Initial-SearchI] E: $e\n'
+          '$st');
       print('Initial search interrupted: $e');
       _showErrorToast('Initial search interrupted: $e');
     });
@@ -135,7 +138,7 @@ class _SearchPageState extends State<SearchPage>
       //
       // scroll position
       //
-      if (itemKeys.length > 0 && itemHeight <= 0.1) {
+      if (itemKeys.isNotEmpty && itemHeight <= 0.1) {
         if (itemKeys[0].currentContext != null) {
           itemHeight = itemKeys[0].currentContext.size.height + 8;
         }
@@ -155,10 +158,11 @@ class _SearchPageState extends State<SearchPage>
       var upScrolling =
           _scroll.position.userScrollDirection == ScrollDirection.forward;
 
-      if (upScrolling)
+      if (upScrolling) {
         scrollQueue.add(-1);
-      else
+      } else {
         scrollQueue.add(1);
+      }
 
       if (scrollQueue.length > 64) {
         scrollQueue.removeRange(0, scrollQueue.length - 65);
@@ -180,7 +184,7 @@ class _SearchPageState extends State<SearchPage>
       if (scrollInProgress || queryEnd) return;
       if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
         scrollInProgress = true;
-        Future.delayed(Duration(milliseconds: 100), () async {
+        Future.delayed(const Duration(milliseconds: 100), () async {
           try {
             await loadNextQuery();
           } catch (e) {
@@ -202,7 +206,7 @@ class _SearchPageState extends State<SearchPage>
 
   Tuple2<Tuple2<List<QueryResult>, int>, String> latestQuery;
 
-  ScrollController _scroll = ScrollController();
+  final ScrollController _scroll = ScrollController();
 
   bool _shouldReload = false;
   ResultPanelWidget _cachedPannel;
@@ -222,7 +226,7 @@ class _SearchPageState extends State<SearchPage>
         dateTime: datetime,
         resultList: filter(),
         itemKeys: itemKeys,
-        key: key,
+        silverKey: key,
       );
 
       _cachedPannel = panel;
@@ -238,8 +242,6 @@ class _SearchPageState extends State<SearchPage>
             SliverPersistentHeader(
               floating: true,
               delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
                 searchBar: Stack(
                   children: <Widget>[
                     _searchBar(),
@@ -255,24 +257,24 @@ class _SearchPageState extends State<SearchPage>
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Settings.majorColor,
         label: AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           switchInCurve: Curves.easeIn,
           switchOutCurve: Curves.easeOut,
           transitionBuilder: (Widget child, Animation<double> animation) =>
               FadeTransition(
             opacity: animation,
             child: SizeTransition(
-              child: child,
               sizeFactor: animation,
               axis: Axis.horizontal,
+              child: child,
             ),
           ),
           child: !isExtended
-              ? Icon(MdiIcons.bookOpenPageVariantOutline)
+              ? const Icon(MdiIcons.bookOpenPageVariantOutline)
               : Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4.0),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 4.0),
                       child: Icon(MdiIcons.bookOpenPageVariantOutline),
                     ),
                     ValueListenableBuilder(
@@ -314,7 +316,7 @@ class _SearchPageState extends State<SearchPage>
             setState(() {
               _cachedPannel = null;
               _shouldReload = true;
-              key = ObjectKey(Uuid().v4());
+              key = ObjectKey(const Uuid().v4());
             });
           }
         },
@@ -324,13 +326,13 @@ class _SearchPageState extends State<SearchPage>
 
   Widget _searchBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(8, 8, 72, 0),
+      padding: const EdgeInsets.fromLTRB(8, 8, 72, 0),
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "searchbar",
+          tag: 'searchbar',
           child: Card(
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -356,7 +358,7 @@ class _SearchPageState extends State<SearchPage>
                               enabledBorder: InputBorder.none,
                               errorBorder: InputBorder.none,
                               disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(
+                              contentPadding: const EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: latestQuery != null &&
                                       latestQuery.item2.trim() != ''
@@ -385,8 +387,8 @@ class _SearchPageState extends State<SearchPage>
                       onDoubleTap: () async {
                         // latestQuery = value;
                         latestQuery =
-                            Tuple2<Tuple2<List<QueryResult>, int>, String>(null,
-                                'random:${new Random().nextDouble() + 1}');
+                            Tuple2<Tuple2<List<QueryResult>, int>, String>(
+                                null, 'random:${Random().nextDouble() + 1}');
                         queryResult = [];
                         _filterController = FilterController();
                         queryEnd = false;
@@ -399,7 +401,7 @@ class _SearchPageState extends State<SearchPage>
                         setState(() {
                           _cachedPannel = null;
                           _shouldReload = true;
-                          key = ObjectKey(Uuid().v4());
+                          key = ObjectKey(const Uuid().v4());
                         });
                       },
                     ),
@@ -414,8 +416,10 @@ class _SearchPageState extends State<SearchPage>
   }
 
   Future<void> _showSearchBar() async {
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 200));
     heroFlareControls.play('search2close');
+
+    if (!mounted) return;
     final query = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -449,12 +453,12 @@ class _SearchPageState extends State<SearchPage>
         setState(() {
           _cachedPannel = null;
           _shouldReload = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
       });
     } catch (e, st) {
-      await Logger.error(
-          '[showSearchBar] E: ${e.toString()}\n${st.toString()}');
+      await Logger.error('[showSearchBar] E: $e\n'
+          '$st');
     }
   }
 
@@ -465,14 +469,14 @@ class _SearchPageState extends State<SearchPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "searchtype",
+          tag: 'searchtype',
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack
                     ? const Color(0xFF141414)
-                    : Color(0xFF353535)
+                    : const Color(0xFF353535)
                 : Colors.grey.shade100,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -480,12 +484,14 @@ class _SearchPageState extends State<SearchPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _alignOnTap,
+              onLongPress: _alignLongPress,
               child: SizedBox(
                 height: 64,
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(
                       MdiIcons.formatListText,
                       color: Colors.grey,
@@ -493,8 +499,6 @@ class _SearchPageState extends State<SearchPage>
                   ],
                 ),
               ),
-              onTap: _alignOnTap,
-              onLongPress: _alignLongPress,
             ),
           ),
         ),
@@ -506,17 +510,17 @@ class _SearchPageState extends State<SearchPage>
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => SearchType(),
+      pageBuilder: (_, __, ___) => const SearchType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
         .then((value) async {
-      await Future.delayed(Duration(milliseconds: 50), () {
+      await Future.delayed(const Duration(milliseconds: 50), () {
         _shouldReload = true;
         itemHeight = 0.0;
         setState(() {});
@@ -540,7 +544,7 @@ class _SearchPageState extends State<SearchPage>
       setState(() {
         _cachedPannel = null;
         _shouldReload = true;
-        key = ObjectKey(Uuid().v4());
+        key = ObjectKey(const Uuid().v4());
       });
     });
   }
@@ -548,7 +552,7 @@ class _SearchPageState extends State<SearchPage>
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -570,24 +574,28 @@ class _SearchPageState extends State<SearchPage>
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (['female', 'male'].contains(split[0]))
+          if (['female', 'male'].contains(split[0])) {
             tag = '${split[0]}:${split[1]}';
-          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+          }
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr) {
             succ = isOr;
+          }
         }
 
         // If Multitag
-        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+        else if ((element.result[dbColumn] as String == split[1]) == isOr) {
           succ = isOr;
+        }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;
 
-    if (_filterController.isPopulationSort)
+    if (_filterController.isPopulationSort) {
       Population.sortByPopulation(filterResult);
+    }
   }
 
   FilterController _filterController = FilterController();
@@ -595,10 +603,10 @@ class _SearchPageState extends State<SearchPage>
   List<QueryResult> queryResult = [];
   List<QueryResult> filterResult = [];
 
-  ObjectKey key = ObjectKey(Uuid().v4());
+  ObjectKey key = ObjectKey(const Uuid().v4());
 
   bool queryEnd = false;
-  Semaphore _querySem = Semaphore(maxCount: 1);
+  final Semaphore _querySem = Semaphore(maxCount: 1);
 
   Future<void> loadNextQuery() async {
     await _querySem.acquire().timeout(
@@ -625,23 +633,24 @@ class _SearchPageState extends State<SearchPage>
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
           next, latestQuery.item2);
 
-      if (next.item1.length == 0) {
+      if (next.item1.isEmpty) {
         setState(() {
           _cachedPannel = null;
           queryEnd = true;
           _shouldReload = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
         return;
       }
 
       queryResult.addAll(next.item1);
 
-      if (_filterController.isPopulationSort)
+      if (_filterController.isPopulationSort) {
         Population.sortByPopulation(queryResult);
+      }
 
       if (searchTotalResultCount == 0) {
-        Future.delayed(Duration(milliseconds: 100)).then((value) async {
+        Future.delayed(const Duration(milliseconds: 100)).then((value) async {
           searchTotalResultCount =
               await HentaiManager.countSearch(latestQuery.item2);
           setState(() {});
@@ -651,12 +660,13 @@ class _SearchPageState extends State<SearchPage>
       setState(() {
         _cachedPannel = null;
         _shouldReload = true;
-        key = ObjectKey(Uuid().v4());
+        key = ObjectKey(const Uuid().v4());
       });
 
       ScriptManager.refresh();
     } catch (e, st) {
-      Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[search-error] E: $e\n'
+          '$st');
       rethrow;
     } finally {
       _querySem.release();
@@ -714,34 +724,40 @@ class _SearchPageState extends State<SearchPage>
   }
 }
 
-// ignore: must_be_immutable
-class ResultPanelWidget extends StatelessWidget {
+class ResultPanelWidget extends StatefulWidget {
   final List<QueryResult> resultList;
   final DateTime dateTime;
-  final ScrollController _scrollController = ScrollController();
-  final ObjectKey key;
   final List<GlobalKey> itemKeys;
+  final ObjectKey silverKey;
+
+  const ResultPanelWidget(
+      {Key key, this.resultList, this.dateTime, this.itemKeys, this.silverKey})
+      : super(key: key);
+
+  @override
+  State<ResultPanelWidget> createState() => _ResultPanelWidgetState();
+}
+
+class _ResultPanelWidgetState extends State<ResultPanelWidget> {
+  final ScrollController _scrollController = ScrollController();
 
   List<Widget> _cachedItems;
-
-  ResultPanelWidget({this.resultList, this.dateTime, this.key, this.itemKeys});
 
   @override
   Widget build(BuildContext context) {
     var mm = Settings.searchResultType == 0 ? 3 : 2;
     var windowWidth = MediaQuery.of(context).size.width;
 
-    if (_cachedItems == null) {
-      _cachedItems = List<Widget>.generate(resultList.length, (x) => null);
-    }
+    _cachedItems ??=
+        List<Widget>.generate(widget.resultList.length, (x) => null);
 
     switch (Settings.searchResultType) {
       case 0:
       case 1:
         return SliverPadding(
-            padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: SliverGrid(
-              key: key,
+              key: widget.silverKey,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
                 crossAxisSpacing: 8,
@@ -752,23 +768,24 @@ class ResultPanelWidget extends StatelessWidget {
                 (BuildContext context, int index) {
                   if (_cachedItems[index] == null) {
                     _cachedItems[index] = Padding(
-                      key: itemKeys.length > index ? itemKeys[index] : null,
+                      key: widget.itemKeys.length > index
+                          ? widget.itemKeys[index]
+                          : null,
                       padding: EdgeInsets.zero,
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: SizedBox(
                           child: Provider<ArticleListItem>.value(
                             value: ArticleListItem.fromArticleListItem(
-                              queryResult: resultList[index],
+                              queryResult: widget.resultList[index],
                               showDetail: false,
                               addBottomPadding: false,
                               width: (windowWidth - 4.0) / mm,
-                              thumbnailTag: 'thumbnail' +
-                                  resultList[index].id().toString() +
-                                  dateTime.toString(),
-                              usableTabList: resultList,
+                              thumbnailTag:
+                                  'thumbnail${widget.resultList[index].id()}${widget.dateTime}',
+                              usableTabList: widget.resultList,
                             ),
-                            child: ArticleListItemVerySimpleWidget(),
+                            child: const ArticleListItemVerySimpleWidget(),
                           ),
                         ),
                       ),
@@ -776,7 +793,7 @@ class ResultPanelWidget extends StatelessWidget {
                   }
                   return _cachedItems[index];
                 },
-                childCount: resultList.length,
+                childCount: widget.resultList.length,
               ),
             ));
 
@@ -785,14 +802,14 @@ class ResultPanelWidget extends StatelessWidget {
         if (Settings.useTabletMode ||
             MediaQuery.of(context).orientation == Orientation.landscape) {
           return SliverPadding(
-            padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: LiveSliverGrid(
-              key: key,
+              key: widget.silverKey,
               controller: _scrollController,
-              showItemInterval: Duration(milliseconds: 50),
-              showItemDuration: Duration(milliseconds: 150),
+              showItemInterval: const Duration(milliseconds: 50),
+              showItemDuration: const Duration(milliseconds: 150),
               visibleFraction: 0.001,
-              itemCount: resultList.length,
+              itemCount: widget.resultList.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 8,
@@ -801,20 +818,21 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               itemBuilder: (context, index, animation) {
                 return Align(
-                  key: itemKeys.length > index ? itemKeys[index] : null,
+                  key: widget.itemKeys.length > index
+                      ? widget.itemKeys[index]
+                      : null,
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
                       showDetail: Settings.searchResultType == 3,
-                      queryResult: resultList[index],
+                      queryResult: widget.resultList[index],
                       width: windowWidth - 4.0,
-                      thumbnailTag: 'thumbnail' +
-                          resultList[index].id().toString() +
-                          dateTime.toString(),
-                      usableTabList: resultList,
+                      thumbnailTag:
+                          'thumbnail${widget.resultList[index].id()}${widget.dateTime}',
+                      usableTabList: widget.resultList,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
@@ -822,38 +840,37 @@ class ResultPanelWidget extends StatelessWidget {
           );
         } else {
           return SliverList(
-            key: key,
+            key: widget.silverKey,
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return Align(
-                  key: itemKeys.length > index ? itemKeys[index] : null,
+                  key: widget.itemKeys.length > index
+                      ? widget.itemKeys[index]
+                      : null,
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
                       showDetail: Settings.searchResultType == 3,
-                      queryResult: resultList[index],
+                      queryResult: widget.resultList[index],
                       width: windowWidth - 4.0,
-                      thumbnailTag: 'thumbnail' +
-                          resultList[index].id().toString() +
-                          dateTime.toString(),
-                      usableTabList: resultList,
+                      thumbnailTag:
+                          'thumbnail${widget.resultList[index].id()}${widget.dateTime}',
+                      usableTabList: widget.resultList,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
-              childCount: resultList.length,
+              childCount: widget.resultList.length,
             ),
           );
         }
         break;
 
       default:
-        return Container(
-          child: Center(
-            child: Text('Error :('),
-          ),
+        return const Center(
+          child: Text('Error :('),
         );
     }
   }

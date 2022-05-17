@@ -56,10 +56,9 @@ Future<void> _sqlIntegrityTest() async {
  */
 
 Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
-  Logger.error('[unhandled-error] E: ' +
-      flutterErrorDetails.exceptionAsString() +
-      '\n' +
-      flutterErrorDetails.stack.toString());
+  Logger.error(
+      '[unhandled-error] E: ${flutterErrorDetails.exceptionAsString()}\n'
+      '${flutterErrorDetails.stack}');
 
   await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
 }
@@ -88,7 +87,6 @@ void main() async {
     DynamicTheme(
       defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
-        accentColor: Settings.majorColor,
         brightness: brightness,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
@@ -100,6 +98,8 @@ void main() async {
         cardColor: Settings.themeBlack && Settings.themeWhat
             ? const Color(0xFF141414)
             : null,
+        colorScheme:
+            ColorScheme.fromSwatch().copyWith(secondary: Settings.majorColor),
       ),
       themedWidgetBuilder: (context, theme) {
         return MaterialApp(
@@ -107,22 +107,23 @@ void main() async {
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
           theme: theme,
-          home: Settings.useLockScreen ? LockScreen() : SplashPage(),
-          supportedLocales: [
-            const Locale('en', 'US'),
-            const Locale('ko', 'KR'),
-            const Locale('ja', 'JP'),
-            const Locale('zh', 'CH'),
-            const Locale('it', 'IT'),
-            const Locale('eo', 'ES'),
+          home:
+              Settings.useLockScreen ? const LockScreen() : const SplashPage(),
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('ko', 'KR'),
+            Locale('ja', 'JP'),
+            Locale('zh', 'CH'),
+            Locale('it', 'IT'),
+            Locale('eo', 'ES'),
           ],
           routes: <String, WidgetBuilder>{
-            '/AfterLoading': (context) => AfterLoadingPage(),
-            '/DatabaseDownload': (context) => DataBaseDownloadPage(),
-            '/SplashPage': (context) => SplashPage(),
+            '/AfterLoading': (context) => const AfterLoadingPage(),
+            '/DatabaseDownload': (context) => const DataBaseDownloadPage(),
+            '/SplashPage': (context) => const SplashPage(),
           },
-          localizationsDelegates: [
-            const TranslationsDelegate(),
+          localizationsDelegates: const [
+            TranslationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate
@@ -133,20 +134,22 @@ void main() async {
             if (Settings.language != null) {
               if (Settings.language.contains('_')) {
                 var ss = Settings.language.split('_');
-                if (ss.length == 2)
+                if (ss.length == 2) {
                   return Locale.fromSubtags(
                       languageCode: ss[0], scriptCode: ss[1]);
-                else
+                } else {
                   return Locale.fromSubtags(
                       languageCode: ss[0],
                       scriptCode: ss[1],
                       countryCode: ss[2]);
-              } else
+                }
+              } else {
                 return Locale(Settings.language);
+              }
             }
 
             if (locale == null) {
-              debugPrint("*language locale is null!!!");
+              debugPrint('*language locale is null!!!');
               if (Settings.language == null) {
                 Settings.setLanguage(supportedLocales.first.languageCode);
               }
@@ -156,7 +159,7 @@ void main() async {
             for (Locale supportedLocale in supportedLocales) {
               if (supportedLocale.languageCode == locale.languageCode ||
                   supportedLocale.countryCode == locale.countryCode) {
-                debugPrint("*language ok $supportedLocale");
+                debugPrint('*language ok $supportedLocale');
                 if (Settings.language == null) {
                   Settings.setLanguage(supportedLocale.languageCode);
                 }
@@ -164,9 +167,10 @@ void main() async {
               }
             }
 
-            debugPrint("*language to fallback ${supportedLocales.first}");
-            if (Settings.language == null)
+            debugPrint('*language to fallback ${supportedLocales.first}');
+            if (Settings.language == null) {
               Settings.setLanguage(supportedLocales.first.languageCode);
+            }
             return supportedLocales.first;
           },
         );

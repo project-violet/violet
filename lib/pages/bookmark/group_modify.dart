@@ -10,10 +10,10 @@ class GroupModifyPage extends StatefulWidget {
   final String name;
   final String desc;
 
-  const GroupModifyPage({this.name, this.desc});
+  const GroupModifyPage({Key key, this.name, this.desc}) : super(key: key);
 
   @override
-  _GroupModifyPageState createState() => _GroupModifyPageState();
+  State<GroupModifyPage> createState() => _GroupModifyPageState();
 }
 
 class _GroupModifyPageState extends State<GroupModifyPage> {
@@ -32,7 +32,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(Translations.of(context).trans('modifygroupinfo')),
-      contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+      contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -66,8 +66,9 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
                   if (await showYesNoDialog(
                       context,
                       Translations.of(context).trans('deletegroupmsg'),
-                      Translations.of(context).trans('bookmark')))
+                      Translations.of(context).trans('bookmark'))) {
                     Navigator.pop(context, [2]);
+                  }
                 },
               ),
               const Spacer(),

@@ -12,10 +12,10 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 class UpdateCard extends StatefulWidget {
   final VoidCallback clickEvent;
 
-  UpdateCard({this.clickEvent});
+  const UpdateCard({Key key, this.clickEvent}) : super(key: key);
 
   @override
-  _UpdateCardState createState() => _UpdateCardState();
+  State<UpdateCard> createState() => _UpdateCardState();
 }
 
 class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
@@ -24,12 +24,12 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
     rotationController = AnimationController(
       duration: const Duration(milliseconds: 270),
       vsync: this,
       // upperBound: pi * 2,
     );
-    super.initState();
   }
 
   @override
@@ -45,13 +45,14 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
               style: settingsItemStyle(pressed),
               gesture: Gestures()
                 ..isTap((isTapped) {
-                  if (isTapped)
+                  if (isTapped) {
                     rotationController.forward(from: 0.0);
-                  else
+                  } else {
                     rotationController.reverse(from: 0.7);
+                  }
                   setState(() => pressed = isTapped);
                   controller.forward(from: 0.0);
-                  Future.delayed(Duration(milliseconds: 200),
+                  Future.delayed(const Duration(milliseconds: 200),
                       () => controller.forward(from: 0.0));
                   // Future.delayed(Duration(milliseconds: 200),
                   //     () => controller.forward(from: 0.0));
@@ -76,7 +77,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 15),
+                      offset: const Offset(0, 15),
                       color:
                           Gradients.backToFuture.colors.first.withOpacity(.3),
                       spreadRadius: -9,
@@ -87,44 +88,42 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                   gradient: Gradients.aliHussien,
                   // shadowColor: Gradients.backToFuture.colors.last.withOpacity(0.2),
                   // elevation: 8,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: RotationTransition(
-                              turns: Tween(begin: 0.0, end: 0.7)
-                                  .animate(rotationController),
-                              child: Icon(
-                                MdiIcons.update,
-                                color: Colors.white,
-                                size: 30,
-                              ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: RotationTransition(
+                            turns: Tween(begin: 0.0, end: 0.7)
+                                .animate(rotationController),
+                            child: const Icon(
+                              MdiIcons.update,
+                              color: Colors.white,
+                              size: 30,
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Text(
-                              '  Tap Me!',
-                              style: TextStyle(
-                                  fontFamily: "Calibre-Semibold",
-                                  fontSize: 18,
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ]
-                        // child: Text(
-                        //   // 'New Version',
-                        //   '',
-                        //   style: TextStyle(
-                        //     fontSize: 30,
-                        //     fontWeight: FontWeight.bold,
-                        //     fontFamily: "Calibre-Semibold",
-                        //     // letterSpacing: 1.0,
-                        //   ),
-                        // ),
                         ),
-                  ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 4),
+                          child: Text(
+                            '  Tap Me!',
+                            style: TextStyle(
+                                fontFamily: 'Calibre-Semibold',
+                                fontSize: 18,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ]
+                      // child: Text(
+                      //   // 'New Version',
+                      //   '',
+                      //   style: TextStyle(
+                      //     fontSize: 30,
+                      //     fontWeight: FontWeight.bold,
+                      //     fontFamily: "Calibre-Semibold",
+                      //     // letterSpacing: 1.0,
+                      //   ),
+                      // ),
+                      ),
                 ),
               ));
         },
@@ -132,7 +131,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -143,7 +142,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)
@@ -168,10 +167,10 @@ class MyRectangle2DemoParticle extends Particle {
       Firework(),
       RectangleMirror.builder(
           numberOfParticles: random.nextInt(6) + 4,
-          particleBuilder: (int) {
+          particleBuilder: (int int) {
             return AnimatedPositionedParticle(
-              begin: Offset(0.0, -10.0),
-              end: Offset(0.0, -60.0),
+              begin: const Offset(0.0, -10.0),
+              end: const Offset(0.0, -60.0),
               child:
                   FadingRect(width: 5.0, height: 15.0, color: intToColor(int)),
             );

@@ -21,8 +21,10 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabRecentRecordsU extends StatefulWidget {
+  const LabRecentRecordsU({Key key}) : super(key: key);
+
   @override
-  _LabRecentRecordsUState createState() => _LabRecentRecordsUState();
+  State<LabRecentRecordsU> createState() => _LabRecentRecordsUState();
 }
 
 class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
@@ -31,7 +33,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
   int latestId = 0;
   int limit = 10;
   Timer timer;
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   bool isTop = false;
 
   @override
@@ -45,16 +47,18 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
         } else {
           isTop = true;
         }
-      } else
+      } else {
         isTop = false;
+      }
     });
 
-    Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
-            _controller.animateTo(_controller.position.maxScrollExtent,
-                duration: Duration(milliseconds: 300),
+    Future.delayed(const Duration(milliseconds: 100)).then(updateRercord).then(
+        (value) => Future.delayed(const Duration(milliseconds: 100)).then(
+            (value) => _controller.animateTo(
+                _controller.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn)));
-    timer = Timer.periodic(Duration(seconds: 1), updateRercord);
+    timer = Timer.periodic(const Duration(seconds: 1), updateRercord);
   }
 
   @override
@@ -73,49 +77,45 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
       latestId = max(latestId,
           xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results.length == 0) return;
+      if (query.results.isEmpty) return;
 
-      var qr = Map<String, QueryResult>();
-      query.results.forEach((element) {
+      var qr = <String, QueryResult>{};
+      for (var element in query.results) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple3<QueryResult, int, String>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item2.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple3<QueryResult, int, String>(
             qr[element.item2.toString()], element.item3, element.item4));
-      });
+      }
 
       records.insertAll(0, result);
 
       if (isTop) {
         setState(() {});
-        Future.delayed(Duration(milliseconds: 50)).then((x) {
+        Future.delayed(const Duration(milliseconds: 50)).then((x) {
           _controller.animateTo(
             _controller.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.fastOutSlowIn,
           );
         });
-      } else
+      } else {
         setState(() {});
+      }
     } catch (e, st) {
-      Logger.error(
-          '[lab-recent_record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-recent_record] E: $e\n'
+          '$st');
     }
   }
 
@@ -130,20 +130,15 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
         children: [
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               controller: _controller,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: xrecords.length,
               reverse: true,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
-                  key: Key('records' +
-                      index.toString() +
-                      '/' +
-                      xrecords[xrecords.length - index - 1]
-                          .item1
-                          .id()
-                          .toString()),
+                  key: Key(
+                      'records$index/${xrecords[xrecords.length - index - 1].item1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
@@ -151,12 +146,12 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       seconds: xrecords[xrecords.length - index - 1].item2,
                       doubleTapCallback: () => _doubleTapCallback(
                           xrecords[xrecords.length - index - 1].item3),
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
@@ -171,7 +166,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
                   dense: true,
                   title: Align(
                     child: SliderTheme(
-                      data: SliderThemeData(
+                      data: const SliderThemeData(
                         activeTrackColor: Colors.blue,
                         inactiveTrackColor: Color(0xffd0d2d3),
                         trackHeight: 3,

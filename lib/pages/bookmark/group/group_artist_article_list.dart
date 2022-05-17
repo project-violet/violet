@@ -16,10 +16,11 @@ class GroupArtistArticleList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistArticleList({this.name, this.groupId});
+  const GroupArtistArticleList({Key key, this.name, this.groupId})
+      : super(key: key);
 
   @override
-  _GroupArtistArticleListState createState() => _GroupArtistArticleListState();
+  State<GroupArtistArticleList> createState() => _GroupArtistArticleListState();
 }
 
 class _GroupArtistArticleListState extends State<GroupArtistArticleList>
@@ -31,28 +32,25 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
   Widget build(BuildContext context) {
     super.build(context);
     var windowWidth = MediaQuery.of(context).size.width;
-    return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: 1)).then((value) async {
+    return FutureBuilder<List<QueryResult>>(
+      future:
+          Future.delayed(const Duration(milliseconds: 1)).then((value) async {
         var artists = (await (await Bookmark.getInstance()).getArtist())
             .where((element) => element.group() == widget.groupId)
             .toList()
             .reversed
             .toList();
 
-        if (artists.length == 0) return <QueryResult>[];
+        if (artists.isEmpty) return <QueryResult>[];
 
         var queryString = HitomiManager.translate2query(artists
-            .map((e) =>
-                '${[
+            .map((e) => '${[
                   'artist',
                   'group',
                   'uploader',
                   'series',
                   'character'
-                ][e.type()]}:' +
-                e.artist().toLowerCase().replaceAll(' ', '_') +
-                ' ' +
-                Settings.includeTags)
+                ][e.type()]}:${e.artist().toLowerCase().replaceAll(' ', '_')} ${Settings.includeTags}')
             .join(' or '));
         print(queryString);
         final qm = QueryManager.queryPagination(queryString);
@@ -60,21 +58,20 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
         return await qm.next();
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
-        if (!snapshot.hasData)
-          return Align(
+        if (!snapshot.hasData) {
+          return const Align(
               alignment: Alignment.center,
               child: SizedBox(
                   width: 64, height: 64, child: CircularProgressIndicator()));
+        }
         return CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPersistentHeader(
               floating: true,
               delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
                 searchBar: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Stack(children: <Widget>[
                       // _filter(),
                       _title(),
@@ -83,9 +80,9 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
             ),
             SliverPadding(
               // padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-              padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
               sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -95,7 +92,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                   snapshot.data.map(
                     (e) {
                       return Padding(
-                        key: Key('gaal/' + e.id().toString()),
+                        key: Key('gaal/${e.id()}'),
                         padding: EdgeInsets.zero,
                         child: Align(
                           alignment: Alignment.bottomCenter,
@@ -110,10 +107,11 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                                         addBottomPadding: false,
                                         showDetail: false,
                                         width: (windowWidth - 4.0 - 52) / 3,
-                                        thumbnailTag: Uuid().v4(),
+                                        thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),
-                                      child: ArticleListItemVerySimpleWidget(),
+                                      child:
+                                          const ArticleListItemVerySimpleWidget(),
                                     )
                                   : Container()
                             ],
@@ -211,7 +209,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
   }
 
   Widget _title() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.only(top: 24, left: 12),
       child: Text('Artists Article Collection',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),

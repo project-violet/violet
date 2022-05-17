@@ -19,8 +19,10 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class BookmarkPage extends StatefulWidget {
+  const BookmarkPage({Key key}) : super(key: key);
+
   @override
-  _BookmarkPageState createState() => _BookmarkPageState();
+  State<BookmarkPage> createState() => _BookmarkPageState();
 }
 
 class _BookmarkPageState extends State<BookmarkPage>
@@ -35,25 +37,24 @@ class _BookmarkPageState extends State<BookmarkPage>
     super.build(context);
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
-      body: FutureBuilder(
+      body: FutureBuilder<List<BookmarkGroup>>(
         future: Bookmark.getInstance().then((value) => value.getGroup()),
         builder: (context, AsyncSnapshot<List<BookmarkGroup>> snapshot) {
-          if (!snapshot.hasData)
-            return Container(
-              child: Center(
-                child: Text('Loading ...'),
-              ),
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text('Loading ...'),
             );
+          }
           void _onReorder(int oldIndex, int newIndex) async {
             if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
               FlutterToast(context).showToast(
-                child: ToastWrapper(
+                child: const ToastWrapper(
                   isCheck: false,
                   isWarning: false,
                   msg: 'You cannot move like that!',
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
+                toastDuration: const Duration(seconds: 4),
               );
             } else {
               var bookmark = await Bookmark.getInstance();
@@ -69,10 +70,10 @@ class _BookmarkPageState extends State<BookmarkPage>
             }
           }
 
-          ScrollController _scrollController =
+          ScrollController scrollController =
               PrimaryScrollController.of(context) ?? ScrollController();
 
-          var _rows = _buildRowItems(snapshot, reorder);
+          var rows = _buildRowItems(snapshot, reorder);
 
           return reorder
               ? Theme(
@@ -85,15 +86,15 @@ class _BookmarkPageState extends State<BookmarkPage>
                   child: ReorderableListView(
                     padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
                     scrollDirection: Axis.vertical,
-                    scrollController: _scrollController,
-                    children: _rows,
+                    scrollController: scrollController,
+                    children: rows,
                     onReorder: _onReorder,
                   ),
                 )
               : ListView.builder(
                   padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
-                  physics: BouncingScrollPhysics(),
-                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  controller: scrollController,
                   itemCount: snapshot.data.length + 1,
                   itemBuilder: (BuildContext ctxt, int index) {
                     return _buildItem(
@@ -105,7 +106,7 @@ class _BookmarkPageState extends State<BookmarkPage>
       floatingActionButton: SpeedDial(
         childMargin: const EdgeInsets.only(right: 18, bottom: 20),
         animatedIcon: AnimatedIcons.menu_close,
-        animatedIconTheme: IconThemeData(size: 22.0),
+        animatedIconTheme: const IconThemeData(size: 22.0),
         visible: true,
         closeManually: false,
         curve: Curves.bounceIn,
@@ -120,7 +121,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             : Colors.white,
         foregroundColor: Settings.majorColor,
         elevation: 1.0,
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         children: [
           // SpeedDialChild(
           //     child: Icon(MdiIcons.frequentlyAskedQuestions,
@@ -244,21 +245,21 @@ class _BookmarkPageState extends State<BookmarkPage>
       desc = Translations.of(context).trans('unclassifieddesc');
     }
 
-    var _random = Random();
+    var random = Random();
 
     return Container(
-      key: Key("bookmark_group_" + id.toString()),
+      key: Key('bookmark_group_$id'),
       child: ShakeAnimatedWidget(
         enabled: reorder,
-        duration: Duration(milliseconds: 300 + _random.nextInt(50)),
+        duration: Duration(milliseconds: 300 + random.nextInt(50)),
         shakeAngle: Rotation.deg(z: 0.8),
         curve: Curves.linear,
         child: Container(
-          margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           width: double.infinity,
           decoration: BoxDecoration(
             color: Settings.themeWhat ? Colors.black26 : Colors.white,
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(8),
                 topRight: Radius.circular(8),
                 bottomLeft: Radius.circular(8),
@@ -270,7 +271,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                     : Colors.grey.withOpacity(0.1),
                 spreadRadius: Settings.themeWhat ? 0 : 5,
                 blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
@@ -284,7 +285,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                   : Colors.white,
               child: reorder
                   ? ListTile(
-                      title: Text(name, style: TextStyle(fontSize: 16.0)),
+                      title: Text(name, style: const TextStyle(fontSize: 16.0)),
                       subtitle: Text(desc),
                       trailing: Text(date),
                     )
@@ -293,20 +294,20 @@ class _BookmarkPageState extends State<BookmarkPage>
                         PlatformNavigator.navigateSlide(
                           context,
                           id == -1
-                              ? RecordViewPage()
+                              ? const RecordViewPage()
                               : GroupArticleListPage(groupId: id, name: name),
                           opaque: false,
                         );
                       },
                       onLongPress: () async {
                         if (index == -1 ||
-                            (oname == 'violet_default' && index == 0))
+                            (oname == 'violet_default' && index == 0)) {
                           await showOkDialog(
                               context,
                               Translations.of(context)
                                   .trans('cannotmodifydefaultgroup'),
                               Translations.of(context).trans('bookmark'));
-                        else {
+                        } else {
                           var rr = await showDialog(
                             context: context,
                             builder: (BuildContext context) => GroupModifyPage(
@@ -346,7 +347,7 @@ class _BookmarkPageState extends State<BookmarkPage>
                         //     },
                         //     pageBuilder: (_, __, ___) => GroupModifyPage()));
                       },
-                      title: Text(name, style: TextStyle(fontSize: 16.0)),
+                      title: Text(name, style: const TextStyle(fontSize: 16.0)),
                       subtitle: Text(desc),
                       trailing: Text(date),
                     ),

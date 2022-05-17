@@ -19,10 +19,12 @@ class Variables {
   static double bottomBarHeight = 0;
   static void updatePadding(double statusBar, double bottomBar) {
     if (Platform.isAndroid) {
-      if (statusBarHeight == 0 && statusBar > 0.1)
+      if (statusBarHeight == 0 && statusBar > 0.1) {
         statusBarHeight = max(statusBarHeight, statusBar);
-      if (bottomBarHeight == 0 && bottomBar > 0.1 && bottomBar < 80)
+      }
+      if (bottomBarHeight == 0 && bottomBar > 0.1 && bottomBar < 80) {
         bottomBarHeight = max(bottomBarHeight, bottomBar);
+      }
     }
   }
 

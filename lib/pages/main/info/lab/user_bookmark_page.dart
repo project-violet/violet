@@ -10,30 +10,31 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabUserBookmarkPage extends StatefulWidget {
+  const LabUserBookmarkPage({Key key}) : super(key: key);
+
   @override
-  _LabUserBookmarkPageState createState() => _LabUserBookmarkPageState();
+  State<LabUserBookmarkPage> createState() => _LabUserBookmarkPageState();
 }
 
 class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
-      child: FutureBuilder(
+      child: FutureBuilder<List<BookmarkUser>>(
         future: Bookmark.getInstance().then((value) => value.getUser()),
         builder: (context, AsyncSnapshot<List<BookmarkUser>> snapshot) {
-          if (!snapshot.hasData)
-            return Container(
-              child: Center(
-                child: Text('Loading ...'),
-              ),
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text('Loading ...'),
             );
+          }
           return ListView.builder(
-              padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
-              physics: BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+              physics: const BouncingScrollPhysics(),
               controller: _scrollController,
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext ctxt, int index) {
@@ -46,11 +47,11 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
 
   _buildItem(BookmarkUser data) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Settings.themeWhat ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
             bottomLeft: Radius.circular(8),
@@ -62,7 +63,7 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
                 : Colors.grey.withOpacity(0.1),
             spreadRadius: Settings.themeWhat ? 0 : 5,
             blurRadius: 7,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -76,7 +77,7 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
               : Colors.white,
           child: ListTile(
             title: Text(data.title() ?? data.user().substring(0, 8),
-                style: TextStyle(fontSize: 16.0)),
+                style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(data.subtitle() ?? ''),
             trailing: Text(data.datetime().split(' ')[0]),
             onTap: () {

@@ -37,7 +37,7 @@ class SyncInfoRecord {
 
 class SyncManager {
   static const String syncInfoURL =
-      "https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt";
+      'https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt';
 
   static bool firstSync = false;
   static bool syncRequire = false; // database sync require
@@ -48,7 +48,7 @@ class SyncManager {
 
   static Future<void> checkSync() async {
     try {
-      var ls = LineSplitter();
+      var ls = const LineSplitter();
       var infoRaw = (await http.get(syncInfoURL)).body;
       var lines = ls.convert(infoRaw);
 
@@ -81,8 +81,8 @@ class SyncManager {
 
         와 같은 형식으로 아래쪽이 항상 최신 청크다. 따라서 reversed 탐색을 시도한다.
        */
-      lines.reversed.forEach((element) {
-        if (element.startsWith('#')) return;
+      for (var element in lines.reversed) {
+        if (element.startsWith('#')) continue;
 
         var split = element.split(' ');
         var type = split[0];
@@ -92,12 +92,12 @@ class SyncManager {
         if (type == 'chunk') size = int.parse(split[3]);
 
         // We require only json files when synchronize with chunk.
-        if (type == 'chunk' && !url.endsWith('.json')) return;
+        if (type == 'chunk' && !url.endsWith('.json')) continue;
 
         //
         // 마지막으로 동기화한 시간보다 작은 경우 해당 청크는 무시한다.
         //
-        if (type == 'chunk' && timestamp <= latest) return;
+        if (type == 'chunk' && timestamp <= latest) continue;
 
         requestSize += size;
         _rows.add(SyncInfoRecord(
@@ -106,7 +106,7 @@ class SyncManager {
           url: url,
           size: size,
         ));
-      });
+      }
 
       /*
          너무 많은 청크를 다운로드해야하는 경우 동기화를 추천한다.
@@ -116,14 +116,16 @@ class SyncManager {
       if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
       if (_rows.any((element) => element.type == 'chunk')) chunkRequire = true;
     } catch (e, st) {
-      Logger.error('[Sync-check] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Sync-check] E: $e\n'
+          '$st');
     }
   }
 
   static SyncInfoRecord getLatestDB() {
     if (_rows != null) {
-      for (int i = 0; i < _rows.length; i++)
+      for (int i = 0; i < _rows.length; i++) {
         if (_rows[i].type == 'db') return _rows[i];
+      }
     }
 
     //
@@ -201,9 +203,10 @@ class SyncManager {
         var dbraw = await openDatabase(db.dbPath);
         await dbraw.transaction((txn) async {
           final batch = txn.batch();
-          for (var query in quries)
+          for (var query in quries) {
             batch.insert('HitomiColumnModel', query.result,
                 conflictAlgorithm: ConflictAlgorithm.replace);
+          }
           await batch.commit();
         });
         await dbraw.close();
@@ -212,20 +215,17 @@ class SyncManager {
             .setInt('synclatest', row.timestamp);
       }
 
-      if (Settings.useOptimizeDatabase && filteredIter.length > 0) {
-        var sql = HitomiManager.translate2query(Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' '));
+      if (Settings.useOptimizeDatabase && filteredIter.isNotEmpty) {
+        var sql = HitomiManager.translate2query(
+            '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
         await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
             'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
       }
     } catch (e, st) {
       // If an error occurs, stops synchronization immediately.
-      Logger.error('[Sync-chunk] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Sync-chunk] E: $e\n'
+          '$st');
       FirebaseCrashlytics.instance.recordError(e, st);
     }
   }

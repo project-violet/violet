@@ -25,7 +25,8 @@ class ThumbnailWidget extends StatelessWidget {
   final bool disableFiltering;
   final Map<String, String> headers;
 
-  ThumbnailWidget({
+  const ThumbnailWidget({
+    Key key,
     this.pad,
     this.showDetail,
     this.thumbnail,
@@ -39,7 +40,7 @@ class ThumbnailWidget extends StatelessWidget {
     this.isLastestRead,
     this.latestReadPage,
     this.disableFiltering,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +88,10 @@ class ThumbnailWidget extends StatelessWidget {
             )
           : !Settings.simpleItemWidgetLoadingIcon
               ? const FlareActor(
-                  "assets/flare/Loading2.flr",
+                  'assets/flare/Loading2.flr',
                   alignment: Alignment.center,
                   fit: BoxFit.fitHeight,
-                  animation: "Alarm",
+                  animation: 'Alarm',
                 )
               : Center(
                   child: SizedBox(
@@ -103,10 +104,11 @@ class ThumbnailWidget extends StatelessWidget {
                 ),
     );
 
-    if (showDetail)
+    if (showDetail) {
       return Material(child: result);
-    else
+    } else {
       return result;
+    }
   }
 }
 
@@ -116,8 +118,13 @@ class ThumbnailImageWidget extends StatelessWidget {
   final Map<String, String> headers;
   final bool isBlurred;
 
-  ThumbnailImageWidget(
-      {this.thumbnail, this.thumbnailTag, this.headers, this.isBlurred});
+  const ThumbnailImageWidget(
+      {Key key,
+      this.thumbnail,
+      this.thumbnailTag,
+      this.headers,
+      this.isBlurred})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -145,10 +152,10 @@ class ThumbnailImageWidget extends StatelessWidget {
         placeholder: (b, c) {
           if (!Settings.simpleItemWidgetLoadingIcon) {
             return const FlareActor(
-              "assets/flare/Loading2.flr",
+              'assets/flare/Loading2.flr',
               alignment: Alignment.center,
               fit: BoxFit.fitHeight,
-              animation: "Alarm",
+              animation: 'Alarm',
             );
           } else {
             return Center(
@@ -171,7 +178,9 @@ class BookmarkIndicatorWidget extends StatelessWidget {
   final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
 
-  BookmarkIndicatorWidget({this.isBookmarked, this.flareController});
+  const BookmarkIndicatorWidget(
+      {Key key, this.isBookmarked, this.flareController})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -188,13 +197,13 @@ class BookmarkIndicatorWidget extends StatelessWidget {
               if (!Settings.simpleItemWidgetLoadingIcon) {
                 return FlareActor(
                   'assets/flare/likeUtsua.flr',
-                  animation: value ? "Like" : "IdleUnlike",
+                  animation: value ? 'Like' : 'IdleUnlike',
                   controller: flareController,
                 );
               } else {
                 return Icon(
                   value ? MdiIcons.heart : MdiIcons.heartOutline,
-                  color: value ? Color(0xFFE2264D) : null,
+                  color: value ? const Color(0xFFE2264D) : null,
                 );
               }
             },
@@ -210,8 +219,9 @@ class ReadProgressOverlayWidget extends StatelessWidget {
   final int latestReadPage;
   final int imageCount;
 
-  ReadProgressOverlayWidget(
-      {this.isLastestRead, this.latestReadPage, this.imageCount});
+  const ReadProgressOverlayWidget(
+      {Key key, this.isLastestRead, this.latestReadPage, this.imageCount})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -226,9 +236,9 @@ class ReadProgressOverlayWidget extends StatelessWidget {
               height: 5,
               color: Colors.transparent,
               child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 child: LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
                   value: isLastestRead && imageCount - latestReadPage <= 2
                       ? 1.0
                       : latestReadPage / imageCount,
@@ -244,7 +254,8 @@ class PagesOverlayWidget extends StatelessWidget {
   final bool showDetail;
   final int imageCount;
 
-  const PagesOverlayWidget({this.showDetail, this.imageCount});
+  const PagesOverlayWidget({Key key, this.showDetail, this.imageCount})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -257,12 +268,10 @@ class PagesOverlayWidget extends StatelessWidget {
           child: Theme(
             data: ThemeData(canvasColor: Colors.transparent),
             child: RawChip(
-              labelPadding: EdgeInsets.all(0.0),
+              labelPadding: const EdgeInsets.all(0.0),
               label: Text(
-                '' + imageCount.toString() + ' Page',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+                '$imageCount Page',
+                style: const TextStyle(color: Colors.white),
               ),
               elevation: 6.0,
               shadowColor: Colors.grey[60],

@@ -14,15 +14,15 @@ class HisokiGetter {
     if (hash == null) return null;
 
     var info = jsonDecode(
-        (await http.get('https://hisoki.me/api/v1/manga/$hash')).body)["body"];
-    var sl = info["sl"] as List<dynamic>;
-    var il = info["il"] as List<dynamic>;
+        (await http.get('https://hisoki.me/api/v1/manga/$hash')).body)['body'];
+    var sl = info['sl'] as List<dynamic>;
+    var il = info['il'] as List<dynamic>;
 
     var result = <Tuple3<String, double, double>>[];
 
     for (var i = 0; i < il.length; i++) {
-      result.add(Tuple3<String, double, double>(il[i].toString() + ".webp",
-          (sl[i]["w"] as int).toDouble(), (sl[i]["h"] as int).toDouble()));
+      result.add(Tuple3<String, double, double>('${il[i]}.webp',
+          (sl[i]['w'] as int).toDouble(), (sl[i]['h'] as int).toDouble()));
     }
 
     return result;

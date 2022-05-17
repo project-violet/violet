@@ -11,10 +11,11 @@ class SearchPageModifyPage extends StatefulWidget {
   final int curPage;
   final int maxPage;
 
-  const SearchPageModifyPage({this.curPage, this.maxPage});
+  const SearchPageModifyPage({Key key, this.curPage, this.maxPage})
+      : super(key: key);
 
   @override
-  _SearchPageModifyPageState createState() => _SearchPageModifyPageState();
+  State<SearchPageModifyPage> createState() => _SearchPageModifyPageState();
 }
 
 class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
@@ -30,8 +31,8 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Item Jump'),
-      contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+      title: const Text('Item Jump'),
+      contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -60,7 +61,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                 ),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () async {
-                  if (_pageController.text == "") {
+                  if (_pageController.text == '') {
                     Navigator.pop(context, [
                       1,
                       0,

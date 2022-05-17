@@ -10,8 +10,10 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/community/anon.dart';
 
 class LabRecentComments extends StatefulWidget {
+  const LabRecentComments({Key key}) : super(key: key);
+
   @override
-  _LabRecentCommentsState createState() => _LabRecentCommentsState();
+  State<LabRecentComments> createState() => _LabRecentCommentsState();
 }
 
 class _LabRecentCommentsState extends State<LabRecentComments> {
@@ -22,7 +24,7 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var tcomments =
           (await VioletCommunityAnonymous.getArtistCommentsRecent())['result']
               as List<dynamic>;
@@ -44,8 +46,8 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
       context,
       enableBackgroundColor: true,
       child: ListView.builder(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.all(0),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(0),
         itemBuilder: (BuildContext ctxt, int index) {
           var e = comments[index];
           return InkWell(
@@ -70,12 +72,13 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                            '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1.toLocal())}',
-                            style: TextStyle(fontSize: 12)),
+                            DateFormat('yyyy-MM-dd HH:mm')
+                                .format(e.item1.toLocal()),
+                            style: const TextStyle(fontSize: 12)),
                       ),
                     ),
                   ]),
-              subtitle: Text('${e.item3}'),
+              subtitle: Text(e.item3),
             ),
           );
         },

@@ -6,7 +6,14 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
-class SearchType extends StatelessWidget {
+class SearchType extends StatefulWidget {
+  const SearchType({Key key}) : super(key: key);
+
+  @override
+  State<SearchType> createState() => _SearchTypeState();
+}
+
+class _SearchTypeState extends State<SearchType> {
   Color getColor(int i) {
     return Settings.themeWhat
         ? Settings.searchResultType == i
@@ -21,7 +28,7 @@ class SearchType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "searchtype",
+        tag: 'searchtype',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
@@ -33,7 +40,7 @@ class SearchType extends StatelessWidget {
             width: 280,
             child: IntrinsicHeight(
               child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
                     _typeItem(context, Icons.grid_on, 'srt0', 0),
@@ -58,6 +65,8 @@ class SearchType extends StatelessWidget {
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
         await Settings.setSearchResultType(selection);
+
+        if (!mounted) return;
         Navigator.pop(context);
       },
     );

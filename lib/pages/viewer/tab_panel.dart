@@ -30,34 +30,30 @@ class TabPanel extends StatefulWidget {
   final double height;
   final List<QueryResult> usableTabList;
 
-  TabPanel({
+  const TabPanel({
+    Key key,
     this.articleId,
     this.usableTabList,
     this.height,
-  });
+  }) : super(key: key);
 
   @override
-  _TabPanelState createState() => _TabPanelState();
+  State<TabPanel> createState() => _TabPanelState();
 }
 
 class _TabPanelState extends State<TabPanel> {
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
 
   // static const _kDuration = const Duration(milliseconds: 300);
   // static const _kCurve = Curves.ease;
 
-  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -78,7 +74,7 @@ class _TabPanelState extends State<TabPanel> {
             ),
           ],
         ),
-        FutureBuilder(
+        FutureBuilder<int>(
           future: Future.value(1),
           builder: (context, snapshot) {
             if (!snapshot.hasData) return Container();
@@ -109,7 +105,7 @@ class _TabPanelState extends State<TabPanel> {
       ],
     );
 
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -120,12 +116,13 @@ class _TabPanelState extends State<TabPanel> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: view,
       );
+    }
   }
 }
 
@@ -136,7 +133,7 @@ class _UsableTabList extends StatefulWidget {
   const _UsableTabList({this.articleId, this.usableTabList});
 
   @override
-  __UsableTabListState createState() => __UsableTabListState();
+  State<_UsableTabList> createState() => __UsableTabListState();
 }
 
 class __UsableTabListState extends State<_UsableTabList>
@@ -144,8 +141,8 @@ class __UsableTabListState extends State<_UsableTabList>
   @override
   bool get wantKeepAlive => true;
 
-  ScrollController _scrollController = ScrollController();
-  Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
+  final ScrollController _scrollController = ScrollController();
+  Map<int, GlobalKey> itemKeys = <int, GlobalKey>{};
 
   @override
   void initState() {
@@ -153,8 +150,9 @@ class __UsableTabListState extends State<_UsableTabList>
 
     if (widget.usableTabList == null) return;
 
-    widget.usableTabList
-        .forEach((element) => itemKeys[element.id()] = GlobalKey());
+    for (var element in widget.usableTabList) {
+      itemKeys[element.id()] = GlobalKey();
+    }
 
     Future.value(1).then((value) {
       var row = widget.usableTabList
@@ -181,9 +179,9 @@ class __UsableTabListState extends State<_UsableTabList>
       controller: _scrollController,
       slivers: <Widget>[
         SliverPadding(
-          padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
           sliver: SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
@@ -203,13 +201,13 @@ class __UsableTabListState extends State<_UsableTabList>
                           addBottomPadding: false,
                           showDetail: false,
                           width: (windowWidth - 4.0) / 3.0,
-                          thumbnailTag: Uuid().v4(),
+                          thumbnailTag: const Uuid().v4(),
                           selectMode: true,
                           selectCallback: () {
                             Navigator.pop(context, e);
                           },
                         ),
-                        child: ArticleListItemVerySimpleWidget(),
+                        child: const ArticleListItemVerySimpleWidget(),
                       ),
                     ),
                   );
@@ -230,7 +228,7 @@ class _ArtistsArticleTabList extends StatefulWidget {
   const _ArtistsArticleTabList({this.articleId, this.height});
 
   @override
-  __ArtistsArticleTabListState createState() => __ArtistsArticleTabListState();
+  State<_ArtistsArticleTabList> createState() => __ArtistsArticleTabListState();
 }
 
 class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
@@ -238,8 +236,8 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
   @override
   bool get wantKeepAlive => true;
 
-  ScrollController _scrollController = ScrollController();
-  Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
+  final ScrollController _scrollController = ScrollController();
+  Map<int, GlobalKey> itemKeys = <int, GlobalKey>{};
   bool isLoaded = false;
   bool isJumped = false;
   List<QueryResult> articleList = [];
@@ -250,25 +248,26 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     Future.value(1).then((value) async {
       var mqrr = await HentaiManager.idSearch(widget.articleId.toString());
-      if (mqrr.item1.length == 0) return;
+      if (mqrr.item1.isEmpty) return;
 
       var mqr = mqrr.item1.first;
 
       var what = '';
-      if (mqr.artists() != null)
+      if (mqr.artists() != null) {
         what += (mqr.artists() as String)
             .split('|')
-            .where((element) => element != '' && element.toLowerCase() != "n/a")
+            .where((element) => element != '' && element.toLowerCase() != 'n/a')
             .map((element) => 'artist:${element.replaceAll(' ', '_')}')
-            .join(" or ");
+            .join(' or ');
+      }
 
       if (mqr.groups() != null) {
-        if (what != '') what += " or ";
+        if (what != '') what += ' or ';
         what += (mqr.groups() as String)
             .split('|')
-            .where((element) => element != '' && element.toLowerCase() != "n/a")
+            .where((element) => element != '' && element.toLowerCase() != 'n/a')
             .map((element) => 'group:${element.replaceAll(' ', '_')}')
-            .join(" or ");
+            .join(' or ');
       }
 
       if (what == '') {
@@ -276,34 +275,30 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
         return;
       }
 
-      final queryString = HitomiManager.translate2query("($what)" +
-          ' ' +
-          Settings.includeTags +
-          ' ' +
-          Settings.excludeTags
-              .where((e) => e.trim() != '')
-              .map((e) => '-$e')
-              .join(' ')
-              .trim());
+      final queryString = HitomiManager.translate2query(
+          '($what) ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
       var queryResult = (await (await DataBaseManager.getInstance())
-              .query("$queryString ORDER BY Id DESC LIMIT 500"))
+              .query('$queryString ORDER BY Id DESC LIMIT 500'))
           .map((e) => QueryResult(result: e))
           .toList();
 
-      if (queryResult.length == 0) {
+      if (queryResult.isEmpty) {
         setState(() => isLoaded = true);
         return;
       }
 
       articleList = queryResult;
-      articleList.forEach((element) => itemKeys[element.id()] = GlobalKey());
+      for (var element in articleList) {
+        itemKeys[element.id()] = GlobalKey();
+      }
 
       setState(() => isLoaded = true);
 
-      if (!articleList.any((element) => element.id() == widget.articleId))
+      if (!articleList.any((element) => element.id() == widget.articleId)) {
         return;
+      }
 
-      Future.delayed(Duration(milliseconds: 50)).then((value) {
+      Future.delayed(const Duration(milliseconds: 50)).then((value) {
         var row = articleList
                 .indexWhere((element) => element.id() == widget.articleId) ~/
             3;
@@ -341,9 +336,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
             controller: _scrollController,
             slivers: <Widget>[
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                 sliver: SliverGrid(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
@@ -363,7 +358,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                 addBottomPadding: false,
                                 showDetail: false,
                                 width: (windowWidth - 4.0) / 3.0,
-                                thumbnailTag: Uuid().v4(),
+                                thumbnailTag: const Uuid().v4(),
                                 selectMode: true,
                                 selectCallback: () async {
                                   if (!Settings
@@ -374,7 +369,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                   }
                                 },
                               ),
-                              child: ArticleListItemVerySimpleWidget(),
+                              child: const ArticleListItemVerySimpleWidget(),
                             ),
                           ),
                         );
@@ -395,7 +390,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     var isBookmarked = await (await Bookmark.getInstance()).isBookmark(e.id());
 
-    var cache;
+    Provider<ArticleInfo> cache;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -406,22 +401,20 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
           maxChildSize: 0.9,
           expand: false,
           builder: (_, controller) {
-            if (cache == null) {
-              cache = Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: e,
-                  thumbnail: thumbnail,
-                  headers: headers,
-                  heroKey: 'zxcvzxcvzxcv',
-                  isBookmarked: isBookmarked,
-                  controller: controller,
-                  usableTabList: articleList,
-                ),
-              );
-            }
+            cache ??= Provider<ArticleInfo>.value(
+              value: ArticleInfo.fromArticleInfo(
+                queryResult: e,
+                thumbnail: thumbnail,
+                headers: headers,
+                heroKey: 'zxcvzxcvzxcv',
+                isBookmarked: isBookmarked,
+                controller: controller,
+                usableTabList: articleList,
+              ),
+              child: const ArticleInfoPage(
+                key: ObjectKey('asdfasdf'),
+              ),
+            );
             return cache;
           },
         );
@@ -431,7 +424,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
   Future<void> _showViewer(QueryResult e) async {
     if (Settings.useVioletServer) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         await VioletServer.view(e.id());
       });
     }
@@ -444,6 +437,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     var headers = await prov.getHeader(0);
 
+    if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -459,7 +453,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                 title: e.title(),
                 usableTabList: articleList,
               ),
-              child: ViewerPage());
+              child: const ViewerPage());
         },
       ),
     ).then((value) async {

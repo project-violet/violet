@@ -72,14 +72,14 @@ class IsolateDownloader {
     _receivePort.listen((dynamic message) => _listen(message));
     _isolate =
         await Isolate.spawn(_downloadIsolateRoutine, _receivePort.sendPort);
-    _tasks = Map<int, DownloadTask>();
-    _taskTotalSizes = Map<int, int>();
-    _taskCountSizes = Map<int, int>();
+    _tasks = <int, DownloadTask>{};
+    _taskTotalSizes = <int, int>{};
+    _taskCountSizes = <int, int>{};
     _appendedTask = HashSet<int>();
     _completedTask = HashSet<int>();
     _erroredTask = HashSet<int>();
     _canceledTask = HashSet<int>();
-    _errorContent = Map<int, IsolateDownloaderErrorUnit>();
+    _errorContent = <int, IsolateDownloaderErrorUnit>{};
     _taskTotalCount = 0;
   }
 
@@ -147,7 +147,7 @@ class IsolateDownloader {
   }
 
   void close() {
-    _sendPort.send(SendPortData(type: SendPortType.terminate));
+    _sendPort.send(const SendPortData(type: SendPortType.terminate));
     _isolate.kill(priority: Isolate.immediate);
   }
 
@@ -205,20 +205,23 @@ class IsolateDownloader {
   void _progressTask(IsolateDownloaderProgressProtocolUnit unit) {
     if (!_tasks[unit.id].isSizeEnsued) {
       _tasks[unit.id].isSizeEnsued = true;
-      if (_tasks[unit.id].sizeCallback != null)
+      if (_tasks[unit.id].sizeCallback != null) {
         _tasks[unit.id].sizeCallback(unit.totalSize.toDouble());
+      }
     }
-    if (_tasks[unit.id].downloadCallback != null)
+    if (_tasks[unit.id].downloadCallback != null) {
       _tasks[unit.id].downloadCallback(
           (unit.countSize - _tasks[unit.id].accDownloadSize).toDouble());
+    }
     _taskTotalSizes[unit.id] = unit.totalSize;
     _taskCountSizes[unit.id] = unit.countSize;
     _tasks[unit.id].accDownloadSize = unit.countSize;
   }
 
   void _completeTask(int taskId) {
-    if (_tasks[taskId].completeCallback != null)
+    if (_tasks[taskId].completeCallback != null) {
       _tasks[taskId].completeCallback();
+    }
     _taskCountSizes.remove(taskId);
     _taskTotalSizes.remove(taskId);
     _completedTask.add(taskId);
@@ -226,36 +229,29 @@ class IsolateDownloader {
   }
 
   Future<void> _errorTask(IsolateDownloaderErrorUnit unit) async {
-    if (_tasks[unit.id].errorCallback != null)
+    if (_tasks[unit.id].errorCallback != null) {
       _tasks[unit.id].errorCallback(unit.error);
+    }
     _erroredTask.add(unit.id);
     _errorContent[unit.id] = unit;
 
-    await Logger.error('[downloader-err] URL: ' +
-        _tasks[unit.id].url +
-        '\nP: ' +
-        _tasks[unit.id].downloadPath +
-        '\nE: ' +
-        unit.error +
-        "\n" +
-        unit.stackTrace);
+    await Logger.error('[downloader-err] URL: ${_tasks[unit.id].url}\n'
+        'P: ${_tasks[unit.id].downloadPath}\n'
+        'E: ${unit.error}\n'
+        '${unit.stackTrace}');
 
     _tasks.remove(unit.id);
   }
 
   Future<void> _retryTask(Map<dynamic, dynamic> data) async {
-    var id = data["id"] as int;
-    var url = data["url"] as String;
-    var count = data["count"] as int;
-    var code = data["code"] as int;
+    var id = data['id'] as int;
+    var url = data['url'] as String;
+    var count = data['count'] as int;
+    var code = data['code'] as int;
 
-    await Logger.warning('[downloader-retry] URL: ' +
-        url +
-        '\nCODE: ' +
-        code.toString() +
-        '\nP: ' +
-        _tasks[id].downloadPath +
-        '\nC: ' +
-        count.toString());
+    await Logger.warning('[downloader-retry] URL: $url\n'
+        'CODE: $code\n'
+        'P: ${_tasks[id].downloadPath}\n'
+        'C: $count');
   }
 }

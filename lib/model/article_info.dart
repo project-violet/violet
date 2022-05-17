@@ -43,7 +43,7 @@ class ArticleInfo {
   }) {
     var artist = (queryResult.artists() as String)
         .split('|')
-        .where((x) => x.length != 0)
+        .where((x) => x.isNotEmpty)
         .elementAt(0);
 
     if (artist == 'N/A') {
@@ -71,9 +71,10 @@ class ArticleInfo {
 
   Future<void> setIsBookmarked(bool isBookmarked) async {
     this.isBookmarked = isBookmarked;
-    if (isBookmarked)
+    if (isBookmarked) {
       await (await Bookmark.getInstance()).bookmark(queryResult.id());
-    else
+    } else {
       await (await Bookmark.getInstance()).unbookmark(queryResult.id());
+    }
   }
 }

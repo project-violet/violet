@@ -13,8 +13,8 @@ class VioletCommunityArticle {
   static Future<dynamic> _getV(String api, String params) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
-    var gg = await http
-        .get(Uri.parse(VioletServer.api + api + '?' + params), headers: {
+    var gg =
+        await http.get(Uri.parse('${VioletServer.api}$api?$params'), headers: {
       'v-token': vToken.toString(),
       'v-valid': vValid,
       'Content-Type': 'application/json'
@@ -41,7 +41,8 @@ class VioletCommunityArticle {
           body: jsonEncode(body));
       return res;
     } catch (e, st) {
-      Logger.error('[API-postv] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-postv] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -53,13 +54,12 @@ class VioletCommunityArticle {
 
   /* Id, TimeStamp, User, NickName, Comments, Title, View, UpVote, DownVote */
   static Future<dynamic> getArticleByPage(int board, int page) async {
-    return await _getV('/community/board/page',
-        'board=' + board.toString() + '&p=' + page.toString());
+    return await _getV('/community/board/page', 'board=$board&p=$page');
   }
 
   /* Body, Etc */
   static Future<dynamic> readArticle(int no) async {
-    return await _getV('/community/article/read', 'no=' + no.toString());
+    return await _getV('/community/article/read', 'no=$no');
   }
 
   /* */
@@ -99,7 +99,7 @@ class VioletCommunityArticle {
 
   /* Id, User, NickName, TimeStamp, Body, Parent */
   static Future<dynamic> readComment(int no) async {
-    return await _getV('/community/comment/read', 'no=' + no.toString());
+    return await _getV('/community/comment/read', 'no=$no');
   }
 
   /* Edit or Insert */
@@ -120,6 +120,6 @@ class VioletCommunityArticle {
   }
 
   static Future<String> getUserNickName(String id) async {
-    return await _getV('/community/user/info', 'id=' + id);
+    return await _getV('/community/user/info', 'id=$id');
   }
 }

@@ -8,8 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class ContactCard extends StatefulWidget {
+  const ContactCard({Key key}) : super(key: key);
+
   @override
-  _ContactCardState createState() => _ContactCardState();
+  State<ContactCard> createState() => _ContactCardState();
 }
 
 class _ContactCardState extends State<ContactCard> {
@@ -37,26 +39,26 @@ class _ContactCardState extends State<ContactCard> {
         child: Container(
           width: width - 16,
           height: 65,
-          margin: EdgeInsets.symmetric(horizontal: 0.0),
+          margin: const EdgeInsets.symmetric(horizontal: 0.0),
           child: Card(
             color: Colors.redAccent,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   MdiIcons.gmail,
                   color: Colors.white,
                 ),
                 Padding(
                   padding: Translations.of(context).dbLanguageCode == 'en'
-                      ? EdgeInsets.only(top: 4)
-                      : EdgeInsets.only(top: 4),
+                      ? const EdgeInsets.only(top: 4)
+                      : const EdgeInsets.only(top: 4),
                   child: Text(
                     '  ${Translations.of(context).trans('maincontact')}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,
                       color: Colors.white,
                     ),
@@ -70,7 +72,7 @@ class _ContactCardState extends State<ContactCard> {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()

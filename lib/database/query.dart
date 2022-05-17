@@ -34,7 +34,7 @@ class QueryResult {
       return null;
     }
 
-    if (!(published() is int) && int.tryParse(published()) == null) {
+    if (published() is! int && int.tryParse(published()) == null) {
       return DateTime.tryParse(published() as String);
     }
 
@@ -74,21 +74,21 @@ class QueryManager {
   Future<List<QueryResult>> next() async {
     curPage += 1;
     return (await (await DataBaseManager.getInstance()).query(
-            "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage - 1)}"))
+            '$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage - 1)}'))
         .map((e) => QueryResult(result: e))
         .toList();
   }
 
   static Future<List<QueryResult>> queryIds(List<int> ids) async {
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-    queryRaw += 'Id IN (' + ids.join(',') + ')';
+    queryRaw += 'Id IN (${ids.join(',')})';
     var qm = await QueryManager.query(
         queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-    var qr = Map<String, QueryResult>();
-    qm.results.forEach((element) {
+    var qr = <String, QueryResult>{};
+    for (var element in qm.results) {
       qr[element.id().toString()] = element;
-    });
+    }
 
     var rr = ids
         .where((e) => qr.containsKey(e.toString()))

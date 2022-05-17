@@ -8,8 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class GithubCard extends StatefulWidget {
+  const GithubCard({Key key}) : super(key: key);
+
   @override
-  _GithubCardState createState() => _GithubCardState();
+  State<GithubCard> createState() => _GithubCardState();
 }
 
 class _GithubCardState extends State<GithubCard> {
@@ -36,26 +38,26 @@ class _GithubCardState extends State<GithubCard> {
         child: Container(
           width: width - 16,
           height: 65,
-          margin: EdgeInsets.symmetric(horizontal: 0.0),
+          margin: const EdgeInsets.symmetric(horizontal: 0.0),
           child: Card(
-            color: Color(0xFF24292E),
+            color: const Color(0xFF24292E),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   MdiIcons.github,
                   color: Colors.white,
                 ),
                 Padding(
                   padding: Translations.of(context).dbLanguageCode == 'en'
-                      ? EdgeInsets.only(top: 4)
-                      : EdgeInsets.only(top: 4),
+                      ? const EdgeInsets.only(top: 4)
+                      : const EdgeInsets.only(top: 4),
                   child: Text(
                     '  ${Translations.of(context).trans('maingithub')}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,
                       color: Colors.white,
                     ),
@@ -69,7 +71,7 @@ class _GithubCardState extends State<GithubCard> {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()

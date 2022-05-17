@@ -39,7 +39,7 @@ class VCachedNetworkImage extends StatelessWidget {
   /// [BaseCacheManager] as the in memory [ImageCache] of the [ImageProvider].
   /// [url] is used by both the disk and memory cache. The scale is only used
   /// to clear the image from the [ImageCache].
-  static Future evictFromCache(
+  static Future<bool> evictFromCache(
     String url, {
     String cacheKey,
     BaseCacheManager cacheManager,

@@ -24,16 +24,16 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 class LabUserRecentRecords extends StatefulWidget {
   final String userAppId;
 
-  LabUserRecentRecords(this.userAppId);
+  const LabUserRecentRecords(this.userAppId, {Key key}) : super(key: key);
 
   @override
-  _LabUserRecentRecordsState createState() => _LabUserRecentRecordsState();
+  State<LabUserRecentRecords> createState() => _LabUserRecentRecordsState();
 }
 
 class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int limit = 10;
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   FlareControls flareController = FlareControls();
   bool isBookmarked = false;
 
@@ -41,12 +41,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then(updateRercord);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    Future.delayed(const Duration(milliseconds: 100)).then(updateRercord);
   }
 
   Future<void> updateRercord(dummy) async {
@@ -60,18 +55,13 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       var xrecords = trecords as List<Tuple3<int, int, int>>;
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results.length == 0) return;
+      if (query.results.isEmpty) return;
 
       /* Statistics -- */
 
@@ -82,25 +72,26 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       maleTags = 0;
       tags = 0;
 
-      var ffstat = Map<String, int>();
+      var ffstat = <String, int>{};
 
-      query.results.forEach((element) {
-        if (element.tags() == null) return;
+      for (var element in query.results) {
+        if (element.tags() == null) continue;
         (element.tags() as String)
             .split('|')
             .where((element) => element != '')
             .forEach((element) {
-          if (element.startsWith('female:'))
+          if (element.startsWith('female:')) {
             femaleTags += 1;
-          else if (element.startsWith('male:'))
+          } else if (element.startsWith('male:')) {
             maleTags += 1;
-          else
+          } else {
             tags += 1;
+          }
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] += 1;
         });
-      });
+      }
 
       ffstat.forEach((key, value) {
         lff.add(Tuple2<String, int>(key, value));
@@ -114,26 +105,26 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       /* -- Statistics */
 
-      var qr = Map<String, QueryResult>();
-      query.results.forEach((element) {
+      var qr = <String, QueryResult>{};
+      for (var element in query.results) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple2<QueryResult, int>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item2.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple2<QueryResult, int>(
             qr[element.item2.toString()], element.item3));
-      });
+      }
 
       records.insertAll(0, result);
 
       setState(() {});
     } catch (e, st) {
-      Logger.error(
-          '[lab-recent_record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-recent_record] E: $e\n'
+          '$st');
     }
   }
 
@@ -146,11 +137,11 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       child: Column(
         children: [
           Expanded(
-            child: records.length != 0
+            child: records.isNotEmpty
                 ? ListView.builder(
-                    padding: EdgeInsets.all(0),
+                    padding: const EdgeInsets.all(0),
                     controller: _controller,
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     itemCount: records.length + 1,
                     itemBuilder: (BuildContext ctxt, int index) {
                       if (index == 0) {
@@ -158,10 +149,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                       }
                       index -= 1;
                       return Align(
-                        key: Key('records' +
-                            index.toString() +
-                            '/' +
-                            records[index].item1.id().toString()),
+                        key: Key('records$index/${records[index].item1.id()}'),
                         alignment: Alignment.center,
                         child: Provider<ArticleListItem>.value(
                           value: ArticleListItem.fromArticleListItem(
@@ -169,16 +157,16 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                             showDetail: true,
                             addBottomPadding: true,
                             width: (windowWidth - 4.0),
-                            thumbnailTag: Uuid().v4(),
+                            thumbnailTag: const Uuid().v4(),
                             seconds: records[index].item2,
                           ),
-                          child: ArticleListItemVerySimpleWidget(),
+                          child: const ArticleListItemVerySimpleWidget(),
                         ),
                       );
                     },
                   )
                 : Column(
-                    children: <Widget>[
+                    children: const <Widget>[
                       Expanded(
                         child: Align(
                           alignment: Alignment.center,
@@ -201,7 +189,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                   dense: true,
                   title: Align(
                     child: SliderTheme(
-                      data: SliderThemeData(
+                      data: const SliderThemeData(
                         activeTrackColor: Colors.blue,
                         inactiveTrackColor: Color(0xffd0d2d3),
                         trackHeight: 3,
@@ -254,9 +242,9 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
             labelStyle: charts.TextStyleSpec(
                 fontSize: isExpanded ? 10 : 14,
                 color: charts.MaterialPalette.white),
-            lineStyle: charts.LineStyleSpec(
+            lineStyle: const charts.LineStyleSpec(
                 color: charts.MaterialPalette.transparent)));
-    var axis2 = charts.NumericAxisSpec(
+    var axis2 = const charts.NumericAxisSpec(
         renderSpec: charts.GridlineRendererSpec(
       labelStyle: charts.TextStyleSpec(
           fontSize: 10, color: charts.MaterialPalette.white),
@@ -274,12 +262,13 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
               height: 28,
               child: FlareActor(
                 'assets/flare/likeUtsua.flr',
-                animation: isBookmarked ? "Like" : "IdleUnlike",
+                animation: isBookmarked ? 'Like' : 'IdleUnlike',
                 controller: flareController,
               ),
             ),
             Text(widget.userAppId.substring(0, 16),
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ],
         ),
         onTap: () async {
@@ -297,7 +286,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
         },
       ),
       Padding(
-        padding: EdgeInsets.fromLTRB(64, 16, 64, 0),
+        padding: const EdgeInsets.fromLTRB(64, 16, 64, 0),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8.0),
           child: Row(
@@ -325,7 +314,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
         ),
       ),
       Container(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
       ),
       InkWell(
         child: SizedBox(
@@ -343,12 +332,13 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                             : sales.item1,
                     measureFn: (Tuple2<String, int> sales, _) => sales.item2,
                     colorFn: (Tuple2<String, int> sales, _) {
-                      if (sales.item1.startsWith('female:'))
+                      if (sales.item1.startsWith('female:')) {
                         return charts.MaterialPalette.pink.shadeDefault;
-                      else if (sales.item1.startsWith('male:'))
+                      } else if (sales.item1.startsWith('male:')) {
                         return charts.MaterialPalette.blue.shadeDefault;
-                      else
+                      } else {
                         return charts.MaterialPalette.gray.shadeDefault;
+                      }
                     }),
               ],
               primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
@@ -359,19 +349,20 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
         onTap: () {},
         onTapCancel: () {
           isExpanded = !isExpanded;
-          if (isExpanded)
+          if (isExpanded) {
             lff = lffOrigin;
-          else
+          } else {
             lff = lffOrigin.take(5).toList();
+          }
           setState(() {});
-          Future.delayed(Duration(milliseconds: 100)).then((value) =>
+          Future.delayed(const Duration(milliseconds: 100)).then((value) =>
               _controller.animateTo(0.0,
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.fastOutSlowIn));
         },
       ),
       Container(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
       ),
     ]);
   }

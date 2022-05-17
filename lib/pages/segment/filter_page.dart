@@ -18,21 +18,22 @@ class FilterController {
   var isPopulationSort = false;
   String heroKey;
 
-  var tagStates = Map<String, bool>();
-  var groupStates = Map<String, bool>();
+  var tagStates = <String, bool>{};
+  var groupStates = <String, bool>{};
 
-  FilterController({this.heroKey = "searchtype"});
+  FilterController({this.heroKey = 'searchtype'});
 }
 
 class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
 
-  FilterPage({
+  const FilterPage({
+    Key key,
     this.queryResult,
-  });
+  }) : super(key: key);
 
   @override
-  _FilterPageState createState() => _FilterPageState();
+  State<FilterPage> createState() => _FilterPageState();
 }
 
 class _FilterPageState extends State<FilterPage> {
@@ -43,12 +44,12 @@ class _FilterPageState extends State<FilterPage> {
   bool test = false;
 
   final _tags = <Tuple3<String, String, int>>[];
-  final _groupCount = Map<String, int>();
+  final _groupCount = <String, int>{};
   final _groups = <Tuple2<String, int>>[];
 
   _initTagPad() {
-    Map<String, int> tags = Map<String, int>();
-    widget.queryResult.forEach((element) {
+    Map<String, int> tags = <String, int>{};
+    for (var element in widget.queryResult) {
       if (element.tags() != null) {
         element.tags().split('|').forEach((element) {
           if (element == '') return;
@@ -56,7 +57,7 @@ class _FilterPageState extends State<FilterPage> {
           tags[element] += 1;
         });
       }
-    });
+    }
     _groupCount['tag'] = 0;
     _groupCount['female'] = 0;
     _groupCount['male'] = 0;
@@ -69,8 +70,9 @@ class _FilterPageState extends State<FilterPage> {
       }
       _groupCount[group] += 1;
       _tags.add(Tuple3<String, String, int>(group, name, value));
-      if (!c.tagStates.containsKey(group + '|' + name))
-        c.tagStates[group + '|' + name] = false;
+      if (!c.tagStates.containsKey('$group|$name')) {
+        c.tagStates['$group|$name'] = false;
+      }
     });
     if (!c.groupStates.containsKey('tag')) c.groupStates['tag'] = false;
     if (!c.groupStates.containsKey('female')) c.groupStates['female'] = false;
@@ -92,8 +94,8 @@ class _FilterPageState extends State<FilterPage> {
   void append(String group, String vv) {
     if (!c.groupStates.containsKey(group)) c.groupStates[group] = false;
     _groupCount[group] = 0;
-    Map<String, int> tags = Map<String, int>();
-    widget.queryResult.forEach((element) {
+    Map<String, int> tags = <String, int>{};
+    for (var element in widget.queryResult) {
       if (element.result[vv] != null) {
         element.result[vv].split('|').forEach((element) {
           if (element == '') return;
@@ -101,12 +103,13 @@ class _FilterPageState extends State<FilterPage> {
           tags[element] += 1;
         });
       }
-    });
+    }
     _groupCount[group] += tags.length;
     tags.forEach((key, value) {
       _tags.add(Tuple3<String, String, int>(group, key, value));
-      if (!c.tagStates.containsKey(group + '|' + key))
-        c.tagStates[group + '|' + key] = false;
+      if (!c.tagStates.containsKey('$group|$key')) {
+        c.tagStates['$group|$key'] = false;
+      }
     });
   }
 
@@ -129,13 +132,13 @@ class _FilterPageState extends State<FilterPage> {
       heroTag: c.heroKey,
       enableBackgroundColor: true,
       child: Padding(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         child: Column(
           children: <Widget>[
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 children: [
                   _buildTagsPanel(),
                 ],
@@ -216,7 +219,7 @@ class _FilterPageState extends State<FilterPage> {
       runSpacing: -10.0,
       children: <Widget>[
         FilterChip(
-          label: Text("Population"),
+          label: const Text('Population'),
           selected: c.isPopulationSort,
           onSelected: (bool value) {
             setState(() {
@@ -225,7 +228,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text("OR"),
+          label: const Text('OR'),
           selected: c.isOr,
           onSelected: (bool value) {
             setState(() {
@@ -234,7 +237,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text("Search"),
+          label: const Text('Search'),
           selected: c.isSearch,
           onSelected: (bool value) {
             setState(() {
@@ -248,22 +251,23 @@ class _FilterPageState extends State<FilterPage> {
 
   _buildTagsPanel() {
     var tags = _tags
-        .where((element) => c.tagStates[element.item1 + '|' + element.item2])
+        .where((element) => c.tagStates['${element.item1}|${element.item2}'])
         .toList();
 
-    if (c.isSearch)
+    if (c.isSearch) {
       tags += _tags
           .where((element) =>
-              (element.item1 + ':' + element.item2)
+              ('${element.item1}:${element.item2}')
                   .contains(_searchController.text) &&
-              !c.tagStates[element.item1 + '|' + element.item2])
+              !c.tagStates['${element.item1}|${element.item2}'])
           .toList();
-    else
+    } else {
       tags += _tags
           .where((element) =>
               c.groupStates[element.item1] &&
-              !c.tagStates[element.item1 + '|' + element.item2])
+              !c.tagStates['${element.item1}|${element.item2}'])
           .toList();
+    }
 
     return Wrap(
         // alignment: WrapAlignment.center,
@@ -272,12 +276,12 @@ class _FilterPageState extends State<FilterPage> {
         children: tags.take(100).map(
           (element) {
             return _Chip(
-              selected: c.tagStates[element.item1 + '|' + element.item2],
+              selected: c.tagStates['${element.item1}|${element.item2}'],
               group: element.item1,
               name: element.item2,
               count: element.item3,
               callback: (selected) {
-                c.tagStates[element.item1 + '|' + element.item2] = selected;
+                c.tagStates['${element.item1}|${element.item2}'] = selected;
               },
             );
           },
@@ -321,13 +325,13 @@ class _FilterPageState extends State<FilterPage> {
           onPressed: () async {
             _searchController.clear();
             _searchController.selection =
-                TextSelection(baseOffset: 0, extentOffset: 0);
+                const TextSelection(baseOffset: 0, extentOffset: 0);
             // await searchProcess('', _searchController.selection);
           },
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
         ),
         contentPadding:
-            EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+            const EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
         hintText: trans.Translations.of(context).trans('search'),
       ),
     );
@@ -345,7 +349,7 @@ class _FilterPageState extends State<FilterPage> {
             _tags
                 .where((element) => c.groupStates[element.item1])
                 .forEach((element) {
-              c.tagStates[element.item1 + '|' + element.item2] = true;
+              c.tagStates['${element.item1}|${element.item2}'] = true;
             });
             setState(() {});
           },
@@ -356,7 +360,7 @@ class _FilterPageState extends State<FilterPage> {
             _tags
                 .where((element) => c.groupStates[element.item1])
                 .forEach((element) {
-              c.tagStates[element.item1 + '|' + element.item2] = false;
+              c.tagStates['${element.item1}|${element.item2}'] = false;
             });
             setState(() {});
           },
@@ -367,8 +371,8 @@ class _FilterPageState extends State<FilterPage> {
             _tags
                 .where((element) => c.groupStates[element.item1])
                 .forEach((element) {
-              c.tagStates[element.item1 + '|' + element.item2] =
-                  !c.tagStates[element.item1 + '|' + element.item2];
+              c.tagStates['${element.item1}|${element.item2}'] =
+                  !c.tagStates['${element.item1}|${element.item2}'];
             });
             setState(() {});
           },
@@ -381,83 +385,99 @@ class _FilterPageState extends State<FilterPage> {
 typedef ChipCallback = void Function(bool);
 
 class _Chip extends StatefulWidget {
-  bool selected;
+  final bool selected;
   final String group;
   final String name;
   final int count;
   final ChipCallback callback;
 
-  _Chip({this.selected, this.group, this.name, this.count, this.callback});
+  const _Chip(
+      {Key key,
+      this.selected,
+      this.group,
+      this.name,
+      this.count,
+      this.callback})
+      : super(key: key);
 
   @override
-  __ChipState createState() => __ChipState();
+  State<_Chip> createState() => __ChipState();
 }
 
 class __ChipState extends State<_Chip> {
+  bool _selected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.selected;
+  }
+
   @override
   Widget build(BuildContext context) {
     var tagDisplayed = widget.name;
     var group = widget.group;
     Color color = Colors.grey;
 
-    if (Settings.translateTags)
+    if (Settings.translateTags) {
       tagDisplayed =
           TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
+    }
 
-    if (group == 'female')
+    if (group == 'female') {
       color = Colors.pink;
-    else if (group == 'male')
+    } else if (group == 'male') {
       color = Colors.blue;
-    else if (group == 'language')
+    } else if (group == 'language') {
       color = Colors.teal;
-    else if (group == 'series')
+    } else if (group == 'series') {
       color = Colors.cyan;
-    else if (group == 'artist' || group == 'group')
+    } else if (group == 'artist' || group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    else if (group == 'type') color = Colors.orange;
+    } else if (group == 'type') {
+      color = Colors.orange;
+    }
 
     Widget avatar = Text(group[0].toUpperCase());
 
-    if (group == 'female')
-      avatar = Icon(MdiIcons.genderFemale, size: 18.0);
-    else if (group == 'male')
-      avatar = Icon(MdiIcons.genderMale, size: 18.0);
-    else if (group == 'language')
-      avatar = Icon(Icons.language, size: 18.0);
-    else if (group == 'artist')
-      avatar = Icon(MdiIcons.account, size: 18.0);
-    else if (group == 'group')
-      avatar = Icon(MdiIcons.accountGroup, size: 15.0);
-    else if (group == 'type')
-      avatar = Icon(MdiIcons.bookOpenPageVariant, size: 15.0);
-    else if (group == 'series') avatar = Icon(MdiIcons.notebook, size: 15.0);
+    if (group == 'female') {
+      avatar = const Icon(MdiIcons.genderFemale, size: 18.0);
+    } else if (group == 'male') {
+      avatar = const Icon(MdiIcons.genderMale, size: 18.0);
+    } else if (group == 'language') {
+      avatar = const Icon(Icons.language, size: 18.0);
+    } else if (group == 'artist') {
+      avatar = const Icon(MdiIcons.account, size: 18.0);
+    } else if (group == 'group') {
+      avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
+    } else if (group == 'type') {
+      avatar = const Icon(MdiIcons.bookOpenPageVariant, size: 15.0);
+    } else if (group == 'series') {
+      avatar = const Icon(MdiIcons.notebook, size: 15.0);
+    }
 
     var fc = Transform.scale(
         scale: 0.90,
         child: RawChip(
-          selected: widget.selected,
-          labelPadding: EdgeInsets.all(0.0),
+          selected: _selected,
+          labelPadding: const EdgeInsets.all(0.0),
           avatar: CircleAvatar(
             backgroundColor: Colors.grey.shade600,
             child: avatar,
           ),
           label: Text(
-            ' ' +
-                HtmlUnescape().convert(tagDisplayed) +
-                ' (' +
-                widget.count.toString() +
-                ')',
-            style: TextStyle(
+            ' ${HtmlUnescape().convert(tagDisplayed)} (${widget.count})',
+            style: const TextStyle(
               color: Colors.white,
             ),
           ),
           backgroundColor: color,
           elevation: 6.0,
-          padding: EdgeInsets.all(6.0),
+          padding: const EdgeInsets.all(6.0),
           onSelected: (value) async {
             widget.callback(value);
             setState(() {
-              widget.selected = value;
+              _selected = value;
             });
           },
         ));

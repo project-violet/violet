@@ -59,7 +59,7 @@ class HentaiDonwloadManager extends Downloadable {
       String url, GeneralDownloadProgress gdp) async {
     var query = (await HentaiManager.idSearch(url)).item1;
 
-    if (query.length == 0) {
+    if (query.isEmpty) {
       return null;
     }
 
@@ -90,10 +90,8 @@ class HentaiDonwloadManager extends Downloadable {
             laugage: target.language(),
             uploadDate: target.getDateTime().toString(),
             filenameWithoutExtension: intToString(i, pad: 3),
-            artist: target.artists() != null
-                ? target.artists().split('|').first
-                : null,
-            extension: path.extension(page.split('/').last).replaceAll(".", ""),
+            artist: target?.artists()?.split('|')?.first,
+            extension: path.extension(page.split('/').last).replaceAll('.', ''),
             extractor: 'hentai',
           ),
         ),
@@ -106,7 +104,7 @@ class HentaiDonwloadManager extends Downloadable {
   }
 
   // https://stackoverflow.com/questions/15193983/is-there-a-built-in-method-to-pad-a-string
-  static String intToString(int i, {int pad: 0}) {
+  static String intToString(int i, {int pad = 0}) {
     var str = i.toString();
     var paddingToAdd = pad - str.length;
     return (paddingToAdd > 0)

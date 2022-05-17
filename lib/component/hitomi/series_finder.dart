@@ -71,9 +71,9 @@ class SeriesFinder {
     }
 
     seriesList.sort((x, y) => x.length.compareTo(y.length));
-    seriesList.forEach((element) {
+    for (var element in seriesList) {
       print('[${element.length}] ${element.first.artists()}');
-    });
+    }
   }
 
   static Future<void> doFind2() async {
@@ -82,8 +82,8 @@ class SeriesFinder {
     qm.itemsPerPage = 999999;
     final qr = await qm.next();
 
-    final artists = Map<String, List<int>>();
-    final groups = Map<String, List<int>>();
+    final artists = <String, List<int>>{};
+    final groups = <String, List<int>>{};
 
     for (int i = 0; i < qr.length; i++) {
       final element = qr[i];
@@ -150,8 +150,8 @@ class SeriesFinder {
     }
 
     seriesList.sort((x, y) => x.item2.length.compareTo(y.item2.length));
-    seriesList.forEach((element) {
+    for (var element in seriesList) {
       print('[${element.item2.length}] ${element.item1}');
-    });
+    }
   }
 }

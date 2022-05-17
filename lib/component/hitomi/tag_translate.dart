@@ -23,43 +23,50 @@ class TagTranslate {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       var file = File('/home/ubuntu/violet/assets/locale/tag/korean.json');
       data = await file.readAsString();
-    } else
+    } else {
       data = await rootBundle
           .loadString('assets/locale/tag/$defaultLanguage.json');
-    Map<String, dynamic> _result = json.decode(data);
+    }
+    Map<String, dynamic> result = json.decode(data);
 
-    _translateMap = Map<String, String>();
-    _reverseAndroMap = Map<String, String>();
+    _translateMap = <String, String>{};
+    _reverseAndroMap = <String, String>{};
 
-    _result.entries.forEach((element) {
-      if (element.value.toString().trim() == '') return;
-      if (_translateMap.containsKey(element.key)) return;
+    for (var element in result.entries) {
+      if (element.value.toString().trim() == '') continue;
+      if (_translateMap.containsKey(element.key)) continue;
       _translateMap[element.key] = element.value as String;
       _reverseAndroMap[disassembly((element.value as String)
           .replaceAll('female:', '')
           .replaceAll('male:', ''))] = element.key;
-    });
+    }
   }
 
   static String of(String classification, String key) {
-    if (_translateMap.containsKey(classification + ':' + key))
-      return _translateMap[classification + ':' + key].split('|').first;
+    if (_translateMap.containsKey('$classification:$key')) {
+      return _translateMap['$classification:$key'].split('|').first;
+    }
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
   }
 
   static String ofAny(String key) {
-    if (_translateMap.containsKey('series:' + key))
-      return _translateMap['series:' + key].split('|').first;
-    if (_translateMap.containsKey('character:' + key))
-      return _translateMap['character:' + key].split('|').first;
-    if (_translateMap.containsKey('tag:female:' + key))
-      return _translateMap['tag:female:' + key].split('|').first;
-    if (_translateMap.containsKey('tag:male:' + key))
-      return _translateMap['tag:male:' + key].split('|').first;
-    if (_translateMap.containsKey('tag:' + key))
-      return _translateMap['tag:' + key].split('|').first;
+    if (_translateMap.containsKey('series:$key')) {
+      return _translateMap['series:$key'].split('|').first;
+    }
+    if (_translateMap.containsKey('character:$key')) {
+      return _translateMap['character:$key'].split('|').first;
+    }
+    if (_translateMap.containsKey('tag:female:$key')) {
+      return _translateMap['tag:female:$key'].split('|').first;
+    }
+    if (_translateMap.containsKey('tag:male:$key')) {
+      return _translateMap['tag:male:$key'].split('|').first;
+    }
+    if (_translateMap.containsKey('tag:$key')) {
+      return _translateMap['tag:$key'].split('|').first;
+    }
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
@@ -87,13 +94,13 @@ class TagTranslate {
   // [<Origin, Translated>]
   static List<DisplayedTag> containsTotal(String part) {
     var result = contains(part) + containsAndro(part);
-    var overlap = Set<String>();
+    var overlap = <String>{};
     var rresult = <DisplayedTag>[];
-    result.forEach((element) {
-      if (overlap.contains(element.getTag())) return;
+    for (var element in result) {
+      if (overlap.contains(element.getTag())) continue;
       overlap.add(element.getTag());
       rresult.add(element);
-    });
+    }
     return rresult;
   }
 
@@ -130,52 +137,57 @@ class TagTranslate {
   static List<Tuple2<DisplayedTag, int>> containsFuzzingTotal(String part) {
     var result = containsFuzzing(part) + containsFuzzingAndro(part);
     result.sort((x, y) => x.item2.compareTo(y.item2));
-    var overlap = Set<String>();
+    var overlap = <String>{};
     var rresult = <Tuple2<DisplayedTag, int>>[];
-    result.forEach((element) {
-      if (overlap.contains(element.item1.getTag())) return;
+    for (var element in result) {
+      if (overlap.contains(element.item1.getTag())) continue;
       overlap.add(element.item1.getTag());
       rresult.add(element);
-    });
+    }
     return rresult;
   }
 
+  // ignore: constant_identifier_names
   static const index_letter_2 = [
-    "r", "R", "rt", "s", "sw", "sg", "e", "E", //
-    "f", "fr", "fa", "fq", "ft", "fe", "fv", "fg", //
-    "a", "q", "Q", "qt", "t", "T", "d", "w", //
-    "W", "", "z", "e", "v", "g", "k", "o", //
-    "i", "O", "j", "p", "u", "P", "h", "hk", //
-    "ho", "hl", "y", "n", "nj", "np", "nl", "b", //
-    "m", "ml", "l", " ", "ss", "se", "st", " ", //
-    "frt", "fe", "fqt", " ", "fg", "aq", "at", " ", //
-    " ", "qr", "qe", "qtr", "qte", "qw", "qe", " ", //
-    " ", "tr", "ts", "te", "tq", "tw", " ", "dd", //
-    "d", "dt", " ", " ", "gg", " ", "yi", "yO", //
-    "yl", "bu", "bP", "bl"
+    'r', 'R', 'rt', 's', 'sw', 'sg', 'e', 'E', //
+    'f', 'fr', 'fa', 'fq', 'ft', 'fe', 'fv', 'fg', //
+    'a', 'q', 'Q', 'qt', 't', 'T', 'd', 'w', //
+    'W', '', 'z', 'e', 'v', 'g', 'k', 'o', //
+    'i', 'O', 'j', 'p', 'u', 'P', 'h', 'hk', //
+    'ho', 'hl', 'y', 'n', 'nj', 'np', 'nl', 'b', //
+    'm', 'ml', 'l', ' ', 'ss', 'se', 'st', ' ', //
+    'frt', 'fe', 'fqt', ' ', 'fg', 'aq', 'at', ' ', //
+    ' ', 'qr', 'qe', 'qtr', 'qte', 'qw', 'qe', ' ', //
+    ' ', 'tr', 'ts', 'te', 'tq', 'tw', ' ', 'dd', //
+    'd', 'dt', ' ', ' ', 'gg', ' ', 'yi', 'yO', //
+    'yl', 'bu', 'bP', 'bl'
   ];
+  // ignore: constant_identifier_names
   static const index_initial_2 = [
-    "r", "R", "s", "e", "E", "f", "a", "q", //
-    "Q", "t", "T", "d", "w", "W", "c", "z", //
-    "x", "v", "g" //
+    'r', 'R', 's', 'e', 'E', 'f', 'a', 'q', //
+    'Q', 't', 'T', 'd', 'w', 'W', 'c', 'z', //
+    'x', 'v', 'g' //
   ];
+  // ignore: constant_identifier_names
   static const index_medial_2 = [
-    "k", "o", "i", "O", "j", "p", "u", "P", //
-    "h", "hk", "ho", "hl", "y", "n", "nj", "np", //
-    "nl", "b", "m", "ml", "l" //
+    'k', 'o', 'i', 'O', 'j', 'p', 'u', 'P', //
+    'h', 'hk', 'ho', 'hl', 'y', 'n', 'nj', 'np', //
+    'nl', 'b', 'm', 'ml', 'l' //
   ];
+  // ignore: constant_identifier_names
   static const index_final_2 = [
-    "", "r", "R", "rt", "s", "sw", "sg", "e", //
-    "f", "fr", "fa", "fq", "ft", "fx", "fv", "fg", //
-    "a", "q", "qt", "t", "T", "d", "w", "", //
-    "z", "x", "v", "g" //
+    '', 'r', 'R', 'rt', 's', 'sw', 'sg', 'e', //
+    'f', 'fr', 'fa', 'fq', 'ft', 'fx', 'fv', 'fg', //
+    'a', 'q', 'qt', 't', 'T', 'd', 'w', '', //
+    'z', 'x', 'v', 'g' //
   ];
+  // ignore: constant_identifier_names
   static const index_final_2_du = [
     't', 'w', 'g', 'r', 'a', 'q', 'x', 'v' //
   ];
 
   static Map<String, int> distortion(int ch) {
-    var ret = Map<String, int>();
+    var ret = <String, int>{};
     var unis = ch - 0xAC00;
     ret['initial'] = unis ~/ (21 * 28);
     ret['medial'] = (unis % (21 * 28)) ~/ 28;

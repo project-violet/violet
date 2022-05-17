@@ -27,7 +27,7 @@ typedef DownloaderAppend = Pointer<Utf8> Function(Pointer<Utf8> downloadInfo);
 typedef CDownloaderChangeThreadCount = Int64 Function(Int64);
 typedef DownloaderChangeThreadCount = int Function(int threadCount);
 
-@deprecated
+@Deprecated('')
 class NativeDownloadTask {
   final int id;
   final String url;
@@ -37,14 +37,14 @@ class NativeDownloadTask {
   NativeDownloadTask({this.id, this.url, this.fullpath, this.header});
 
   static NativeDownloadTask fromDownloadTask(int taskId, DownloadTask task) {
-    var header = Map<String, String>();
+    var header = <String, String>{};
     if (task.referer != null) header['referer'] = task.referer;
     if (task.accept != null) header['accept'] = task.accept;
     if (task.userAgent != null) header['user-agent'] = task.userAgent;
     if (task.headers != null) {
-      task.headers.entries.forEach((element) {
+      for (var element in task.headers.entries) {
         header[element.key.toLowerCase()] = element.value;
-      });
+      }
     }
     return NativeDownloadTask(
       id: taskId,
@@ -54,17 +54,18 @@ class NativeDownloadTask {
     );
   }
 
+  @override
   String toString() {
     return jsonEncode({
-      "id": id,
-      "url": url,
-      "fullpath": fullpath,
-      "header": header,
+      'id': id,
+      'url': url,
+      'fullpath': fullpath,
+      'header': header,
     });
   }
 }
 
-@deprecated
+@Deprecated('')
 class NativeDownloader {
   DynamicLibrary libviolet;
   DownloaderInit downloaderInit;
@@ -76,8 +77,7 @@ class NativeDownloader {
 
   sync.Lock lock = sync.Lock();
 
-  static const platform =
-      const MethodChannel('xyz.project.violet/nativelibdir');
+  static const platform = MethodChannel('xyz.project.violet/nativelibdir');
   static Directory nativeDir;
 
   static Future<Directory> getLibraryDirectory() async {
@@ -93,20 +93,20 @@ class NativeDownloader {
     libviolet = DynamicLibrary.open(join(libdir.path, 'libviolet.so'));
 
     downloaderInit = libviolet
-        .lookup<NativeFunction<CDownloaderInit>>("downloader_init")
+        .lookup<NativeFunction<CDownloaderInit>>('downloader_init')
         .asFunction();
     downloaderDispose = libviolet
-        .lookup<NativeFunction<CDownloaderDispose>>("downloader_dispose")
+        .lookup<NativeFunction<CDownloaderDispose>>('downloader_dispose')
         .asFunction();
     downloaderStatus = libviolet
-        .lookup<NativeFunction<CDownloaderStatus>>("downloader_status")
+        .lookup<NativeFunction<CDownloaderStatus>>('downloader_status')
         .asFunction();
     downloaderAppend = libviolet
-        .lookup<NativeFunction<CDownloaderAppend>>("downloader_append")
+        .lookup<NativeFunction<CDownloaderAppend>>('downloader_append')
         .asFunction();
     downloaderChangeThreadCount = libviolet
         .lookup<NativeFunction<CDownloaderChangeThreadCount>>(
-            "downloader_change_thread_count")
+            'downloader_change_thread_count')
         .asFunction();
 
     var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
@@ -120,7 +120,7 @@ class NativeDownloader {
     }
 
     downloaderInit(tc);
-    Logger.info('[ND] Initialized: ' + tc.toString());
+    Logger.info('[ND] Initialized: $tc');
   }
 
   static NativeDownloader _instance;
@@ -134,7 +134,7 @@ class NativeDownloader {
   }
 
   NativeDownloader() {
-    Future.delayed(Duration(seconds: 1)).then((value) async {
+    Future.delayed(const Duration(seconds: 1)).then((value) async {
       // int prev = 0;
       while (true) {
         var x = downloaderStatus().toDartString();
@@ -144,14 +144,14 @@ class NativeDownloader {
         var ll = x.split('|');
         if (ll.length == 5) {
           var complete = ll.last.split(',');
-          complete.forEach((element) {
+          for (var element in complete) {
             int v = int.tryParse(element);
             if (v != null) {
               downloadTasks[v].completeCallback();
             }
-          });
+          }
         }
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(const Duration(milliseconds: 100));
       }
     });
   }
@@ -172,13 +172,13 @@ class NativeDownloader {
 
   Future<void> addTasks(List<DownloadTask> tasks) async {
     await lock.synchronized(() {
-      tasks.forEach((task) {
+      for (var task in tasks) {
         downloadTasks.add(task);
         downloaderAppend(
             NativeDownloadTask.fromDownloadTask(downloadTasks.length - 1, task)
                 .toString()
                 .toNativeUtf8());
-      });
+      }
     });
   }
 }

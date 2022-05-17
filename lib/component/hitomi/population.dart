@@ -17,14 +17,15 @@ class Population {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       var file = File('/home/ubuntu/violet/assets/rank/population.json');
       data = await file.readAsString();
-    } else
+    } else {
       data = await rootBundle.loadString('assets/rank/population.json');
+    }
 
-    List<dynamic> _population = json.decode(data);
-    population = Map<int, int>();
+    List<dynamic> populationInfo = json.decode(data);
+    population = <int, int>{};
 
-    for (int i = 0; i < _population.length; i++) {
-      population[_population[i] as int] = i;
+    for (int i = 0; i < populationInfo.length; i++) {
+      population[populationInfo[i] as int] = i;
     }
   }
 

@@ -7,8 +7,10 @@ import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
 class SignUpDialog extends StatefulWidget {
+  const SignUpDialog({Key key}) : super(key: key);
+
   @override
-  _SignUpDialogState createState() => _SignUpDialogState();
+  State<SignUpDialog> createState() => _SignUpDialogState();
 }
 
 class _SignUpDialogState extends State<SignUpDialog> {
@@ -59,8 +61,8 @@ class _SignUpDialogState extends State<SignUpDialog> {
     );
 
     return AlertDialog(
-      title: Text('Sign Up'),
-      contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+      title: const Text('Sign Up'),
+      contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       actions: [
         yesButton,
         noButton,
@@ -69,7 +71,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(children: [
-            Text('Id: '),
+            const Text('Id: '),
             Expanded(
               child: TextField(
                 controller: _idController,
@@ -78,7 +80,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
           ]),
           Row(
             children: [
-              Text('Pw: '),
+              const Text('Pw: '),
               Expanded(
                 child: TextField(
                   obscureText: true,
@@ -91,7 +93,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
           ),
           Row(
             children: [
-              Text('Pw Again: '),
+              const Text('Pw Again: '),
               Expanded(
                 child: TextField(
                   obscureText: true,
@@ -104,7 +106,7 @@ class _SignUpDialogState extends State<SignUpDialog> {
           ),
           Row(
             children: [
-              Text('NickName: '),
+              const Text('NickName: '),
               Expanded(
                 child: TextField(
                   controller: _nnController,

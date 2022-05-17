@@ -11,24 +11,25 @@ import 'package:violet/settings/settings.dart';
 class TagSelectorDialog extends StatefulWidget {
   final String what;
 
-  TagSelectorDialog({this.what});
+  const TagSelectorDialog({Key key, this.what}) : super(key: key);
 
   @override
-  _TagSelectorDialogState createState() => _TagSelectorDialogState();
+  State<TagSelectorDialog> createState() => _TagSelectorDialogState();
 }
 
 class _TagSelectorDialogState extends State<TagSelectorDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.what == 'include')
+    if (widget.what == 'include') {
       _searchController = TextEditingController(text: Settings.includeTags);
-    else if (widget.what == 'exclude')
+    } else if (widget.what == 'exclude') {
       _searchController =
           TextEditingController(text: Settings.excludeTags.join(' '));
-    else if (widget.what == 'blurred')
+    } else if (widget.what == 'blurred') {
       _searchController =
           TextEditingController(text: Settings.blurredTags.join(' '));
+    }
   }
 
   @override
@@ -40,7 +41,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
 
     if (MediaQuery.of(context).viewInsets.bottom < 1) height = 400;
 
-    if (_searchLists.length == 0 && !_nothing) {
+    if (_searchLists.isEmpty && !_nothing) {
       _searchLists.add(Tuple2<DisplayedTag, int>(
           DisplayedTag(group: 'prefix', name: 'female'), 0));
       _searchLists.add(Tuple2<DisplayedTag, int>(
@@ -66,8 +67,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     }
 
     return AlertDialog(
-      insetPadding: EdgeInsets.all(16),
-      contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+      insetPadding: const EdgeInsets.all(16),
+      contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       content: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
@@ -80,7 +81,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
               // mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 ListTile(
-                  contentPadding: EdgeInsets.all(0),
+                  contentPadding: const EdgeInsets.all(0),
                   leading: Text('${Translations.of(context).trans('tag')}:'),
                   title: TextField(
                     controller: _searchController,
@@ -92,14 +93,14 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                   ),
                 ),
                 Expanded(
-                  child: _searchLists.length == 0 || _nothing
+                  child: _searchLists.isEmpty || _nothing
                       ? Center(
                           child: Text(_nothing
                               ? Translations.of(context).trans('nosearchresult')
                               : Translations.of(context)
                                   .trans('inputsearchtoken')))
                       : Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
                           child: SingleChildScrollView(
                             controller: ScrollController(),
                             child: Wrap(
@@ -114,7 +115,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                 ),
                 widget.what == 'include'
                     ? Text(Translations.of(context).trans('tagmsgdefault'),
-                        style: TextStyle(fontSize: 14.0))
+                        style: const TextStyle(fontSize: 14.0))
                     : Container()
               ],
             ),
@@ -152,9 +153,9 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   int _insertPos, _insertLength;
   String _searchText;
   bool _nothing = false;
-  bool _tagTranslation = false;
-  bool _showCount = true;
-  int _searchResultMaximum = 60;
+  final bool _tagTranslation = false;
+  final bool _showCount = true;
+  final int _searchResultMaximum = 60;
 
   Future<void> searchProcess(String target, TextSelection selection) async {
     _nothing = false;
@@ -166,11 +167,12 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     }
 
     int pos = selection.base.offset - 1;
-    for (; pos > 0; pos--)
+    for (; pos > 0; pos--) {
       if (target[pos] == ' ') {
         pos++;
         break;
       }
+    }
 
     var last = target.indexOf(' ', pos);
     var token =
@@ -193,7 +195,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     final result = (await HitomiManager.queryAutoComplete(token))
         .take(_searchResultMaximum)
         .toList();
-    if (result.length == 0) _nothing = true;
+    if (result.isEmpty) _nothing = true;
     setState(() {
       _searchLists = result;
     });
@@ -206,27 +208,31 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     var count = '';
     Color color = Colors.grey;
 
-    if (_tagTranslation) // Korean
+    if (_tagTranslation) {
       tagDisplayed = info.item1.getTranslated();
+    }
 
     if (info.item2 > 0 && _showCount) count = ' (${info.item2})';
 
-    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:'))
+    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:')) {
       color = Colors.pink;
-    else if (info.item1.group == 'tag' && info.item1.name.startsWith('male:'))
+    } else if (info.item1.group == 'tag' &&
+        info.item1.name.startsWith('male:')) {
       color = Colors.blue;
-    else if (info.item1.group == 'prefix')
+    } else if (info.item1.group == 'prefix') {
       color = Colors.orange;
-    else if (info.item1.group == 'language')
+    } else if (info.item1.group == 'language') {
       color = Colors.teal;
-    else if (info.item1.group == 'series')
+    } else if (info.item1.group == 'series') {
       color = Colors.cyan;
-    else if (info.item1.group == 'artist' || info.item1.group == 'group')
+    } else if (info.item1.group == 'artist' || info.item1.group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    else if (info.item1.group == 'type') color = Colors.orange;
+    } else if (info.item1.group == 'type') {
+      color = Colors.orange;
+    }
 
     var fc = RawChip(
-      labelPadding: EdgeInsets.all(0.0),
+      labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
         child: Text(info.item1.group == 'tag' &&
@@ -236,15 +242,15 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
             : info.item1.group[0].toUpperCase()),
       ),
       label: Text(
-        ' ' + tagDisplayed + count,
-        style: TextStyle(
+        ' $tagDisplayed$count',
+        style: const TextStyle(
           color: Colors.white,
         ),
       ),
       backgroundColor: color,
       elevation: 6.0,
       shadowColor: Colors.grey[60],
-      padding: EdgeInsets.all(6.0),
+      padding: const EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {
@@ -266,18 +272,14 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         } else {
           var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
-            _searchController.text = _searchController.text
-                    .substring(0, _searchController.selection.base.offset) +
-                info.item1.name +
-                ':' +
-                _searchController.text
-                    .substring(_searchController.selection.base.offset);
+            _searchController.text =
+                '${_searchController.text.substring(0, _searchController.selection.base.offset)}${info.item1.name}:${_searchController.text.substring(_searchController.selection.base.offset)}';
             _searchController.selection = TextSelection(
               baseOffset: offset + info.item1.name.length + 1,
               extentOffset: offset + info.item1.name.length + 1,
             );
           } else {
-            _searchController.text = info.item1.name + ':';
+            _searchController.text = '${info.item1.name}:';
             _searchController.selection = TextSelection(
               baseOffset: info.item1.name.length + 1,
               extentOffset: info.item1.name.length + 1,

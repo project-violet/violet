@@ -16,7 +16,8 @@ class ToastWrapper extends StatefulWidget {
   final bool ignoreDrawer;
   final bool reverse;
 
-  ToastWrapper({
+  const ToastWrapper({
+    Key key,
     this.isCheck,
     this.isWarning,
     this.msg,
@@ -24,10 +25,10 @@ class ToastWrapper extends StatefulWidget {
     this.color,
     this.ignoreDrawer = false,
     this.reverse = false,
-  });
+  }) : super(key: key);
 
   @override
-  _ToastWrapperState createState() => _ToastWrapperState();
+  State<ToastWrapper> createState() => _ToastWrapperState();
 }
 
 class _ToastWrapperState extends State<ToastWrapper>
@@ -41,37 +42,39 @@ class _ToastWrapperState extends State<ToastWrapper>
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 100)).then((value) {
+
+    // https://dash-overflow.net/articles/why_vsync/
+    controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 700));
+
+    offset = Tween<Offset>(
+            begin: widget.reverse ? const Offset(0.0, 1.0) : Offset.zero,
+            end: widget.reverse ? Offset.zero : const Offset(0.0, 1.0))
+        .animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeInOut,
+    ));
+
+    Future.delayed(const Duration(milliseconds: 100)).then((value) {
       controller.reverse(from: 0.8);
       setState(() {
         opacity = 1.0;
         opened = true;
       });
     });
-    Future.delayed(Duration(milliseconds: 3000)).then((value) {
+    Future.delayed(const Duration(milliseconds: 3000)).then((value) {
       setState(() {
         opacity = 0.0;
         reverse = true;
       });
       controller.forward();
     });
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
-    offset = Tween<Offset>(
-            begin: widget.reverse ? Offset(0.0, 1.0) : Offset.zero,
-            end: widget.reverse ? Offset.zero : Offset(0.0, 1.0))
-        .animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeInOut,
-    ));
   }
 
-// https://dash-overflow.net/articles/why_vsync/
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -110,12 +113,12 @@ class _ToastWrapperState extends State<ToastWrapper>
                   );
                 },
                 child: AnimatedOpacity(
-                  duration: Duration(milliseconds: 500),
+                  duration: const Duration(milliseconds: 500),
                   opacity: opacity,
                   curve: Curves.easeInOut,
                   child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0, vertical: 12.0),
                     decoration: BoxDecoration(
                         color: Settings.themeWhat
                             ? Colors.black.withOpacity(0.6)
@@ -140,9 +143,7 @@ class _ToastWrapperState extends State<ToastWrapper>
                                       : Icons.cancel),
                           color: color,
                         ),
-                        SizedBox(
-                          width: 12.0,
-                        ),
+                        const SizedBox(width: 12.0),
                         Text(widget.msg, style: TextStyle(color: color)),
                       ],
                     ),

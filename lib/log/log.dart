@@ -57,7 +57,7 @@ class Logger {
 
     if (!Platform.environment.containsKey('FLUTTER_TEST')) {
       await lock.synchronized(() async {
-        await logFile.writeAsString('[${DateTime.now().toUtc()}] ' + msg + '\n',
+        await logFile.writeAsString('[${DateTime.now().toUtc()}] $msg\n',
             mode: FileMode.append);
       });
     }
@@ -77,12 +77,12 @@ class Logger {
       isError: isError,
       isWarning: isWarning,
       message:
-          message.length > 500 ? message.substring(0, 500) + '...' : message,
+          message.length > 500 ? '${message.substring(0, 500)}...' : message,
       detail: message.length > 500 ? message : null,
-      title: '[$prefix] (${DateFormat('kk:mm').format(DateTime.now())}) ' +
-          (msg.startsWith('[') ? msg.split('[')[1].split(']')[0] : ''),
+      title:
+          '[$prefix] (${DateFormat('kk:mm').format(DateTime.now())}) ${msg.startsWith('[') ? msg.split('[')[1].split(']')[0] : ''}',
     ));
-    await log('[$prefix] ' + msg);
+    await log('[$prefix] $msg');
   }
 
   static Future<void> info(String msg) async {
@@ -98,9 +98,9 @@ class Logger {
   }
 
   static Future<void> showLogs() async {
-    (await logFile.readAsLines()).forEach((element) {
+    for (var element in (await logFile.readAsLines())) {
       print(element);
-    });
+    }
   }
 
   static Future<void> exportLog() async {

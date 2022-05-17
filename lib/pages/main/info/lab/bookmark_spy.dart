@@ -13,12 +13,14 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabBookmarkSpyPage extends StatefulWidget {
+  const LabBookmarkSpyPage({Key key}) : super(key: key);
+
   @override
-  _LabBookmarkSpyPageState createState() => _LabBookmarkSpyPageState();
+  State<LabBookmarkSpyPage> createState() => _LabBookmarkSpyPageState();
 }
 
 class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   static const String dev = '1918c652d3a9';
 
@@ -29,7 +31,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       bookmarks = await VioletServer.bookmarkLists();
       bookmarks.removeWhere((element) =>
           ((element as Map<String, dynamic>)['user'] as String)
@@ -45,10 +47,10 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
       context,
       enableBackgroundColor: true,
       child: bookmarks == null
-          ? Container(child: Center(child: Text('Loading ...')))
+          ? const Center(child: Text('Loading ...'))
           : ListView.builder(
-              padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
-              physics: BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+              physics: const BouncingScrollPhysics(),
               controller: _scrollController,
               itemCount: bookmarks.length,
               itemBuilder: (BuildContext ctxt, int index) {
@@ -59,21 +61,19 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
   }
 
   static String formatBytes(int bytes, int decimals) {
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+    if (bytes <= 0) return '0 B';
+    const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     var i = (log(bytes) / log(1024)).floor();
-    return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) +
-        ' ' +
-        suffixes[i];
+    return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
   }
 
   _buildItem(Map<String, dynamic> data) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Settings.themeWhat ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
             bottomLeft: Radius.circular(8),
@@ -85,7 +85,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                 : Colors.grey.withOpacity(0.1),
             spreadRadius: Settings.themeWhat ? 0 : 5,
             blurRadius: 7,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -95,14 +95,14 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
           color: Settings.themeWhat ? Colors.black38 : Colors.white,
           child: ListTile(
             title: Text(data['user'].substring(0, 8),
-                style: TextStyle(fontSize: 16.0)),
+                style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
             trailing: (_latestAccessUserAppId == data['user'] as String)
-                ? Icon(
+                ? const Icon(
                     MdiIcons.starCircle,
                     color: Colors.green,
                   )
-                : FutureBuilder(
+                : FutureBuilder<List<Object>>(
                     future: Bookmark.getInstance().then((value) async {
                       return [
                         await value.isBookmarkUser(data['user'] as String),
@@ -112,17 +112,19 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                     builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
                       if (!snapshot.hasData) return null;
 
-                      if (snapshot.data[0] as bool)
-                        return Icon(
+                      if (snapshot.data[0] as bool) {
+                        return const Icon(
                           MdiIcons.starCircleOutline,
                           color: Colors.yellow,
                         );
+                      }
 
-                      if (snapshot.data[1] as bool)
-                        return Icon(
+                      if (snapshot.data[1] as bool) {
+                        return const Icon(
                           MdiIcons.rayStartVertexEnd,
                           color: Colors.grey,
                         );
+                      }
 
                       return null;
                     },
@@ -133,6 +135,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
               var bookmark = await Bookmark.getInstance();
               await bookmark.setHistoryUser(data['user'] as String);
 
+              if (!mounted) return;
               await PlatformNavigator.navigateSlide(
                   context, LabBookmarkPage(userAppId: data['user'] as String));
 

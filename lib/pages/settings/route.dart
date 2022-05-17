@@ -6,25 +6,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/settings/settings.dart';
 
 class RouteDialog extends StatefulWidget {
-  RouteDialog();
+  const RouteDialog({Key key}) : super(key: key);
 
   @override
-  _RouteDialogState createState() => _RouteDialogState();
+  State<RouteDialog> createState() => _RouteDialogState();
 }
 
 class _RouteDialogState extends State<RouteDialog> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
     return AlertDialog(
-      contentPadding: EdgeInsets.all(16),
-      content: Container(
+      contentPadding: const EdgeInsets.all(16),
+      content: SizedBox(
         height: 80 * 5.0,
         width: width,
         child: ReorderableListView(
@@ -49,7 +44,7 @@ class _RouteDialogState extends State<RouteDialog> {
             return ListTile(
               key: Key(e),
               title: Text(e),
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
               leading: Image.network(
                 {
                   'Hitomi':
@@ -64,7 +59,8 @@ class _RouteDialogState extends State<RouteDialog> {
                 width: 25,
                 fit: BoxFit.fill,
               ),
-              trailing: Icon(Icons.reorder, color: Colors.grey, size: 24.0),
+              trailing:
+                  const Icon(Icons.reorder, color: Colors.grey, size: 24.0),
             );
           }).toList(),
         ),
@@ -74,25 +70,20 @@ class _RouteDialogState extends State<RouteDialog> {
 }
 
 class ImageRouteDialog extends StatefulWidget {
-  ImageRouteDialog();
+  const ImageRouteDialog({Key key}) : super(key: key);
 
   @override
-  _ImageRouteDialogState createState() => _ImageRouteDialogState();
+  State<ImageRouteDialog> createState() => _ImageRouteDialogState();
 }
 
 class _ImageRouteDialogState extends State<ImageRouteDialog> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 
     return AlertDialog(
-      contentPadding: EdgeInsets.all(16),
-      content: Container(
+      contentPadding: const EdgeInsets.all(16),
+      content: SizedBox(
         height: 80 * 5.0,
         width: width,
         child: ReorderableListView(
@@ -117,7 +108,7 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
             return ListTile(
               key: Key(e),
               title: Text(e),
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
               leading: Image.network(
                 {
                   'Hitomi':
@@ -132,7 +123,8 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
                 width: 25,
                 fit: BoxFit.fill,
               ),
-              trailing: Icon(Icons.reorder, color: Colors.grey, size: 24.0),
+              trailing:
+                  const Icon(Icons.reorder, color: Colors.grey, size: 24.0),
             );
           }).toList(),
         ),

@@ -19,8 +19,10 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabRecentRecords extends StatefulWidget {
+  const LabRecentRecords({Key key}) : super(key: key);
+
   @override
-  _LabRecentRecordsState createState() => _LabRecentRecordsState();
+  State<LabRecentRecords> createState() => _LabRecentRecordsState();
 }
 
 class _LabRecentRecordsState extends State<LabRecentRecords> {
@@ -28,7 +30,7 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
   int latestId = 0;
   int limit = 10;
   Timer timer;
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   bool isTop = false;
 
   @override
@@ -42,16 +44,18 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
         } else {
           isTop = true;
         }
-      } else
+      } else {
         isTop = false;
+      }
     });
 
-    Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
-            _controller.animateTo(_controller.position.maxScrollExtent,
-                duration: Duration(milliseconds: 300),
+    Future.delayed(const Duration(milliseconds: 100)).then(updateRercord).then(
+        (value) => Future.delayed(const Duration(milliseconds: 100)).then(
+            (value) => _controller.animateTo(
+                _controller.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn)));
-    timer = Timer.periodic(Duration(seconds: 1), updateRercord);
+    timer = Timer.periodic(const Duration(seconds: 1), updateRercord);
   }
 
   @override
@@ -70,49 +74,45 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
       latestId = max(latestId,
           xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results.length == 0) return;
+      if (query.results.isEmpty) return;
 
-      var qr = Map<String, QueryResult>();
-      query.results.forEach((element) {
+      var qr = <String, QueryResult>{};
+      for (var element in query.results) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple2<QueryResult, int>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item2.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple2<QueryResult, int>(
             qr[element.item2.toString()], element.item3));
-      });
+      }
 
       records.insertAll(0, result);
 
       if (isTop) {
         setState(() {});
-        Future.delayed(Duration(milliseconds: 50)).then((x) {
+        Future.delayed(const Duration(milliseconds: 50)).then((x) {
           _controller.animateTo(
             _controller.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.fastOutSlowIn,
           );
         });
-      } else
+      } else {
         setState(() {});
+      }
     } catch (e, st) {
-      Logger.error(
-          '[lab-recent_record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-recent_record] E: $e\n'
+          '$st');
     }
   }
 
@@ -127,20 +127,15 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
         children: [
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               controller: _controller,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: xrecords.length,
               reverse: true,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
-                  key: Key('records' +
-                      index.toString() +
-                      '/' +
-                      xrecords[xrecords.length - index - 1]
-                          .item1
-                          .id()
-                          .toString()),
+                  key: Key(
+                      'records$index/${xrecords[xrecords.length - index - 1].item1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
@@ -148,10 +143,10 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       seconds: xrecords[xrecords.length - index - 1].item2,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
@@ -166,7 +161,7 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
                   dense: true,
                   title: Align(
                     child: SliderTheme(
-                      data: SliderThemeData(
+                      data: const SliderThemeData(
                         activeTrackColor: Colors.blue,
                         inactiveTrackColor: Color(0xffd0d2d3),
                         trackHeight: 3,

@@ -13,13 +13,13 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Test Downloader Isolate", () async {
+  test('Test Downloader Isolate', () async {
     var downloader = IsolateDownloader();
     await downloader.init();
 
     // while (!downloader.isReady()) {}
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     var task = DownloadTask(
       taskId: 0,
@@ -52,7 +52,7 @@ void main() {
     //   headers: {},
     // ));
 
-    await Future.delayed(Duration(seconds: 10));
-    sleep(Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 10));
+    sleep(const Duration(seconds: 10));
   });
 }

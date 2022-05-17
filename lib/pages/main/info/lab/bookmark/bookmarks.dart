@@ -18,13 +18,14 @@ class LabBookmarkPage extends StatefulWidget {
   final String userAppId;
   final String version;
 
-  LabBookmarkPage({
+  const LabBookmarkPage({
+    Key key,
     this.userAppId,
     this.version,
-  });
+  }) : super(key: key);
 
   @override
-  _BookmarkPageState createState() => _BookmarkPageState();
+  State<LabBookmarkPage> createState() => _BookmarkPageState();
 }
 
 class _BookmarkPageState extends State<LabBookmarkPage> {
@@ -37,7 +38,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
   Widget build(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
-      body: FutureBuilder(
+      body: FutureBuilder<dynamic>(
         // future: Bookmark.getInstance().then((value) => value.getGroup()),
         future: widget.version == null
             ? VioletServer.resotreBookmark(widget.userAppId)
@@ -46,19 +47,17 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                 widget.version,
               ),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (!snapshot.hasData)
-            return Container(
-              child: Center(
-                child: Text('Loading ...'),
-              ),
+          if (!snapshot.hasData) {
+            return const Center(
+              child: Text('Loading ...'),
             );
+          }
 
-          if (snapshot.data == null)
-            return Container(
-              child: Center(
-                child: Text('Error Occured!'),
-              ),
+          if (snapshot.data == null) {
+            return const Center(
+              child: Text('Error Occured!'),
             );
+          }
 
           articles = (snapshot.data['article'] as List<dynamic>)
               .map((x) => BookmarkArticle(result: x))
@@ -71,13 +70,13 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
               .toList();
           records = snapshot.data['record'] as List<dynamic>;
 
-          ScrollController _scrollController =
+          ScrollController scrollController =
               PrimaryScrollController.of(context) ?? ScrollController();
 
           return ListView.builder(
               padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
-              physics: BouncingScrollPhysics(),
-              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              controller: scrollController,
               itemCount: groups.length + 1,
               itemBuilder: (BuildContext ctxt, int index) {
                 return _buildItem(index, index == 0 ? null : groups[index - 1]);
@@ -91,7 +90,6 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     index -= 1;
 
     String name;
-    String oname = '';
     String desc;
     String date = '';
     int id;
@@ -102,7 +100,6 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
       id = -1;
     } else {
       name = data.name();
-      oname = name;
       desc = data.description();
       date = data.datetime().split(' ')[0];
       id = data.id();
@@ -114,13 +111,13 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     }
 
     return Container(
-      key: Key("lab_bookmark_group_" + id.toString()),
+      key: Key('lab_bookmark_group_$id'),
       child: Container(
-        margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Settings.themeWhat ? Colors.black26 : Colors.white,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(8),
               topRight: Radius.circular(8),
               bottomLeft: Radius.circular(8),
@@ -132,7 +129,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                   : Colors.grey.withOpacity(0.1),
               spreadRadius: Settings.themeWhat ? 0 : 5,
               blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -165,7 +162,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                 if (yn != null && yn) {
                   // 북마크 그룹 생성
                   var groupName =
-                      "${widget.userAppId.substring(0, 8)}-${data.name()}";
+                      '${widget.userAppId.substring(0, 8)}-${data.name()}';
 
                   var bookmark = await Bookmark.getInstance();
                   var gid = await bookmark.createGroup(
@@ -211,11 +208,13 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                   });
                   await dbraw.close();
 
-                  await showOkDialog(
-                      context, '북마크 그룹을 성공적으로 끌어왔습니다!', 'Bookmark Spy');
+                  if (mounted) {
+                    await showOkDialog(
+                        context, '북마크 그룹을 성공적으로 끌어왔습니다!', 'Bookmark Spy');
+                  }
                 }
               },
-              title: Text(name, style: TextStyle(fontSize: 16.0)),
+              title: Text(name, style: const TextStyle(fontSize: 16.0)),
               subtitle: Text(desc),
               trailing: Text(date),
             ),

@@ -56,7 +56,7 @@ class EHResultArticle {
 // E-Hentai, EX-Hentai Parser
 // You can use both of the previous.
 class EHParser {
-  static RegExp _thumbnailPattern =
+  static final RegExp _thumbnailPattern =
       RegExp(r'https://(exhentai|ehgt).org/.*?(?=\))');
 
   // ex: https://exhentai.org/g/1212168/421ef300a8/
@@ -96,12 +96,12 @@ class EHParser {
   // ex: https://exhentai.org/g/1212396/71a853083e/ //  5 pages
   // ex: https://exhentai.org/g/1201400/48f9b8e20a/ // 43 pages
   static List<String> getPagesUrl(String html, {String url}) {
-    var doc = parse(html).querySelector("div.gtb");
+    var doc = parse(html).querySelector('div.gtb');
 
     var url = <String>[];
     try {
       var rr = doc.querySelectorAll("table tbody tr td[onclick*='document']");
-      if (rr.length != 0) {
+      if (rr.isNotEmpty) {
         doc
             .querySelectorAll("table tbody tr td[onclick*='document']")
             .forEach((element) {
@@ -109,44 +109,40 @@ class EHParser {
           if (a != null) url.add(a.attributes['href']);
         });
       } else {
-        url.add(doc
-                .querySelector("table tbody tr td.ptds")
-                .querySelector('a')
-                .attributes['href'] +
-            '?p=0');
+        url.add(
+            '${doc.querySelector("table tbody tr td.ptds").querySelector('a').attributes['href']}?p=0');
       }
-    } catch (e) {
-      url.add(doc
-              .querySelector("table tbody tr td.ptds")
-              .querySelector('a')
-              .attributes['href'] +
-          '?p=0');
+    } catch (_) {
+      url.add(
+          '${doc.querySelector('table tbody tr td.ptds').querySelector('a').attributes['href']}?p=0');
     }
 
     int max = 0;
-    url.forEach((element) {
+    for (var element in url) {
       int value = int.tryParse(element.split('?p=')[1]);
       if (value != null) {
         if (max < value) max = value;
       }
-    });
+    }
 
-    if (url.length == 0) return null;
+    if (url.isEmpty) return null;
 
     var result = <String>[];
     var prefix = url[0].split('?p=')[0];
-    for (int i = 0; i <= max; i++) result.add(prefix + '?p=' + i.toString());
+    for (int i = 0; i <= max; i++) {
+      result.add('$prefix?p=$i');
+    }
     return result;
   }
 
   static EHArticle parseArticleData(String html) {
     var article = EHArticle();
     var h = parse(html);
-    var doc = h.querySelector("div.gm");
+    var doc = h.querySelector('div.gm');
 
     article.thumbnail = _thumbnailPattern
         .stringMatch(
-            doc.querySelector("div[id=gleft] div div").attributes['style'])
+            doc.querySelector('div[id=gleft] div div').attributes['style'])
         .toString();
 
     article.title = doc.querySelector("div[id='gd2'] h1[id='gn']").text;
@@ -175,9 +171,9 @@ class EHParser {
 
     var nodesData =
         doc.querySelectorAll("div[id='gmid'] div[id='taglist'] table tr");
-    var info = Map<String, List<String>>();
+    var info = <String, List<String>>{};
 
-    nodesData.forEach((element) {
+    for (var element in nodesData) {
       try {
         info[element.querySelector('td').text.trim()] = element
             .querySelectorAll('td')[1]
@@ -185,18 +181,19 @@ class EHParser {
             .map((x) => x.querySelector('a').text)
             .toList();
       } catch (e, st) {
-        Logger.error('[eh-parser] E: ' + e.toString() + '\n' + st.toString());
+        Logger.error('[eh-parser] E: $e\n'
+            '$st');
       }
-    });
+    }
 
-    if (info.containsKey("language:")) article.languages = info["language:"];
-    if (info.containsKey("group:")) article.group = info["group:"];
-    if (info.containsKey("parody:")) article.parody = info["parody:"];
-    if (info.containsKey("character:")) article.character = info["character:"];
-    if (info.containsKey("artist:")) article.artist = info["artist:"];
-    if (info.containsKey("male:")) article.male = info["male:"];
-    if (info.containsKey("female:")) article.female = info["female:"];
-    if (info.containsKey("misc:")) article.misc = info["misc:"];
+    if (info.containsKey('language:')) article.languages = info['language:'];
+    if (info.containsKey('group:')) article.group = info['group:'];
+    if (info.containsKey('parody:')) article.parody = info['parody:'];
+    if (info.containsKey('character:')) article.character = info['character:'];
+    if (info.containsKey('artist:')) article.artist = info['artist:'];
+    if (info.containsKey('male:')) article.male = info['male:'];
+    if (info.containsKey('female:')) article.female = info['female:'];
+    if (info.containsKey('misc:')) article.misc = info['misc:'];
 
     var nodeComments = h.querySelectorAll("div[id='cdiv'] > div.c1");
     var comments = <Tuple3<DateTime, String, String>>[];
@@ -204,13 +201,13 @@ class EHParser {
     if (nodeComments != null) {
       var hu = HtmlUnescape();
       var df = DateFormat('dd MMMM yyyy, H:m');
-      nodeComments.forEach((element) {
+      for (var element in nodeComments) {
         var date =
-            hu.convert(element.querySelector("div.c2 div.c3").text.trim());
+            hu.convert(element.querySelector('div.c2 div.c3').text.trim());
         var author =
-            hu.convert(element.querySelector("div.c2 div.c3 > a").text.trim());
+            hu.convert(element.querySelector('div.c2 div.c3 > a').text.trim());
         var contents = hu.convert(element
-            .querySelector("div.c6")
+            .querySelector('div.c6')
             .innerHtml
             .replaceAll('<br>', '\r\n'));
         comments.add(Tuple3<DateTime, String, String>(
@@ -219,7 +216,7 @@ class EHParser {
                 .substring('Posted on '.length)),
             author,
             contents));
-      });
+      }
     }
 
     comments.sort((x, y) => x.item1.compareTo(y.item1));
@@ -234,7 +231,7 @@ class EHParser {
 
     var nodes = parse(html).querySelectorAll('div.itg > div.id1');
 
-    nodes.forEach((element) {
+    for (var element in nodes) {
       try {
         var article = EHResultArticle();
 
@@ -243,15 +240,15 @@ class EHParser {
         try {
           article.thumbnail =
               element.querySelector('div.id3 a img').attributes['src'];
-        } catch (e) {}
+        } catch (_) {}
         article.title = element.querySelector('div.id2 a').text;
 
         article.files = element.querySelector('div.id42').text;
         article.type = element.querySelector('div.id41').attributes['title'];
 
         result.add(article);
-      } catch (e) {}
-    });
+      } catch (_) {}
+    }
 
     return result;
   }
@@ -264,7 +261,7 @@ class EHParser {
 
     if (nodes.length > 1) nodes.removeAt(0);
 
-    nodes.forEach((element) {
+    for (var element in nodes) {
       try {
         var article = EHResultArticle();
         var tds = element.querySelectorAll('td');
@@ -274,7 +271,7 @@ class EHParser {
         try {
           article.thumbnail =
               tds[2].querySelector('div.it2 img').attributes['src'];
-        } catch (e) {}
+        } catch (_) {}
         article.title = tds[2].querySelector('div.it5 a').text;
 
         article.uploader = tds[3].querySelector('div > a').attributes['href'];
@@ -282,8 +279,8 @@ class EHParser {
         article.type = tds[0].querySelector('a img').attributes['alt'];
 
         result.add(article);
-      } catch (e) {}
-    });
+      } catch (_) {}
+    }
 
     return result;
   }
@@ -295,7 +292,7 @@ class EHParser {
 
     var q = <Element>[];
     parse(html)
-        .querySelectorAll("table.itg.glte")
+        .querySelectorAll('table.itg.glte')
         .forEach((element) => q.add(element));
 
     while (q.isNotEmpty) {
@@ -308,7 +305,7 @@ class EHParser {
         article.url = node.querySelector('a').attributes['href'];
         try {
           article.thumbnail = node.querySelector('img').attributes['src'];
-        } catch (e) {}
+        } catch (_) {}
 
         var g13 = node.querySelectorAll('td')[1].querySelector('div > div');
         var g13div = g13.querySelectorAll('div');
@@ -324,7 +321,7 @@ class EHParser {
         article.title = gref.querySelector('div').text;
 
         try {
-          var dict = Map<String, List<String>>();
+          var dict = <String, List<String>>{};
 
           var tagarea = gref.querySelector('div > table');
 
@@ -347,16 +344,14 @@ class EHParser {
             });
           }
           article.descripts = dict;
-        } catch (e) {
-          print(e);
-        }
+        } catch (_) {}
 
         result.add(article);
 
         var next = node.querySelectorAll('tr');
 
         if (next != null) q.addAll(next);
-      } catch (e) {}
+      } catch (_) {}
     }
 
     return result;
@@ -370,14 +365,15 @@ class EHParser {
 
     if (nodes.length > 1) nodes.removeAt(0);
 
-    nodes.forEach((element) {
+    for (var element in nodes) {
       var article = EHResultArticle();
 
       article.type =
           element.querySelector('td > div').text.trim().toLowerCase();
       article.thumbnail = element.querySelector('img').attributes['src'];
-      if (article.thumbnail.startsWith('data'))
+      if (article.thumbnail.startsWith('data')) {
         article.thumbnail = element.querySelector('img').attributes['data-src'];
+      }
       article.published = element
           .querySelectorAll('td')[1]
           .querySelectorAll('div')[1]
@@ -405,7 +401,7 @@ class EHParser {
           element.querySelectorAll('td')[5].querySelector('div a').text.trim();
 
       result.add(article);
-    });
+    }
 
     return result;
   }

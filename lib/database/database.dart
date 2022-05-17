@@ -29,8 +29,8 @@ class DataBaseManager {
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
       var dbPath = Platform.isAndroid
-          ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
-          : "${await getDatabasesPath()}/data.db";
+          ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+          : '${await getDatabasesPath()}/data.db';
       _instance = create(dbPath);
     }
     return _instance;
@@ -38,16 +38,16 @@ class DataBaseManager {
 
   static Future<void> reloadInstance() async {
     var dbPath = Platform.isAndroid
-        ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
-        : "${await getDatabasesPath()}/data.db";
+        ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+        : '${await getDatabasesPath()}/data.db';
     _instance = create(dbPath);
   }
 
-  Future _open() async {
+  Future<void> _open() async {
     db = await openDatabase(dbPath);
   }
 
-  Future _close() async {
+  Future<void> _close() async {
     await db.close();
   }
 
@@ -92,8 +92,8 @@ class DataBaseManager {
       int s1, int s2) async {
     await lock.synchronized(() async {
       await _open();
-      await db.rawUpdate("UPDATE $name SET $what=? WHERE $key=?", [s2, key1]);
-      await db.rawUpdate("UPDATE $name SET $what=? WHERE $key=?", [s1, key2]);
+      await db.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s2, key1]);
+      await db.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s1, key2]);
       await _close();
     });
   }
@@ -111,7 +111,7 @@ class DataBaseManager {
       final x = await query('SELECT count(*) FROM HitomiColumnModel');
       if ((x[0]['count(*)'] as int) < 5000) return false;
       return true;
-    } catch (e) {
+    } catch (_) {
       return false;
     }
   }

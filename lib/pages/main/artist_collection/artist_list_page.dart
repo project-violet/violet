@@ -18,7 +18,7 @@ class ArtistListPage extends StatelessWidget {
   final List<String> artists;
   final bool isLast;
 
-  const ArtistListPage({this.artists, this.isLast});
+  const ArtistListPage({Key key, this.artists, this.isLast}) : super(key: key);
 
   static final RegExp _chDot = RegExp('[cC]h\\.');
 
@@ -28,15 +28,8 @@ class ArtistListPage extends StatelessWidget {
     }
 
     var postfix = e.trim().toLowerCase().replaceAll(' ', '_');
-    var queryString = HitomiManager.translate2query((isLast ? '' : 'artist:') +
-        postfix +
-        ' ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+    var queryString = HitomiManager.translate2query(
+        '${isLast ? '' : 'artist:'}$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
     final queryManager = QueryManager.queryPagination(queryString);
     queryManager.itemsPerPage = 10;
@@ -73,7 +66,7 @@ class ArtistListPage extends StatelessWidget {
     final color = Settings.themeWhat
         ? Settings.themeBlack
             ? Colors.black
-            : Color(0xFF353535)
+            : const Color(0xFF353535)
         : Colors.grey.shade100;
 
     return Container(
@@ -89,11 +82,11 @@ class ArtistListPage extends StatelessWidget {
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
           child: ListView.builder(
-            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-            physics: ClampingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+            physics: const ClampingScrollPhysics(),
             itemCount: artists.length,
             itemBuilder: (context, index) {
               final artist = artists[index];
@@ -125,7 +118,7 @@ class ArtistListPage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.error),
+                          const Icon(Icons.error),
                           Text(
                             snapshot.error.toString(),
                             overflow: TextOverflow.fade,
@@ -137,9 +130,9 @@ class ArtistListPage extends StatelessWidget {
                   }
 
                   if (!snapshot.hasData) {
-                    return Container(
+                    return const SizedBox(
                       height: 195,
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: Center(child: CircularProgressIndicator()),
                     );
                   }
 
@@ -211,11 +204,11 @@ class ArtistListPage extends StatelessWidget {
                 showDetail: false,
                 addBottomPadding: false,
                 width: width,
-                thumbnailTag: Uuid().v4(),
+                thumbnailTag: const Uuid().v4(),
                 disableFilter: true,
                 usableTabList: queryResults,
               ),
-              child: ArticleListItemVerySimpleWidget(),
+              child: const ArticleListItemVerySimpleWidget(),
             );
           },
         ),

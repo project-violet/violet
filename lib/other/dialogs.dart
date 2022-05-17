@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
-final defaultTitle = 'Project Violet';
+const defaultTitle = 'Project Violet';
 
 Future<void> showOkDialog(BuildContext context, String message,
     [String title]) async {

@@ -11,18 +11,15 @@ import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 
 class UpdateLogCard extends StatefulWidget {
+  const UpdateLogCard({Key key}) : super(key: key);
+
   @override
-  _UpdateLogCardState createState() => _UpdateLogCardState();
+  State<UpdateLogCard> createState() => _UpdateLogCardState();
 }
 
 class _UpdateLogCardState extends State<UpdateLogCard>
     with TickerProviderStateMixin {
   bool pressed = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +38,8 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                   if (!isTapped) {
                     controller.forward(from: 0.0);
 
-                    PlatformNavigator.navigateSlide(context, PatchNotePage());
+                    PlatformNavigator.navigateSlide(
+                        context, const PatchNotePage());
                   }
                 }),
               child: Container(
@@ -52,7 +50,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 8),
+                      offset: const Offset(0, 8),
                       color: Gradients.taitanum.colors.first.withOpacity(.3),
                       spreadRadius: -9,
                     ),
@@ -60,16 +58,14 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                 ),
                 child: GradientCard(
                   gradient: Gradients.taitanum,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            Translations.of(context).trans('patchnote'),
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ]),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          Translations.of(context).trans('patchnote'),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ]),
                 ),
               ));
         },
@@ -77,7 +73,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -88,7 +84,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)
