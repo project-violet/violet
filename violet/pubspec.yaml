@@ -34,7 +34,7 @@ dependencies:
   auto_animated: ^3.0.1
   badges: ^2.0.2
   bubble_tab_indicator: ^0.1.6
-  cached_network_image: ^3.2.0
+  cached_network_image: ^3.2.1
   carousel_slider: ^4.1.1
   charts_flutter: ^0.12.0
   connectivity_plus: ^2.3.0
@@ -44,11 +44,13 @@ dependencies:
   dio: ^4.0.6
   division: ^0.9.0
   dynamic_theme:
-    git: https://github.com/TesteurManiak/dynamic_theme
+    git:
+      url: https://github.com/TesteurManiak/dynamic_theme.git
   expandable: ^5.0.1
   ext_storage:
-    git: https://github.com/violet-dev/ext_storage
-  extended_image: ^6.2.0
+    git: 
+      url: https://github.com/violet-dev/ext_storage.git
+  extended_image: ^6.2.1
   file_picker: ^4.5.1
   firebase_core: ^1.17.0
   firebase_analytics: ^9.1.8
@@ -56,15 +58,17 @@ dependencies:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^1.0.3
-  flutter_downloader: ^1.7.3 # @dependent: android
+  flutter_downloader: ^1.7.4 # @dependent: android
   flutter_markdown: ^0.6.10
   flutter_speed_dial: ^6.0.0
   flutter_staggered_animations:
-    git: https://github.com/mfrischbutter/flutter_staggered_animations
+    git:
+      url: https://github.com/mfrischbutter/flutter_staggered_animations.git
   flutter_svg: ^1.0.3
   flutter_typeahead: ^4.0.0
   flutter_js:
-    git: https://github.com/violet-dev/flutter_js
+    git: 
+      url: https://github.com/violet-dev/flutter_js.git
   flutter_windowmanager: ^0.2.0
   fluttertoast: ^8.0.9
   gradient_widgets: ^0.6.0
@@ -77,12 +81,14 @@ dependencies:
   material_design_icons_flutter: ^5.0.6595
   mdi: ^5.0.0-nullsafety.0
   open_file:
-    git: https://github.com/violet-dev/open_file
+    git:
+      url: https://github.com/violet-dev/open_file.git
   optimized_cached_image: ^3.0.0
   path_provider: ^2.0.10
   permission_handler: ^9.2.0
   photo_view:
-    git: https://github.com/bluefireteam/photo_view
+    git:
+      url: https://github.com/bluefireteam/photo_view.git
   pimp_my_button: ^1.0.0
   pointycastle: ^3.6.0
   provider: ^6.0.2
@@ -101,7 +107,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.1.10
+  build_runner: ^2.1.11
   json_serializable: ^6.2.0
   freezed: ^2.0.3+1
   moor_flutter: ^4.1.0
