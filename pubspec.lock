@@ -378,7 +378,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: e2d567fc5ec7242d8ab8aeb99cc6a97be21e8fb4
-      url: "https://github.com/TesteurManiak/dynamic_theme"
+      url: "https://github.com/TesteurManiak/dynamic_theme.git"
     source: git
     version: "2.0.0"
   expandable:
@@ -394,7 +394,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "4347ff9e9505f2f7d2c1ce0a24c92efa120db334"
-      url: "https://github.com/violet-dev/ext_storage"
+      url: "https://github.com/violet-dev/ext_storage.git"
     source: git
     version: "2.0.0"
   extended_image:
@@ -555,7 +555,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "502c73b713a5ae213fa6f65f62c2fc0d12759c8c"
-      url: "https://github.com/violet-dev/flutter_js"
+      url: "https://github.com/violet-dev/flutter_js.git"
     source: git
     version: "0.5.0+5"
   flutter_keyboard_visibility:
@@ -611,7 +611,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "88ef999433f129b3c19e22ea5348e6543983a011"
-      url: "https://github.com/mfrischbutter/flutter_staggered_animations"
+      url: "https://github.com/mfrischbutter/flutter_staggered_animations.git"
     source: git
     version: "1.0.0"
   flutter_svg:
@@ -931,7 +931,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "4c95f54fb4b36a88dd24eec93f321ddf373d3bb3"
-      url: "https://github.com/violet-dev/open_file"
+      url: "https://github.com/violet-dev/open_file.git"
     source: git
     version: "3.2.1"
   optimized_cached_image:
@@ -1073,7 +1073,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "23063d535909027b8e198c2cffa83bf8f0480c96"
-      url: "https://github.com/bluefireteam/photo_view"
+      url: "https://github.com/bluefireteam/photo_view.git"
     source: git
     version: "0.13.0"
   pimp_my_button:
