@@ -62,7 +62,7 @@ dependencies:
   flutter_staggered_animations:
     git: https://github.com/mfrischbutter/flutter_staggered_animations
   flutter_svg: ^1.0.3
-  flutter_typeahead: ^3.2.5
+  flutter_typeahead: ^4.0.0
   flutter_js:
     git: https://github.com/violet-dev/flutter_js
   flutter_windowmanager: ^0.2.0
