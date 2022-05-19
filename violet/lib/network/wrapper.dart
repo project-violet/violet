@@ -4,8 +4,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:semaphore/semaphore.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/thread/semaphore.dart';
 
 class HttpWrapper {
   static String accept =
@@ -14,8 +14,8 @@ class HttpWrapper {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36";
   static String mobileUserAgent =
       "Mozilla/5.0 (Linux; Android 6.0.1; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Mobile Safari/537.36";
-  static Semaphore throttlerExHentai = Semaphore(maxCount: 1);
-  static Semaphore throttlerEHentai = Semaphore(maxCount: 4);
+  static Semaphore throttlerExHentai = LocalSemaphore(1);
+  static Semaphore throttlerEHentai = LocalSemaphore(4);
   static Map<String, http.Response> cacheResponse =
       Map<String, http.Response>();
 }

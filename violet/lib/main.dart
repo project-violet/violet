@@ -9,6 +9,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -32,7 +33,7 @@ const _filesToWarmup = [
 
 Future<void> warmupFlare() async {
   for (final filename in _filesToWarmup) {
-    await cachedActor(rootBundle, filename);
+    await cachedActor(AssetFlare(bundle: rootBundle, name: filename));
   }
 }
 
@@ -86,10 +87,10 @@ void main() async {
 
   runApp(
     DynamicTheme(
-      defaultBrightness: Brightness.light,
-      data: (brightness) => ThemeData(
-        accentColor: Settings.majorColor,
-        brightness: brightness,
+      defaultThemeMode: ThemeMode.light,
+      data: (themeMode) => ThemeData(
+        brightness:
+            themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
         scaffoldBackgroundColor:
@@ -100,12 +101,15 @@ void main() async {
         cardColor: Settings.themeBlack && Settings.themeWhat
             ? const Color(0xFF141414)
             : null,
+        colorScheme:
+            ColorScheme.fromSwatch().copyWith(secondary: Settings.majorColor),
       ),
-      themedWidgetBuilder: (context, theme) {
+      themedWidgetBuilder: (context, themeMode, theme) {
         return MaterialApp(
           navigatorObservers: [
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
+          themeMode: themeMode,
           theme: theme,
           home: Settings.useLockScreen ? LockScreen() : SplashPage(),
           supportedLocales: [
