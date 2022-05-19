@@ -5,15 +5,17 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
-import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controls.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:semaphore/semaphore.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
@@ -23,7 +25,6 @@ import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
-import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
@@ -31,7 +32,6 @@ import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/thread/semaphore.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 
@@ -44,14 +44,11 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage>
     with AutomaticKeepAliveClientMixin<SearchPage> {
-  @override
-  bool get wantKeepAlive => true;
-
   Color color = Colors.green;
   bool into = false;
 
   final FlareControls heroFlareControls = FlareControls();
-  FlutterActorArtboard artboard;
+  AssetFlare asset;
 
   bool isFilterUsed = false;
   bool searchbarVisible = true;
@@ -70,8 +67,10 @@ class _SearchPageState extends State<SearchPage>
   int baseCount = 0; // using for user custom page index
   List<int> scrollQueue = <int>[];
 
+  FToast _toast;
+
   void _showErrorToast(String message) {
-    FlutterToast(context).showToast(
+    _toast.showToast(
       toastDuration: const Duration(seconds: 10),
       child: Container(
         padding: const EdgeInsets.all(8.0),
@@ -86,16 +85,19 @@ class _SearchPageState extends State<SearchPage>
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
 
+    _toast = FToast();
+    _toast.init(context);
+
     (() async {
-      var asset =
-          await cachedActor(rootBundle, 'assets/flare/search_close.flr');
-      asset.ref();
-      artboard = asset.actor.artboard.makeInstance() as FlutterActorArtboard;
-      artboard.initializeGraphics();
-      artboard.advance(0);
+      asset =
+          AssetFlare(bundle: rootBundle, name: 'assets/flare/search_close.flr');
+      await cachedActor(asset);
     })();
     Future.delayed(Duration(milliseconds: 500),
         () => heroFlareControls.play('close2search'));
@@ -370,7 +372,7 @@ class _SearchPageState extends State<SearchPage>
                         leading: SizedBox(
                           width: 25,
                           height: 25,
-                          child: FlareArtboard(artboard,
+                          child: FlareActor.asset(asset,
                               controller: heroFlareControls),
                         ),
                       ),
@@ -425,7 +427,7 @@ class _SearchPageState extends State<SearchPage>
       MaterialPageRoute(
         builder: (context) {
           return SearchBarPage(
-            artboard: artboard,
+            assetProvider: asset,
             initText: latestQuery != null ? latestQuery.item2 : '',
             heroController: heroFlareControls,
           );
@@ -602,7 +604,7 @@ class _SearchPageState extends State<SearchPage>
   ObjectKey key = ObjectKey(Uuid().v4());
 
   bool queryEnd = false;
-  Semaphore _querySem = Semaphore(maxCount: 1);
+  Semaphore _querySem = LocalSemaphore(1);
 
   Future<void> loadNextQuery() async {
     await _querySem.acquire().timeout(

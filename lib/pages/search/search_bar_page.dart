@@ -3,7 +3,8 @@
 
 import 'dart:math';
 
-import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/asset_provider.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -14,16 +15,15 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/settings/settings.dart';
 
 class SearchBarPage extends StatefulWidget {
+  final AssetProvider assetProvider;
   final FlareControls heroController;
-  final FlutterActorArtboard artboard;
   final String initText;
   const SearchBarPage(
-      {Key key, this.artboard, this.initText, this.heroController})
+      {Key key, this.assetProvider, this.initText, this.heroController})
       : super(key: key);
 
   @override
@@ -209,7 +209,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               shape: CircleBorder(),
               child: Transform.scale(
                 scale: 0.65,
-                child: FlareArtboard(widget.artboard,
+                child: FlareActor.asset(widget.assetProvider,
                     controller: widget.heroController),
               ),
             ),

@@ -25,10 +25,21 @@ class BookmarkPage extends StatefulWidget {
 
 class _BookmarkPageState extends State<BookmarkPage>
     with AutomaticKeepAliveClientMixin<BookmarkPage> {
-  @override
-  bool get wantKeepAlive => true;
   // List<Widget> _rows;
   bool reorder = false;
+
+  FToast _toast;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _toast = FToast();
+    _toast.init(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +57,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             );
           void _onReorder(int oldIndex, int newIndex) async {
             if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
-              FlutterToast(context).showToast(
+              _toast.showToast(
                 child: ToastWrapper(
                   isCheck: false,
                   isWarning: false,
