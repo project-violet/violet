@@ -35,6 +35,13 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
         .then((value) async => await readComments());
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   TextEditingController text = TextEditingController();
 
   Future<void> readComments() async {

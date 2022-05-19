@@ -109,6 +109,13 @@ class _ArticleListItemVerySimpleWidgetState
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     disposed = true;
     super.dispose();

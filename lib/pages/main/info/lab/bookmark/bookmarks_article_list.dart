@@ -123,6 +123,13 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

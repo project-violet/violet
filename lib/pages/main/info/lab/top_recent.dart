@@ -54,6 +54,13 @@ class _LabTopRecentState extends State<LabTopRecent> {
                 curve: Curves.fastOutSlowIn)));
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> updateRercord(dummy) async {
     try {
       var trecords = await VioletServer.top_recent(limit);

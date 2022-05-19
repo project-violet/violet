@@ -72,6 +72,13 @@ class _ToastWrapperState extends State<ToastWrapper>
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     controller.dispose();
     super.dispose();

@@ -62,6 +62,13 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     timer.cancel();
     super.dispose();

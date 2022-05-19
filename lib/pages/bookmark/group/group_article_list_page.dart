@@ -125,6 +125,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();

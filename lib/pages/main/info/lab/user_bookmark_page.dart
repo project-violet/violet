@@ -20,6 +20,13 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CardPanel.build(
       context,

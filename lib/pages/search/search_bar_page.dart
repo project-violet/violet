@@ -64,6 +64,13 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     _topController.dispose();
     _bottomController.dispose();

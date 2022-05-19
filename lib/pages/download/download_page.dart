@@ -75,6 +75,13 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     DownloadPageManager.taskController.close();
     super.dispose();

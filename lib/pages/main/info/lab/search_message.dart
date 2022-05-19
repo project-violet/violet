@@ -87,6 +87,13 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();

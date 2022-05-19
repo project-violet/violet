@@ -202,6 +202,13 @@ class _SearchPageState extends State<SearchPage>
     });
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   bool scrollInProgress = false;
 
   Tuple2<Tuple2<List<QueryResult>, int>, String> latestQuery;

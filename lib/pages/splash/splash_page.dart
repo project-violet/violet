@@ -300,6 +300,13 @@ class _SplashPageState extends State<SplashPage> {
     startTime();
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Database _database;
 
   void _setDatabase(Database database) {

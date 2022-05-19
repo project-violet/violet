@@ -48,6 +48,13 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         .addPostFrameCallback((_) async => checkDownload());
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> checkDownload() async {
     try {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {

@@ -98,6 +98,13 @@ class _MainPage2State extends State<MainPage2>
     });
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   List<Widget> _cachedGroups;
   bool _shouldReload = false;
 

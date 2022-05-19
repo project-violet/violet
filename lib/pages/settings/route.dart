@@ -14,6 +14,13 @@ class RouteDialog extends StatefulWidget {
 
 class _RouteDialogState extends State<RouteDialog> {
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
 

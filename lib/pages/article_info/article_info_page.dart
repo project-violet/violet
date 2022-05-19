@@ -644,6 +644,13 @@ class __CommentAreaState extends State<_CommentArea> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _InfoAreaWidget(
       queryResult: widget.queryResult,

@@ -44,6 +44,13 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
     Future.delayed(const Duration(milliseconds: 100)).then(updateRercord);
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   Future<void> updateRercord(dummy) async {
     try {
       isBookmarked =

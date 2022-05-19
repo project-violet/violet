@@ -35,6 +35,13 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(

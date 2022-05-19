@@ -42,6 +42,13 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CardPanel.build(
       context,

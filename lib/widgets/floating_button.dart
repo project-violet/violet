@@ -80,6 +80,13 @@ class _AnimatedFloatingActionButtonState
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     _animationController.dispose();
     super.dispose();

@@ -61,6 +61,13 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CardPanel.build(
       context,

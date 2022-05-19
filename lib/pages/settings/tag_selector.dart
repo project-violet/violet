@@ -33,6 +33,13 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height -

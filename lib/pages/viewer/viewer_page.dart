@@ -285,6 +285,13 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
   void dispose() {
     if (_nextPageTimer != null) _nextPageTimer.cancel();
     PaintingBinding.instance.imageCache.clear();

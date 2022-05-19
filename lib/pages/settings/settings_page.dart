@@ -152,6 +152,13 @@ class _SettingsPageState extends State<SettingsPage>
     flutterToast = FlutterToast(context);
   }
 
+  @override
+  void setState(VoidCallback fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
   List<Widget> _cachedGroups;
   bool _shouldReload = false;
 
