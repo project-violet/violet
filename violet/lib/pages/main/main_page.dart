@@ -8,7 +8,7 @@ import 'dart:ui';
 
 import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:fluttertoast/fluttertoast.dart';
@@ -53,25 +53,16 @@ class MainPage2 extends StatefulWidget {
 
 class _MainPage2State extends State<MainPage2>
     with AutomaticKeepAliveClientMixin<MainPage2> {
+  @override
+  bool get wantKeepAlive => true;
   // int count = 0;
   // bool ee = false;
   int _current = 0;
   bool _syncAvailable = false;
 
-  List<Widget> _cachedGroups;
-  bool _shouldReload = false;
-
-  FToast _toast;
-
-  @override
-  bool get wantKeepAlive => true;
-
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
 
     Future.delayed(Duration(milliseconds: 200)).then((value) async {
       // var latestDB = SyncManager.getLatestDB().getDateTime();
@@ -104,6 +95,9 @@ class _MainPage2State extends State<MainPage2>
       }
     });
   }
+
+  List<Widget> _cachedGroups;
+  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
@@ -466,7 +460,7 @@ class _MainPage2State extends State<MainPage2>
                       if (lastDB != null &&
                           latestDB.difference(DateTime.parse(lastDB)).inHours <
                               1) {
-                        _toast.showToast(
+                        FlutterToast(context).showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context)
@@ -507,7 +501,7 @@ class _MainPage2State extends State<MainPage2>
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
 
-                        _toast.showToast(
+                        FlutterToast(context).showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context).trans('synccomplete'),

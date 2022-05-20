@@ -43,7 +43,7 @@ class MainActivity: FlutterFragmentActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine);
 
-        EventChannel(flutterEngine.dartExecutor.binaryMessenger, VOLUME_CHANNEL).setStreamHandler(object : EventChannel.StreamHandler {
+        EventChannel(flutterEngine.dartExecutor, VOLUME_CHANNEL).setStreamHandler(object : EventChannel.StreamHandler {
             override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink?) {
                 sink = eventSink;
             }
@@ -52,14 +52,14 @@ class MainActivity: FlutterFragmentActivity() {
             }
         })
 
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NATIVELIBDIR_CHANNEL).setMethodCallHandler { 
-            call, result ->
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, NATIVELIBDIR_CHANNEL).setMethodCallHandler { call, result ->
             // Note: this method is invoked on the main thread.
+            // TODO
             if (call.method == "getNativeDir") {
                 result.success(getApplicationContext().getApplicationInfo().nativeLibraryDir);
-            } else {
-                result.notImplemented()
             }
+            
+            result.notImplemented()
         }
     }
 

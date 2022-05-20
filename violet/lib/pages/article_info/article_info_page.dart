@@ -49,25 +49,12 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
-class ArticleInfoPage extends StatefulWidget {
+class ArticleInfoPage extends StatelessWidget {
+  final Key key;
+
   ArticleInfoPage({
-    Key key,
+    this.key,
   }) : super(key: key);
-
-  @override
-  State<ArticleInfoPage> createState() => _ArticleInfoPageState();
-}
-
-class _ArticleInfoPageState extends State<ArticleInfoPage> {
-  FToast _toast;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,7 +163,6 @@ class _ArticleInfoPageState extends State<ArticleInfoPage> {
                         ),
                         expanded:
                             PreviewAreaWidget(queryResult: data.queryResult),
-                        collapsed: Container(),
                       ),
                     ),
                   ),
@@ -207,7 +193,6 @@ class _ArticleInfoPageState extends State<ArticleInfoPage> {
                           expanded: _RelatedArea(
                               relatedIds:
                                   Related.getRelated(data.queryResult.id())),
-                          collapsed: Container(),
                         ),
                       ),
                     ),
@@ -257,6 +242,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage> {
       ],
     );
   }*/
+
   _downloadButtonEvent(context, data) async {
     if (!Settings.useInnerStorage && !await Permission.storage.isGranted) {
       if (await Permission.storage.request() == PermissionStatus.denied) {
@@ -266,7 +252,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage> {
       }
     }
     if (!DownloadPageManager.downloadPageLoaded) {
-      _toast.showToast(
+      FlutterToast(context).showToast(
         child: ToastWrapper(
           isCheck: false,
           isWarning: true,
@@ -286,7 +272,7 @@ class _ArticleInfoPageState extends State<ArticleInfoPage> {
       }
     }
 
-    _toast.showToast(
+    FlutterToast(context).showToast(
       child: ToastWrapper(
         isCheck: true,
         isWarning: false,
@@ -695,7 +681,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                   '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
             ),
             expanded: commentArea(context),
-            collapsed: Container(),
           ),
         ),
       ),
@@ -877,11 +862,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       var match = ehPattern.allMatches(url);
       var id = match.first.namedGroup('id').trim();
       _showArticleInfo(int.parse(id));
-    } else {
-      final Uri uri = Uri.tryParse(url);
-      if (uri != null && await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      }
+    } else if (await canLaunch(url)) {
+      await launch(url);
     }
   }
 
@@ -1014,18 +996,11 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
 
 // Create tag-chip
 // group, name
-class _Chip extends StatefulWidget {
+class _Chip extends StatelessWidget {
   final String name;
   final String group;
 
   const _Chip({this.name, this.group});
-
-  @override
-  State<_Chip> createState() => _ChipState();
-}
-
-class _ChipState extends State<_Chip> {
-  FToast _toast;
 
   String normalize(String tag) {
     if (tag == "groups") return "group";
@@ -1034,41 +1009,33 @@ class _ChipState extends State<_Chip> {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    var tagDisplayed = widget.name;
+    var tagDisplayed = name;
     var color = Colors.grey;
 
     if (Settings.translateTags)
       tagDisplayed =
           TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
 
-    if (widget.group == 'female')
+    if (group == 'female')
       color = Colors.pink;
-    else if (widget.group == 'male')
+    else if (group == 'male')
       color = Colors.blue;
-    else if (widget.group == 'prefix')
+    else if (group == 'prefix')
       color = Colors.orange;
-    else if (widget.group == 'id') color = Colors.orange;
+    else if (group == 'id') color = Colors.orange;
 
-    Widget avatar = Text(widget.group[0].toUpperCase());
+    Widget avatar = Text(group[0].toUpperCase());
 
-    if (widget.group == 'female')
+    if (group == 'female')
       avatar = Icon(MdiIcons.genderFemale, size: 18.0);
-    else if (widget.group == 'male')
+    else if (group == 'male')
       avatar = Icon(MdiIcons.genderMale, size: 18.0);
-    else if (widget.group == 'language')
+    else if (group == 'language')
       avatar = Icon(Icons.language, size: 18.0);
-    else if (widget.group == 'artists')
+    else if (group == 'artists')
       avatar = Icon(MdiIcons.account, size: 18.0);
-    else if (widget.group == 'groups')
+    else if (group == 'groups')
       avatar = Icon(MdiIcons.accountGroup, size: 15.0);
 
     var fc = Transform.scale(
@@ -1092,12 +1059,12 @@ class _ChipState extends State<_Chip> {
           padding: EdgeInsets.all(6.0),
         ),
         onLongPress: () async {
-          if (!Settings.excludeTags.contains(
-              '${normalize(widget.group)}:${widget.name.replaceAll(' ', '_')}')) {
+          if (!Settings.excludeTags
+              .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
             var yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
             if (yn != null && yn) {
-              Settings.excludeTags.add(
-                  '${normalize(widget.group)}:${widget.name.replaceAll(' ', '_')}');
+              Settings.excludeTags
+                  .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
               await Settings.setExcludeTags(Settings.excludeTags.join(' '));
               await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
             }
@@ -1106,25 +1073,25 @@ class _ChipState extends State<_Chip> {
           }
         },
         onTap: () async {
-          if ((widget.group == 'groups' ||
-                  widget.group == 'artists' ||
-                  widget.group == 'uploader' ||
-                  widget.group == 'series' ||
-                  widget.group == 'character') &&
-              widget.name.toLowerCase() != 'n/a') {
+          if ((group == 'groups' ||
+                  group == 'artists' ||
+                  group == 'uploader' ||
+                  group == 'series' ||
+                  group == 'character') &&
+              name.toLowerCase() != 'n/a') {
             PlatformNavigator.navigateSlide(
               context,
               ArtistInfoPage(
-                isGroup: widget.group == 'groups',
-                isUploader: widget.group == 'uploader',
-                isCharacter: widget.group == 'character',
-                isSeries: widget.group == 'series',
-                artist: widget.name,
+                isGroup: group == 'groups',
+                isUploader: group == 'uploader',
+                isCharacter: group == 'character',
+                isSeries: group == 'series',
+                artist: name,
               ),
             );
-          } else if (widget.group == 'id') {
-            Clipboard.setData(ClipboardData(text: widget.name));
-            _toast.showToast(
+          } else if (group == 'id') {
+            Clipboard.setData(ClipboardData(text: name));
+            FlutterToast(context).showToast(
               child: ToastWrapper(
                 isCheck: true,
                 isWarning: false,

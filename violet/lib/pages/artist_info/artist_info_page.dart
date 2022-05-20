@@ -85,15 +85,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   bool isBookmarked = false;
   FlareControls flareController = FlareControls();
 
-  FToast _toast;
-
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
-
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       //
       // Check bookmark
@@ -453,7 +447,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         ? 4
                         : 0;
 
-        _toast.showToast(
+        FlutterToast(context).showToast(
           child: ToastWrapper(
             isCheck: true,
             msg:
@@ -599,7 +593,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 : 'Artist: ') +
                                 widget.artist)))
                   ]),
-                  collapsed: Container(),
                 ),
               ),
             ),
@@ -619,7 +612,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         ' (${(comments != null ? comments.length : 0)})'),
                   ),
                   expanded: commentArea(),
-                  collapsed: Container(),
                 ),
               ),
             ),
@@ -646,7 +638,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                       .trans('icharacter'))),
                         ),
                         expanded: relatedArea(),
-                        collapsed: Container(),
                       ),
                     ),
                   ),
@@ -674,7 +665,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                       .trans('icharacter'))),
                         ),
                         expanded: relatedSingleArea(),
-                        collapsed: Container(),
                       ),
                     ),
                   ),
@@ -706,7 +696,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                             .trans('iartists'))),
                   ),
                   expanded: similarArea(),
-                  collapsed: Container(),
                 ),
               ),
             ),
@@ -726,7 +715,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         ' (${series.length})'),
                   ),
                   expanded: seriesArea(),
-                  collapsed: Container(),
                 ),
               ),
             ),

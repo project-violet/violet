@@ -77,9 +77,8 @@ class _InfoPageState extends State<InfoPage> {
                 () async {
                   const url =
                       'https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45';
-                  final Uri uri = Uri.tryParse(url);
-                  if (uri != null && await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
+                  if (await canLaunch(url)) {
+                    await launch(url);
                   }
                 },
               ),
@@ -98,9 +97,8 @@ class _InfoPageState extends State<InfoPage> {
                 () async {
                   const url =
                       'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-                  final Uri uri = Uri.tryParse(url);
-                  if (uri != null && await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
+                  if (await canLaunch(url)) {
+                    await launch(url);
                   }
                 },
               ),
@@ -113,9 +111,8 @@ class _InfoPageState extends State<InfoPage> {
                 null,
                 () async {
                   const url = 'https://discord.gg/K8qny6E';
-                  final Uri uri = Uri.tryParse(url);
-                  if (uri != null && await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
+                  if (await canLaunch(url)) {
+                    await launch(url);
                   }
                 },
               ),
@@ -128,9 +125,8 @@ class _InfoPageState extends State<InfoPage> {
                 null,
                 () async {
                   const url = 'https://github.com/project-violet/violet';
-                  final Uri uri = Uri.tryParse(url);
-                  if (uri != null && await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
+                  if (await canLaunch(url)) {
+                    await launch(url);
                   }
                 },
               ),

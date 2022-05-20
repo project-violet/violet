@@ -140,21 +140,17 @@ class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage> {
   FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
-
-  List<Widget> _cachedGroups;
-  bool _shouldReload = false;
-
-  FToast _toast;
+  FlutterToast flutterToast;
 
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
-
     _themeSwitch = Settings.themeWhat;
+    flutterToast = FlutterToast(context);
   }
+
+  List<Widget> _cachedGroups;
+  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
@@ -305,8 +301,8 @@ class _SettingsPageState extends State<SettingsPage>
               _flareController.play('switch_day');
             _themeSwitch = !_themeSwitch;
             await Settings.setThemeWhat(_themeSwitch);
-            DynamicTheme.of(context)
-                .setThemeMode(!_themeSwitch ? ThemeMode.light : ThemeMode.dark);
+            DynamicTheme.of(context).setBrightness(
+                !_themeSwitch ? Brightness.light : Brightness.dark);
             setState(() {
               _shouldReload = true;
             });
@@ -361,6 +357,7 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setThemeFlat(newValue);
                       DynamicTheme.of(context).setThemeData(
                         ThemeData(
+                          accentColor: Settings.majorColor,
                           brightness: Theme.of(context).brightness,
                           bottomSheetTheme: BottomSheetThemeData(
                               backgroundColor: Colors.black.withOpacity(0)),
@@ -375,8 +372,6 @@ class _SettingsPageState extends State<SettingsPage>
                           cardColor: Settings.themeBlack && Settings.themeWhat
                               ? const Color(0xFF141414)
                               : null,
-                          colorScheme: ColorScheme.fromSwatch()
-                              .copyWith(secondary: Settings.majorColor),
                         ),
                       );
                       setState(() {
@@ -393,6 +388,7 @@ class _SettingsPageState extends State<SettingsPage>
                   await Settings.setThemeBlack(!Settings.themeBlack);
                   DynamicTheme.of(context).setThemeData(
                     ThemeData(
+                      accentColor: Settings.majorColor,
                       brightness: Theme.of(context).brightness,
                       bottomSheetTheme: BottomSheetThemeData(
                           backgroundColor: Colors.black.withOpacity(0)),
@@ -407,8 +403,6 @@ class _SettingsPageState extends State<SettingsPage>
                       cardColor: Settings.themeBlack && Settings.themeWhat
                           ? const Color(0xFF141414)
                           : null,
-                      colorScheme: ColorScheme.fromSwatch()
-                          .copyWith(secondary: Settings.majorColor),
                     ),
                   );
                   setState(() {
@@ -596,7 +590,7 @@ class _SettingsPageState extends State<SettingsPage>
                 await HitomiIndexs.init();
                 HitomiManager.reloadIndex();
 
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('tagrebuild') +
@@ -797,7 +791,7 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               await Logger.exportLog();
 
-              _toast.showToast(
+              flutterToast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('complete'),
@@ -973,7 +967,7 @@ class _SettingsPageState extends State<SettingsPage>
                   builder: (BuildContext context) => DBRebuildPage(),
                 );
 
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('dbrebuild') +
@@ -1035,7 +1029,7 @@ class _SettingsPageState extends State<SettingsPage>
                     if (lastDB != null &&
                         latestDB.difference(DateTime.parse(lastDB)).inHours <
                             1) {
-                      _toast.showToast(
+                      flutterToast.showToast(
                         child: ToastWrapper(
                           isCheck: true,
                           msg: Translations.of(context)
@@ -1072,7 +1066,7 @@ class _SettingsPageState extends State<SettingsPage>
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
 
-                        _toast.showToast(
+                        flutterToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context).trans('synccomplete'),
@@ -1361,7 +1355,7 @@ class _SettingsPageState extends State<SettingsPage>
                 await (await SharedPreferences.getInstance())
                     .setInt('thread_count', int.parse(text.text));
 
-                _toast.showToast(
+                FlutterToast(context).showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('changedthread'),
@@ -1683,7 +1677,7 @@ class _SettingsPageState extends State<SettingsPage>
                     e.toString() +
                     '\n' +
                     st.toString());
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     msg: "Bookmark Restoring Error!",
@@ -1696,7 +1690,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               await Bookmark.getInstance();
 
-              _toast.showToast(
+              flutterToast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('importbookmark'),
@@ -1715,7 +1709,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
                     PermissionStatus.denied) {
-                  _toast.showToast(
+                  flutterToast.showToast(
                     child: ToastWrapper(
                       isCheck: false,
                       msg: Translations.of(context).trans('noauth'),
@@ -1736,7 +1730,7 @@ class _SettingsPageState extends State<SettingsPage>
                   .path);
 
               if (file == null) {
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     msg: Translations.of(context).trans('noselectedb'),
@@ -1754,7 +1748,7 @@ class _SettingsPageState extends State<SettingsPage>
 
               await Bookmark.getInstance();
 
-              _toast.showToast(
+              flutterToast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('importbookmark'),
@@ -1776,7 +1770,7 @@ class _SettingsPageState extends State<SettingsPage>
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
                     PermissionStatus.denied) {
-                  _toast.showToast(
+                  flutterToast.showToast(
                     child: ToastWrapper(
                       isCheck: false,
                       msg: Translations.of(context).trans('noauth'),
@@ -1795,7 +1789,7 @@ class _SettingsPageState extends State<SettingsPage>
               var extpath = '${ext.path}/bookmark.db';
               await dbfile.copy(extpath);
 
-              _toast.showToast(
+              flutterToast.showToast(
                 child: ToastWrapper(
                   isCheck: true,
                   msg: Translations.of(context).trans('exportbookmark'),
@@ -1820,7 +1814,7 @@ class _SettingsPageState extends State<SettingsPage>
                   .getString('eh_cookies');
 
               if (ehc == null || ehc == '') {
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     msg: Translations.of(context).trans('setcookiefirst'),
@@ -1837,7 +1831,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
 
               if (EHBookmark.bookmarkInfo == null) {
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
                     isWarning: true,
@@ -1876,7 +1870,7 @@ class _SettingsPageState extends State<SettingsPage>
                   }
                 }
 
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     isWarning: false,
@@ -2061,7 +2055,7 @@ class _SettingsPageState extends State<SettingsPage>
                     .setString('eh_cookies', result);
 
                 if (result != null) {
-                  _toast.showToast(
+                  flutterToast.showToast(
                     child: ToastWrapper(
                       isCheck: true,
                       msg: 'Login Success!',
@@ -2220,7 +2214,7 @@ class _SettingsPageState extends State<SettingsPage>
               await UpdateSyncManager.checkUpdateSync();
 
               if (UpdateSyncManager.updateRequire) {
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('newupdate'),
@@ -2229,7 +2223,7 @@ class _SettingsPageState extends State<SettingsPage>
                   toastDuration: Duration(seconds: 4),
                 );
               } else {
-                _toast.showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('latestver'),
@@ -2265,9 +2259,8 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             onTap: () async {
               const url = 'https://discord.gg/K8qny6E';
-              final Uri uri = Uri.tryParse(url);
-              if (uri != null && await canLaunchUrl(uri)) {
-                await launchUrl(uri);
+              if (await canLaunch(url)) {
+                await launch(url);
               }
             },
           ),
@@ -2281,9 +2274,8 @@ class _SettingsPageState extends State<SettingsPage>
             trailing: Icon(Icons.open_in_new),
             onTap: () async {
               const url = 'https://github.com/project-violet/';
-              final Uri uri = Uri.tryParse(url);
-              if (uri != null && await canLaunchUrl(uri)) {
-                await launchUrl(uri);
+              if (await canLaunch(url)) {
+                await launch(url);
               }
             },
           ),
@@ -2298,9 +2290,8 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               const url =
                   'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-              final Uri uri = Uri.tryParse(url);
-              if (uri != null && await canLaunchUrl(uri)) {
-                await launchUrl(uri);
+              if (await canLaunch(url)) {
+                await launch(url);
               }
             },
           ),
