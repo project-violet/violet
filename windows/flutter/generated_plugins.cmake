@@ -3,9 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  connectivity_plus_windows
   flutter_js
-  permission_handler_windows
   url_launcher_windows
 )
 

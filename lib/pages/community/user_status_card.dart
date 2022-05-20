@@ -20,6 +20,9 @@ class UserStatusCard extends StatefulWidget {
 
 class _UserStatusCardState extends State<UserStatusCard>
     with AutomaticKeepAliveClientMixin<UserStatusCard> {
+  @override
+  bool get wantKeepAlive => true;
+
   VioletCommunitySession sess;
   String _userId = 'None';
   String _userAppId = '';
@@ -27,17 +30,9 @@ class _UserStatusCardState extends State<UserStatusCard>
   bool _logining = false;
   DateTime _latestBackup = DateTime.now();
 
-  FToast _toast;
-
-  @override
-  bool get wantKeepAlive => true;
-
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
 
     // load boards
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
@@ -258,7 +253,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                     });
 
                     if (resc) {
-                      _toast.showToast(
+                      FlutterToast(context).showToast(
                         child: ToastWrapper(
                           isCheck: true,
                           msg: 'Bookmark Backup Success!',
@@ -267,7 +262,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                         toastDuration: Duration(seconds: 4),
                       );
                     } else {
-                      _toast.showToast(
+                      FlutterToast(context).showToast(
                         child: ToastWrapper(
                           isCheck: false,
                           isWarning: false,

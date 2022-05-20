@@ -70,6 +70,8 @@ class DownloadItemWidget extends StatefulWidget {
 
 class DownloadItemWidgetState extends State<DownloadItemWidget>
     with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   double scale = 1.0;
   String fav = '';
   int cur = 0;
@@ -88,17 +90,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   bool isLastestRead = false;
   int latestReadPage;
 
-  FToast _toast;
-
-  @override
-  bool get wantKeepAlive => true;
-
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
 
     if (ExtractorManager.instance.existsExtractor(widget.item.url())) {
       var extractor = ExtractorManager.instance.getExtractor(widget.item.url());
@@ -257,7 +251,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       recoveryMode = false;
 
-      _toast.showToast(
+      FlutterToast(context).showToast(
         child: ToastWrapper(
           isCheck: true,
           isWarning: false,
@@ -317,7 +311,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         } else if (v == 2) {
           // Copy Url
           Clipboard.setData(ClipboardData(text: widget.item.url()));
-          _toast.showToast(
+          FlutterToast(context).showToast(
             child: ToastWrapper(
               isCheck: true,
               isWarning: false,

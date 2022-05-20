@@ -18,7 +18,7 @@ void main() {
     var pair = CertUtil.createRSAKeyPair();
 
     var rootCA = RootCert(data: {
-      'PubKey': CertUtil.exportRSAPublicKey(pair.publicKey),
+      'PubKey': CertUtil.exportRSAPublicKey(pair.item1),
       'AuthStarts': DateTime.now().toUtc().toString(),
       'AuthEnds':
           DateTime.now().add(Duration(days: 365 * 20 + 4)).toUtc().toString(),
@@ -27,7 +27,7 @@ void main() {
     });
 
     var signedData = CertUtil.sign(
-        pair.privateKey, Uint8List.fromList(rootCA.getRawData().codeUnits));
+        pair.item2, Uint8List.fromList(rootCA.getRawData().codeUnits));
 
     rootCA.data['SignedData'] = CertUtil.l8ToStr(signedData);
 
@@ -39,12 +39,12 @@ void main() {
     print(rootCA.toBase64());
 
     print('--- ROOT CA RSA PRIVATE KEY ---');
-    print(CertUtil.exportRSAPrivateKey(pair.privateKey));
+    print(CertUtil.exportRSAPrivateKey(pair.item2));
     print('--- ROOT CA RSA PUBLIC KEY ---');
-    print(CertUtil.exportRSAPublicKey(pair.publicKey));
+    print(CertUtil.exportRSAPublicKey(pair.item1));
 
-    var priKey = pair.privateKey;
-    var pubKey = pair.publicKey;
+    var priKey = pair.item2;
+    var pubKey = pair.item1;
 
     var testCert = CertData(data: {
       'PubKey': CertUtil.exportRSAPublicKey(pubKey),

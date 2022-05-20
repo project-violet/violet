@@ -25,14 +25,9 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
   int total = 0;
   int progress = 0;
 
-  FToast _toast;
-
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       try {
@@ -116,7 +111,7 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
       } catch (e, st) {
         Logger.error(
             '[Restore Bookmark] ' + e.toString() + '\n' + st.toString());
-        _toast.showToast(
+        FlutterToast(context).showToast(
           child: ToastWrapper(
             isCheck: false,
             msg: "Bookmark Restoring Error!",

@@ -29,9 +29,8 @@ class _GithubCardState extends State<GithubCard> {
           })
           ..onTapUp((detail) async {
             const url = 'https://github.com/project-violet/';
-            final Uri uri = Uri.tryParse(url);
-            if (uri != null && await canLaunchUrl(uri)) {
-              await launchUrl(uri);
+            if (await canLaunch(url)) {
+              await launch(url);
             }
           }),
         child: Container(

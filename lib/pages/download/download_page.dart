@@ -49,6 +49,9 @@ class DownloadPage extends StatefulWidget {
 
 class _DownloadPageState extends State<DownloadPage>
     with AutomaticKeepAliveClientMixin<DownloadPage> {
+  @override
+  bool get wantKeepAlive => true;
+
   ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = [];
   Map<int, DownloadItemModel> itemsMap = Map<int, DownloadItemModel>();
@@ -58,18 +61,9 @@ class _DownloadPageState extends State<DownloadPage>
       FilterController(heroKey: "downloadtype");
   ObjectKey _listKey = ObjectKey(Uuid().v4());
 
-  FToast _toast;
-
-  @override
-  bool get wantKeepAlive => true;
-
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
-
     refresh();
     // DownloadPageManager.appendTask = appendTask;
     DownloadPageManager.taskController = StreamController<String>();
@@ -558,7 +552,7 @@ class _DownloadPageState extends State<DownloadPage>
       else if (value == 2) {
         Clipboard.setData(ClipboardData(
             text: filterResult.map((e) => int.tryParse(e.url())).join(", ")));
-        _toast.showToast(
+        FlutterToast(context).showToast(
           child: ToastWrapper(
             isCheck: true,
             isWarning: false,

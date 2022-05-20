@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer' as developer;
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -39,13 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
   static const _loginUrl = 'https://e-hentai.org/bounce_login.php';
 
   final _webViewController = Completer<WebViewController>();
-
-  @override
-  void initState() {
-    super.initState();
-    // Enable virtual display.
-    if (Platform.isAndroid) WebView.platform = AndroidWebView();
-  }
 
   @override
   Widget build(BuildContext context) {

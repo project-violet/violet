@@ -146,14 +146,9 @@ class _ViewerPageState extends State<ViewerPage>
   /// Thumbnail slider height including image and page text
   double _thumbHeight = 140.0;
 
-  FToast _toast;
-
   @override
   void initState() {
     super.initState();
-
-    _toast = FToast();
-    _toast.init(context);
 
     if (!Settings.disableFullScreen)
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
@@ -636,7 +631,7 @@ class _ViewerPageState extends State<ViewerPage>
               if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
             }
 
-            _toast.showToast(
+            FlutterToast(context).showToast(
               child: ToastWrapper(
                 icon: _vIsBookmarked.value ? Icons.delete_forever : Icons.check,
                 color: _vIsBookmarked.value
@@ -1104,13 +1099,13 @@ class _ViewerPageState extends State<ViewerPage>
             ),
             pageController: _pageController,
             onPageChanged: (page) async {
-              _thumbAnimateTo(page);
+              _thumbAnimateTo(page.toInt());
 
-              _currentPage = page + 1;
-              _prevPage = page + 1;
-              _vPrevPage.value = page + 1;
-              await _precache(page - 1);
-              await _precache(page + 1);
+              _currentPage = page.toInt() + 1;
+              _prevPage = page.toInt() + 1;
+              _vPrevPage.value = page.toInt() + 1;
+              await _precache(page.toInt() - 1);
+              await _precache(page.toInt() + 1);
             },
             scrollDirection:
                 Settings.scrollVertical ? Axis.vertical : Axis.horizontal,
@@ -1120,8 +1115,8 @@ class _ViewerPageState extends State<ViewerPage>
                 child: SizedBox(
                   child: CircularProgressIndicator(
                       value: imageChunkEvent == null
-                          ? 0.0
-                          : imageChunkEvent.cumulativeBytesLoaded.toDouble() /
+                          ? 0
+                          : imageChunkEvent.cumulativeBytesLoaded /
                               imageChunkEvent.expectedTotalBytes.toDouble()),
                   width: 30,
                   height: 30,
@@ -1374,7 +1369,7 @@ class _ViewerPageState extends State<ViewerPage>
     }
   }
 
-  _thumbAnimateTo(int page) {
+  _thumbAnimateTo(page) {
     if (!_disableBottom && _isThumbMode) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final width = MediaQuery.of(context).size.width;
