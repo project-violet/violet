@@ -8,7 +8,7 @@ class _ToastCard extends StatelessWidget {
   final ToastType type;
 
   const _ToastCard({
-    Key key,
+    @required Key key,
     this.message,
     this.action,
     this.type,
@@ -60,7 +60,7 @@ class _ToastCard extends StatelessWidget {
             ? () => ToastManager()._hideToastByKey(key)
             : null,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 17, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 10),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -75,7 +75,7 @@ class _ToastCard extends StatelessWidget {
                     context,
                     () => ToastManager()._hideToastByKey(key),
                   ) ??
-                  SizedBox(),
+                  const SizedBox(),
             ],
           ),
         ),
@@ -239,7 +239,7 @@ class ToastOverlay extends StatelessWidget {
             child: Theme(
               data: _generateInverseTheme(context),
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 400),
+                constraints: const BoxConstraints(maxWidth: 400),
                 child: StreamBuilder<List<ToastFuture>>(
                   stream: ToastManager()._toastsController,
                   builder: (context, toastsSnapshot) {
@@ -247,7 +247,7 @@ class ToastOverlay extends StatelessWidget {
                       key: ToastManager()._toastAnimatedListKey,
                       initialItemCount: toastsSnapshot.data?.length ?? 0,
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index, animation) {
                         return AnimatedBuilder(
                           animation: animation,
@@ -300,10 +300,7 @@ class ToastOverlay extends StatelessWidget {
       backgroundColor: themeBackgroundColor,
       colorScheme: ColorScheme(
         primary: colorScheme.onPrimary,
-        primaryVariant: colorScheme.onPrimary,
-        secondary:
-            isThemeDark ? colorScheme.primaryVariant : colorScheme.secondary,
-        secondaryVariant: colorScheme.onSecondary,
+        secondary: isThemeDark ? colorScheme.primary : colorScheme.secondary,
         surface: colorScheme.onSurface,
         background: themeBackgroundColor,
         error: colorScheme.onError,
@@ -392,7 +389,7 @@ class ToastManager {
           ),
         );
       },
-      duration: showAnim ? Duration(milliseconds: 300) : Duration.zero,
+      duration: showAnim ? const Duration(milliseconds: 300) : Duration.zero,
     );
     _toastsController.add(
       _toastsController.value..remove(toastFuture),
