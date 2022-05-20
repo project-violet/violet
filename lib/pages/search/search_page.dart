@@ -97,10 +97,6 @@ class _SearchPageState extends State<SearchPage>
       artboard.initializeGraphics();
       artboard.advance(0);
     })();
-    Future.delayed(Duration(milliseconds: 500),
-        () => heroFlareControls.play('close2search'));
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => heroFlareControls.play('close2search'));
 
     Future.delayed(Duration(milliseconds: 500), () async {
       try {
