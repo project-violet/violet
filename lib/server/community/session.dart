@@ -9,13 +9,13 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
 
 class VioletCommunitySession {
-  static VioletCommunitySession lastSession;
+  static VioletCommunitySession? lastSession;
   final String session;
   final String id;
 
   VioletCommunitySession(this.session, this.id);
 
-  static Future<VioletCommunitySession> signIn(String id, String pw) async {
+  static Future<VioletCommunitySession?> signIn(String id, String pw) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
 
