@@ -11,7 +11,7 @@ import 'package:violet/log/log.dart';
 
 class DownloadItemModel {
   Map<String, dynamic> result;
-  DownloadItemModel({this.result});
+  DownloadItemModel({required this.result});
 
   int id() => result['Id'];
 
@@ -28,15 +28,15 @@ class DownloadItemModel {
   // 10: Error
   // 11: Nothing to download
   int state() => result['State'];
-  String path() => result['Path']; // directory
-  String files() => result['Files']; // files path
-  String info() => result['Info'];
-  String dateTime() => result['DateTime'];
-  String extractor() => result['Extractor'];
+  String? path() => result['Path']; // directory
+  String? files() => result['Files']; // files path
+  String? info() => result['Info'];
+  String? dateTime() => result['DateTime'];
+  String? extractor() => result['Extractor'];
   String url() => result['URL'];
-  String errorMsg() => result['ErrorMsg'];
-  String thumbnail() => result['Thumbnail']; // file path
-  String thumbnailHeader() => result['ThumbnailHeader'];
+  String? errorMsg() => result['ErrorMsg'];
+  String? thumbnail() => result['Thumbnail']; // file path
+  String? thumbnailHeader() => result['ThumbnailHeader'];
 
   bool download = false;
 
@@ -57,7 +57,7 @@ class DownloadItemModel {
 
   List<String> rawFiles() {
     if (files() == null || files() == "") return [];
-    return (jsonDecode(files()) as List<dynamic>)
+    return (jsonDecode(files()!) as List<dynamic>)
         .map((e) => e as String)
         .toList();
   }
@@ -69,9 +69,9 @@ class DownloadItemModel {
     return rfiles;
   }
 
-  String tryThumbnailFile() {
+  String? tryThumbnailFile() {
     if (files() != null) {
-      var rfiles = (jsonDecode(files()) as List<dynamic>)
+      var rfiles = (jsonDecode(files()!) as List<dynamic>)
           .map((e) => e as String)
           .toList();
       if (rfiles
@@ -86,7 +86,7 @@ class DownloadItemModel {
 }
 
 class Download {
-  static Download _instance;
+  static Download? _instance;
   static Lock lock = Lock();
   static Future<Download> getInstance() async {
     await lock.synchronized(() async {
@@ -118,10 +118,10 @@ class Download {
           }
         }
         _instance = Download();
-        await _instance.init();
+        await _instance!.init();
       }
     });
-    return _instance;
+    return _instance!;
   }
 
   HashSet<int> _downloadedChecker = HashSet<int>();
@@ -129,7 +129,7 @@ class Download {
   Future<void> init() async {
     var items = await getDownloadItems();
     for (var item in items) {
-      int no = int.tryParse(item.url());
+      int? no = int.tryParse(item.url());
       if (no != null && item.state() == 0) {
         _downloadedChecker.add(no);
         _downloadedItems[no] = item;
@@ -149,8 +149,11 @@ class Download {
   bool _isValidDownloadedArticle(int id) {
     if (!isDownloadedArticle(id)) return false;
 
-    var item = _downloadedItems[id];
-    var files = jsonDecode(item.files()) as List<dynamic>;
+    var item = _downloadedItems[id]!;
+
+    // _isValidDownloadedArticle 메서드가 호출되었다는 것은 state가
+    // extraction을 마치고 다운로드가 시작되기 직전 후라는 것임
+    var files = jsonDecode(item.files()!) as List<dynamic>;
 
     if (!File(files[0] as String).existsSync()) return false;
 
@@ -159,7 +162,7 @@ class Download {
 
   bool isValidDownloadedArticle(int id) {
     if (_validDownloadedArticleCache.containsKey(id))
-      return _validDownloadedArticleCache[id];
+      return _validDownloadedArticleCache[id]!;
 
     var v = _isValidDownloadedArticle(id);
     _validDownloadedArticleCache[id] = v;
@@ -171,7 +174,7 @@ class Download {
     _downloadedItems[id] = item;
   }
 
-  DownloadItemModel getDownloadedArticle(int id) => _downloadedItems[id];
+  DownloadItemModel? getDownloadedArticle(int id) => _downloadedItems[id];
 
   Future<List<DownloadItemModel>> getDownloadItems() async {
     return (await (await CommonUserDatabase.getInstance())

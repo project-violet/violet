@@ -6,7 +6,7 @@ import 'package:violet/settings/settings.dart';
 
 class QueryResult {
   Map<String, dynamic> result;
-  QueryResult({this.result});
+  QueryResult({required this.result});
 
   int id() => result['Id'];
   title() => result['Title'] ?? '';
@@ -28,7 +28,7 @@ class QueryResult {
   thumbnail() => result['Thumbnail'];
   url() => result['URL'];
 
-  DateTime getDateTime() {
+  DateTime? getDateTime() {
     if (published() == null || published() == 0) {
       if (publishedeh() != null) return DateTime.parse(publishedeh());
       return null;
@@ -48,10 +48,10 @@ class QueryResult {
 }
 
 class QueryManager {
-  String queryString;
-  List<QueryResult> results;
-  bool isPagination;
-  int curPage;
+  String? queryString;
+  List<QueryResult>? results;
+  bool isPagination = false;
+  int curPage = 0;
   int itemsPerPage = 500;
 
   static Future<QueryManager> query(String rawQuery) async {
@@ -86,13 +86,13 @@ class QueryManager {
         queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
     var qr = Map<String, QueryResult>();
-    qm.results.forEach((element) {
+    qm.results!.forEach((element) {
       qr[element.id().toString()] = element;
     });
 
     var rr = ids
         .where((e) => qr.containsKey(e.toString()))
-        .map((e) => qr[e.toString()])
+        .map((e) => qr[e.toString()]!)
         .toList();
 
     return rr;
