@@ -19,87 +19,88 @@ import 'package:violet/settings/device_type.dart';
 
 class Settings {
   // Color Settings
-  static Color themeColor; // default light
-  static bool themeWhat; // default false == light
-  static Color majorColor; // default purple
-  static Color majorAccentColor;
-  static int searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
-  static int downloadResultType;
-  static int downloadAlignType;
-  static bool themeFlat;
-  static bool themeBlack; // default false
-  static bool useTabletMode;
+  static late Color themeColor; // default light
+  static late bool themeWhat; // default false == light
+  static late Color majorColor; // default purple
+  static late Color majorAccentColor;
+  static late int
+      searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
+  static late int downloadResultType;
+  static late int downloadAlignType;
+  static late bool themeFlat;
+  static late bool themeBlack; // default false
+  static late bool useTabletMode;
 
   // Tag Settings
-  static String includeTags;
-  static List<String> excludeTags;
-  static List<String> blurredTags;
-  static String language; // System Language
-  static bool translateTags;
+  static late String includeTags;
+  static late List<String> excludeTags;
+  static late List<String> blurredTags;
+  static late String? language; // System Language
+  static late bool translateTags;
 
   // Like this Hitomi.la => e-hentai => exhentai => nhentai
-  static List<String> routingRule; // image routing rule
-  static List<String> searchRule;
-  static bool searchNetwork;
+  static late List<String> routingRule; // image routing rule
+  static late List<String> searchRule;
+  static late bool searchNetwork;
 
   // Global? English? Korean?
-  static String databaseType;
+  static late String databaseType;
 
   // Reader Option
-  static bool rightToLeft;
-  static bool isHorizontal;
-  static bool scrollVertical;
-  static bool animation;
-  static bool padding;
-  static bool disableOverlayButton;
-  static bool disableFullScreen;
-  static bool enableTimer;
-  static double timerTick;
-  static bool moveToAppBarToBottom;
-  static bool showSlider;
-  static int imageQuality;
-  static int thumbSize;
-  static bool enableThumbSlider;
-  static bool showPageNumberIndicator;
-  static bool showRecordJumpMessage;
+  static late bool rightToLeft;
+  static late bool isHorizontal;
+  static late bool scrollVertical;
+  static late bool animation;
+  static late bool padding;
+  static late bool disableOverlayButton;
+  static late bool disableFullScreen;
+  static late bool enableTimer;
+  static late double timerTick;
+  static late bool moveToAppBarToBottom;
+  static late bool showSlider;
+  static late int imageQuality;
+  static late int thumbSize;
+  static late bool enableThumbSlider;
+  static late bool showPageNumberIndicator;
+  static late bool showRecordJumpMessage;
 
   // Download Options
-  static bool useInnerStorage;
-  static String downloadBasePath;
-  static String downloadRule;
+  static late bool? useInnerStorage;
+  static late String? downloadBasePath;
+  static late String downloadRule;
 
-  static String searchMessageAPI;
-  static bool useVioletServer;
+  static late String searchMessageAPI;
+  static late bool useVioletServer;
 
-  static bool useDrawer;
+  static late bool useDrawer;
 
-  static bool useOptimizeDatabase;
+  static late bool useOptimizeDatabase;
 
-  static bool useLowPerf;
+  static late bool useLowPerf;
 
   // View Option
-  static bool showArticleProgress;
+  static late bool showArticleProgress;
 
   // Search Option
-  static bool searchUseFuzzy;
-  static bool searchTagTranslation;
-  static bool searchUseTranslated;
-  static bool searchShowCount;
-  static bool searchPure;
+  static late bool searchUseFuzzy;
+  static late bool searchTagTranslation;
+  static late bool searchUseTranslated;
+  static late bool searchShowCount;
+  static late bool searchPure;
 
-  static String userAppId;
+  static late String userAppId;
 
-  static bool autobackupBookmark;
+  static late bool autobackupBookmark;
 
   // Lab
-  static bool simpleItemWidgetLoadingIcon;
-  static bool showNewViewerWhenArtistArticleListItemTap;
-  static bool enableViewerFunctionBackdropFilter;
-  static bool usingPushReplacementOnArticleRead;
-  static bool downloadEhRawImage;
+  static late bool simpleItemWidgetLoadingIcon;
+  static late bool showNewViewerWhenArtistArticleListItemTap;
+  static late bool enableViewerFunctionBackdropFilter;
+  static late bool usingPushReplacementOnArticleRead;
+  static late bool downloadEhRawImage;
 
-  static bool useLockScreen;
-  static bool useSecureMode;
+  static late bool useLockScreen;
+  static late bool useSecureMode;
 
   static Future<void> initFirst() async {
     var mc = await _getInt('majorColor', Colors.purple.value);
@@ -219,11 +220,11 @@ class Settings {
       if (Platform.isAndroid) {
         var deviceInfoPlugin = DeviceInfoPlugin();
         final androidInfo = await deviceInfoPlugin.androidInfo;
-        if (androidInfo.version.sdkInt >= 30) useInnerStorage = true;
+        if (androidInfo.version.sdkInt! >= 30) useInnerStorage = true;
       }
 
       await (await SharedPreferences.getInstance())
-          .setBool('userinnerstorage', useInnerStorage);
+          .setBool('userinnerstorage', useInnerStorage!);
     }
 
     if (Platform.isAndroid) {
@@ -232,7 +233,7 @@ class Settings {
       final String path = await ExtStorage.getExternalStorageDirectory();
 
       var androidInfo = await DeviceInfoPlugin().androidInfo;
-      var sdkInt = androidInfo.version.sdkInt;
+      var sdkInt = androidInfo.version.sdkInt!;
 
       if (sdkInt >= 30 &&
           (await SharedPreferences.getInstance())
@@ -241,15 +242,15 @@ class Settings {
         await (await SharedPreferences.getInstance())
             .setBool('android30downpath', true);
         var ext = await getExternalStorageDirectory();
-        downloadBasePath = ext.path;
+        downloadBasePath = ext!.path;
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', downloadBasePath);
+            .setString('downloadbasepath', downloadBasePath!);
       }
 
       if (downloadBasePath == null) {
         downloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', downloadBasePath);
+            .setString('downloadbasepath', downloadBasePath!);
       }
 
       if (sdkInt < 30 &&
@@ -259,7 +260,7 @@ class Settings {
               null) {
         downloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', downloadBasePath);
+            .setString('downloadbasepath', downloadBasePath!);
         await (await SharedPreferences.getInstance())
             .setBool('downloadbasepathcc1', true);
 
@@ -277,10 +278,10 @@ class Settings {
                   Map<String, dynamic>.from(download.result);
               if (download.files() != null)
                 result['Files'] =
-                    download.files().replaceAll('/Violet/', '/.violet/');
+                    download.files()!.replaceAll('/Violet/', '/.violet/');
               if (download.path() != null)
                 result['Path'] =
-                    download.path().replaceAll('/Violet/', '/.violet/');
+                    download.path()!.replaceAll('/Violet/', '/.violet/');
               download.result = result;
               await download.update();
             }
@@ -312,7 +313,8 @@ class Settings {
     searchShowCount = await _getBool('searchshowcount', true);
     searchPure = await _getBool('searchPure');
 
-    userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
+    // main에서 셋팅됨
+    userAppId = (await SharedPreferences.getInstance()).getString('fa_userid')!;
 
     autobackupBookmark = await _getBool('autobackupbookmark', false);
 
@@ -391,18 +393,18 @@ class Settings {
     final String path = await ExtStorage.getExternalStorageDirectory();
 
     var androidInfo = await DeviceInfoPlugin().androidInfo;
-    var sdkInt = androidInfo.version.sdkInt;
+    var sdkInt = androidInfo.version.sdkInt!;
 
     if (sdkInt >= 30) {
       var ext = await getExternalStorageDirectory();
-      downloadBasePath = ext.path;
+      downloadBasePath = ext!.path;
     }
 
     if (downloadBasePath == null) {
       downloadBasePath = join(path, '.violet');
     }
 
-    return downloadBasePath;
+    return downloadBasePath!;
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -433,7 +435,7 @@ class Settings {
         .setInt('majorColor', color.value);
     majorColor = color;
 
-    Color accent;
+    Color? accent;
     for (int i = 0; i < Colors.primaries.length - 2; i++)
       if (color.value == Colors.primaries[i].value) {
         accent = Colors.accents[i];
@@ -451,8 +453,8 @@ class Settings {
     }
 
     await (await SharedPreferences.getInstance())
-        .setInt('majorAccentColor', accent.value);
-    majorAccentColor = accent;
+        .setInt('majorAccentColor', accent!.value);
+    majorAccentColor = accent!;
   }
 
   static Future<void> setSearchResultType(int wh) async {

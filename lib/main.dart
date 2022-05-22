@@ -128,11 +128,11 @@ void main() async {
             GlobalWidgetsLocalizations.delegate
           ],
           localeResolutionCallback:
-              (Locale locale, Iterable<Locale> supportedLocales) {
+              (Locale? locale, Iterable<Locale> supportedLocales) {
             print(Settings.language);
             if (Settings.language != null) {
-              if (Settings.language.contains('_')) {
-                var ss = Settings.language.split('_');
+              if (Settings.language!.contains('_')) {
+                var ss = Settings.language!.split('_');
                 if (ss.length == 2)
                   return Locale.fromSubtags(
                       languageCode: ss[0], scriptCode: ss[1]);
@@ -142,7 +142,7 @@ void main() async {
                       scriptCode: ss[1],
                       countryCode: ss[2]);
               } else
-                return Locale(Settings.language);
+                return Locale(Settings.language!);
             }
 
             if (locale == null) {
