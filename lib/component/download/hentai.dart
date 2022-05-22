@@ -9,7 +9,7 @@ import 'package:violet/component/hentai.dart';
 import 'package:violet/settings/settings.dart';
 
 class HentaiDonwloadManager extends Downloadable {
-  RegExp urlMatcher;
+  late RegExp urlMatcher;
 
   HentaiDonwloadManager() {
     urlMatcher = RegExp(r'^\d+$');
@@ -55,7 +55,7 @@ class HentaiDonwloadManager extends Downloadable {
   }
 
   @override
-  Future<List<DownloadTask>> createTask(
+  Future<List<DownloadTask>?> createTask(
       String url, GeneralDownloadProgress gdp) async {
     var query = (await HentaiManager.idSearch(url)).item1;
 

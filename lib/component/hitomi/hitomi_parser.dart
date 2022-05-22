@@ -15,7 +15,8 @@ class HitomiParser {
       artists = doc
           .querySelector('div.artists-list')
           .querySelectorAll('li')
-          .map((e) => e.querySelector('a').text.trim());
+          .map((e) => e.querySelector('a').text.trim())
+          .toList();
     } catch (e) {}
 
     return {'Title': title, 'Artists': artists};

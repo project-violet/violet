@@ -15,29 +15,29 @@ import 'package:violet/log/log.dart';
 class HitomiIndexs {
   // Tag, Index
   // Map<String, int>
-  static Map<String, dynamic> tagIndex;
+  static late Map<String, dynamic> tagIndex;
   // Artist, <Tag Index, Count>
   // Map<String, Map<String, int>>
-  static Map<String, dynamic> tagArtist;
-  static Map<String, dynamic> tagGroup;
-  static Map<String, dynamic> tagUploader;
-  static Map<String, dynamic> tagSeries;
-  static Map<String, dynamic> tagCharacter;
+  static late Map<String, dynamic> tagArtist;
+  static late Map<String, dynamic> tagGroup;
+  static late Map<String, dynamic> tagUploader;
+  static late Map<String, dynamic> tagSeries;
+  static late Map<String, dynamic> tagCharacter;
   // Series, <Character, Count>
   // Map<String, Map<String, int>>
-  static Map<String, dynamic> characterSeries;
+  static Map<String, dynamic>? characterSeries;
   // Unmap of character series
   // Character, <Series, Count>
   // Map<String, Map<String, int>>
-  static Map<String, dynamic> seriesCharacter;
+  static Map<String, dynamic>? seriesCharacter;
   // Series, <Series, Count>
   // Map<String, Map<String, int>>
-  static Map<String, dynamic> seriesSeries;
+  static Map<String, dynamic>? seriesSeries;
   // Character, <Character, Count>
   // Map<String, Map<String, int>>
-  static Map<String, dynamic> characterCharacter;
+  static Map<String, dynamic>? characterCharacter;
   // Tag, [<Tag, Similarity>]
-  static Map<String, dynamic> relatedTag;
+  static late Map<String, dynamic> relatedTag;
 
   static Future<void> init() async {
     final directory = await getApplicationDocumentsDirectory();
@@ -124,11 +124,11 @@ class HitomiIndexs {
   static List<Tuple2<String, double>> calculateRelatedCharacterSeries(
       String series) {
     if (seriesSeries == null)
-      return _calculateSimilars(characterSeries, series)
+      return _calculateSimilars(characterSeries!, series)
           .where((element) => element.item2 >= 0.000001)
           .toList();
     else {
-      var ll = (seriesSeries[series] as Map<String, dynamic>)
+      var ll = (seriesSeries![series] as Map<String, dynamic>)
           .entries
           .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
           .toList();
@@ -140,11 +140,11 @@ class HitomiIndexs {
   static List<Tuple2<String, double>> calculateRelatedSeriesCharacter(
       String character) {
     if (characterCharacter == null)
-      return _calculateSimilars(seriesCharacter, character)
+      return _calculateSimilars(seriesCharacter!, character)
           .where((element) => element.item2 >= 0.000001)
           .toList();
     else {
-      var ll = (characterCharacter[character] as Map<String, dynamic>)
+      var ll = (characterCharacter![character] as Map<String, dynamic>)
           .entries
           .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
           .toList();
@@ -154,8 +154,9 @@ class HitomiIndexs {
   }
 
   static List<Tuple2<String, double>> getRelatedCharacters(String series) {
-    if (!characterSeries.containsKey(series)) return <Tuple2<String, double>>[];
-    var ll = (characterSeries[series] as Map<String, dynamic>)
+    if (!characterSeries!.containsKey(series))
+      return <Tuple2<String, double>>[];
+    var ll = (characterSeries![series] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
         .toList();
@@ -164,9 +165,9 @@ class HitomiIndexs {
   }
 
   static List<Tuple2<String, double>> getRelatedSeries(String character) {
-    if (!seriesCharacter.containsKey(character))
+    if (!seriesCharacter!.containsKey(character))
       return <Tuple2<String, double>>[];
-    var ll = (seriesCharacter[character] as Map<String, dynamic>)
+    var ll = (seriesCharacter![character] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
         .toList();

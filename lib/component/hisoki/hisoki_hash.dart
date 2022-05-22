@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class HisokiHash {
-  static Map<String, String> hash;
+  static late Map<String, String> hash;
 
   static Future<void> init() async {
     String data;
@@ -24,7 +24,7 @@ class HisokiHash {
         _hashs.entries.map((e) => MapEntry(e.key, e.value as String)).toList());
   }
 
-  static String getHash(String id) {
+  static String? getHash(String id) {
     return hash[id];
   }
 }

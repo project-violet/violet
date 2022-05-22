@@ -45,7 +45,7 @@ class ScriptManager {
     _runtime.evaluate(_scriptCache);
   }
 
-  static Future<Tuple3<List<String>, List<String>, List<String>>>
+  static Future<Tuple3<List<String>, List<String>, List<String>>?>
       runHitomiGetImageList(int id) async {
     if (_scriptCache == null) return null;
     try {

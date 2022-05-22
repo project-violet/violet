@@ -12,7 +12,7 @@ import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
 
 class EHentaiManager extends Downloadable {
-  RegExp urlMatcher;
+  late RegExp urlMatcher;
 
   EHentaiManager() {
     urlMatcher = RegExp(r'^https?://e-hentai.org/g/(?<id>\d+)/(?<hash>\w+)/?$');
@@ -57,17 +57,17 @@ class EHentaiManager extends Downloadable {
   }
 
   @override
-  Future<List<DownloadTask>> createTask(
+  Future<List<DownloadTask>?> createTask(
       String url, GeneralDownloadProgress gdp) async {
     var match = urlMatcher.allMatches(url);
-    var id = match.first.namedGroup('id').trim();
+    var id = match.first.namedGroup('id')!.trim();
 
     var articles = (await (await DataBaseManager.getInstance()).query(
             "SELECT * FROM HitomiColumnModel WHERE Id=$id ORDER BY Id DESC LIMIT 1 OFFSET 0"))
         .map((e) => QueryResult(result: e))
         .toList();
 
-    if (articles == null || articles.length == 0) {
+    if (articles.length == 0) {
       return null;
     }
 

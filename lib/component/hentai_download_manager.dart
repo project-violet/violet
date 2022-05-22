@@ -11,7 +11,7 @@ import 'package:violet/settings/settings.dart';
 class HentaiDonwloadManager {
   factory HentaiDonwloadManager.instance() => HentaiDonwloadManager();
 
-  RegExp urlMatcher;
+  late RegExp urlMatcher;
 
   HentaiDonwloadManager() {
     urlMatcher = RegExp(r'^\d+$');
@@ -48,7 +48,7 @@ class HentaiDonwloadManager {
     return true;
   }
 
-  Future<List<DownloadTask>> createTask(
+  Future<List<DownloadTask>?> createTask(
       String url, GeneralDownloadProgress gdp) async {
     var query = (await HentaiManager.idSearch(url)).item1;
 

@@ -32,7 +32,7 @@ class HitomiManager {
       tagmap = jsonDecode(text);
     }
 
-    return tagmap[classification][name];
+    return tagmap![classification][name];
   }
 
   static void reloadIndex() {
@@ -43,7 +43,7 @@ class HitomiManager {
     tagmap = jsonDecode(text);
   }
 
-  static Map<String, dynamic> tagmap;
+  static Map<String, dynamic>? tagmap;
   static Future<List<Tuple2<DisplayedTag, int>>> queryAutoComplete(
       String prefix,
       [bool useTranslated = false]) async {
@@ -83,9 +83,9 @@ class HitomiManager {
       else if (pp == 'classes') pp = 'class';
 
       var results = <Tuple2<DisplayedTag, int>>[];
-      if (!tagmap.containsKey(pp)) return results;
+      if (!tagmap!.containsKey(pp)) return results;
 
-      final ch = tagmap[pp];
+      final ch = tagmap![pp];
       if (!useTranslated) {
         if (opp == 'female' || opp == 'male') {
           ch.forEach((key, value) {
@@ -119,12 +119,12 @@ class HitomiManager {
             .where((e) =>
                 (opp != 'female' && opp != 'male'
                     ? e.group == opp
-                    : e.group == 'tag' && e.name.startsWith(opp)) &&
+                    : e.group == 'tag' && e.name!.startsWith(opp)) &&
                 ch.containsKey(e.name))
             .map((e) => Tuple2<DisplayedTag, int>(e, ch[e.name]))
             .where((e) => opp == 'tag'
-                ? !(e.item1.name.startsWith('female:') ||
-                    e.item1.name.startsWith('male:'))
+                ? !(e.item1.name!.startsWith('female:') ||
+                    e.item1.name!.startsWith('male:'))
                 : true)
             .toList();
         results.sort((a, b) => b.item2.compareTo(a.item2));
@@ -133,7 +133,7 @@ class HitomiManager {
     } else {
       if (!useTranslated) {
         var results = <Tuple2<DisplayedTag, int>>[];
-        tagmap.forEach((key1, value) {
+        tagmap!.forEach((key1, value) {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
               if (key2.contains(':')) {
@@ -163,8 +163,8 @@ class HitomiManager {
         return results;
       } else {
         var results = TagTranslate.containsTotal(prefix)
-            .where((e) => tagmap[e.group].containsKey(e.name))
-            .map((e) => Tuple2<DisplayedTag, int>(e, tagmap[e.group][e.name]))
+            .where((e) => tagmap![e.group].containsKey(e.name))
+            .map((e) => Tuple2<DisplayedTag, int>(e, tagmap![e.group][e.name]))
             .toList();
         results.sort((a, b) => b.item2.compareTo(a.item2));
         return results;
@@ -211,9 +211,9 @@ class HitomiManager {
       else if (pp == 'classes') pp = 'class';
 
       var results = <Tuple3<DisplayedTag, int, int>>[];
-      if (!tagmap.containsKey(pp)) return <Tuple2<DisplayedTag, int>>[];
+      if (!tagmap!.containsKey(pp)) return <Tuple2<DisplayedTag, int>>[];
 
-      final ch = tagmap[pp];
+      final ch = tagmap![pp];
       if (!useTranslated) {
         if (opp == 'female' || opp == 'male') {
           ch.forEach((key, value) {
@@ -256,13 +256,14 @@ class HitomiManager {
             .where((e) =>
                 (opp != 'female' && opp != 'male'
                     ? e.item1.group == opp
-                    : e.item1.group == 'tag' && e.item1.name.startsWith(opp)) &&
+                    : e.item1.group == 'tag' &&
+                        e.item1.name!.startsWith(opp)) &&
                 ch.containsKey(e.item1.name))
             .map((e) => Tuple3<DisplayedTag, int, int>(
                 e.item1, ch[e.item1.name], e.item2))
             .where((e) => opp == 'tag'
-                ? !(e.item1.name.startsWith('female:') ||
-                    e.item1.name.startsWith('male:'))
+                ? !(e.item1.name!.startsWith('female:') ||
+                    e.item1.name!.startsWith('male:'))
                 : true)
             .toList();
         results.sort((a, b) => a.item3.compareTo(b.item3));
@@ -273,7 +274,7 @@ class HitomiManager {
     } else {
       if (!useTranslated) {
         var results = <Tuple3<DisplayedTag, int, int>>[];
-        tagmap.forEach((key1, value) {
+        tagmap!.forEach((key1, value) {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
               if (key2.contains(':')) {
@@ -313,9 +314,9 @@ class HitomiManager {
             .toList();
       } else {
         var results = TagTranslate.containsFuzzingTotal(prefix)
-            .where((e) => tagmap[e.item1.group].containsKey(e.item1.name))
+            .where((e) => tagmap![e.item1.group].containsKey(e.item1.name))
             .map((e) => Tuple3<DisplayedTag, int, int>(
-                e.item1, tagmap[e.item1.group][e.item1.name], e.item2))
+                e.item1, tagmap![e.item1.group][e.item1.name], e.item2))
             .toList();
         results.sort((a, b) => a.item3.compareTo(b.item3));
         return results

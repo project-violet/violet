@@ -9,7 +9,7 @@ import 'package:image_size_getter/image_size_getter.dart';
 import 'package:violet/script/script_manager.dart';
 
 class HitomiImageProvider extends VioletImageProvider {
-  Tuple3<List<String>, List<String>, List<String>> urls;
+  Tuple3<List<String>, List<String>, List<String>?> urls;
   String id;
 
   HitomiImageProvider(this.urls, this.id);
@@ -19,7 +19,7 @@ class HitomiImageProvider extends VioletImageProvider {
 
   @override
   Future<List<String>> getSmallImagesUrl() async {
-    return urls.item3;
+    return urls.item3 ?? [];
   }
 
   @override
@@ -48,24 +48,25 @@ class HitomiImageProvider extends VioletImageProvider {
     return urls.item1.length;
   }
 
-  List<double> _estimatedCache;
+  List<double>? _estimatedCache;
 
   @override
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {
-    if (urls.item3 == null || urls.item3.length <= page) return -1;
+    if (urls.item3 == null || urls.item3!.length <= page) return -1;
 
     if (_estimatedCache == null)
-      _estimatedCache = List<double>.filled(urls.item3.length, 0);
-    else if (_estimatedCache[page] != 0) return _estimatedCache[page];
+      _estimatedCache = List<double>.filled(urls.item3!.length, 0);
+    else if (_estimatedCache![page] != 0) return _estimatedCache![page];
 
     final header = await getHeader(page);
-    final image = (await http.get(urls.item3[page], headers: header)).bodyBytes;
+    final image =
+        (await http.get(urls.item3![page], headers: header)).bodyBytes;
     final thumbSize = ImageSizeGetter.getSize(MemoryInput(image));
 
     // w1:h1=w2:h2
     // w1h2=h1w2
     // h2=h1w2/w1
-    return _estimatedCache[page] =
+    return _estimatedCache![page] =
         thumbSize.height * baseWidth / thumbSize.width;
   }
 

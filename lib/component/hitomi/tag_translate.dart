@@ -13,9 +13,9 @@ import 'package:violet/component/hitomi/tag_translated_regacy.dart';
 class TagTranslate {
   static const defaultLanguage = 'korean';
   // <Origin, Translated>
-  static Map<String, String> _translateMap;
+  static late Map<String, String> _translateMap;
   // <Translated-Andro, Origin>
-  static Map<String, String> _reverseAndroMap;
+  static late Map<String, String> _reverseAndroMap;
 
   static Future<void> init() async {
     String data;
@@ -43,7 +43,7 @@ class TagTranslate {
 
   static String of(String classification, String key) {
     if (_translateMap.containsKey(classification + ':' + key))
-      return _translateMap[classification + ':' + key].split('|').first;
+      return _translateMap[classification + ':' + key]!.split('|').first;
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
@@ -51,15 +51,15 @@ class TagTranslate {
 
   static String ofAny(String key) {
     if (_translateMap.containsKey('series:' + key))
-      return _translateMap['series:' + key].split('|').first;
+      return _translateMap['series:' + key]!.split('|').first;
     if (_translateMap.containsKey('character:' + key))
-      return _translateMap['character:' + key].split('|').first;
+      return _translateMap['character:' + key]!.split('|').first;
     if (_translateMap.containsKey('tag:female:' + key))
-      return _translateMap['tag:female:' + key].split('|').first;
+      return _translateMap['tag:female:' + key]!.split('|').first;
     if (_translateMap.containsKey('tag:male:' + key))
-      return _translateMap['tag:male:' + key].split('|').first;
+      return _translateMap['tag:male:' + key]!.split('|').first;
     if (_translateMap.containsKey('tag:' + key))
-      return _translateMap['tag:' + key].split('|').first;
+      return _translateMap['tag:' + key]!.split('|').first;
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
@@ -102,9 +102,9 @@ class TagTranslate {
     part = part.replaceAll(' ', '');
     var result = _translateMap.entries
         .map((e) => Tuple2<DisplayedTag, int>(
-            DisplayedTag(tag: e.key, translated: e.value.split('|')[0]),
+            DisplayedTag(tag: e.key, translated: e.value!.split('|')[0]),
             Distance.levenshteinDistance(
-                e.value.replaceAll(' ', '').split('|')[0].runes.toList(),
+                e.value.replaceAll(' ', '')!.split('|')[0].runes.toList(),
                 part.runes.toList())))
         .toList();
     result.sort((x, y) => x.item2.compareTo(y.item2));
@@ -117,9 +117,10 @@ class TagTranslate {
     var result = _reverseAndroMap.entries
         .map((e) => Tuple2<DisplayedTag, int>(
             DisplayedTag(
-                tag: e.value, translated: _translateMap[e.value].split('|')[0]),
+                tag: e.value,
+                translated: _translateMap[e.value]!.split('|')[0]),
             Distance.levenshteinDistance(
-                e.key.replaceAll(' ', '').split('|')[0].runes.toList(),
+                e.key.replaceAll(' ', '')!.split('|')[0].runes.toList(),
                 part.runes.toList())))
         .toList();
     result.sort((x, y) => x.item2.compareTo(y.item2));
@@ -198,9 +199,9 @@ class TagTranslate {
   static String disassemblyCharacter(int ch) {
     if (checkLetter(ch)) {
       var jamo = distortion(ch);
-      return index_initial_2[jamo['initial']] +
-          index_medial_2[jamo['medial']] +
-          index_final_2[jamo['final']];
+      return index_initial_2[jamo['initial']!] +
+          index_medial_2[jamo['medial']!] +
+          index_final_2[jamo['final']!];
     } else if (checkJamo31(ch)) {
       return index_letter_2[ch - 0x3131];
     } else if (checkJamo11(ch)) {
