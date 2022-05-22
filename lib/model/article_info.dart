@@ -14,31 +14,31 @@ class ArticleInfo {
   final ScrollController controller;
   final String title;
   final String artist;
-  final List<QueryResult> usableTabList;
+  final List<QueryResult>? usableTabList;
   bool isBookmarked;
-  bool lockRead;
+  bool? lockRead;
 
   ArticleInfo({
-    @required this.queryResult,
-    @required this.thumbnail,
-    @required this.heroKey,
-    @required this.headers,
-    @required this.isBookmarked,
-    @required this.controller,
-    @required this.title,
-    @required this.artist,
+    required this.queryResult,
+    required this.thumbnail,
+    required this.heroKey,
+    required this.headers,
+    required this.isBookmarked,
+    required this.controller,
+    required this.title,
+    required this.artist,
     this.usableTabList,
     this.lockRead,
   });
 
   factory ArticleInfo.fromArticleInfo({
-    QueryResult queryResult,
-    String thumbnail,
-    String heroKey,
-    Map<String, String> headers,
-    bool isBookmarked,
-    ScrollController controller,
-    List<QueryResult> usableTabList,
+    required QueryResult queryResult,
+    required String thumbnail,
+    required String heroKey,
+    required Map<String, String> headers,
+    required bool isBookmarked,
+    required ScrollController controller,
+    List<QueryResult>? usableTabList,
     bool lockRead = false,
   }) {
     var artist = (queryResult.artists() as String)

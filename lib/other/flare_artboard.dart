@@ -14,7 +14,7 @@ class FlareArtboard extends LeafRenderObjectWidget {
   const FlareArtboard(this.artboard,
       {this.fit = BoxFit.contain,
       this.alignment = Alignment.center,
-      this.controller});
+      required this.controller});
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -45,17 +45,17 @@ class FlareArtboard extends LeafRenderObjectWidget {
 }
 
 class FlareArtboardRenderObject extends FlareRenderBox {
-  FlutterActorArtboard _artboard;
-  AABB _setupAABB;
-  FlareController _controller;
-  FlareController get controller => _controller;
+  FlutterActorArtboard? _artboard;
+  AABB? _setupAABB;
+  FlareController? _controller;
+  FlareController get controller => _controller!;
   set controller(FlareController c) {
     if (_controller != c) {
       _controller?.isActive?.removeListener(onControllerActiveChange);
       _controller = c;
       _controller?.isActive?.addListener(onControllerActiveChange);
       if (_controller != null && _artboard != null) {
-        _controller.initialize(_artboard);
+        _controller!.initialize(_artboard);
       }
     }
   }
@@ -66,11 +66,11 @@ class FlareArtboardRenderObject extends FlareRenderBox {
 
   void updateBounds() {
     if (_artboard != null) {
-      _setupAABB = _artboard.artboardAABB();
+      _setupAABB = _artboard!.artboardAABB();
     }
   }
 
-  FlutterActorArtboard get artboard => _artboard;
+  FlutterActorArtboard get artboard => _artboard!;
   set artboard(FlutterActorArtboard value) {
     if (value == _artboard) {
       return;
@@ -90,17 +90,17 @@ class FlareArtboardRenderObject extends FlareRenderBox {
   void advance(double elapsedSeconds) {
     if (_artboard != null &&
         _controller != null &&
-        !_controller.advance(_artboard, elapsedSeconds)) {
+        !_controller!.advance(_artboard, elapsedSeconds)) {
       _controller?.isActive?.value = false;
     }
 
     if (_artboard != null) {
-      _artboard.advance(elapsedSeconds);
+      _artboard!.advance(elapsedSeconds);
     }
   }
 
   @override
-  AABB get aabb => _setupAABB;
+  AABB get aabb => _setupAABB!;
 
   @override
   void prePaint(Canvas canvas, Offset offset) {
@@ -113,14 +113,12 @@ class FlareArtboardRenderObject extends FlareRenderBox {
       return;
     }
 
-    _artboard.draw(canvas);
+    _artboard!.draw(canvas);
   }
 
   @override
   bool get isPlaying => true;
 
   @override
-  Future<void> load() {
-    return null;
-  }
+  Future<void> load() async {}
 }

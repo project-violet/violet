@@ -3,9 +3,9 @@
 
 class GalleryImageItem {
   GalleryImageItem({
-    this.id,
-    this.url,
-    this.headers,
+    required this.id,
+    required this.url,
+    required this.headers,
     this.isSvg = false,
     this.loaded = false,
   });
@@ -14,6 +14,6 @@ class GalleryImageItem {
   final String url;
   final Map<String, String> headers;
   final bool isSvg;
-  double height;
+  double? height;
   bool loaded;
 }

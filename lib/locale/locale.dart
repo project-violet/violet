@@ -13,27 +13,27 @@ class Translations {
   Locale locale;
 
   // Latest instance
-  static Translations instance;
+  static Translations? instance;
 
   static Translations of(BuildContext context) {
     var trans = Localizations.of<Translations>(context, Translations);
     if (trans != null)
-      return Localizations.of<Translations>(context, Translations);
+      return Localizations.of<Translations>(context, Translations)!;
     else
-      return instance;
+      return instance!;
   }
 
-  Map<String, String> _sentences;
+  late Map<String, String> _sentences;
 
-  String dbLanguageCode;
+  late String dbLanguageCode;
 
-  Future<bool> load([String code]) async {
+  Future<bool> load([String? code]) async {
     if (code == null) {
       code = locale.languageCode;
       dbLanguageCode = code;
       if (!code.contains('_')) {
         if (locale.scriptCode != null && locale.scriptCode != '')
-          code += '_' + this.locale.scriptCode;
+          code += '_' + this.locale.scriptCode!;
       }
     } else if (code.contains('_')) {
       dbLanguageCode = code.split('_')[0];
@@ -57,7 +57,7 @@ class Translations {
   }
 
   String trans(String key) {
-    return this._sentences[key];
+    return this._sentences[key]!;
   }
 }
 

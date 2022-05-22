@@ -52,10 +52,9 @@ class DownloadTask {
   // These used in isolate downloader
   int accDownloadSize = 0;
   bool isSizeEnsued = false;
-  int? taskId;
+  late int taskId;
 
   DownloadTask({
-    this.taskId,
     this.accept =
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
     this.userAgent =
