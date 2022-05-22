@@ -28,7 +28,7 @@ class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
 
   FilterPage({
-    this.queryResult,
+    required this.queryResult,
   });
 
   @override
@@ -36,7 +36,7 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  FilterController c;
+  late FilterController c;
 
   final _searchController = TextEditingController();
 
@@ -53,7 +53,7 @@ class _FilterPageState extends State<FilterPage> {
         element.tags().split('|').forEach((element) {
           if (element == '') return;
           if (!tags.containsKey(element)) tags[element] = 0;
-          tags[element] += 1;
+          tags[element] = tags[element]! + 1;
         });
       }
     });
@@ -67,7 +67,7 @@ class _FilterPageState extends State<FilterPage> {
         group = key.split(':')[0];
         name = key.split(':')[1];
       }
-      _groupCount[group] += 1;
+      _groupCount[group] = _groupCount[group]! + 1;
       _tags.add(Tuple3<String, String, int>(group, name, value));
       if (!c.tagStates.containsKey(group + '|' + name))
         c.tagStates[group + '|' + name] = false;
@@ -98,11 +98,11 @@ class _FilterPageState extends State<FilterPage> {
         element.result[vv].split('|').forEach((element) {
           if (element == '') return;
           if (!tags.containsKey(element)) tags[element] = 0;
-          tags[element] += 1;
+          tags[element] = tags[element]! + 1;
         });
       }
     });
-    _groupCount[group] += tags.length;
+    _groupCount[group] = _groupCount[group]! + tags.length;
     tags.forEach((key, value) {
       _tags.add(Tuple3<String, String, int>(group, key, value));
       if (!c.tagStates.containsKey(group + '|' + key))
@@ -248,7 +248,7 @@ class _FilterPageState extends State<FilterPage> {
 
   _buildTagsPanel() {
     var tags = _tags
-        .where((element) => c.tagStates[element.item1 + '|' + element.item2])
+        .where((element) => c.tagStates[element.item1 + '|' + element.item2]!)
         .toList();
 
     if (c.isSearch)
@@ -256,13 +256,13 @@ class _FilterPageState extends State<FilterPage> {
           .where((element) =>
               (element.item1 + ':' + element.item2)
                   .contains(_searchController.text) &&
-              !c.tagStates[element.item1 + '|' + element.item2])
+              !c.tagStates[element.item1 + '|' + element.item2]!)
           .toList();
     else
       tags += _tags
           .where((element) =>
-              c.groupStates[element.item1] &&
-              !c.tagStates[element.item1 + '|' + element.item2])
+              c.groupStates[element.item1]! &&
+              !c.tagStates[element.item1 + '|' + element.item2]!)
           .toList();
 
     return Wrap(
@@ -272,7 +272,7 @@ class _FilterPageState extends State<FilterPage> {
         children: tags.take(100).map(
           (element) {
             return _Chip(
-              selected: c.tagStates[element.item1 + '|' + element.item2],
+              selected: c.tagStates[element.item1 + '|' + element.item2]!,
               group: element.item1,
               name: element.item2,
               count: element.item3,
@@ -294,7 +294,7 @@ class _FilterPageState extends State<FilterPage> {
                   count: element.item2,
                   group: element.item1,
                   name: element.item1,
-                  selected: c.groupStates[element.item1],
+                  selected: c.groupStates[element.item1]!,
                   callback: (value) {
                     c.groupStates[element.item1] = value;
                     setState(() {});
@@ -343,7 +343,7 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.of(context).trans('selectall')),
           onSelected: (bool value) {
             _tags
-                .where((element) => c.groupStates[element.item1])
+                .where((element) => c.groupStates[element.item1]!)
                 .forEach((element) {
               c.tagStates[element.item1 + '|' + element.item2] = true;
             });
@@ -354,7 +354,7 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.of(context).trans('deselectall')),
           onSelected: (bool value) {
             _tags
-                .where((element) => c.groupStates[element.item1])
+                .where((element) => c.groupStates[element.item1]!)
                 .forEach((element) {
               c.tagStates[element.item1 + '|' + element.item2] = false;
             });
@@ -365,10 +365,10 @@ class _FilterPageState extends State<FilterPage> {
           label: Text(trans.Translations.of(context).trans('inverse')),
           onSelected: (bool value) {
             _tags
-                .where((element) => c.groupStates[element.item1])
+                .where((element) => c.groupStates[element.item1]!)
                 .forEach((element) {
               c.tagStates[element.item1 + '|' + element.item2] =
-                  !c.tagStates[element.item1 + '|' + element.item2];
+                  !c.tagStates[element.item1 + '|' + element.item2]!;
             });
             setState(() {});
           },
@@ -387,7 +387,13 @@ class _Chip extends StatefulWidget {
   final int count;
   final ChipCallback callback;
 
-  _Chip({this.selected, this.group, this.name, this.count, this.callback});
+  _Chip({
+    required this.selected,
+    required this.group,
+    required this.name,
+    required this.count,
+    required this.callback,
+  });
 
   @override
   __ChipState createState() => __ChipState();

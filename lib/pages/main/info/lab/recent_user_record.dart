@@ -71,7 +71,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results.length == 0) return;
+      if (query.results!.length == 0) return;
 
       /* Statistics -- */
 
@@ -84,7 +84,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       var ffstat = Map<String, int>();
 
-      query.results.forEach((element) {
+      query.results!.forEach((element) {
         if (element.tags() == null) return;
         (element.tags() as String)
             .split('|')
@@ -98,7 +98,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
             tags += 1;
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
-          ffstat[element] += 1;
+          ffstat[element] = ffstat[element]! + 1;
         });
       });
 
@@ -115,7 +115,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       /* -- Statistics */
 
       var qr = Map<String, QueryResult>();
-      query.results.forEach((element) {
+      query.results!.forEach((element) {
         qr[element.id().toString()] = element;
       });
 
@@ -125,7 +125,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
           return;
         }
         result.add(Tuple2<QueryResult, int>(
-            qr[element.item2.toString()], element.item3));
+            qr[element.item2.toString()]!, element.item3));
       });
 
       records.insertAll(0, result);
@@ -195,7 +195,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
           Row(
             children: [
               Container(width: 16),
-              Text('Limit: $limit${Translations.instance.trans('second')}'),
+              Text('Limit: $limit${Translations.instance!.trans('second')}'),
               Expanded(
                 child: ListTile(
                   dense: true,
@@ -240,7 +240,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
   // Chart component lists
   List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
-  List<Tuple2<String, int>> lffOrigin;
+  List<Tuple2<String, int>>? lffOrigin;
   bool isExpanded = false;
   // This is used for top color bar
   int femaleTags = 0;
@@ -360,9 +360,9 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
         onTapCancel: () {
           isExpanded = !isExpanded;
           if (isExpanded)
-            lff = lffOrigin;
+            lff = lffOrigin!;
           else
-            lff = lffOrigin.take(5).toList();
+            lff = lffOrigin!.take(5).toList();
           setState(() {});
           Future.delayed(Duration(milliseconds: 100)).then((value) =>
               _controller.animateTo(0.0,

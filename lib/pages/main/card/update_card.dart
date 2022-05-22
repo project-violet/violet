@@ -12,7 +12,7 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 class UpdateCard extends StatefulWidget {
   final VoidCallback clickEvent;
 
-  UpdateCard({this.clickEvent});
+  UpdateCard({required this.clickEvent});
 
   @override
   _UpdateCardState createState() => _UpdateCardState();
@@ -20,7 +20,7 @@ class UpdateCard extends StatefulWidget {
 
 class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
   bool pressed = false;
-  AnimationController rotationController;
+  late AnimationController rotationController;
 
   @override
   void initState() {

@@ -42,7 +42,7 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final BookmarkCheckCallback bookmarkCheckCallback;
   bool isChecked;
   final bool isCheckMode;
-  final ArticleListItem articleListItem;
+  final ArticleListItem? articleListItem;
 
   ArticleListItemVerySimpleWidget({
     // this.queryResult,
@@ -68,12 +68,12 @@ class _ArticleListItemVerySimpleWidgetState
     with
         TickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
-  ArticleListItem data;
+  late ArticleListItem data;
 
   @override
   bool get wantKeepAlive => true;
 
-  String thumbnail;
+  String? thumbnail;
   int imageCount = 0;
   double pad = 0.0;
   double scale = 1.0;
@@ -85,18 +85,18 @@ class _ArticleListItemVerySimpleWidgetState
   bool isLastestRead = false;
   bool disableFiltering = false;
   int latestReadPage = 0;
-  Map<String, String> headers;
+  Map<String, String>? headers;
   final FlareControls _flareController = FlareControls();
-  double thisWidth, thisHeight;
+  double? thisWidth, thisHeight;
 
   @override
   void initState() {
     super.initState();
   }
 
-  String artist;
-  String title;
-  String dateTime;
+  String? artist;
+  String? title;
+  String? dateTime;
 
   @override
   void dispose() {
@@ -176,7 +176,7 @@ class _ArticleListItemVerySimpleWidgetState
 
     title = HtmlUnescape().convert(data.queryResult.title());
     dateTime = data.queryResult.getDateTime() != null
-        ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime())
+        ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime()!)
         : '';
     _shouldReload = true;
 
@@ -209,17 +209,17 @@ class _ArticleListItemVerySimpleWidgetState
     }
   }
 
-  BodyWidget _body;
+  BodyWidget? _body;
   bool _shouldReload = false;
 
-  Widget _cachedBuildWidget;
+  Widget? _cachedBuildWidget;
   bool _shouldReloadCachedBuildWidget = false;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    if (disposed) return null;
+    if (disposed) return Container();
 
     if (data.bookmarkMode &&
         !widget.isCheckMode &&
@@ -303,7 +303,7 @@ class _ArticleListItemVerySimpleWidgetState
       );
     }
 
-    return _cachedBuildWidget;
+    return _cachedBuildWidget!;
   }
 
   _onTapDown(detail) {
@@ -320,7 +320,7 @@ class _ArticleListItemVerySimpleWidgetState
 
   _onTapUp(detail) {
     if (data.selectMode) {
-      data.selectCallback();
+      data.selectCallback!();
       return;
     }
 
@@ -328,7 +328,7 @@ class _ArticleListItemVerySimpleWidgetState
 
     if (widget.isCheckMode) {
       widget.isChecked = !widget.isChecked;
-      data.bookmarkCheckCallback(data.queryResult.id(), widget.isChecked);
+      data.bookmarkCheckCallback!(data.queryResult.id(), widget.isChecked);
       _shouldReloadCachedBuildWidget = true;
       Future.delayed(Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
@@ -369,8 +369,8 @@ class _ArticleListItemVerySimpleWidgetState
                 ),
                 value: ArticleInfo.fromArticleInfo(
                   queryResult: data.queryResult,
-                  thumbnail: thumbnail,
-                  headers: headers,
+                  thumbnail: thumbnail!,
+                  headers: headers!,
                   heroKey: data.thumbnailTag,
                   isBookmarked: isBookmarked.value,
                   controller: controller,

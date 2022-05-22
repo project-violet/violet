@@ -79,9 +79,9 @@ Future<bool> showOkCancelDialog({
   );
 }
 
-Future<bool?> showYesNoDialog(BuildContext context, String message,
+Future<bool> showYesNoDialog(BuildContext context, String message,
     [String? title]) async {
-  return await showDialog<bool>(
+  var result = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(title ?? defaultTitle),
@@ -104,4 +104,5 @@ Future<bool?> showYesNoDialog(BuildContext context, String message,
       ],
     ),
   );
+  return result == null ? false : result;
 }

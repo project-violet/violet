@@ -11,7 +11,7 @@ import 'package:violet/settings/settings.dart';
 class TagSelectorDialog extends StatefulWidget {
   final String what;
 
-  TagSelectorDialog({this.what});
+  TagSelectorDialog({required this.what});
 
   @override
   _TagSelectorDialogState createState() => _TagSelectorDialogState();
@@ -148,9 +148,9 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
 
   List<Tuple2<DisplayedTag, int>> _searchLists = <Tuple2<DisplayedTag, int>>[];
 
-  TextEditingController _searchController;
-  int _insertPos, _insertLength;
-  String _searchText;
+  late final TextEditingController _searchController;
+  int? _insertPos, _insertLength;
+  String? _searchText;
   bool _nothing = false;
   bool _tagTranslation = false;
   bool _showCount = true;
@@ -202,7 +202,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   // Create tag-chip
   // group, name, counts
   Widget chip(Tuple2<DisplayedTag, int> info) {
-    var tagDisplayed = info.item1.name.split(':').last;
+    var tagDisplayed = info.item1.name!.split(':').last;
     var count = '';
     Color color = Colors.grey;
 
@@ -211,9 +211,9 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
 
     if (info.item2 > 0 && _showCount) count = ' (${info.item2})';
 
-    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:'))
+    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:'))
       color = Colors.pink;
-    else if (info.item1.group == 'tag' && info.item1.name.startsWith('male:'))
+    else if (info.item1.group == 'tag' && info.item1.name!.startsWith('male:'))
       color = Colors.blue;
     else if (info.item1.group == 'prefix')
       color = Colors.orange;
@@ -230,10 +230,10 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
         child: Text(info.item1.group == 'tag' &&
-                (info.item1.name.startsWith('female:') ||
-                    info.item1.name.startsWith('male:'))
-            ? info.item1.name[0].toUpperCase()
-            : info.item1.group[0].toUpperCase()),
+                (info.item1.name!.startsWith('female:') ||
+                    info.item1.name!.startsWith('male:'))
+            ? info.item1.name![0].toUpperCase()
+            : info.item1.group![0].toUpperCase()),
       ),
       label: Text(
         ' ' + tagDisplayed + count,
@@ -249,38 +249,38 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {
           var insert = (info.item1.group == 'tag' &&
-                      (info.item1.name.startsWith('female') ||
-                          info.item1.name.startsWith('male'))
+                      (info.item1.name!.startsWith('female') ||
+                          info.item1.name!.startsWith('male'))
                   ? info.item1.name
-                  : info.item1.getTag())
+                  : info.item1.getTag())!
               .replaceAll(' ', '_');
 
-          _searchController.text = _searchText.substring(0, _insertPos) +
+          _searchController.text = _searchText!.substring(0, _insertPos) +
               insert +
-              _searchText.substring(
-                  _insertPos + _insertLength, _searchText.length);
+              _searchText!
+                  .substring(_insertPos! + _insertLength!, _searchText!.length);
           _searchController.selection = TextSelection(
-            baseOffset: _insertPos + insert.length,
-            extentOffset: _insertPos + insert.length,
+            baseOffset: _insertPos! + insert.length,
+            extentOffset: _insertPos! + insert.length,
           );
         } else {
           var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
-                info.item1.name +
+                info.item1.name! +
                 ':' +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item1.name.length + 1,
-              extentOffset: offset + info.item1.name.length + 1,
+              baseOffset: offset + info.item1.name!.length + 1,
+              extentOffset: offset + info.item1.name!.length + 1,
             );
           } else {
-            _searchController.text = info.item1.name + ':';
+            _searchController.text = info.item1.name! + ':';
             _searchController.selection = TextSelection(
-              baseOffset: info.item1.name.length + 1,
-              extentOffset: info.item1.name.length + 1,
+              baseOffset: info.item1.name!.length + 1,
+              extentOffset: info.item1.name!.length + 1,
             );
           }
           await searchProcess(

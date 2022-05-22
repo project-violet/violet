@@ -16,7 +16,12 @@ class ThreeArticlePanel extends StatelessWidget {
   final String count;
   final List<QueryResult> articles;
 
-  ThreeArticlePanel({this.tappedRoute, this.title, this.count, this.articles});
+  ThreeArticlePanel({
+    required this.tappedRoute,
+    required this.title,
+    required this.count,
+    required this.articles,
+  });
 
   @override
   Widget build(BuildContext context) {

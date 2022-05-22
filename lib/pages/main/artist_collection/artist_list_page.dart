@@ -18,7 +18,7 @@ class ArtistListPage extends StatelessWidget {
   final List<String> artists;
   final bool isLast;
 
-  const ArtistListPage({this.artists, this.isLast});
+  const ArtistListPage({required this.artists, required this.isLast});
 
   static final RegExp _chDot = RegExp('[cC]h\\.');
 
@@ -143,7 +143,7 @@ class ArtistListPage extends StatelessWidget {
                     );
                   }
 
-                  final queryResults = snapshot.data;
+                  final queryResults = snapshot.data!;
                   final articleCount =
                       HitomiManager.getArticleCount(classification, name);
 

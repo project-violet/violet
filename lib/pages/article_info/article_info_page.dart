@@ -50,7 +50,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
 class ArticleInfoPage extends StatelessWidget {
-  final Key key;
+  final Key? key;
 
   ArticleInfoPage({
     this.key,
@@ -286,7 +286,7 @@ class ArticleInfoPage extends StatelessWidget {
 
     await ScriptManager.refresh();
 
-    DownloadPageManager.taskController.add(data.queryResult.id().toString());
+    DownloadPageManager.taskController!.add(data.queryResult.id().toString());
     Navigator.pop(context);
   }
 
@@ -319,8 +319,6 @@ class ArticleInfoPage extends StatelessWidget {
                 // uris: ThumbnailManager.get(queryResult.id())
                 //     .item1,
                 // useWeb: true,
-
-                uris: List<String>.filled(prov.length(), null),
                 useProvider: true,
                 provider: prov,
                 headers: data.headers,
@@ -357,7 +355,7 @@ class DividerWidget extends StatelessWidget {
 class TagInfoAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  const TagInfoAreaWidget({this.queryResult});
+  const TagInfoAreaWidget({required this.queryResult});
 
   @override
   Widget build(BuildContext context) {
@@ -520,7 +518,7 @@ class MultiChipWidget extends StatelessWidget {
 class PreviewAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  PreviewAreaWidget({this.queryResult});
+  PreviewAreaWidget({required this.queryResult});
 
   @override
   Widget build(BuildContext context) {
@@ -547,9 +545,11 @@ class PreviewAreaWidget extends StatelessWidget {
           // } else
           //   prov = await ProviderManager.get(queryResult.id() * 1000000);
 
-          return [await prov.getSmallImagesUrl(), await prov.getHeader(0)];
+          return Tuple2(
+              await prov.getSmallImagesUrl(), await prov.getHeader(0));
         }),
-        builder: (context, snapshot) {
+        builder: (context,
+            AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
           return GridView.count(
@@ -560,11 +560,11 @@ class PreviewAreaWidget extends StatelessWidget {
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            children: (snapshot.data[0] as List<String>)
+            children: (snapshot.data!.item1)
                 .take(30)
                 .map((e) => CachedNetworkImage(
                       imageUrl: e,
-                      httpHeaders: snapshot.data[1] as Map<String, String>,
+                      httpHeaders: snapshot.data!.item2,
                     ))
                 .toList(),
           );
@@ -603,7 +603,7 @@ class _CommentArea extends StatefulWidget {
   final QueryResult queryResult;
   final Map<String, String> headers;
 
-  _CommentArea({this.queryResult, this.headers});
+  _CommentArea({required this.queryResult, required this.headers});
 
   @override
   __CommentAreaState createState() => __CommentAreaState();
@@ -625,7 +625,7 @@ class __CommentAreaState extends State<_CommentArea> {
                 'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l');
             var article = EHParser.parseArticleData(html);
             setState(() {
-              comments = article.comment;
+              comments = article.comment ?? [];
             });
             return;
           } catch (e) {}
@@ -637,7 +637,7 @@ class __CommentAreaState extends State<_CommentArea> {
           return;
         var article = EHParser.parseArticleData(html);
         setState(() {
-          comments = article.comment;
+          comments = article.comment ?? [];
         });
       });
     }
@@ -658,7 +658,11 @@ class _InfoAreaWidget extends StatefulWidget {
   final Map<String, String> headers;
   final List<Tuple3<DateTime, String, String>> comments;
 
-  _InfoAreaWidget({@required this.queryResult, this.headers, this.comments});
+  _InfoAreaWidget({
+    required this.queryResult,
+    required this.headers,
+    required this.comments,
+  });
 
   @override
   __InfoAreaWidgetState createState() => __InfoAreaWidgetState();
@@ -860,7 +864,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         RegExp(r'^(https?://)?e(-|x)hentai.org/g/(?<id>\d+)/(?<hash>\w+)/?$');
     if (ehPattern.stringMatch(url) == url) {
       var match = ehPattern.allMatches(url);
-      var id = match.first.namedGroup('id').trim();
+      var id = match.first.namedGroup('id')!.trim();
       _showArticleInfo(int.parse(id));
     } else if (await canLaunch(url)) {
       await launch(url);
@@ -919,7 +923,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
 
   List<InlineSpan> linkify(String text) {
     final List<InlineSpan> list = <InlineSpan>[];
-    final RegExpMatch match =
+    final RegExpMatch? match =
         RegExp(r'(https?://.*?)([\<"\n\r ]|$)').firstMatch(text);
     if (match == null) {
       list.add(TextSpan(text: text));
@@ -930,7 +934,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       list.add(TextSpan(text: text.substring(0, match.start)));
     }
 
-    final String linkText = match.group(1);
+    final String linkText = match.group(1)!;
     if (linkText.contains(RegExp(urlPattern, caseSensitive: false))) {
       list.add(buildLinkComponent(linkText, linkText));
     } else if (linkText.contains(RegExp(emailPattern, caseSensitive: false))) {
@@ -1000,7 +1004,7 @@ class _Chip extends StatelessWidget {
   final String name;
   final String group;
 
-  const _Chip({this.name, this.group});
+  const _Chip({required this.name, required this.group});
 
   String normalize(String tag) {
     if (tag == "groups") return "group";
@@ -1110,7 +1114,7 @@ class _Chip extends StatelessWidget {
 
 class _RelatedArea extends StatelessWidget {
   final List<int> relatedIds;
-  const _RelatedArea({this.relatedIds});
+  const _RelatedArea({required this.relatedIds});
 
   @override
   Widget build(BuildContext context) {
@@ -1120,13 +1124,13 @@ class _RelatedArea extends StatelessWidget {
         if (!snapshot.hasData) return Container();
 
         return Column(children: <Widget>[
-          articleArea(context, snapshot.data),
+          articleArea(context, snapshot.data!),
           Visibility(
             visible: relatedIds.length > 6,
             child: more(
               context,
               () => ArticleListPage(
-                  cc: snapshot.data,
+                  cc: snapshot.data!,
                   name: Translations.of(context).trans('related') +
                       ' ' +
                       Translations.of(context).trans('articles')),

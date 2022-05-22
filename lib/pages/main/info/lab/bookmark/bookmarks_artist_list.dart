@@ -22,7 +22,11 @@ class LabGroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  LabGroupArtistList({this.artists, this.name, this.groupId});
+  LabGroupArtistList({
+    required this.artists,
+    required this.name,
+    required this.groupId,
+  });
 
   @override
   _GroupArtistListState createState() => _GroupArtistListState();
@@ -32,7 +36,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
     with AutomaticKeepAliveClientMixin<LabGroupArtistList> {
   @override
   bool get wantKeepAlive => true;
-  List<BookmarkArtist> artists;
+  late List<BookmarkArtist> artists;
 
   Future<List<BookmarkArtist>> _bookmark() async {
     if (_filterLevel == 0) await refresh();
@@ -123,12 +127,11 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                       future: _future(e.artist(), e.type()),
                       builder: (BuildContext context,
                           AsyncSnapshot<List<QueryResult>> snapshot) {
-                        var qq = snapshot.data;
                         if (!snapshot.hasData)
                           return Container(
                             height: 195,
                           );
-                        return _listItem(context, e, qq);
+                        return _listItem(context, e, snapshot.data!);
                       },
                     );
                   },

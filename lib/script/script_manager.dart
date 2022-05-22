@@ -84,9 +84,9 @@ class ScriptManager {
     }
   }
 
-  static Future<Map<String, String>?> runHitomiGetHeaderContent(
+  static Future<Map<String, String>> runHitomiGetHeaderContent(
       String id) async {
-    if (_scriptCache == null) return null;
+    if (_scriptCache == null) return Map<String, String>();
     try {
       final jResult =
           _runtime.evaluate("hitomi_get_header_content('$id')").stringResult;
@@ -95,17 +95,16 @@ class ScriptManager {
       if (jResultObject is Map<dynamic, dynamic>) {
         return Map<String, String>.from(jResultObject);
       } else {
-        Logger.error(
+        throw new Exception(
             '[script-HitomiGetHeaderContent] E: JSError\nId: $id\nMessage: ' +
                 jResult.toString());
-        return null;
       }
     } catch (e, st) {
       Logger.error('[script-HitomiGetHeaderContent] E: ' +
           e.toString() +
           '\nId: $id\n' +
           st.toString());
-      return null;
+      rethrow;
     }
   }
 }

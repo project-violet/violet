@@ -7,8 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:violet/settings/settings.dart';
 
 class CardPanel {
-  static Widget build(BuildContext context,
-      {Widget child, bool enableBackgroundColor = false, String heroTag}) {
+  static Widget build(
+    BuildContext context, {
+    required Widget child,
+    bool enableBackgroundColor = false,
+    String? heroTag,
+  }) {
     final width = MediaQuery.of(context).size.width;
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;

@@ -42,7 +42,7 @@ class ArtistInfoPage extends StatefulWidget {
   final bool isCharacter;
 
   ArtistInfoPage({
-    @required this.artist,
+    required this.artist,
     this.isGroup = false,
     this.isUploader = false,
     this.isSeries = false,
@@ -60,27 +60,27 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   int maleTags = 0;
   int tags = 0;
   // Artist? Group? Uploader?
-  String prefix;
+  late String prefix;
   // Artist Articles
-  List<QueryResult> cc;
+  late List<QueryResult> cc;
   // Chart component lists
-  List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
-  List<Tuple2<String, int>> lffOrigin;
+  late List<Tuple2<String, int>> lff = <Tuple2<String, int>>[];
+  late List<Tuple2<String, int>> lffOrigin;
   // Similar Aritsts Info
-  List<Tuple2<String, double>> similars;
-  List<Tuple2<String, double>> similarsAll;
-  List<Tuple2<String, double>> relatedCOSSingle;
-  List<Tuple2<String, double>> relatedCharacterOrSeries;
-  List<Tuple2<String, double>> relatedCOSSingleAll;
-  List<Tuple2<String, double>> relatedCharacterOrSeriesAll;
+  late List<Tuple2<String, double>> similars;
+  late List<Tuple2<String, double>> similarsAll;
+  late List<Tuple2<String, double>> relatedCOSSingle;
+  late List<Tuple2<String, double>> relatedCharacterOrSeries;
+  late List<Tuple2<String, double>> relatedCOSSingleAll;
+  late List<Tuple2<String, double>> relatedCharacterOrSeriesAll;
   // Similar Item Lists
   List<List<QueryResult>> qrs = [];
   List<List<QueryResult>> qrsCOSSingle = [];
   List<List<QueryResult>> qrsCharacterOrSeries = [];
   // Title clustering
-  List<List<int>> series;
+  late List<List<int>> series;
   // Comments
-  List<Tuple3<DateTime, String, String>> comments;
+  late List<Tuple3<DateTime, String, String>> comments;
 
   bool isBookmarked = false;
   FlareControls flareController = FlareControls();
@@ -141,7 +141,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             tags += 1;
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
-          ffstat[element] += 1;
+          ffstat[element] = ffstat[element]! + 1;
         });
       });
 
@@ -330,7 +330,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     QueryManager qm = await QueryManager.query(query + ' ORDER BY Id DESC');
     // print((DateTime.now().difference(dt)).inSeconds);
 
-    return qm.results;
+    return qm.results!;
   }
 
   @override

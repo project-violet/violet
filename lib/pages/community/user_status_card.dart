@@ -23,7 +23,7 @@ class _UserStatusCardState extends State<UserStatusCard>
   @override
   bool get wantKeepAlive => true;
 
-  VioletCommunitySession sess;
+  late VioletCommunitySession sess;
   String _userId = 'None';
   String _userAppId = '';
   String _userNickName = 'None';
@@ -37,7 +37,7 @@ class _UserStatusCardState extends State<UserStatusCard>
     // load boards
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       _userAppId =
-          (await SharedPreferences.getInstance()).getString('fa_userid');
+          (await SharedPreferences.getInstance()).getString('fa_userid')!;
       setState(() {});
 
       // if (id != null && pw != null) {

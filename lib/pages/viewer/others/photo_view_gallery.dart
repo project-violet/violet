@@ -91,7 +91,7 @@ typedef PhotoViewGalleryBuilder = PhotoViewGalleryPageOptions Function(
 class VPhotoViewGallery extends StatefulWidget {
   /// Construct a gallery with static items through a list of [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery({
-    Key key,
+    Key? key,
     this.pageOptions,
     this.loadingBuilder,
     this.backgroundDecoration,
@@ -112,7 +112,7 @@ class VPhotoViewGallery extends StatefulWidget {
   ///
   /// The builder must return a [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery.builder({
-    Key key,
+    Key? key,
     this.itemCount,
     this.builder,
     this.loadingBuilder,
@@ -132,46 +132,46 @@ class VPhotoViewGallery extends StatefulWidget {
         super(key: key);
 
   /// A list of options to describe the items in the gallery
-  final List<PhotoViewGalleryPageOptions> pageOptions;
+  final List<PhotoViewGalleryPageOptions>? pageOptions;
 
   /// The count of items in the gallery, only used when constructed via [PhotoViewGallery.builder]
-  final int itemCount;
+  final int? itemCount;
 
   /// Called to build items for the gallery when using [PhotoViewGallery.builder]
-  final PhotoViewGalleryBuilder builder;
+  final PhotoViewGalleryBuilder? builder;
 
   /// [ScrollPhysics] for the internal [PageView]
-  final ScrollPhysics scrollPhysics;
+  final ScrollPhysics? scrollPhysics;
 
   /// Mirror to [PhotoView.loadingBuilder]
-  final LoadingBuilder loadingBuilder;
+  final LoadingBuilder? loadingBuilder;
 
   /// Mirror to [PhotoView.backgroundDecoration]
-  final BoxDecoration backgroundDecoration;
+  final BoxDecoration? backgroundDecoration;
 
   /// Mirror to [PhotoView.gaplessPlayback]
-  final bool gaplessPlayback;
+  final bool? gaplessPlayback;
 
   /// Mirror to [PageView.reverse]
-  final bool reverse;
+  final bool? reverse;
 
   /// An object that controls the [PageView] inside [PhotoViewGallery]
-  final PreloadPageController pageController;
+  final PreloadPageController? pageController;
 
   /// An callback to be called on a page change
-  final PhotoViewGalleryPageChangedCallback onPageChanged;
+  final PhotoViewGalleryPageChangedCallback? onPageChanged;
 
   /// Mirror to [PhotoView.scaleStateChangedCallback]
-  final ValueChanged<PhotoViewScaleState> scaleStateChangedCallback;
+  final ValueChanged<PhotoViewScaleState>? scaleStateChangedCallback;
 
   /// Mirror to [PhotoView.enableRotation]
-  final bool enableRotation;
+  final bool? enableRotation;
 
   /// Mirror to [PhotoView.customSize]
-  final Size customSize;
+  final Size? customSize;
 
   /// The axis along which the [PageView] scrolls. Mirror to [PageView.scrollDirection]
-  final Axis scrollDirection;
+  final Axis? scrollDirection;
 
   bool get _isBuilder => builder != null;
 
@@ -182,7 +182,7 @@ class VPhotoViewGallery extends StatefulWidget {
 }
 
 class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
-  PreloadPageController _controller;
+  late PreloadPageController _controller;
 
   @override
   void initState() {
@@ -192,7 +192,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
 
   void scaleStateChangedCallback(PhotoViewScaleState scaleState) {
     if (widget.scaleStateChangedCallback != null) {
-      widget.scaleStateChangedCallback(scaleState);
+      widget.scaleStateChangedCallback!(scaleState);
     }
   }
 
@@ -202,9 +202,9 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
 
   int get itemCount {
     if (widget._isBuilder) {
-      return widget.itemCount;
+      return widget.itemCount!;
     }
-    return widget.pageOptions.length;
+    return widget.pageOptions!.length;
   }
 
   @override

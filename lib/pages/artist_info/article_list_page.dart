@@ -20,7 +20,7 @@ class ArticleListPage extends StatefulWidget {
   final List<QueryResult> cc;
   final String name;
 
-  ArticleListPage({this.name, this.cc});
+  ArticleListPage({required this.name, required this.cc});
 
   @override
   _ArticleListPageState createState() => _ArticleListPageState();
@@ -28,7 +28,7 @@ class ArticleListPage extends StatefulWidget {
 
 class _ArticleListPageState extends State<ArticleListPage> {
   bool _shouldReload = false;
-  Widget _cachedList;
+  Widget? _cachedList;
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +94,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                             ),
                           ),
                         ),
-                        _cachedList
+                        _cachedList!
                       ],
                     ),
                   ),
@@ -281,9 +281,9 @@ class _ArticleListPageState extends State<ArticleListPage> {
       case 'female':
       case 'male':
       case 'series':
+      default:
         return false;
     }
-    return null;
   }
 
   List<QueryResult> filter() {

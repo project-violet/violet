@@ -10,15 +10,18 @@ class GroupModifyPage extends StatefulWidget {
   final String name;
   final String desc;
 
-  const GroupModifyPage({this.name, this.desc});
+  const GroupModifyPage({
+    required this.name,
+    required this.desc,
+  });
 
   @override
   _GroupModifyPageState createState() => _GroupModifyPageState();
 }
 
 class _GroupModifyPageState extends State<GroupModifyPage> {
-  TextEditingController _nameController;
-  TextEditingController _descController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _descController;
 
   @override
   void initState() {

@@ -21,12 +21,12 @@ class LockScreen extends StatefulWidget {
 }
 
 class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animation;
-  List<int> _pin = List.filled(4, null);
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  List<int?> _pin = List.filled(4, null);
   bool _isFirstPINInserted = false;
-  String _firstPIN;
-  String _message;
+  String? _firstPIN;
+  String? _message;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                     ),
                   ),
                   Container(height: 8.0),
-                  Text(_message),
+                  Text(_message!),
                   Container(height: 36),
                   Icon(Icons.lock),
                   Spacer(),

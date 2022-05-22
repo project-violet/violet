@@ -10,34 +10,26 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
   final AsyncCallback pausedCallBack;
 
   LifecycleEventHandler({
-    this.resumeCallBack,
-    this.suspendingCallBack,
-    this.inactiveCallBack,
-    this.pausedCallBack,
+    required this.resumeCallBack,
+    required this.suspendingCallBack,
+    required this.inactiveCallBack,
+    required this.pausedCallBack,
   });
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
-        if (resumeCallBack != null) {
-          await resumeCallBack();
-        }
+        await resumeCallBack();
         break;
       case AppLifecycleState.inactive:
-        if (inactiveCallBack != null) {
-          await inactiveCallBack();
-        }
+        await inactiveCallBack();
         break;
       case AppLifecycleState.paused:
-        if (pausedCallBack != null) {
-          await pausedCallBack();
-        }
+        await pausedCallBack();
         break;
       case AppLifecycleState.detached:
-        if (suspendingCallBack != null) {
-          await suspendingCallBack();
-        }
+        await suspendingCallBack();
         break;
     }
   }

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -37,9 +38,9 @@ class DownloadListItem {
   double width;
 
   DownloadListItem({
-    @required this.addBottomPadding,
-    @required this.showDetail,
-    @required this.width,
+    required this.addBottomPadding,
+    required this.showDetail,
+    required this.width,
   });
 }
 
@@ -49,7 +50,7 @@ typedef DownloadListItemCallbackCallback = void Function(
 
 class DownloadItemWidget extends StatefulWidget {
   // final double width;
-  final Key key;
+  final Key? key;
   final DownloadItemModel item;
   final DownloadListItem initialStyle;
   bool download;
@@ -58,10 +59,10 @@ class DownloadItemWidget extends StatefulWidget {
   DownloadItemWidget({
     this.key,
     // this.width,
-    this.item,
-    this.initialStyle,
-    this.download,
-    this.refeshCallback,
+    required this.item,
+    required this.initialStyle,
+    required this.download,
+    required this.refeshCallback,
   }) : super(key: key);
 
   @override
@@ -85,10 +86,10 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   String downloadSpeed = ' KB/S';
   bool once = false;
   bool recoveryMode = false;
-  double thisWidth, thisHeight;
-  DownloadListItem style;
+  late double thisWidth, thisHeight;
+  late DownloadListItem style;
   bool isLastestRead = false;
-  int latestReadPage;
+  int latestReadPage = 0;
 
   @override
   void initState() {
@@ -172,7 +173,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       if (await routine.checkNothingToDownload()) return;
 
-      downloadTotalFileCount = routine.tasks.length;
+      downloadTotalFileCount = routine.tasks!.length;
 
       await routine.extractFilePath();
 
@@ -256,7 +257,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           isCheck: true,
           isWarning: false,
           icon: Icons.download,
-          msg: widget.item.info().split('[')[1].split(']').first +
+          msg: widget.item.info()!.split('[')[1].split(']').first +
               Translations.of(context).trans('download') +
               " " +
               Translations.of(context).trans('complete'),
@@ -329,7 +330,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       onTap: () async {
         if (widget.item.state() == 0 && widget.item.files() != null) {
           await (await User.getInstance())
-              .insertUserLog(int.tryParse(widget.item.url()), 0);
+              .insertUserLog(int.tryParse(widget.item.url()) ?? -1, 0);
 
           Navigator.push(
             context,
@@ -340,8 +341,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                     value: ViewerPageProvider(
                       uris: widget.item.filesWithoutThumbnail(),
                       useFileSystem: true,
-                      id: int.tryParse(widget.item.url()),
-                      title: widget.item.info(),
+                      id: int.tryParse(widget.item.url()) ?? -1,
+                      title: widget.item.info()!,
                     ),
                     child: ViewerPage());
               },
@@ -457,8 +458,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
   recovery() {
     if (widget.item.thumbnail() != null &&
-        (widget.item.thumbnail().contains('e-hentai') ||
-            widget.item.thumbnail().contains('exhentai'))) return;
+        (widget.item.thumbnail()!.contains('e-hentai') ||
+            widget.item.thumbnail()!.contains('exhentai'))) return;
     _recovery();
   }
 
@@ -510,7 +511,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     );
   }
 
-  Widget _cachedThumbnail;
+  Widget? _cachedThumbnail;
   bool _shouldReload = false;
 
   void thubmanilReload() {
@@ -536,7 +537,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
             )
           : _ThumbnailWidget(
               showDetail: style.showDetail,
-              id: int.tryParse(widget.item.url()),
+              id: int.tryParse(widget.item.url()) ?? -1,
               thumbnail: widget.item.thumbnail(),
               thumbnailTag: (widget.item.thumbnail() ?? '') +
                   widget.item.dateTime().toString(),
@@ -559,7 +560,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               )
             : null,
         child: Stack(children: [
-          _cachedThumbnail,
+          _cachedThumbnail!,
           ReadProgressOverlayWidget(
             imageCount: widget.item.filesWithoutThumbnail().length,
             latestReadPage: latestReadPage,
@@ -578,37 +579,37 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     var title = widget.item.url();
 
     if (widget.item.info() != null) {
-      title = widget.item.info();
+      title = widget.item.info()!;
     }
 
     var state = 'None';
     var pp =
-        '${Translations.instance.trans('date')}: ' + widget.item.dateTime();
+        '${Translations.instance!.trans('date')}: ' + widget.item.dateTime()!;
 
     var statecolor = !Settings.themeWhat ? Colors.black : Colors.white;
     var statebold = FontWeight.normal;
 
     switch (widget.item.state()) {
       case 0:
-        state = Translations.instance.trans('complete');
+        state = Translations.instance!.trans('complete');
         break;
       case 1:
-        state = Translations.instance.trans('waitqueue');
-        pp = Translations.instance.trans('progress') +
+        state = Translations.instance!.trans('waitqueue');
+        pp = Translations.instance!.trans('progress') +
             ': ' +
-            Translations.instance.trans('waitdownload');
+            Translations.instance!.trans('waitdownload');
         break;
       case 2:
         if (max == 0) {
-          state = Translations.instance.trans('extracting');
-          pp = Translations.instance.trans('progress') +
+          state = Translations.instance!.trans('extracting');
+          pp = Translations.instance!.trans('progress') +
               ': ' +
-              Translations.instance
+              Translations.instance!
                   .trans('count')
                   .replaceAll('%s', cur.toString());
         } else {
-          state = Translations.instance.trans('extracting') + '[$cur/$max]';
-          pp = Translations.instance.trans('progress') + ': ';
+          state = Translations.instance!.trans('extracting') + '[$cur/$max]';
+          pp = Translations.instance!.trans('progress') + ': ';
         }
         break;
 
@@ -616,35 +617,35 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         // state =
         //     '[$downloadedFileCount/$downloadTotalFileCount] ($downloadSpeed ${(download / 1024.0 / 1024.0).toStringAsFixed(1)} MB)';
         state = '[$downloadedFileCount/$downloadTotalFileCount]';
-        pp = Translations.instance.trans('progress') + ': ';
+        pp = Translations.instance!.trans('progress') + ': ';
         break;
 
       case 6:
-        state = Translations.instance.trans('stop');
+        state = Translations.instance!.trans('stop');
         pp = '';
         statecolor = Colors.orange;
         // statebold = FontWeight.bold;
         break;
       case 7:
-        state = Translations.instance.trans('unknownerr');
+        state = Translations.instance!.trans('unknownerr');
         pp = '';
         statecolor = Colors.red;
         // statebold = FontWeight.bold;
         break;
       case 8:
-        state = Translations.instance.trans('urlnotsupport');
+        state = Translations.instance!.trans('urlnotsupport');
         pp = '';
         statecolor = Colors.redAccent;
         // statebold = FontWeight.bold;
         break;
       case 9:
-        state = Translations.instance.trans('tryagainlogin');
+        state = Translations.instance!.trans('tryagainlogin');
         pp = '';
         statecolor = Colors.redAccent;
         // statebold = FontWeight.bold;
         break;
       case 11:
-        state = Translations.instance.trans('nothingtodownload');
+        state = Translations.instance!.trans('nothingtodownload');
         pp = '';
         statecolor = Colors.orangeAccent;
         // statebold = FontWeight.bold;
@@ -657,14 +658,14 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(Translations.instance.trans('dinfo') + ': ' + title,
+          Text(Translations.instance!.trans('dinfo') + ': ' + title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           Container(
             height: 2,
           ),
-          Text(Translations.instance.trans('state') + ': ' + state,
+          Text(Translations.instance!.trans('state') + ': ' + state,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -719,18 +720,18 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 }
 
 class _ThumbnailWidget extends StatelessWidget {
-  final String thumbnail;
-  final String thumbnailHeader;
-  final String thumbnailTag;
+  final String? thumbnail;
+  final String? thumbnailHeader;
+  final String? thumbnailTag;
   final bool showDetail;
-  final int id;
+  final int? id;
 
   _ThumbnailWidget({
-    this.thumbnail,
-    this.thumbnailHeader,
-    this.thumbnailTag,
-    this.showDetail,
-    this.id,
+    required this.thumbnail,
+    required this.thumbnailHeader,
+    required this.thumbnailTag,
+    required this.showDetail,
+    required this.id,
   });
 
   @override
@@ -752,15 +753,15 @@ class _ThumbnailWidget extends StatelessWidget {
     if (id == null) {
       Map<String, String> headers = {};
       if (thumbnailHeader != null) {
-        var hh = jsonDecode(thumbnailHeader) as Map<String, dynamic>;
+        var hh = jsonDecode(thumbnailHeader!) as Map<String, dynamic>;
         hh.entries.forEach((element) {
           headers[element.key] = element.value as String;
         });
       }
       return Hero(
-        tag: thumbnailTag,
+        tag: thumbnailTag!,
         child: CachedNetworkImage(
-          imageUrl: thumbnail,
+          imageUrl: thumbnail!,
           fit: BoxFit.cover,
           httpHeaders: headers,
           imageBuilder: (context, imageProvider) => Container(
@@ -777,22 +778,22 @@ class _ThumbnailWidget extends StatelessWidget {
     } else {
       return FutureBuilder(
         future: HitomiManager.getImageList(id.toString()).then((value) async {
-          if (value == null) return null;
           var header =
               await ScriptManager.runHitomiGetHeaderContent(id.toString());
-          return [value.item1[0], header];
+          return Tuple2(value.item1[0], header);
         }),
-        builder: (context, snapshot) {
+        builder: (context,
+            AsyncSnapshot<Tuple2<String, Map<String, String>>> snapshot) {
           if (!snapshot.hasData || snapshot.data == null) {
             return _getLoadingAnimation();
           }
 
           return Hero(
-            tag: thumbnailTag,
+            tag: thumbnailTag!,
             child: CachedNetworkImage(
-              imageUrl: snapshot.data[0],
+              imageUrl: snapshot.data!.item1,
               fit: BoxFit.cover,
-              httpHeaders: snapshot.data[1],
+              httpHeaders: snapshot.data!.item2,
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
                   image:
@@ -840,11 +841,11 @@ class _FileThumbnailWidget extends StatelessWidget {
   final double height;
 
   _FileThumbnailWidget({
-    this.thumbnailPath,
-    this.thumbnailTag,
-    this.showDetail,
+    required this.thumbnailPath,
+    required this.thumbnailTag,
+    required this.showDetail,
     this.usingRawImage = false,
-    this.height,
+    required this.height,
   });
 
   @override

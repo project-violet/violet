@@ -25,9 +25,9 @@ class _UserStatusCardState extends State<UserStatusCard>
   @override
   bool get wantKeepAlive => true;
 
-  VioletCommunitySession sess;
+  late VioletCommunitySession sess;
   String _userId = 'None';
-  String _userAppId;
+  late String _userAppId;
   String _userNickName = 'None';
   bool _logining = false;
 
@@ -43,7 +43,7 @@ class _UserStatusCardState extends State<UserStatusCard>
           .getString('saved_community_pw');
 
       _userAppId =
-          (await SharedPreferences.getInstance()).getString('fa_userid');
+          (await SharedPreferences.getInstance()).getString('fa_userid')!;
       setState(() {});
 
       if (id != null && pw != null) {
@@ -51,8 +51,8 @@ class _UserStatusCardState extends State<UserStatusCard>
           _logining = true;
         });
         sess = VioletCommunitySession.lastSession != null
-            ? VioletCommunitySession.lastSession
-            : await VioletCommunitySession.signIn(id, pw);
+            ? VioletCommunitySession.lastSession!
+            : (await VioletCommunitySession.signIn(id, pw))!;
         _userNickName =
             (await VioletCommunitySession.getUserInfo(id))['NickName'];
         setState(() {
@@ -62,7 +62,7 @@ class _UserStatusCardState extends State<UserStatusCard>
 
       // [{Id: 1, ShortName: issue, Name: Issue, Description: Leave app issues or improvements here},
       //  {Id: 2, ShortName: general, Name: General, Description: Any Topic}]
-      var boards = (await VioletCommunityArticle.getBoards(null))['result'];
+      var boards = (await VioletCommunityArticle.getBoards())['result'];
       boards.removeWhere((element) => element['ShortName'] == '-- free --');
     });
   }
@@ -74,11 +74,12 @@ class _UserStatusCardState extends State<UserStatusCard>
         (await SharedPreferences.getInstance()).getString('saved_community_pw');
 
     _userId = id != null ? id : 'None';
-    _userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
+    _userAppId =
+        (await SharedPreferences.getInstance()).getString('fa_userid')!;
     setState(() {});
 
     if (id != null && pw != null) {
-      sess = await VioletCommunitySession.signIn(id, pw);
+      sess = (await VioletCommunitySession.signIn(id, pw))!;
     }
   }
 

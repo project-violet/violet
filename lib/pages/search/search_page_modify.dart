@@ -11,14 +11,17 @@ class SearchPageModifyPage extends StatefulWidget {
   final int curPage;
   final int maxPage;
 
-  const SearchPageModifyPage({this.curPage, this.maxPage});
+  const SearchPageModifyPage({
+    required this.curPage,
+    required this.maxPage,
+  });
 
   @override
   _SearchPageModifyPageState createState() => _SearchPageModifyPageState();
 }
 
 class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
-  TextEditingController _pageController;
+  late final TextEditingController _pageController;
 
   @override
   void initState() {

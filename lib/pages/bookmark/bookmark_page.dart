@@ -72,7 +72,7 @@ class _BookmarkPageState extends State<BookmarkPage>
           ScrollController _scrollController =
               PrimaryScrollController.of(context) ?? ScrollController();
 
-          var _rows = _buildRowItems(snapshot, reorder);
+          var _rows = _buildRowItems(snapshot.data!, reorder);
 
           return reorder
               ? Theme(
@@ -94,10 +94,10 @@ class _BookmarkPageState extends State<BookmarkPage>
                   padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
                   physics: BouncingScrollPhysics(),
                   controller: _scrollController,
-                  itemCount: snapshot.data.length + 1,
+                  itemCount: snapshot.data!.length + 1,
                   itemBuilder: (BuildContext ctxt, int index) {
                     return _buildItem(
-                        index, index == 0 ? null : snapshot.data[index - 1]);
+                        index, index == 0 ? null : snapshot.data![index - 1]);
                   });
         },
       ),
@@ -218,7 +218,7 @@ class _BookmarkPageState extends State<BookmarkPage>
     //         onPressed: () {})));
   }
 
-  _buildItem(int index, BookmarkGroup data, [bool reorder = false]) {
+  _buildItem(int index, BookmarkGroup? data, [bool reorder = false]) {
     index -= 1;
 
     String name;
@@ -232,7 +232,7 @@ class _BookmarkPageState extends State<BookmarkPage>
       desc = Translations.of(context).trans('readrecorddesc');
       id = -1;
     } else {
-      name = data.name();
+      name = data!.name();
       oname = name;
       desc = data.description();
       date = data.datetime().split(' ')[0];
@@ -310,20 +310,20 @@ class _BookmarkPageState extends State<BookmarkPage>
                           var rr = await showDialog(
                             context: context,
                             builder: (BuildContext context) => GroupModifyPage(
-                                name: name, desc: data.description()),
+                                name: name, desc: data!.description()),
                           );
 
                           if (rr == null) return;
 
                           if (rr[0] == 2) {
                             await (await Bookmark.getInstance())
-                                .deleteGroup(data);
+                                .deleteGroup(data!);
                             setState(() {});
                           } else if (rr[0] == 1) {
                             var nname = rr[1] as String;
                             var ndesc = rr[2] as String;
 
-                            var rrt = Map<String, dynamic>.from(data.result);
+                            var rrt = Map<String, dynamic>.from(data!.result);
 
                             rrt['Name'] = nname;
                             rrt['Description'] = ndesc;
@@ -357,12 +357,10 @@ class _BookmarkPageState extends State<BookmarkPage>
     );
   }
 
-  _buildRowItems(AsyncSnapshot<List<BookmarkGroup>> snapshot,
-      [bool reorder = false]) {
+  _buildRowItems(List<BookmarkGroup> data, [bool reorder = false]) {
     var ll = <Widget>[];
-    for (int index = 0; index <= snapshot.data.length; index++) {
-      ll.add(_buildItem(
-          index, index == 0 ? null : snapshot.data[index - 1], reorder));
+    for (int index = 0; index <= data.length; index++) {
+      ll.add(_buildItem(index, index == 0 ? null : data[index - 1], reorder));
     }
 
     return ll;

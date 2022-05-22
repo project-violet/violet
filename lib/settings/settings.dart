@@ -65,8 +65,8 @@ class Settings {
   static late bool showRecordJumpMessage;
 
   // Download Options
-  static late bool? useInnerStorage;
-  static late String? downloadBasePath;
+  static late bool useInnerStorage;
+  static late String downloadBasePath;
   static late String downloadRule;
 
   static late String searchMessageAPI;
@@ -213,22 +213,24 @@ class Settings {
     showPageNumberIndicator = await _getBool('showPageNumberIndicator', true);
     showRecordJumpMessage = await _getBool('showRecordJumpMessage', true);
 
-    useInnerStorage =
+    var tUseInnerStorage =
         (await SharedPreferences.getInstance()).getBool('useinnerstorage');
-    if (useInnerStorage == null) {
-      useInnerStorage = Platform.isIOS;
+    if (tUseInnerStorage == null) {
+      tUseInnerStorage = Platform.isIOS;
       if (Platform.isAndroid) {
         var deviceInfoPlugin = DeviceInfoPlugin();
         final androidInfo = await deviceInfoPlugin.androidInfo;
-        if (androidInfo.version.sdkInt! >= 30) useInnerStorage = true;
+        if (androidInfo.version.sdkInt! >= 30) tUseInnerStorage = true;
       }
 
       await (await SharedPreferences.getInstance())
-          .setBool('userinnerstorage', useInnerStorage!);
+          .setBool('userinnerstorage', tUseInnerStorage);
     }
+    useInnerStorage = tUseInnerStorage;
 
+    String? tDownloadBasePath;
     if (Platform.isAndroid) {
-      downloadBasePath =
+      tDownloadBasePath =
           (await SharedPreferences.getInstance()).getString('downloadbasepath');
       final String path = await ExtStorage.getExternalStorageDirectory();
 
@@ -242,25 +244,25 @@ class Settings {
         await (await SharedPreferences.getInstance())
             .setBool('android30downpath', true);
         var ext = await getExternalStorageDirectory();
-        downloadBasePath = ext!.path;
+        tDownloadBasePath = ext!.path;
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', downloadBasePath!);
+            .setString('downloadbasepath', tDownloadBasePath!);
       }
 
-      if (downloadBasePath == null) {
-        downloadBasePath = join(path, '.violet');
+      if (tDownloadBasePath == null) {
+        tDownloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', downloadBasePath!);
+            .setString('downloadbasepath', tDownloadBasePath!);
       }
 
       if (sdkInt < 30 &&
-          downloadBasePath == join(path, 'Violet') &&
+          tDownloadBasePath == join(path, 'Violet') &&
           (await SharedPreferences.getInstance())
                   .getBool('downloadbasepathcc1') ==
               null) {
-        downloadBasePath = join(path, '.violet');
+        tDownloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', downloadBasePath!);
+            .setString('downloadbasepath', tDownloadBasePath!);
         await (await SharedPreferences.getInstance())
             .setBool('downloadbasepathcc1', true);
 
@@ -292,8 +294,9 @@ class Settings {
         }
       }
     } else if (Platform.isIOS) {
-      downloadBasePath = await _getString('downloadbasepath', 'not supported');
+      tDownloadBasePath = await _getString('downloadbasepath', 'not supported');
     }
+    downloadBasePath = tDownloadBasePath!;
 
     downloadRule = await _getString(
         'downloadrule', "%(extractor)s/%(id)s/%(file)s.%(ext)s");

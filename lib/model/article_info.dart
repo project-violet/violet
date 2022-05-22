@@ -16,7 +16,7 @@ class ArticleInfo {
   final String artist;
   final List<QueryResult>? usableTabList;
   bool isBookmarked;
-  bool? lockRead;
+  bool lockRead;
 
   ArticleInfo({
     required this.queryResult,
@@ -28,7 +28,7 @@ class ArticleInfo {
     required this.title,
     required this.artist,
     this.usableTabList,
-    this.lockRead,
+    required this.lockRead,
   });
 
   factory ArticleInfo.fromArticleInfo({

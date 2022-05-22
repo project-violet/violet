@@ -16,7 +16,7 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 class LabRecordViewPage extends StatelessWidget {
   final List<dynamic> records;
 
-  LabRecordViewPage({this.records});
+  LabRecordViewPage({required this.records});
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +47,13 @@ class LabRecordViewPage extends StatelessWidget {
             queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
         var qr = Map<String, QueryResult>();
-        qm.results.forEach((element) {
+        qm.results!.forEach((element) {
           qr[element.id().toString()] = element;
         });
 
         return rr
             .where((e) => qr.containsKey(e.articleId()))
-            .map((e) => qr[e.articleId()])
+            .map((e) => qr[e.articleId()]!)
             .toList();
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
@@ -71,7 +71,7 @@ class LabRecordViewPage extends StatelessWidget {
                   childAspectRatio: 3 / 4,
                 ),
                 delegate: SliverChildListDelegate(
-                  snapshot.data.map(
+                  snapshot.data!.map(
                     (e) {
                       return Padding(
                         key: Key('lab_record/' + e.id().toString()),

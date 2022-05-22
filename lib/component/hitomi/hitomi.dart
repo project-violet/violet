@@ -23,7 +23,7 @@ class HitomiManager {
         <String>[], <String>[], <String>[]);
   }
 
-  static int getArticleCount(String classification, String name) {
+  static int? getArticleCount(String classification, String name) {
     if (tagmap == null) {
       final subdir = Platform.isAndroid ? '/data' : '';
       final path =

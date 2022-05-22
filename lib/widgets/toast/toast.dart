@@ -4,28 +4,28 @@ import 'package:rxdart/rxdart.dart';
 
 class _ToastCard extends StatelessWidget {
   final String message;
-  final ToastAction action;
+  final ToastAction? action;
   final ToastType type;
 
   const _ToastCard({
-    Key key,
-    this.message,
+    Key? key,
+    required this.message,
     this.action,
-    this.type,
+    required this.type,
   })  : assert(key != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    ToastOverlay toastOverlay;
+    ToastOverlay? toastOverlay;
     try {
       toastOverlay = Provider.of<ToastOverlay>(context);
     } on ProviderNotFoundException catch (e) {
       print(e);
     }
 
-    Color backgroundColor;
-    Color textColor;
+    Color? backgroundColor;
+    Color? textColor;
     switch (type) {
       case ToastType.success:
         backgroundColor =
@@ -47,17 +47,18 @@ class _ToastCard extends StatelessWidget {
       case ToastType.notification:
         backgroundColor =
             toastOverlay?.normalBackgroundColor ?? Theme.of(context).cardColor;
-        textColor = toastOverlay?.normalTextColor;
+        textColor =
+            toastOverlay?.normalTextColor ?? Colors.white.withOpacity(0.87);
         break;
       default:
     }
 
     Widget result = Card(
-      color: backgroundColor.withOpacity(0.97),
+      color: backgroundColor!.withOpacity(0.97),
       margin: EdgeInsets.zero,
       child: GestureDetector(
-        onTap: toastOverlay.enableTapToHide
-            ? () => ToastManager()._hideToastByKey(key)
+        onTap: toastOverlay!.enableTapToHide
+            ? () => ToastManager()._hideToastByKey(key!)
             : null,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 17, vertical: 10),
@@ -73,7 +74,7 @@ class _ToastCard extends StatelessWidget {
               ),
               action?.build(
                     context,
-                    () => ToastManager()._hideToastByKey(key),
+                    () => ToastManager()._hideToastByKey(key!),
                   ) ??
                   SizedBox(),
             ],
@@ -84,9 +85,9 @@ class _ToastCard extends StatelessWidget {
 
     if (toastOverlay?.enableSwipeToDismiss != false) {
       result = Dismissible(
-        key: key,
+        key: key!,
         onDismissed: (_) {
-          ToastManager()._hideToastByKey(key, showAnim: false);
+          ToastManager()._hideToastByKey(key!, showAnim: false);
         },
         child: result,
       );
@@ -118,11 +119,11 @@ class ToastAction {
   final void Function(void Function()) onPressed;
 
   const ToastAction({
-    Key key,
-    this.onPressed,
-    this.disabledTextColor,
-    this.label,
-    this.textColor,
+    Key? key,
+    required this.onPressed,
+    required this.disabledTextColor,
+    required this.label,
+    required this.textColor,
   });
 
   Widget build(BuildContext context, void Function() hideToast) {
@@ -211,16 +212,16 @@ class ToastOverlay extends StatelessWidget {
   final Widget child;
 
   const ToastOverlay({
-    Key key,
-    this.child,
-    this.successfullBackgroundColor,
-    this.successfullTextColor,
-    this.warningBackgroundColor,
-    this.warningTextColor,
-    this.errorBackgroundColor,
-    this.errorTextColor,
-    this.normalBackgroundColor,
-    this.normalTextColor,
+    Key? key,
+    required this.child,
+    required this.successfullBackgroundColor,
+    required this.successfullTextColor,
+    required this.warningBackgroundColor,
+    required this.warningTextColor,
+    required this.errorBackgroundColor,
+    required this.errorTextColor,
+    required this.normalBackgroundColor,
+    required this.normalTextColor,
     this.enableSwipeToDismiss = true,
     this.enableTapToHide = false,
   }) : super(key: key);
@@ -264,7 +265,7 @@ class ToastOverlay extends StatelessWidget {
                             sizeFactor: animation,
                             child: FadeTransition(
                               opacity: animation,
-                              child: toastsSnapshot.data
+                              child: toastsSnapshot.data!
                                   .elementAt(index)
                                   ._toastCard,
                             ),
@@ -331,10 +332,10 @@ class ToastManager {
   final BehaviorSubject<List<ToastFuture>> _toastsController =
       BehaviorSubject<List<ToastFuture>>.seeded([]);
 
-  ToastFuture showToast(
+  ToastFuture? showToast(
     String message, {
     ToastType type = ToastType.notification,
-    ToastAction action,
+    ToastAction? action,
     Duration duration = const Duration(seconds: 4),
   }) {
     if (_toastsController == null) {
@@ -410,9 +411,8 @@ class ToastManager {
     }
     var toastFuture = _toastsController.value?.firstWhere(
       (toastFuture) => toastFuture._toastCard.key == toastKey,
-      orElse: () => null,
     );
-    hideToast(toastFuture, showAnim: showAnim);
+    hideToast(toastFuture!, showAnim: showAnim);
   }
 }
 

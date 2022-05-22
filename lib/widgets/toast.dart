@@ -11,15 +11,15 @@ class ToastWrapper extends StatefulWidget {
   final bool isCheck;
   final bool isWarning;
   final String msg;
-  final IconData icon;
-  final Color color;
+  final IconData? icon;
+  final Color? color;
   final bool ignoreDrawer;
   final bool reverse;
 
   ToastWrapper({
-    this.isCheck,
-    this.isWarning,
-    this.msg,
+    this.isCheck = false,
+    this.isWarning = false,
+    required this.msg,
     this.icon,
     this.color,
     this.ignoreDrawer = false,
@@ -33,8 +33,8 @@ class ToastWrapper extends StatefulWidget {
 class _ToastWrapperState extends State<ToastWrapper>
     with TickerProviderStateMixin {
   double opacity = 0.0;
-  AnimationController controller;
-  Animation<Offset> offset;
+  late AnimationController controller;
+  late Animation<Offset> offset;
   bool opened = false;
   bool reverse = false;
 
@@ -42,7 +42,7 @@ class _ToastWrapperState extends State<ToastWrapper>
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 100)).then((value) {
-      controller.reverse(from: 0.8);
+      controller!.reverse(from: 0.8);
       setState(() {
         opacity = 1.0;
         opened = true;
@@ -53,7 +53,7 @@ class _ToastWrapperState extends State<ToastWrapper>
         opacity = 0.0;
         reverse = true;
       });
-      controller.forward();
+      controller!.forward();
     });
     controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 700));
@@ -77,9 +77,9 @@ class _ToastWrapperState extends State<ToastWrapper>
   @override
   Widget build(BuildContext context) {
     var color = widget.color ??
-        (widget.isCheck
+        (widget.isCheck!
             ? Colors.greenAccent.withOpacity(0.8)
-            : widget.isWarning != null && widget.isWarning
+            : widget.isWarning != null && widget.isWarning!
                 ? Colors.orangeAccent.withOpacity(0.8)
                 : Colors.redAccent.withOpacity(0.8));
 
@@ -103,7 +103,7 @@ class _ToastWrapperState extends State<ToastWrapper>
                     begin: reverse ? 10.0 : 0.1, end: reverse ? 0.001 : 10.0),
                 duration: Duration(milliseconds: (reverse ? 500 : 700)),
                 builder: (_, value, child) {
-                  if (reverse && value < 0.1) return child;
+                  if (reverse && value < 0.1) return child!;
                   return BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: value, sigmaY: value),
                     child: child,
