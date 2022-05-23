@@ -88,7 +88,7 @@ class HitomiIndexs {
 
     map.forEach((key, value) {
       if (artist == key) return;
-      if (key.toUpperCase() == 'n/a') return;
+      if (key.toLowerCase() == 'n/a') return;
 
       var dist = Distance.cosineDistance(rr, value);
       result.add(Tuple2<String, double>(key, dist));
