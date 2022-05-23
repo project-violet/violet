@@ -42,7 +42,7 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final BookmarkCheckCallback bookmarkCheckCallback;
   bool isChecked;
   final bool isCheckMode;
-  final ArticleListItem articleListItem;
+  final ArticleListItem? articleListItem;
 
   ArticleListItemVerySimpleWidget({
     // this.queryResult,
@@ -68,12 +68,12 @@ class _ArticleListItemVerySimpleWidgetState
     with
         TickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
-  ArticleListItem data;
+  late ArticleListItem data;
 
   @override
   bool get wantKeepAlive => true;
 
-  String thumbnail;
+  String? thumbnail;
   int imageCount = 0;
   double pad = 0.0;
   double scale = 1.0;
@@ -85,18 +85,22 @@ class _ArticleListItemVerySimpleWidgetState
   bool isLastestRead = false;
   bool disableFiltering = false;
   int latestReadPage = 0;
-  Map<String, String> headers;
+  Map<String, String>? headers;
   final FlareControls _flareController = FlareControls();
-  double thisWidth, thisHeight;
+  double? thisWidth, thisHeight;
+
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
   }
 
-  String artist;
-  String title;
-  String dateTime;
+  String? artist;
+  String? title;
+  String? dateTime;
 
   @override
   void dispose() {
@@ -148,7 +152,7 @@ class _ArticleListItemVerySimpleWidgetState
           var x = value.where((e) =>
               e.articleId() == data.queryResult.id().toString() &&
               e.lastPage() != null &&
-              e.lastPage() > 1 &&
+              e.lastPage()! > 1 &&
               DateTime.parse(e.datetimeStart())
                       .difference(DateTime.now())
                       .inDays <
@@ -157,7 +161,7 @@ class _ArticleListItemVerySimpleWidgetState
           _shouldReload = true;
           setState(() {
             isLastestRead = true;
-            latestReadPage = x.first.lastPage();
+            latestReadPage = x.first.lastPage()!;
           });
         }));
   }
@@ -176,7 +180,7 @@ class _ArticleListItemVerySimpleWidgetState
 
     title = HtmlUnescape().convert(data.queryResult.title());
     dateTime = data.queryResult.getDateTime() != null
-        ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime())
+        ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime()!)
         : '';
     _shouldReload = true;
 
@@ -209,17 +213,17 @@ class _ArticleListItemVerySimpleWidgetState
     }
   }
 
-  BodyWidget _body;
+  BodyWidget? _body;
   bool _shouldReload = false;
 
-  Widget _cachedBuildWidget;
+  Widget? _cachedBuildWidget;
   bool _shouldReloadCachedBuildWidget = false;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    if (disposed) return null;
+    if (disposed) return Container();
 
     if (data.bookmarkMode &&
         !widget.isCheckMode &&
@@ -283,9 +287,9 @@ class _ArticleListItemVerySimpleWidgetState
                   curve: Curves.easeInOut,
                   duration: const Duration(milliseconds: 300),
                   transform: Matrix4.identity()
-                    ..translate(thisWidth / 2, thisHeight / 2)
+                    ..translate(thisWidth! / 2, thisHeight! / 2)
                     ..scale(scale)
-                    ..translate(-thisWidth / 2, -thisHeight / 2),
+                    ..translate(-thisWidth! / 2, -thisHeight! / 2),
                   child: _body,
                 ),
               ),
@@ -303,7 +307,7 @@ class _ArticleListItemVerySimpleWidgetState
       );
     }
 
-    return _cachedBuildWidget;
+    return _cachedBuildWidget!;
   }
 
   _onTapDown(detail) {
@@ -320,7 +324,7 @@ class _ArticleListItemVerySimpleWidgetState
 
   _onTapUp(detail) {
     if (data.selectMode) {
-      data.selectCallback();
+      data.selectCallback!();
       return;
     }
 
@@ -328,7 +332,7 @@ class _ArticleListItemVerySimpleWidgetState
 
     if (widget.isCheckMode) {
       widget.isChecked = !widget.isChecked;
-      data.bookmarkCheckCallback(data.queryResult.id(), widget.isChecked);
+      data.bookmarkCheckCallback!(data.queryResult.id(), widget.isChecked);
       _shouldReloadCachedBuildWidget = true;
       Future.delayed(Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
@@ -369,8 +373,8 @@ class _ArticleListItemVerySimpleWidgetState
                 ),
                 value: ArticleInfo.fromArticleInfo(
                   queryResult: data.queryResult,
-                  thumbnail: thumbnail,
-                  headers: headers,
+                  thumbnail: thumbnail!,
+                  headers: headers!,
                   heroKey: data.thumbnailTag,
                   isBookmarked: isBookmarked.value,
                   controller: controller,
@@ -406,7 +410,7 @@ class _ArticleListItemVerySimpleWidgetState
       setState(() {
         scale = 0.95;
       });
-      data.bookmarkCallback(data.queryResult.id());
+      data.bookmarkCallback!(data.queryResult.id());
       return;
     }
 
@@ -414,7 +418,7 @@ class _ArticleListItemVerySimpleWidgetState
       if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
     }
     try {
-      FlutterToast(context).showToast(
+      fToast.showToast(
         child: ToastWrapper(
           icon: isBookmarked.value ? Icons.delete_forever : Icons.check,
           color: isBookmarked.value
@@ -485,7 +489,7 @@ class _ArticleListItemVerySimpleWidgetState
     onScaling = false;
 
     if (data.doubleTapCallback == null) {
-      var sz = await _calculateImageDimension(thumbnail);
+      var sz = await _calculateImageDimension(thumbnail!);
       Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         transitionDuration: Duration(milliseconds: 500),
@@ -495,13 +499,13 @@ class _ArticleListItemVerySimpleWidgetState
         },
         pageBuilder: (_, __, ___) => ThumbnailViewPage(
           size: sz,
-          thumbnail: thumbnail,
-          headers: headers,
+          thumbnail: thumbnail!,
+          headers: headers!,
           heroKey: data.thumbnailTag,
         ),
       ));
     } else {
-      data.doubleTapCallback();
+      data.doubleTapCallback!();
     }
 
     _shouldReloadCachedBuildWidget = true;
@@ -530,35 +534,35 @@ class _ArticleListItemVerySimpleWidgetState
 
 class BodyWidget extends StatelessWidget {
   final ArticleListItem data;
-  final String thumbnail;
+  final String? thumbnail;
   final int imageCount;
   final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
   final double pad;
   final bool isBlurred;
-  final Map<String, String> headers;
+  final Map<String, String>? headers;
   final bool isLastestRead;
   final int latestReadPage;
   final bool disableFiltering;
-  final String artist;
-  final String title;
-  final String dateTime;
+  final String? artist;
+  final String? title;
+  final String? dateTime;
 
   BodyWidget({
-    this.data,
-    this.thumbnail,
-    this.imageCount,
-    this.isBookmarked,
-    this.flareController,
-    this.pad,
-    this.isBlurred,
-    this.headers,
-    this.isLastestRead,
-    this.latestReadPage,
-    this.disableFiltering,
-    this.artist,
-    this.title,
-    this.dateTime,
+    required this.data,
+    required this.thumbnail,
+    required this.imageCount,
+    required this.isBookmarked,
+    required this.flareController,
+    required this.pad,
+    required this.isBlurred,
+    required this.headers,
+    required this.isLastestRead,
+    required this.latestReadPage,
+    required this.disableFiltering,
+    required this.artist,
+    required this.title,
+    required this.dateTime,
   });
 
   @override
@@ -646,20 +650,20 @@ class BodyWidget extends StatelessWidget {
 
 // Artist List Item Details
 class _DetailWidget extends StatelessWidget {
-  final String title;
-  final String artist;
+  final String? title;
+  final String? artist;
   final int imageCount;
-  final String dateTime;
-  final int viewed;
-  final int seconds;
+  final String? dateTime;
+  final int? viewed;
+  final int? seconds;
 
   _DetailWidget({
-    this.title,
-    this.artist,
-    this.imageCount,
-    this.dateTime,
-    this.viewed,
-    this.seconds,
+    required this.title,
+    required this.artist,
+    required this.imageCount,
+    required this.dateTime,
+    required this.viewed,
+    required this.seconds,
   });
 
   @override
@@ -670,13 +674,13 @@ class _DetailWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            title,
+            title ?? '',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           Text(
-            artist,
+            artist ?? '',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

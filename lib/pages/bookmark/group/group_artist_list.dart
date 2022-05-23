@@ -24,7 +24,7 @@ class GroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistList({this.name, this.groupId});
+  GroupArtistList({required this.name, required this.groupId});
 
   @override
   _GroupArtistListState createState() => _GroupArtistListState();
@@ -34,7 +34,7 @@ class _GroupArtistListState extends State<GroupArtistList>
     with AutomaticKeepAliveClientMixin<GroupArtistList> {
   @override
   bool get wantKeepAlive => true;
-  List<BookmarkArtist> artists;
+  late List<BookmarkArtist> artists;
 
   Future<List<BookmarkArtist>> _bookmark() async {
     if (_filterLevel == 0) await refresh();
@@ -134,12 +134,11 @@ class _GroupArtistListState extends State<GroupArtistList>
                       future: _future(e.artist(), e.type()),
                       builder: (BuildContext context,
                           AsyncSnapshot<List<QueryResult>> snapshot) {
-                        var qq = snapshot.data;
                         if (!snapshot.hasData)
                           return Container(
                             height: 195,
                           );
-                        return _listItem(context, e, qq);
+                        return _listItem(context, e, snapshot.data!);
                       },
                     );
                   },
@@ -509,8 +508,8 @@ class _GroupArtistListState extends State<GroupArtistList>
         for (int i = 0; i < artists.length; i++)
           invIdIndex[artists[i].artist() + '|' + artists[i].type().toString()] =
               i;
-        checked.sort((x, y) => invIdIndex[x.item2 + '|' + x.item1.toString()]
-            .compareTo(invIdIndex[y.item2 + '|' + y.item1.toString()]));
+        checked.sort((x, y) => invIdIndex[x.item2 + '|' + x.item1.toString()]!
+            .compareTo(invIdIndex[y.item2 + '|' + y.item1.toString()]!));
 
         // 1. Get bookmark articles on source groupid
         var bm = await Bookmark.getInstance();

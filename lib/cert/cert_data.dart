@@ -9,7 +9,7 @@ import 'package:violet/cert/root.dart';
 
 class CertData {
   Map<String, dynamic> data;
-  CertData({this.data});
+  CertData({required this.data});
 
   DateTime authStarts() => DateTime.parse(data['AuthStarts']).toLocal();
   DateTime authEnds() => DateTime.parse(data['AuthEnds']).toLocal();

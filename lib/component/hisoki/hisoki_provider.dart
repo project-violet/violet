@@ -8,7 +8,7 @@ class HisokiImageProvider extends VioletImageProvider {
   int id;
   List<Tuple3<String, double, double>> infos;
 
-  HisokiImageProvider({this.infos, this.id});
+  HisokiImageProvider({required this.infos, required this.id});
 
   @override
   Future<void> init() async {}
@@ -38,7 +38,7 @@ class HisokiImageProvider extends VioletImageProvider {
     return infos.length;
   }
 
-  List<double> _estimatedCache;
+  late List<double> _estimatedCache;
 
   @override
   Future<double> getEstimatedImageHeight(int page, double baseWidth) async {

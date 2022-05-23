@@ -7,12 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
-  AnimatedOpacitySliver(
-      {this.minExtent, @required this.maxExtent, this.searchBar});
+  AnimatedOpacitySliver({
+    required this.minExtent,
+    required this.maxExtent,
+    this.searchBar,
+  });
   final double minExtent;
   final double maxExtent;
 
-  Widget searchBar;
+  Widget? searchBar;
 
   @override
   Widget build(
@@ -35,15 +38,15 @@ class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
   }
 
   @override
-  FloatingHeaderSnapConfiguration get snapConfiguration => null;
+  FloatingHeaderSnapConfiguration? get snapConfiguration => null;
 
   @override
-  OverScrollHeaderStretchConfiguration get stretchConfiguration => null;
+  OverScrollHeaderStretchConfiguration? get stretchConfiguration => null;
 
   @override
-  PersistentHeaderShowOnScreenConfiguration get showOnScreenConfiguration =>
+  PersistentHeaderShowOnScreenConfiguration? get showOnScreenConfiguration =>
       null;
 
   @override
-  TickerProvider get vsync => null;
+  TickerProvider? get vsync => null;
 }

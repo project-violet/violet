@@ -22,10 +22,10 @@ class _CommunityPageState extends State<CommunityPage>
   @override
   bool get wantKeepAlive => true;
 
-  VioletCommunitySession sess;
-  String _userId;
-  String _userAppId;
-  String _userNickName;
+  late VioletCommunitySession sess;
+  late String _userId;
+  late String _userAppId;
+  late String _userNickName;
   bool _logining = false;
 
   @override
@@ -41,7 +41,7 @@ class _CommunityPageState extends State<CommunityPage>
 
       _userId = id != null ? id : 'None';
       _userAppId =
-          (await SharedPreferences.getInstance()).getString('fa_userid');
+          (await SharedPreferences.getInstance()).getString('fa_userid')!;
       setState(() {});
 
       if (id != null && pw != null) {
@@ -49,8 +49,8 @@ class _CommunityPageState extends State<CommunityPage>
           _logining = true;
         });
         sess = VioletCommunitySession.lastSession != null
-            ? VioletCommunitySession.lastSession
-            : await VioletCommunitySession.signIn(id, pw);
+            ? VioletCommunitySession.lastSession!
+            : (await VioletCommunitySession.signIn(id, pw))!;
         _userNickName =
             (await VioletCommunitySession.getUserInfo(id))['NickName'];
         setState(() {
@@ -60,7 +60,7 @@ class _CommunityPageState extends State<CommunityPage>
 
       // [{Id: 1, ShortName: issue, Name: Issue, Description: Leave app issues or improvements here},
       //  {Id: 2, ShortName: general, Name: General, Description: Any Topic}]
-      var boards = (await VioletCommunityArticle.getBoards(null))['result'];
+      var boards = (await VioletCommunityArticle.getBoards())['result'];
       boards.removeWhere((element) => element['ShortName'] == '-- free --');
     });
   }
@@ -72,11 +72,12 @@ class _CommunityPageState extends State<CommunityPage>
         (await SharedPreferences.getInstance()).getString('saved_community_pw');
 
     _userId = id != null ? id : 'None';
-    _userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
+    _userAppId =
+        (await SharedPreferences.getInstance()).getString('fa_userid')!;
     setState(() {});
 
     if (id != null && pw != null) {
-      sess = await VioletCommunitySession.signIn(id, pw);
+      sess = (await VioletCommunitySession.signIn(id, pw))!;
     }
   }
 

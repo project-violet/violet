@@ -6,8 +6,10 @@ import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controls.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +25,6 @@ import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
-import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
@@ -51,7 +52,8 @@ class _SearchPageState extends State<SearchPage>
   bool into = false;
 
   final FlareControls heroFlareControls = FlareControls();
-  FlutterActorArtboard artboard;
+  // FlutterActorArtboard? artboard;
+  late AssetFlare asset;
 
   bool isFilterUsed = false;
   bool searchbarVisible = true;
@@ -70,8 +72,10 @@ class _SearchPageState extends State<SearchPage>
   int baseCount = 0; // using for user custom page index
   List<int> scrollQueue = <int>[];
 
+  late final FToast fToast;
+
   void _showErrorToast(String message) {
-    FlutterToast(context).showToast(
+    fToast.showToast(
       toastDuration: const Duration(seconds: 10),
       child: Container(
         padding: const EdgeInsets.all(8.0),
@@ -88,14 +92,13 @@ class _SearchPageState extends State<SearchPage>
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
+    asset =
+        AssetFlare(bundle: rootBundle, name: 'assets/flare/search_close.flr');
     (() async {
-      var asset =
-          await cachedActor(rootBundle, 'assets/flare/search_close.flr');
-      asset.ref();
-      artboard = asset.actor.artboard.makeInstance() as FlutterActorArtboard;
-      artboard.initializeGraphics();
-      artboard.advance(0);
+      await cachedActor(asset);
     })();
 
     Future.delayed(Duration(milliseconds: 500), () async {
@@ -105,7 +108,7 @@ class _SearchPageState extends State<SearchPage>
 
         latestQuery =
             Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
-        queryResult = latestQuery.item1.item1;
+        queryResult = latestQuery!.item1!.item1;
         if (_filterController.isPopulationSort)
           Population.sortByPopulation(queryResult);
         _shouldReload = true;
@@ -137,7 +140,7 @@ class _SearchPageState extends State<SearchPage>
       //
       if (itemKeys.length > 0 && itemHeight <= 0.1) {
         if (itemKeys[0].currentContext != null) {
-          itemHeight = itemKeys[0].currentContext.size.height + 8;
+          itemHeight = itemKeys[0].currentContext!.size!.height + 8;
         }
       }
 
@@ -200,12 +203,12 @@ class _SearchPageState extends State<SearchPage>
 
   bool scrollInProgress = false;
 
-  Tuple2<Tuple2<List<QueryResult>, int>, String> latestQuery;
+  Tuple2<Tuple2<List<QueryResult>, int>?, String>? latestQuery;
 
   ScrollController _scroll = ScrollController();
 
   bool _shouldReload = false;
-  ResultPanelWidget _cachedPannel;
+  ResultPanelWidget? _cachedPannel;
 
   // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
@@ -248,7 +251,7 @@ class _SearchPageState extends State<SearchPage>
                 ),
               ),
             ),
-            _cachedPannel,
+            _cachedPannel!,
           ],
         ),
       ),
@@ -277,7 +280,8 @@ class _SearchPageState extends State<SearchPage>
                     ),
                     ValueListenableBuilder(
                       valueListenable: searchPageNum,
-                      builder: (BuildContext context, int value, Widget child) {
+                      builder:
+                          (BuildContext context, int value, Widget? child) {
                         return Text(
                             '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
                       },
@@ -302,7 +306,7 @@ class _SearchPageState extends State<SearchPage>
 
             latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
                 Tuple2<List<QueryResult>, int>(<QueryResult>[], baseCount),
-                latestQuery.item2);
+                latestQuery!.item2);
             queryEnd = false;
             queryResult = [];
             _filterController = FilterController();
@@ -359,14 +363,14 @@ class _SearchPageState extends State<SearchPage>
                               contentPadding: EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: latestQuery != null &&
-                                      latestQuery.item2.trim() != ''
-                                  ? latestQuery.item2
+                                      latestQuery!.item2.trim() != ''
+                                  ? latestQuery!.item2
                                   : Translations.of(context).trans('search')),
                         ),
                         leading: SizedBox(
                           width: 25,
                           height: 25,
-                          child: FlareArtboard(artboard,
+                          child: FlareActor.asset(asset,
                               controller: heroFlareControls),
                         ),
                       ),
@@ -385,7 +389,8 @@ class _SearchPageState extends State<SearchPage>
                       onDoubleTap: () async {
                         // latestQuery = value;
                         latestQuery =
-                            Tuple2<Tuple2<List<QueryResult>, int>, String>(null,
+                            Tuple2<Tuple2<List<QueryResult>, int>?, String>(
+                                null,
                                 'random:${new Random().nextDouble() + 1}');
                         queryResult = [];
                         _filterController = FilterController();
@@ -421,8 +426,8 @@ class _SearchPageState extends State<SearchPage>
       MaterialPageRoute(
         builder: (context) {
           return SearchBarPage(
-            artboard: artboard,
-            initText: latestQuery != null ? latestQuery.item2 : '',
+            assetProvider: asset,
+            initText: latestQuery != null ? latestQuery!.item2 : '',
             heroController: heroFlareControls,
           );
         },
@@ -437,7 +442,8 @@ class _SearchPageState extends State<SearchPage>
       });
       if (query == null) return;
 
-      latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(null, query);
+      latestQuery =
+          Tuple2<Tuple2<List<QueryResult>, int>?, String>(null, query);
       queryResult = [];
       _filterController = FilterController();
       queryEnd = false;
@@ -612,10 +618,11 @@ class _SearchPageState extends State<SearchPage>
 
     try {
       if (queryEnd ||
-          (latestQuery.item1 != null && latestQuery.item1.item2 == -1)) return;
+          (latestQuery!.item1 != null && latestQuery!.item1!.item2 == -1))
+        return;
 
-      var next = await HentaiManager.search(latestQuery.item2,
-              latestQuery.item1 == null ? 0 : latestQuery.item1.item2)
+      var next = await HentaiManager.search(latestQuery!.item2,
+              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.item2)
           .timeout(const Duration(seconds: 10), onTimeout: () {
         Logger.error('[Search_loadNextQuery] Search Timeout');
 
@@ -623,7 +630,7 @@ class _SearchPageState extends State<SearchPage>
       });
 
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-          next, latestQuery.item2);
+          next, latestQuery!.item2);
 
       if (next.item1.length == 0) {
         setState(() {
@@ -643,7 +650,7 @@ class _SearchPageState extends State<SearchPage>
       if (searchTotalResultCount == 0) {
         Future.delayed(Duration(milliseconds: 100)).then((value) async {
           searchTotalResultCount =
-              await HentaiManager.countSearch(latestQuery.item2);
+              await HentaiManager.countSearch(latestQuery!.item2);
           setState(() {});
         });
       }
@@ -703,9 +710,9 @@ class _SearchPageState extends State<SearchPage>
       case 'female':
       case 'male':
       case 'series':
+      default:
         return false;
     }
-    return null;
   }
 
   List<QueryResult> filter() {
@@ -722,9 +729,14 @@ class ResultPanelWidget extends StatelessWidget {
   final ObjectKey key;
   final List<GlobalKey> itemKeys;
 
-  List<Widget> _cachedItems;
+  List<Widget?>? _cachedItems;
 
-  ResultPanelWidget({this.resultList, this.dateTime, this.key, this.itemKeys});
+  ResultPanelWidget({
+    required this.resultList,
+    required this.dateTime,
+    required this.key,
+    required this.itemKeys,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -732,7 +744,7 @@ class ResultPanelWidget extends StatelessWidget {
     var windowWidth = MediaQuery.of(context).size.width;
 
     if (_cachedItems == null) {
-      _cachedItems = List<Widget>.generate(resultList.length, (x) => null);
+      _cachedItems = List<Widget?>.generate(resultList.length, (x) => null);
     }
 
     switch (Settings.searchResultType) {
@@ -750,8 +762,8 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  if (_cachedItems[index] == null) {
-                    _cachedItems[index] = Padding(
+                  if (_cachedItems![index] == null) {
+                    _cachedItems![index] = Padding(
                       key: itemKeys.length > index ? itemKeys[index] : null,
                       padding: EdgeInsets.zero,
                       child: Align(
@@ -774,7 +786,7 @@ class ResultPanelWidget extends StatelessWidget {
                       ),
                     );
                   }
-                  return _cachedItems[index];
+                  return _cachedItems![index];
                 },
                 childCount: resultList.length,
               ),

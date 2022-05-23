@@ -35,7 +35,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       <Tuple5<double, int, int, double, List<double>>>[];
   TextEditingController text = TextEditingController(text: '은근슬쩍');
   String latestSearch = '은근슬쩍';
-  List<Tuple3<String, String, int>> autocompleteTarget;
+  List<Tuple3<String, String, int>>? autocompleteTarget;
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               e.key, TagTranslate.disassembly(e.key), e.value as int))
           .toList();
 
-      autocompleteTarget.sort((x, y) => y.item3.compareTo(x.item3));
+      autocompleteTarget!.sort((x, y) => y.item3.compareTo(x.item3));
 
       setState(() {});
     });
@@ -89,15 +89,15 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();
     imageCache.clear();
-    _urls.forEach((element) async {
+    _urls!.forEach((element) async {
       await CachedNetworkImageProvider(element).evict();
     });
     super.dispose();
   }
 
-  List<double> _height;
-  List<GlobalKey> _keys;
-  List<String> _urls;
+  List<double>? _height;
+  List<GlobalKey>? _keys;
+  List<String>? _urls;
   String selected = 'Contains';
 
   @override
@@ -140,17 +140,19 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                       ProviderManager.insert(query[0].id(), provider);
                     }
 
-                    return [
-                      _urls[index] = await provider.getImageUrl(e.item3),
-                      await provider.getHeader(e.item3)
-                    ];
+                    return Tuple2(
+                        _urls![index] = await provider.getImageUrl(e.item3),
+                        await provider.getHeader(e.item3));
                   }),
-                  builder: (context, snapshot) {
+                  builder: (context,
+                      AsyncSnapshot<Tuple2<String, Map<String, String>>>
+                          snapshot) {
                     if (!snapshot.hasData) {
                       return Column(
                         children: [
                           SizedBox(
-                            height: _height[index] != 0 ? _height[index] : 300,
+                            height:
+                                _height![index] != 0 ? _height![index] : 300,
                             child: Align(
                               alignment: Alignment.center,
                               child: SizedBox(
@@ -179,17 +181,16 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             children: [
                               Container(
                                 constraints: BoxConstraints(
-                                    minHeight: _height[index] != 0
-                                        ? _height[index]
+                                    minHeight: _height![index] != 0
+                                        ? _height![index]
                                         : 300),
                                 child: VCachedNetworkImage(
-                                  key: _keys[index],
+                                  key: _keys![index],
                                   fit: BoxFit.cover,
                                   fadeInDuration: Duration(microseconds: 500),
                                   fadeInCurve: Curves.easeIn,
-                                  imageUrl: snapshot.data[0] as String,
-                                  httpHeaders:
-                                      snapshot.data[1] as Map<String, String>,
+                                  imageUrl: snapshot.data!.item1,
+                                  httpHeaders: snapshot.data!.item2,
                                   progressIndicatorBuilder:
                                       (context, string, progress) {
                                     return SizedBox(
@@ -206,18 +207,19 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                   },
                                   imageBuilder:
                                       (context, imageProvider, child) {
-                                    if (_height[index] == 0 ||
-                                        _height[index] == 300) {
+                                    if (_height![index] == 0 ||
+                                        _height![index] == 300) {
                                       Future.delayed(Duration(milliseconds: 50))
                                           .then((value) {
                                         try {
                                           final RenderBox renderBoxRed =
-                                              _keys[index]
-                                                  .currentContext
-                                                  .findRenderObject();
+                                              _keys![index]
+                                                      .currentContext!
+                                                      .findRenderObject()!
+                                                  as RenderBox;
                                           final sizeRender = renderBoxRed.size;
                                           if (sizeRender.height != 300) {
-                                            _height[index] =
+                                            _height![index] =
                                                 width / sizeRender.aspectRatio;
                                           }
                                         } catch (e) {}
@@ -229,8 +231,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                               ),
                               FutureBuilder(
                                 future: _calculateImageDimension(
-                                    snapshot.data[0] as String,
-                                    snapshot.data[1] as Map<String, String>),
+                                    snapshot.data!.item1, snapshot.data!.item2),
                                 builder:
                                     (context, AsyncSnapshot<Size> snapshot2) {
                                   if (!snapshot2.hasData) return Container();
@@ -240,7 +241,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                   var brbx = e.item5[2];
                                   var brby = e.item5[3];
 
-                                  var w = snapshot2.data.width;
+                                  var w = snapshot2.data!.width;
 
                                   var ratio = width / w;
 
@@ -285,13 +286,13 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                       .map((e) => DropdownMenuItem(child: Text(e), value: e))
                       .toList(),
                   value: selected,
-                  onChanged: (value) async {
+                  onChanged: (String? value) async {
                     if (value == selected) return;
                     messages =
                         <Tuple5<double, int, int, double, List<double>>>[];
 
                     setState(() {
-                      selected = value;
+                      selected = value!;
                     });
                     var tmessages = (await VioletServer.searchMessage(
                         selected.toLowerCase(), text.text)) as List<dynamic>;
@@ -307,7 +308,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .toList()))
                         .toList();
 
-                    _urls.forEach((element) async {
+                    _urls!.forEach((element) async {
                       await CachedNetworkImageProvider(element).evict();
                     });
 
@@ -329,10 +330,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
 
                     var ppattern = TagTranslate.disassembly(pattern);
 
-                    return autocompleteTarget
+                    return autocompleteTarget!
                         .where((element) => element.item2.startsWith(ppattern))
                         .toList()
-                      ..addAll(autocompleteTarget
+                      ..addAll(autocompleteTarget!
                           .where((element) =>
                               !element.item2.startsWith(ppattern) &&
                               element.item2.contains(ppattern))
@@ -352,7 +353,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     );
                   },
                   direction: AxisDirection.up,
-                  onSuggestionSelected: (suggestion) {
+                  onSuggestionSelected:
+                      (Tuple3<String, String, int> suggestion) {
                     text.text = suggestion.item1;
                     setState(() {});
                     Future.delayed(Duration(milliseconds: 100))
@@ -425,7 +427,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 .toList()))
         .toList();
 
-    _urls.forEach((element) async {
+    _urls!.forEach((element) async {
       await CachedNetworkImageProvider(element).evict();
     });
 

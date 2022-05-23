@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class Related {
-  static Map<int, List<int>> related;
+  static late Map<int, List<int>> related;
 
   static Future<void> init() async {
     String data;
@@ -33,6 +33,6 @@ class Related {
   }
 
   static List<int> getRelated(int articleId) {
-    return related[articleId];
+    return related[articleId]!;
   }
 }

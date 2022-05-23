@@ -49,7 +49,7 @@ Pointer<Int8> intListToArray(String list) {
 }
 
 class P7zip {
-  Future<String> decompress(List<String> files, {String path}) async {
+  Future<String?> decompress(List<String> files, {String? path}) async {
     final soPath = await _checkSharedLibrary();
     print(soPath);
     if (soPath == null) {
@@ -69,39 +69,24 @@ class P7zip {
     return result == 0 ? path : null;
   }
 
-  Future<String> _checkSharedLibrary() async {
+  Future<String?> _checkSharedLibrary() async {
     final dir = await getTemporaryDirectory();
-    if (dir == null) {
-      return null;
-    }
     final libFile = File(dir.path + "/lib7zr.so");
     if (Platform.isAndroid) {
       final devicePlugin = DeviceInfoPlugin();
       final deviceInfo = await devicePlugin.androidInfo;
-      if (deviceInfo == null) {
-        return null;
-      }
       String soResource = "assets/p7zip/armeabi-v7a/lib7zr.so";
       if (kDebugMode) soResource = "assets/p7zip/x86/lib7zr.so";
       final support64 = deviceInfo.supported64BitAbis;
-      if (support64 != null && support64.length > 0) {
+      if (support64.length > 0) {
         if (kDebugMode)
           soResource = "assets/p7zip/x86_64/lib7zr.so";
         else
           soResource = "assets/p7zip/arm64-v8a/lib7zr.so";
       }
       final data = await rootBundle.load(soResource);
-      if (data == null) {
-        return null;
-      }
       final createFile = await libFile.create();
-      if (createFile == null) {
-        return null;
-      }
       final writeFile = await createFile.open(mode: FileMode.write);
-      if (writeFile == null) {
-        return null;
-      }
       await writeFile.writeFrom(Uint8List.view(data.buffer));
       return libFile.path;
     }

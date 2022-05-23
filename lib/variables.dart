@@ -7,7 +7,7 @@ import 'dart:math';
 import 'package:path_provider/path_provider.dart';
 
 class Variables {
-  static String applicationDocumentsDirectory;
+  static late String applicationDocumentsDirectory;
   static bool databaseDecompressed = false;
 
   static Future<void> init() async {

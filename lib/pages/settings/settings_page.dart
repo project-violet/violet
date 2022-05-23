@@ -59,10 +59,10 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
 class ExCountry extends Country {
-  String language;
-  String script;
-  String region;
-  String variant;
+  String? language;
+  String? script;
+  String? region;
+  String? variant;
 
   ExCountry(
     String name,
@@ -77,7 +77,7 @@ class ExCountry extends Country {
         );
 
   static ExCountry create(String iso,
-      {String language, String script, String region, String variant}) {
+      {String? language, String? script, String? region, String? variant}) {
     var c = CountryPickerUtils.getCountryByIsoCode(iso);
     var country = ExCountry(c.name, c.isoCode, c.iso3Code, c.phoneCode);
     country.language = language;
@@ -98,7 +98,7 @@ class ExCountry extends Country {
       'ES': 'eo',
     };
 
-    if (dict.containsKey(isoCode)) return dict[isoCode];
+    if (dict.containsKey(isoCode)) return dict[isoCode]!;
 
     if (isoCode == 'CN') {
       if (script == 'Hant') return 'zh_Hant';
@@ -120,7 +120,7 @@ class ExCountry extends Country {
       'ES': 'Español',
     };
 
-    if (dict.containsKey(isoCode)) return dict[isoCode];
+    if (dict.containsKey(isoCode)) return dict[isoCode]!;
 
     if (isoCode == 'CN') {
       if (script == 'Hant') return '中文(繁體)';
@@ -140,16 +140,17 @@ class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage> {
   FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
-  FlutterToast flutterToast;
+  late final FToast flutterToast;
 
   @override
   void initState() {
     super.initState();
     _themeSwitch = Settings.themeWhat;
-    flutterToast = FlutterToast(context);
+    flutterToast = FToast();
+    flutterToast.init(context);
   }
 
-  List<Widget> _cachedGroups;
+  List<Widget>? _cachedGroups;
   bool _shouldReload = false;
 
   @override
@@ -181,7 +182,7 @@ class _SettingsPageState extends State<SettingsPage>
         physics: BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: _cachedGroups,
+          children: _cachedGroups!,
         ),
       ),
     );
@@ -301,7 +302,7 @@ class _SettingsPageState extends State<SettingsPage>
               _flareController.play('switch_day');
             _themeSwitch = !_themeSwitch;
             await Settings.setThemeWhat(_themeSwitch);
-            DynamicTheme.of(context).setBrightness(
+            DynamicTheme.of(context)!.setBrightness(
                 !_themeSwitch ? Brightness.light : Brightness.dark);
             setState(() {
               _shouldReload = true;
@@ -355,7 +356,7 @@ class _SettingsPageState extends State<SettingsPage>
               onChanged: _themeSwitch
                   ? (newValue) async {
                       await Settings.setThemeFlat(newValue);
-                      DynamicTheme.of(context).setThemeData(
+                      DynamicTheme.of(context)!.setThemeData(
                         ThemeData(
                           accentColor: Settings.majorColor,
                           brightness: Theme.of(context).brightness,
@@ -386,7 +387,7 @@ class _SettingsPageState extends State<SettingsPage>
           onTap: _themeSwitch
               ? () async {
                   await Settings.setThemeBlack(!Settings.themeBlack);
-                  DynamicTheme.of(context).setThemeData(
+                  DynamicTheme.of(context)!.setThemeData(
                     ThemeData(
                       accentColor: Settings.majorColor,
                       brightness: Theme.of(context).brightness,
@@ -478,7 +479,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                 final afterLoadingPageState =
                     context.findAncestorStateOfType<AfterLoadingPageState>();
-                afterLoadingPageState.setState(() {
+                afterLoadingPageState!.setState(() {
                   _shouldReload = true;
                 });
               },
@@ -494,7 +495,7 @@ class _SettingsPageState extends State<SettingsPage>
 
             final afterLoadingPageState =
                 context.findAncestorStateOfType<AfterLoadingPageState>();
-            afterLoadingPageState.setState(() {
+            afterLoadingPageState!.setState(() {
               _shouldReload = true;
             });
           },
@@ -1274,7 +1275,8 @@ class _SettingsPageState extends State<SettingsPage>
                   Translations.of(context).trans('threadcount'),
                 ),
                 FutureBuilder(
-                  builder: (context, snapshot) {
+                  builder:
+                      (context, AsyncSnapshot<SharedPreferences> snapshot) {
                     if (!snapshot.hasData) {
                       return Text(
                         Translations.of(context).trans('curthread') + ': ',
@@ -1284,7 +1286,7 @@ class _SettingsPageState extends State<SettingsPage>
                     return Text(
                       Translations.of(context).trans('curthread') +
                           ': ' +
-                          snapshot.data.getInt('thread_count').toString(),
+                          snapshot.data!.getInt('thread_count').toString(),
                       overflow: TextOverflow.ellipsis,
                     );
                   },
@@ -1355,7 +1357,7 @@ class _SettingsPageState extends State<SettingsPage>
                 await (await SharedPreferences.getInstance())
                     .setInt('thread_count', int.parse(text.text));
 
-                FlutterToast(context).showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('changedthread'),
@@ -1724,10 +1726,10 @@ class _SettingsPageState extends State<SettingsPage>
               File file;
               file = File((await FilePicker.platform.pickFiles(
                 type: FileType.any,
-              ))
+              ))!
                   .files
                   .single
-                  .path);
+                  .path!);
 
               if (file == null) {
                 flutterToast.showToast(
@@ -1786,7 +1788,7 @@ class _SettingsPageState extends State<SettingsPage>
               var db = await getApplicationDocumentsDirectory();
               var dbfile = File('${db.path}/user.db');
               var ext = await getExternalStorageDirectory();
-              var extpath = '${ext.path}/bookmark.db';
+              var extpath = '${ext!.path}/bookmark.db';
               await dbfile.copy(extpath);
 
               flutterToast.showToast(
@@ -1844,7 +1846,7 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               int count = 0;
-              EHBookmark.bookmarkInfo.forEach((element) {
+              EHBookmark.bookmarkInfo!.forEach((element) {
                 count += element.length;
               });
 
@@ -1853,18 +1855,18 @@ class _SettingsPageState extends State<SettingsPage>
                   Translations.of(context)
                       .trans('ensurecreatebookmark')
                       .replaceAll('\$1', count.toString()));
-              if (qqq != null && qqq == true) {
+              if (qqq) {
                 var bookmark = await Bookmark.getInstance();
-                for (int i = 0; i < EHBookmark.bookmarkInfo.length; i++) {
-                  if (EHBookmark.bookmarkInfo[i].isEmpty) continue;
+                for (int i = 0; i < EHBookmark.bookmarkInfo!.length; i++) {
+                  if (EHBookmark.bookmarkInfo![i].isEmpty) continue;
                   await bookmark.createGroup('Favorite $i', '', Colors.black);
                   var group = (await bookmark.getGroup())
                       .where((element) => element.name() == 'Favorite $i')
                       .first
                       .id();
-                  for (int j = 0; j < EHBookmark.bookmarkInfo[i].length; j++) {
+                  for (int j = 0; j < EHBookmark.bookmarkInfo![i].length; j++) {
                     await bookmark.insertArticle(
-                        EHBookmark.bookmarkInfo[i].elementAt(j).toString(),
+                        EHBookmark.bookmarkInfo![i].elementAt(j).toString(),
                         DateTime.now(),
                         group);
                   }

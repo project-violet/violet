@@ -23,7 +23,12 @@ class SyncInfoRecord {
   final String url;
   final int size;
 
-  SyncInfoRecord({this.type, this.timestamp, this.url, this.size = 0});
+  SyncInfoRecord({
+    required this.type,
+    required this.timestamp,
+    required this.url,
+    this.size = 0,
+  });
 
   String getDBDownloadUrl(String type) =>
       url + SyncManager.createRawdbPostfix(type);
@@ -43,7 +48,7 @@ class SyncManager {
   static bool syncRequire = false; // database sync require
   static bool chunkRequire = false;
   static const ignoreUserAcceptThreshold = 1024 * 1024 * 10; // 10MB
-  static List<SyncInfoRecord> _rows;
+  static List<SyncInfoRecord>? _rows;
   static int requestSize = 0;
 
   static Future<void> checkSync() async {
@@ -59,7 +64,8 @@ class SyncManager {
       if (latest == null) {
         syncRequire = firstSync = true;
         latest = 0;
-      } else if (DateTime.parse(lastDB).difference(DateTime.now()).inDays > 7) {
+      } else if (lastDB != null &&
+          DateTime.parse(lastDB).difference(DateTime.now()).inDays > 7) {
         syncRequire = true;
       }
 
@@ -97,10 +103,10 @@ class SyncManager {
         //
         // 마지막으로 동기화한 시간보다 작은 경우 해당 청크는 무시한다.
         //
-        if (type == 'chunk' && timestamp <= latest) return;
+        if (type == 'chunk' && timestamp <= latest!) return;
 
         requestSize += size;
-        _rows.add(SyncInfoRecord(
+        _rows!.add(SyncInfoRecord(
           type: type,
           timestamp: timestamp,
           url: url,
@@ -114,7 +120,7 @@ class SyncManager {
          또한 데이터베이스의 무결성이 훼손될 가능성이 있기 때문이다.
       */
       if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
-      if (_rows.any((element) => element.type == 'chunk')) chunkRequire = true;
+      if (_rows!.any((element) => element.type == 'chunk')) chunkRequire = true;
     } catch (e, st) {
       Logger.error('[Sync-check] E: ' + e.toString() + '\n' + st.toString());
     }
@@ -122,8 +128,8 @@ class SyncManager {
 
   static SyncInfoRecord getLatestDB() {
     if (_rows != null) {
-      for (int i = 0; i < _rows.length; i++)
-        if (_rows[i].type == 'db') return _rows[i];
+      for (int i = 0; i < _rows!.length; i++)
+        if (_rows![i].type == 'db') return _rows![i];
     }
 
     //
@@ -140,13 +146,13 @@ class SyncManager {
 
   static int getSyncRequiredChunkCount() {
     if (_rows == null) return 0;
-    return _rows.where((element) => element.type == 'chunk').toList().length;
+    return _rows!.where((element) => element.type == 'chunk').toList().length;
   }
 
   static Future<void> doChunkSync(DoubleIntCallback progressCallback) async {
     // Only chunk
     var filteredIter =
-        _rows.where((element) => element.type == 'chunk').toList();
+        _rows!.where((element) => element.type == 'chunk').toList();
 
     // Download Jsons
     var res = <Response>[];
@@ -198,7 +204,7 @@ class SyncManager {
 
         // Last, append datas
         var db = await DataBaseManager.getInstance();
-        var dbraw = await openDatabase(db.dbPath);
+        var dbraw = await openDatabase(db.dbPath!);
         await dbraw.transaction((txn) async {
           final batch = txn.batch();
           for (var query in quries)

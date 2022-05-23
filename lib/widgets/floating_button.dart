@@ -9,7 +9,8 @@ class TransformFloatButton extends StatelessWidget {
   final Widget floatButton;
   final double translateValue;
 
-  TransformFloatButton({this.floatButton, this.translateValue})
+  TransformFloatButton(
+      {required this.floatButton, required this.translateValue})
       : super(key: ObjectKey(floatButton));
 
   @override
@@ -34,10 +35,10 @@ class AnimatedFloatingActionButton extends StatefulWidget {
   final VoidCallback exitCallback;
 
   AnimatedFloatingActionButton({
-    Key key,
-    this.fabButtons,
-    this.animatedIconData,
-    this.exitCallback,
+    Key? key,
+    required this.fabButtons,
+    required this.animatedIconData,
+    required this.exitCallback,
   }) : super(key: key);
 
   @override
@@ -49,9 +50,9 @@ class _AnimatedFloatingActionButtonState
     extends State<AnimatedFloatingActionButton>
     with SingleTickerProviderStateMixin {
   bool isOpened = true;
-  AnimationController _animationController;
-  Animation<double> _animateIcon;
-  Animation<double> _translateButton;
+  late AnimationController _animationController;
+  late Animation<double> _animateIcon;
+  late Animation<double> _translateButton;
   Curve _curve = Curves.easeOut;
   double _fabHeight = 56.0;
 

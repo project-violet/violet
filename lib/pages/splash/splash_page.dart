@@ -37,13 +37,13 @@ import 'package:violet/version/sync.dart';
 
 class RadioTile<T> extends StatefulWidget {
   RadioTile({
-    Key key,
-    this.value,
-    this.groupValue,
-    this.setGroupValue,
-    this.title,
-    this.subtitle,
-    this.onLongPress,
+    Key? key,
+    required this.value,
+    required this.groupValue,
+    required this.setGroupValue,
+    required this.title,
+    required this.subtitle,
+    required this.onLongPress,
   }) : super(key: key);
 
   final T value;
@@ -83,14 +83,14 @@ class _RadioTileState<T> extends State<RadioTile<T>> {
                 maxWidth: 44,
                 maxHeight: 44,
               ),
-              child: Radio(
+              child: Radio<T>(
                 value: widget.value,
                 groupValue: widget.groupValue,
                 materialTapTargetSize: MaterialTapTargetSize.padded,
-                onChanged: (selected) {
+                onChanged: (T? selected) {
                   setState(() {
                     _longPressing = false;
-                    widget.setGroupValue(selected);
+                    widget.setGroupValue(selected!);
                   });
                 },
               ),
@@ -294,9 +294,9 @@ class _SplashPageState extends State<SplashPage> {
     startTime();
   }
 
-  Database _database;
+  Database? _database;
 
-  void _setDatabase(Database database) {
+  void _setDatabase(Database? database) {
     setState(() {
       _database = database;
     });
@@ -455,7 +455,7 @@ class _SplashPageState extends State<SplashPage> {
                           showOkDialog(
                               context,
                               translations.trans('dbusermsg').replaceFirst(
-                                  '%s', imgSize[translations.dbLanguageCode]));
+                                  '%s', imgSize[translations.dbLanguageCode]!));
                         },
                       ),
                       RadioTile(
@@ -475,7 +475,7 @@ class _SplashPageState extends State<SplashPage> {
                               context,
                               translations
                                   .trans('dballmsg')
-                                  .replaceFirst('%s', imgSize['global']));
+                                  .replaceFirst('%s', imgSize['global']!));
                         },
                       ),
                       _downloadButton(),
@@ -698,10 +698,10 @@ class _SplashPageState extends State<SplashPage> {
     File file;
     file = File((await FilePicker.platform.pickFiles(
       type: FileType.any,
-    ))
+    ))!
         .files
-        .single
-        .path);
+        .single!
+        .path!);
 
     if (file == null) {
       await showOkDialog(

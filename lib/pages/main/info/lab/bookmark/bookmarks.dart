@@ -16,10 +16,10 @@ import 'bookmarks_records.dart';
 
 class LabBookmarkPage extends StatefulWidget {
   final String userAppId;
-  final String version;
+  final String? version;
 
   LabBookmarkPage({
-    this.userAppId,
+    required this.userAppId,
     this.version,
   });
 
@@ -28,10 +28,10 @@ class LabBookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends State<LabBookmarkPage> {
-  List<BookmarkArticle> articles;
-  List<BookmarkArtist> artists;
-  List<BookmarkGroup> groups;
-  List<dynamic> records;
+  late List<BookmarkArticle> articles;
+  late List<BookmarkArtist> artists;
+  late List<BookmarkGroup> groups;
+  late List<dynamic> records;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
             ? VioletServer.resotreBookmark(widget.userAppId)
             : VioletServer.resotreBookmarkWithVersion(
                 widget.userAppId,
-                widget.version,
+                widget.version!,
               ),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (!snapshot.hasData)
@@ -87,7 +87,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     );
   }
 
-  _buildItem(int index, BookmarkGroup data) {
+  _buildItem(int index, BookmarkGroup? data) {
     index -= 1;
 
     String name;
@@ -101,7 +101,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
       desc = Translations.of(context).trans('readrecorddesc');
       id = -1;
     } else {
-      name = data.name();
+      name = data!.name();
       oname = name;
       desc = data.description();
       date = data.datetime().split(' ')[0];
@@ -165,7 +165,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                 if (yn != null && yn) {
                   // 북마크 그룹 생성
                   var groupName =
-                      "${widget.userAppId.substring(0, 8)}-${data.name()}";
+                      "${widget.userAppId.substring(0, 8)}-${data!.name()}";
 
                   var bookmark = await Bookmark.getInstance();
                   var gid = await bookmark.createGroup(

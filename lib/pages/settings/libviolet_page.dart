@@ -41,6 +41,7 @@ class LibvioletPage extends StatelessWidget {
                         ],
                       ),
                     ),
+                    collapsed: Container(),
                   ),
                 ),
               ),

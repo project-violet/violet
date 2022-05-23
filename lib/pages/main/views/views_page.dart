@@ -160,10 +160,10 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         queryRaw += '(' + value.map((e) => 'Id=${e.item1}').join(' OR ') + ')';
         var query = await QueryManager.query(queryRaw);
 
-        if (query.results.length == 0) return 901;
+        if (query.results!.length == 0) return 901;
 
         var qr = Map<String, QueryResult>();
-        query.results.forEach((element) {
+        query.results!.forEach((element) {
           qr[element.id().toString()] = element;
         });
 
@@ -174,7 +174,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
             return;
           }
           result.add(Tuple2<QueryResult, int>(
-              qr[element.item1.toString()], element.item2));
+              qr[element.item1.toString()]!, element.item2));
         });
 
         return result;
@@ -222,7 +222,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                 ),
                 Text('Error' +
                     (errmsg[snapshot.data.toString()] != null
-                        ? ': ' + errmsg[snapshot.data.toString()]
+                        ? ': ' + errmsg[snapshot.data.toString()]!
                         : ' Code: ' + snapshot.data.toString()))
               ],
             ),

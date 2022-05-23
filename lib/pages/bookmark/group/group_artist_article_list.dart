@@ -16,7 +16,10 @@ class GroupArtistArticleList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistArticleList({this.name, this.groupId});
+  GroupArtistArticleList({
+    required this.name,
+    required this.groupId,
+  });
 
   @override
   _GroupArtistArticleListState createState() => _GroupArtistArticleListState();
@@ -92,7 +95,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                   childAspectRatio: 3 / 4,
                 ),
                 delegate: SliverChildListDelegate(
-                  snapshot.data.map(
+                  snapshot.data!.map(
                     (e) {
                       return Padding(
                         key: Key('gaal/' + e.id().toString()),

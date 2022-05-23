@@ -16,18 +16,22 @@ class EHentaiImageProvider extends VioletImageProvider {
   bool isEHentai;
   String thumbnail;
   List<String> pagesUrl;
-  List<String> urls;
-  List<String> imgUrls;
-  Semaphore pageThrottler;
+  late List<String?> urls;
+  late List<String> imgUrls;
+  late Semaphore pageThrottler;
 
-  EHentaiImageProvider(
-      {this.count, this.thumbnail, this.pagesUrl, this.isEHentai});
+  EHentaiImageProvider({
+    required this.count,
+    required this.thumbnail,
+    required this.pagesUrl,
+    required this.isEHentai,
+  });
 
   @override
   Future<void> init() async {
     if (initialized) return;
     pageThrottler = Semaphore(maxCount: 1);
-    urls = List<String>.filled(count, null);
+    urls = List<String?>.filled(count, null);
     // for (int i = 0; i < pagesUrl.length; i++) {
     //   var phtml = await EHSession.requestString(pagesUrl[i]);
     //   urls.addAll(EHParser.getImagesUrl(phtml));
@@ -51,7 +55,7 @@ class EHentaiImageProvider extends VioletImageProvider {
   Future<Map<String, String>> getHeader(int page) async {
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies');
-    return {"Cookie": cookie};
+    return {"Cookie": cookie ?? ''};
   }
 
   @override
@@ -76,7 +80,7 @@ class EHentaiImageProvider extends VioletImageProvider {
 
     pageThrottler.release();
 
-    var img = await EHSession.requestString(urls[page]);
+    var img = await EHSession.requestString(urls[page]!);
 
     if (Settings.downloadEhRawImage) {
       var unescape = HtmlUnescape();

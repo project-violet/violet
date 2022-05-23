@@ -10,19 +10,19 @@ class ViewerPageProvider {
   final bool useWeb;
   final bool useProvider;
   final List<String> uris;
-  final Map<String, String> headers;
-  final VioletImageProvider provider;
+  final Map<String, String>? headers;
+  final VioletImageProvider? provider;
   final int id;
   final String title;
-  final List<QueryResult> usableTabList;
+  final List<QueryResult>? usableTabList;
 
   ViewerPageProvider({
     this.useFileSystem = false,
     this.useWeb = false,
     this.useProvider = false,
-    @required this.uris,
-    @required this.id,
-    @required this.title,
+    required this.uris,
+    required this.id,
+    required this.title,
     this.provider,
     this.headers,
     this.usableTabList,

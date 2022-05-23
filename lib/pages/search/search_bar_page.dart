@@ -3,7 +3,9 @@
 
 import 'dart:math';
 
+import 'package:flare_flutter/asset_provider.dart';
 import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -14,17 +16,19 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/other/flare_artboard.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/settings/settings.dart';
 
 class SearchBarPage extends StatefulWidget {
+  final AssetProvider assetProvider;
   final FlareControls heroController;
-  final FlutterActorArtboard artboard;
   final String initText;
-  const SearchBarPage(
-      {Key key, this.artboard, this.initText, this.heroController})
-      : super(key: key);
+  const SearchBarPage({
+    Key? key,
+    required this.assetProvider,
+    required this.initText,
+    required this.heroController,
+  }) : super(key: key);
 
   @override
   _SearchBarPageState createState() => _SearchBarPageState();
@@ -41,13 +45,13 @@ class _SearchBarPageState extends State<SearchBarPage>
   static const _kDuration = const Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
-  AnimationController controller;
+  late AnimationController controller;
   List<Tuple2<DisplayedTag, int>> _searchLists = <Tuple2<DisplayedTag, int>>[];
   List<Tuple2<DisplayedTag, int>> _relatedLists = <Tuple2<DisplayedTag, int>>[];
 
-  TextEditingController _searchController;
-  int _insertPos, _insertLength;
-  String _searchText;
+  late TextEditingController _searchController;
+  int? _insertPos, _insertLength;
+  String? _searchText;
   bool _nothing = false;
 
   int _searchResultMaximum = 60;
@@ -70,7 +74,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     super.dispose();
   }
 
-  double _initBottomPadding;
+  double? _initBottomPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +117,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               : Colors.grey.shade900
           : Colors.white,
       padding:
-          EdgeInsets.fromLTRB(2, statusBarHeight + 2, 0, _initBottomPadding),
+          EdgeInsets.fromLTRB(2, statusBarHeight + 2, 0, _initBottomPadding!),
       child: Stack(
         children: <Widget>[
           Hero(
@@ -209,7 +213,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               shape: CircleBorder(),
               child: Transform.scale(
                 scale: 0.65,
-                child: FlareArtboard(widget.artboard,
+                child: FlareActor.asset(widget.assetProvider,
                     controller: widget.heroController),
               ),
             ),
@@ -759,7 +763,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   // Create tag-chip
   // group, name, counts
   Widget chip(Tuple2<DisplayedTag, int> info, [bool related = false]) {
-    var tagDisplayed = info.item1.name.split(':').last;
+    var tagDisplayed = info.item1.name!.split(':').last;
     var count = '';
     Color color = Colors.grey;
 
@@ -770,9 +774,9 @@ class _SearchBarPageState extends State<SearchBarPage>
       count =
           ' (${info.item2.toString() + (related && info.item1.group == 'tag' ? '%' : '')})';
 
-    if (info.item1.group == 'tag' && info.item1.name.startsWith('female:'))
+    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:'))
       color = Colors.pink;
-    else if (info.item1.group == 'tag' && info.item1.name.startsWith('male:'))
+    else if (info.item1.group == 'tag' && info.item1.name!.startsWith('male:'))
       color = Colors.blue;
     else if (info.item1.group == 'prefix')
       color = Colors.orange;
@@ -863,10 +867,10 @@ class _SearchBarPageState extends State<SearchBarPage>
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
         child: Text(info.item1.group == 'tag' &&
-                (info.item1.name.startsWith('female:') ||
-                    info.item1.name.startsWith('male:'))
-            ? info.item1.name[0].toUpperCase()
-            : info.item1.group[0].toUpperCase()),
+                (info.item1.name!.startsWith('female:') ||
+                    info.item1.name!.startsWith('male:'))
+            ? info.item1.name![0].toUpperCase()
+            : info.item1.group![0].toUpperCase()),
       ),
       label: RichText(
           text: TextSpan(
@@ -886,32 +890,32 @@ class _SearchBarPageState extends State<SearchBarPage>
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {
           var insert = (info.item1.group == 'tag' &&
-                      (info.item1.name.startsWith('female') ||
-                          info.item1.name.startsWith('male'))
+                      (info.item1.name!.startsWith('female') ||
+                          info.item1.name!.startsWith('male'))
                   ? info.item1.name
-                  : info.item1.getTag())
+                  : info.item1.getTag())!
               .replaceAll(' ', '_');
 
-          _searchController.text = _searchText.substring(0, _insertPos) +
+          _searchController.text = _searchText!.substring(0, _insertPos) +
               insert +
-              _searchText.substring(
-                  _insertPos + _insertLength, _searchText.length);
+              _searchText!
+                  .substring(_insertPos! + _insertLength!, _searchText!.length);
           _searchController.selection = TextSelection(
-            baseOffset: _insertPos + insert.length,
-            extentOffset: _insertPos + insert.length,
+            baseOffset: _insertPos! + insert.length,
+            extentOffset: _insertPos! + insert.length,
           );
 
           if (info.item1.group == 'tag') {
-            _relatedLists =
-                HitomiIndexs.getRelatedTag(info.item1.name.replaceAll('_', ' '))
-                    .map((e) => Tuple2<DisplayedTag, int>(
-                        DisplayedTag(group: 'tag', name: e.item1),
-                        (e.item2 * 100).toInt()))
-                    .toList();
+            _relatedLists = HitomiIndexs.getRelatedTag(
+                    info.item1.name!.replaceAll('_', ' '))
+                .map((e) => Tuple2<DisplayedTag, int>(
+                    DisplayedTag(group: 'tag', name: e.item1),
+                    (e.item2 * 100).toInt()))
+                .toList();
             setState(() {});
           } else if (info.item1.group == 'series') {
             _relatedLists = HitomiIndexs.getRelatedCharacters(
-                    info.item1.name.replaceAll('_', ' '))
+                    info.item1.name!.replaceAll('_', ' '))
                 .map((e) => Tuple2<DisplayedTag, int>(
                     DisplayedTag(group: 'character', name: e.item1),
                     e.item2.toInt()))
@@ -919,7 +923,7 @@ class _SearchBarPageState extends State<SearchBarPage>
             setState(() {});
           } else if (info.item1.group == 'character') {
             _relatedLists = HitomiIndexs.getRelatedSeries(
-                    info.item1.name.replaceAll('_', ' '))
+                    info.item1.name!.replaceAll('_', ' '))
                 .map((e) => Tuple2<DisplayedTag, int>(
                     DisplayedTag(group: 'series', name: e.item1),
                     e.item2.toInt()))
@@ -931,20 +935,20 @@ class _SearchBarPageState extends State<SearchBarPage>
           if (offset != -1) {
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
-                info.item1.name +
+                info.item1.name! +
                 (info.item1.name == 'random' ? ' ' : ':') +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item1.name.length + 1,
-              extentOffset: offset + info.item1.name.length + 1,
+              baseOffset: offset + info.item1.name!.length + 1,
+              extentOffset: offset + info.item1.name!.length + 1,
             );
           } else {
             _searchController.text =
-                info.item1.name + (info.item1.name == 'random' ? '' : ':');
+                info.item1.name! + (info.item1.name == 'random' ? '' : ':');
             _searchController.selection = TextSelection(
-              baseOffset: info.item1.name.length + 1,
-              extentOffset: info.item1.name.length + 1,
+              baseOffset: info.item1.name!.length + 1,
+              extentOffset: info.item1.name!.length + 1,
             );
           }
           await searchProcess(

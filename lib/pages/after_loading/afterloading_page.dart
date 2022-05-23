@@ -27,11 +27,14 @@ class AfterLoadingPage extends StatefulWidget {
 class AfterLoadingPageState extends State<AfterLoadingPage>
     with WidgetsBindingObserver {
   static int defaultInitialPage = 0;
+  late FToast fToast;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    fToast = FToast();
+    fToast.init(context);
   }
 
   bool _alreadyLocked = false;
@@ -66,14 +69,14 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
       PageController(initialPage: defaultInitialPage);
 
   int get _currentPage => _pageController.hasClients
-      ? _pageController.page.round()
+      ? _pageController.page!.round()
       : defaultInitialPage;
 
   bool get _usesDrawer => Settings.useDrawer;
 
   bool get _usesBottomNavigationBar => !Settings.useDrawer;
 
-  DateTime _lastPopAt;
+  DateTime? _lastPopAt;
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final translations = Translations.of(context);
@@ -254,13 +257,13 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         DateTime now = DateTime.now();
 
         if (_lastPopAt != null &&
-            now.difference(_lastPopAt) <= const Duration(seconds: 2)) {
+            now.difference(_lastPopAt!) <= const Duration(seconds: 2)) {
           return true;
         }
 
         _lastPopAt = now;
 
-        FlutterToast(context).showToast(
+        fToast.showToast(
           child: ToastWrapper(
             isCheck: false,
             isWarning: true,

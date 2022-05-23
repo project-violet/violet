@@ -63,13 +63,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
-                  qm.results.forEach((element) {
+                  qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
 
                   var rr = LDI.ldi
                       .where((e) => qr.containsKey(e.item1.toString()))
-                      .map((e) => qr[e.item1.toString()])
+                      .map((e) => qr[e.item1.toString()]!)
                       .toList();
 
                   _navigate(ArticleListPage(name: "LDI DESC", cc: rr));
@@ -94,13 +94,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
-                  qm.results.forEach((element) {
+                  qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
 
                   var rr = LDI.ldi.reversed
                       .where((e) => qr.containsKey(e.item1.toString()))
-                      .map((e) => qr[e.item1.toString()])
+                      .map((e) => qr[e.item1.toString()]!)
                       .toList();
 
                   _navigate(ArticleListPage(name: "LDI ASC", cc: rr));
@@ -118,7 +118,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;
-                    articleCount[element.articleId()]++;
+                    articleCount[element.articleId()] =
+                        articleCount[element.articleId()]! + 1;
                   });
                   var ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));
@@ -131,13 +132,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
-                  qm.results.forEach((element) {
+                  qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
 
                   var rr = ll
                       .where((e) => qr.containsKey(e.key))
-                      .map((e) => qr[e.key])
+                      .map((e) => qr[e.key]!)
                       .toList();
 
                   _navigate(
@@ -168,7 +169,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   _navigate(ArticleListPage(
-                      name: "User Read Count DESC", cc: qm.results));
+                      name: "User Read Count DESC", cc: qm.results!));
                 },
               ),
               _buildItem(
@@ -297,13 +298,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = Map<String, QueryResult>();
-                  qm.results.forEach((element) {
+                  qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
 
                   var rr = CommentsCount.counts
                       .where((e) => qr.containsKey(e.item1.toString()))
-                      .map((e) => qr[e.item1.toString()])
+                      .map((e) => qr[e.item1.toString()]!)
                       .toList();
 
                   _navigate(ArticleListPage(name: "Comment Counts", cc: rr));

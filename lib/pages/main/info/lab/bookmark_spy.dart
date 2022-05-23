@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -23,7 +24,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
   static const String dev = '1918c652d3a9';
 
   String _latestAccessUserAppId = '';
-  List<dynamic> bookmarks;
+  List<dynamic>? bookmarks;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       bookmarks = await VioletServer.bookmarkLists();
-      bookmarks.removeWhere((element) =>
+      bookmarks!.removeWhere((element) =>
           ((element as Map<String, dynamic>)['user'] as String)
               .startsWith(dev));
 
@@ -50,9 +51,9 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
               padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
               physics: BouncingScrollPhysics(),
               controller: _scrollController,
-              itemCount: bookmarks.length,
+              itemCount: bookmarks!.length,
               itemBuilder: (BuildContext ctxt, int index) {
-                return _buildItem(bookmarks[index] as Map<String, dynamic>);
+                return _buildItem(bookmarks![index] as Map<String, dynamic>);
               },
             ),
     );
@@ -104,27 +105,27 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                   )
                 : FutureBuilder(
                     future: Bookmark.getInstance().then((value) async {
-                      return [
-                        await value.isBookmarkUser(data['user'] as String),
-                        await value.isHistoryUser(data['user'] as String)
-                      ];
+                      return Tuple2(
+                          await value.isBookmarkUser(data['user'] as String),
+                          await value.isHistoryUser(data['user'] as String));
                     }),
-                    builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                      if (!snapshot.hasData) return null;
+                    builder:
+                        (context, AsyncSnapshot<Tuple2<bool, bool>> snapshot) {
+                      if (!snapshot.hasData) return Container();
 
-                      if (snapshot.data[0] as bool)
+                      if (snapshot.data!.item1)
                         return Icon(
                           MdiIcons.starCircleOutline,
                           color: Colors.yellow,
                         );
 
-                      if (snapshot.data[1] as bool)
+                      if (snapshot.data!.item2)
                         return Icon(
                           MdiIcons.rayStartVertexEnd,
                           color: Colors.grey,
                         );
 
-                      return null;
+                      return Container();
                     },
                   ),
             onTap: () async {

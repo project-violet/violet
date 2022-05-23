@@ -18,7 +18,7 @@ class SearchType2 extends StatelessWidget {
   }
 
   final int nowType;
-  SearchType2({this.nowType});
+  SearchType2({required this.nowType});
 
   @override
   Widget build(BuildContext context) {

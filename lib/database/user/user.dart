@@ -7,13 +7,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:violet/database/database.dart';
 
 class CommonUserDatabase extends DataBaseManager {
-  static DataBaseManager _instance;
+  static DataBaseManager? _instance;
 
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
       var dir = await getApplicationDocumentsDirectory();
       _instance = DataBaseManager.create('${dir.path}/user.db');
     }
-    return _instance;
+    return _instance!;
   }
 }

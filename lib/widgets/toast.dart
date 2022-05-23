@@ -11,15 +11,15 @@ class ToastWrapper extends StatefulWidget {
   final bool isCheck;
   final bool isWarning;
   final String msg;
-  final IconData icon;
-  final Color color;
+  final IconData? icon;
+  final Color? color;
   final bool ignoreDrawer;
   final bool reverse;
 
   ToastWrapper({
-    this.isCheck,
-    this.isWarning,
-    this.msg,
+    this.isCheck = false,
+    this.isWarning = false,
+    required this.msg,
     this.icon,
     this.color,
     this.ignoreDrawer = false,
@@ -33,14 +33,23 @@ class ToastWrapper extends StatefulWidget {
 class _ToastWrapperState extends State<ToastWrapper>
     with TickerProviderStateMixin {
   double opacity = 0.0;
-  AnimationController controller;
-  Animation<Offset> offset;
+  late AnimationController controller;
+  late Animation<Offset> offset;
   bool opened = false;
   bool reverse = false;
 
   @override
   void initState() {
     super.initState();
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
+    offset = Tween<Offset>(
+            begin: widget.reverse ? Offset(0.0, 1.0) : Offset.zero,
+            end: widget.reverse ? Offset.zero : Offset(0.0, 1.0))
+        .animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeInOut,
+    ));
     Future.delayed(Duration(milliseconds: 100)).then((value) {
       controller.reverse(from: 0.8);
       setState(() {
@@ -55,15 +64,6 @@ class _ToastWrapperState extends State<ToastWrapper>
       });
       controller.forward();
     });
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
-    offset = Tween<Offset>(
-            begin: widget.reverse ? Offset(0.0, 1.0) : Offset.zero,
-            end: widget.reverse ? Offset.zero : Offset(0.0, 1.0))
-        .animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeInOut,
-    ));
   }
 
 // https://dash-overflow.net/articles/why_vsync/
@@ -79,7 +79,7 @@ class _ToastWrapperState extends State<ToastWrapper>
     var color = widget.color ??
         (widget.isCheck
             ? Colors.greenAccent.withOpacity(0.8)
-            : widget.isWarning != null && widget.isWarning
+            : widget.isWarning
                 ? Colors.orangeAccent.withOpacity(0.8)
                 : Colors.redAccent.withOpacity(0.8));
 
@@ -103,7 +103,7 @@ class _ToastWrapperState extends State<ToastWrapper>
                     begin: reverse ? 10.0 : 0.1, end: reverse ? 0.001 : 10.0),
                 duration: Duration(milliseconds: (reverse ? 500 : 700)),
                 builder: (_, value, child) {
-                  if (reverse && value < 0.1) return child;
+                  if (reverse && value < 0.1) return child!;
                   return BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: value, sigmaY: value),
                     child: child,
@@ -135,7 +135,7 @@ class _ToastWrapperState extends State<ToastWrapper>
                           widget.icon ??
                               (widget.isCheck
                                   ? Icons.check
-                                  : widget.isWarning != null && widget.isWarning
+                                  : widget.isWarning
                                       ? Icons.warning
                                       : Icons.cancel),
                           color: color,

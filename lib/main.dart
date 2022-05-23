@@ -9,6 +9,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -32,7 +33,9 @@ const _filesToWarmup = [
 
 Future<void> warmupFlare() async {
   for (final filename in _filesToWarmup) {
-    await cachedActor(rootBundle, filename);
+    await cachedActor(
+      AssetFlare(bundle: rootBundle, name: filename),
+    );
   }
 }
 
@@ -128,11 +131,11 @@ void main() async {
             GlobalWidgetsLocalizations.delegate
           ],
           localeResolutionCallback:
-              (Locale locale, Iterable<Locale> supportedLocales) {
+              (Locale? locale, Iterable<Locale> supportedLocales) {
             print(Settings.language);
             if (Settings.language != null) {
-              if (Settings.language.contains('_')) {
-                var ss = Settings.language.split('_');
+              if (Settings.language!.contains('_')) {
+                var ss = Settings.language!.split('_');
                 if (ss.length == 2)
                   return Locale.fromSubtags(
                       languageCode: ss[0], scriptCode: ss[1]);
@@ -142,7 +145,7 @@ void main() async {
                       scriptCode: ss[1],
                       countryCode: ss[2]);
               } else
-                return Locale(Settings.language);
+                return Locale(Settings.language!);
             }
 
             if (locale == null) {

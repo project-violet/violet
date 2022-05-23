@@ -21,16 +21,19 @@ class LockScreen extends StatefulWidget {
 }
 
 class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animation;
-  List<int> _pin = List.filled(4, null);
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  List<int?> _pin = List.filled(4, null);
   bool _isFirstPINInserted = false;
-  String _firstPIN;
-  String _message;
+  String? _firstPIN;
+  String? _message;
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
     _controller = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this)
@@ -77,7 +80,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                     ),
                   ),
                   Container(height: 8.0),
-                  Text(_message),
+                  Text(_message!),
                   Container(height: 36),
                   Icon(Icons.lock),
                   Spacer(),
@@ -301,7 +304,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         await (await SharedPreferences.getInstance())
             .setString('pinPass', _pin.join());
         Future.delayed(Duration(milliseconds: 300)).then((value) {
-          FlutterToast(context).showToast(
+          fToast.showToast(
             child: ToastWrapper(
               isCheck: true,
               isWarning: false,

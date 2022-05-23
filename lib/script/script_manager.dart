@@ -12,9 +12,9 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class ScriptManager {
   static const String _scriptUrl =
       'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js';
-  static String _scriptCache;
-  static JavascriptRuntime _runtime;
-  static DateTime _latestUpdate;
+  static String? _scriptCache;
+  static late JavascriptRuntime _runtime;
+  static late DateTime _latestUpdate;
 
   static Future<void> init() async {
     _scriptCache = (await http.get(_scriptUrl)).body;
@@ -42,10 +42,10 @@ class ScriptManager {
 
   static void _initRuntime() {
     _runtime = getJavascriptRuntime();
-    _runtime.evaluate(_scriptCache);
+    _runtime.evaluate(_scriptCache!);
   }
 
-  static Future<Tuple3<List<String>, List<String>, List<String>>>
+  static Future<Tuple3<List<String>, List<String>, List<String>>?>
       runHitomiGetImageList(int id) async {
     if (_scriptCache == null) return null;
     try {
@@ -86,7 +86,7 @@ class ScriptManager {
 
   static Future<Map<String, String>> runHitomiGetHeaderContent(
       String id) async {
-    if (_scriptCache == null) return null;
+    if (_scriptCache == null) return Map<String, String>();
     try {
       final jResult =
           _runtime.evaluate("hitomi_get_header_content('$id')").stringResult;
@@ -95,17 +95,16 @@ class ScriptManager {
       if (jResultObject is Map<dynamic, dynamic>) {
         return Map<String, String>.from(jResultObject);
       } else {
-        Logger.error(
+        throw new Exception(
             '[script-HitomiGetHeaderContent] E: JSError\nId: $id\nMessage: ' +
                 jResult.toString());
-        return null;
       }
     } catch (e, st) {
       Logger.error('[script-HitomiGetHeaderContent] E: ' +
           e.toString() +
           '\nId: $id\n' +
           st.toString());
-      return null;
+      rethrow;
     }
   }
 }

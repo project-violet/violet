@@ -9,15 +9,14 @@ class PatchModel {
   String version;
   bool isMajor;
   bool isMinor;
-  String detail;
   List<String> contents;
 
   PatchModel({
-    this.dateTime,
-    this.version,
+    required this.dateTime,
+    required this.version,
     this.isMajor = false,
     this.isMinor = false,
-    this.contents,
+    required this.contents,
   });
 }
 

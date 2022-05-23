@@ -11,7 +11,7 @@ import 'package:violet/log/log.dart';
 class VioletChecker {
   static Future<bool> checkArticleDatabase() async {
     const testPrefix = '[Checker] checkArticleDatabase';
-    Database db;
+    Database? db;
 
     try {
       //
@@ -96,7 +96,7 @@ class VioletChecker {
 
   static Future<bool> checkUserDatabase() async {
     const testPrefix = '[Checker] checkUserDatabase';
-    Database db;
+    Database? db;
 
     try {
       //
@@ -178,5 +178,7 @@ class VioletChecker {
     }
   }
 
-  static Future<bool> checkDownloadable() async {}
+  static Future<bool> checkDownloadable() async {
+    return false;
+  }
 }

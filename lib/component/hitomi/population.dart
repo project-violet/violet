@@ -9,7 +9,7 @@ import 'package:violet/database/query.dart';
 import 'package:violet/database/user/download.dart';
 
 class Population {
-  static Map<int, int> population;
+  static late Map<int, int> population;
 
   static Future<void> init() async {
     String data;
@@ -47,7 +47,7 @@ class Population {
     // a < b
     if (!population.containsKey(b.id())) return -1;
 
-    return population[a.id()].compareTo(population[b.id()]);
+    return population[a.id()]!.compareTo(population[b.id()]!);
   }
 
   static int compareDownloadItem(DownloadItemModel a, DownloadItemModel b) {
@@ -61,6 +61,6 @@ class Population {
     // a < b
     if (!population.containsKey(b.id())) return -1;
 
-    return population[a.id()].compareTo(population[b.id()]);
+    return population[a.id()]!.compareTo(population[b.id()]!);
   }
 }

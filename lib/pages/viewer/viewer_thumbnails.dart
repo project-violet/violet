@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
 import 'package:violet/component/image_provider.dart';
@@ -21,14 +22,14 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class ViewerThumbnail extends StatefulWidget {
   final int viewedPage;
 
-  ViewerThumbnail({this.viewedPage});
+  ViewerThumbnail({required this.viewedPage});
 
   @override
   _ViewerThumbnailState createState() => _ViewerThumbnailState();
 }
 
 class _ViewerThumbnailState extends State<ViewerThumbnail> {
-  ViewerPageProvider _pageInfo;
+  late final ViewerPageProvider _pageInfo;
   List<GlobalKey> itemKeys = <GlobalKey>[];
   ScrollController _scrollController = ScrollController();
 
@@ -53,7 +54,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       var row = widget.viewedPage ~/ 3;
       if (row == 0) return;
       var firstItemHeight =
-          (itemKeys[0].currentContext.findRenderObject() as RenderBox)
+          (itemKeys[0].currentContext!.findRenderObject() as RenderBox)
               .size
               .height;
       _scrollController.jumpTo(
@@ -92,6 +93,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     } else if (_pageInfo.useProvider) {
       return _buildProviderThumbnailList();
     }
+    throw UnimplementedError();
   }
 
   Widget _buildFileSystemThumbnailList() {
@@ -147,9 +149,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           } else
             prov = await ProviderManager.get(_pageInfo.id * 1000000);
 
-          return [await prov.getSmallImagesUrl(), await prov.getHeader(0)];
+          return Tuple2(
+              await prov.getSmallImagesUrl(), await prov.getHeader(0));
         }),
-        builder: (context, snapshot) {
+        builder: (context,
+            AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
           if (!snapshot.hasData)
             return Container(child: CircularProgressIndicator());
           Future.delayed(Duration(milliseconds: 50))
@@ -163,7 +167,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
             childAspectRatio: 3 / 4,
             crossAxisSpacing: 8,
             mainAxisSpacing: 8,
-            children: (snapshot.data[0] as List<String>)
+            children: snapshot.data!.item1
                 .asMap()
                 .map((i, e) => MapEntry(
                     i,
@@ -171,7 +175,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                       i,
                       CachedNetworkImage(
                         imageUrl: e,
-                        httpHeaders: snapshot.data[1] as Map<String, String>,
+                        httpHeaders: snapshot.data!.item2,
                         filterQuality: FilterQuality.high,
                         fit: BoxFit.cover,
                       ),
@@ -256,11 +260,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           'type: ${_pageInfo.useProvider ? 'provider' : _pageInfo.useFileSystem ? 'filesys' : _pageInfo.useWeb ? 'web' : 'none'}\n';
 
       if (_pageInfo.useProvider || _pageInfo.useFileSystem) {
-        File file;
+        File? file;
 
         if (_pageInfo.useProvider) {
-          final url = await _pageInfo.provider.getImageUrl(i);
-          final headers = await _pageInfo.provider.getHeader(i);
+          final url = await _pageInfo.provider!.getImageUrl(i);
+          final headers = await _pageInfo.provider!.getHeader(i);
 
           infoText += 'url: $url\n';
           infoText += 'header: ${json.encode(headers)}\n';
@@ -274,13 +278,13 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         infoText += '\n';
 
         try {
-          final image = await decodeImageFromList(file.readAsBytesSync());
+          final image = await decodeImageFromList(file!.readAsBytesSync());
 
           infoText +=
               'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
         } catch (e) {}
         infoText +=
-            'length: ${toStringWithComma((await file.length() ~/ 1024).toString())}KB\n';
+            'length: ${toStringWithComma((await file!.length() ~/ 1024).toString())}KB\n';
         infoText += 'filename: ${file.path}';
       }
 

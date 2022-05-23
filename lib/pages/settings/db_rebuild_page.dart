@@ -92,7 +92,7 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
     for (var tag in (qr as String).split('|'))
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
-        map[tag] += 1;
+        map[tag] = map[tag]! + 1;
       }
   }
 
@@ -102,7 +102,7 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
     var str = qr as String;
     if (str != null && str != '') {
       if (!map.containsKey(str)) map[str] = 0;
-      map[str] += 1;
+      map[str] = map[str]! + 1;
     }
   }
 

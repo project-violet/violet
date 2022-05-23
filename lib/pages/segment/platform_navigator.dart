@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 
 class PlatformNavigator {
-  static Future<T> navigateFade<T>(BuildContext context, Widget page) async {
+  static Future<T?> navigateFade<T>(BuildContext context, Widget page) async {
     if (!Platform.isIOS) {
       return await Navigator.of(context).push<T>(
         PageRouteBuilder(
@@ -27,7 +27,7 @@ class PlatformNavigator {
     }
   }
 
-  static Future<T> navigateSlide<T>(BuildContext context, Widget page,
+  static Future<T?> navigateSlide<T>(BuildContext context, Widget page,
       {bool opaque = true}) async {
     if (!Platform.isIOS) {
       return await Navigator.of(context).push<T>(PageRouteBuilder(
@@ -54,7 +54,7 @@ class PlatformNavigator {
     }
   }
 
-  static Future<T> navigateOption<T>(BuildContext context, Widget page) async {
+  static Future<T?> navigateOption<T>(BuildContext context, Widget page) async {
     return await Navigator.of(context).push<T>(
       PageRouteBuilder(
         opaque: false,

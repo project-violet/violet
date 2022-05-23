@@ -43,7 +43,7 @@ class HentaiManager {
   // if next offset == -1, then search end
   static Future<Tuple2<List<QueryResult>, int>> search(String what,
       [int offset = 0]) async {
-    int no = int.tryParse(what);
+    int? no = int.tryParse(what);
     // is Id Search?
     if (no != null) {
       return await idSearch(what);
@@ -69,9 +69,9 @@ class HentaiManager {
             .query("$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0"))
         .map((e) => QueryResult(result: e))
         .toList();
-    int no = int.tryParse(what);
+    int? no = int.tryParse(what);
 
-    if (queryResult != null && queryResult.length != 0) {
+    if (queryResult.length != 0) {
       return Tuple2<List<QueryResult>, int>(queryResult, -1);
     }
 
@@ -99,7 +99,7 @@ class HentaiManager {
   static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
       [int offset = 0]) async {
     var wwhat = what.split(' ').where((x) => x != 'random').join(' ');
-    var seed = -1.0;
+    double? seed = -1.0;
     if (what.split(' ').where((x) => x.startsWith('random:')).length > 0) {
       var tseed = what
           .split(' ')
@@ -393,31 +393,33 @@ class HentaiManager {
     return result.map((element) {
       var tag = <String>[];
 
-      if (element.descripts['female'] != null)
-        tag.addAll(element.descripts['female'].map((e) => "female:" + e));
-      if (element.descripts['male'] != null)
-        tag.addAll(element.descripts['male'].map((e) => "male:" + e));
-      if (element.descripts['misc'] != null)
-        tag.addAll(element.descripts['misc']);
+      if (element.descripts != null) {
+        if (element.descripts!['female'] != null)
+          tag.addAll(element.descripts!['female']!.map((e) => "female:" + e));
+        if (element.descripts!['male'] != null)
+          tag.addAll(element.descripts!['male']!.map((e) => "male:" + e));
+        if (element.descripts!['misc'] != null)
+          tag.addAll(element.descripts!['misc']!);
+      }
 
       var map = {
-        'Id': int.parse(element.url.split('/')[4]),
-        'EHash': element.url.split('/')[5],
+        'Id': int.parse(element.url!.split('/')[4]),
+        'EHash': element.url!.split('/')[5],
         'Title': element.title,
-        'Artists': element.descripts['artist'] != null
-            ? element.descripts['artist'].join('|')
+        'Artists': element.descripts!['artist'] != null
+            ? element.descripts!['artist']!.join('|')
             : 'n/a',
-        'Groups': element.descripts['group'] != null
-            ? element.descripts['group'].join('|')
+        'Groups': element.descripts!['group'] != null
+            ? element.descripts!['group']!.join('|')
             : null,
-        'Characters': element.descripts['character'] != null
-            ? element.descripts['character'].join('|')
+        'Characters': element.descripts!['character'] != null
+            ? element.descripts!['character']!.join('|')
             : null,
-        'Series': element.descripts['parody'] != null
-            ? element.descripts['parody'].join('|')
+        'Series': element.descripts!['parody'] != null
+            ? element.descripts!['parody']!.join('|')
             : 'n/a',
-        'Language': element.descripts['language'] != null
-            ? element.descripts['language']
+        'Language': element.descripts!['language'] != null
+            ? element.descripts!['language']!
                 .where((element) => !element.contains('translate'))
                 .join('|')
             : 'n/a',
