@@ -10,9 +10,14 @@ class ThumbnailViewPage extends StatefulWidget {
   final String thumbnail;
   final String heroKey;
   final Map<String, String> headers;
-  final Size size;
+  final Size? size;
 
-  ThumbnailViewPage({this.thumbnail, this.headers, this.size, this.heroKey});
+  ThumbnailViewPage({
+    required this.thumbnail,
+    required this.headers,
+    this.size,
+    required this.heroKey,
+  });
 
   @override
   _ThumbnailViewPageState createState() => _ThumbnailViewPageState();
@@ -119,7 +124,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
         tapCount++;
         DateTime now = DateTime.now();
         if (currentBackPressTime == null ||
-            now.difference(currentBackPressTime) >
+            now.difference(currentBackPressTime!) >
                 Duration(milliseconds: 300)) {
           currentBackPressTime = now;
           return;
@@ -137,7 +142,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
   }
 
   int tapCount = 0;
-  double dragStart;
+  double dragStart = 0;
   bool zooming = false;
-  DateTime currentBackPressTime;
+  DateTime? currentBackPressTime;
 }

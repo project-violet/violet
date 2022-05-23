@@ -16,14 +16,14 @@ import 'package:violet/widgets/search_bar.dart';
 class ViewerGallery extends StatefulWidget {
   final int viewedPage;
 
-  ViewerGallery({this.viewedPage});
+  ViewerGallery({required this.viewedPage});
 
   @override
   _ViewerGalleryState createState() => _ViewerGalleryState();
 }
 
 class _ViewerGalleryState extends State<ViewerGallery> {
-  ViewerPageProvider _pageInfo;
+  late final ViewerPageProvider _pageInfo;
   ScrollController _scrollController = ScrollController();
   List<GlobalKey> itemKeys = <GlobalKey>[];
 
@@ -39,7 +39,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       var row = widget.viewedPage ~/ 4;
       if (row == 0) return;
       var firstItemHeight =
-          (itemKeys[0].currentContext.findRenderObject() as RenderBox)
+          (itemKeys[0].currentContext!.findRenderObject() as RenderBox)
               .size
               .height;
       _scrollController.jumpTo(
@@ -264,12 +264,13 @@ class _ViewerGalleryState extends State<ViewerGallery> {
 
     return FutureBuilder(
       future: Future.sync(() async {
-        return Tuple2<dynamic, dynamic>(
-          await _pageInfo.provider.getSmallImagesUrl(),
-          await _pageInfo.provider.getHeader(0),
+        return Tuple2<List<String>, Map<String, String>>(
+          await _pageInfo.provider!.getSmallImagesUrl(),
+          await _pageInfo.provider!.getHeader(0),
         );
       }),
-      builder: (context, snapshot) {
+      builder: (context,
+          AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
         if (!snapshot.hasData) {
           return SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -301,8 +302,8 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                 child: Stack(
                   children: <Widget>[
                     CachedNetworkImage(
-                      imageUrl: snapshot.data.item1[index],
-                      httpHeaders: snapshot.data.item2,
+                      imageUrl: snapshot.data!.item1[index],
+                      httpHeaders: snapshot.data!.item2,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: double.infinity,
@@ -338,7 +339,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                 ),
               );
             },
-            childCount: _pageInfo.provider.length(),
+            childCount: _pageInfo.provider!.length(),
           ),
         );
       },

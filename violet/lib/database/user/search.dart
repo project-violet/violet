@@ -13,7 +13,7 @@ import 'package:violet/log/log.dart';
 
 class SearchLog {
   Map<String, dynamic> result;
-  SearchLog({this.result});
+  SearchLog({required this.result});
 
   int id() => result['Id'];
   String searchWhat() => result['SearchWhat'];
@@ -21,7 +21,7 @@ class SearchLog {
 }
 
 class SearchLogDatabase {
-  static SearchLogDatabase _instance;
+  static SearchLogDatabase? _instance;
   static Lock lock = Lock();
   static Future<SearchLogDatabase> getInstance() async {
     await lock.synchronized(() async {
@@ -44,7 +44,7 @@ class SearchLogDatabase {
         _instance = SearchLogDatabase();
       }
     });
-    return _instance;
+    return _instance!;
   }
 
   Future<List<SearchLog>> getSearchLog() async {
@@ -56,7 +56,7 @@ class SearchLogDatabase {
         .toList();
   }
 
-  Future<void> insertSearchLog(String searchWhat, [DateTime datetime]) async {
+  Future<void> insertSearchLog(String searchWhat, [DateTime? datetime]) async {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
     await db.insert('SearchLog', {

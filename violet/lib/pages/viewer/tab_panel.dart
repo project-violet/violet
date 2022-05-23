@@ -28,12 +28,12 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class TabPanel extends StatefulWidget {
   final int articleId;
   final double height;
-  final List<QueryResult> usableTabList;
+  final List<QueryResult>? usableTabList;
 
   TabPanel({
-    this.articleId,
+    required this.articleId,
     this.usableTabList,
-    this.height,
+    required this.height,
   });
 
   @override
@@ -70,7 +70,7 @@ class _TabPanelState extends State<TabPanel> {
             if (widget.usableTabList != null)
               _UsableTabList(
                 articleId: widget.articleId,
-                usableTabList: widget.usableTabList,
+                usableTabList: widget.usableTabList!,
               ),
             _ArtistsArticleTabList(
               height: widget.height,
@@ -133,7 +133,10 @@ class _UsableTabList extends StatefulWidget {
   final int articleId;
   final List<QueryResult> usableTabList;
 
-  const _UsableTabList({this.articleId, this.usableTabList});
+  const _UsableTabList({
+    required this.articleId,
+    required this.usableTabList,
+  });
 
   @override
   __UsableTabListState createState() => __UsableTabListState();
@@ -151,8 +154,6 @@ class __UsableTabListState extends State<_UsableTabList>
   void initState() {
     super.initState();
 
-    if (widget.usableTabList == null) return;
-
     widget.usableTabList
         .forEach((element) => itemKeys[element.id()] = GlobalKey());
 
@@ -161,8 +162,8 @@ class __UsableTabListState extends State<_UsableTabList>
               .indexWhere((element) => element.id() == widget.articleId) ~/
           3;
       if (row == 0) return;
-      var firstItemHeight = (itemKeys[widget.usableTabList.first.id()]
-              .currentContext
+      var firstItemHeight = (itemKeys[widget.usableTabList.first.id()]!
+              .currentContext!
               .findRenderObject() as RenderBox)
           .size
           .height;
@@ -227,7 +228,10 @@ class _ArtistsArticleTabList extends StatefulWidget {
   final int articleId;
   final double height;
 
-  const _ArtistsArticleTabList({this.articleId, this.height});
+  const _ArtistsArticleTabList({
+    required this.articleId,
+    required this.height,
+  });
 
   @override
   __ArtistsArticleTabListState createState() => __ArtistsArticleTabListState();
@@ -308,8 +312,8 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                 .indexWhere((element) => element.id() == widget.articleId) ~/
             3;
         if (row == 0) return;
-        var firstItemHeight = (itemKeys[articleList.first.id()]
-                .currentContext
+        var firstItemHeight = (itemKeys[articleList.first.id()]!
+                .currentContext!
                 .findRenderObject() as RenderBox)
             .size
             .height;
@@ -451,7 +455,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
         builder: (context) {
           return Provider<ViewerPageProvider>.value(
               value: ViewerPageProvider(
-                uris: List<String>.filled(prov.length(), null),
+                uris: List<String>.filled(prov.length(), ''),
                 useProvider: true,
                 provider: prov,
                 headers: headers,

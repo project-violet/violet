@@ -43,19 +43,19 @@ import 'package:violet/log/log.dart';
 
 class ArticleReadLog {
   Map<String, dynamic> result;
-  ArticleReadLog({this.result});
+  ArticleReadLog({required this.result});
 
   int id() => result['Id'];
   String articleId() => result['Article'];
   String datetimeStart() => result['DateTimeStart'];
   String datetimeEnd() => result['DateTimeEnd'];
-  int lastPage() => result['LastPage'];
+  int? lastPage() => result['LastPage'];
   // 0: Read on search, 1: Read on bookmark
   int type() => result['Type'];
 }
 
 class User {
-  static User _instance;
+  static User? _instance;
   static Lock lock = Lock();
   static Future<User> getInstance() async {
     await lock.synchronized(() async {
@@ -63,7 +63,7 @@ class User {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='ArticleReadLog';");
-        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+        if (ee.length == 0 || ee[0].length == 0) {
           try {
             await db.execute('''CREATE TABLE ArticleReadLog (
               Id integer primary key autoincrement, 
@@ -81,7 +81,7 @@ class User {
         _instance = User();
       }
     });
-    return _instance;
+    return _instance!;
   }
 
   Future<List<ArticleReadLog>> getUserLog() async {
@@ -93,7 +93,8 @@ class User {
         .toList();
   }
 
-  Future<void> insertUserLog(int article, int type, [DateTime datetime]) async {
+  Future<void> insertUserLog(int article, int type,
+      [DateTime? datetime]) async {
     datetime ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
     await db.insert('ArticleReadLog', {
@@ -103,7 +104,7 @@ class User {
     });
   }
 
-  Future<void> updateUserLog(int article, int lastpage, [DateTime end]) async {
+  Future<void> updateUserLog(int article, int lastpage, [DateTime? end]) async {
     end ??= DateTime.now();
     var db = await CommonUserDatabase.getInstance();
     var rr = (await getUserLog())[0];

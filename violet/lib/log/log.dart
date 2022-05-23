@@ -9,19 +9,19 @@ import 'package:path_provider/path_provider.dart';
 import 'package:synchronized/synchronized.dart' as sync;
 
 class LogEvent {
-  DateTime dateTime;
+  DateTime? dateTime;
   bool isError;
   bool isWarning;
   String title;
   String message;
-  String detail;
+  String? detail;
 
   LogEvent({
     this.dateTime,
     this.isError = false,
     this.isWarning = false,
-    this.title,
-    this.message,
+    required this.title,
+    required this.message,
     this.detail,
   }) {
     dateTime ??= DateTime.now();
@@ -41,7 +41,7 @@ class Logger {
   // Since isolates handle all asynchronous operations linearly,
   // there is no need for mutual exclusion.
   static sync.Lock lock = sync.Lock();
-  static File logFile;
+  static late File logFile;
   static List<LogEvent> events = <LogEvent>[];
 
   static Future<void> init() async {
@@ -107,7 +107,7 @@ class Logger {
     final ext = await getExternalStorageDirectory();
     // final dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
     // final extpath = '${ext.path}/log-${dateFormat.format(DateTime.now())}.log';
-    final extpath = '${ext.path}/log.txt';
+    final extpath = '${ext!.path}/log.txt';
     await logFile.copy(extpath);
   }
 }

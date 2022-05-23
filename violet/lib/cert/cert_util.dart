@@ -20,7 +20,8 @@ class CertUtil {
           secureRandom));
     final pair = keyGen.generateKeyPair();
 
-    return Tuple2<RSAPublicKey, RSAPrivateKey>(pair.publicKey, pair.privateKey);
+    return Tuple2<RSAPublicKey, RSAPrivateKey>(
+        pair.publicKey as RSAPublicKey, pair.privateKey as RSAPrivateKey);
   }
 
   static Uint8List sign(RSAPrivateKey privateKey, Uint8List dataToSign) {

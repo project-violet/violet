@@ -26,9 +26,9 @@ import 'package:violet/widgets/search_bar.dart';
 // https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
 class DotsIndicator extends AnimatedWidget {
   DotsIndicator({
-    this.controller,
-    this.itemCount,
-    this.onPageSelected,
+    required this.controller,
+    required this.itemCount,
+    required this.onPageSelected,
     this.color: Colors.white,
   }) : super(listenable: controller);
 
@@ -96,8 +96,12 @@ class LabGroupArticleListPage extends StatefulWidget {
   final String name;
   final int groupId;
 
-  LabGroupArticleListPage(
-      {this.articles, this.artists, this.name, this.groupId});
+  LabGroupArticleListPage({
+    required this.articles,
+    required this.artists,
+    required this.name,
+    required this.groupId,
+  });
 
   @override
   _GroupArticleListPageState createState() => _GroupArticleListPageState();
@@ -149,7 +153,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''))
           .then((value) async {
         var qr = Map<String, QueryResult>();
-        value.results.forEach((element) {
+        value.results!.forEach((element) {
           qr[element.id().toString()] = element;
         });
 
@@ -176,7 +180,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
             });
             return;
           }
-          result.add(qr[element.article()]);
+          result.add(qr[element.article()]!);
         });
 
         queryResult = result;
@@ -191,7 +195,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
   }
 
   bool _shouldRebuild = false;
-  Widget _cachedList;
+  Widget? _cachedList;
 
   @override
   Widget build(BuildContext context) {
@@ -229,7 +233,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                               ])),
                         ),
                       ),
-                      _cachedList
+                      _cachedList!
                     ],
                   ),
                 ),
@@ -453,9 +457,9 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
       case 'female':
       case 'male':
       case 'series':
+      default:
         return false;
     }
-    return null;
   }
 
   List<QueryResult> filter() {

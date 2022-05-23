@@ -8,7 +8,7 @@ import 'package:violet/settings/settings.dart';
 final defaultTitle = 'Project Violet';
 
 Future<void> showOkDialog(BuildContext context, String message,
-    [String title]) async {
+    [String? title]) async {
   await showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -28,15 +28,15 @@ Future<void> showOkDialog(BuildContext context, String message,
 }
 
 Future<bool> showOkCancelDialog({
-  @required BuildContext context,
-  @required String titleText,
-  String contentText,
-  WidgetBuilder contentBuilder,
-  EdgeInsetsGeometry contentPadding,
-  String okText,
-  String cancelText,
-  VoidCallback onOkPressed,
-  VoidCallback onCancelPressed,
+  required BuildContext context,
+  String? titleText,
+  String? contentText,
+  WidgetBuilder? contentBuilder,
+  EdgeInsetsGeometry? contentPadding,
+  String? okText,
+  String? cancelText,
+  VoidCallback? onOkPressed,
+  VoidCallback? onCancelPressed,
   bool useRootNavigator = true,
 }) async {
   assert((contentText != null && contentBuilder == null) ||
@@ -49,8 +49,8 @@ Future<bool> showOkCancelDialog({
       title: Text(titleText ?? defaultTitle),
       content: contentText != null
           ? Text(contentText)
-          : Builder(builder: contentBuilder),
-      contentPadding: contentPadding,
+          : Builder(builder: contentBuilder!),
+      contentPadding: contentPadding!,
       actions: [
         TextButton(
           style: TextButton.styleFrom(primary: Settings.majorColor),
@@ -80,8 +80,8 @@ Future<bool> showOkCancelDialog({
 }
 
 Future<bool> showYesNoDialog(BuildContext context, String message,
-    [String title]) async {
-  return await showDialog<bool>(
+    [String? title]) async {
+  var result = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(title ?? defaultTitle),
@@ -104,4 +104,5 @@ Future<bool> showYesNoDialog(BuildContext context, String message,
       ],
     ),
   );
+  return result == null ? false : result;
 }

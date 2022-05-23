@@ -59,10 +59,13 @@ class _MainPage2State extends State<MainPage2>
   // bool ee = false;
   int _current = 0;
   bool _syncAvailable = false;
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
     Future.delayed(Duration(milliseconds: 200)).then((value) async {
       // var latestDB = SyncManager.getLatestDB().getDateTime();
@@ -96,7 +99,7 @@ class _MainPage2State extends State<MainPage2>
     });
   }
 
-  List<Widget> _cachedGroups;
+  List<Widget>? _cachedGroups;
   bool _shouldReload = false;
 
   @override
@@ -177,7 +180,7 @@ class _MainPage2State extends State<MainPage2>
         physics: BouncingScrollPhysics(),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: _cachedGroups,
+          children: _cachedGroups!,
         ),
       ),
     );
@@ -265,13 +268,14 @@ class _MainPage2State extends State<MainPage2>
                 () async {
                   return await (await User.getInstance()).getUserLog();
                 },
-              ), builder: (context, snapshot) {
+              ), builder:
+                  (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
                 if (!snapshot.hasData) {
                   return Text('??',
                       style: TextStyle(
                           fontFamily: "Calibre-Semibold", fontSize: 18));
                 }
-                return Text(numberWithComma(snapshot.data.length),
+                return Text(numberWithComma(snapshot.data!.length),
                     style: TextStyle(
                         fontFamily: "Calibre-Semibold", fontSize: 18));
               }),
@@ -285,13 +289,14 @@ class _MainPage2State extends State<MainPage2>
                 () async {
                   return await (await Bookmark.getInstance()).getArticle();
                 },
-              ), builder: (context, snapshot) {
+              ), builder:
+                  (context, AsyncSnapshot<List<BookmarkArticle>> snapshot) {
                 if (!snapshot.hasData) {
                   return Text('??',
                       style: TextStyle(
                           fontFamily: "Calibre-Semibold", fontSize: 18));
                 }
-                return Text(numberWithComma(snapshot.data.length),
+                return Text(numberWithComma(snapshot.data!.length),
                     style: TextStyle(
                         fontFamily: "Calibre-Semibold", fontSize: 18));
               }),
@@ -306,13 +311,14 @@ class _MainPage2State extends State<MainPage2>
                   return await (await Download.getInstance())
                       .getDownloadItems();
                 },
-              ), builder: (context, snapshot) {
+              ), builder:
+                  (context, AsyncSnapshot<List<DownloadItemModel>> snapshot) {
                 if (!snapshot.hasData) {
                   return Text('??',
                       style: TextStyle(
                           fontFamily: "Calibre-Semibold", fontSize: 18));
                 }
-                return Text(numberWithComma(snapshot.data.length),
+                return Text(numberWithComma(snapshot.data!.length),
                     style: TextStyle(
                         fontFamily: "Calibre-Semibold", fontSize: 18));
               }),
@@ -394,14 +400,15 @@ class _MainPage2State extends State<MainPage2>
                       style: TextStyle(color: Colors.grey)),
                   FutureBuilder(
                       future: SharedPreferences.getInstance(),
-                      builder: (context, snapshot) {
+                      builder:
+                          (context, AsyncSnapshot<SharedPreferences> snapshot) {
                         if (!snapshot.hasData) {
                           return Text(' ??');
                         }
                         return Text(
                           ' ' +
                               DateFormat('yyyy.MM.dd').format(DateTime.parse(
-                                  snapshot.data.getString('databasesync'))),
+                                  snapshot.data!.getString('databasesync')!)),
                         );
                       }),
                 ],
@@ -460,7 +467,7 @@ class _MainPage2State extends State<MainPage2>
                       if (lastDB != null &&
                           latestDB.difference(DateTime.parse(lastDB)).inHours <
                               1) {
-                        FlutterToast(context).showToast(
+                        fToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context)
@@ -501,7 +508,7 @@ class _MainPage2State extends State<MainPage2>
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
 
-                        FlutterToast(context).showToast(
+                        fToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context).trans('synccomplete'),
@@ -771,7 +778,7 @@ class _MainPage2State extends State<MainPage2>
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
+        IsolateNameServer.lookupPortByName('downloader_send_port')!;
     send.send([id, status, progress]);
   }
 
@@ -798,7 +805,7 @@ class _MainPage2State extends State<MainPage2>
         }
       }
       updateContinued = true;
-      var ext = await getExternalStorageDirectory();
+      var ext = (await getExternalStorageDirectory())!;
       bool once = false;
       IsolateNameServer.registerPortWithName(
           _port.sendPort, 'downloader_send_port');

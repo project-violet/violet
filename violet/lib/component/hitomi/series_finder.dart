@@ -93,7 +93,7 @@ class SeriesFinder {
             .where((element) => element.isNotEmpty)
             .forEach((element) {
           if (!artists.containsKey(element)) artists[element] = <int>[];
-          artists[element].add(i);
+          artists[element]!.add(i);
         });
       }
       if (element.groups() != null && element.groups() != '') {
@@ -102,7 +102,7 @@ class SeriesFinder {
             .where((element) => element.isNotEmpty)
             .forEach((element) {
           if (!groups.containsKey(element)) groups[element] = <int>[];
-          groups[element].add(i);
+          groups[element]!.add(i);
         });
       }
     }

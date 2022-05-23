@@ -10,7 +10,7 @@ class Idata {
   String title;
   int index;
 
-  Idata({this.title, this.index});
+  Idata({required this.title, required this.index});
 
   int compareTo(Idata id) {
     return title.compareTo(id.title);
@@ -76,7 +76,7 @@ class HitomiTitleCluster {
     });
 
     // Group By Same Lists
-    var gg = groupBy(groups, (x) => x.join(','));
+    var gg = groupBy(groups, (x) => (x as List<int>).join(','));
     var ds = DisjointSet(titles.length);
 
     // Join groups
@@ -91,7 +91,7 @@ class HitomiTitleCluster {
     for (int i = 0; i < titles.length; i++) {
       var v = ds.find(i);
       if (!join.containsKey(v)) join[v] = <int>[];
-      join[v].add(i);
+      join[v]!.add(i);
     }
 
     var result = join.values.toList();

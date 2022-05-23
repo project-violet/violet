@@ -35,9 +35,9 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
               padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
               physics: BouncingScrollPhysics(),
               controller: _scrollController,
-              itemCount: snapshot.data.length,
+              itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext ctxt, int index) {
-                return _buildItem(snapshot.data[index]);
+                return _buildItem(snapshot.data![index]);
               });
         },
       ),

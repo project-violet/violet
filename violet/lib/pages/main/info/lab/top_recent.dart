@@ -24,7 +24,7 @@ class LabTopRecent extends StatefulWidget {
 class _LabTopRecentState extends State<LabTopRecent> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int limit = 10;
-  Timer timer;
+  Timer? timer;
   ScrollController _controller = ScrollController();
   bool isTop = false;
   String desc = "로딩";
@@ -69,10 +69,10 @@ class _LabTopRecentState extends State<LabTopRecent> {
       queryRaw += 'Id IN (' + xrecords.map((e) => e.item1).join(',') + ')';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results.length == 0) return;
+      if (query.results!.length == 0) return;
 
       var qr = Map<String, QueryResult>();
-      query.results.forEach((element) {
+      query.results!.forEach((element) {
         qr[element.id().toString()] = element;
       });
 
@@ -82,7 +82,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
           return;
         }
         result.add(Tuple2<QueryResult, int>(
-            qr[element.item1.toString()], element.item2));
+            qr[element.item1.toString()]!, element.item2));
       });
 
       records = result;

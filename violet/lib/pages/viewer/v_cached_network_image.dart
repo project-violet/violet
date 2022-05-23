@@ -41,8 +41,8 @@ class VCachedNetworkImage extends StatelessWidget {
   /// to clear the image from the [ImageCache].
   static Future evictFromCache(
     String url, {
-    String cacheKey,
-    BaseCacheManager cacheManager,
+    String? cacheKey,
+    BaseCacheManager? cacheManager,
     double scale = 1.0,
   }) async {
     cacheManager = cacheManager ?? DefaultCacheManager();
@@ -53,28 +53,28 @@ class VCachedNetworkImage extends StatelessWidget {
   final CachedNetworkImageProvider _image;
 
   /// Option to use cachemanager with other settings
-  final BaseCacheManager cacheManager;
+  final BaseCacheManager? cacheManager;
 
   /// The target image that is displayed.
   final String imageUrl;
 
   /// The target image's cache key.
-  final String cacheKey;
+  final String? cacheKey;
 
   /// Optional builder to further customize the display of the image.
-  final ImageWidgetBuilder imageBuilder;
+  final ImageWidgetBuilder? imageBuilder;
 
   /// Widget displayed while the target [imageUrl] is loading.
-  final PlaceholderWidgetBuilder placeholder;
+  final PlaceholderWidgetBuilder? placeholder;
 
   /// Widget displayed while the target [imageUrl] is loading.
-  final ProgressIndicatorBuilder progressIndicatorBuilder;
+  final ProgressIndicatorBuilder? progressIndicatorBuilder;
 
   /// Widget displayed while the target [imageUrl] failed loading.
-  final LoadingErrorWidgetBuilder errorWidget;
+  final LoadingErrorWidgetBuilder? errorWidget;
 
   /// The duration of the fade-in animation for the [placeholder].
-  final Duration placeholderFadeInDuration;
+  final Duration? placeholderFadeInDuration;
 
   /// The duration of the fade-out animation for the [placeholder].
   final Duration fadeOutDuration;
@@ -94,7 +94,7 @@ class VCachedNetworkImage extends StatelessWidget {
   /// aspect ratio. This may result in a sudden change if the size of the
   /// placeholder widget does not match that of the target image. The size is
   /// also affected by the scale factor.
-  final double width;
+  final double? width;
 
   /// If non-null, require the image to have this height.
   ///
@@ -102,13 +102,13 @@ class VCachedNetworkImage extends StatelessWidget {
   /// aspect ratio. This may result in a sudden change if the size of the
   /// placeholder widget does not match that of the target image. The size is
   /// also affected by the scale factor.
-  final double height;
+  final double? height;
 
   /// How to inscribe the image into the space allocated during layout.
   ///
   /// The default varies based on the other fields. See the discussion at
   /// [paintImage].
-  final BoxFit fit;
+  final BoxFit? fit;
 
   /// How to align the image within its bounds.
   ///
@@ -152,17 +152,17 @@ class VCachedNetworkImage extends StatelessWidget {
   ///
   /// If this is true, there must be an ambient [Directionality] widget in
   /// scope.
-  final bool matchTextDirection;
+  final bool? matchTextDirection;
 
   /// Optional headers for the http request of the image url
-  final Map<String, String> httpHeaders;
+  final Map<String, String>? httpHeaders;
 
   /// When set to true it will animate from the old image to the new image
   /// if the url changes.
-  final bool useOldImageOnUrlChange;
+  final bool? useOldImageOnUrlChange;
 
   /// If non-null, this color is blended with each image pixel using [colorBlendMode].
-  final Color color;
+  final Color? color;
 
   /// Used to combine [color] with this image.
   ///
@@ -172,32 +172,32 @@ class VCachedNetworkImage extends StatelessWidget {
   /// See also:
   ///
   ///  * [BlendMode], which includes an illustration of the effect of each blend mode.
-  final BlendMode colorBlendMode;
+  final BlendMode? colorBlendMode;
 
   /// Target the interpolation quality for image scaling.
   ///
   /// If not given a value, defaults to FilterQuality.low.
-  final FilterQuality filterQuality;
+  final FilterQuality? filterQuality;
 
   /// Will resize the image in memory to have a certain width using [ResizeImage]
-  final int memCacheWidth;
+  final int? memCacheWidth;
 
   /// Will resize the image in memory to have a certain height using [ResizeImage]
-  final int memCacheHeight;
+  final int? memCacheHeight;
 
   /// Will resize the image and store the resized image in the disk cache.
-  final int maxWidthDiskCache;
+  final int? maxWidthDiskCache;
 
   /// Will resize the image and store the resized image in the disk cache.
-  final int maxHeightDiskCache;
+  final int? maxHeightDiskCache;
 
   /// CachedNetworkImage shows a network image using a caching mechanism. It also
   /// provides support for a placeholder, showing an error and fading into the
   /// loaded image. Next to that it supports most features of a default Image
   /// widget.
   VCachedNetworkImage({
-    Key key,
-    this.imageUrl,
+    Key? key,
+    required this.imageUrl,
     this.httpHeaders,
     this.imageBuilder,
     this.placeholder,
@@ -224,7 +224,7 @@ class VCachedNetworkImage extends StatelessWidget {
     this.cacheKey,
     this.maxWidthDiskCache,
     this.maxHeightDiskCache,
-    ImageRenderMethodForWeb imageRenderMethodForWeb,
+    ImageRenderMethodForWeb? imageRenderMethodForWeb,
   })  : _image = CachedNetworkImageProvider(
           imageUrl,
           headers: httpHeaders,
@@ -278,32 +278,32 @@ class VCachedNetworkImage extends StatelessWidget {
   }
 
   Widget _octoImageBuilder(BuildContext context, Widget child) {
-    return imageBuilder(context, _image, child);
+    return imageBuilder!(context, _image, child);
   }
 
   Widget _octoPlaceholderBuilder(BuildContext context) {
-    return placeholder(context, imageUrl);
+    return placeholder!(context, imageUrl);
   }
 
   Widget _octoProgressIndicatorBuilder(
     BuildContext context,
-    ImageChunkEvent progress,
+    ImageChunkEvent? progress,
   ) {
-    int totalSize;
+    int? totalSize;
     var downloaded = 0;
     if (progress != null) {
-      totalSize = progress.expectedTotalBytes;
+      totalSize = progress.expectedTotalBytes!;
       downloaded = progress.cumulativeBytesLoaded;
     }
-    return progressIndicatorBuilder(
+    return progressIndicatorBuilder!(
         context, imageUrl, DownloadProgress(imageUrl, totalSize, downloaded));
   }
 
   Widget _octoErrorBuilder(
     BuildContext context,
     Object error,
-    StackTrace stackTrace,
+    StackTrace? stackTrace,
   ) {
-    return errorWidget(context, imageUrl, error);
+    return errorWidget!(context, imageUrl, error);
   }
 }

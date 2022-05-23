@@ -31,9 +31,9 @@ import 'package:violet/widgets/search_bar.dart';
 // https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
 class DotsIndicator extends AnimatedWidget {
   DotsIndicator({
-    this.controller,
-    this.itemCount,
-    this.onPageSelected,
+    required this.controller,
+    required this.itemCount,
+    required this.onPageSelected,
     this.color: Colors.white,
   }) : super(listenable: controller);
 
@@ -99,7 +99,10 @@ class GroupArticleListPage extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArticleListPage({this.name, this.groupId});
+  GroupArticleListPage({
+    required this.name,
+    required this.groupId,
+  });
 
   @override
   _GroupArticleListPageState createState() => _GroupArticleListPageState();
@@ -150,8 +153,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   Future<void> _loadBookmarkAlignType() async {
     nowType = (await SharedPreferences.getInstance())
-        .getInt('bookmark_${widget.groupId}');
-    if (nowType == null) nowType = 3;
+            .getInt('bookmark_${widget.groupId}') ??
+        3;
   }
 
   void refresh() {
@@ -195,7 +198,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   }
 
   bool _shouldRebuild = false;
-  Widget _cachedList;
+  Widget? _cachedList;
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +246,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                               ])),
                         ),
                       ),
-                      _cachedList
+                      _cachedList!
                     ],
                   ),
                 ),
@@ -539,9 +542,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 'female':
       case 'male':
       case 'series':
+      default:
         return false;
     }
-    return null;
   }
 
   List<QueryResult> filter() {
@@ -748,7 +751,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         var invIdIndex = Map<int, int>();
         for (int i = 0; i < queryResult.length; i++)
           invIdIndex[queryResult[i].id()] = i;
-        checked.sort((x, y) => invIdIndex[x].compareTo(invIdIndex[y]));
+        checked.sort((x, y) => invIdIndex[x]!.compareTo(invIdIndex[y]!));
 
         // 1. Get bookmark articles on source groupid
         var bm = await Bookmark.getInstance();

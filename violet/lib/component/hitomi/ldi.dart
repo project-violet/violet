@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 
 class LDI {
-  static List<Tuple2<int, double>> ldi;
+  static late List<Tuple2<int, double>> ldi;
 
   static Future<void> init() async {
     String data;

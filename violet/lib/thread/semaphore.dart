@@ -13,7 +13,7 @@ class Semaphore {
   int _currentCount = 0;
 
   Semaphore({
-    @required this.maxCount,
+    required this.maxCount,
   });
 
   final Queue<Completer> _waitQueue = Queue<Completer>();

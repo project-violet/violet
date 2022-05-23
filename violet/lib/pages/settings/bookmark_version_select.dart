@@ -34,7 +34,10 @@ class BookmarkVersionSelectPage extends StatefulWidget {
   final String userAppId;
   final List<dynamic> versions;
 
-  BookmarkVersionSelectPage({this.userAppId, this.versions});
+  BookmarkVersionSelectPage({
+    required this.userAppId,
+    required this.versions,
+  });
 
   @override
   _BookmarkVersionSelectPageState createState() =>

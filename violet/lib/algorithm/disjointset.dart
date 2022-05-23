@@ -4,7 +4,7 @@
 // Forrest based union-find data structure.
 class DisjointSet {
   // Disjoint Set Array
-  List<int> array;
+  late List<int> array;
 
   DisjointSet(int n) {
     array = Iterable.generate(n, (i) => i).toList();

@@ -5,14 +5,14 @@ import 'package:violet/component/hitomi/tag_translate.dart';
 
 class DisplayedTag {
   // artist, group, tag, series, character, uploader, type, class, language, prefix
-  String group;
+  String? group;
   // <tag>, female:<tag>, male:<tag>
-  String name;
+  String? name;
   // <translated-tag>
-  String translated;
+  String? translated;
 
   // tag := <group>:<name>
-  DisplayedTag({String tag, this.group, this.name, this.translated}) {
+  DisplayedTag({String? tag, this.group, this.name, this.translated}) {
     if (tag != null) {
       final maybeGroup = tag.split(':').first;
       if ([
@@ -37,7 +37,7 @@ class DisplayedTag {
 
     if (group != null) {
       if (['female', 'male'].contains(group)) {
-        if (!name.startsWith('$group:')) name = '$group:$name';
+        if (!name!.startsWith('$group:')) name = '$group:$name';
         group = 'tag';
       }
     }
@@ -48,7 +48,7 @@ class DisplayedTag {
   }
 
   String getTranslated() {
-    return translated = (translated ?? TagTranslate.ofAny(name))
+    return translated = (translated ?? TagTranslate.ofAny(name!))
         .split('|')
         .first
         .split(':')

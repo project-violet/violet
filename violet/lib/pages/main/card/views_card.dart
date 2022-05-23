@@ -40,7 +40,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                 ..isTap((isTapped) async {
                   setState(() => pressed = isTapped);
                   if (!isTapped) {
-                    controller.forward(from: 0.0);
+                    controller!.forward(from: 0.0);
 
                     if (!Settings.useVioletServer) {
                       await showOkDialog(context,

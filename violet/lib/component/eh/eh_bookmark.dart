@@ -6,7 +6,7 @@ import 'dart:collection';
 import 'package:violet/component/eh/eh_headers.dart';
 
 class EHBookmark {
-  static List<HashSet<int>> bookmarkInfo;
+  static List<HashSet<int>>? bookmarkInfo;
   static Future<List<HashSet<int>>> process() async {
     // https://e-hentai.org/favorites.php?page=0&favcat=0
     // https://exhentai.org/favorites.php?page=0&favcat=0
@@ -24,7 +24,7 @@ class EHBookmark {
           var matched = rr.allMatches(html).map((e) => e.group(0));
           if (matched.length == 0) break;
           matched.forEach((element) {
-            hh.add(int.parse(element.split('/')[4]));
+            hh.add(int.parse(element!.split('/')[4]));
           });
         }
       } catch (e) {}
@@ -40,7 +40,7 @@ class EHBookmark {
           var matched = r2.allMatches(html).map((e) => e.group(0));
           if (matched.length == 0) break;
           matched.forEach((element) {
-            result[i].add(int.parse(element.split('/')[4]));
+            result[i].add(int.parse(element!.split('/')[4]));
           });
         }
       } catch (e) {}

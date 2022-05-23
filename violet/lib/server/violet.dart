@@ -28,8 +28,8 @@ class VioletServer {
 
     try {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple2<int, int>(
-              (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
+          .map((e) =>
+              Tuple2<int, int>((e as List<dynamic>)[0] as int, (e)[1] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -50,8 +50,8 @@ class VioletServer {
 
     try {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple2<int, int>(
-              (e as List<dynamic>)[0] as int, (e as List<dynamic>)[1] as int))
+          .map((e) =>
+              Tuple2<int, int>((e as List<dynamic>)[0] as int, (e)[1] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -73,7 +73,7 @@ class VioletServer {
 
     try {
       var result =
-          DateTime.tryParse(jsonDecode(gg.body)['result'] as String).toLocal();
+          DateTime.parse(jsonDecode(gg.body)['result'] as String).toLocal();
       return result;
     } catch (e, st) {
       print(e);
@@ -93,7 +93,7 @@ class VioletServer {
 
     try {
       var result =
-          DateTime.tryParse(jsonDecode(gg.body)['result'] as String).toLocal();
+          DateTime.parse(jsonDecode(gg.body)['result'] as String).toLocal();
       return result;
     } catch (e, st) {
       print(e);
@@ -248,11 +248,11 @@ class VioletServer {
     return false;
   }
 
-  static String _userId;
+  static String? _userId;
   static Future<String> getUserAppId() async {
     if (_userId == null)
       _userId = (await SharedPreferences.getInstance()).getString('fa_userid');
-    return _userId;
+    return _userId!;
   }
 
   // https://koromo.xyz/api/record/recent?count=10&limit=180
@@ -267,8 +267,8 @@ class VioletServer {
 
     try {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple3<int, int, int>((e as List<dynamic>)[0] as int,
-              (e as List<dynamic>)[1] as int, (e as List<dynamic>)[2] as int))
+          .map((e) => Tuple3<int, int, int>(
+              (e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -301,9 +301,9 @@ class VioletServer {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple4<int, int, int, String>(
               (e as List<dynamic>)[0] as int,
-              (e as List<dynamic>)[1] as int,
-              (e as List<dynamic>)[2] as int,
-              (e as List<dynamic>)[3] as String))
+              (e)[1] as int,
+              (e)[2] as int,
+              (e)[3] as String))
           .toList();
       return result;
     } catch (e, st) {
@@ -334,8 +334,8 @@ class VioletServer {
 
     try {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
-          .map((e) => Tuple3<int, int, int>((e as List<dynamic>)[0] as int,
-              (e as List<dynamic>)[1] as int, (e as List<dynamic>)[2] as int))
+          .map((e) => Tuple3<int, int, int>(
+              (e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
           .toList();
       return result;
     } catch (e, st) {
@@ -366,9 +366,9 @@ class VioletServer {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple4<int, DateTime, String, String>(
               int.parse((e as Map<String, dynamic>)['id'] as String),
-              DateTime.parse((e as Map<String, dynamic>)['time'] as String),
-              (e as Map<String, dynamic>)['author'] as String,
-              (e as Map<String, dynamic>)['body'] as String))
+              DateTime.parse((e)['time'] as String),
+              (e)['author'] as String,
+              (e)['body'] as String))
           .toList();
       return result;
     } catch (e, st) {
@@ -400,9 +400,9 @@ class VioletServer {
       var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple4<int, DateTime, String, String>(
               int.parse((e as Map<String, dynamic>)['id'] as String),
-              DateTime.parse((e as Map<String, dynamic>)['time'] as String),
-              (e as Map<String, dynamic>)['author'] as String,
-              (e as Map<String, dynamic>)['body'] as String))
+              DateTime.parse((e)['time'] as String),
+              (e)['author'] as String,
+              (e)['body'] as String))
           .toList();
       return result;
     } catch (e, st) {
@@ -472,7 +472,7 @@ class VioletServer {
     return false;
   }
 
-  static Future<List<dynamic>> bookmarkLists() async {
+  static Future<List<dynamic>?> bookmarkLists() async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
 
@@ -500,7 +500,7 @@ class VioletServer {
     return null;
   }
 
-  static Future<List<dynamic>> versionsBookmark(String userAppId) async {
+  static Future<List<dynamic>?> versionsBookmark(String userAppId) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
 

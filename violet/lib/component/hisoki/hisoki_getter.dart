@@ -8,7 +8,7 @@ import 'package:violet/component/hisoki/hisoki_hash.dart';
 import 'package:violet/network/wrapper.dart' as http;
 
 class HisokiGetter {
-  static Future<List<Tuple3<String, double, double>>> getImages(int id) async {
+  static Future<List<Tuple3<String, double, double>>?> getImages(int id) async {
     var hash = HisokiHash.getHash('$id');
 
     if (hash == null) return null;

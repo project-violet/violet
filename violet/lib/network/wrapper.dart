@@ -20,25 +20,27 @@ class HttpWrapper {
       Map<String, http.Response>();
 }
 
-Future<http.Response> get(String url, {Map<String, String> headers}) async {
+Future<http.Response> get(String url, {Map<String, String>? headers}) async {
   if (url.contains('exhentai.org')) {
     if (HttpWrapper.cacheResponse.containsKey(url))
-      return HttpWrapper.cacheResponse[url];
+      return HttpWrapper.cacheResponse[url]!;
     await HttpWrapper.throttlerExHentai.acquire();
     if (HttpWrapper.cacheResponse.containsKey(url)) {
       HttpWrapper.throttlerExHentai.release();
-      return HttpWrapper.cacheResponse[url];
+      return HttpWrapper.cacheResponse[url]!;
     }
     Logger.info('[Http Request] GET: ' + url);
     var retry = 0;
     while (true) {
+      var timeout = false;
       var res = await http
           .get(Uri.parse(url), headers: headers)
           .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
-        return null;
+        timeout = true;
+        return new http.Response('', 0);
       });
       retry++;
-      if (res == null) {
+      if (timeout) {
         Logger.info('[Http Request] GETS: ' + url + ', $retry');
         continue;
       }
@@ -56,24 +58,26 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
     }
   } else if (url.contains('e-hentai.org')) {
     if (HttpWrapper.cacheResponse.containsKey(url))
-      return HttpWrapper.cacheResponse[url];
+      return HttpWrapper.cacheResponse[url]!;
     await HttpWrapper.throttlerEHentai.acquire();
     if (HttpWrapper.cacheResponse.containsKey(url)) {
       HttpWrapper.throttlerEHentai.release();
-      return HttpWrapper.cacheResponse[url];
+      return HttpWrapper.cacheResponse[url]!;
     }
     Logger.info('[Http Request] GET: ' + url);
     var retry = 0;
     while (true) {
+      var timeout = false;
       var res = await http
           .get(Uri.parse(url), headers: headers)
           .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
-        return null;
+        timeout = true;
+        return new http.Response('', 0);
       }).catchError((e, st) {
         Logger.error('[Http Request] GET: ' + url + '\nE:$e\n$st');
       });
       retry++;
-      if (res == null) {
+      if (timeout) {
         Logger.info('[Http Request] GETS: ' + url + ', $retry');
         continue;
       }
@@ -94,7 +98,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
           'raw.githubusercontent.com/project-violet/violet-message-search')) {
     Logger.info('[Http Cache] GET: ' + url);
     if (HttpWrapper.cacheResponse.containsKey(url)) {
-      return HttpWrapper.cacheResponse[url];
+      return HttpWrapper.cacheResponse[url]!;
     }
     var res = await http.get(Uri.parse(url), headers: headers);
     if (res.statusCode != 200) {
@@ -120,7 +124,7 @@ Future<http.Response> get(String url, {Map<String, String> headers}) async {
 }
 
 Future<http.Response> post(String url,
-    {Map<String, String> headers, dynamic body, Encoding encoding}) async {
+    {Map<String, String>? headers, dynamic body, Encoding? encoding}) async {
   Logger.info('[Http Request] POST: ' +
       url +
       '\nHEADERS: ' +

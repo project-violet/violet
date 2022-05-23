@@ -38,7 +38,7 @@ typedef StringCallback = Future Function(String);
 
 class DownloadPageManager {
   static bool downloadPageLoaded = false;
-  static StreamController<String> taskController;
+  static StreamController<String>? taskController;
 }
 
 // This page must remain alive until the app is closed.
@@ -60,14 +60,17 @@ class _DownloadPageState extends State<DownloadPage>
   FilterController _filterController =
       FilterController(heroKey: "downloadtype");
   ObjectKey _listKey = ObjectKey(Uuid().v4());
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
     refresh();
     // DownloadPageManager.appendTask = appendTask;
     DownloadPageManager.taskController = StreamController<String>();
-    DownloadPageManager.taskController.stream.listen((event) {
+    DownloadPageManager.taskController!.stream.listen((event) {
       appendTask(event);
     });
   }
@@ -75,7 +78,7 @@ class _DownloadPageState extends State<DownloadPage>
   @override
   void dispose() {
     super.dispose();
-    DownloadPageManager.taskController.close();
+    DownloadPageManager.taskController!.close();
   }
 
   void refresh() {
@@ -111,21 +114,22 @@ class _DownloadPageState extends State<DownloadPage>
       if (item.files() == null) continue;
 
       if (item.files() != null &&
-          item.files().toLowerCase().contains(newPath.toLowerCase())) continue;
+          item.files()!.toLowerCase().contains(newPath.toLowerCase())) continue;
       if (item.path() != null &&
-          item.path().toLowerCase().contains(newPath.toLowerCase())) continue;
+          item.path()!.toLowerCase().contains(newPath.toLowerCase())) continue;
 
-      final oldPath = ((jsonDecode(item.files()) as List<dynamic>)[0] as String)
-          .split('/')
-          .take(8)
-          .join('/');
+      final oldPath =
+          ((jsonDecode(item.files()!) as List<dynamic>)[0] as String)
+              .split('/')
+              .take(8)
+              .join('/');
 
       Map<String, dynamic> result = Map<String, dynamic>.from(item.result);
 
       if (item.files() != null)
-        result['Files'] = item.files().replaceAll(oldPath, newPath);
+        result['Files'] = item.files()!.replaceAll(oldPath, newPath);
       if (item.path() != null)
-        result['Path'] = item.path().replaceAll(oldPath, newPath);
+        result['Path'] = item.path()!.replaceAll(oldPath, newPath);
       item.result = result;
 
       await item.update();
@@ -145,7 +149,7 @@ class _DownloadPageState extends State<DownloadPage>
     queryRaw += 'Id IN (' + articles.map((e) => e).join(',') + ')';
     QueryManager.query(queryRaw).then((value) async {
       var qr = Map<int, QueryResult>();
-      value.results.forEach((element) {
+      value.results!.forEach((element) {
         qr[element.id()] = element;
       });
 
@@ -169,7 +173,7 @@ class _DownloadPageState extends State<DownloadPage>
             return;
           } catch (e, st) {}
         }
-        result.add(qr[element]);
+        result.add(qr[element]!);
       });
 
       result.forEach((element) {
@@ -236,7 +240,7 @@ class _DownloadPageState extends State<DownloadPage>
     }
   }
 
-  double lastWindowWidth;
+  double? lastWindowWidth;
   Widget _panel() {
     var windowWidth = lastWindowWidth = MediaQuery.of(context).size.width;
 
@@ -350,7 +354,7 @@ class _DownloadPageState extends State<DownloadPage>
       }
     }
 
-    return null;
+    throw new Exception('unreachable');
   }
 
   Widget _urlBar() {
@@ -552,7 +556,7 @@ class _DownloadPageState extends State<DownloadPage>
       else if (value == 2) {
         Clipboard.setData(ClipboardData(
             text: filterResult.map((e) => int.tryParse(e.url())).join(", ")));
-        FlutterToast(context).showToast(
+        fToast.showToast(
           child: ToastWrapper(
             isCheck: true,
             isWarning: false,
@@ -730,7 +734,7 @@ class _DownloadPageState extends State<DownloadPage>
     });
 
     if (_filterController.tagStates.isNotEmpty)
-      filterResult = result.map((e) => itemsMap[e]).toList();
+      filterResult = result.map((e) => itemsMap[e]!).toList();
     else
       filterResult = items.toList();
 
@@ -744,7 +748,7 @@ class _DownloadPageState extends State<DownloadPage>
 
       userlog.forEach((element) {
         if (!articlereadlog.containsKey(int.tryParse(element.articleId())))
-          articlereadlog[int.tryParse(element.articleId())] =
+          articlereadlog[int.parse(element.articleId())] =
               DateTime.parse(element.datetimeStart());
       });
 
@@ -764,8 +768,8 @@ class _DownloadPageState extends State<DownloadPage>
           if (!queryResults.containsKey(xx)) return 1;
           if (!queryResults.containsKey(yy)) return -1;
 
-          final a1 = queryResults[xx].groups();
-          final a2 = queryResults[yy].groups();
+          final a1 = queryResults[xx]!.groups();
+          final a2 = queryResults[yy]!.groups();
 
           if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
           if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
@@ -780,8 +784,8 @@ class _DownloadPageState extends State<DownloadPage>
           if (!queryResults.containsKey(xx)) return 1;
           if (!queryResults.containsKey(yy)) return -1;
 
-          final a1 = queryResults[xx].artists();
-          final a2 = queryResults[yy].artists();
+          final a1 = queryResults[xx]!.artists();
+          final a2 = queryResults[yy]!.artists();
 
           if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
           if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
@@ -796,7 +800,7 @@ class _DownloadPageState extends State<DownloadPage>
           if (!articlereadlog.containsKey(xx)) return 1;
           if (!articlereadlog.containsKey(yy)) return -1;
 
-          return articlereadlog[yy].compareTo(articlereadlog[xx]);
+          return articlereadlog[yy]!.compareTo(articlereadlog[xx]!);
         }
 
         return 0;
@@ -805,7 +809,7 @@ class _DownloadPageState extends State<DownloadPage>
     }
 
     if (_filterController.tagStates.isNotEmpty && downloading.length > 0)
-      filterResult.addAll(downloading.map((e) => itemsMap[e]).toList());
+      filterResult.addAll(downloading.map((e) => itemsMap[e]!).toList());
 
     setState(() {});
   }
@@ -850,9 +854,9 @@ class _DownloadPageState extends State<DownloadPage>
       case 'female':
       case 'male':
       case 'series':
+      default:
         return false;
     }
-    return null;
   }
 
   Future<void> appendTask(String url) async {
@@ -872,8 +876,8 @@ class _DownloadPageState extends State<DownloadPage>
 
     var qm = await QueryManager.query(queryRaw);
 
-    if (qm.results.isEmpty) return;
+    if (qm.results!.isEmpty) return;
 
-    queryResults[int.parse(url)] = qm.results.first;
+    queryResults[int.parse(url)] = qm.results!.first;
   }
 }

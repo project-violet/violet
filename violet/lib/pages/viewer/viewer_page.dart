@@ -57,9 +57,10 @@ class ViewerPage extends StatefulWidget {
 
 class _ViewerPageState extends State<ViewerPage>
     with SingleTickerProviderStateMixin {
-  ViewerPageProvider _pageInfo;
-  LifecycleEventHandler _lifecycleEventHandler;
-  Timer _nextPageTimer;
+  late ViewerPageProvider _pageInfo;
+  bool isPageInfoInited = false;
+  late final LifecycleEventHandler _lifecycleEventHandler;
+  Timer? _nextPageTimer;
   ValueNotifier<bool> _vIsBookmarked = ValueNotifier(false);
   bool _isSessionOutdated = false;
   bool _sliderOnChange = false;
@@ -89,51 +90,51 @@ class _ViewerPageState extends State<ViewerPage>
   /// double-tap a specific location to zoom in on that location.
   TransformationController _transformationController =
       TransformationController();
-  AnimationController _animationController;
-  Animation<Matrix4> _animation;
+  late AnimationController _animationController;
+  Animation<Matrix4>? _animation;
 
   /// lock scroll after zoom gesture
   /// this prevents paging on zoom gesture are performed
   bool _scrollListEnable = true;
 
   /// these are used for VioletServer.viewReport
-  ViewerReport _report;
+  late ViewerReport _report;
   int _inactivateSeconds = 0;
-  DateTime _startsTime;
-  DateTime _inactivateTime;
-  List<int> _decisecondPerPages;
-  List<bool> _isImageLoaded;
+  late DateTime _startsTime;
+  DateTime? _inactivateTime;
+  late List<int> _decisecondPerPages;
+  late List<bool> _isImageLoaded;
 
   /// check if the current user is using this app.
   bool _isStaring = true;
 
   /// these are used for thumbnail slider
   ScrollController _thumbController = ScrollController();
-  List<double> _thumbImageWidth;
-  List<double> _thumbImageStartPos;
+  late List<double> _thumbImageWidth;
+  late List<double> _thumbImageStartPos;
 
   /// It is height that a widget that has an image as a child.
-  List<double> _height;
+  List<double>? _height;
 
   /// Image widget key
   /// This is used to get the height of a widget that has an image as a child.
-  List<GlobalKey> _keys;
+  List<GlobalKey>? _keys;
 
   /// this is used on provider
   /// caching image header information
-  List<Map<String, String>> _headerCache;
+  List<Map<String, String>?>? _headerCache;
 
   /// this is used on provider
   /// caching image url
-  List<String> _urlCache;
+  List<String?>? _urlCache;
 
   /// this is used on provider
   /// caching estimated image height
-  List<double> _estimatedImageHeight;
+  List<double>? _estimatedImageHeight;
 
   /// this is used on provider
   /// determine estimaed height is loaded
-  List<bool> _loadingEstimaed;
+  List<bool>? _loadingEstimaed;
 
   /// these are used on [_patchHeightForDynamicLoadedImage]
   int _latestIndex = 0;
@@ -146,9 +147,13 @@ class _ViewerPageState extends State<ViewerPage>
   /// Thumbnail slider height including image and page text
   double _thumbHeight = 140.0;
 
+  late final FToast fToast;
+
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
     if (!Settings.disableFullScreen)
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
@@ -165,7 +170,8 @@ class _ViewerPageState extends State<ViewerPage>
       vsync: this,
       duration: Duration(milliseconds: 200),
     )..addListener(() {
-        _transformationController.value = _animation.value;
+        if (_animation != null)
+          _transformationController.value = _animation!.value;
       });
 
     _itemPositionsListener.itemPositions.addListener(() {
@@ -207,7 +213,7 @@ class _ViewerPageState extends State<ViewerPage>
       },
       resumeCallBack: () async {
         _inactivateSeconds +=
-            DateTime.now().difference(_inactivateTime).inSeconds;
+            DateTime.now().difference(_inactivateTime!).inSeconds;
         _isStaring = true;
         await ScriptManager.refresh();
       },
@@ -223,7 +229,8 @@ class _ViewerPageState extends State<ViewerPage>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_pageInfo == null) {
+    if (!isPageInfoInited) {
+      isPageInfoInited = true;
       _pageInfo = Provider.of<ViewerPageProvider>(context);
       _report = ViewerReport(
         id: _pageInfo.id,
@@ -280,7 +287,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   @override
   void dispose() {
-    if (_nextPageTimer != null) _nextPageTimer.cancel();
+    if (_nextPageTimer != null) _nextPageTimer!.cancel();
     PaintingBinding.instance.imageCache.clear();
     if (_pageInfo.useWeb)
       _pageInfo.uris.forEach((element) async {
@@ -332,7 +339,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   void startTimer() {
     if (_nextPageTimer != null) {
-      _nextPageTimer.cancel();
+      _nextPageTimer!.cancel();
       _nextPageTimer = null;
     }
     if (Settings.enableTimer) {
@@ -345,7 +352,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   void stopTimer() {
     if (_nextPageTimer != null) {
-      _nextPageTimer.cancel();
+      _nextPageTimer!.cancel();
       _nextPageTimer = null;
     }
   }
@@ -398,7 +405,7 @@ class _ViewerPageState extends State<ViewerPage>
           print(DateTime.parse(e.datetimeStart())
               .difference(DateTime.now())
               .inDays);
-          if (e.lastPage() > 1 &&
+          if (e.lastPage()! > 1 &&
               DateTime.now()
                       .difference(DateTime.parse(e.datetimeStart()))
                       .inDays <
@@ -411,14 +418,14 @@ class _ViewerPageState extends State<ViewerPage>
                         .replaceAll('%s', e.lastPage().toString()),
                     Translations.of(context).trans('record'))) {
               if (!Settings.isHorizontal) {
-                _latestIndex = e.lastPage() - 1;
+                _latestIndex = e.lastPage()! - 1;
                 _itemScrollController.scrollTo(
-                  index: e.lastPage() - 1,
+                  index: e.lastPage()! - 1,
                   duration: Duration(microseconds: 1),
                   alignment: 0.12,
                 );
               } else {
-                _pageController.jumpToPage(e.lastPage() - 1);
+                _pageController.jumpToPage(e.lastPage()! - 1);
               }
             }
           }
@@ -619,7 +626,7 @@ class _ViewerPageState extends State<ViewerPage>
   _appBarBookmark() {
     return ValueListenableBuilder(
       valueListenable: _vIsBookmarked,
-      builder: (BuildContext context, bool value, Widget child) {
+      builder: (BuildContext context, bool value, Widget? child) {
         return IconButton(
           icon: Icon(value ? MdiIcons.heart : MdiIcons.heartOutline),
           color: Colors.white,
@@ -631,7 +638,7 @@ class _ViewerPageState extends State<ViewerPage>
               if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
             }
 
-            FlutterToast(context).showToast(
+            fToast.showToast(
               child: ToastWrapper(
                 icon: _vIsBookmarked.value ? Icons.delete_forever : Icons.check,
                 color: _vIsBookmarked.value
@@ -771,7 +778,7 @@ class _ViewerPageState extends State<ViewerPage>
           var headers = await prov.getHeader(0);
 
           _pageInfo = ViewerPageProvider(
-            uris: List<String>.filled(prov.length(), null),
+            uris: List<String>.filled(prov.length(), ''),
             useProvider: true,
             provider: prov,
             headers: headers,
@@ -789,8 +796,8 @@ class _ViewerPageState extends State<ViewerPage>
           _isImageLoaded = List.filled(_pageInfo.uris.length, false);
 
           _headerCache =
-              List<Map<String, String>>.filled(_pageInfo.uris.length, null);
-          _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+              List<Map<String, String>?>.filled(_pageInfo.uris.length, null);
+          _urlCache = List<String?>.filled(_pageInfo.uris.length, null);
           _height = List<double>.filled(_pageInfo.uris.length, 0);
           _keys = List<GlobalKey>.generate(
               _pageInfo.uris.length, (index) => GlobalKey());
@@ -1020,7 +1027,7 @@ class _ViewerPageState extends State<ViewerPage>
                 minCacheExtent:
                     _pageInfo.useFileSystem ? height * 3.0 : height * 3.0,
                 itemBuilder: (context, index) {
-                  Widget image;
+                  Widget? image;
                   if (!Settings.padding) {
                     if (_pageInfo.useWeb)
                       image = _networkImageItem(index);
@@ -1117,7 +1124,7 @@ class _ViewerPageState extends State<ViewerPage>
                       value: imageChunkEvent == null
                           ? 0
                           : imageChunkEvent.cumulativeBytesLoaded /
-                              imageChunkEvent.expectedTotalBytes.toDouble()),
+                              imageChunkEvent.expectedTotalBytes!.toDouble()),
                   width: 30,
                   height: 30,
                 ),
@@ -1149,11 +1156,11 @@ class _ViewerPageState extends State<ViewerPage>
         context,
       );
     } else if (_pageInfo.useProvider) {
-      if (index < 0 || _pageInfo.provider.length() <= index) return;
+      if (index < 0 || _pageInfo.provider!.length() <= index) return;
       if (_headerCache == null) {
         _headerCache =
-            List<Map<String, String>>.filled(_pageInfo.uris.length, null);
-        _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+            List<Map<String, String>?>.filled(_pageInfo.uris.length, null);
+        _urlCache = List<String?>.filled(_pageInfo.uris.length, null);
       }
       if (_height == null) {
         _height = List<double>.filled(_pageInfo.uris.length, 0);
@@ -1161,20 +1168,20 @@ class _ViewerPageState extends State<ViewerPage>
             _pageInfo.uris.length, (index) => GlobalKey());
       }
 
-      if (_headerCache[index] == null) {
-        var header = await _pageInfo.provider.getHeader(index);
-        _headerCache[index] = header;
+      if (_headerCache![index] == null) {
+        var header = await _pageInfo.provider!.getHeader(index);
+        _headerCache![index] = header;
       }
 
-      if (_urlCache[index] == null) {
-        var url = await _pageInfo.provider.getImageUrl(index);
-        _urlCache[index] = url;
+      if (_urlCache![index] == null) {
+        var url = await _pageInfo.provider!.getImageUrl(index);
+        _urlCache![index] = url;
       }
 
       await precacheImage(
         CachedNetworkImageProvider(
-          _urlCache[index],
-          headers: _headerCache[index],
+          _urlCache![index]!,
+          headers: _headerCache![index],
         ),
         context,
       );
@@ -1206,9 +1213,9 @@ class _ViewerPageState extends State<ViewerPage>
         child: FutureBuilder(
           future: Future.sync(() async {
             if (_headerCache == null) {
-              _headerCache =
-                  List<Map<String, String>>.filled(_pageInfo.uris.length, null);
-              _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+              _headerCache = List<Map<String, String>?>.filled(
+                  _pageInfo.uris.length, null);
+              _urlCache = List<String?>.filled(_pageInfo.uris.length, null);
             }
             if (_height == null) {
               _height = List<double>.filled(_pageInfo.uris.length, 0);
@@ -1216,25 +1223,25 @@ class _ViewerPageState extends State<ViewerPage>
                   _pageInfo.uris.length, (index) => GlobalKey());
             }
 
-            if (_headerCache[index] == null) {
-              var header = await _pageInfo.provider.getHeader(index);
-              _headerCache[index] = header;
+            if (_headerCache![index] == null) {
+              var header = await _pageInfo.provider!.getHeader(index);
+              _headerCache![index] = header;
             }
 
-            if (_urlCache[index] == null) {
-              var url = await _pageInfo.provider.getImageUrl(index);
-              _urlCache[index] = url;
+            if (_urlCache![index] == null) {
+              var url = await _pageInfo.provider!.getImageUrl(index);
+              _urlCache![index] = url;
             }
 
             return Tuple2<Map<String, String>, String>(
-                _headerCache[index], _urlCache[index]);
+                _headerCache![index]!, _urlCache![index]!);
           }),
           builder: (context, snapshot) {
-            if (_urlCache[index] != null && _headerCache[index] != null) {
+            if (_urlCache![index] != null && _headerCache![index] != null) {
               return PhotoView(
                 imageProvider: CachedNetworkImageProvider(
-                  _urlCache[index],
-                  headers: _headerCache[index],
+                  _urlCache![index]!,
+                  headers: _headerCache![index],
                 ),
                 filterQuality: SettingsWrapper.imageQuality,
                 initialScale: PhotoViewComputedScale.contained,
@@ -1512,7 +1519,7 @@ class _ViewerPageState extends State<ViewerPage>
       builder: (context, snapshot) {
         // To prevent the scroll from being chewed,
         // it is necessary to put an empty box for the invisible part.
-        if (!snapshot.hasData && _height[index] == 0) {
+        if (!snapshot.hasData && _height![index] == 0) {
           return SizedBox(
             height: 300,
             child: Center(
@@ -1527,22 +1534,23 @@ class _ViewerPageState extends State<ViewerPage>
 
         return Container(
           constraints: BoxConstraints(
-              minHeight: _height[index] != 0 ? _height[index] : 300),
+              minHeight: _height![index] != 0 ? _height![index] : 300),
           child: VCachedNetworkImage(
-            key: _keys[index],
+            key: _keys![index],
             imageUrl: _pageInfo.uris[index],
             httpHeaders: _pageInfo.headers,
             fit: BoxFit.cover,
             fadeInDuration: Duration(microseconds: 500),
             fadeInCurve: Curves.easeIn,
             imageBuilder: (context, imageProvider, child) {
-              if (_height[index] == 0 || _height[index] == 300) {
+              if (_height![index] == 0 || _height![index] == 300) {
                 try {
-                  final RenderBox renderBoxRed =
-                      _keys[index].currentContext.findRenderObject();
+                  final RenderBox renderBoxRed = _keys![index]
+                      .currentContext!
+                      .findRenderObject()! as RenderBox;
                   final sizeRender = renderBoxRed.size;
                   if (sizeRender.height != 300)
-                    _height[index] = width / sizeRender.aspectRatio;
+                    _height![index] = width / sizeRender.aspectRatio;
                   _isImageLoaded[index] = true;
                 } catch (e) {}
               }
@@ -1573,7 +1581,7 @@ class _ViewerPageState extends State<ViewerPage>
 
     Future<dynamic> future;
 
-    if (_height[index] == 0)
+    if (_height![index] == 0)
       future = Future.delayed(Duration(milliseconds: 300));
     else
       future = Future.value(0);
@@ -1587,17 +1595,17 @@ class _ViewerPageState extends State<ViewerPage>
         if (snapshot.hasData) {
           return _FileImage(
             path: _pageInfo.uris[index],
-            cachedHeight: _height[index] != 0 ? _height[index] : null,
-            heightCallback: _height[index] != 0
+            cachedHeight: _height![index] != 0 ? _height![index] : null,
+            heightCallback: _height![index]! != 0
                 ? null
                 : (height) async {
-                    _height[index] = height;
+                    _height![index] = height;
                   },
           );
         }
 
         return SizedBox(
-          height: _height[index] != 0 ? _height[index] : 300,
+          height: _height![index] != 0 ? _height![index] : 300,
           child: Center(
             child: SizedBox(
               child: CircularProgressIndicator(),
@@ -1646,8 +1654,8 @@ class _ViewerPageState extends State<ViewerPage>
   _providerImageItem(index) {
     if (_headerCache == null) {
       _headerCache =
-          List<Map<String, String>>.filled(_pageInfo.uris.length, null);
-      _urlCache = List<String>.filled(_pageInfo.uris.length, null);
+          List<Map<String, String>?>.filled(_pageInfo.uris.length, null);
+      _urlCache = List<String?>.filled(_pageInfo.uris.length, null);
     }
 
     final width = MediaQuery.of(context).size.width;
@@ -1662,15 +1670,15 @@ class _ViewerPageState extends State<ViewerPage>
       _loadingEstimaed = List<bool>.filled(_pageInfo.uris.length, false);
     }
 
-    if (_loadingEstimaed[index] == false) {
-      _loadingEstimaed[index] = true;
+    if (_loadingEstimaed![index] == false) {
+      _loadingEstimaed![index] = true;
       Future.delayed(Duration(milliseconds: 1)).then((value) async {
         if (_isSessionOutdated) return;
         final _h =
-            await _pageInfo.provider.getEstimatedImageHeight(index, width);
+            await _pageInfo.provider!.getEstimatedImageHeight(index, width);
         if (_h > 0) {
           setState(() {
-            _estimatedImageHeight[index] = _h;
+            _estimatedImageHeight![index] = _h;
           });
         }
       });
@@ -1678,7 +1686,7 @@ class _ViewerPageState extends State<ViewerPage>
 
     Future<dynamic> future;
 
-    if (_height[index] == 0)
+    if (_height![index] == 0)
       future = Future.delayed(Duration(milliseconds: 300));
     else
       future = Future.value(0);
@@ -1689,10 +1697,10 @@ class _ViewerPageState extends State<ViewerPage>
       builder: (context, snapshot) {
         // To prevent the scroll from being chewed,
         // it is necessary to put an empty box for the invisible part.
-        if (!snapshot.hasData && _height[index] == 0) {
+        if (!snapshot.hasData && _height![index] == 0) {
           return SizedBox(
-            height: _estimatedImageHeight[index] != 0
-                ? _estimatedImageHeight[index]
+            height: _estimatedImageHeight![index] != 0
+                ? _estimatedImageHeight![index]
                 : 300,
             child: Center(
               child: SizedBox(
@@ -1706,23 +1714,23 @@ class _ViewerPageState extends State<ViewerPage>
 
         return FutureBuilder(
           future: Future.value(1).then((value) async {
-            if (_headerCache[index] == null) {
-              var header = await _pageInfo.provider.getHeader(index);
-              _headerCache[index] = header;
+            if (_headerCache![index] == null) {
+              var header = await _pageInfo.provider!.getHeader(index);
+              _headerCache![index] = header;
             }
 
-            if (_urlCache[index] == null) {
-              var url = await _pageInfo.provider.getImageUrl(index);
-              _urlCache[index] = url;
+            if (_urlCache![index] == null) {
+              var url = await _pageInfo.provider!.getImageUrl(index);
+              _urlCache![index] = url;
             }
 
             return 1;
           }),
           builder: (context, snapshot) {
-            if (_urlCache[index] == null || _headerCache[index] == null) {
+            if (_urlCache![index] == null || _headerCache![index] == null) {
               return SizedBox(
-                height: _estimatedImageHeight[index] != 0
-                    ? _estimatedImageHeight[index]
+                height: _estimatedImageHeight![index] != 0
+                    ? _estimatedImageHeight![index]
                     : 300,
                 child: Center(
                   child: SizedBox(
@@ -1735,28 +1743,29 @@ class _ViewerPageState extends State<ViewerPage>
             }
             return Container(
               // height: _height[index] != 0 ? _height[index] : null,
-              constraints: _height[index] != 0
-                  ? BoxConstraints(minHeight: _height[index])
-                  : _estimatedImageHeight[index] != 0
-                      ? BoxConstraints(minHeight: _estimatedImageHeight[index])
+              constraints: _height![index] != 0
+                  ? BoxConstraints(minHeight: _height![index])
+                  : _estimatedImageHeight![index] != 0
+                      ? BoxConstraints(minHeight: _estimatedImageHeight![index])
                       : null,
               child: VCachedNetworkImage(
-                key: _keys[index],
-                imageUrl: _urlCache[index],
-                httpHeaders: _headerCache[index],
+                key: _keys![index],
+                imageUrl: _urlCache![index]!,
+                httpHeaders: _headerCache![index],
                 fit: BoxFit.cover,
                 fadeInDuration: Duration(microseconds: 500),
                 fadeInCurve: Curves.easeIn,
                 filterQuality: SettingsWrapper.imageQuality,
                 imageBuilder: (context, imageProvider, child) {
-                  if (_height[index] == 0 || _height[index] == 300) {
+                  if (_height![index] == 0 || _height![index] == 300) {
                     Future.delayed(Duration(milliseconds: 50)).then((value) {
                       try {
-                        final RenderBox renderBoxRed =
-                            _keys[index].currentContext.findRenderObject();
+                        final RenderBox renderBoxRed = _keys![index]
+                            .currentContext!
+                            .findRenderObject() as RenderBox;
                         final sizeRender = renderBoxRed.size;
                         if (sizeRender.height != 300) {
-                          _height[index] =
+                          _height![index] =
                               (width / sizeRender.aspectRatio - 1.5)
                                   .floor()
                                   .toDouble();
@@ -1773,8 +1782,8 @@ class _ViewerPageState extends State<ViewerPage>
                 },
                 progressIndicatorBuilder: (context, string, progress) {
                   return SizedBox(
-                    height: _estimatedImageHeight[index] != 0
-                        ? _estimatedImageHeight[index]
+                    height: _estimatedImageHeight![index] != 0
+                        ? _estimatedImageHeight![index]
                         : 300,
                     child: Center(
                       child: SizedBox(
@@ -1791,11 +1800,11 @@ class _ViewerPageState extends State<ViewerPage>
                       '[Viewer] E: image load failed\n' + error.toString());
                   Future.delayed(Duration(milliseconds: 500))
                       .then((value) => setState(() {
-                            _keys[index] = GlobalKey();
+                            _keys![index] = GlobalKey();
                           }));
                   return SizedBox(
-                    height: _estimatedImageHeight[index] != 0
-                        ? _estimatedImageHeight[index]
+                    height: _estimatedImageHeight![index] != 0
+                        ? _estimatedImageHeight![index]
                         : 300,
                     child: Center(
                       child: SizedBox(
@@ -1807,7 +1816,7 @@ class _ViewerPageState extends State<ViewerPage>
                             color: Settings.majorColor,
                           ),
                           onPressed: () => setState(() {
-                            _keys[index] = GlobalKey();
+                            _keys![index] = GlobalKey();
                           }),
                         ),
                       ),
@@ -1937,7 +1946,7 @@ class _ViewerPageState extends State<ViewerPage>
                               ValueListenableBuilder(
                                   valueListenable: _vPrevPage,
                                   builder: (BuildContext context, int value,
-                                      Widget child) {
+                                      Widget? child) {
                                     return Text('$value',
                                         style: TextStyle(
                                             color: Colors.white70,
@@ -1961,7 +1970,7 @@ class _ViewerPageState extends State<ViewerPage>
                               child: ValueListenableBuilder(
                                 valueListenable: _vPrevPage,
                                 builder: (BuildContext context, int value,
-                                    Widget child) {
+                                    Widget? child) {
                                   return Slider(
                                     value: value.toDouble() > 0
                                         ? value <= _pageInfo.uris.length
@@ -2111,7 +2120,7 @@ class _ViewerPageState extends State<ViewerPage>
       padding: EdgeInsets.all(8),
       child: ValueListenableBuilder(
         valueListenable: _vPrevPage,
-        builder: (BuildContext context, int value, Widget child) {
+        builder: (BuildContext context, int value, Widget? child) {
           return Stack(
             children: [
               Text(
@@ -2142,7 +2151,10 @@ class _DoublePointListener extends StatefulWidget {
   final Widget child;
   final BoolCallback onStateChanged;
 
-  _DoublePointListener({this.child, this.onStateChanged});
+  _DoublePointListener({
+    required this.child,
+    required this.onStateChanged,
+  });
 
   @override
   State<_DoublePointListener> createState() => __DoublePointListener();
@@ -2188,8 +2200,8 @@ class _CustomDoubleTapGestureDectector extends StatefulWidget {
   final Duration doubleTapMaxDelay;
 
   _CustomDoubleTapGestureDectector({
-    this.onTap,
-    this.onDoubleTap,
+    required this.onTap,
+    required this.onDoubleTap,
     this.doubleTapMaxDelay = const Duration(milliseconds: 200),
   });
 
@@ -2201,13 +2213,13 @@ class _CustomDoubleTapGestureDectector extends StatefulWidget {
 class __CustomDoubleTapGestureDectectorState
     extends State<_CustomDoubleTapGestureDectector> {
   /// these are used for double tap check
-  Timer _doubleTapCheckTimer;
+  Timer? _doubleTapCheckTimer;
   bool _isPressed = false;
   bool _isDoubleTap = false;
   bool _isSingleTap = false;
 
   /// this is used for onTap, onDoubleTap event
-  TapDownDetails _onTapDetails;
+  late TapDownDetails _onTapDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -2218,9 +2230,9 @@ class __CustomDoubleTapGestureDectectorState
         _onTapDetails = details;
 
         _isPressed = true;
-        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
+        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer!.isActive) {
           _isDoubleTap = true;
-          _doubleTapCheckTimer.cancel();
+          _doubleTapCheckTimer!.cancel();
         } else {
           _doubleTapCheckTimer =
               Timer(widget.doubleTapMaxDelay, _doubleTapTimerElapsed);
@@ -2228,8 +2240,8 @@ class __CustomDoubleTapGestureDectectorState
       },
       onTapCancel: () {
         _isPressed = _isSingleTap = _isDoubleTap = false;
-        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer.isActive) {
-          _doubleTapCheckTimer.cancel();
+        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer!.isActive) {
+          _doubleTapCheckTimer!.cancel();
         }
       },
     );
@@ -2258,17 +2270,18 @@ class __CustomDoubleTapGestureDectectorState
 
 class _FileImage extends StatefulWidget {
   final String path;
-  final double cachedHeight;
-  final DoubleCallback heightCallback;
+  final double? cachedHeight;
+  final DoubleCallback? heightCallback;
 
-  const _FileImage({this.path, this.heightCallback, this.cachedHeight});
+  const _FileImage(
+      {required this.path, this.heightCallback, this.cachedHeight});
 
   @override
   __FileImageState createState() => __FileImageState();
 }
 
 class __FileImageState extends State<_FileImage> {
-  double _height;
+  late double _height;
   bool _loaded = false;
 
   @override
@@ -2276,8 +2289,8 @@ class __FileImageState extends State<_FileImage> {
     // TODO: implement initState
     super.initState();
 
-    if (widget.cachedHeight != null && widget.cachedHeight > 0)
-      _height = widget.cachedHeight;
+    if (widget.cachedHeight != null && widget.cachedHeight! > 0)
+      _height = widget.cachedHeight!;
     else
       _height = 300;
   }
@@ -2299,17 +2312,19 @@ class __FileImageState extends State<_FileImage> {
       imageCacheName: widget.path,
       filterQuality: SettingsWrapper.imageQuality,
       loadStateChanged: (ExtendedImageState state) {
-        if (widget.cachedHeight != null && widget.cachedHeight > 0)
+        if (widget.cachedHeight != null && widget.cachedHeight! > 0)
           return state.completedWidget;
 
-        final ImageInfo imageInfo = state.extendedImageInfo;
+        final ImageInfo? imageInfo = state.extendedImageInfo;
         if ((state.extendedImageLoadState == LoadState.completed ||
                 imageInfo != null) &&
             !_loaded) {
           _loaded = true;
           Future.delayed(Duration(milliseconds: 100)).then((value) {
-            final aspectRatio = imageInfo.image.width / imageInfo.image.height;
-            widget.heightCallback(width / aspectRatio);
+            final aspectRatio =
+                imageInfo!.image.width / imageInfo!.image.height;
+            if (widget.heightCallback != null)
+              widget.heightCallback!(width / aspectRatio);
             setState(() {
               _height = width / aspectRatio;
             });

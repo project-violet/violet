@@ -47,7 +47,7 @@ class VioletCommunityArticle {
   }
 
   /* Id, ShortName, Name, Description */
-  static Future<dynamic> getBoards(VioletCommunitySession sess) async {
+  static Future<dynamic> getBoards() async {
     return await _getV('/community/board/list', '');
   }
 

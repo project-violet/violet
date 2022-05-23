@@ -101,6 +101,7 @@ class FAQPageKorean extends StatelessWidget {
                 ],
               ),
             ),
+            collapsed: Container(),
           ),
         ),
       ),

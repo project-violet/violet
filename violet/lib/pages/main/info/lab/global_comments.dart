@@ -188,7 +188,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
   }
 
   bool modReply = false;
-  int replyParent;
+  int? replyParent;
 
   Future<void> reply(int id) async {
     replyParent = id;
@@ -205,19 +205,19 @@ class CommentUnit extends StatelessWidget {
   final String body;
   final DateTime dateTime;
   final int id;
-  final ReplyCallback reply;
+  final ReplyCallback? reply;
   final bool isReply;
   final List<Tuple5<int, DateTime, String, String, int>> replies;
 
   static const String dev = '1918c652d3a9';
 
   const CommentUnit({
-    this.id,
-    this.author,
-    this.body,
-    this.dateTime,
+    required this.id,
+    required this.author,
+    required this.body,
+    required this.dateTime,
     this.reply,
-    this.replies,
+    required this.replies,
     this.isReply = false,
   });
 
@@ -297,7 +297,7 @@ class CommentUnit extends StatelessWidget {
               },
               onLongPress: !isReply
                   ? () {
-                      reply(id);
+                      reply!(id);
                     }
                   : null,
             )

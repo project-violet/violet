@@ -23,11 +23,15 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
-  final String dbPath;
-  final String dbType;
+  String? dbPath;
+  final String? dbType;
   final bool isSync;
 
-  DataBaseDownloadPage({this.dbPath, this.dbType, this.isSync});
+  DataBaseDownloadPage({
+    this.dbPath,
+    this.dbType,
+    this.isSync = false,
+  });
 
   @override
   DataBaseDownloadPagepState createState() {
@@ -95,7 +99,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               }));
       await SyncManager.checkSync();
       await dio.download(
-          SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType),
+          SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType!),
           "${dir.path}/db.sql.7z", onReceiveProgress: (rec, total) {
         _nu += rec - latest;
         _tnu += rec - latest;
@@ -115,7 +119,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       _timer.cancel();
 
       setState(() {
-        baseString = Translations.instance.trans('dbdunzip');
+        baseString = Translations.instance!.trans('dbdunzip');
         print(baseString);
         downloading = false;
       });
@@ -135,7 +139,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
-          .setString('databasetype', widget.dbType);
+          .setString('databasetype', widget.dbType!);
       await (await SharedPreferences.getInstance()).setString(
           'databasesync', SyncManager.getLatestDB().getDateTime().toString());
       await (await SharedPreferences.getInstance())
@@ -147,11 +151,11 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         await indexing();
       }
 
-      if (widget.isSync != null && widget.isSync == true)
+      if (widget.isSync == true)
         Navigator.pop(context);
       else
         setState(() {
-          baseString = Translations.instance.trans('dbdcomplete');
+          baseString = Translations.instance!.trans('dbdcomplete');
         });
 
       return;
@@ -161,7 +165,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     setState(() {
       downloading = false;
-      baseString = Translations.instance.trans('dbretry');
+      baseString = Translations.instance!.trans('dbretry');
     });
   }
 
@@ -186,7 +190,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               }));
       await SyncManager.checkSync();
       await dio.download(
-          SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType),
+          SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType!),
           "$dir/data.db", onReceiveProgress: (rec, total) {
         _nu += rec - latest;
         _tnu += rec - latest;
@@ -207,7 +211,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
-          .setString('databasetype', widget.dbType);
+          .setString('databasetype', widget.dbType!);
       await (await SharedPreferences.getInstance()).setString(
           'databasesync', SyncManager.getLatestDB().getDateTime().toString());
       await (await SharedPreferences.getInstance())
@@ -221,11 +225,11 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       await indexing();
 
-      if (widget.isSync != null && widget.isSync == true)
+      if (widget.isSync == true)
         Navigator.pop(context);
       else
         setState(() {
-          baseString = Translations.instance.trans('dbdcomplete');
+          baseString = Translations.instance!.trans('dbdcomplete');
         });
 
       return;
@@ -235,7 +239,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     setState(() {
       downloading = false;
-      baseString = Translations.instance.trans('dbretry');
+      baseString = Translations.instance!.trans('dbretry');
     });
   }
 
@@ -254,20 +258,19 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
     if (qr as String == "") return;
-    for (var tag in (qr as String).split('|'))
-      if (tag != null && tag != '') {
+    for (var tag in qr.split('|'))
+      if (tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
-        map[tag] += 1;
+        map[tag] = map[tag]! + 1;
       }
   }
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
     if (qr as String == "") return;
-    var str = qr as String;
-    if (str != null && str != '') {
-      if (!map.containsKey(str)) map[str] = 0;
-      map[str] += 1;
+    if (qr != '') {
+      if (!map.containsKey(qr)) map[qr] = 0;
+      map[qr] = map[qr]! + 1;
     }
   }
 
@@ -302,7 +305,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     int i = 0;
     while (true) {
       setState(() {
-        baseString = Translations.instance.trans('dbdindexing') + '[$i/13]';
+        baseString = Translations.instance!.trans('dbdindexing') + '[$i/13]';
       });
 
       var ll = await qm.next();
@@ -329,9 +332,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             var index = tagIndex[tag].toString();
             for (var artist in item.artists().split('|')) {
               if (artist == '') continue;
-              if (!tagArtist[artist].containsKey(index))
-                tagArtist[artist][index] = 0;
-              tagArtist[artist][index] += 1;
+              if (!tagArtist[artist]!.containsKey(index))
+                tagArtist[artist]![index] = 0;
+              tagArtist[artist]![index] = tagArtist[artist]![index]! + 1;
             }
           }
         }
@@ -346,9 +349,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             var index = tagIndex[tag].toString();
             for (var artist in item.groups().split('|')) {
               if (artist == '') continue;
-              if (!tagGroup[artist].containsKey(index))
-                tagGroup[artist][index] = 0;
-              tagGroup[artist][index] += 1;
+              if (!tagGroup[artist]!.containsKey(index))
+                tagGroup[artist]![index] = 0;
+              tagGroup[artist]![index] = tagGroup[artist]![index]! + 1;
             }
           }
         }
@@ -360,9 +363,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
-            if (!tagUploader[item.uploader()].containsKey(index))
-              tagUploader[item.uploader()][index] = 0;
-            tagUploader[item.uploader()][index] += 1;
+            if (!tagUploader[item.uploader()]!.containsKey(index))
+              tagUploader[item.uploader()]![index] = 0;
+            tagUploader[item.uploader()]![index] =
+                tagGroup[item.uploader()]![index]! + 1;
           }
         }
 
@@ -376,9 +380,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             var index = tagIndex[tag].toString();
             for (var artist in item.series().split('|')) {
               if (artist == '') continue;
-              if (!tagSeries[artist].containsKey(index))
-                tagSeries[artist][index] = 0;
-              tagSeries[artist][index] += 1;
+              if (!tagSeries[artist]!.containsKey(index))
+                tagSeries[artist]![index] = 0;
+              tagSeries[artist]![index] = tagSeries[artist]![index]! + 1;
             }
           }
         }
@@ -393,9 +397,9 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             var index = tagIndex[tag].toString();
             for (var artist in item.characters().split('|')) {
               if (artist == '') continue;
-              if (!tagCharacter[artist].containsKey(index))
-                tagCharacter[artist][index] = 0;
-              tagCharacter[artist][index] += 1;
+              if (!tagCharacter[artist]!.containsKey(index))
+                tagCharacter[artist]![index] = 0;
+              tagCharacter[artist]![index] = tagCharacter[artist]![index]! + 1;
             }
           }
         }
@@ -407,9 +411,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               characterSeries[series] = Map<String, int>();
             for (var character in item.characters().split('|')) {
               if (character == '') continue;
-              if (!characterSeries[series].containsKey(character))
-                characterSeries[series][character] = 0;
-              characterSeries[series][character] += 1;
+              if (!characterSeries[series]!.containsKey(character))
+                characterSeries[series]![character] = 0;
+              characterSeries[series]![character] =
+                  characterSeries[series]![character]! + 1;
             }
           }
 
@@ -419,9 +424,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               seriesCharacter[character] = Map<String, int>();
             for (var series in item.characters().split('|')) {
               if (series == '') continue;
-              if (!seriesCharacter[character].containsKey(series))
-                seriesCharacter[character][series] = 0;
-              seriesCharacter[character][series] += 1;
+              if (!seriesCharacter[character]!.containsKey(series))
+                seriesCharacter[character]![series] = 0;
+              seriesCharacter[character]![series] =
+                  seriesCharacter[character]![series]! + 1;
             }
           }
         }
@@ -433,9 +439,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               seriesSeries[series] = Map<String, int>();
             for (var series2 in item.series().split('|')) {
               if (series2 == '' || series == series2) continue;
-              if (!seriesSeries[series].containsKey(series2))
-                seriesSeries[series][series2] = 0;
-              seriesSeries[series][series2] += 1;
+              if (!seriesSeries[series]!.containsKey(series2))
+                seriesSeries[series]![series2] = 0;
+              seriesSeries[series]![series2] =
+                  seriesSeries[series]![series2]! + 1;
             }
           }
         }
@@ -447,9 +454,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               characterCharacter[character] = Map<String, int>();
             for (var character2 in item.characters().split('|')) {
               if (character2 == '' || series == character2) continue;
-              if (!characterCharacter[character].containsKey(character2))
-                characterCharacter[character][character2] = 0;
-              characterCharacter[character][character2] += 1;
+              if (!characterCharacter[character]!.containsKey(character2))
+                characterCharacter[character]![character2] = 0;
+              characterCharacter[character]![character2] =
+                  characterCharacter[character]![character2]! + 1;
             }
           }
         }
@@ -495,7 +503,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         path11.writeAsString(jsonEncode(seriesSeries));
 
         setState(() {
-          baseString = Translations.instance.trans('dbdcomplete');
+          baseString = Translations.instance!.trans('dbdcomplete');
         });
         break;
       }

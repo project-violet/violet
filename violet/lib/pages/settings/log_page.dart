@@ -104,7 +104,7 @@ class _LogPageState extends State<LogPage> {
                                           ),
                                           onPressed: () async {
                                             await showOkDialog(
-                                                context, ii.detail, '상세정보');
+                                                context, ii.detail!, '상세정보');
                                           },
                                         ),
                                       ),

@@ -20,15 +20,15 @@ class ProviderManager {
   }
 
   static VioletImageProvider getIgnoreDirty(int id) {
-    return _ids[id];
+    return _ids[id]!;
   }
 
   static Future<VioletImageProvider> get(int id) async {
-    if (_dirty[id]) {
+    if (_dirty[id]!) {
       _dirty[id] = false;
-      await _ids[id].refresh();
+      await _ids[id]!.refresh();
     }
-    return _ids[id];
+    return _ids[id]!;
   }
 
   static void clear() {
@@ -37,7 +37,7 @@ class ProviderManager {
 
   static void refresh() {
     for (var v in _dirty.entries) {
-      if (_ids[v.key].isRefreshable()) _dirty[v.key] = true;
+      if (_ids[v.key]!.isRefreshable()) _dirty[v.key] = true;
     }
   }
 }

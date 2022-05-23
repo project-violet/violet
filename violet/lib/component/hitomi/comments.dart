@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 
 class CommentsCount {
-  static List<Tuple2<int, int>> counts;
+  static late List<Tuple2<int, int>> counts;
 
   static Future<void> init() async {
     String data;

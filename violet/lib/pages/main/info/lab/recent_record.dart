@@ -27,7 +27,7 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int latestId = 0;
   int limit = 10;
-  Timer timer;
+  late Timer timer;
   ScrollController _controller = ScrollController();
   bool isTop = false;
 
@@ -81,10 +81,10 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
       queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results.length == 0) return;
+      if (query.results!.length == 0) return;
 
       var qr = Map<String, QueryResult>();
-      query.results.forEach((element) {
+      query.results!.forEach((element) {
         qr[element.id().toString()] = element;
       });
 
@@ -94,7 +94,7 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
           return;
         }
         result.add(Tuple2<QueryResult, int>(
-            qr[element.item2.toString()], element.item3));
+            qr[element.item2.toString()]!, element.item3));
       });
 
       records.insertAll(0, result);
@@ -160,7 +160,7 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
           Row(
             children: [
               Container(width: 16),
-              Text('Limit: $limit${Translations.instance.trans('second')}'),
+              Text('Limit: $limit${Translations.instance!.trans('second')}'),
               Expanded(
                 child: ListTile(
                   dense: true,

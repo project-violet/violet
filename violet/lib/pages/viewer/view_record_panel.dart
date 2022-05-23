@@ -11,7 +11,7 @@ import 'package:violet/variables.dart';
 class ViewRecordPanel extends StatefulWidget {
   final int articleId;
 
-  ViewRecordPanel({this.articleId});
+  ViewRecordPanel({required this.articleId});
 
   @override
   _ViewRecordPanelState createState() => _ViewRecordPanelState();
@@ -25,7 +25,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
           (value) => value
               .where((e) => e.articleId() == widget.articleId.toString())
               .toList())),
-      builder: (context, snapshot) {
+      builder: (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
         if (!snapshot.hasData) return Container();
         return ListView.builder(
           physics: BouncingScrollPhysics(),
@@ -54,9 +54,9 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                     child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        snapshot.data[index - 1].lastPage() == null
+                        snapshot.data![index - 1].lastPage() == null
                             ? '??'
-                            : snapshot.data[index - 1].lastPage().toString() +
+                            : snapshot.data![index - 1].lastPage().toString() +
                                 ' Page',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -69,18 +69,18 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      snapshot.data[index - 1].datetimeStart().toString(),
+                      snapshot.data![index - 1].datetimeStart().toString(),
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ),
                 ],
               ),
               onTap: () {
-                Navigator.pop(context, snapshot.data[index - 1].lastPage());
+                Navigator.pop(context, snapshot.data![index - 1].lastPage());
               },
             );
           },
-          itemCount: snapshot.data.length + 1,
+          itemCount: snapshot.data!.length + 1,
         );
       },
     );
