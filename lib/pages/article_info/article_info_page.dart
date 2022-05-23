@@ -464,7 +464,7 @@ class TagInfoAreaWidget extends StatelessWidget {
 }
 
 class SingleChipWidget extends StatelessWidget {
-  final String target;
+  final String? target;
   final String name;
   final String raw;
 
@@ -482,7 +482,7 @@ class SingleChipWidget extends StatelessWidget {
         ),
       ),
       Wrap(
-        children: <Widget>[_Chip(group: raw.toLowerCase(), name: target)],
+        children: <Widget>[_Chip(group: raw.toLowerCase(), name: target!)],
       ),
     ]);
   }
@@ -491,7 +491,7 @@ class SingleChipWidget extends StatelessWidget {
 class MultiChipWidget extends StatelessWidget {
   final List<Tuple2<String, String>> groupName;
   final String name;
-  final String target;
+  final String? target;
 
   const MultiChipWidget(this.target, this.name, this.groupName);
 

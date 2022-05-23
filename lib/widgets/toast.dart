@@ -41,8 +41,17 @@ class _ToastWrapperState extends State<ToastWrapper>
   @override
   void initState() {
     super.initState();
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
+    offset = Tween<Offset>(
+            begin: widget.reverse ? Offset(0.0, 1.0) : Offset.zero,
+            end: widget.reverse ? Offset.zero : Offset(0.0, 1.0))
+        .animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeInOut,
+    ));
     Future.delayed(Duration(milliseconds: 100)).then((value) {
-      controller!.reverse(from: 0.8);
+      controller.reverse(from: 0.8);
       setState(() {
         opacity = 1.0;
         opened = true;
@@ -53,17 +62,8 @@ class _ToastWrapperState extends State<ToastWrapper>
         opacity = 0.0;
         reverse = true;
       });
-      controller!.forward();
+      controller.forward();
     });
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 700));
-    offset = Tween<Offset>(
-            begin: widget.reverse ? Offset(0.0, 1.0) : Offset.zero,
-            end: widget.reverse ? Offset.zero : Offset(0.0, 1.0))
-        .animate(CurvedAnimation(
-      parent: controller,
-      curve: Curves.easeInOut,
-    ));
   }
 
 // https://dash-overflow.net/articles/why_vsync/
@@ -77,9 +77,9 @@ class _ToastWrapperState extends State<ToastWrapper>
   @override
   Widget build(BuildContext context) {
     var color = widget.color ??
-        (widget.isCheck!
+        (widget.isCheck
             ? Colors.greenAccent.withOpacity(0.8)
-            : widget.isWarning != null && widget.isWarning!
+            : widget.isWarning
                 ? Colors.orangeAccent.withOpacity(0.8)
                 : Colors.redAccent.withOpacity(0.8));
 
@@ -135,7 +135,7 @@ class _ToastWrapperState extends State<ToastWrapper>
                           widget.icon ??
                               (widget.isCheck
                                   ? Icons.check
-                                  : widget.isWarning != null && widget.isWarning
+                                  : widget.isWarning
                                       ? Icons.warning
                                       : Icons.cancel),
                           color: color,
