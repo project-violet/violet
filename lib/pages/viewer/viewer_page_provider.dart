@@ -9,7 +9,7 @@ class ViewerPageProvider {
   final bool useFileSystem;
   final bool useWeb;
   final bool useProvider;
-  final List<String>? uris;
+  final List<String> uris;
   final Map<String, String>? headers;
   final VioletImageProvider? provider;
   final int id;
@@ -20,7 +20,7 @@ class ViewerPageProvider {
     this.useFileSystem = false,
     this.useWeb = false,
     this.useProvider = false,
-    this.uris,
+    required this.uris,
     required this.id,
     required this.title,
     this.provider,

@@ -111,7 +111,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           var x = value.where((e) =>
               e.articleId() == widget.item.url() &&
               e.lastPage() != null &&
-              e.lastPage() > 1 &&
+              e.lastPage()! > 1 &&
               DateTime.parse(e.datetimeStart())
                       .difference(DateTime.now())
                       .inDays <
@@ -120,7 +120,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           _shouldReload = true;
           setState(() {
             isLastestRead = true;
-            latestReadPage = x.first.lastPage();
+            latestReadPage = x.first.lastPage()!;
           });
         }));
   }

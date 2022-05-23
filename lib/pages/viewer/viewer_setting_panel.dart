@@ -16,9 +16,9 @@ class ViewerSettingPanel extends StatefulWidget {
   final VoidCallback thumbSizeChangeEvent;
 
   ViewerSettingPanel({
-    this.viewerStyleChangeEvent,
-    this.setStateCallback,
-    this.thumbSizeChangeEvent,
+    required this.viewerStyleChangeEvent,
+    required this.setStateCallback,
+    required this.thumbSizeChangeEvent,
   });
 
   @override
@@ -290,9 +290,9 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
   }
 
   _checkBox({
-    bool value,
-    String title,
-    ValueChanged<bool> onChanged,
+    required bool value,
+    required String title,
+    required ValueChanged<bool> onChanged,
     bool enabled = true,
   }) {
     return ListTile(

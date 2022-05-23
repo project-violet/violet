@@ -4,32 +4,32 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class LifecycleEventHandler extends WidgetsBindingObserver {
-  final AsyncCallback resumeCallBack;
-  final AsyncCallback suspendingCallBack;
-  final AsyncCallback inactiveCallBack;
-  final AsyncCallback pausedCallBack;
+  final AsyncCallback? resumeCallBack;
+  final AsyncCallback? suspendingCallBack;
+  final AsyncCallback? inactiveCallBack;
+  final AsyncCallback? pausedCallBack;
 
   LifecycleEventHandler({
-    required this.resumeCallBack,
-    required this.suspendingCallBack,
-    required this.inactiveCallBack,
-    required this.pausedCallBack,
+    this.resumeCallBack,
+    this.suspendingCallBack,
+    this.inactiveCallBack,
+    this.pausedCallBack,
   });
 
   @override
   Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
-        await resumeCallBack();
+        if (resumeCallBack != null) await resumeCallBack!();
         break;
       case AppLifecycleState.inactive:
-        await inactiveCallBack();
+        if (inactiveCallBack != null) await inactiveCallBack!();
         break;
       case AppLifecycleState.paused:
-        await pausedCallBack();
+        if (pausedCallBack != null) await pausedCallBack!();
         break;
       case AppLifecycleState.detached:
-        await suspendingCallBack();
+        if (suspendingCallBack != null) await suspendingCallBack!();
         break;
     }
   }

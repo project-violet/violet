@@ -98,10 +98,10 @@ class VPhotoViewGallery extends StatefulWidget {
     this.gaplessPlayback = false,
     this.reverse = false,
     this.pageController,
-    this.onPageChanged,
+    required this.onPageChanged,
     this.scaleStateChangedCallback,
     this.enableRotation = false,
-    this.scrollPhysics,
+    required this.scrollPhysics,
     this.scrollDirection = Axis.horizontal,
     this.customSize,
   })  : itemCount = null,
@@ -120,10 +120,10 @@ class VPhotoViewGallery extends StatefulWidget {
     this.gaplessPlayback = false,
     this.reverse = false,
     this.pageController,
-    this.onPageChanged,
+    required this.onPageChanged,
     this.scaleStateChangedCallback,
     this.enableRotation = false,
-    this.scrollPhysics,
+    required this.scrollPhysics,
     this.scrollDirection = Axis.horizontal,
     this.customSize,
   })  : pageOptions = null,
@@ -141,7 +141,7 @@ class VPhotoViewGallery extends StatefulWidget {
   final PhotoViewGalleryBuilder? builder;
 
   /// [ScrollPhysics] for the internal [PageView]
-  final ScrollPhysics? scrollPhysics;
+  final ScrollPhysics scrollPhysics;
 
   /// Mirror to [PhotoView.loadingBuilder]
   final LoadingBuilder? loadingBuilder;
@@ -159,7 +159,7 @@ class VPhotoViewGallery extends StatefulWidget {
   final PreloadPageController? pageController;
 
   /// An callback to be called on a page change
-  final PhotoViewGalleryPageChangedCallback? onPageChanged;
+  final PhotoViewGalleryPageChangedCallback onPageChanged;
 
   /// Mirror to [PhotoView.scaleStateChangedCallback]
   final ValueChanged<PhotoViewScaleState>? scaleStateChangedCallback;
@@ -197,7 +197,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
   }
 
   int get actualPage {
-    return _controller.hasClients ? _controller.page.floor() : 0;
+    return _controller.hasClients ? _controller.page!.floor() : 0;
   }
 
   int get itemCount {
@@ -213,12 +213,12 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
     return PhotoViewGestureDetectorScope(
       axis: widget.scrollDirection,
       child: PreloadPageView.builder(
-        reverse: widget.reverse,
+        reverse: widget.reverse ?? false,
         controller: _controller,
         onPageChanged: widget.onPageChanged,
         itemCount: itemCount,
         itemBuilder: _buildItem,
-        scrollDirection: widget.scrollDirection,
+        scrollDirection: widget.scrollDirection ?? Axis.horizontal,
         physics: widget.scrollPhysics,
         preloadPagesCount: 3,
       ),
@@ -240,7 +240,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             customSize: widget.customSize,
             heroAttributes: pageOption.heroAttributes,
             scaleStateChangedCallback: scaleStateChangedCallback,
-            enableRotation: widget.enableRotation,
+            enableRotation: widget.enableRotation ?? false,
             initialScale: pageOption.initialScale,
             minScale: pageOption.minScale,
             maxScale: pageOption.maxScale,
@@ -261,10 +261,10 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             controller: pageOption.controller,
             scaleStateController: pageOption.scaleStateController,
             customSize: widget.customSize,
-            gaplessPlayback: widget.gaplessPlayback,
+            gaplessPlayback: widget.gaplessPlayback ?? false,
             heroAttributes: pageOption.heroAttributes,
             scaleStateChangedCallback: scaleStateChangedCallback,
-            enableRotation: widget.enableRotation,
+            enableRotation: widget.enableRotation ?? false,
             initialScale: pageOption.initialScale,
             minScale: pageOption.minScale,
             maxScale: pageOption.maxScale,
@@ -287,8 +287,8 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
   PhotoViewGalleryPageOptions _buildPageOption(
       BuildContext context, int index) {
     if (widget._isBuilder) {
-      return widget.builder(context, index);
+      return widget.builder!(context, index);
     }
-    return widget.pageOptions[index];
+    return widget.pageOptions![index];
   }
 }

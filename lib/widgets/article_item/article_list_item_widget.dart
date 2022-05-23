@@ -148,7 +148,7 @@ class _ArticleListItemVerySimpleWidgetState
           var x = value.where((e) =>
               e.articleId() == data.queryResult.id().toString() &&
               e.lastPage() != null &&
-              e.lastPage() > 1 &&
+              e.lastPage()! > 1 &&
               DateTime.parse(e.datetimeStart())
                       .difference(DateTime.now())
                       .inDays <
@@ -157,7 +157,7 @@ class _ArticleListItemVerySimpleWidgetState
           _shouldReload = true;
           setState(() {
             isLastestRead = true;
-            latestReadPage = x.first.lastPage();
+            latestReadPage = x.first.lastPage()!;
           });
         }));
   }
@@ -283,9 +283,9 @@ class _ArticleListItemVerySimpleWidgetState
                   curve: Curves.easeInOut,
                   duration: const Duration(milliseconds: 300),
                   transform: Matrix4.identity()
-                    ..translate(thisWidth / 2, thisHeight / 2)
+                    ..translate(thisWidth! / 2, thisHeight! / 2)
                     ..scale(scale)
-                    ..translate(-thisWidth / 2, -thisHeight / 2),
+                    ..translate(-thisWidth! / 2, -thisHeight! / 2),
                   child: _body,
                 ),
               ),
@@ -406,7 +406,7 @@ class _ArticleListItemVerySimpleWidgetState
       setState(() {
         scale = 0.95;
       });
-      data.bookmarkCallback(data.queryResult.id());
+      data.bookmarkCallback!(data.queryResult.id());
       return;
     }
 
@@ -485,7 +485,7 @@ class _ArticleListItemVerySimpleWidgetState
     onScaling = false;
 
     if (data.doubleTapCallback == null) {
-      var sz = await _calculateImageDimension(thumbnail);
+      var sz = await _calculateImageDimension(thumbnail!);
       Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         transitionDuration: Duration(milliseconds: 500),
@@ -495,13 +495,13 @@ class _ArticleListItemVerySimpleWidgetState
         },
         pageBuilder: (_, __, ___) => ThumbnailViewPage(
           size: sz,
-          thumbnail: thumbnail,
-          headers: headers,
+          thumbnail: thumbnail!,
+          headers: headers!,
           heroKey: data.thumbnailTag,
         ),
       ));
     } else {
-      data.doubleTapCallback();
+      data.doubleTapCallback!();
     }
 
     _shouldReloadCachedBuildWidget = true;
@@ -530,35 +530,35 @@ class _ArticleListItemVerySimpleWidgetState
 
 class BodyWidget extends StatelessWidget {
   final ArticleListItem data;
-  final String thumbnail;
+  final String? thumbnail;
   final int imageCount;
   final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
   final double pad;
   final bool isBlurred;
-  final Map<String, String> headers;
+  final Map<String, String>? headers;
   final bool isLastestRead;
   final int latestReadPage;
   final bool disableFiltering;
-  final String artist;
-  final String title;
-  final String dateTime;
+  final String? artist;
+  final String? title;
+  final String? dateTime;
 
   BodyWidget({
-    this.data,
-    this.thumbnail,
-    this.imageCount,
-    this.isBookmarked,
-    this.flareController,
-    this.pad,
-    this.isBlurred,
-    this.headers,
-    this.isLastestRead,
-    this.latestReadPage,
-    this.disableFiltering,
-    this.artist,
-    this.title,
-    this.dateTime,
+    required this.data,
+    required this.thumbnail,
+    required this.imageCount,
+    required this.isBookmarked,
+    required this.flareController,
+    required this.pad,
+    required this.isBlurred,
+    required this.headers,
+    required this.isLastestRead,
+    required this.latestReadPage,
+    required this.disableFiltering,
+    required this.artist,
+    required this.title,
+    required this.dateTime,
   });
 
   @override
@@ -646,20 +646,20 @@ class BodyWidget extends StatelessWidget {
 
 // Artist List Item Details
 class _DetailWidget extends StatelessWidget {
-  final String title;
-  final String artist;
+  final String? title;
+  final String? artist;
   final int imageCount;
-  final String dateTime;
-  final int viewed;
-  final int seconds;
+  final String? dateTime;
+  final int? viewed;
+  final int? seconds;
 
   _DetailWidget({
-    this.title,
-    this.artist,
-    this.imageCount,
-    this.dateTime,
-    this.viewed,
-    this.seconds,
+    required this.title,
+    required this.artist,
+    required this.imageCount,
+    required this.dateTime,
+    required this.viewed,
+    required this.seconds,
   });
 
   @override
@@ -670,13 +670,13 @@ class _DetailWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            title,
+            title ?? '',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           Text(
-            artist,
+            artist ?? '',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

@@ -319,6 +319,7 @@ class ArticleInfoPage extends StatelessWidget {
                 // uris: ThumbnailManager.get(queryResult.id())
                 //     .item1,
                 // useWeb: true,
+                uris: List<String>.filled(prov.length(), ''),
                 useProvider: true,
                 provider: prov,
                 headers: data.headers,

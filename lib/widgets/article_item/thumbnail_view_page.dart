@@ -124,7 +124,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
         tapCount++;
         DateTime now = DateTime.now();
         if (currentBackPressTime == null ||
-            now.difference(currentBackPressTime) >
+            now.difference(currentBackPressTime!) >
                 Duration(milliseconds: 300)) {
           currentBackPressTime = now;
           return;
@@ -142,7 +142,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
   }
 
   int tapCount = 0;
-  double dragStart;
+  double dragStart = 0;
   bool zooming = false;
-  DateTime currentBackPressTime;
+  DateTime? currentBackPressTime;
 }

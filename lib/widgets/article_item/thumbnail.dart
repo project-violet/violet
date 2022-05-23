@@ -13,7 +13,7 @@ import 'package:violet/settings/settings.dart';
 class ThumbnailWidget extends StatelessWidget {
   final double pad;
   final bool showDetail;
-  final String thumbnail;
+  final String? thumbnail;
   final String thumbnailTag;
   final int imageCount;
   final ValueNotifier<bool> isBookmarked;
@@ -23,22 +23,22 @@ class ThumbnailWidget extends StatelessWidget {
   final bool isLastestRead;
   final int latestReadPage;
   final bool disableFiltering;
-  final Map<String, String> headers;
+  final Map<String, String>? headers;
 
   ThumbnailWidget({
-    this.pad,
-    this.showDetail,
-    this.thumbnail,
-    this.thumbnailTag,
-    this.imageCount,
-    this.isBookmarked,
-    this.flareController,
-    this.id,
-    this.isBlurred,
-    this.headers,
-    this.isLastestRead,
-    this.latestReadPage,
-    this.disableFiltering,
+    required this.pad,
+    required this.showDetail,
+    required this.thumbnail,
+    required this.thumbnailTag,
+    required this.imageCount,
+    required this.isBookmarked,
+    required this.flareController,
+    required this.id,
+    required this.isBlurred,
+    required this.headers,
+    required this.isLastestRead,
+    required this.latestReadPage,
+    required this.disableFiltering,
   });
 
   @override
@@ -64,8 +64,8 @@ class ThumbnailWidget extends StatelessWidget {
               child: Stack(
                 children: <Widget>[
                   ThumbnailImageWidget(
-                    headers: headers,
-                    thumbnail: thumbnail,
+                    headers: headers!,
+                    thumbnail: thumbnail!,
                     thumbnailTag: thumbnailTag,
                     isBlurred: isBlurred,
                   ),
@@ -116,8 +116,12 @@ class ThumbnailImageWidget extends StatelessWidget {
   final Map<String, String> headers;
   final bool isBlurred;
 
-  ThumbnailImageWidget(
-      {this.thumbnail, this.thumbnailTag, this.headers, this.isBlurred});
+  ThumbnailImageWidget({
+    required this.thumbnail,
+    required this.thumbnailTag,
+    required this.headers,
+    required this.isBlurred,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +175,10 @@ class BookmarkIndicatorWidget extends StatelessWidget {
   final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
 
-  BookmarkIndicatorWidget({this.isBookmarked, this.flareController});
+  BookmarkIndicatorWidget({
+    required this.isBookmarked,
+    required this.flareController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +191,7 @@ class BookmarkIndicatorWidget extends StatelessWidget {
           height: 35,
           child: ValueListenableBuilder(
             valueListenable: isBookmarked,
-            builder: (BuildContext context, bool value, Widget child) {
+            builder: (BuildContext context, bool value, Widget? child) {
               if (!Settings.simpleItemWidgetLoadingIcon) {
                 return FlareActor(
                   'assets/flare/likeUtsua.flr',
@@ -210,8 +217,11 @@ class ReadProgressOverlayWidget extends StatelessWidget {
   final int latestReadPage;
   final int imageCount;
 
-  ReadProgressOverlayWidget(
-      {this.isLastestRead, this.latestReadPage, this.imageCount});
+  ReadProgressOverlayWidget({
+    required this.isLastestRead,
+    required this.latestReadPage,
+    required this.imageCount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -244,7 +254,10 @@ class PagesOverlayWidget extends StatelessWidget {
   final bool showDetail;
   final int imageCount;
 
-  const PagesOverlayWidget({this.showDetail, this.imageCount});
+  const PagesOverlayWidget({
+    required this.showDetail,
+    required this.imageCount,
+  });
 
   @override
   Widget build(BuildContext context) {
