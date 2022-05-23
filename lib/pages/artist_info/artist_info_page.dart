@@ -80,14 +80,19 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   // Title clustering
   late List<List<int>> series;
   // Comments
-  late List<Tuple3<DateTime, String, String>> comments;
+  List<Tuple3<DateTime, String, String>>? comments;
 
   bool isBookmarked = false;
   FlareControls flareController = FlareControls();
 
+  late FToast fToast;
+
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
+
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       //
       // Check bookmark
@@ -245,7 +250,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         .reversed
         .toList();
 
-    if (comments.length > 0) setState(() {});
+    if (comments!.length > 0) setState(() {});
   }
 
   Future<void> querySimilars(List<Tuple2<String, double>> similars,
@@ -447,7 +452,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         ? 4
                         : 0;
 
-        FlutterToast(context).showToast(
+        fToast.showToast(
           child: ToastWrapper(
             isCheck: true,
             msg:
@@ -593,6 +598,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 : 'Artist: ') +
                                 widget.artist)))
                   ]),
+                  collapsed: Container(),
                 ),
               ),
             ),
@@ -609,9 +615,10 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                   header: Padding(
                     padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
                     child: Text(Translations.of(context).trans('comment') +
-                        ' (${(comments != null ? comments.length : 0)})'),
+                        ' (${(comments != null ? comments!.length : 0)})'),
                   ),
                   expanded: commentArea(),
+                  collapsed: Container(),
                 ),
               ),
             ),
@@ -638,6 +645,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                       .trans('icharacter'))),
                         ),
                         expanded: relatedArea(),
+                        collapsed: Container(),
                       ),
                     ),
                   ),
@@ -665,6 +673,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                       .trans('icharacter'))),
                         ),
                         expanded: relatedSingleArea(),
+                        collapsed: Container(),
                       ),
                     ),
                   ),
@@ -696,6 +705,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                             .trans('iartists'))),
                   ),
                   expanded: similarArea(),
+                  collapsed: Container(),
                 ),
               ),
             ),
@@ -715,6 +725,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         ' (${series.length})'),
                   ),
                   expanded: seriesArea(),
+                  collapsed: Container(),
                 ),
               ),
             ),
@@ -871,8 +882,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   Widget commentArea() {
-    if (comments != null && comments.length > 0) {
-      var children = List<Widget>.from(comments.map((e) {
+    if (comments != null && comments!.length > 0) {
+      var children = List<Widget>.from(comments!.map((e) {
         return InkWell(
           onTap: () async {
             AlertDialog alert = AlertDialog(

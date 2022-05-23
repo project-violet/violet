@@ -147,9 +147,13 @@ class _ViewerPageState extends State<ViewerPage>
   /// Thumbnail slider height including image and page text
   double _thumbHeight = 140.0;
 
+  late final FToast fToast;
+
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
     if (!Settings.disableFullScreen)
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
@@ -634,7 +638,7 @@ class _ViewerPageState extends State<ViewerPage>
               if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
             }
 
-            FlutterToast(context).showToast(
+            fToast.showToast(
               child: ToastWrapper(
                 icon: _vIsBookmarked.value ? Icons.delete_forever : Icons.check,
                 color: _vIsBookmarked.value

@@ -90,10 +90,13 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   late DownloadListItem style;
   bool isLastestRead = false;
   int latestReadPage = 0;
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
     if (ExtractorManager.instance.existsExtractor(widget.item.url())) {
       var extractor = ExtractorManager.instance.getExtractor(widget.item.url());
@@ -252,7 +255,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       recoveryMode = false;
 
-      FlutterToast(context).showToast(
+      fToast.showToast(
         child: ToastWrapper(
           isCheck: true,
           isWarning: false,
@@ -312,7 +315,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         } else if (v == 2) {
           // Copy Url
           Clipboard.setData(ClipboardData(text: widget.item.url()));
-          FlutterToast(context).showToast(
+          fToast.showToast(
             child: ToastWrapper(
               isCheck: true,
               isWarning: false,

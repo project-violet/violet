@@ -30,15 +30,15 @@ dependencies:
 
   # I know there are too many packages.
   android_intent_plus: ^3.1.0
-  animated_widgets:
+  animated_widgets: ^1.1.0
   animations:
   async:
   auto_animated: ^3.0.1
-  badges:
+  badges: ^2.0.2
   bloc: ^6.0.0
-  bubble_tab_indicator: "^0.1.4"
+  bubble_tab_indicator: ^0.1.6
   cached_network_image: ^3.0.0
-  carousel_slider: ^2.3.4
+  carousel_slider: ^4.1.1
   # charts_flutter: ^0.11.0
   charts_flutter: # https://github.com/google/charts/issues/678
     git:
@@ -52,13 +52,13 @@ dependencies:
   device_info_plus: ^3.2.1
   dio: ^4.0.5-beta1
   dio_http_cache: ^0.3.0
-  division:
+  division: ^0.9.0
   draggable_scrollbar:
   # dynamic_theme: ^1.0.1
   dynamic_theme:
     git: https://github.com/Norbert515/dynamic_theme
   encrypt: ^5.0.0
-  expandable:
+  expandable: ^5.0.1
   ext_storage:
     git: https://github.com/violet-dev/ext_storage
   extended_image: ^6.2.0
@@ -67,8 +67,8 @@ dependencies:
   firebase_core: ^1.17.0
   firebase_analytics: ^9.1.8
   firebase_crashlytics: ^2.8.0
-  flare_dart:
-  flare_flutter: ^1.8.3
+  # flare_dart:
+  flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^0.6.0
   flutter_downloader: # @dependent: android
@@ -87,20 +87,20 @@ dependencies:
   flutter_js:
     git: https://github.com/violet-dev/flutter_js
   flutter_windowmanager: ^0.2.0
-  fluttertoast:
+  fluttertoast: ^8.0.9
   freezed_annotation:
   get: ^4.1.4
   gradient_widgets:
-  html:
-  html_unescape:
+  html: ^0.15.0
+  html_unescape: ^2.0.0
   http:
   image_size_getter: ^1.0.0
   intl: ^0.17.0
-  kdtree:
+  kdtree: ^0.2.0
   local_auth: ^1.1.11
   lottie:
   material_design_icons_flutter: ^5.0.6595
-  mdi:
+  mdi: ^5.0.0-nullsafety.0
   open_file:
     git: https://github.com/violet-dev/open_file
   optimized_cached_image: ^3.0.0
@@ -109,10 +109,11 @@ dependencies:
   permission_handler: ^8.3.0
   photo_view: ^0.13.0
   platform: ^3.1.0
-  pimp_my_button: ^1.0.0
+  pimp_my_button:
+    git: https://github.com/MichaelMarner/pimp_my_button
   pointycastle:
   provider: ^6.0.2
-  scrollable_positioned_list: 0.1.7
+  scrollable_positioned_list: ^0.3.2
   shared_preferences: ^2.0.12
   sqflite: ^2.0.2
   synchronized:

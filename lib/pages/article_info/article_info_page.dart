@@ -163,6 +163,7 @@ class ArticleInfoPage extends StatelessWidget {
                         ),
                         expanded:
                             PreviewAreaWidget(queryResult: data.queryResult),
+                        collapsed: Container(),
                       ),
                     ),
                   ),
@@ -193,6 +194,7 @@ class ArticleInfoPage extends StatelessWidget {
                           expanded: _RelatedArea(
                               relatedIds:
                                   Related.getRelated(data.queryResult.id())),
+                          collapsed: Container(),
                         ),
                       ),
                     ),
@@ -252,7 +254,9 @@ class ArticleInfoPage extends StatelessWidget {
       }
     }
     if (!DownloadPageManager.downloadPageLoaded) {
-      FlutterToast(context).showToast(
+      FToast ftoast = FToast();
+      ftoast.init(context);
+      ftoast.showToast(
         child: ToastWrapper(
           isCheck: false,
           isWarning: true,
@@ -272,7 +276,9 @@ class ArticleInfoPage extends StatelessWidget {
       }
     }
 
-    FlutterToast(context).showToast(
+    FToast ftoast = FToast();
+    ftoast.init(context);
+    ftoast.showToast(
       child: ToastWrapper(
         isCheck: true,
         isWarning: false,
@@ -686,6 +692,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                   '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
             ),
             expanded: commentArea(context),
+            collapsed: Container(),
           ),
         ),
       ),
@@ -1096,7 +1103,9 @@ class _Chip extends StatelessWidget {
             );
           } else if (group == 'id') {
             Clipboard.setData(ClipboardData(text: name));
-            FlutterToast(context).showToast(
+            FToast fToast = FToast();
+            fToast.init(context);
+            fToast.showToast(
               child: ToastWrapper(
                 isCheck: true,
                 isWarning: false,

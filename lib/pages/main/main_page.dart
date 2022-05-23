@@ -59,10 +59,13 @@ class _MainPage2State extends State<MainPage2>
   // bool ee = false;
   int _current = 0;
   bool _syncAvailable = false;
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
     Future.delayed(Duration(milliseconds: 200)).then((value) async {
       // var latestDB = SyncManager.getLatestDB().getDateTime();
@@ -464,7 +467,7 @@ class _MainPage2State extends State<MainPage2>
                       if (lastDB != null &&
                           latestDB.difference(DateTime.parse(lastDB)).inHours <
                               1) {
-                        FlutterToast(context).showToast(
+                        fToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context)
@@ -505,7 +508,7 @@ class _MainPage2State extends State<MainPage2>
                         HitomiManager.tagmap = jsonDecode(text);
                         await DataBaseManager.reloadInstance();
 
-                        FlutterToast(context).showToast(
+                        fToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: Translations.of(context).trans('synccomplete'),

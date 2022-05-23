@@ -63,10 +63,10 @@ class EHParser {
   static List<String> getImagesUrl(String html) {
     var doc = parse(html).querySelector("div[id='gdt']");
     var result = <String>[];
-    doc.querySelectorAll('div').forEach((element) {
+    doc!.querySelectorAll('div').forEach((element) {
       var a = element.querySelector('a');
       if (a == null) return;
-      var url = element.querySelector('a').attributes['href'];
+      var url = element.querySelector('a')!.attributes['href'];
       if (!result.contains(url)) result.add(url!);
     });
     return result;
@@ -82,7 +82,7 @@ class EHParser {
   // ex: https://exhentai.org/s/df24b19548/1212549-2
   static String getImageAddress(String html) {
     var doc = parse(html).querySelector("div[id='i1']");
-    return doc.querySelector("div[id='i3'] a img").attributes['src']!;
+    return doc!.querySelector("div[id='i3'] a img")!.attributes['src']!;
   }
 
   // ex: https://exhentai.org/s/df24b19548/1212549-2
@@ -100,25 +100,25 @@ class EHParser {
 
     var url = <String>[];
     try {
-      var rr = doc.querySelectorAll("table tbody tr td[onclick*='document']");
+      var rr = doc!.querySelectorAll("table tbody tr td[onclick*='document']");
       if (rr.length != 0) {
         doc
             .querySelectorAll("table tbody tr td[onclick*='document']")
             .forEach((element) {
           var a = element.querySelector('a');
-          url.add(a.attributes['href']!);
+          url.add(a!.attributes['href']!);
         });
       } else {
         url.add(doc
-                .querySelector("table tbody tr td.ptds")
-                .querySelector('a')
+                .querySelector("table tbody tr td.ptds")!
+                .querySelector('a')!
                 .attributes['href']! +
             '?p=0');
       }
     } catch (e) {
-      url.add(doc
-              .querySelector("table tbody tr td.ptds")
-              .querySelector('a')
+      url.add(doc!
+              .querySelector("table tbody tr td.ptds")!
+              .querySelector('a')!
               .attributes['href']! +
           '?p=0');
     }
@@ -144,29 +144,30 @@ class EHParser {
 
     article.thumbnail = _thumbnailPattern
         .stringMatch(
-            doc.querySelector("div[id=gleft] div div").attributes['style']!)
+            doc!.querySelector("div[id=gleft] div div")!.attributes['style']!)
         .toString();
 
-    article.title = doc.querySelector("div[id='gd2'] h1[id='gn']").text;
-    article.subTitle = doc.querySelector("div[id='gd2'] h1[id='gj']").text;
+    article.title = doc.querySelector("div[id='gd2'] h1[id='gn']")!.text;
+    article.subTitle = doc.querySelector("div[id='gd2'] h1[id='gj']")!.text;
 
-    article.uploader = doc.querySelector("div[id='gmid'] div[id='gdn'] a").text;
+    article.uploader =
+        doc.querySelector("div[id='gmid'] div[id='gdn'] a")!.text;
 
     var nodeStatic =
         doc.querySelectorAll("div[id='gmid'] div[id='gdd'] table tr");
 
-    article.posted = nodeStatic[0].querySelector("td[class='gdt2']").text;
-    article.parent = nodeStatic[1].querySelector("td[class='gdt2']").text;
-    article.visible = nodeStatic[2].querySelector("td[class='gdt2']").text;
-    article.language = nodeStatic[3].querySelector("td[class='gdt2']").text;
-    article.fileSize = nodeStatic[4].querySelector("td[class='gdt2']").text;
+    article.posted = nodeStatic[0].querySelector("td[class='gdt2']")!.text;
+    article.parent = nodeStatic[1].querySelector("td[class='gdt2']")!.text;
+    article.visible = nodeStatic[2].querySelector("td[class='gdt2']")!.text;
+    article.language = nodeStatic[3].querySelector("td[class='gdt2']")!.text;
+    article.fileSize = nodeStatic[4].querySelector("td[class='gdt2']")!.text;
     article.length = int.parse(nodeStatic[5]
-        .querySelector("td[class='gdt2']")
+        .querySelector("td[class='gdt2']")!
         .text
         .replaceAll('pages', '')
         .trim());
     article.favorited = int.parse(nodeStatic[6]
-        .querySelector("td[class='gdt2']")
+        .querySelector("td[class='gdt2']")!
         .text
         .replaceAll('times', '')
         .trim());
@@ -177,10 +178,10 @@ class EHParser {
 
     nodesData.forEach((element) {
       try {
-        info[element.querySelector('td').text.trim()] = element
+        info[element.querySelector('td')!.text.trim()] = element
             .querySelectorAll('td')[1]
             .querySelectorAll('div')
-            .map((x) => x.querySelector('a').text)
+            .map((x) => x.querySelector('a')!.text)
             .toList();
       } catch (e, st) {
         Logger.error('[eh-parser] E: ' + e.toString() + '\n' + st.toString());
@@ -202,11 +203,14 @@ class EHParser {
     var hu = HtmlUnescape();
     var df = DateFormat('dd MMMM yyyy, H:m');
     nodeComments.forEach((element) {
-      var date = hu.convert(element.querySelector("div.c2 div.c3").text.trim());
+      var date =
+          hu.convert(element.querySelector("div.c2 div.c3")!.text.trim());
       var author =
-          hu.convert(element.querySelector("div.c2 div.c3 > a").text.trim());
-      var contents = hu.convert(
-          element.querySelector("div.c6").innerHtml.replaceAll('<br>', '\r\n'));
+          hu.convert(element.querySelector("div.c2 div.c3 > a")!.text.trim());
+      var contents = hu.convert(element
+          .querySelector("div.c6")!
+          .innerHtml
+          .replaceAll('<br>', '\r\n'));
       comments.add(Tuple3<DateTime, String, String>(
           df.parse(date
               .substring(0, date.indexOf(' by'))
@@ -231,16 +235,16 @@ class EHParser {
       try {
         var article = EHResultArticle();
 
-        article.url = element.querySelector('div.id2 a').attributes['href'];
+        article.url = element.querySelector('div.id2 a')!.attributes['href'];
 
         try {
           article.thumbnail =
-              element.querySelector('div.id3 a img').attributes['src'];
+              element.querySelector('div.id3 a img')!.attributes['src'];
         } catch (e) {}
-        article.title = element.querySelector('div.id2 a').text;
+        article.title = element.querySelector('div.id2 a')!.text;
 
-        article.files = element.querySelector('div.id42').text;
-        article.type = element.querySelector('div.id41').attributes['title'];
+        article.files = element.querySelector('div.id42')!.text;
+        article.type = element.querySelector('div.id41')!.attributes['title'];
 
         result.add(article);
       } catch (e) {}
@@ -262,17 +266,17 @@ class EHParser {
         var article = EHResultArticle();
         var tds = element.querySelectorAll('td');
 
-        article.url = tds[2].querySelector('div.it5 a').attributes['href'];
+        article.url = tds[2].querySelector('div.it5 a')!.attributes['href'];
 
         try {
           article.thumbnail =
-              tds[2].querySelector('div.it2 img').attributes['src'];
+              tds[2].querySelector('div.it2 img')!.attributes['src'];
         } catch (e) {}
-        article.title = tds[2].querySelector('div.it5 a').text;
+        article.title = tds[2].querySelector('div.it5 a')!.text;
 
-        article.uploader = tds[3].querySelector('div > a').attributes['href'];
+        article.uploader = tds[3].querySelector('div > a')!.attributes['href'];
         article.published = tds[1].text;
-        article.type = tds[0].querySelector('a img').attributes['alt'];
+        article.type = tds[0].querySelector('a img')!.attributes['alt'];
 
         result.add(article);
       } catch (e) {}
@@ -298,13 +302,13 @@ class EHParser {
       try {
         var article = EHResultArticle();
 
-        article.url = node.querySelector('a').attributes['href'];
+        article.url = node.querySelector('a')!.attributes['href'];
         try {
-          article.thumbnail = node.querySelector('img').attributes['src'];
+          article.thumbnail = node.querySelector('img')!.attributes['src'];
         } catch (e) {}
 
         var g13 = node.querySelectorAll('td')[1].querySelector('div > div');
-        var g13div = g13.querySelectorAll('div');
+        var g13div = g13!.querySelectorAll('div');
 
         article.type = g13div[0].text.toLowerCase();
         article.published = g13div[1].text;
@@ -314,7 +318,7 @@ class EHParser {
         var gref =
             node.querySelectorAll('td')[1].querySelector('div > a > div');
 
-        article.title = gref.querySelector('div').text;
+        article.title = gref!.querySelector('div')!.text;
 
         try {
           var dict = Map<String, List<String>>();
@@ -322,10 +326,10 @@ class EHParser {
           var tagarea = gref.querySelector('div > table');
 
           gref
-              .querySelector('div > table')
+              .querySelector('div > table')!
               .querySelectorAll('tr')
               .forEach((element) {
-            var cont = element.querySelector('td').text.trim();
+            var cont = element.querySelector('td')!.text.trim();
             cont = cont.substring(0, cont.length - 1);
 
             var cc = <String>[];
@@ -365,10 +369,11 @@ class EHParser {
       var article = EHResultArticle();
 
       article.type =
-          element.querySelector('td > div').text.trim().toLowerCase();
-      article.thumbnail = element.querySelector('img').attributes['src'];
+          element.querySelector('td > div')!.text.trim().toLowerCase();
+      article.thumbnail = element.querySelector('img')!.attributes['src'];
       if (article.thumbnail!.startsWith('data'))
-        article.thumbnail = element.querySelector('img').attributes['data-src'];
+        article.thumbnail =
+            element.querySelector('img')!.attributes['data-src'];
       article.published = element
           .querySelectorAll('td')[1]
           .querySelectorAll('div')[1]
@@ -388,12 +393,15 @@ class EHParser {
 
       article.url = element
           .querySelectorAll('td')[3]
-          .querySelector('a')
+          .querySelector('a')!
           .attributes['href'];
-      article.title =
-          element.querySelectorAll('td')[3].querySelector('a  div').text.trim();
+      article.title = element
+          .querySelectorAll('td')[3]
+          .querySelector('a  div')!
+          .text
+          .trim();
       article.uploader =
-          element.querySelectorAll('td')[5].querySelector('div a').text.trim();
+          element.querySelectorAll('td')[5].querySelector('div a')!.text.trim();
 
       result.add(article);
     });

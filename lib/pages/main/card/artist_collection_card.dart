@@ -39,7 +39,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                 ..isTap((isTapped) {
                   setState(() => pressed = isTapped);
                   if (!isTapped) {
-                    controller.forward(from: 0.0);
+                    controller!.forward(from: 0.0);
 
                     PlatformNavigator.navigateSlide(
                         context, ArtistCollectionPage());

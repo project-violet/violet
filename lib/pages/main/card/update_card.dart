@@ -50,7 +50,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                   else
                     rotationController.reverse(from: 0.7);
                   setState(() => pressed = isTapped);
-                  controller.forward(from: 0.0);
+                  controller!.forward(from: 0.0);
                   Future.delayed(Duration(milliseconds: 200),
                       () => controller.forward(from: 0.0));
                   // Future.delayed(Duration(milliseconds: 200),

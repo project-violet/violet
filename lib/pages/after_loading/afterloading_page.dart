@@ -27,11 +27,14 @@ class AfterLoadingPage extends StatefulWidget {
 class AfterLoadingPageState extends State<AfterLoadingPage>
     with WidgetsBindingObserver {
   static int defaultInitialPage = 0;
+  late FToast fToast;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    fToast = FToast();
+    fToast.init(context);
   }
 
   bool _alreadyLocked = false;
@@ -260,7 +263,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
 
         _lastPopAt = now;
 
-        FlutterToast(context).showToast(
+        fToast.showToast(
           child: ToastWrapper(
             isCheck: false,
             isWarning: true,

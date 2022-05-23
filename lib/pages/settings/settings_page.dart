@@ -140,13 +140,14 @@ class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage> {
   FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
-  late FlutterToast flutterToast;
+  late final FToast flutterToast;
 
   @override
   void initState() {
     super.initState();
     _themeSwitch = Settings.themeWhat;
-    flutterToast = FlutterToast(context);
+    flutterToast = FToast();
+    flutterToast.init(context);
   }
 
   List<Widget>? _cachedGroups;
@@ -1356,7 +1357,7 @@ class _SettingsPageState extends State<SettingsPage>
                 await (await SharedPreferences.getInstance())
                     .setInt('thread_count', int.parse(text.text));
 
-                FlutterToast(context).showToast(
+                flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
                     msg: Translations.of(context).trans('changedthread'),

@@ -30,10 +30,13 @@ class _UserStatusCardState extends State<UserStatusCard>
   late String _userAppId;
   String _userNickName = 'None';
   bool _logining = false;
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
 
     // load boards
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
@@ -242,7 +245,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                       });
 
                       if (resc) {
-                        FlutterToast(context).showToast(
+                        fToast.showToast(
                           child: ToastWrapper(
                             isCheck: true,
                             msg: 'Bookmark Backup Success!',
@@ -251,7 +254,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                           toastDuration: Duration(seconds: 4),
                         );
                       } else {
-                        FlutterToast(context).showToast(
+                        fToast.showToast(
                           child: ToastWrapper(
                             isCheck: false,
                             isWarning: false,

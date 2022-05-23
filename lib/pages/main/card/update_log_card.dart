@@ -39,7 +39,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                 ..isTap((isTapped) async {
                   setState(() => pressed = isTapped);
                   if (!isTapped) {
-                    controller.forward(from: 0.0);
+                    controller!.forward(from: 0.0);
 
                     PlatformNavigator.navigateSlide(context, PatchNotePage());
                   }

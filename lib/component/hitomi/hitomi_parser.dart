@@ -9,13 +9,13 @@ class HitomiParser {
   static Future<Map<String, dynamic>> parseGalleryBlock(String html) async {
     var doc = (await compute(parse, html)).querySelector('div');
 
-    var title = doc.querySelector('h1').text.trim();
+    var title = doc!.querySelector('h1')!.text.trim();
     var artists = ['N/A'];
     try {
       artists = doc
-          .querySelector('div.artists-list')
+          .querySelector('div.artists-list')!
           .querySelectorAll('li')
-          .map((e) => e.querySelector('a').text.trim())
+          .map((e) => e.querySelector('a')!.text.trim())
           .toList();
     } catch (e) {}
 

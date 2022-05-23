@@ -60,10 +60,13 @@ class _DownloadPageState extends State<DownloadPage>
   FilterController _filterController =
       FilterController(heroKey: "downloadtype");
   ObjectKey _listKey = ObjectKey(Uuid().v4());
+  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
     refresh();
     // DownloadPageManager.appendTask = appendTask;
     DownloadPageManager.taskController = StreamController<String>();
@@ -553,7 +556,7 @@ class _DownloadPageState extends State<DownloadPage>
       else if (value == 2) {
         Clipboard.setData(ClipboardData(
             text: filterResult.map((e) => int.tryParse(e.url())).join(", ")));
-        FlutterToast(context).showToast(
+        fToast.showToast(
           child: ToastWrapper(
             isCheck: true,
             isWarning: false,

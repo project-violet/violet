@@ -30,6 +30,16 @@ class _BookmarkPageState extends State<BookmarkPage>
   // List<Widget> _rows;
   bool reorder = false;
 
+  late final FToast fToast;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fToast = FToast();
+    fToast.init(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -46,7 +56,7 @@ class _BookmarkPageState extends State<BookmarkPage>
             );
           void _onReorder(int oldIndex, int newIndex) async {
             if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
-              FlutterToast(context).showToast(
+              fToast.showToast(
                 child: ToastWrapper(
                   isCheck: false,
                   isWarning: false,
