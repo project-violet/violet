@@ -3,6 +3,7 @@
 
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -230,24 +231,30 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 // floatingActionButton: Container(child: Text('asdf')),
                 body: Padding(
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: <Widget>[
-                      SliverPersistentHeader(
-                        floating: true,
-                        delegate: AnimatedOpacitySliver(
-                          minExtent: 64 + 12.0,
-                          maxExtent: 64.0 + 12,
-                          searchBar: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Stack(children: <Widget>[
-                                _filter(),
-                                _title(),
-                              ])),
-                        ),
+                  child: PrimaryScrollController(
+                    controller: ScrollController(),
+                    child: CupertinoScrollbar(
+                      child: CustomScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        slivers: <Widget>[
+                          SliverPersistentHeader(
+                            floating: true,
+                            delegate: AnimatedOpacitySliver(
+                              minExtent: 64 + 12.0,
+                              maxExtent: 64.0 + 12,
+                              searchBar: Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: Stack(children: <Widget>[
+                                    _filter(),
+                                    _title(),
+                                  ])),
+                            ),
+                          ),
+                          _cachedList!
+                        ],
                       ),
-                      _cachedList!
-                    ],
+                    ),
                   ),
                 ),
               ),
