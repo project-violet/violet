@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:mdi/mdi.dart';
@@ -109,43 +110,51 @@ class _GroupArtistListState extends State<GroupArtistList>
         builder: (BuildContext context,
             AsyncSnapshot<List<BookmarkArtist>> snapshot) {
           if (!snapshot.hasData) return Container();
-          return CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: <Widget>[
-              SliverPersistentHeader(
-                floating: true,
-                delegate: AnimatedOpacitySliver(
-                  minExtent: 64 + 12.0,
-                  maxExtent: 64.0 + 12,
-                  searchBar: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Stack(children: <Widget>[
-                        _filter(),
-                        _title(),
-                      ])),
-                ),
-              ),
-              SliverList(
-                // padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    var e = artists[index];
-                    return FutureBuilder<List<QueryResult>>(
-                      future: _future(e.artist(), e.type()),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<List<QueryResult>> snapshot) {
-                        if (!snapshot.hasData)
-                          return Container(
-                            height: 195,
-                          );
-                        return _listItem(context, e, snapshot.data!);
+          return PrimaryScrollController(
+            controller: ScrollController(),
+            child: CupertinoScrollbar(
+              scrollbarOrientation: Settings.bookmarkScrollbarPositionToLeft
+                  ? ScrollbarOrientation.left
+                  : ScrollbarOrientation.right,
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: <Widget>[
+                  SliverPersistentHeader(
+                    floating: true,
+                    delegate: AnimatedOpacitySliver(
+                      minExtent: 64 + 12.0,
+                      maxExtent: 64.0 + 12,
+                      searchBar: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Stack(children: <Widget>[
+                            _filter(),
+                            _title(),
+                          ])),
+                    ),
+                  ),
+                  SliverList(
+                    // padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        var e = artists[index];
+                        return FutureBuilder<List<QueryResult>>(
+                          future: _future(e.artist(), e.type()),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<List<QueryResult>> snapshot) {
+                            if (!snapshot.hasData)
+                              return Container(
+                                height: 195,
+                              );
+                            return _listItem(context, e, snapshot.data!);
+                          },
+                        );
                       },
-                    );
-                  },
-                  childCount: _progressingFilter ? 0 : artists.length,
-                ),
-              )
-            ],
+                      childCount: _progressingFilter ? 0 : artists.length,
+                    ),
+                  )
+                ],
+              ),
+            ),
           );
         },
       ),
