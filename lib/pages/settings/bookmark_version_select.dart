@@ -40,16 +40,15 @@ class BookmarkVersionSelectPage extends StatefulWidget {
   });
 
   @override
-  _BookmarkVersionSelectPageState createState() =>
+  State<BookmarkVersionSelectPage> createState() =>
       _BookmarkVersionSelectPageState();
 }
 
 class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setLocalMessages();
   }

@@ -13,7 +13,7 @@ import 'package:violet/settings/settings.dart';
 
 class TagRebuildPage extends StatefulWidget {
   @override
-  _TagRebuildPageState createState() => _TagRebuildPageState();
+  State<TagRebuildPage> createState() => _TagRebuildPageState();
 }
 
 class _TagRebuildPageState extends State<TagRebuildPage> {
@@ -21,7 +21,6 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
@@ -307,7 +306,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         }
       }
 
-      if (ll.length == 0) {
+      if (ll.isEmpty) {
         var index = {
           "tag": tags,
           "artist": artists,

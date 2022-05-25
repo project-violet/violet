@@ -1111,7 +1111,9 @@ class PreloadPageView extends StatefulWidget {
     this.onPageChanged,
     required this.childrenDelegate,
     this.preloadPagesCount = 1,
-  })  : controller = controller ?? _defaultPageController,
+  })  : assert(preloadPagesCount >= 0,
+            'preloadPagesCount cannot be less than 0. Actual value: $preloadPagesCount'),
+        controller = controller ?? _defaultPageController,
         super(key: key);
 
   /// The axis along which the page view scrolls.
@@ -1168,29 +1170,18 @@ class PreloadPageView extends StatefulWidget {
   final int preloadPagesCount;
 
   @override
-  _PreloadPageViewState createState() =>
-      _PreloadPageViewState(preloadPagesCount);
+  State<PreloadPageView> createState() => _PreloadPageViewState();
 }
 
 class _PreloadPageViewState extends State<PreloadPageView> {
   int _lastReportedPage = 0;
   int _preloadPagesCount = 1;
 
-  _PreloadPageViewState(int preloadPagesCount) {
-    _validatePreloadPagesCount(preloadPagesCount);
-    this._preloadPagesCount = preloadPagesCount;
-  }
-
   @override
   void initState() {
     super.initState();
     _lastReportedPage = widget.controller.initialPage;
-  }
-
-  void _validatePreloadPagesCount(int preloadPagesCount) {
-    if (preloadPagesCount < 0) {
-      throw 'preloadPagesCount cannot be less than 0. Actual value: $preloadPagesCount';
-    }
+    _preloadPagesCount = widget.preloadPagesCount;
   }
 
   AxisDirection _getDirection(BuildContext context) {

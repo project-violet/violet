@@ -20,7 +20,7 @@ import 'package:violet/widgets/toast.dart';
 
 class BookmarkPage extends StatefulWidget {
   @override
-  _BookmarkPageState createState() => _BookmarkPageState();
+  State<BookmarkPage> createState() => _BookmarkPageState();
 }
 
 class _BookmarkPageState extends State<BookmarkPage>
@@ -34,7 +34,6 @@ class _BookmarkPageState extends State<BookmarkPage>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fToast = FToast();
     fToast.init(context);
@@ -79,10 +78,10 @@ class _BookmarkPageState extends State<BookmarkPage>
             }
           }
 
-          ScrollController _scrollController =
+          ScrollController scrollController =
               PrimaryScrollController.of(context) ?? ScrollController();
 
-          var _rows = _buildRowItems(snapshot.data!, reorder);
+          var rows = _buildRowItems(snapshot.data!, reorder);
 
           return reorder
               ? Theme(
@@ -95,15 +94,15 @@ class _BookmarkPageState extends State<BookmarkPage>
                   child: ReorderableListView(
                     padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
                     scrollDirection: Axis.vertical,
-                    scrollController: _scrollController,
-                    children: _rows,
+                    scrollController: scrollController,
+                    children: rows,
                     onReorder: _onReorder,
                   ),
                 )
               : ListView.builder(
                   padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
                   physics: BouncingScrollPhysics(),
-                  controller: _scrollController,
+                  controller: scrollController,
                   itemCount: snapshot.data!.length + 1,
                   itemBuilder: (BuildContext ctxt, int index) {
                     return _buildItem(
@@ -254,13 +253,13 @@ class _BookmarkPageState extends State<BookmarkPage>
       desc = Translations.of(context).trans('unclassifieddesc');
     }
 
-    var _random = Random();
+    var random = Random();
 
     return Container(
       key: Key("bookmark_group_" + id.toString()),
       child: ShakeAnimatedWidget(
         enabled: reorder,
-        duration: Duration(milliseconds: 300 + _random.nextInt(50)),
+        duration: Duration(milliseconds: 300 + random.nextInt(50)),
         shakeAngle: Rotation.deg(z: 0.8),
         curve: Curves.linear,
         child: Container(

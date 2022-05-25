@@ -14,7 +14,7 @@ import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 
 class SimpleInfoWidget extends StatelessWidget {
   final FlareControls _flareController = FlareControls();
-  static DateFormat _dateFormat = DateFormat(' yyyy/MM/dd HH:mm');
+  static final DateFormat _dateFormat = DateFormat(' yyyy/MM/dd HH:mm');
 
   @override
   Widget build(BuildContext context) {

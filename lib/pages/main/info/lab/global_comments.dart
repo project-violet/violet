@@ -16,13 +16,13 @@ import 'package:violet/settings/settings.dart';
 
 class LabGlobalComments extends StatefulWidget {
   @override
-  _LabGlobalCommentsState createState() => _LabGlobalCommentsState();
+  State<LabGlobalComments> createState() => _LabGlobalCommentsState();
 }
 
 class _LabGlobalCommentsState extends State<LabGlobalComments> {
   List<Tuple5<int, DateTime, String, String, int>> comments =
       <Tuple5<int, DateTime, String, String, int>>[];
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   FocusNode myFocusNode = FocusNode();
 
   @override
@@ -48,7 +48,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
             e['Parent']))
         .toList();
 
-    if (comments.length > 0) setState(() {});
+    if (comments.isNotEmpty) setState(() {});
   }
 
   @override
@@ -104,12 +104,11 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
             height: 36.0,
             child: Ink(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
-              decoration: new BoxDecoration(
+              decoration: BoxDecoration(
                   color: Settings.themeWhat
                       ? Colors.grey.shade800
                       : Color(0xffe2e4e7),
-                  borderRadius:
-                      new BorderRadius.all(const Radius.circular(6.0))),
+                  borderRadius: BorderRadius.all(const Radius.circular(6.0))),
               child: Row(
                 children: [
                   if (modReply)
@@ -133,7 +132,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                     child: TextField(
                       focusNode: myFocusNode,
                       style: TextStyle(fontSize: 14.0, color: Colors.grey),
-                      decoration: new InputDecoration.collapsed(
+                      decoration: InputDecoration.collapsed(
                           hintText: '500자까지 입력할 수 있습니다.'),
                       controller: text,
                       // onEditingComplete: () async {},
@@ -264,7 +263,7 @@ class CommentUnit extends StatelessWidget {
                       ],
                     ),
                     RichText(
-                      text: new TextSpan(
+                      text: TextSpan(
                         style: TextStyle(
                           color: Settings.themeWhat
                               ? Colors.grey.shade300
@@ -272,11 +271,11 @@ class CommentUnit extends StatelessWidget {
                           fontSize: 12.0,
                         ),
                         children: <TextSpan>[
-                          new TextSpan(text: body),
-                          new TextSpan(text: ' '),
-                          new TextSpan(
+                          TextSpan(text: body),
+                          TextSpan(text: ' '),
+                          TextSpan(
                             text:
-                                '${DateFormat('yyyy.MM.dd HH:mm').format(dateTime)}',
+                                DateFormat('yyyy.MM.dd HH:mm').format(dateTime),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Settings.themeWhat

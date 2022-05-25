@@ -32,7 +32,7 @@ class FilterPage extends StatefulWidget {
   });
 
   @override
-  _FilterPageState createState() => _FilterPageState();
+  State<FilterPage> createState() => _FilterPageState();
 }
 
 class _FilterPageState extends State<FilterPage> {

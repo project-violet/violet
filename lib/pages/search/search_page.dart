@@ -5,7 +5,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
-import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controls.dart';
@@ -40,7 +39,7 @@ bool blurred = false;
 
 class SearchPage extends StatefulWidget {
   @override
-  _SearchPageState createState() => _SearchPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
 class _SearchPageState extends State<SearchPage>
@@ -138,7 +137,7 @@ class _SearchPageState extends State<SearchPage>
       //
       // scroll position
       //
-      if (itemKeys.length > 0 && itemHeight <= 0.1) {
+      if (itemKeys.isNotEmpty && itemHeight <= 0.1) {
         if (itemKeys[0].currentContext != null) {
           itemHeight = itemKeys[0].currentContext!.size!.height + 8;
         }
@@ -205,7 +204,7 @@ class _SearchPageState extends State<SearchPage>
 
   Tuple2<Tuple2<List<QueryResult>, int>?, String>? latestQuery;
 
-  ScrollController _scroll = ScrollController();
+  final ScrollController _scroll = ScrollController();
 
   bool _shouldReload = false;
   ResultPanelWidget? _cachedPannel;
@@ -225,7 +224,7 @@ class _SearchPageState extends State<SearchPage>
         dateTime: datetime,
         resultList: filter(),
         itemKeys: itemKeys,
-        key: key,
+        sliverKey: key,
       );
 
       _cachedPannel = panel;
@@ -241,8 +240,6 @@ class _SearchPageState extends State<SearchPage>
             SliverPersistentHeader(
               floating: true,
               delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
                 searchBar: Stack(
                   children: <Widget>[
                     _searchBar(),
@@ -390,8 +387,7 @@ class _SearchPageState extends State<SearchPage>
                         // latestQuery = value;
                         latestQuery =
                             Tuple2<Tuple2<List<QueryResult>, int>?, String>(
-                                null,
-                                'random:${new Random().nextDouble() + 1}');
+                                null, 'random:${Random().nextDouble() + 1}');
                         queryResult = [];
                         _filterController = FilterController();
                         queryEnd = false;
@@ -604,7 +600,7 @@ class _SearchPageState extends State<SearchPage>
   ObjectKey key = ObjectKey(Uuid().v4());
 
   bool queryEnd = false;
-  Semaphore _querySem = Semaphore(maxCount: 1);
+  final Semaphore _querySem = Semaphore(maxCount: 1);
 
   Future<void> loadNextQuery() async {
     await _querySem.acquire().timeout(
@@ -632,7 +628,7 @@ class _SearchPageState extends State<SearchPage>
       latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
           next, latestQuery!.item2);
 
-      if (next.item1.length == 0) {
+      if (next.item1.isEmpty) {
         setState(() {
           _cachedPannel = null;
           queryEnd = true;
@@ -721,22 +717,22 @@ class _SearchPageState extends State<SearchPage>
   }
 }
 
-// ignore: must_be_immutable
 class ResultPanelWidget extends StatelessWidget {
   final List<QueryResult> resultList;
   final DateTime dateTime;
   final ScrollController _scrollController = ScrollController();
-  final ObjectKey key;
+  final ObjectKey sliverKey;
   final List<GlobalKey> itemKeys;
 
   List<Widget?>? _cachedItems;
 
   ResultPanelWidget({
+    Key? key,
     required this.resultList,
     required this.dateTime,
-    required this.key,
+    required this.sliverKey,
     required this.itemKeys,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -859,8 +855,6 @@ class ResultPanelWidget extends StatelessWidget {
             ),
           );
         }
-        break;
-
       default:
         return Container(
           child: Center(

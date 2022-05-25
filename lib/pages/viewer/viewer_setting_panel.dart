@@ -22,7 +22,7 @@ class ViewerSettingPanel extends StatefulWidget {
   });
 
   @override
-  _ViewerSettingPanelState createState() => _ViewerSettingPanelState();
+  State<ViewerSettingPanel> createState() => _ViewerSettingPanelState();
 }
 
 class _ViewerSettingPanelState extends State<ViewerSettingPanel> {

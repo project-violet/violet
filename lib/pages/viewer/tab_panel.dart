@@ -37,27 +37,22 @@ class TabPanel extends StatefulWidget {
   });
 
   @override
-  _TabPanelState createState() => _TabPanelState();
+  State<TabPanel> createState() => _TabPanelState();
 }
 
 class _TabPanelState extends State<TabPanel> {
-  PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 0);
 
   // static const _kDuration = const Duration(milliseconds: 300);
   // static const _kCurve = Curves.ease;
 
-  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -147,7 +142,7 @@ class __UsableTabListState extends State<_UsableTabList>
   @override
   bool get wantKeepAlive => true;
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
 
   @override
@@ -242,7 +237,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
   @override
   bool get wantKeepAlive => true;
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
   bool isLoaded = false;
   bool isJumped = false;
@@ -254,7 +249,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     Future.value(1).then((value) async {
       var mqrr = await HentaiManager.idSearch(widget.articleId.toString());
-      if (mqrr.item1.length == 0) return;
+      if (mqrr.item1.isEmpty) return;
 
       var mqr = mqrr.item1.first;
 
@@ -294,7 +289,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
           .map((e) => QueryResult(result: e))
           .toList();
 
-      if (queryResult.length == 0) {
+      if (queryResult.isEmpty) {
         setState(() => isLoaded = true);
         return;
       }
@@ -399,7 +394,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
     var isBookmarked = await (await Bookmark.getInstance()).isBookmark(e.id());
 
-    var cache;
+    Provider<ArticleInfo>? cache;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -426,7 +421,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                 ),
               );
             }
-            return cache;
+            return cache!;
           },
         );
       },

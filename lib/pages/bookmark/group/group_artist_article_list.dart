@@ -23,7 +23,7 @@ class GroupArtistArticleList extends StatefulWidget {
   });
 
   @override
-  _GroupArtistArticleListState createState() => _GroupArtistArticleListState();
+  State<GroupArtistArticleList> createState() => _GroupArtistArticleListState();
 }
 
 class _GroupArtistArticleListState extends State<GroupArtistArticleList>
@@ -43,7 +43,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
             .reversed
             .toList();
 
-        if (artists.length == 0) return <QueryResult>[];
+        if (artists.isEmpty) return <QueryResult>[];
 
         var queryString = HitomiManager.translate2query(artists
             .map((e) =>
@@ -81,8 +81,6 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                 SliverPersistentHeader(
                   floating: true,
                   delegate: AnimatedOpacitySliver(
-                    minExtent: 64 + 12.0,
-                    maxExtent: 64.0 + 12,
                     searchBar: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.0),
                         child: Stack(children: <Widget>[

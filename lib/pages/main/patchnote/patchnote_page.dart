@@ -803,16 +803,10 @@ Thank you so much for using the beta version until now.'''
 
 class PatchNotePage extends StatefulWidget {
   @override
-  _PatchNotePageState createState() => _PatchNotePageState();
+  State<PatchNotePage> createState() => _PatchNotePageState();
 }
 
 class _PatchNotePageState extends State<PatchNotePage> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;

@@ -81,32 +81,32 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future<void> downloadFileAndroid() async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
-    int _nu = 0;
+    int nu = 0;
     int latest = 0;
-    int _tlatest = 0;
-    int _tnu = 0;
+    int tlatest = 0;
+    int tnu = 0;
 
     try {
       var dir = await getApplicationDocumentsDirectory();
       if (await File("${dir.path}/db.sql.7z").exists())
         await File("${dir.path}/db.sql.7z").delete();
-      Timer _timer = Timer.periodic(
+      Timer timer = Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = (_tlatest / 1024).toString() + " KB/S";
-                _tlatest = _tnu;
-                _tnu = 0;
+                speedString = (tlatest / 1024).toString() + " KB/S";
+                tlatest = tnu;
+                tnu = 0;
               }));
       await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType!),
           "${dir.path}/db.sql.7z", onReceiveProgress: (rec, total) {
-        _nu += rec - latest;
-        _tnu += rec - latest;
+        nu += rec - latest;
+        tnu += rec - latest;
         latest = rec;
-        if (_nu <= oneMega) return;
+        if (nu <= oneMega) return;
 
-        _nu = 0;
+        nu = 0;
 
         setState(
           () {
@@ -116,7 +116,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           },
         );
       });
-      _timer.cancel();
+      timer.cancel();
 
       setState(() {
         baseString = Translations.instance!.trans('dbdunzip');
@@ -172,32 +172,32 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   Future<void> downloadFileIOS() async {
     Dio dio = Dio();
     int oneMega = 1024 * 1024;
-    int _nu = 0;
+    int nu = 0;
     int latest = 0;
-    int _tlatest = 0;
-    int _tnu = 0;
+    int tlatest = 0;
+    int tnu = 0;
 
     try {
       var dir = await getDatabasesPath();
       if (await File("$dir/data.db").exists())
         await File("$dir/data.db").delete();
-      Timer _timer = Timer.periodic(
+      Timer timer = Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = (_tlatest / 1024).toString() + " KB/S";
-                _tlatest = _tnu;
-                _tnu = 0;
+                speedString = (tlatest / 1024).toString() + " KB/S";
+                tlatest = tnu;
+                tnu = 0;
               }));
       await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType!),
           "$dir/data.db", onReceiveProgress: (rec, total) {
-        _nu += rec - latest;
-        _tnu += rec - latest;
+        nu += rec - latest;
+        tnu += rec - latest;
         latest = rec;
-        if (_nu <= oneMega) return;
+        if (nu <= oneMega) return;
 
-        _nu = 0;
+        nu = 0;
 
         setState(
           () {
@@ -207,7 +207,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           },
         );
       });
-      _timer.cancel();
+      timer.cancel();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
@@ -463,7 +463,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         }
       }
 
-      if (ll.length == 0) {
+      if (ll.isEmpty) {
         var index = {
           "tag": tags,
           "artist": artists,

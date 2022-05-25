@@ -28,7 +28,7 @@ class GroupArtistList extends StatefulWidget {
   GroupArtistList({required this.name, required this.groupId});
 
   @override
-  _GroupArtistListState createState() => _GroupArtistListState();
+  State<GroupArtistList> createState() => _GroupArtistListState();
 }
 
 class _GroupArtistListState extends State<GroupArtistList>
@@ -122,8 +122,6 @@ class _GroupArtistListState extends State<GroupArtistList>
                   SliverPersistentHeader(
                     floating: true,
                     delegate: AnimatedOpacitySliver(
-                      minExtent: 64 + 12.0,
-                      maxExtent: 64.0 + 12,
                       searchBar: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8.0),
                           child: Stack(children: <Widget>[
@@ -238,11 +236,9 @@ class _GroupArtistListState extends State<GroupArtistList>
     return Container(
       color: checkMode &&
               checked
-                      .where((element) =>
-                          element.item1 == e.type() &&
-                          element.item2 == e.artist())
-                      .length !=
-                  0
+                  .where((element) =>
+                      element.item1 == e.type() && element.item2 == e.artist())
+                  .isNotEmpty
           ? Colors.amber
           : Colors.transparent,
       child: InkWell(
@@ -252,11 +248,10 @@ class _GroupArtistListState extends State<GroupArtistList>
                 e.type(),
                 e.artist(),
                 checked
-                        .where((element) =>
-                            element.item1 == e.type() &&
-                            element.item2 == e.artist())
-                        .length ==
-                    0);
+                    .where((element) =>
+                        element.item1 == e.type() &&
+                        element.item2 == e.artist())
+                    .isEmpty);
             setState(() {});
             return;
           }
@@ -447,7 +442,7 @@ class _GroupArtistListState extends State<GroupArtistList>
     else {
       checked.removeWhere(
           (element) => element.item1 == type && element.item2 == artist);
-      if (checked.length == 0) {
+      if (checked.isEmpty) {
         setState(() {
           checkModePre = false;
           checked.clear();

@@ -12,7 +12,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 
 class UpdateLogCard extends StatefulWidget {
   @override
-  _UpdateLogCardState createState() => _UpdateLogCardState();
+  State<UpdateLogCard> createState() => _UpdateLogCardState();
 }
 
 class _UpdateLogCardState extends State<UpdateLogCard>
@@ -77,7 +77,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -88,7 +88,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)

@@ -17,7 +17,7 @@ class SearchPageModifyPage extends StatefulWidget {
   });
 
   @override
-  _SearchPageModifyPageState createState() => _SearchPageModifyPageState();
+  State<SearchPageModifyPage> createState() => _SearchPageModifyPageState();
 }
 
 class _SearchPageModifyPageState extends State<SearchPageModifyPage> {

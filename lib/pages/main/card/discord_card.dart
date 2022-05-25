@@ -9,7 +9,7 @@ import 'package:violet/locale/locale.dart';
 
 class DiscordCard extends StatefulWidget {
   @override
-  _DiscordCardState createState() => _DiscordCardState();
+  State<DiscordCard> createState() => _DiscordCardState();
 }
 
 class _DiscordCardState extends State<DiscordCard> {
@@ -69,7 +69,7 @@ class _DiscordCardState extends State<DiscordCard> {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()

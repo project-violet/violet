@@ -21,7 +21,7 @@ class RestoreBookmarkPage extends StatefulWidget {
   });
 
   @override
-  _RestoreBookmarkPageState createState() => _RestoreBookmarkPageState();
+  State<RestoreBookmarkPage> createState() => _RestoreBookmarkPageState();
 }
 
 class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {

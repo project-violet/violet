@@ -7,13 +7,12 @@ import 'package:violet/settings/settings.dart';
 
 class ImportFromEHPage extends StatefulWidget {
   @override
-  _ImportFromEHPageState createState() => _ImportFromEHPageState();
+  State<ImportFromEHPage> createState() => _ImportFromEHPageState();
 }
 
 class _ImportFromEHPageState extends State<ImportFromEHPage> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {

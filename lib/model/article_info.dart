@@ -43,7 +43,7 @@ class ArticleInfo {
   }) {
     var artist = (queryResult.artists() as String)
         .split('|')
-        .where((x) => x.length != 0)
+        .where((x) => x.isNotEmpty)
         .elementAt(0);
 
     if (artist == 'N/A') {

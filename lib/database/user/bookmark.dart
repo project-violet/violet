@@ -121,7 +121,7 @@ class Bookmark {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkGroup';");
-        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
           try {
             await db.execute(
                 'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer, Gorder integer)');
@@ -158,7 +158,7 @@ class Bookmark {
         }
         var ex = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkUser';");
-        if (ex == null || ex.length == 0 || ex[0].length == 0) {
+        if (ex == null || ex.isEmpty || ex[0].isEmpty) {
           await db.execute('''CREATE TABLE BookmarkUser (
               Id integer primary key autoincrement, 
               User text,
@@ -171,7 +171,7 @@ class Bookmark {
         }
         var ex2 = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='HistoryUser';");
-        if (ex2 == null || ex2.length == 0 || ex2[0].length == 0) {
+        if (ex2 == null || ex2.isEmpty || ex2[0].isEmpty) {
           await db.execute('''CREATE TABLE HistoryUser (
               Id integer primary key autoincrement, 
               User text,

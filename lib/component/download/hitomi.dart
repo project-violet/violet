@@ -69,7 +69,7 @@ class HitomiDonwloadManager extends Downloadable {
         .toList();
 
     var result = <DownloadTask>[];
-    if (articles != null && articles.length != 0) {
+    if (articles != null && articles.isNotEmpty) {
       var article = articles[0];
 
       gdp.simpleInfoCallback('[$id] ${article.title()}');
@@ -132,7 +132,7 @@ class HitomiDonwloadManager extends Downloadable {
   }
 
   // https://stackoverflow.com/questions/15193983/is-there-a-built-in-method-to-pad-a-string
-  static String intToString(int i, {int pad: 0}) {
+  static String intToString(int i, {int pad = 0}) {
     var str = i.toString();
     var paddingToAdd = pad - str.length;
     return (paddingToAdd > 0)

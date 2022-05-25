@@ -11,7 +11,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 
 class ArtistCollectionPage extends StatefulWidget {
   @override
-  _ArtistCollectionPageState createState() => _ArtistCollectionPageState();
+  State<ArtistCollectionPage> createState() => _ArtistCollectionPageState();
 }
 
 class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
