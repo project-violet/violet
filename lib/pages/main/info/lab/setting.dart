@@ -134,6 +134,28 @@ class _LabSettingState extends State<LabSetting> {
               setState(() {});
             },
           ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(MdiIcons.flask, color: Settings.majorColor),
+              title: Text('Bookmark Scrollbar Position To Left'),
+              subtitle: Text('Reposition Bookmark Scrollber'),
+              trailing: Switch(
+                value: Settings.bookmarkScrollbarPositionToLeft,
+                onChanged: (newValue) async {
+                  await Settings.setBookmarkScrollbarPositionToLeft(newValue);
+                  setState(() {});
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setBookmarkScrollbarPositionToLeft(
+                  !Settings.bookmarkScrollbarPositionToLeft);
+              setState(() {});
+            },
+          ),
         ],
       ),
     );

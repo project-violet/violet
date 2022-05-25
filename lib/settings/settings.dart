@@ -98,6 +98,7 @@ class Settings {
   static late bool enableViewerFunctionBackdropFilter;
   static late bool usingPushReplacementOnArticleRead;
   static late bool downloadEhRawImage;
+  static late bool bookmarkScrollbarPositionToLeft;
 
   static late bool useLockScreen;
   static late bool useSecureMode;
@@ -246,13 +247,13 @@ class Settings {
         var ext = await getExternalStorageDirectory();
         tDownloadBasePath = ext!.path;
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', tDownloadBasePath!);
+            .setString('downloadbasepath', tDownloadBasePath);
       }
 
       if (tDownloadBasePath == null) {
         tDownloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', tDownloadBasePath!);
+            .setString('downloadbasepath', tDownloadBasePath);
       }
 
       if (sdkInt < 30 &&
@@ -262,7 +263,7 @@ class Settings {
               null) {
         tDownloadBasePath = join(path, '.violet');
         await (await SharedPreferences.getInstance())
-            .setString('downloadbasepath', tDownloadBasePath!);
+            .setString('downloadbasepath', tDownloadBasePath);
         await (await SharedPreferences.getInstance())
             .setBool('downloadbasepathcc1', true);
 
@@ -332,6 +333,8 @@ class Settings {
     usingPushReplacementOnArticleRead =
         await _getBool('usingPushReplacementOnArticleRead', true);
     downloadEhRawImage = await _getBool('downloadEhRawImage');
+    bookmarkScrollbarPositionToLeft =
+        await _getBool('bookmarkScrollbarPositionToLeft');
 
     await regacy1_20_2();
   }
@@ -407,7 +410,7 @@ class Settings {
       downloadBasePath = join(path, '.violet');
     }
 
-    return downloadBasePath!;
+    return downloadBasePath;
   }
 
   static Future<void> setThemeWhat(bool wh) async {
@@ -457,7 +460,7 @@ class Settings {
 
     await (await SharedPreferences.getInstance())
         .setInt('majorAccentColor', accent!.value);
-    majorAccentColor = accent!;
+    majorAccentColor = accent;
   }
 
   static Future<void> setSearchResultType(int wh) async {
@@ -725,6 +728,12 @@ class Settings {
     downloadEhRawImage = nn;
     await (await SharedPreferences.getInstance())
         .setBool('downloadEhRawImage', nn);
+  }
+
+  static Future<void> setBookmarkScrollbarPositionToLeft(bool nn) async {
+    bookmarkScrollbarPositionToLeft = nn;
+    await (await SharedPreferences.getInstance())
+        .setBool('bookmarkScrollbarPositionToLeft', nn);
   }
 
   static Future<void> setUseLockScreen(bool nn) async {

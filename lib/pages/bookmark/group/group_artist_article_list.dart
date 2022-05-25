@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -68,67 +69,76 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
               alignment: Alignment.center,
               child: SizedBox(
                   width: 64, height: 64, child: CircularProgressIndicator()));
-        return CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
-                searchBar: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Stack(children: <Widget>[
-                      // _filter(),
-                      _title(),
-                    ])),
-              ),
-            ),
-            SliverPadding(
-              // padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-              padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 3 / 4,
+        return PrimaryScrollController(
+          controller: ScrollController(),
+          child: CupertinoScrollbar(
+            scrollbarOrientation: Settings.bookmarkScrollbarPositionToLeft
+                ? ScrollbarOrientation.left
+                : ScrollbarOrientation.right,
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(),
+              slivers: <Widget>[
+                SliverPersistentHeader(
+                  floating: true,
+                  delegate: AnimatedOpacitySliver(
+                    minExtent: 64 + 12.0,
+                    maxExtent: 64.0 + 12,
+                    searchBar: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Stack(children: <Widget>[
+                          // _filter(),
+                          _title(),
+                        ])),
+                  ),
                 ),
-                delegate: SliverChildListDelegate(
-                  snapshot.data!.map(
-                    (e) {
-                      return Padding(
-                        key: Key('gaal/' + e.id().toString()),
-                        padding: EdgeInsets.zero,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              snapshot.hasData
-                                  ? Provider<ArticleListItem>.value(
-                                      value:
-                                          ArticleListItem.fromArticleListItem(
-                                        queryResult: e,
-                                        addBottomPadding: false,
-                                        showDetail: false,
-                                        width: (windowWidth - 4.0 - 52) / 3,
-                                        thumbnailTag: Uuid().v4(),
-                                        usableTabList: snapshot.data,
-                                      ),
-                                      child: ArticleListItemVerySimpleWidget(),
-                                    )
-                                  : Container()
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ).toList(),
+                SliverPadding(
+                  // padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+                  sliver: SliverGrid(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 3 / 4,
+                    ),
+                    delegate: SliverChildListDelegate(
+                      snapshot.data!.map(
+                        (e) {
+                          return Padding(
+                            key: Key('gaal/' + e.id().toString()),
+                            padding: EdgeInsets.zero,
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  snapshot.hasData
+                                      ? Provider<ArticleListItem>.value(
+                                          value: ArticleListItem
+                                              .fromArticleListItem(
+                                            queryResult: e,
+                                            addBottomPadding: false,
+                                            showDetail: false,
+                                            width: (windowWidth - 4.0 - 52) / 3,
+                                            thumbnailTag: Uuid().v4(),
+                                            usableTabList: snapshot.data,
+                                          ),
+                                          child:
+                                              ArticleListItemVerySimpleWidget(),
+                                        )
+                                      : Container()
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ).toList(),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         );
         //       ListView.builder(
         // itemCount: .length,
