@@ -29,7 +29,7 @@ class DotsIndicator extends AnimatedWidget {
     required this.controller,
     required this.itemCount,
     required this.onPageSelected,
-    this.color: Colors.white,
+    this.color = Colors.white,
   }) : super(listenable: controller);
 
   /// The PageController that this DotsIndicator is representing.
@@ -82,6 +82,7 @@ class DotsIndicator extends AnimatedWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -104,15 +105,15 @@ class LabGroupArticleListPage extends StatefulWidget {
   });
 
   @override
-  _GroupArticleListPageState createState() => _GroupArticleListPageState();
+  State<LabGroupArticleListPage> createState() => _GroupArticleListPageState();
 }
 
 class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
-  PageController _controller = PageController(
+  final PageController _controller = PageController(
     initialPage: 0,
   );
 
-  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   @override
@@ -136,7 +137,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
           .reversed
           .toList();
 
-      if (cc.length == 0) {
+      if (cc.isEmpty) {
         queryResult = <QueryResult>[];
         filterResult = queryResult;
         _shouldRebuild = true;
@@ -223,8 +224,6 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                       SliverPersistentHeader(
                         floating: true,
                         delegate: AnimatedOpacitySliver(
-                          minExtent: 64 + 12.0,
-                          maxExtent: 64.0 + 12,
                           searchBar: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(children: <Widget>[
@@ -365,7 +364,8 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
 
   ObjectKey key = ObjectKey(Uuid().v4());
 
-  FilterController _filterController = FilterController(heroKey: "searchtype2");
+  final FilterController _filterController =
+      FilterController(heroKey: "searchtype2");
 
   bool isFilterUsed = false;
 

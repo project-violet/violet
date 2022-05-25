@@ -95,7 +95,7 @@ class ScriptManager {
       if (jResultObject is Map<dynamic, dynamic>) {
         return Map<String, String>.from(jResultObject);
       } else {
-        throw new Exception(
+        throw Exception(
             '[script-HitomiGetHeaderContent] E: JSError\nId: $id\nMessage: ' +
                 jResult.toString());
       }

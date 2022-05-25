@@ -16,7 +16,7 @@ class GroupModifyPage extends StatefulWidget {
   });
 
   @override
-  _GroupModifyPageState createState() => _GroupModifyPageState();
+  State<GroupModifyPage> createState() => _GroupModifyPageState();
 }
 
 class _GroupModifyPageState extends State<GroupModifyPage> {

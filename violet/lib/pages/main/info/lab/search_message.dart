@@ -27,7 +27,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class LabSearchMessage extends StatefulWidget {
   @override
-  _LabSearchMessageState createState() => _LabSearchMessageState();
+  State<LabSearchMessage> createState() => _LabSearchMessageState();
 }
 
 class _LabSearchMessageState extends State<LabSearchMessage> {
@@ -102,10 +102,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
 
   @override
   Widget build(BuildContext context) {
-    ImageCache _imageCache = PaintingBinding.instance.imageCache;
-    if (_imageCache.currentSizeBytes >= (1024 + 256) << 20) {
-      _imageCache.clear();
-      _imageCache.clearLiveImages();
+    ImageCache imageCache = PaintingBinding.instance.imageCache;
+    if (imageCache.currentSizeBytes >= (1024 + 256) << 20) {
+      imageCache.clear();
+      imageCache.clearLiveImages();
     }
 
     final height = MediaQuery.of(context).size.height;
@@ -222,7 +222,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                             _height![index] =
                                                 width / sizeRender.aspectRatio;
                                           }
-                                        } catch (e) {}
+                                        } catch (_) {}
                                       });
                                     }
                                     return child;
@@ -365,8 +365,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   hideOnEmpty: true,
                   hideOnLoading: true,
                   textFieldConfiguration: TextFieldConfiguration(
-                    decoration:
-                        new InputDecoration.collapsed(hintText: '대사 입력'),
+                    decoration: InputDecoration.collapsed(hintText: '대사 입력'),
                     controller: text,
                     // autofocus: true,
                     onEditingComplete: _onModifiedText,
@@ -473,7 +472,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo>? cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -499,7 +498,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   ),
                 );
               }
-              return cache;
+              return cache!;
             },
           );
         },

@@ -54,7 +54,7 @@ class RadioTile<T> extends StatefulWidget {
   final void Function() onLongPress;
 
   @override
-  _RadioTileState<T> createState() => _RadioTileState<T>();
+  State<RadioTile<T>> createState() => _RadioTileState<T>();
 }
 
 class _RadioTileState<T> extends State<RadioTile<T>> {
@@ -90,7 +90,9 @@ class _RadioTileState<T> extends State<RadioTile<T>> {
                 onChanged: (T? selected) {
                   setState(() {
                     _longPressing = false;
-                    widget.setGroupValue(selected!);
+                    if (selected != null) {
+                      widget.setGroupValue(selected);
+                    }
                   });
                 },
               ),
@@ -128,7 +130,7 @@ class SplashPage extends StatefulWidget {
   SplashPage({this.switching = false});
 
   @override
-  _SplashPageState createState() => _SplashPageState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
 enum Database { userLanguage, all }
@@ -180,8 +182,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   startTime() async {
-    var _duration = Duration(milliseconds: 100);
-    return Timer(_duration, navigationPage);
+    var duration = Duration(milliseconds: 100);
+    return Timer(duration, navigationPage);
   }
 
   Future<void> navigationPage() async {
@@ -562,7 +564,7 @@ class _SplashPageState extends State<SplashPage> {
         await ((await openDatabase('${dir.path}/data/data.db')).close());
         await deleteDatabase('${dir.path}/data/data.db');
         await Directory('${dir.path}/data').delete(recursive: true);
-      } catch (e) {}
+      } catch (_) {}
     }
     print(Translations.of(context).dbLanguageCode);
     Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -678,8 +680,7 @@ class _SplashPageState extends State<SplashPage> {
                               width: 8.0,
                               height: 30,
                             ),
-                            Text(
-                                "${(country as ExCountry).getDisplayLanguage()}"),
+                            Text((country as ExCountry).getDisplayLanguage()),
                           ],
                         ),
                       );

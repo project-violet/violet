@@ -14,7 +14,7 @@ import 'package:violet/settings/settings.dart';
 
 class CommunityPage extends StatefulWidget {
   @override
-  _CommunityPageState createState() => _CommunityPageState();
+  State<CommunityPage> createState() => _CommunityPageState();
 }
 
 class _CommunityPageState extends State<CommunityPage>
@@ -39,7 +39,7 @@ class _CommunityPageState extends State<CommunityPage>
       var pw = (await SharedPreferences.getInstance())
           .getString('saved_community_pw');
 
-      _userId = id != null ? id : 'None';
+      _userId = id ?? 'None';
       _userAppId =
           (await SharedPreferences.getInstance()).getString('fa_userid')!;
       setState(() {});
@@ -71,7 +71,7 @@ class _CommunityPageState extends State<CommunityPage>
     var pw =
         (await SharedPreferences.getInstance()).getString('saved_community_pw');
 
-    _userId = id != null ? id : 'None';
+    _userId = id ?? 'None';
     _userAppId =
         (await SharedPreferences.getInstance()).getString('fa_userid')!;
     setState(() {});

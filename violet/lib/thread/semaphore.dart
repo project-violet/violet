@@ -4,8 +4,6 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:flutter/material.dart';
-
 // https://github.com/mezoni/semaphore/blob/master/lib/src/semaphore/semaphore.dart
 class Semaphore {
   final int maxCount;

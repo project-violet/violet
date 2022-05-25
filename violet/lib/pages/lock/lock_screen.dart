@@ -45,7 +45,6 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
 
     if (_message == null)

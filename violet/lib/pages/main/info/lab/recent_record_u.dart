@@ -22,7 +22,7 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabRecentRecordsU extends StatefulWidget {
   @override
-  _LabRecentRecordsUState createState() => _LabRecentRecordsUState();
+  State<LabRecentRecordsU> createState() => _LabRecentRecordsUState();
 }
 
 class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
@@ -31,7 +31,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
   int latestId = 0;
   int limit = 10;
   late Timer timer;
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   bool isTop = false;
 
   @override
@@ -84,7 +84,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
       queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results!.length == 0) return;
+      if (query.results!.isEmpty) return;
 
       var qr = Map<String, QueryResult>();
       query.results!.forEach((element) {

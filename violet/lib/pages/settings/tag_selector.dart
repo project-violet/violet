@@ -14,7 +14,7 @@ class TagSelectorDialog extends StatefulWidget {
   TagSelectorDialog({required this.what});
 
   @override
-  _TagSelectorDialogState createState() => _TagSelectorDialogState();
+  State<TagSelectorDialog> createState() => _TagSelectorDialogState();
 }
 
 class _TagSelectorDialogState extends State<TagSelectorDialog> {
@@ -40,7 +40,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
 
     if (MediaQuery.of(context).viewInsets.bottom < 1) height = 400;
 
-    if (_searchLists.length == 0 && !_nothing) {
+    if (_searchLists.isEmpty && !_nothing) {
       _searchLists.add(Tuple2<DisplayedTag, int>(
           DisplayedTag(group: 'prefix', name: 'female'), 0));
       _searchLists.add(Tuple2<DisplayedTag, int>(
@@ -92,7 +92,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                   ),
                 ),
                 Expanded(
-                  child: _searchLists.length == 0 || _nothing
+                  child: _searchLists.isEmpty || _nothing
                       ? Center(
                           child: Text(_nothing
                               ? Translations.of(context).trans('nosearchresult')
@@ -152,9 +152,9 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   int? _insertPos, _insertLength;
   String? _searchText;
   bool _nothing = false;
-  bool _tagTranslation = false;
-  bool _showCount = true;
-  int _searchResultMaximum = 60;
+  final bool _tagTranslation = false;
+  final bool _showCount = true;
+  final int _searchResultMaximum = 60;
 
   Future<void> searchProcess(String target, TextSelection selection) async {
     _nothing = false;
@@ -193,7 +193,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     final result = (await HitomiManager.queryAutoComplete(token))
         .take(_searchResultMaximum)
         .toList();
-    if (result.length == 0) _nothing = true;
+    if (result.isEmpty) _nothing = true;
     setState(() {
       _searchLists = result;
     });

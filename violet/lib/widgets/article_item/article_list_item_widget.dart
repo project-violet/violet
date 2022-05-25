@@ -28,8 +28,8 @@ import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 import 'package:violet/widgets/toast.dart';
 
-typedef void BookmarkCallback(int article);
-typedef void BookmarkCheckCallback(int article, bool check);
+typedef BookmarkCallback = void Function(int article);
+typedef BookmarkCheckCallback = void Function(int article, bool check);
 
 class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final bool addBottomPadding;
@@ -59,7 +59,7 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   });
 
   @override
-  _ArticleListItemVerySimpleWidgetState createState() =>
+  State<ArticleListItemVerySimpleWidget> createState() =>
       _ArticleListItemVerySimpleWidgetState();
 }
 
@@ -157,7 +157,7 @@ class _ArticleListItemVerySimpleWidgetState
                       .difference(DateTime.now())
                       .inDays <
                   31);
-          if (x.length == 0) return;
+          if (x.isEmpty) return;
           _shouldReload = true;
           setState(() {
             isLastestRead = true;
@@ -169,7 +169,7 @@ class _ArticleListItemVerySimpleWidgetState
   _initTexts() {
     artist = (data.queryResult.artists() as String)
         .split('|')
-        .where((x) => x.length != 0)
+        .where((x) => x.isNotEmpty)
         .join(',');
     if (artist == 'N/A') {
       var group = data.queryResult.groups() != null
@@ -355,7 +355,7 @@ class _ArticleListItemVerySimpleWidgetState
     final height = MediaQuery.of(context).size.height;
 
     // https://github.com/flutter/flutter/issues/67219
-    var cache;
+    Provider<ArticleInfo>? cache;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -382,7 +382,7 @@ class _ArticleListItemVerySimpleWidgetState
                 ),
               );
             }
-            return cache;
+            return cache!;
           },
         );
       },
@@ -582,7 +582,7 @@ class BodyWidget extends StatelessWidget {
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),
-              borderRadius: const BorderRadius.all(const Radius.circular(3)),
+              borderRadius: const BorderRadius.all(Radius.circular(3)),
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat

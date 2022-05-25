@@ -29,7 +29,7 @@ import 'lab/search_comment.dart';
 
 class LaboratoryPage extends StatefulWidget {
   @override
-  _LaboratoryPageState createState() => _LaboratoryPageState();
+  State<LaboratoryPage> createState() => _LaboratoryPageState();
 }
 
 class _LaboratoryPageState extends State<LaboratoryPage> {
@@ -114,7 +114,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = new Map<String, int>();
+                  var articleCount = Map<String, int>();
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;
@@ -153,7 +153,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = new Map<String, int>();
+                  var articleCount = Map<String, int>();
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;

@@ -8,7 +8,7 @@ import 'package:violet/settings/settings.dart';
 
 class DBRebuildPage extends StatefulWidget {
   @override
-  _DBRebuildPagePageState createState() => _DBRebuildPagePageState();
+  State<DBRebuildPage> createState() => _DBRebuildPagePageState();
 }
 
 class _DBRebuildPagePageState extends State<DBRebuildPage> {
@@ -16,7 +16,6 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {

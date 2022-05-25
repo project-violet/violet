@@ -50,10 +50,8 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
 class ArticleInfoPage extends StatelessWidget {
-  final Key? key;
-
   ArticleInfoPage({
-    this.key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -635,7 +633,7 @@ class __CommentAreaState extends State<_CommentArea> {
               comments = article.comment ?? [];
             });
             return;
-          } catch (e) {}
+          } catch (_) {}
         }
         var html = (await http.get(
                 'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l'))
@@ -700,7 +698,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
   }
 
   Widget commentArea(BuildContext context) {
-    if (widget.comments.length == 0) {
+    if (widget.comments.isEmpty) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -758,7 +756,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1)}',
+                          DateFormat('yyyy-MM-dd HH:mm').format(e.item1),
                           style: TextStyle(fontSize: 12)),
                     ),
                   ),
@@ -895,7 +893,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo>? cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -921,7 +919,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                   ),
                 );
               }
-              return cache;
+              return cache!;
             },
           );
         },

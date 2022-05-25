@@ -20,7 +20,7 @@ class ThumbnailViewPage extends StatefulWidget {
   });
 
   @override
-  _ThumbnailViewPageState createState() => _ThumbnailViewPageState();
+  State<ThumbnailViewPage> createState() => _ThumbnailViewPageState();
 }
 
 class _ThumbnailViewPageState extends State<ThumbnailViewPage> {

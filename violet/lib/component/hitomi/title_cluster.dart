@@ -20,6 +20,7 @@ class Idata {
     return title.compareTo(id.title) < 0;
   }
 
+  @override
   String toString() {
     return title;
   }

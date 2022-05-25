@@ -15,7 +15,7 @@ class UpdateCard extends StatefulWidget {
   UpdateCard({required this.clickEvent});
 
   @override
-  _UpdateCardState createState() => _UpdateCardState();
+  State<UpdateCard> createState() => _UpdateCardState();
 }
 
 class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
@@ -24,12 +24,12 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
     rotationController = AnimationController(
       duration: const Duration(milliseconds: 270),
       vsync: this,
       // upperBound: pi * 2,
     );
-    super.initState();
   }
 
   @override
@@ -132,7 +132,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -143,7 +143,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)
@@ -168,7 +168,7 @@ class MyRectangle2DemoParticle extends Particle {
       Firework(),
       RectangleMirror.builder(
           numberOfParticles: random.nextInt(6) + 4,
-          particleBuilder: (int) {
+          particleBuilder: (int int) {
             return AnimatedPositionedParticle(
               begin: Offset(0.0, -10.0),
               end: Offset(0.0, -60.0),

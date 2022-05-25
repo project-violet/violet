@@ -71,7 +71,7 @@ class HentaiManager {
         .toList();
     int? no = int.tryParse(what);
 
-    if (queryResult.length != 0) {
+    if (queryResult.isNotEmpty) {
       return Tuple2<List<QueryResult>, int>(queryResult, -1);
     }
 
@@ -100,7 +100,7 @@ class HentaiManager {
       [int offset = 0]) async {
     var wwhat = what.split(' ').where((x) => x != 'random').join(' ');
     double? seed = -1.0;
-    if (what.split(' ').where((x) => x.startsWith('random:')).length > 0) {
+    if (what.split(' ').where((x) => x.startsWith('random:')).isNotEmpty) {
       var tseed = what
           .split(' ')
           .where((x) => x.startsWith('random:'))
@@ -178,7 +178,6 @@ class HentaiManager {
             var result = await searchEHentai(what, offset.toString(), true);
             return Tuple2<List<QueryResult>, int>(
                 result, result.length >= 25 ? offset + 25 : -1);
-            break;
           case 'Hitomi':
             // https://hiyobi.me/search/loli|sex
             break;
@@ -255,22 +254,21 @@ class HentaiManager {
           case 'Hitomi':
             {
               var urls = await HitomiManager.getImageList(qr.id().toString());
-              if (urls.item1.length == 0 || urls.item2.length == 0) break;
+              if (urls.item1.isEmpty || urls.item2.isEmpty) break;
               return HitomiImageProvider(urls, qr.id().toString());
             }
-            break;
 
           case 'Hiyobi':
             {
               var urls = await HiyobiManager.getImageList(qr.id().toString());
-              if (urls.item2.length == 0) break;
+              if (urls.item2.isEmpty) break;
               return HiyobiImageProvider(urls);
             }
 
           case 'Hisoki':
             {
               var urls = await HisokiGetter.getImages(qr.id());
-              if (urls == null || urls.length == 0) break;
+              if (urls == null || urls.isEmpty) break;
               return HisokiImageProvider(infos: urls, id: qr.id());
             }
 

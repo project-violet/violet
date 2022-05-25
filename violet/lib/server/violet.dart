@@ -41,7 +41,7 @@ class VioletServer {
     }
   }
 
-  static Future<dynamic> top_recent(int s) async {
+  static Future<dynamic> topRecent(int s) async {
     var gg = await http.get('$api/top_recent?s=$s');
 
     if (gg.statusCode != 200) {
@@ -64,7 +64,7 @@ class VioletServer {
     }
   }
 
-  static Future<dynamic> top_ts(int s) async {
+  static Future<dynamic> topTs(int s) async {
     var gg = await http.get('$api/top_ts?s=$s');
 
     if (gg.statusCode != 200) {
@@ -84,7 +84,7 @@ class VioletServer {
     }
   }
 
-  static Future<dynamic> cur_ts() async {
+  static Future<dynamic> curTs() async {
     var gg = await http.get('$api/cur_ts');
 
     if (gg.statusCode != 200) {

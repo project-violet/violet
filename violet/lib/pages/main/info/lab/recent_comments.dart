@@ -11,7 +11,7 @@ import 'package:violet/server/community/anon.dart';
 
 class LabRecentComments extends StatefulWidget {
   @override
-  _LabRecentCommentsState createState() => _LabRecentCommentsState();
+  State<LabRecentComments> createState() => _LabRecentCommentsState();
 }
 
 class _LabRecentCommentsState extends State<LabRecentComments> {
@@ -70,12 +70,13 @@ class _LabRecentCommentsState extends State<LabRecentComments> {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                            '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1.toLocal())}',
+                            DateFormat('yyyy-MM-dd HH:mm')
+                                .format(e.item1.toLocal()),
                             style: TextStyle(fontSize: 12)),
                       ),
                     ),
                   ]),
-              subtitle: Text('${e.item3}'),
+              subtitle: Text(e.item3),
             ),
           );
         },

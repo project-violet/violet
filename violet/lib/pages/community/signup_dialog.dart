@@ -8,7 +8,7 @@ import 'package:violet/settings/settings.dart';
 
 class SignUpDialog extends StatefulWidget {
   @override
-  _SignUpDialogState createState() => _SignUpDialogState();
+  State<SignUpDialog> createState() => _SignUpDialogState();
 }
 
 class _SignUpDialogState extends State<SignUpDialog> {

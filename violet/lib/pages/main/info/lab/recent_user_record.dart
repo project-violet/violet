@@ -27,13 +27,13 @@ class LabUserRecentRecords extends StatefulWidget {
   LabUserRecentRecords(this.userAppId);
 
   @override
-  _LabUserRecentRecordsState createState() => _LabUserRecentRecordsState();
+  State<LabUserRecentRecords> createState() => _LabUserRecentRecordsState();
 }
 
 class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int limit = 10;
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   FlareControls flareController = FlareControls();
   bool isBookmarked = false;
 
@@ -42,11 +42,6 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100)).then(updateRercord);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   Future<void> updateRercord(dummy) async {
@@ -71,7 +66,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results!.length == 0) return;
+      if (query.results!.isEmpty) return;
 
       /* Statistics -- */
 
@@ -146,7 +141,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       child: Column(
         children: [
           Expanded(
-            child: records.length != 0
+            child: records.isNotEmpty
                 ? ListView.builder(
                     padding: EdgeInsets.all(0),
                     controller: _controller,

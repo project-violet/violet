@@ -4,7 +4,6 @@
 import 'dart:math';
 
 import 'package:flare_flutter/asset_provider.dart';
-import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
@@ -31,18 +30,18 @@ class SearchBarPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SearchBarPageState createState() => _SearchBarPageState();
+  State<SearchBarPage> createState() => _SearchBarPageState();
 }
 
 class _SearchBarPageState extends State<SearchBarPage>
     with SingleTickerProviderStateMixin {
-  PageController _bottomController = PageController(
+  final PageController _bottomController = PageController(
     initialPage: 0,
   );
-  PageController _topController = PageController(
+  final PageController _topController = PageController(
     initialPage: 0,
   );
-  static const _kDuration = const Duration(milliseconds: 300);
+  static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
   late AnimationController controller;
@@ -54,7 +53,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   String? _searchText;
   bool _nothing = false;
 
-  int _searchResultMaximum = 60;
+  final int _searchResultMaximum = 60;
 
   @override
   void initState() {
@@ -82,7 +81,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     final mediaQuery = MediaQuery.of(context);
     controller.forward();
 
-    if (_searchLists.length == 0 && !_nothing) {
+    if (_searchLists.isEmpty && !_nothing) {
       const prefixList = [
         'female',
         'male',
@@ -236,7 +235,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           var search = _searchController.text;
           if (search.split(' ').any((x) => x == 'random')) {
             search = search.split(' ').where((x) => x != 'random').join(' ');
-            search += ' random:${new Random().nextDouble() + 1}';
+            search += ' random:${Random().nextDouble() + 1}';
           }
           Navigator.pop(context, search);
         },
@@ -286,7 +285,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchAutoCompletePanel() {
-    if (_searchLists.length == 0 || _nothing)
+    if (_searchLists.isEmpty || _nothing)
       return Center(
           child: Text(_nothing
               ? Translations.of(context).trans('nosearchresult')
@@ -305,7 +304,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchRelatedPanel() {
-    if (_relatedLists.length == 0)
+    if (_relatedLists.isEmpty)
       return Center(
           child: Text(Translations.of(context).trans('nosearchresult')));
     return ListView(
@@ -699,7 +698,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               token, Settings.searchUseTranslated))
           .take(_searchResultMaximum)
           .toList();
-      if (result.length == 0) _nothing = true;
+      if (result.isEmpty) _nothing = true;
       setState(() {
         _searchLists = result;
       });
@@ -708,7 +707,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               token, Settings.searchUseTranslated))
           .take(_searchResultMaximum)
           .toList();
-      if (result.length == 0) _nothing = true;
+      if (result.isEmpty) _nothing = true;
       setState(() {
         _searchLists = result;
       });

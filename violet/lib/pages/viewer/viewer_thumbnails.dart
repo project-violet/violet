@@ -25,13 +25,13 @@ class ViewerThumbnail extends StatefulWidget {
   ViewerThumbnail({required this.viewedPage});
 
   @override
-  _ViewerThumbnailState createState() => _ViewerThumbnailState();
+  State<ViewerThumbnail> createState() => _ViewerThumbnailState();
 }
 
 class _ViewerThumbnailState extends State<ViewerThumbnail> {
   late final ViewerPageProvider _pageInfo;
   List<GlobalKey> itemKeys = <GlobalKey>[];
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void didChangeDependencies() {
@@ -140,11 +140,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               try {
                 var urls =
                     await HitomiManager.getImageList(_pageInfo.id.toString());
-                if (urls.item1.length != 0 && urls.item2.length != 0) {
+                if (urls.item1.isNotEmpty && urls.item2.isNotEmpty) {
                   prov = HitomiImageProvider(urls, _pageInfo.id.toString());
                   ProviderManager.insert(_pageInfo.id * 1000000, prov);
                 }
-              } catch (e) {}
+              } catch (_) {}
             }
           } else
             prov = await ProviderManager.get(_pageInfo.id * 1000000);
@@ -282,7 +282,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
 
           infoText +=
               'size: ${toStringWithComma(image.width.toString())}x${toStringWithComma(image.height.toString())}\n';
-        } catch (e) {}
+        } catch (_) {}
         infoText +=
             'length: ${toStringWithComma((await file!.length() ~/ 1024).toString())}KB\n';
         infoText += 'filename: ${file.path}';

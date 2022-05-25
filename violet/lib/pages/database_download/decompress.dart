@@ -78,7 +78,7 @@ class P7zip {
       String soResource = "assets/p7zip/armeabi-v7a/lib7zr.so";
       if (kDebugMode) soResource = "assets/p7zip/x86/lib7zr.so";
       final support64 = deviceInfo.supported64BitAbis;
-      if (support64.length > 0) {
+      if (support64.isNotEmpty) {
         if (kDebugMode)
           soResource = "assets/p7zip/x86_64/lib7zr.so";
         else

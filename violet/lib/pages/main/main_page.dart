@@ -48,7 +48,7 @@ import 'package:violet/widgets/toast.dart';
 
 class MainPage2 extends StatefulWidget {
   @override
-  _MainPage2State createState() => _MainPage2State();
+  State<MainPage2> createState() => _MainPage2State();
 }
 
 class _MainPage2State extends State<MainPage2>
@@ -486,7 +486,7 @@ class _MainPage2State extends State<MainPage2>
                         await deleteDatabase('${dir.path}/data/data.db');
                         await Directory('${dir.path}/data')
                             .delete(recursive: true);
-                      } catch (e) {}
+                      } catch (_) {}
 
                       setState(() {
                         _shouldReload = true;
@@ -773,7 +773,7 @@ class _MainPage2State extends State<MainPage2>
   }
 
   // @dependent: android [
-  ReceivePort _port = ReceivePort();
+  final ReceivePort _port = ReceivePort();
 
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
@@ -833,7 +833,7 @@ class _MainPage2State extends State<MainPage2>
       FlutterDownloader.registerCallback(downloadCallback);
       await FlutterDownloader.enqueue(
         url: UpdateSyncManager.updateUrl,
-        savedDir: '${ext.path}',
+        savedDir: ext.path,
         fileName: UpdateSyncManager.updateUrl.split('/').last,
         showNotification:
             true, // show download progress in status bar (for Android)
@@ -863,7 +863,6 @@ class _MainPage2State extends State<MainPage2>
   @override
   void dispose() {
     IsolateNameServer.removePortNameMapping('downloader_send_port');
-    // TODO: implement dispose
     super.dispose();
   }
   // @dependent: android ]

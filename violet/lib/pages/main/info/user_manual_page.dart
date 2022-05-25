@@ -10,7 +10,7 @@ import 'package:violet/pages/segment/card_panel.dart';
 
 class UserManualPage extends StatefulWidget {
   @override
-  _UserManualPageState createState() => _UserManualPageState();
+  State<UserManualPage> createState() => _UserManualPageState();
 }
 
 class _UserManualPageState extends State<UserManualPage> {

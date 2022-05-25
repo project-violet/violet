@@ -9,15 +9,10 @@ class RouteDialog extends StatefulWidget {
   RouteDialog();
 
   @override
-  _RouteDialogState createState() => _RouteDialogState();
+  State<RouteDialog> createState() => _RouteDialogState();
 }
 
 class _RouteDialogState extends State<RouteDialog> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -77,15 +72,10 @@ class ImageRouteDialog extends StatefulWidget {
   ImageRouteDialog();
 
   @override
-  _ImageRouteDialogState createState() => _ImageRouteDialogState();
+  State<ImageRouteDialog> createState() => _ImageRouteDialogState();
 }
 
 class _ImageRouteDialogState extends State<ImageRouteDialog> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;

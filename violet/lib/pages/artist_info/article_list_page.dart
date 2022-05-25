@@ -23,7 +23,7 @@ class ArticleListPage extends StatefulWidget {
   ArticleListPage({required this.name, required this.cc});
 
   @override
-  _ArticleListPageState createState() => _ArticleListPageState();
+  State<ArticleListPage> createState() => _ArticleListPageState();
 }
 
 class _ArticleListPageState extends State<ArticleListPage> {
@@ -81,8 +81,6 @@ class _ArticleListPageState extends State<ArticleListPage> {
                         SliverPersistentHeader(
                           floating: true,
                           delegate: AnimatedOpacitySliver(
-                            minExtent: 64 + 12.0,
-                            maxExtent: 64.0 + 12,
                             searchBar: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(
@@ -191,7 +189,8 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
   ObjectKey key = ObjectKey(Uuid().v4());
 
-  FilterController _filterController = FilterController(heroKey: "searchtype2");
+  final FilterController _filterController =
+      FilterController(heroKey: "searchtype2");
   List<QueryResult> filterResult = [];
 
   bool isFilterUsed = false;
@@ -293,7 +292,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
   int nowType = 0;
 
-  List<ScrollController> _scrollControllers =
+  final List<ScrollController> _scrollControllers =
       Iterable.generate(4, (i) => ScrollController()).toList();
 
   Widget buildList() {
