@@ -696,19 +696,21 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<String> getFile() async {
-    File file;
-    file = File((await FilePicker.platform.pickFiles(
+    var filename = (await FilePicker.platform.pickFiles(
       type: FileType.any,
     ))!
         .files
-        .single!
-        .path!);
+        .single
+        .path;
 
-    if (file == null) {
+    if (filename == null) {
       await showOkDialog(
           context, Translations.of(context).trans('dbalreadyerr'));
       return '';
     }
+
+    File file;
+    file = File(filename);
 
     return file.path;
   }

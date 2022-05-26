@@ -88,7 +88,7 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
                 context: context,
                 builder: (BuildContext context) => GroupModifyPage(
                     name: data.title() ?? data.user().substring(0, 8),
-                    desc: data.subtitle()),
+                    desc: data.subtitle() ?? ''),
               );
 
               if (rr == null) return;
