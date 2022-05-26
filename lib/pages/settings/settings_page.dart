@@ -1373,11 +1373,11 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            //   customBorder: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.all(
-            //       Radius.circular(8.0),
-            //     ),
+            // customBorder: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.all(
+            //     Radius.circular(8.0),
             //   ),
+            // ),
             onTap: Settings.useInnerStorage
                 ? null
                 : () async {
@@ -1434,11 +1434,6 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setBaseDownloadPath(text.text);
                     }
                   },
-            //   customBorder: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.all(
-            //       Radius.circular(8.0),
-            //     ),
-            //   ),
             child: ListTile(
               leading:
                   Icon(MdiIcons.folderDownload, color: Settings.majorColor),

@@ -933,7 +933,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                // alignment: Alignment.center,
                 width: 100,
                 height: 100,
                 // alignment: Alignment.center,

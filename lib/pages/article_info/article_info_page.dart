@@ -581,7 +581,6 @@ class PreviewAreaWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Container(
-          // alignment: Alignment.center,
           width: 100,
           height: 100,
           // alignment: Alignment.center,
@@ -708,7 +707,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
-                // alignment: Alignment.center,
                 width: 100,
                 height: 100,
                 // alignment: Alignment.center,
@@ -991,7 +989,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
-            // alignment: Alignment.center,
             width: 100,
             height: 100,
             // alignment: Alignment.center,
