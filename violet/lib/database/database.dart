@@ -57,8 +57,7 @@ class DataBaseManager {
       await _open();
       result = await db!.rawQuery(str);
       await _close();
-      print('asdfc');
-    }, timeout: Duration(seconds: 1));
+    }, timeout: Duration(seconds: 5));
     return result;
   }
 
@@ -67,7 +66,7 @@ class DataBaseManager {
       await _open();
       await db!.execute(str);
       await _close();
-    }, timeout: Duration(seconds: 1));
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<int> insert(String name, Map<String, dynamic> wh) async {
@@ -76,7 +75,7 @@ class DataBaseManager {
       await _open();
       result = await db!.insert(name, wh);
       await _close();
-    }, timeout: Duration(seconds: 1));
+    }, timeout: Duration(seconds: 5));
     return result;
   }
 
@@ -86,7 +85,7 @@ class DataBaseManager {
       await _open();
       await db!.update(name, wh, where: where, whereArgs: args);
       await _close();
-    }, timeout: Duration(seconds: 1));
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<void> swap(String name, String key, String what, int key1, int key2,
@@ -96,7 +95,7 @@ class DataBaseManager {
       await db!.rawUpdate("UPDATE $name SET $what=? WHERE $key=?", [s2, key1]);
       await db!.rawUpdate("UPDATE $name SET $what=? WHERE $key=?", [s1, key2]);
       await _close();
-    }, timeout: Duration(seconds: 1));
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<void> delete(String name, String where, List<dynamic> args) async {
@@ -104,7 +103,7 @@ class DataBaseManager {
       await _open();
       await db!.delete(name, where: where, whereArgs: args);
       await _close();
-    }, timeout: Duration(seconds: 1));
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<bool> test() async {
