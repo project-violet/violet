@@ -19,12 +19,12 @@ class ViewerGallery extends StatefulWidget {
   ViewerGallery({required this.viewedPage});
 
   @override
-  _ViewerGalleryState createState() => _ViewerGalleryState();
+  State<ViewerGallery> createState() => _ViewerGalleryState();
 }
 
 class _ViewerGalleryState extends State<ViewerGallery> {
   late final ViewerPageProvider _pageInfo;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<GlobalKey> itemKeys = <GlobalKey>[];
 
   @override
@@ -61,8 +61,6 @@ class _ViewerGalleryState extends State<ViewerGallery> {
             SliverPersistentHeader(
               floating: true,
               delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
                 searchBar: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(

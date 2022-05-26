@@ -87,6 +87,7 @@ class ExCountry extends Country {
     return country;
   }
 
+  @override
   String toString() {
     final dict = {
       'KR': 'ko',
@@ -133,12 +134,12 @@ class ExCountry extends Country {
 
 class SettingsPage extends StatefulWidget {
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage>
     with AutomaticKeepAliveClientMixin<SettingsPage> {
-  FlareControls _flareController = FlareControls();
+  final FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
   late final FToast flutterToast;
 
@@ -728,8 +729,8 @@ class _SettingsPageState extends State<SettingsPage>
                                   width: 8.0,
                                   height: 30,
                                 ),
-                                Text(
-                                    "${(country as ExCountry).getDisplayLanguage()}"),
+                                Text((country as ExCountry)
+                                    .getDisplayLanguage()),
                               ],
                             ),
                           );
@@ -1049,7 +1050,7 @@ class _SettingsPageState extends State<SettingsPage>
                       await deleteDatabase('${dir.path}/data/data.db');
                       await Directory('${dir.path}/data')
                           .delete(recursive: true);
-                    } catch (e) {}
+                    } catch (_) {}
 
                     Navigator.of(context)
                         .push(MaterialPageRoute(
@@ -1351,8 +1352,8 @@ class _SettingsPageState extends State<SettingsPage>
                 ),
               );
               if (dialog == true) {
-                await IsolateDownloader.getInstance()
-                  ..changeThreadCount(int.parse(text.text));
+                (await IsolateDownloader.getInstance())
+                    .changeThreadCount(int.parse(text.text));
 
                 await (await SharedPreferences.getInstance())
                     .setInt('thread_count', int.parse(text.text));
@@ -1445,7 +1446,7 @@ class _SettingsPageState extends State<SettingsPage>
                             await prevDir.rename(text.text);
                           }
                         }
-                      } catch (e) {}
+                      } catch (_) {}
 
                       await Settings.setBaseDownloadPath(text.text);
                     }

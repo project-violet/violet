@@ -17,7 +17,7 @@ import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
   @override
-  _UserStatusCardState createState() => _UserStatusCardState();
+  State<UserStatusCard> createState() => _UserStatusCardState();
 }
 
 class _UserStatusCardState extends State<UserStatusCard>
@@ -76,7 +76,7 @@ class _UserStatusCardState extends State<UserStatusCard>
     var pw =
         (await SharedPreferences.getInstance()).getString('saved_community_pw');
 
-    _userId = id != null ? id : 'None';
+    _userId = id ?? 'None';
     _userAppId =
         (await SharedPreferences.getInstance()).getString('fa_userid')!;
     setState(() {});

@@ -22,12 +22,12 @@ class EHBookmark {
           var html = await EHSession.requestString(
               'https://exhentai.org/favorites.php?page=$j&favcat=$i');
           var matched = rr.allMatches(html).map((e) => e.group(0));
-          if (matched.length == 0) break;
+          if (matched.isEmpty) break;
           matched.forEach((element) {
             hh.add(int.parse(element!.split('/')[4]));
           });
         }
-      } catch (e) {}
+      } catch (_) {}
       result.add(hh);
       print(hh.length);
     }
@@ -38,12 +38,12 @@ class EHBookmark {
           var html = await EHSession.requestString(
               'https://e-hentai.org/favorites.php?page=$j&favcat=$i');
           var matched = r2.allMatches(html).map((e) => e.group(0));
-          if (matched.length == 0) break;
+          if (matched.isEmpty) break;
           matched.forEach((element) {
             result[i].add(int.parse(element!.split('/')[4]));
           });
         }
-      } catch (e) {}
+      } catch (_) {}
     }
 
     return bookmarkInfo = result;

@@ -18,14 +18,14 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabTopRecent extends StatefulWidget {
   @override
-  _LabTopRecentState createState() => _LabTopRecentState();
+  State<LabTopRecent> createState() => _LabTopRecentState();
 }
 
 class _LabTopRecentState extends State<LabTopRecent> {
   List<Tuple2<QueryResult, int>> records = <Tuple2<QueryResult, int>>[];
   int limit = 10;
   Timer? timer;
-  ScrollController _controller = ScrollController();
+  final ScrollController _controller = ScrollController();
   bool isTop = false;
   String desc = "로딩";
 
@@ -53,7 +53,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
 
   Future<void> updateRercord(dummy) async {
     try {
-      var trecords = await VioletServer.top_recent(limit);
+      var trecords = await VioletServer.topRecent(limit);
       if (trecords is int || trecords == null || trecords.length == 0) return;
 
       var xrecords = trecords as List<Tuple2<int, int>>;
@@ -69,7 +69,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
       queryRaw += 'Id IN (' + xrecords.map((e) => e.item1).join(',') + ')';
       var query = await QueryManager.query(queryRaw);
 
-      if (query.results!.length == 0) return;
+      if (query.results!.isEmpty) return;
 
       var qr = Map<String, QueryResult>();
       query.results!.forEach((element) {
@@ -96,8 +96,8 @@ class _LabTopRecentState extends State<LabTopRecent> {
         );
       });
 
-      var sts = (await VioletServer.top_ts(limit)) as DateTime;
-      var cts = (await VioletServer.cur_ts()) as DateTime;
+      var sts = (await VioletServer.topTs(limit)) as DateTime;
+      var cts = (await VioletServer.curTs()) as DateTime;
 
       var x = cts.difference(sts);
 

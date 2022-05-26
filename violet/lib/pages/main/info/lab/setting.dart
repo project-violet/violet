@@ -8,7 +8,7 @@ import 'package:violet/settings/settings.dart';
 
 class LabSetting extends StatefulWidget {
   @override
-  _LabSettingState createState() => _LabSettingState();
+  State<LabSetting> createState() => _LabSettingState();
 }
 
 class _LabSettingState extends State<LabSetting> {

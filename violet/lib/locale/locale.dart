@@ -33,7 +33,7 @@ class Translations {
       dbLanguageCode = code;
       if (!code.contains('_')) {
         if (locale.scriptCode != null && locale.scriptCode != '')
-          code += '_' + this.locale.scriptCode!;
+          code += '_' + locale.scriptCode!;
       }
     } else if (code.contains('_')) {
       dbLanguageCode = code.split('_')[0];
@@ -44,11 +44,11 @@ class Translations {
     print(code);
 
     String data = await rootBundle.loadString('assets/locale/$code.json');
-    Map<String, dynamic> _result = json.decode(data);
+    Map<String, dynamic> result = json.decode(data);
 
-    this._sentences = Map();
-    _result.forEach((String key, dynamic value) {
-      this._sentences[key] = value.toString();
+    _sentences = Map();
+    result.forEach((String key, dynamic value) {
+      _sentences[key] = value.toString();
     });
 
     instance = this;
@@ -57,7 +57,7 @@ class Translations {
   }
 
   String trans(String key) {
-    return this._sentences[key]!;
+    return _sentences[key]!;
   }
 }
 

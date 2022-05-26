@@ -27,7 +27,7 @@ class ToastWrapper extends StatefulWidget {
   });
 
   @override
-  _ToastWrapperState createState() => _ToastWrapperState();
+  State<ToastWrapper> createState() => _ToastWrapperState();
 }
 
 class _ToastWrapperState extends State<ToastWrapper>
@@ -69,9 +69,8 @@ class _ToastWrapperState extends State<ToastWrapper>
 // https://dash-overflow.net/articles/why_vsync/
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     controller.dispose();
+    super.dispose();
   }
 
   @override

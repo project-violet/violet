@@ -15,7 +15,7 @@ import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
   @override
-  _UserStatusCardState createState() => _UserStatusCardState();
+  State<UserStatusCard> createState() => _UserStatusCardState();
 }
 
 class _UserStatusCardState extends State<UserStatusCard>
@@ -24,9 +24,9 @@ class _UserStatusCardState extends State<UserStatusCard>
   bool get wantKeepAlive => true;
 
   late VioletCommunitySession sess;
-  String _userId = 'None';
+  final String _userId = 'None';
   String _userAppId = '';
-  String _userNickName = 'None';
+  final String _userNickName = 'None';
   bool _logining = false;
   DateTime _latestBackup = DateTime.now();
   late final FToast fToast;

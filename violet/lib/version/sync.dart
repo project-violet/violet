@@ -218,7 +218,7 @@ class SyncManager {
             .setInt('synclatest', row.timestamp);
       }
 
-      if (Settings.useOptimizeDatabase && filteredIter.length > 0) {
+      if (Settings.useOptimizeDatabase && filteredIter.isNotEmpty) {
         var sql = HitomiManager.translate2query(Settings.includeTags +
             ' ' +
             Settings.excludeTags

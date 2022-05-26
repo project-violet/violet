@@ -19,8 +19,8 @@ class CommentsCount {
       data = await rootBundle.loadString('assets/rank/comments.json');
     }
 
-    Map<String, dynamic> _counts = json.decode(data);
-    counts = _counts.entries
+    Map<String, dynamic> dataCounts = json.decode(data);
+    counts = dataCounts.entries
         .map((x) => Tuple2<int, int>(int.parse(x.key), x.value as int))
         .toList();
     counts.sort((x, y) => y.item2.compareTo(x.item2));

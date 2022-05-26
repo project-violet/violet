@@ -18,11 +18,11 @@ class Related {
     } else
       data = await rootBundle.loadString('assets/rank/related.json');
 
-    Map<String, dynamic> _data = json.decode(data);
+    Map<String, dynamic> dataMap = json.decode(data);
 
     related = Map<int, List<int>>();
 
-    _data.entries.forEach((element) {
+    dataMap.entries.forEach((element) {
       related[int.parse(element.key)] =
           (element.value as List<dynamic>).map((e) => e as int).toList();
     });

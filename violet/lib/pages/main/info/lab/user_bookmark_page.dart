@@ -11,11 +11,11 @@ import 'package:violet/settings/settings.dart';
 
 class LabUserBookmarkPage extends StatefulWidget {
   @override
-  _LabUserBookmarkPageState createState() => _LabUserBookmarkPageState();
+  State<LabUserBookmarkPage> createState() => _LabUserBookmarkPageState();
 }
 
 class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {

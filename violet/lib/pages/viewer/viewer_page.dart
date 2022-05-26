@@ -44,7 +44,7 @@ import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
-const volumeKeyChannel = const EventChannel('xyz.project.violet/volume');
+const volumeKeyChannel = EventChannel('xyz.project.violet/volume');
 
 typedef DoubleCallback = Future Function(double);
 typedef BoolCallback = Function(bool);
@@ -52,7 +52,7 @@ typedef StringCallback = Future Function(String);
 
 class ViewerPage extends StatefulWidget {
   @override
-  _ViewerPageState createState() => _ViewerPageState();
+  State<ViewerPage> createState() => _ViewerPageState();
 }
 
 class _ViewerPageState extends State<ViewerPage>
@@ -61,7 +61,7 @@ class _ViewerPageState extends State<ViewerPage>
   bool isPageInfoInited = false;
   late final LifecycleEventHandler _lifecycleEventHandler;
   Timer? _nextPageTimer;
-  ValueNotifier<bool> _vIsBookmarked = ValueNotifier(false);
+  final ValueNotifier<bool> _vIsBookmarked = ValueNotifier(false);
   bool _isSessionOutdated = false;
   bool _sliderOnChange = false;
 
@@ -74,7 +74,7 @@ class _ViewerPageState extends State<ViewerPage>
   /// for example, when a slide is manipulated in file system mode, the value
   /// displayed on the slider changes, but the page of the list does not change.
   int _prevPage = 1;
-  ValueNotifier<int> _vPrevPage = ValueNotifier(0);
+  final ValueNotifier<int> _vPrevPage = ValueNotifier(0);
 
   /// these are used for overlay
   double _opacity = 0.0;
@@ -83,12 +83,13 @@ class _ViewerPageState extends State<ViewerPage>
 
   /// these are used for page control
   PreloadPageController _pageController = PreloadPageController();
-  ItemScrollController _itemScrollController = ItemScrollController();
-  ItemPositionsListener _itemPositionsListener = ItemPositionsListener.create();
+  final ItemScrollController _itemScrollController = ItemScrollController();
+  final ItemPositionsListener _itemPositionsListener =
+      ItemPositionsListener.create();
 
   /// this is used for interactive viewer widget
   /// double-tap a specific location to zoom in on that location.
-  TransformationController _transformationController =
+  final TransformationController _transformationController =
       TransformationController();
   late AnimationController _animationController;
   Animation<Matrix4>? _animation;
@@ -109,7 +110,7 @@ class _ViewerPageState extends State<ViewerPage>
   bool _isStaring = true;
 
   /// these are used for thumbnail slider
-  ScrollController _thumbController = ScrollController();
+  final ScrollController _thumbController = ScrollController();
   late List<double> _thumbImageWidth;
   late List<double> _thumbImageStartPos;
 
@@ -179,7 +180,7 @@ class _ViewerPageState extends State<ViewerPage>
       if (_sliderOnChange) return;
 
       var v = _itemPositionsListener.itemPositions.value.toList();
-      var selected;
+      int? selected;
 
       v.sort((x, y) => x.itemLeadingEdge.compareTo(y.itemLeadingEdge));
 
@@ -250,10 +251,12 @@ class _ViewerPageState extends State<ViewerPage>
       );
     }
     volumeKeyChannel.receiveBroadcastStream().listen((event) {
-      if (event as String == 'down') {
-        _rightButtonEvent();
-      } else if (event as String == 'up') {
-        _leftButtonEvent();
+      if (event is String) {
+        if (event == 'down') {
+          _rightButtonEvent();
+        } else if (event == 'up') {
+          _leftButtonEvent();
+        }
       }
     });
   }
@@ -262,17 +265,17 @@ class _ViewerPageState extends State<ViewerPage>
     _thumbHeight = [140.0, 120.0, 96.0][Settings.thumbSize];
     _isThumbMode = Settings.enableThumbSlider;
 
-    var _imageSizes = _pageInfo.uris.map((e) {
-      final image = new File(e);
+    var imageSizes = _pageInfo.uris.map((e) {
+      final image = File(e);
       if (!image.existsSync()) return null;
       return ImageSizeGetter.getSize(FileInput(image));
     }).toList();
 
-    _thumbImageStartPos = List.filled(_imageSizes.length + 1, 0);
-    _thumbImageWidth = List.filled(_imageSizes.length, 0);
+    _thumbImageStartPos = List.filled(imageSizes.length + 1, 0);
+    _thumbImageWidth = List.filled(imageSizes.length, 0);
 
-    for (var i = 0; i < _imageSizes.length; i++) {
-      final sz = _imageSizes[i];
+    for (var i = 0; i < imageSizes.length; i++) {
+      final sz = imageSizes[i];
 
       if (sz != null)
         _thumbImageStartPos[i + 1] =
@@ -327,13 +330,13 @@ class _ViewerPageState extends State<ViewerPage>
 
   Future<void> pageReadTimerCallback(timer) async {
     if (_isStaring) {
-      var _page = _prevPage - 1 < 0
+      var page = _prevPage - 1 < 0
           ? 0
           : _prevPage - 1 >= _pageInfo.uris.length
               ? _pageInfo.uris.length - 1
               : _prevPage - 1;
 
-      if (_isImageLoaded[_page]) _decisecondPerPages[_page] += 1;
+      if (_isImageLoaded[page]) _decisecondPerPages[page] += 1;
     }
   }
 
@@ -434,11 +437,11 @@ class _ViewerPageState extends State<ViewerPage>
 
   @override
   Widget build(BuildContext context) {
-    ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    ImageCache imageCache = PaintingBinding.instance.imageCache;
     final mediaQuery = MediaQuery.of(context);
-    if (_imageCache.currentSizeBytes >= (1024 + 256) << 20) {
-      _imageCache.clear();
-      _imageCache.clearLiveImages();
+    if (imageCache.currentSizeBytes >= (1024 + 256) << 20) {
+      imageCache.clear();
+      imageCache.clearLiveImages();
     }
 
     return WillPopScope(
@@ -686,13 +689,13 @@ class _ViewerPageState extends State<ViewerPage>
         var headers = await prov.getHeader(0);
         ProviderManager.insert(qr.id(), prov);
 
-        var _isBookmarked =
+        var isBookmarked =
             await (await Bookmark.getInstance()).isBookmark(qr.id());
 
         _isStaring = false;
         stopTimer();
 
-        var cache;
+        Provider<ArticleInfo>? cache;
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
@@ -713,13 +716,13 @@ class _ViewerPageState extends State<ViewerPage>
                       thumbnail: thumbnail,
                       headers: headers,
                       heroKey: 'zxcvzxcvzxcv',
-                      isBookmarked: _isBookmarked,
+                      isBookmarked: isBookmarked,
                       controller: controller,
                       lockRead: true,
                     ),
                   );
                 }
-                return cache;
+                return cache!;
               },
             );
           },
@@ -739,7 +742,7 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
-        var cache;
+        TabPanel? cache;
         await showModalBottomSheet(
             context: context,
             isScrollControlled: false,
@@ -750,7 +753,7 @@ class _ViewerPageState extends State<ViewerPage>
                   usableTabList: _pageInfo.usableTabList,
                   height: height,
                 );
-              return cache;
+              return cache!;
             }).then((value) async {
           if (value == null) return;
 
@@ -825,7 +828,7 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
-        var cache;
+        ViewRecordPanel? cache;
         await showModalBottomSheet(
             context: context,
             isScrollControlled: false,
@@ -834,7 +837,7 @@ class _ViewerPageState extends State<ViewerPage>
                 cache = ViewRecordPanel(
                   articleId: _pageInfo.id,
                 );
-              return cache;
+              return cache!;
             }).then((value) {
           if (value != null) {
             if (!Settings.isHorizontal) {
@@ -877,7 +880,7 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
-        var cache;
+        FractionallySizedBox? cache;
         await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
@@ -892,7 +895,7 @@ class _ViewerPageState extends State<ViewerPage>
                     ),
                   ),
                 );
-              return cache;
+              return cache!;
             }).then((value) async {
           if (value != null) {
             if (value != null) {
@@ -924,7 +927,7 @@ class _ViewerPageState extends State<ViewerPage>
       onPressed: () async {
         stopTimer();
         _isStaring = false;
-        var cache;
+        ViewerSettingPanel? cache;
         await showModalBottomSheet(
             context: context,
             isScrollControlled: false,
@@ -956,7 +959,7 @@ class _ViewerPageState extends State<ViewerPage>
                     setState(() {});
                   },
                 );
-              return cache;
+              return cache!;
             });
         startTimer();
         _isStaring = true;
@@ -1297,20 +1300,20 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   void _doubleTapEvent(TapDownDetails details) {
-    Matrix4 _endMatrix;
-    Offset _position = details.localPosition;
+    Matrix4 endMatrix;
+    Offset position = details.localPosition;
 
     if (_transformationController.value != Matrix4.identity()) {
-      _endMatrix = Matrix4.identity();
+      endMatrix = Matrix4.identity();
     } else {
-      _endMatrix = Matrix4.identity()
-        ..translate(-_position.dx * 1, -_position.dy * 1)
+      endMatrix = Matrix4.identity()
+        ..translate(-position.dx * 1, -position.dy * 1)
         ..scale(2.0);
     }
 
     _animation = Matrix4Tween(
       begin: _transformationController.value,
-      end: _endMatrix,
+      end: endMatrix,
     ).animate(
       CurveTween(curve: Curves.easeOut).animate(_animationController),
     );
@@ -1552,7 +1555,7 @@ class _ViewerPageState extends State<ViewerPage>
                   if (sizeRender.height != 300)
                     _height![index] = width / sizeRender.aspectRatio;
                   _isImageLoaded[index] = true;
-                } catch (e) {}
+                } catch (_) {}
               }
               return child;
             },
@@ -1674,11 +1677,11 @@ class _ViewerPageState extends State<ViewerPage>
       _loadingEstimaed![index] = true;
       Future.delayed(Duration(milliseconds: 1)).then((value) async {
         if (_isSessionOutdated) return;
-        final _h =
+        final h =
             await _pageInfo.provider!.getEstimatedImageHeight(index, width);
-        if (_h > 0) {
+        if (h > 0) {
           setState(() {
-            _estimatedImageHeight![index] = _h;
+            _estimatedImageHeight![index] = h;
           });
         }
       });
@@ -1775,7 +1778,7 @@ class _ViewerPageState extends State<ViewerPage>
 
                         if (_latestIndex >= index && !_onScroll)
                           _patchHeightForDynamicLoadedImage();
-                      } catch (e) {}
+                      } catch (_) {}
                     });
                   }
                   return child;
@@ -1840,8 +1843,8 @@ class _ViewerPageState extends State<ViewerPage>
   /// the minCacheExtent to solve this problem.
   _getLatestHeight() {
     var v = _itemPositionsListener.itemPositions.value.toList();
-    var selected;
-    var selectede;
+    int? selected;
+    ItemPosition? selectede;
 
     v.sort((x, y) => y.itemLeadingEdge.compareTo(x.itemLeadingEdge));
 
@@ -1854,8 +1857,8 @@ class _ViewerPageState extends State<ViewerPage>
       }
     }
 
-    _latestIndex = selected;
-    _latestAlign = selectede.itemLeadingEdge;
+    _latestIndex = selected ?? 0;
+    _latestAlign = selectede?.itemLeadingEdge ?? 0;
   }
 
   _patchHeightForDynamicLoadedImage() {
@@ -2286,7 +2289,6 @@ class __FileImageState extends State<_FileImage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     if (widget.cachedHeight != null && widget.cachedHeight! > 0)
@@ -2297,9 +2299,8 @@ class __FileImageState extends State<_FileImage> {
 
   @override
   void dispose() {
-    super.dispose();
-
     clearMemoryImageCache(widget.path);
+    super.dispose();
   }
 
   @override

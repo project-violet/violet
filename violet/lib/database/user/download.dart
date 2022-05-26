@@ -94,7 +94,7 @@ class Download {
         var db = await CommonUserDatabase.getInstance();
         var ee = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='DownloadItem';");
-        if (ee == null || ee.length == 0 || ee[0].length == 0) {
+        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
           try {
             await db.execute('''CREATE TABLE DownloadItem (
               Id integer primary key autoincrement, 
@@ -145,7 +145,7 @@ class Download {
 
   bool isDownloadedArticle(int id) => _downloadedChecker.contains(id);
 
-  Map<int, bool> _validDownloadedArticleCache = Map<int, bool>();
+  final Map<int, bool> _validDownloadedArticleCache = Map<int, bool>();
   bool _isValidDownloadedArticle(int id) {
     if (!isDownloadedArticle(id)) return false;
 

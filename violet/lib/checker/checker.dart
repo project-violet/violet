@@ -66,7 +66,7 @@ class VioletChecker {
       //
       // 4. check result is empty
       //
-      if (results == null || results.length == 0) {
+      if (results == null || results.isEmpty) {
         await Logger.error('$testPrefix\n' + 'query result is empty');
         return true;
       }
@@ -150,7 +150,7 @@ class VioletChecker {
       //
       // 4. check result is empty
       //
-      if (results == null || results.length == 0 || results[0].length == 0) {
+      if (results == null || results.isEmpty || results[0].isEmpty) {
         await Logger.error('$testPrefix\n' + 'query result is empty');
         return true;
       }

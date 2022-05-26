@@ -19,7 +19,7 @@ class LabSearchCommentsAuthor extends StatefulWidget {
   LabSearchCommentsAuthor(this.author);
 
   @override
-  _LabSearchCommentsAuthorState createState() =>
+  State<LabSearchCommentsAuthor> createState() =>
       _LabSearchCommentsAuthorState();
 }
 
@@ -66,7 +66,8 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item2.toLocal())}',
+                          DateFormat('yyyy-MM-dd HH:mm')
+                              .format(e.item2.toLocal()),
                           style: TextStyle(fontSize: 12)),
                     ),
                   ),
@@ -121,7 +122,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo>? cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -147,7 +148,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
                   ),
                 );
               }
-              return cache;
+              return cache!;
             },
           );
         },
