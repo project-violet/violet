@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:violet/settings/settings.dart';
 
 class SearchResultSelector extends StatelessWidget {
+  const SearchResultSelector({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;

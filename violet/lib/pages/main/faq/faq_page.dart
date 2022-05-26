@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:violet/settings/settings.dart';
 
 class FAQPageKorean extends StatelessWidget {
+  const FAQPageKorean({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

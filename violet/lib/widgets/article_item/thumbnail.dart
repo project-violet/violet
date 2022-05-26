@@ -26,6 +26,7 @@ class ThumbnailWidget extends StatelessWidget {
   final Map<String, String>? headers;
 
   ThumbnailWidget({
+    Key? key,
     required this.pad,
     required this.showDetail,
     required this.thumbnail,
@@ -39,7 +40,7 @@ class ThumbnailWidget extends StatelessWidget {
     required this.isLastestRead,
     required this.latestReadPage,
     required this.disableFiltering,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -117,11 +118,12 @@ class ThumbnailImageWidget extends StatelessWidget {
   final bool isBlurred;
 
   ThumbnailImageWidget({
+    Key? key,
     required this.thumbnail,
     required this.thumbnailTag,
     required this.headers,
     required this.isBlurred,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -176,9 +178,10 @@ class BookmarkIndicatorWidget extends StatelessWidget {
   final FlareControls flareController;
 
   BookmarkIndicatorWidget({
+    Key? key,
     required this.isBookmarked,
     required this.flareController,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -218,10 +221,11 @@ class ReadProgressOverlayWidget extends StatelessWidget {
   final int imageCount;
 
   ReadProgressOverlayWidget({
+    Key? key,
     required this.isLastestRead,
     required this.latestReadPage,
     required this.imageCount,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -255,9 +259,10 @@ class PagesOverlayWidget extends StatelessWidget {
   final int imageCount;
 
   const PagesOverlayWidget({
+    Key? key,
     required this.showDetail,
     required this.imageCount,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

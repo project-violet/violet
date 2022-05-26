@@ -51,6 +51,8 @@ typedef BoolCallback = Function(bool);
 typedef StringCallback = Future Function(String);
 
 class ViewerPage extends StatefulWidget {
+  const ViewerPage({Key? key}) : super(key: key);
+
   @override
   State<ViewerPage> createState() => _ViewerPageState();
 }

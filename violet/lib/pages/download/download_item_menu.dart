@@ -6,6 +6,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/settings/settings.dart';
 
 class DownloadImageMenu extends StatelessWidget {
+  const DownloadImageMenu({Key? key}) : super(key: key);
+
   Color getColor(int i) {
     return Settings.themeWhat ? Colors.grey.shade200 : Colors.grey.shade900;
   }

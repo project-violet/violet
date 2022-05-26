@@ -14,7 +14,8 @@ class LockScreen extends StatefulWidget {
   final bool isRegisterMode;
   final bool isSecureMode;
 
-  LockScreen({this.isRegisterMode = false, this.isSecureMode = false});
+  LockScreen({Key? key, this.isRegisterMode = false, this.isSecureMode = false})
+      : super(key: key);
 
   @override
   State<LockScreen> createState() => _LockScreenState();

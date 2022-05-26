@@ -342,7 +342,7 @@ class ArticleInfoPage extends StatelessWidget {
 }
 
 class DividerWidget extends StatelessWidget {
-  const DividerWidget();
+  const DividerWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -360,7 +360,8 @@ class DividerWidget extends StatelessWidget {
 class TagInfoAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  const TagInfoAreaWidget({required this.queryResult});
+  const TagInfoAreaWidget({Key? key, required this.queryResult})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -466,7 +467,8 @@ class SingleChipWidget extends StatelessWidget {
   final String name;
   final String raw;
 
-  SingleChipWidget(this.target, this.name, this.raw);
+  SingleChipWidget(this.target, this.name, this.raw, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -491,7 +493,8 @@ class MultiChipWidget extends StatelessWidget {
   final String name;
   final String? target;
 
-  const MultiChipWidget(this.target, this.name, this.groupName);
+  const MultiChipWidget(this.target, this.name, this.groupName, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -523,7 +526,7 @@ class MultiChipWidget extends StatelessWidget {
 class PreviewAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  PreviewAreaWidget({required this.queryResult});
+  PreviewAreaWidget({Key? key, required this.queryResult}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

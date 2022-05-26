@@ -13,6 +13,8 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class ViewsCard extends StatefulWidget {
+  const ViewsCard({Key? key}) : super(key: key);
+
   @override
   State<ViewsCard> createState() => _ViewsCardState();
 }

@@ -18,9 +18,10 @@ class GroupArtistArticleList extends StatefulWidget {
   final int groupId;
 
   GroupArtistArticleList({
+    Key? key,
     required this.name,
     required this.groupId,
-  });
+  }) : super(key: key);
 
   @override
   State<GroupArtistArticleList> createState() => _GroupArtistArticleListState();

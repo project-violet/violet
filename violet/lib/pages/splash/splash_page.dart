@@ -127,7 +127,7 @@ class _RadioTileState<T> extends State<RadioTile<T>> {
 class SplashPage extends StatefulWidget {
   final bool switching;
 
-  SplashPage({this.switching = false});
+  SplashPage({Key? key, this.switching = false}) : super(key: key);
 
   @override
   State<SplashPage> createState() => _SplashPageState();

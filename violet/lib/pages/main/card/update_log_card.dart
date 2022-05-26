@@ -11,6 +11,8 @@ import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 
 class UpdateLogCard extends StatefulWidget {
+  const UpdateLogCard({Key? key}) : super(key: key);
+
   @override
   State<UpdateLogCard> createState() => _UpdateLogCardState();
 }
