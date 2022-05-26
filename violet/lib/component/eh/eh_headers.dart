@@ -13,13 +13,13 @@ class EHSession {
   static Future<String> requestString(String url) async {
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies');
-    return (await http.get(url, headers: {"Cookie": cookie ?? ''})).body;
+    return (await http.get(url, headers: {'Cookie': cookie ?? ''})).body;
   }
 
   static Future<String?> requestRedirect(String url) async {
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies');
-    Request req = Request("Get", Uri.parse(url))..followRedirects = false;
+    Request req = Request('Get', Uri.parse(url))..followRedirects = false;
     req.headers['Cookie'] = cookie ?? '';
     Client baseClient = Client();
     StreamedResponse response = await baseClient.send(req);
@@ -30,8 +30,8 @@ class EHSession {
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies');
     return (await http.post(url,
-            headers: {"Cookie": cookie ?? ''},
-            body: 'commenttext_new=' + Uri.encodeFull(content)))
+            headers: {'Cookie': cookie ?? ''},
+            body: 'commenttext_new=${Uri.encodeFull(content)}'))
         .body;
   }
 }

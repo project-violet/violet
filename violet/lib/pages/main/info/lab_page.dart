@@ -56,9 +56,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   if (LDI.ldi == null) await LDI.init();
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw += 'Id IN (' +
-                      LDI.ldi.map((e) => e.item1).take(1500).join(',') +
-                      ')';
+                  queryRaw +=
+                      'Id IN (${LDI.ldi.map((e) => e.item1).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -72,7 +71,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .map((e) => qr[e.item1.toString()]!)
                       .toList();
 
-                  _navigate(ArticleListPage(name: "LDI DESC", cc: rr));
+                  _navigate(ArticleListPage(name: 'LDI DESC', cc: rr));
                 },
               ),
               _buildItem(
@@ -84,12 +83,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   if (LDI.ldi == null) await LDI.init();
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw += 'Id IN (' +
-                      LDI.ldi.reversed
-                          .map((e) => e.item1)
-                          .take(1500)
-                          .join(',') +
-                      ')';
+                  queryRaw +=
+                      'Id IN (${LDI.ldi.reversed.map((e) => e.item1).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -103,7 +98,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .map((e) => qr[e.item1.toString()]!)
                       .toList();
 
-                  _navigate(ArticleListPage(name: "LDI ASC", cc: rr));
+                  _navigate(ArticleListPage(name: 'LDI ASC', cc: rr));
                 },
               ),
               _buildItem(
@@ -125,9 +120,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   ll.sort((x, y) => y.value.compareTo(x.value));
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw += 'Id IN (' +
-                      ll.map((e) => e.key).take(1500).join(',') +
-                      ')';
+                  queryRaw +=
+                      'Id IN (${ll.map((e) => e.key).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -142,7 +136,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .toList();
 
                   _navigate(
-                      ArticleListPage(name: "User Read Count DESC", cc: rr));
+                      ArticleListPage(name: 'User Read Count DESC', cc: rr));
                 },
               ),
               _buildItem(
@@ -162,14 +156,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   ll.sort((x, y) => y.value.compareTo(x.value));
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw += 'Id IN (' +
-                      ll.map((e) => e.key).take(1500).join(',') +
-                      ')';
+                  queryRaw +=
+                      'Id IN (${ll.map((e) => e.key).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   _navigate(ArticleListPage(
-                      name: "User Read Count DESC", cc: qm.results!));
+                      name: 'User Read Count DESC', cc: qm.results!));
                 },
               ),
               _buildItem(
@@ -246,7 +239,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     ),
                   );
                   if (dialog == true) {
-                    if (getValid(text.text + 'saltff') == '605f372') {
+                    if (getValid('${text.text}saltff') == '605f372') {
                       await showOkDialog(context, 'Successful!');
                       await (await SharedPreferences.getInstance())
                           .setString('labmasterkey', text.text);
@@ -288,12 +281,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   if (CommentsCount.counts == null) await CommentsCount.init();
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw += 'Id IN (' +
-                      CommentsCount.counts
-                          .map((e) => e.item1)
-                          .take(1500)
-                          .join(',') +
-                      ')';
+                  queryRaw +=
+                      'Id IN (${CommentsCount.counts.map((e) => e.item1).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -307,7 +296,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .map((e) => qr[e.item1.toString()]!)
                       .toList();
 
-                  _navigate(ArticleListPage(name: "Comment Counts", cc: rr));
+                  _navigate(ArticleListPage(name: 'Comment Counts', cc: rr));
                 },
               ),
               _buildItem(
@@ -360,7 +349,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
 
   Future<bool> _checkMaterKey() async {
     var key = (await SharedPreferences.getInstance()).getString('labmasterkey');
-    if (key != null && getValid(key + 'saltff') == '605f372') {
+    if (key != null && getValid('${key}saltff') == '605f372') {
       return true;
     }
     return false;
@@ -381,7 +370,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 16.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),

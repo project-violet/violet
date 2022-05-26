@@ -150,10 +150,8 @@ class Bookmark {
               'Gorder': 1,
             });
           } catch (e, st) {
-            Logger.error('[Bookmark Instance] E: ' +
-                e.toString() +
-                '\n' +
-                st.toString());
+            Logger.error('[Bookmark Instance] E: $e\n'
+                '$st');
           }
         }
         var ex = await db.query(
@@ -288,7 +286,7 @@ class Bookmark {
   }
 
   Future<void> positionSwap(int from, int to) async {
-    print(from.toString() + "|" + to.toString());
+    print('$from|$to');
     var groups = await getGroup();
     void swap(int x, int y) {
       var tmp = groups[x];

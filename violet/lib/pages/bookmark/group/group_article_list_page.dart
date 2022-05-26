@@ -366,7 +366,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     return Align(
       alignment: Alignment.centerRight,
       child: Hero(
-        tag: "searchtype2",
+        tag: 'searchtype2',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
@@ -461,7 +461,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   ObjectKey key = ObjectKey(Uuid().v4());
 
   final FilterController _filterController =
-      FilterController(heroKey: "searchtype2");
+      FilterController(heroKey: 'searchtype2');
 
   bool isFilterUsed = false;
 
@@ -583,12 +583,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             ),
             delegate: SliverChildListDelegate(filterResult.map((e) {
               return Padding(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    e.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${e.id()}'),
                 padding: EdgeInsets.zero,
                 child: Align(
                   alignment: Alignment.bottomCenter,
@@ -627,12 +622,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
               return Align(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    x.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${x.id()}'),
                 alignment: Alignment.center,
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(

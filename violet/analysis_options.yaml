@@ -24,10 +24,8 @@ linter:
   rules:
     curly_braces_in_flow_control_structures: false # TODO(ykh09242): Enable this lint. Too many changes.
     avoid_function_literals_in_foreach_calls: false # TODO(ykh09242): Enable this lint.
-    prefer_adjacent_string_concatenation: false # TODO(ykh09242): Enable this lint. Too many changes.
     prefer_collection_literals: false # TODO(ykh09242): Enable this lint. Too many changes.
     prefer_conditional_assignment: false # TODO(ykh09242): Enable this lint. Too many changes.
-    prefer_interpolation_to_compose_strings: false # TODO(ykh09242): Enable this lint. Too many changes.
     avoid_print: false
     avoid_unnecessary_containers: false # TODO(ykh09242): Enable this lint. Too many changes.
     prefer_const_constructors: false # TODO(ykh09242): Enable this lint. Too many changes.
@@ -37,6 +35,8 @@ linter:
     sort_child_properties_last: false # TODO(ykh09242): Enable this lint. Too many changes.
     use_build_context_synchronously: false # TODO(ykh09242): Enable this lint.
     use_key_in_widget_constructors: false # TODO(ykh09242): Enable this lint. Too many changes.
+
+    prefer_single_quotes: true
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

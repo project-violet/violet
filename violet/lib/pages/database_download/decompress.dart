@@ -24,7 +24,7 @@ void _shell(List argv) async {
     return null;
   }
   final _DartP7zipShell p7zipShell = p7zip
-      .lookup<NativeFunction<_NativeP7zipShell>>("p7zipShell")
+      .lookup<NativeFunction<_NativeP7zipShell>>('p7zipShell')
       .asFunction();
   if (p7zipShell == null) {
     return null;
@@ -55,34 +55,34 @@ class P7zip {
     if (soPath == null) {
       return null;
     }
-    String filesStr = "";
+    String filesStr = '';
     files.forEach((element) {
-      filesStr += " $element";
+      filesStr += ' $element';
     });
 
     final receivePort = ReceivePort();
     await Isolate.spawn(
-        _shell, [receivePort.sendPort, soPath, "7zr e $filesStr -o$path"]);
+        _shell, [receivePort.sendPort, soPath, '7zr e $filesStr -o$path']);
     final result = await receivePort.first;
-    print("[p7zip] compress: after first result = $result");
+    print('[p7zip] compress: after first result = $result');
     receivePort.close();
     return result == 0 ? path : null;
   }
 
   Future<String?> _checkSharedLibrary() async {
     final dir = await getTemporaryDirectory();
-    final libFile = File(dir.path + "/lib7zr.so");
+    final libFile = File('${dir.path}/lib7zr.so');
     if (Platform.isAndroid) {
       final devicePlugin = DeviceInfoPlugin();
       final deviceInfo = await devicePlugin.androidInfo;
-      String soResource = "assets/p7zip/armeabi-v7a/lib7zr.so";
-      if (kDebugMode) soResource = "assets/p7zip/x86/lib7zr.so";
+      String soResource = 'assets/p7zip/armeabi-v7a/lib7zr.so';
+      if (kDebugMode) soResource = 'assets/p7zip/x86/lib7zr.so';
       final support64 = deviceInfo.supported64BitAbis;
       if (support64.isNotEmpty) {
         if (kDebugMode)
-          soResource = "assets/p7zip/x86_64/lib7zr.so";
+          soResource = 'assets/p7zip/x86_64/lib7zr.so';
         else
-          soResource = "assets/p7zip/arm64-v8a/lib7zr.so";
+          soResource = 'assets/p7zip/arm64-v8a/lib7zr.so';
       }
       final data = await rootBundle.load(soResource);
       final createFile = await libFile.create();

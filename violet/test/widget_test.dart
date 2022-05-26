@@ -467,7 +467,7 @@ void main() {
   //       'female:loli (lang:korean) -group:zenmmai_courasi -artist:loli'));
   // });
 
-  test("EHentai Test", () async {
+  test('EHentai Test', () async {
     // var what = 'ahegao';
 
     // var search = Uri.encodeComponent(what);

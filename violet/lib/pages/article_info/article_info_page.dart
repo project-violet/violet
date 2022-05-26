@@ -185,9 +185,7 @@ class ArticleInfoPage extends StatelessWidget {
                           header: Padding(
                             padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                             child: Text(
-                                Translations.of(context).trans('related') +
-                                    ' ' +
-                                    Translations.of(context).trans('articles')),
+                                '${Translations.of(context).trans('related')} ${Translations.of(context).trans('articles')}'),
                           ),
                           expanded: _RelatedArea(
                               relatedIds:
@@ -1013,7 +1011,7 @@ class _Chip extends StatelessWidget {
   const _Chip({required this.name, required this.group});
 
   String normalize(String tag) {
-    if (tag == "groups") return "group";
+    if (tag == 'groups') return 'group';
     if (tag == 'artists') return 'artist';
     return tag;
   }
@@ -1058,7 +1056,7 @@ class _Chip extends StatelessWidget {
             child: avatar,
           ),
           label: Text(
-            ' ' + tagDisplayed,
+            ' $tagDisplayed',
             style: TextStyle(
               color: Colors.white,
             ),
@@ -1139,9 +1137,8 @@ class _RelatedArea extends StatelessWidget {
               context,
               () => ArticleListPage(
                   cc: snapshot.data!,
-                  name: Translations.of(context).trans('related') +
-                      ' ' +
-                      Translations.of(context).trans('articles')),
+                  name:
+                      '${Translations.of(context).trans('related')} ${Translations.of(context).trans('articles')}'),
             ),
           ),
         ]);

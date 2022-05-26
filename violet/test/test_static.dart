@@ -12,7 +12,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Test Translated", () async {
+  test('Test Translated', () async {
     await TagTranslate.init();
 
     var tag = TagTranslate.containsFuzzingTotal('그날그쪽에핀꽃은아무도모른다')
@@ -26,13 +26,13 @@ void main() {
     expect(tag.getTag(), answer);
   });
 
-  test("Test Population", () async {
+  test('Test Population', () async {
     await Population.init();
 
     expect(Population.population.isNotEmpty, true);
   });
 
-  test("Test Related", () async {
+  test('Test Related', () async {
     await Related.init();
 
     print(Related.related);

@@ -18,15 +18,16 @@ class VioletChecker {
       //  0. get database path
       //
       var dbPath = Platform.isAndroid
-          ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
-          : "${await getDatabasesPath()}/data.db";
+          ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+          : '${await getDatabasesPath()}/data.db';
 
       //
       // 1. check file exists
       //
       if (!await File(dbPath).exists()) {
-        await Logger.error(
-            '$testPrefix\n' + 'database file not exists\n' + 'PATH:$dbPath');
+        await Logger.error('$testPrefix\n'
+            'database file not exists\n'
+            'PATH:$dbPath');
         return true;
       }
 
@@ -36,12 +37,10 @@ class VioletChecker {
       try {
         db = await openDatabase(dbPath);
       } catch (e, st) {
-        await Logger.error('$testPrefix\n' +
-            'load database fail\n' +
-            'E: ' +
-            e.toString() +
-            '\n' +
-            st.toString());
+        await Logger.error('$testPrefix\n'
+            'load database fail\n'
+            'E: $e\n'
+            '$st');
         return true;
       }
 
@@ -54,12 +53,10 @@ class VioletChecker {
         var queryResult = await db.rawQuery(testQuery);
         results = queryResult.map((e) => QueryResult(result: e)).toList();
       } catch (e, st) {
-        await Logger.error('$testPrefix\n' +
-            'query fail\n' +
-            'E: ' +
-            e.toString() +
-            '\n' +
-            st.toString());
+        await Logger.error('$testPrefix\n'
+            'query fail\n'
+            'E: $e\n'
+            '$st');
         return true;
       }
 
@@ -67,7 +64,8 @@ class VioletChecker {
       // 4. check result is empty
       //
       if (results == null || results.isEmpty) {
-        await Logger.error('$testPrefix\n' + 'query result is empty');
+        await Logger.error('$testPrefix\n'
+            'query result is empty');
         return true;
       }
 
@@ -79,13 +77,10 @@ class VioletChecker {
       //
       return false;
     } catch (e, st) {
-      await Logger.error('$testPrefix\n' +
-          'unhandled\n' +
-          'E: ' +
-          e.toString() +
-          '\n' +
-          st.toString());
-
+      await Logger.error('$testPrefix\n'
+          'unhandled\n'
+          'E: $e\n'
+          '$st');
       return true;
     } finally {
       if (db != null) {
@@ -109,8 +104,9 @@ class VioletChecker {
       // 1. check file exists
       //
       if (!await File(dbPath).exists()) {
-        await Logger.error(
-            '$testPrefix\n' + 'database file not exists\n' + 'PATH:$dbPath');
+        await Logger.error('$testPrefix\n'
+            'database file not exists\n'
+            'PATH:$dbPath');
         return true;
       }
 
@@ -120,12 +116,10 @@ class VioletChecker {
       try {
         db = await openDatabase(dbPath);
       } catch (e, st) {
-        await Logger.error('$testPrefix\n' +
-            'load database fail\n' +
-            'E: ' +
-            e.toString() +
-            '\n' +
-            st.toString());
+        await Logger.error('$testPrefix\n'
+            'load database fail\n'
+            'E: $e\n'
+            '$st');
         return true;
       }
 
@@ -138,12 +132,10 @@ class VioletChecker {
       try {
         results = await db.rawQuery(testQuery);
       } catch (e, st) {
-        await Logger.error('$testPrefix\n' +
-            'query fail\n' +
-            'E: ' +
-            e.toString() +
-            '\n' +
-            st.toString());
+        await Logger.error('$testPrefix\n'
+            'query fail\n'
+            'E: $e\n'
+            '$st');
         return true;
       }
 
@@ -151,7 +143,8 @@ class VioletChecker {
       // 4. check result is empty
       //
       if (results == null || results.isEmpty || results[0].isEmpty) {
-        await Logger.error('$testPrefix\n' + 'query result is empty');
+        await Logger.error('$testPrefix\n'
+            'query result is empty');
         return true;
       }
 
@@ -163,13 +156,10 @@ class VioletChecker {
       //
       return false;
     } catch (e, st) {
-      await Logger.error('$testPrefix\n' +
-          'unhandled\n' +
-          'E: ' +
-          e.toString() +
-          '\n' +
-          st.toString());
-
+      await Logger.error('$testPrefix\n'
+          'unhandled\n'
+          'E: $e\n'
+          '$st');
       return true;
     } finally {
       if (db != null) {

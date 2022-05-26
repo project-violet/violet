@@ -155,11 +155,7 @@ class _CommunityPageState extends State<CommunityPage>
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 16)),
                               Text(
-                                  ' ' +
-                                      (_userAppId != null
-                                          ? _userAppId.substring(0, 16)
-                                          : '') +
-                                      '...',
+                                  ' ${_userAppId != null ? _userAppId.substring(0, 16) : ''}...',
                                   style: TextStyle(fontSize: 16)),
                             ],
                           )
@@ -221,9 +217,11 @@ class _CommunityPageState extends State<CommunityPage>
 
                             var ync = await showYesNoDialog(
                                 context,
-                                'You need to log in to use the community feature. ' +
-                                    'If you have an existing id, press "YES" to log in. ' +
-                                    'If you do not have an existing id, press "NO" to register for a new one.',
+                                'You need to log in to use the community feature.'
+                                    ' If you have an existing id,'
+                                    ' press "YES" to log in.'
+                                    ' If you do not have an existing id,'
+                                    ' press "NO" to register for a new one.',
                                 'Sign In/Up');
 
                             if (ync == null) return;
@@ -247,9 +245,12 @@ class _CommunityPageState extends State<CommunityPage>
                                   'success') {
                                 await showOkDialog(
                                     context,
-                                    'You cannot continue, there is an account registered with your UserAppId.' +
-                                        ' If you have already registered as a member, please sign in with your existing id.' +
-                                        ' If you forgot your login information, please contact developer.');
+                                    'You cannot continue,'
+                                    ' there is an account registered with your UserAppId.'
+                                    ' If you have already registered as a member,'
+                                    ' please sign in with your existing id.'
+                                    ' If you forgot your login information,'
+                                    ' please contact developer.');
                                 return;
                               }
                               var r = await showDialog(

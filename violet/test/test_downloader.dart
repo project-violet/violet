@@ -10,7 +10,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Test Downloader", () async {
+  test('Test Downloader', () async {
     var dio = Dio();
 
     var tests = [
@@ -40,7 +40,7 @@ void main() {
 
         nu = 0;
 
-        var progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
+        var progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
         print('$url [${rec ~/ 1024}/${total ~/ 1024}] $progressString');
       });
     }

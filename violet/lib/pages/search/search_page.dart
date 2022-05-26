@@ -120,15 +120,15 @@ class _SearchPageState extends State<SearchPage>
           });
         }
       } catch (e, st) {
-        Logger.error(
-            '[Initial-Search] E: ' + e.toString() + '\n' + st.toString());
+        Logger.error('[Initial-Search] E: $e\n'
+            '$st');
         print('Initial search failed: $e');
         _showErrorToast('Failed to search all: $e');
       }
     }).catchError((e, st) {
       // It happened!
-      Logger.error(
-          '[Initial-SearchI] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Initial-SearchI] E: $e'
+          '\n$st');
       print('Initial search interrupted: $e');
       _showErrorToast('Initial search interrupted: $e');
     });
@@ -329,7 +329,7 @@ class _SearchPageState extends State<SearchPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "searchbar",
+          tag: 'searchbar',
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -467,7 +467,7 @@ class _SearchPageState extends State<SearchPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "searchtype",
+          tag: 'searchtype',
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack
@@ -659,7 +659,8 @@ class _SearchPageState extends State<SearchPage>
 
       ScriptManager.refresh();
     } catch (e, st) {
-      Logger.error('[search-error] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[search-error] E: $e\n'
+          '$st');
       rethrow;
     } finally {
       _querySem.release();
@@ -771,9 +772,8 @@ class ResultPanelWidget extends StatelessWidget {
                               showDetail: false,
                               addBottomPadding: false,
                               width: (windowWidth - 4.0) / mm,
-                              thumbnailTag: 'thumbnail' +
-                                  resultList[index].id().toString() +
-                                  dateTime.toString(),
+                              thumbnailTag:
+                                  'thumbnail${resultList[index].id()}$dateTime',
                               usableTabList: resultList,
                             ),
                             child: ArticleListItemVerySimpleWidget(),
@@ -817,9 +817,8 @@ class ResultPanelWidget extends StatelessWidget {
                       showDetail: Settings.searchResultType == 3,
                       queryResult: resultList[index],
                       width: windowWidth - 4.0,
-                      thumbnailTag: 'thumbnail' +
-                          resultList[index].id().toString() +
-                          dateTime.toString(),
+                      thumbnailTag:
+                          'thumbnail${resultList[index].id()}$dateTime',
                       usableTabList: resultList,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
@@ -842,9 +841,8 @@ class ResultPanelWidget extends StatelessWidget {
                       showDetail: Settings.searchResultType == 3,
                       queryResult: resultList[index],
                       width: windowWidth - 4.0,
-                      thumbnailTag: 'thumbnail' +
-                          resultList[index].id().toString() +
-                          dateTime.toString(),
+                      thumbnailTag:
+                          'thumbnail${resultList[index].id()}$dateTime',
                       usableTabList: resultList,
                     ),
                     child: ArticleListItemVerySimpleWidget(),

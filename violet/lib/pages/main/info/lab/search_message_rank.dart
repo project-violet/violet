@@ -33,7 +33,7 @@ class _SearchMessageRankPageState extends State<SearchMessageRankPage> {
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       if (SearchMessageRankPageMemory.rawSearchLists.isEmpty) {
         const url =
-            "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
+            'https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json';
 
         var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 

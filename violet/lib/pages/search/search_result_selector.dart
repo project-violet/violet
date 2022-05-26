@@ -18,7 +18,7 @@ class SearchResultSelector extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Hero(
-              tag: "searchbar",
+              tag: 'searchbar',
               child: Card(
                 color: Settings.themeWhat
                     ? Color(0xFF353535)

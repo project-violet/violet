@@ -298,11 +298,9 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         },
       );
     } catch (e, st) {
-      await Logger.error('[Viewer_thumbnails]\n' +
-          'E: ' +
-          e.toString() +
-          '\n' +
-          st.toString());
+      await Logger.error('[Viewer_thumbnails]\n'
+          'E: $e\n'
+          '$st');
     }
   }
 }

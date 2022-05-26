@@ -87,10 +87,10 @@ class ThumbnailWidget extends StatelessWidget {
             )
           : !Settings.simpleItemWidgetLoadingIcon
               ? const FlareActor(
-                  "assets/flare/Loading2.flr",
+                  'assets/flare/Loading2.flr',
                   alignment: Alignment.center,
                   fit: BoxFit.fitHeight,
-                  animation: "Alarm",
+                  animation: 'Alarm',
                 )
               : Center(
                   child: SizedBox(
@@ -149,10 +149,10 @@ class ThumbnailImageWidget extends StatelessWidget {
         placeholder: (b, c) {
           if (!Settings.simpleItemWidgetLoadingIcon) {
             return const FlareActor(
-              "assets/flare/Loading2.flr",
+              'assets/flare/Loading2.flr',
               alignment: Alignment.center,
               fit: BoxFit.fitHeight,
-              animation: "Alarm",
+              animation: 'Alarm',
             );
           } else {
             return Center(
@@ -195,7 +195,7 @@ class BookmarkIndicatorWidget extends StatelessWidget {
               if (!Settings.simpleItemWidgetLoadingIcon) {
                 return FlareActor(
                   'assets/flare/likeUtsua.flr',
-                  animation: value ? "Like" : "IdleUnlike",
+                  animation: value ? 'Like' : 'IdleUnlike',
                   controller: flareController,
                 );
               } else {
@@ -272,7 +272,7 @@ class PagesOverlayWidget extends StatelessWidget {
             child: RawChip(
               labelPadding: EdgeInsets.all(0.0),
               label: Text(
-                '' + imageCount.toString() + ' Page',
+                '$imageCount Page',
                 style: TextStyle(
                   color: Colors.white,
                 ),

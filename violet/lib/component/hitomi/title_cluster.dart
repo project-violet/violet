@@ -1,7 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import "package:collection/collection.dart";
+import 'package:collection/collection.dart';
 import 'package:kdtree/kdtree.dart';
 import 'package:violet/algorithm/disjointset.dart';
 import 'package:violet/algorithm/distance.dart';

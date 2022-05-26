@@ -56,8 +56,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                       child: Text(
                         snapshot.data![index - 1].lastPage() == null
                             ? '??'
-                            : snapshot.data![index - 1].lastPage().toString() +
-                                ' Page',
+                            : '${snapshot.data![index - 1].lastPage()} Page',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 16,

@@ -114,7 +114,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     }
 
     return Container(
-      key: Key("lab_bookmark_group_" + id.toString()),
+      key: Key('lab_bookmark_group_$id'),
       child: Container(
         margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
         width: double.infinity,
@@ -165,7 +165,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                 if (yn != null && yn) {
                   // 북마크 그룹 생성
                   var groupName =
-                      "${widget.userAppId.substring(0, 8)}-${data!.name()}";
+                      '${widget.userAppId.substring(0, 8)}-${data!.name()}';
 
                   var bookmark = await Bookmark.getInstance();
                   var gid = await bookmark.createGroup(

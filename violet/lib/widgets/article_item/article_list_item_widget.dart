@@ -431,8 +431,8 @@ class _ArticleListItemVerySimpleWidgetState
         toastDuration: Duration(seconds: 4),
       );
     } catch (e, st) {
-      Logger.error(
-          '[ArticleList-LongPress] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[ArticleList-LongPress] E: $e\n'
+          '$st');
     }
     isBookmarked.value = !isBookmarked.value;
 
