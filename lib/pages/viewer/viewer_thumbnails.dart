@@ -22,7 +22,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class ViewerThumbnail extends StatefulWidget {
   final int viewedPage;
 
-  ViewerThumbnail({required this.viewedPage});
+  ViewerThumbnail({Key? key, required this.viewedPage}) : super(key: key);
 
   @override
   State<ViewerThumbnail> createState() => _ViewerThumbnailState();

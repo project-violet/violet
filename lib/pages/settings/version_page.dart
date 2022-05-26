@@ -7,6 +7,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
 
 class VersionViewPage extends StatelessWidget {
+  const VersionViewPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

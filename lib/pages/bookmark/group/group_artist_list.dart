@@ -25,7 +25,8 @@ class GroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistList({required this.name, required this.groupId});
+  GroupArtistList({Key? key, required this.name, required this.groupId})
+      : super(key: key);
 
   @override
   State<GroupArtistList> createState() => _GroupArtistListState();

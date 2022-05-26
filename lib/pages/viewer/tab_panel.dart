@@ -31,10 +31,11 @@ class TabPanel extends StatefulWidget {
   final List<QueryResult>? usableTabList;
 
   TabPanel({
+    Key? key,
     required this.articleId,
     this.usableTabList,
     required this.height,
-  });
+  }) : super(key: key);
 
   @override
   State<TabPanel> createState() => _TabPanelState();

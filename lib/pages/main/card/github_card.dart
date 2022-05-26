@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class GithubCard extends StatefulWidget {
+  const GithubCard({Key? key}) : super(key: key);
+
   @override
   State<GithubCard> createState() => _GithubCardState();
 }

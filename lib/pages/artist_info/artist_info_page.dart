@@ -42,12 +42,13 @@ class ArtistInfoPage extends StatefulWidget {
   final bool isCharacter;
 
   ArtistInfoPage({
+    Key? key,
     required this.artist,
     this.isGroup = false,
     this.isUploader = false,
     this.isSeries = false,
     this.isCharacter = false,
-  });
+  }) : super(key: key);
 
   @override
   State<ArtistInfoPage> createState() => _ArtistInfoPageState();
