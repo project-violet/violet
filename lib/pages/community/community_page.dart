@@ -13,6 +13,8 @@ import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
 class CommunityPage extends StatefulWidget {
+  const CommunityPage({Key? key}) : super(key: key);
+
   @override
   State<CommunityPage> createState() => _CommunityPageState();
 }

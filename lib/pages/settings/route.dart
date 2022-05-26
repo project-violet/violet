@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/settings/settings.dart';
 
 class RouteDialog extends StatefulWidget {
-  RouteDialog();
+  RouteDialog({Key? key}) : super(key: key);
 
   @override
   State<RouteDialog> createState() => _RouteDialogState();
@@ -69,7 +69,7 @@ class _RouteDialogState extends State<RouteDialog> {
 }
 
 class ImageRouteDialog extends StatefulWidget {
-  ImageRouteDialog();
+  ImageRouteDialog({Key? key}) : super(key: key);
 
   @override
   State<ImageRouteDialog> createState() => _ImageRouteDialogState();

@@ -28,8 +28,9 @@ class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
 
   FilterPage({
+    Key? key,
     required this.queryResult,
-  });
+  }) : super(key: key);
 
   @override
   State<FilterPage> createState() => _FilterPageState();

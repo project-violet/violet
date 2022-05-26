@@ -6,6 +6,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/settings/settings.dart';
 
 class DownloadImageMenu extends StatelessWidget {
+  const DownloadImageMenu({Key? key}) : super(key: key);
+
   Color getColor(int i) {
     return Settings.themeWhat ? Colors.grey.shade200 : Colors.grey.shade900;
   }
@@ -17,6 +19,19 @@ class DownloadImageMenu extends StatelessWidget {
         Navigator.pop(context, 0);
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.4)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,19 +65,6 @@ class DownloadImageMenu extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
             ),
           ],
         ),

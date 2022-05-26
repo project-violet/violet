@@ -43,6 +43,8 @@ class DownloadPageManager {
 
 // This page must remain alive until the app is closed.
 class DownloadPage extends StatefulWidget {
+  const DownloadPage({Key? key}) : super(key: key);
+
   @override
   State<DownloadPage> createState() => _DownloadPageState();
 }
@@ -507,6 +509,7 @@ class _DownloadPageState extends State<DownloadPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _featuresOnTap,
               child: SizedBox(
                 height: 64,
                 width: 64,
@@ -520,7 +523,6 @@ class _DownloadPageState extends State<DownloadPage>
                   ],
                 ),
               ),
-              onTap: _featuresOnTap,
             ),
           ),
         ),
@@ -589,6 +591,9 @@ class _DownloadPageState extends State<DownloadPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _alignOnTap,
+              onDoubleTap: _alignDoubleTap,
+              onLongPress: _alignLongPress,
               child: SizedBox(
                 height: 64,
                 width: 64,
@@ -602,9 +607,6 @@ class _DownloadPageState extends State<DownloadPage>
                   ],
                 ),
               ),
-              onTap: _alignOnTap,
-              onDoubleTap: _alignDoubleTap,
-              onLongPress: _alignLongPress,
             ),
           ),
         ),

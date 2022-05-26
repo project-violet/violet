@@ -27,9 +27,10 @@ class DataBaseDownloadPage extends StatefulWidget {
   final bool isSync;
 
   DataBaseDownloadPage({
+    Key? key,
     this.dbType,
     this.isSync = false,
-  });
+  }) : super(key: key);
 
   @override
   DataBaseDownloadPagepState createState() {

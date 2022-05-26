@@ -31,10 +31,11 @@ class TabPanel extends StatefulWidget {
   final List<QueryResult>? usableTabList;
 
   TabPanel({
+    Key? key,
     required this.articleId,
     this.usableTabList,
     required this.height,
-  });
+  }) : super(key: key);
 
   @override
   State<TabPanel> createState() => _TabPanelState();
@@ -400,9 +401,6 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
           builder: (_, controller) {
             if (cache == null) {
               cache = Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
                 value: ArticleInfo.fromArticleInfo(
                   queryResult: e,
                   thumbnail: thumbnail,
@@ -411,6 +409,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                   isBookmarked: isBookmarked,
                   controller: controller,
                   usableTabList: articleList,
+                ),
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
             }

@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class ContactCard extends StatefulWidget {
+  const ContactCard({Key? key}) : super(key: key);
+
   @override
   State<ContactCard> createState() => _ContactCardState();
 }

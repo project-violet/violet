@@ -38,6 +38,8 @@ import 'package:violet/widgets/search_bar.dart';
 bool blurred = false;
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({Key? key}) : super(key: key);
+
   @override
   State<SearchPage> createState() => _SearchPageState();
 }
@@ -262,9 +264,9 @@ class _SearchPageState extends State<SearchPage>
               FadeTransition(
             opacity: animation,
             child: SizeTransition(
-              child: child,
               sizeFactor: animation,
               axis: Axis.horizontal,
+              child: child,
             ),
           ),
           child: !isExtended
@@ -482,6 +484,8 @@ class _SearchPageState extends State<SearchPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _alignOnTap,
+              onLongPress: _alignLongPress,
               child: SizedBox(
                 height: 64,
                 width: 64,
@@ -495,8 +499,6 @@ class _SearchPageState extends State<SearchPage>
                   ],
                 ),
               ),
-              onTap: _alignOnTap,
-              onLongPress: _alignLongPress,
             ),
           ),
         ),

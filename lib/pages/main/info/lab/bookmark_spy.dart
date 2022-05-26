@@ -14,6 +14,8 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabBookmarkSpyPage extends StatefulWidget {
+  const LabBookmarkSpyPage({Key? key}) : super(key: key);
+
   @override
   State<LabBookmarkSpyPage> createState() => _LabBookmarkSpyPageState();
 }

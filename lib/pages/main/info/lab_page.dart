@@ -28,6 +28,8 @@ import 'package:violet/server/wsalt.dart';
 import 'lab/search_comment.dart';
 
 class LaboratoryPage extends StatefulWidget {
+  const LaboratoryPage({Key? key}) : super(key: key);
+
   @override
   State<LaboratoryPage> createState() => _LaboratoryPageState();
 }
