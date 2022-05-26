@@ -6,6 +6,8 @@ import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/settings/settings.dart';
 
 class ImportFromEHPage extends StatefulWidget {
+  const ImportFromEHPage({Key? key}) : super(key: key);
+
   @override
   State<ImportFromEHPage> createState() => _ImportFromEHPageState();
 }

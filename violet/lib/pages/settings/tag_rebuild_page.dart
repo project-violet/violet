@@ -12,6 +12,8 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
 class TagRebuildPage extends StatefulWidget {
+  const TagRebuildPage({Key? key}) : super(key: key);
+
   @override
   State<TagRebuildPage> createState() => _TagRebuildPageState();
 }

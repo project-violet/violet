@@ -11,9 +11,10 @@ class GroupModifyPage extends StatefulWidget {
   final String desc;
 
   const GroupModifyPage({
+    Key? key,
     required this.name,
     required this.desc,
-  });
+  }) : super(key: key);
 
   @override
   State<GroupModifyPage> createState() => _GroupModifyPageState();

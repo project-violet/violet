@@ -43,6 +43,8 @@ class DownloadPageManager {
 
 // This page must remain alive until the app is closed.
 class DownloadPage extends StatefulWidget {
+  const DownloadPage({Key? key}) : super(key: key);
+
   @override
   State<DownloadPage> createState() => _DownloadPageState();
 }

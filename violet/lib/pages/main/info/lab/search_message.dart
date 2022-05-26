@@ -26,6 +26,8 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class LabSearchMessage extends StatefulWidget {
+  const LabSearchMessage({Key? key}) : super(key: key);
+
   @override
   State<LabSearchMessage> createState() => _LabSearchMessageState();
 }

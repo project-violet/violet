@@ -13,11 +13,12 @@ class ThumbnailViewPage extends StatefulWidget {
   final Size? size;
 
   ThumbnailViewPage({
+    Key? key,
     required this.thumbnail,
     required this.headers,
     this.size,
     required this.heroKey,
-  });
+  }) : super(key: key);
 
   @override
   State<ThumbnailViewPage> createState() => _ThumbnailViewPageState();

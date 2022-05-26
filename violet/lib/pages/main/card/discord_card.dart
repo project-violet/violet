@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class DiscordCard extends StatefulWidget {
+  const DiscordCard({Key? key}) : super(key: key);
+
   @override
   State<DiscordCard> createState() => _DiscordCardState();
 }
