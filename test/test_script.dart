@@ -23,7 +23,7 @@ void main() {
   cmake --build build/linux
   sudo cp build/linux/libquickjs_c_bridge_plugin.so /usr/lib/libquickjs_c_bridge_plugin.so
   */
-  test("JS Simple Test", () async {
+  test('JS Simple Test', () async {
     JavascriptRuntime flutterJs;
     flutterJs = getJavascriptRuntime();
 

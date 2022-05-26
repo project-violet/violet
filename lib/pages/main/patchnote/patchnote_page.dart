@@ -895,7 +895,7 @@ class _PatchNotePageState extends State<PatchNotePage> {
                           ],
                         ),
                         Container(height: 4),
-                        Text('* ' + ii.contents.join('\n* ')),
+                        Text('* ${ii.contents.join('\n* ')}'),
                       ],
                     ),
                   );

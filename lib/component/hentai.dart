@@ -66,7 +66,7 @@ class HentaiManager {
   static Future<Tuple2<List<QueryResult>, int>> idSearch(String what) async {
     final queryString = HitomiManager.translate2query(what);
     var queryResult = (await (await DataBaseManager.getInstance())
-            .query("$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0"))
+            .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
     int? no = int.tryParse(what);
@@ -88,8 +88,8 @@ class HentaiManager {
       };
       return Tuple2<List<QueryResult>, int>([QueryResult(result: meta)], -1);
     } catch (e, st) {
-      Logger.error(
-          '[hentai-idSearch] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[hentai-idSearch] E: $e\n'
+          '$st');
     }
 
     return Tuple2<List<QueryResult>, int>([], -1);
@@ -117,24 +117,17 @@ class HentaiManager {
         return Tuple2<List<QueryResult>, int>([], -1);
       }
     }
-    final queryString = HitomiManager.translate2query(wwhat +
-        ' ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' ')
-            .trim());
+    final queryString = HitomiManager.translate2query(
+        '$wwhat ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
 
     // if (offset == 0 && seed < 0) _latestSeed = new Random().nextDouble() + 1;
     await Logger.info('[Database Query]\nSQL: $queryString');
 
     const int itemsPerPage = 500;
-    var queryResult = (await (await DataBaseManager.getInstance()).query(
-            "$queryString ORDER BY " +
-                "Id * $seed - ROUND(Id * $seed - 0.5, 0) DESC" +
-                " LIMIT $itemsPerPage OFFSET $offset"))
+    var queryResult = (await (await DataBaseManager.getInstance())
+            .query('$queryString ORDER BY '
+                'Id * $seed - ROUND(Id * $seed - 0.5, 0) DESC'
+                ' LIMIT $itemsPerPage OFFSET $offset'))
         .map((e) => QueryResult(result: e))
         .toList();
     return Tuple2<List<QueryResult>, int>(queryResult,
@@ -143,21 +136,14 @@ class HentaiManager {
 
   static Future<Tuple2<List<QueryResult>, int>> _dbSearch(String what,
       [int offset = 0]) async {
-    final queryString = HitomiManager.translate2query(what +
-        ' ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' ')
-            .trim());
+    final queryString = HitomiManager.translate2query(
+        '$what ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
 
     await Logger.info('[Database Query]\nSQL: $queryString');
 
     const int itemsPerPage = 500;
     var queryResult = (await (await DataBaseManager.getInstance()).query(
-            "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET $offset"))
+            '$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET $offset'))
         .map((e) => QueryResult(result: e))
         .toList();
     return Tuple2<List<QueryResult>, int>(queryResult,
@@ -188,10 +174,8 @@ class HentaiManager {
             break;
         }
       } catch (e, st) {
-        Logger.error('[hentai-_networkSearch] E: ' +
-            e.toString() +
-            '\n' +
-            st.toString());
+        Logger.error('[hentai-_networkSearch] E: $e\n'
+            '$st');
       }
     }
 
@@ -200,15 +184,8 @@ class HentaiManager {
   }
 
   static Future<int> countSearch(String what) async {
-    final queryString = HitomiManager.translate2query(what +
-        ' ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' ')
-            .trim());
+    final queryString = HitomiManager.translate2query(
+        '$what ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
 
     var count = (await (await DataBaseManager.getInstance()).query(queryString
             .replaceAll('SELECT * FROM', 'SELECT COUNT(*) AS C FROM')))
@@ -280,10 +257,8 @@ class HentaiManager {
             break;
         }
       } catch (e, st) {
-        Logger.error('[hentai-getImageProvider] E: ' +
-            e.toString() +
-            '\n' +
-            st.toString());
+        Logger.error('[hentai-getImageProvider] E: $e\n'
+            '$st');
       }
     }
 
@@ -384,7 +359,7 @@ class HentaiManager {
     var cookie =
         (await SharedPreferences.getInstance()).getString('eh_cookies') ?? '';
     var html =
-        (await http.get(url, headers: {'Cookie': cookie + ';sl=dm_2'})).body;
+        (await http.get(url, headers: {'Cookie': '$cookie;sl=dm_2'})).body;
 
     var result = EHParser.parseReulstPageExtendedListView(html);
 
@@ -393,9 +368,9 @@ class HentaiManager {
 
       if (element.descripts != null) {
         if (element.descripts!['female'] != null)
-          tag.addAll(element.descripts!['female']!.map((e) => "female:" + e));
+          tag.addAll(element.descripts!['female']!.map((e) => 'female:$e'));
         if (element.descripts!['male'] != null)
-          tag.addAll(element.descripts!['male']!.map((e) => "male:" + e));
+          tag.addAll(element.descripts!['male']!.map((e) => 'male:$e'));
         if (element.descripts!['misc'] != null)
           tag.addAll(element.descripts!['misc']!);
       }

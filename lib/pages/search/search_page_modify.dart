@@ -63,7 +63,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                 ),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () async {
-                  if (_pageController.text == "") {
+                  if (_pageController.text == '') {
                     Navigator.pop(context, [
                       1,
                       0,

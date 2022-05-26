@@ -58,7 +58,7 @@ class _DownloadPageState extends State<DownloadPage>
   List<DownloadItemModel> filterResult = [];
   Map<int, QueryResult> queryResults = Map<int, QueryResult>();
   final FilterController _filterController =
-      FilterController(heroKey: "downloadtype");
+      FilterController(heroKey: 'downloadtype');
   ObjectKey _listKey = ObjectKey(Uuid().v4());
   late final FToast fToast;
 
@@ -146,7 +146,7 @@ class _DownloadPageState extends State<DownloadPage>
     }
 
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-    queryRaw += 'Id IN (' + articles.map((e) => e).join(',') + ')';
+    queryRaw += 'Id IN (${articles.map((e) => e).join(',')})';
     QueryManager.query(queryRaw).then((value) async {
       var qr = Map<int, QueryResult>();
       value.results!.forEach((element) {
@@ -262,7 +262,7 @@ class _DownloadPageState extends State<DownloadPage>
                   downloadItemWidgetKeys1[filterResult[index].id()] =
                       GlobalKey<DownloadItemWidgetState>();
                 return Align(
-                  key: Key('dp' + e.id().toString() + e.url()),
+                  key: Key('dp${e.id()}${e.url()}'),
                   alignment: Alignment.bottomCenter,
                   child: DownloadItemWidget(
                     key: downloadItemWidgetKeys1[filterResult[index].id()],
@@ -306,7 +306,7 @@ class _DownloadPageState extends State<DownloadPage>
                 downloadItemWidgetKeys2[filterResult[index].id()] =
                     GlobalKey<DownloadItemWidgetState>();
               return Align(
-                key: Key('dp' + e.id().toString() + e.url()),
+                key: Key('dp${e.id()}${e.url()}'),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys2[filterResult[index].id()],
@@ -332,7 +332,7 @@ class _DownloadPageState extends State<DownloadPage>
                 downloadItemWidgetKeys3[e.id()] =
                     GlobalKey<DownloadItemWidgetState>();
               return Align(
-                key: Key('dp' + e.id().toString() + e.url()),
+                key: Key('dp${e.id()}${e.url()}'),
                 alignment: Alignment.center,
                 child: DownloadItemWidget(
                   key: downloadItemWidgetKeys3[e.id()],
@@ -418,7 +418,7 @@ class _DownloadPageState extends State<DownloadPage>
                         if (await Permission.storage.request() ==
                             PermissionStatus.denied) {
                           await showOkDialog(context,
-                              "You cannot use downloader, if you not allow external storage permission.");
+                              'You cannot use downloader, if you not allow external storage permission.');
                           return;
                         }
                       }
@@ -457,7 +457,7 @@ class _DownloadPageState extends State<DownloadPage>
                         final ids = text.text.split(',').map((e) => e.trim());
                         if (ids
                             .any((element) => int.tryParse(element) == null)) {
-                          await showOkDialog(context, "콤마로 구분된 숫자만 입력해야 합니다!");
+                          await showOkDialog(context, '콤마로 구분된 숫자만 입력해야 합니다!');
                           return;
                         }
                         if (dialog == true) {
@@ -467,7 +467,7 @@ class _DownloadPageState extends State<DownloadPage>
                         }
                       } else {
                         if (int.parse(text.text) == null) {
-                          await showOkDialog(context, "숫자만 입력해야 합니다!");
+                          await showOkDialog(context, '숫자만 입력해야 합니다!');
                           return;
                         }
                         if (dialog == true) {
@@ -492,7 +492,7 @@ class _DownloadPageState extends State<DownloadPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "features",
+          tag: 'features',
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack
@@ -553,7 +553,7 @@ class _DownloadPageState extends State<DownloadPage>
             .forEach((key, value) => value.currentState.recovery());
       else if (value == 2) {
         Clipboard.setData(ClipboardData(
-            text: filterResult.map((e) => int.tryParse(e.url())).join(", ")));
+            text: filterResult.map((e) => int.tryParse(e.url())).join(', ')));
         fToast.showToast(
           child: ToastWrapper(
             isCheck: true,
@@ -574,7 +574,7 @@ class _DownloadPageState extends State<DownloadPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: "downloadtype",
+          tag: 'downloadtype',
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack
@@ -769,8 +769,8 @@ class _DownloadPageState extends State<DownloadPage>
           final a1 = queryResults[xx]!.groups();
           final a2 = queryResults[yy]!.groups();
 
-          if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
-          if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
+          if (a1 == null || a1 == '' || a1 == '|N/A|') return 1;
+          if (a2 == null || a2 == '' || a2 == '|N/A|') return -1;
 
           final aa1 =
               (a1 as String).split('|').firstWhere((element) => element != '');
@@ -785,8 +785,8 @@ class _DownloadPageState extends State<DownloadPage>
           final a1 = queryResults[xx]!.artists();
           final a2 = queryResults[yy]!.artists();
 
-          if (a1 == null || a1 == "" || a1 == "|N/A|") return 1;
-          if (a2 == null || a2 == "" || a2 == "|N/A|") return -1;
+          if (a1 == null || a1 == '' || a1 == '|N/A|') return 1;
+          if (a2 == null || a2 == '' || a2 == '|N/A|') return -1;
 
           final aa1 =
               (a1 as String).split('|').firstWhere((element) => element != '');

@@ -182,10 +182,10 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       var timer = Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
         setState(() {
           if (downloadSec / 1024 < 500.0)
-            downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";
+            downloadSpeed = '${(downloadSec / 1024).toStringAsFixed(1)} KB/S';
           else
             downloadSpeed =
-                (downloadSec / 1024 / 1024).toStringAsFixed(1) + " MB/S";
+                '${(downloadSec / 1024 / 1024).toStringAsFixed(1)} MB/S';
           downloadSec = 0;
         });
       });
@@ -259,10 +259,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           isCheck: true,
           isWarning: false,
           icon: Icons.download,
-          msg: widget.item.info()!.split('[')[1].split(']').first +
-              Translations.of(context).trans('download') +
-              " " +
-              Translations.of(context).trans('complete'),
+          msg:
+              '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
         ),
         gravity: ToastGravity.BOTTOM,
         toastDuration: Duration(seconds: 4),
@@ -585,7 +583,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
     var state = 'None';
     var pp =
-        '${Translations.instance!.trans('date')}: ' + widget.item.dateTime()!;
+        '${Translations.instance!.trans('date')}: ${widget.item.dateTime()!}';
 
     var statecolor = !Settings.themeWhat ? Colors.black : Colors.white;
     var statebold = FontWeight.normal;
@@ -596,21 +594,17 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         break;
       case 1:
         state = Translations.instance!.trans('waitqueue');
-        pp = Translations.instance!.trans('progress') +
-            ': ' +
-            Translations.instance!.trans('waitdownload');
+        pp =
+            '${Translations.instance!.trans('progress')}: ${Translations.instance!.trans('waitdownload')}';
         break;
       case 2:
         if (max == 0) {
           state = Translations.instance!.trans('extracting');
-          pp = Translations.instance!.trans('progress') +
-              ': ' +
-              Translations.instance!
-                  .trans('count')
-                  .replaceAll('%s', cur.toString());
+          pp =
+              '${Translations.instance!.trans('progress')}: ${Translations.instance!.trans('count').replaceAll('%s', cur.toString())}';
         } else {
-          state = Translations.instance!.trans('extracting') + '[$cur/$max]';
-          pp = Translations.instance!.trans('progress') + ': ';
+          state = '${Translations.instance!.trans('extracting')}[$cur/$max]';
+          pp = '${Translations.instance!.trans('progress')}: ';
         }
         break;
 
@@ -618,7 +612,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         // state =
         //     '[$downloadedFileCount/$downloadTotalFileCount] ($downloadSpeed ${(download / 1024.0 / 1024.0).toStringAsFixed(1)} MB)';
         state = '[$downloadedFileCount/$downloadTotalFileCount]';
-        pp = Translations.instance!.trans('progress') + ': ';
+        pp = '${Translations.instance!.trans('progress')}: ';
         break;
 
       case 6:
@@ -659,14 +653,14 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(Translations.instance!.trans('dinfo') + ': ' + title,
+          Text('${Translations.instance!.trans('dinfo')}: $title',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           Container(
             height: 2,
           ),
-          Text(Translations.instance!.trans('state') + ': ' + state,
+          Text('${Translations.instance!.trans('state')}: $state',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -815,10 +809,10 @@ class _ThumbnailWidget extends StatelessWidget {
   Widget _getLoadingAnimation() {
     if (!Settings.simpleItemWidgetLoadingIcon) {
       return const FlareActor(
-        "assets/flare/Loading2.flr",
+        'assets/flare/Loading2.flr',
         alignment: Alignment.center,
         fit: BoxFit.fitHeight,
-        animation: "Alarm",
+        animation: 'Alarm',
       );
     } else {
       return Center(
@@ -892,10 +886,10 @@ class _FileThumbnailWidget extends StatelessWidget {
   Widget _getLoadingAnimation() {
     if (!Settings.simpleItemWidgetLoadingIcon) {
       return const FlareActor(
-        "assets/flare/Loading2.flr",
+        'assets/flare/Loading2.flr',
         alignment: Alignment.center,
         fit: BoxFit.fitHeight,
-        animation: "Alarm",
+        animation: 'Alarm',
       );
     } else {
       return Center(

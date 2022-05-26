@@ -92,7 +92,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     for (var tag in (qr as String).split('|'))
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
@@ -102,7 +102,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     var str = qr as String;
     if (str != null && str != '') {
       if (!map.containsKey(str)) map[str] = 0;
@@ -113,12 +113,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
   Future indexing() async {
     QueryManager qm;
     qm = QueryManager.queryPagination(HitomiManager.translate2query(
-        Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' ')));
+        '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}'));
     qm.itemsPerPage = 50000;
 
     var tags = Map<String, int>();
@@ -147,7 +142,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
     int i = 0;
     while (true) {
       setState(() {
-        baseString = Translations.instance!.trans('dbdindexing') + '[$i/20]';
+        baseString = '${Translations.instance!.trans('dbdindexing')}[$i/20]';
       });
 
       var ll = await qm.next();
@@ -308,15 +303,15 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
       if (ll.isEmpty) {
         var index = {
-          "tag": tags,
-          "artist": artists,
-          "group": groups,
-          "series": series,
-          "lang": languages,
-          "type": types,
-          "uploader": uploaders,
-          "character": characters,
-          "class": classes,
+          'tag': tags,
+          'artist': artists,
+          'group': groups,
+          'series': series,
+          'lang': languages,
+          'type': types,
+          'uploader': uploaders,
+          'character': characters,
+          'class': classes,
         };
         final subdir = Platform.isAndroid ? '/data' : '';
 

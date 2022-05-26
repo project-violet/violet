@@ -55,7 +55,7 @@ class _GithubCardState extends State<GithubCard> {
                     '  ${Translations.of(context).trans('maingithub')}',
                     style: TextStyle(
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,
                       color: Colors.white,
                     ),

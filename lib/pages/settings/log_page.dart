@@ -28,7 +28,7 @@ class _LogPageState extends State<LogPage> {
             !(errors[j].message.startsWith('GET:') ||
                 errors[j].message.startsWith('GETS:'))) break;
         if (errors[j].message.length < 200) {
-          errors[i].message += '\n' + errors[j].message;
+          errors[i].message += '\n${errors[j].message}';
           errors.removeAt(j--);
         }
       }

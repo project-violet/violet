@@ -57,10 +57,10 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
                     placeholder: (b, c) {
                       if (!Settings.simpleItemWidgetLoadingIcon) {
                         return const FlareActor(
-                          "assets/flare/Loading2.flr",
+                          'assets/flare/Loading2.flr',
                           alignment: Alignment.center,
                           fit: BoxFit.fitHeight,
-                          animation: "Alarm",
+                          animation: 'Alarm',
                         );
                       } else {
                         return Center(

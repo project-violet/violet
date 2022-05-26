@@ -115,12 +115,12 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         }
         await dbraw.close();
       } catch (e, st) {
-        Logger.error(
-            '[Restore Bookmark] ' + e.toString() + '\n' + st.toString());
+        Logger.error('[Restore Bookmark] $e\n'
+            '$st');
         fToast.showToast(
           child: ToastWrapper(
             isCheck: false,
-            msg: "Bookmark Restoring Error!",
+            msg: 'Bookmark Restoring Error!',
           ),
           gravity: ToastGravity.BOTTOM,
           toastDuration: Duration(seconds: 4),

@@ -69,7 +69,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
 
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       const url =
-          "https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json";
+          'https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json';
 
       var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
 
@@ -163,8 +163,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             ),
                           ),
                           ListTile(
-                            title: Text("${e.item2} (${e.item3 + 1} Page)"),
-                            subtitle: Text("Score: ${e.item1}"),
+                            title: Text('${e.item2} (${e.item3 + 1} Page)'),
+                            subtitle: Text('Score: ${e.item1}'),
                           ),
                         ],
                       );
@@ -266,8 +266,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                             ],
                           ),
                           ListTile(
-                            title: Text("${e.item2} (${e.item3 + 1} Page)"),
-                            subtitle: Text("Score: ${e.item1}"),
+                            title: Text('${e.item2} (${e.item3 + 1} Page)'),
+                            subtitle: Text('Score: ${e.item1}'),
                           ),
                         ],
                       ),
@@ -346,7 +346,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                           EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
                       title: Text(suggestion.item1),
                       trailing: Text(
-                        suggestion.item3.toString() + '회',
+                        '${suggestion.item3}회',
                         style: TextStyle(color: Colors.grey, fontSize: 10.0),
                       ),
                       dense: true,

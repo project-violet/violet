@@ -121,7 +121,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       child: Stack(
         children: <Widget>[
           Hero(
-            tag: "searchbar",
+            tag: 'searchbar',
             child: Card(
               elevation: 100,
               shape: RoundedRectangleBorder(
@@ -750,9 +750,8 @@ class _SearchBarPageState extends State<SearchBarPage>
     var text = _searchController.text;
     var selection = _searchController.selection;
 
-    _searchController.text = text.substring(0, selection.base.offset) +
-        ' ' +
-        text.substring(selection.base.offset + 1);
+    _searchController.text =
+        '${text.substring(0, selection.base.offset)} ${text.substring(selection.base.offset + 1)}';
     _searchController.selection = TextSelection(
       baseOffset: selection.baseOffset + 1,
       extentOffset: selection.baseOffset + 1,

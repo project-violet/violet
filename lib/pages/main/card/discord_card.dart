@@ -55,7 +55,7 @@ class _DiscordCardState extends State<DiscordCard> {
                     '  ${Translations.of(context).trans('maindiscord')}',
                     style: TextStyle(
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,
                       color: Colors.white,
                     ),

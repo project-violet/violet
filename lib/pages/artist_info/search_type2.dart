@@ -28,7 +28,7 @@ class SearchType2 extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Hero(
-            tag: "searchtype2",
+            tag: 'searchtype2',
             child: Card(
               color: Settings.themeWhat
                   ? Settings.themeBlack

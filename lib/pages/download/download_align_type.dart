@@ -21,7 +21,7 @@ class DownloadAlignType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "downloadtype",
+        tag: 'downloadtype',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
