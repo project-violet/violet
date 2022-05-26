@@ -509,6 +509,7 @@ class _DownloadPageState extends State<DownloadPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _featuresOnTap,
               child: SizedBox(
                 height: 64,
                 width: 64,
@@ -522,7 +523,6 @@ class _DownloadPageState extends State<DownloadPage>
                   ],
                 ),
               ),
-              onTap: _featuresOnTap,
             ),
           ),
         ),
@@ -591,6 +591,9 @@ class _DownloadPageState extends State<DownloadPage>
             elevation: !Settings.themeFlat ? 100 : 0,
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
+              onTap: _alignOnTap,
+              onDoubleTap: _alignDoubleTap,
+              onLongPress: _alignLongPress,
               child: SizedBox(
                 height: 64,
                 width: 64,
@@ -604,9 +607,6 @@ class _DownloadPageState extends State<DownloadPage>
                   ],
                 ),
               ),
-              onTap: _alignOnTap,
-              onDoubleTap: _alignDoubleTap,
-              onLongPress: _alignLongPress,
             ),
           ),
         ),

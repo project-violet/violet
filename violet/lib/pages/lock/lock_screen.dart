@@ -102,6 +102,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                       height: 64.0,
                       child: Center(
                         child: GestureDetector(
+                          onTap: _passwordMissing,
                           child: Text.rich(TextSpan(
                               text:
                                   Translations.of(context).trans('missingpass'),
@@ -109,7 +110,6 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,
                               ))),
-                          onTap: _passwordMissing,
                         ),
                       )),
                   SizedBox(

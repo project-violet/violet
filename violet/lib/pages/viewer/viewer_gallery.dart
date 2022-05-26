@@ -128,12 +128,6 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       alignment: Alignment.center,
       child: RawMaterialButton(
         constraints: BoxConstraints(),
-        child: Center(
-          child: Icon(
-            icons[viewStyle],
-            size: 28,
-          ),
-        ),
         padding: EdgeInsets.all(12),
         shape: CircleBorder(),
         onPressed: () async {
@@ -141,6 +135,12 @@ class _ViewerGalleryState extends State<ViewerGallery> {
             viewStyle = (viewStyle + 1) % icons.length;
           });
         },
+        child: Center(
+          child: Icon(
+            icons[viewStyle],
+            size: 28,
+          ),
+        ),
       ),
     );
   }
