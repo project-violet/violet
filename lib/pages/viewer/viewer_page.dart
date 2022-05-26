@@ -1745,89 +1745,160 @@ class _ViewerPageState extends State<ViewerPage>
               );
             }
             return Container(
-              // height: _height[index] != 0 ? _height[index] : null,
-              constraints: _height![index] != 0
-                  ? BoxConstraints(minHeight: _height![index])
-                  : _estimatedImageHeight![index] != 0
-                      ? BoxConstraints(minHeight: _estimatedImageHeight![index])
-                      : null,
-              child: VCachedNetworkImage(
-                key: _keys![index],
-                imageUrl: _urlCache![index]!,
-                httpHeaders: _headerCache![index],
-                fit: BoxFit.cover,
-                fadeInDuration: Duration(microseconds: 500),
-                fadeInCurve: Curves.easeIn,
-                filterQuality: SettingsWrapper.imageQuality,
-                imageBuilder: (context, imageProvider, child) {
-                  if (_height![index] == 0 || _height![index] == 300) {
-                    Future.delayed(Duration(milliseconds: 50)).then((value) {
-                      try {
-                        final RenderBox renderBoxRed = _keys![index]
-                            .currentContext!
-                            .findRenderObject() as RenderBox;
-                        final sizeRender = renderBoxRed.size;
-                        if (sizeRender.height != 300) {
-                          _height![index] =
-                              (width / sizeRender.aspectRatio - 1.5)
-                                  .floor()
-                                  .toDouble();
-                        }
-
-                        _isImageLoaded[index] = true;
-
-                        if (_latestIndex >= index && !_onScroll)
-                          _patchHeightForDynamicLoadedImage();
-                      } catch (_) {}
-                    });
-                  }
-                  return child;
-                },
-                progressIndicatorBuilder: (context, string, progress) {
-                  return SizedBox(
-                    height: _estimatedImageHeight![index] != 0
-                        ? _estimatedImageHeight![index]
-                        : 300,
-                    child: Center(
-                      child: SizedBox(
-                        child:
-                            CircularProgressIndicator(value: progress.progress),
-                        width: 30,
-                        height: 30,
-                      ),
-                    ),
-                  );
-                },
-                errorWidget: (context, url, error) {
-                  Logger.error(
-                      '[Viewer] E: image load failed\n' + error.toString());
-                  Future.delayed(Duration(milliseconds: 500))
-                      .then((value) => setState(() {
-                            _keys![index] = GlobalKey();
-                          }));
-                  return SizedBox(
-                    height: _estimatedImageHeight![index] != 0
-                        ? _estimatedImageHeight![index]
-                        : 300,
-                    child: Center(
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.refresh,
-                            color: Settings.majorColor,
-                          ),
-                          onPressed: () => setState(() {
-                            _keys![index] = GlobalKey();
-                          }),
+                // height: _height[index] != 0 ? _height[index] : null,
+                constraints: _height![index] != 0
+                    ? BoxConstraints(minHeight: _height![index])
+                    : _estimatedImageHeight![index] != 0
+                        ? BoxConstraints(
+                            minHeight: _estimatedImageHeight![index])
+                        : null,
+                child: _ProviderImage(
+                  imgKey: _keys![index],
+                  imgUrl: _urlCache![index]!,
+                  imgHeader: _headerCache![index],
+                  imageWidgetBuilder: (context, imageProvider, child) {
+                    if (_height![index] == 0 || _height![index] == 300) {
+                      Future.delayed(Duration(milliseconds: 50)).then((value) {
+                        try {
+                          final RenderBox renderBoxRed = _keys![index]
+                              .currentContext!
+                              .findRenderObject() as RenderBox;
+                          final sizeRender = renderBoxRed.size;
+                          if (sizeRender.height != 300) {
+                            _height![index] =
+                                (width / sizeRender.aspectRatio - 1.5)
+                                    .floor()
+                                    .toDouble();
+                          }
+                          _isImageLoaded[index] = true;
+                          if (_latestIndex >= index && !_onScroll)
+                            _patchHeightForDynamicLoadedImage();
+                        } catch (_) {}
+                      });
+                    }
+                    return child;
+                  },
+                  progressIndicatorBuilder: (context, string, progress) {
+                    return SizedBox(
+                      height: _estimatedImageHeight![index] != 0
+                          ? _estimatedImageHeight![index]
+                          : 300,
+                      child: Center(
+                        child: SizedBox(
+                          child: CircularProgressIndicator(
+                              value: progress.progress),
+                          width: 30,
+                          height: 30,
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            );
+                    );
+                  },
+                  loadingErrorWidgetBuilder: (context, url, error) {
+                    Logger.error(
+                        '[Viewer] E: image load failed\n' + error.toString());
+                    Future.delayed(Duration(milliseconds: 500))
+                        .then((value) => setState(() {
+                              _keys![index] = GlobalKey();
+                            }));
+                    return SizedBox(
+                      height: _estimatedImageHeight![index] != 0
+                          ? _estimatedImageHeight![index]
+                          : 300,
+                      child: Center(
+                        child: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.refresh,
+                              color: Settings.majorColor,
+                            ),
+                            onPressed: () => setState(() {
+                              _keys![index] = GlobalKey();
+                            }),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                )
+                // child: VCachedNetworkImage(
+                //   key: _keys![index],
+                //   imageUrl: _urlCache![index]!,
+                //   httpHeaders: _headerCache![index],
+                //   fit: BoxFit.cover,
+                //   fadeInDuration: Duration(microseconds: 500),
+                //   fadeInCurve: Curves.easeIn,
+                //   filterQuality: SettingsWrapper.imageQuality,
+                //   imageBuilder: (context, imageProvider, child) {
+                //     if (_height![index] == 0 || _height![index] == 300) {
+                //       Future.delayed(Duration(milliseconds: 50)).then((value) {
+                //         try {
+                //           final RenderBox renderBoxRed = _keys![index]
+                //               .currentContext!
+                //               .findRenderObject() as RenderBox;
+                //           final sizeRender = renderBoxRed.size;
+                //           if (sizeRender.height != 300) {
+                //             _height![index] =
+                //                 (width / sizeRender.aspectRatio - 1.5)
+                //                     .floor()
+                //                     .toDouble();
+                //           }
+
+                //           _isImageLoaded[index] = true;
+
+                //           if (_latestIndex >= index && !_onScroll)
+                //             _patchHeightForDynamicLoadedImage();
+                //         } catch (_) {}
+                //       });
+                //     }
+                //     return child;
+                //   },
+                //   progressIndicatorBuilder: (context, string, progress) {
+                //     return SizedBox(
+                //       height: _estimatedImageHeight![index] != 0
+                //           ? _estimatedImageHeight![index]
+                //           : 300,
+                //       child: Center(
+                //         child: SizedBox(
+                //           child:
+                //               CircularProgressIndicator(value: progress.progress),
+                //           width: 30,
+                //           height: 30,
+                //         ),
+                //       ),
+                //     );
+                //   },
+                //   errorWidget: (context, url, error) {
+                //     Logger.error(
+                //         '[Viewer] E: image load failed\n' + error.toString());
+                //     Future.delayed(Duration(milliseconds: 500))
+                //         .then((value) => setState(() {
+                //               _keys![index] = GlobalKey();
+                //             }));
+                //     return SizedBox(
+                //       height: _estimatedImageHeight![index] != 0
+                //           ? _estimatedImageHeight![index]
+                //           : 300,
+                //       child: Center(
+                //         child: SizedBox(
+                //           width: 50,
+                //           height: 50,
+                //           child: IconButton(
+                //             icon: Icon(
+                //               Icons.refresh,
+                //               color: Settings.majorColor,
+                //             ),
+                //             onPressed: () => setState(() {
+                //               _keys![index] = GlobalKey();
+                //             }),
+                //           ),
+                //         ),
+                //       ),
+                //     );
+                //   },
+                // ),
+                );
           },
         );
       },
@@ -2205,6 +2276,7 @@ class _CustomDoubleTapGestureDectector extends StatefulWidget {
   _CustomDoubleTapGestureDectector({
     required this.onTap,
     required this.onDoubleTap,
+    // ignore: unused_element
     this.doubleTapMaxDelay = const Duration(milliseconds: 200),
   });
 
@@ -2271,6 +2343,70 @@ class __CustomDoubleTapGestureDectectorState
   }
 }
 
+typedef VImageWidgetBuilder = Widget Function(
+    BuildContext context, ImageProvider imageProvider, Widget child);
+
+typedef VProgressIndicatorBuilder = Widget Function(
+  BuildContext context,
+  String url,
+  DownloadProgress progress,
+);
+
+typedef VLoadingErrorWidgetBuilder = Widget Function(
+  BuildContext context,
+  String url,
+  dynamic error,
+);
+
+class _ProviderImage extends StatefulWidget {
+  final GlobalKey imgKey;
+  final String imgUrl;
+  final Map<String, String>? imgHeader;
+  final VImageWidgetBuilder imageWidgetBuilder;
+  final VProgressIndicatorBuilder progressIndicatorBuilder;
+  final VLoadingErrorWidgetBuilder loadingErrorWidgetBuilder;
+
+  const _ProviderImage({
+    Key? key,
+    required this.imgKey,
+    required this.imgUrl,
+    required this.imgHeader,
+    required this.imageWidgetBuilder,
+    required this.progressIndicatorBuilder,
+    required this.loadingErrorWidgetBuilder,
+  }) : super(key: key);
+
+  @override
+  State<_ProviderImage> createState() => __ProviderImageState();
+}
+
+class __ProviderImageState extends State<_ProviderImage> {
+  @override
+  void dispose() {
+    CachedNetworkImage.evictFromCache(widget.imgUrl);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return VCachedNetworkImage(
+      key: widget.imgKey,
+      imageUrl: widget.imgUrl,
+      httpHeaders: widget.imgHeader,
+      fit: BoxFit.cover,
+      fadeInDuration: Duration(microseconds: 500),
+      fadeInCurve: Curves.easeIn,
+      filterQuality: SettingsWrapper.imageQuality,
+      imageBuilder: widget.imageWidgetBuilder,
+      progressIndicatorBuilder: widget.progressIndicatorBuilder,
+      errorWidget: widget.loadingErrorWidgetBuilder,
+      memCacheWidth: Settings.useLowPerf
+          ? (MediaQuery.of(context).size.width * 1.5).toInt()
+          : null,
+    );
+  }
+}
+
 class _FileImage extends StatefulWidget {
   final String path;
   final double? cachedHeight;
@@ -2312,6 +2448,9 @@ class __FileImageState extends State<_FileImage> {
       fit: BoxFit.contain,
       imageCacheName: widget.path,
       filterQuality: SettingsWrapper.imageQuality,
+      cacheWidth: Settings.useLowPerf
+          ? (MediaQuery.of(context).size.width * 1.5).toInt()
+          : null,
       loadStateChanged: (ExtendedImageState state) {
         if (widget.cachedHeight != null && widget.cachedHeight! > 0)
           return state.completedWidget;
