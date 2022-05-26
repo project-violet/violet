@@ -532,6 +532,7 @@ class _SplashPageState extends State<SplashPage> {
                 ? Settings.majorColor.withAlpha(200)
                 : Colors.purple.shade400,
           ),
+          onPressed: _onDownloadButtonPressed,
           child: SizedBox(
             width: 90,
             child: Row(
@@ -543,7 +544,6 @@ class _SplashPageState extends State<SplashPage> {
               ],
             ),
           ),
-          onPressed: _onDownloadButtonPressed,
         ),
       ),
     );

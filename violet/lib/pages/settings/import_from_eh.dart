@@ -29,6 +29,19 @@ class _ImportFromEHPageState extends State<ImportFromEHPage> {
         return false;
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.4)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,19 +93,6 @@ class _ImportFromEHPageState extends State<ImportFromEHPage> {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
             ),
           ],
         ),

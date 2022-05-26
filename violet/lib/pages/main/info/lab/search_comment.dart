@@ -139,9 +139,6 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
             builder: (_, controller) {
               if (cache == null) {
                 cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
                   value: ArticleInfo.fromArticleInfo(
                     queryResult: qr,
                     thumbnail: thumbnail,
@@ -149,6 +146,9 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
                     heroKey: 'zxcvzxcvzxcv',
                     isBookmarked: isBookmarked,
                     controller: controller,
+                  ),
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
                   ),
                 );
               }

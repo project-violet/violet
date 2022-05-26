@@ -280,6 +280,14 @@ class _ArticleListItemVerySimpleWidgetState
           particle: Rectangle2DemoParticle(),
           pimpedWidgetBuilder: (context, controller) {
             return GestureDetector(
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onLongPress: () async {
+                await _onLongPress(controller);
+              },
+              onLongPressEnd: _onPressEnd,
+              onTapCancel: _onTapCancle,
+              onDoubleTap: _onDoubleTap,
               child: SizedBox(
                 width: thisWidth,
                 height: thisHeight,
@@ -293,14 +301,6 @@ class _ArticleListItemVerySimpleWidgetState
                   child: _body,
                 ),
               ),
-              onTapDown: _onTapDown,
-              onTapUp: _onTapUp,
-              onLongPress: () async {
-                await _onLongPress(controller);
-              },
-              onLongPressEnd: _onPressEnd,
-              onTapCancel: _onTapCancle,
-              onDoubleTap: _onDoubleTap,
             );
           },
         ),
@@ -368,9 +368,6 @@ class _ArticleListItemVerySimpleWidgetState
           builder: (_, controller) {
             if (cache == null) {
               cache = Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
                 value: ArticleInfo.fromArticleInfo(
                   queryResult: data.queryResult,
                   thumbnail: thumbnail!,
@@ -379,6 +376,9 @@ class _ArticleListItemVerySimpleWidgetState
                   isBookmarked: isBookmarked.value,
                   controller: controller,
                   usableTabList: data.usableTabList,
+                ),
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
             }

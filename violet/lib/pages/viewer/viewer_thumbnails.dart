@@ -191,6 +191,8 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Container(
+          width: 100,
+          height: 100,
           // alignment: Alignment.center,
           child: Align(
             // alignment: Alignment.center,
@@ -199,8 +201,6 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               textAlign: TextAlign.center,
             ),
           ),
-          width: 100,
-          height: 100,
         )
       ],
     );
