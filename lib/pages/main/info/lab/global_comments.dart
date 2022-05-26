@@ -225,6 +225,16 @@ class CommentUnit extends StatelessWidget {
     return Column(
       children: <Widget>[
             InkWell(
+              onDoubleTap: () {
+                if (!author.startsWith(dev))
+                  PlatformNavigator.navigateSlide(
+                      context, LabUserRecentRecords(author));
+              },
+              onLongPress: !isReply
+                  ? () {
+                      reply!(id);
+                    }
+                  : null,
               child: Padding(
                 padding: isReply
                     ? const EdgeInsets.only(
@@ -289,16 +299,6 @@ class CommentUnit extends StatelessWidget {
                   ],
                 ),
               ),
-              onDoubleTap: () {
-                if (!author.startsWith(dev))
-                  PlatformNavigator.navigateSlide(
-                      context, LabUserRecentRecords(author));
-              },
-              onLongPress: !isReply
-                  ? () {
-                      reply!(id);
-                    }
-                  : null,
             )
           ] +
           replies

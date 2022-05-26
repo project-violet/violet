@@ -104,6 +104,11 @@ class ArticleInfoPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Settings.majorColor.withAlpha(230),
+                      ),
+                      onPressed: () async =>
+                          await _downloadButtonEvent(context, data),
                       child: Container(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
@@ -111,14 +116,15 @@ class ArticleInfoPage extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Settings.majorColor.withAlpha(230),
-                      ),
-                      onPressed: () async =>
-                          await _downloadButtonEvent(context, data),
                     ),
                     const SizedBox(width: 4.0),
                     ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Settings.majorColor,
+                      ),
+                      onPressed: data.lockRead
+                          ? null
+                          : () async => await _readButtonEvent(context, data),
                       child: Container(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
@@ -126,12 +132,6 @@ class ArticleInfoPage extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        primary: Settings.majorColor,
-                      ),
-                      onPressed: data.lockRead
-                          ? null
-                          : () async => await _readButtonEvent(context, data),
                     ),
                   ],
                 ),
@@ -582,6 +582,9 @@ class PreviewAreaWidget extends StatelessWidget {
       children: [
         Container(
           // alignment: Alignment.center,
+          width: 100,
+          height: 100,
+          // alignment: Alignment.center,
           child: Align(
             // alignment: Alignment.center,
             child: Text(
@@ -589,8 +592,6 @@ class PreviewAreaWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          width: 100,
-          height: 100,
         )
       ],
     );
@@ -708,6 +709,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             children: [
               Container(
                 // alignment: Alignment.center,
+                width: 100,
+                height: 100,
+                // alignment: Alignment.center,
                 child: Align(
                   // alignment: Alignment.center,
                   child: Text(
@@ -715,8 +719,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                width: 100,
-                height: 100,
               )
             ],
           ),
@@ -845,9 +847,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         // dense: true,
         // contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
         title: Row(
-          children: [Text('Write Comment')],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text('Write Comment')],
         ),
       ),
     );
@@ -906,9 +908,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             builder: (_, controller) {
               if (cache == null) {
                 cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
                   value: ArticleInfo.fromArticleInfo(
                     queryResult: qr,
                     thumbnail: thumbnail,
@@ -916,6 +915,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                     heroKey: 'zxcvzxcvzxcv',
                     isBookmarked: isBookmarked,
                     controller: controller,
+                  ),
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
                   ),
                 );
               }
@@ -990,6 +992,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         children: [
           Container(
             // alignment: Alignment.center,
+            width: 100,
+            height: 100,
+            // alignment: Alignment.center,
             child: Align(
               // alignment: Alignment.center,
               child: Text(
@@ -997,8 +1002,6 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                 textAlign: TextAlign.center,
               ),
             ),
-            width: 100,
-            height: 100,
           )
         ]);
   }
@@ -1157,9 +1160,9 @@ class _RelatedArea extends StatelessWidget {
           PlatformNavigator.navigateSlide(context, what(), opaque: true);
         },
         child: Row(
-          children: [Text(Translations.of(context).trans('more'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('more'))],
         ),
       ),
     );
