@@ -50,14 +50,13 @@ typedef DownloadListItemCallbackCallback = void Function(
 
 class DownloadItemWidget extends StatefulWidget {
   // final double width;
-  final Key? key;
   final DownloadItemModel item;
   final DownloadListItem initialStyle;
   bool download;
   final VoidCallback refeshCallback;
 
   DownloadItemWidget({
-    this.key,
+    Key? key,
     // this.width,
     required this.item,
     required this.initialStyle,
@@ -119,7 +118,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                       .difference(DateTime.now())
                       .inDays <
                   31);
-          if (x.length == 0) return;
+          if (x.isEmpty) return;
           _shouldReload = true;
           setState(() {
             isLastestRead = true;
@@ -180,7 +179,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       await routine.extractFilePath();
 
-      var _timer = Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
+      var timer = Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
         setState(() {
           if (downloadSec / 1024 < 500.0)
             downloadSpeed = (downloadSec / 1024).toStringAsFixed(1) + " KB/S";
@@ -221,7 +220,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       while (retryCount < maxRetryCount) {
         var invalidFiles = await routine.checkDownloadFiles();
 
-        if (invalidFiles.length == 0 || invalidFiles.length == errorFileCount)
+        if (invalidFiles.isEmpty || invalidFiles.length == errorFileCount)
           break;
 
         errorFileCount = 0;
@@ -249,7 +248,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         }
       }
 
-      _timer.cancel();
+      timer.cancel();
 
       await routine.setDownloadComplete();
 
@@ -309,8 +308,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
             }
           }
           await widget.item.delete();
-          await Download.getInstance()
-            ..refresh();
+          (await Download.getInstance()).refresh();
           widget.refeshCallback();
         } else if (v == 2) {
           // Copy Url
@@ -394,7 +392,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo>? cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -420,7 +418,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                   ),
                 );
               }
-              return cache;
+              return cache!;
             },
           );
         },
@@ -528,7 +526,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     if (_cachedThumbnail == null || _shouldReload) {
       _shouldReload = false;
       _cachedThumbnail = widget.item.state() == 0 &&
-              widget.item.rawFiles().length > 0 &&
+              widget.item.rawFiles().isNotEmpty &&
               File(widget.item.rawFiles().first).existsSync()
           ? _FileThumbnailWidget(
               showDetail: style.showDetail,

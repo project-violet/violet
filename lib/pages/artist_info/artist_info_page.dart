@@ -50,7 +50,7 @@ class ArtistInfoPage extends StatefulWidget {
   });
 
   @override
-  _ArtistInfoPageState createState() => _ArtistInfoPageState();
+  State<ArtistInfoPage> createState() => _ArtistInfoPageState();
 }
 
 class _ArtistInfoPageState extends State<ArtistInfoPage> {
@@ -250,7 +250,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         .reversed
         .toList();
 
-    if (comments!.length > 0) setState(() {});
+    if (comments!.isNotEmpty) setState(() {});
   }
 
   Future<void> querySimilars(List<Tuple2<String, double>> similars,
@@ -271,7 +271,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       qm.itemsPerPage = 10;
 
       var x = await qm.next();
-      if (x == null || x.length == 0) {
+      if (x == null || x.isEmpty) {
         qrs.add(<QueryResult>[]);
         continue;
       }
@@ -882,7 +882,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   }
 
   Widget commentArea() {
-    if (comments != null && comments!.length > 0) {
+    if (comments != null && comments!.isNotEmpty) {
       var children = List<Widget>.from(comments!.map((e) {
         return InkWell(
           onTap: () async {
@@ -906,7 +906,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          '${DateFormat('yyyy-MM-dd HH:mm').format(e.item1.toLocal())}',
+                          DateFormat('yyyy-MM-dd HH:mm')
+                              .format(e.item1.toLocal()),
                           style: TextStyle(fontSize: 12)),
                     ),
                   ),

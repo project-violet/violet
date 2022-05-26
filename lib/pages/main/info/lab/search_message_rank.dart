@@ -17,7 +17,7 @@ class SearchMessageRankPageMemory {
 
 class SearchMessageRankPage extends StatefulWidget {
   @override
-  _SearchMessageRankPageState createState() => _SearchMessageRankPageState();
+  State<SearchMessageRankPage> createState() => _SearchMessageRankPageState();
 }
 
 class _SearchMessageRankPageState extends State<SearchMessageRankPage> {

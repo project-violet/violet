@@ -9,7 +9,7 @@ import 'package:violet/locale/locale.dart';
 
 class GithubCard extends StatefulWidget {
   @override
-  _GithubCardState createState() => _GithubCardState();
+  State<GithubCard> createState() => _GithubCardState();
 }
 
 class _GithubCardState extends State<GithubCard> {
@@ -69,7 +69,7 @@ class _GithubCardState extends State<GithubCard> {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()

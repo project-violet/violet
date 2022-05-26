@@ -17,7 +17,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class LabSearchComments extends StatefulWidget {
   @override
-  _LabSearchCommentsState createState() => _LabSearchCommentsState();
+  State<LabSearchComments> createState() => _LabSearchCommentsState();
 }
 
 class _LabSearchCommentsState extends State<LabSearchComments> {
@@ -71,7 +71,8 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                                '${DateFormat('yyyy-MM-dd HH:mm').format(e.item2.toLocal())}',
+                                DateFormat('yyyy-MM-dd HH:mm')
+                                    .format(e.item2.toLocal()),
                                 style: TextStyle(fontSize: 12)),
                           ),
                         ),
@@ -125,7 +126,7 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
       var isBookmarked =
           await (await Bookmark.getInstance()).isBookmark(qr.id());
 
-      var cache;
+      Provider<ArticleInfo>? cache;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -151,7 +152,7 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
                   ),
                 );
               }
-              return cache;
+              return cache!;
             },
           );
         },

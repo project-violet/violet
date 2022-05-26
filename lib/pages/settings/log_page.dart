@@ -7,15 +7,10 @@ import 'package:violet/other/dialogs.dart';
 
 class LogPage extends StatefulWidget {
   @override
-  _LogPageState createState() => _LogPageState();
+  State<LogPage> createState() => _LogPageState();
 }
 
 class _LogPageState extends State<LogPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;

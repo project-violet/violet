@@ -67,6 +67,7 @@ class IsolateDownloaderTask {
     );
   }
 
+  @override
   String toString() {
     return jsonEncode({
       "id": id,
@@ -244,9 +245,9 @@ void _resolveQueue() {
   if (_dqueue.isEmpty) return;
   if (_taskCurrentCount < _maxTaskCount) {
     _taskCurrentCount += 1;
-    final _itask = _dqueue.removeFirst();
-    _workingMap[_itask.id] = _itask;
-    _processTask(_itask);
+    final itask = _dqueue.removeFirst();
+    _workingMap[itask.id] = itask;
+    _processTask(itask);
   }
 }
 
@@ -278,11 +279,11 @@ void _modifyTaskPoolSize(int sz) {
 }
 
 void _downloadIsolateRoutine(SendPort sendPort) {
-  final ReceivePort _receivePort = ReceivePort();
-  sendPort.send(_receivePort.sendPort);
+  final ReceivePort receivePort = ReceivePort();
+  sendPort.send(receivePort.sendPort);
   _sendPort = sendPort;
 
-  _receivePort.listen((dynamic message) async {
+  receivePort.listen((dynamic message) async {
     if (message is SendPortData) {
       switch (message.type) {
         case SendPortType.init:

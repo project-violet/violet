@@ -29,7 +29,7 @@ class LabGroupArtistList extends StatefulWidget {
   });
 
   @override
-  _GroupArtistListState createState() => _GroupArtistListState();
+  State<LabGroupArtistList> createState() => _GroupArtistListState();
 }
 
 class _GroupArtistListState extends State<LabGroupArtistList>
@@ -108,8 +108,6 @@ class _GroupArtistListState extends State<LabGroupArtistList>
               SliverPersistentHeader(
                 floating: true,
                 delegate: AnimatedOpacitySliver(
-                  minExtent: 64 + 12.0,
-                  maxExtent: 64.0 + 12,
                   searchBar: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8.0),
                       child: Stack(children: <Widget>[

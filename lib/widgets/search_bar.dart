@@ -8,14 +8,16 @@ import 'package:flutter/rendering.dart';
 
 class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
   AnimatedOpacitySliver({
-    required this.minExtent,
-    required this.maxExtent,
     this.searchBar,
   });
-  final double minExtent;
-  final double maxExtent;
 
   Widget? searchBar;
+
+  @override
+  double get minExtent => 64 + 12;
+
+  @override
+  double get maxExtent => 64 + 12;
 
   @override
   Widget build(

@@ -6,7 +6,7 @@ import 'package:violet/pages/segment/card_panel.dart';
 
 class SearchNavPage extends StatefulWidget {
   @override
-  _SearchNavPageState createState() => _SearchNavPageState();
+  State<SearchNavPage> createState() => _SearchNavPageState();
 }
 
 class _SearchNavPageState extends State<SearchNavPage> {

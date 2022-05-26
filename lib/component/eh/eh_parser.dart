@@ -56,7 +56,7 @@ class EHResultArticle {
 // E-Hentai, EX-Hentai Parser
 // You can use both of the previous.
 class EHParser {
-  static RegExp _thumbnailPattern =
+  static final RegExp _thumbnailPattern =
       RegExp(r'https://(exhentai|ehgt).org/.*?(?=\))');
 
   // ex: https://exhentai.org/g/1212168/421ef300a8/
@@ -101,7 +101,7 @@ class EHParser {
     var url = <String>[];
     try {
       var rr = doc!.querySelectorAll("table tbody tr td[onclick*='document']");
-      if (rr.length != 0) {
+      if (rr.isNotEmpty) {
         doc
             .querySelectorAll("table tbody tr td[onclick*='document']")
             .forEach((element) {
@@ -129,7 +129,7 @@ class EHParser {
       if (max < value) max = value;
     });
 
-    if (url.length == 0) return url;
+    if (url.isEmpty) return url;
 
     var result = <String>[];
     var prefix = url[0].split('?p=')[0];
@@ -240,14 +240,14 @@ class EHParser {
         try {
           article.thumbnail =
               element.querySelector('div.id3 a img')!.attributes['src'];
-        } catch (e) {}
+        } catch (_) {}
         article.title = element.querySelector('div.id2 a')!.text;
 
         article.files = element.querySelector('div.id42')!.text;
         article.type = element.querySelector('div.id41')!.attributes['title'];
 
         result.add(article);
-      } catch (e) {}
+      } catch (_) {}
     });
 
     return result;
@@ -271,7 +271,7 @@ class EHParser {
         try {
           article.thumbnail =
               tds[2].querySelector('div.it2 img')!.attributes['src'];
-        } catch (e) {}
+        } catch (_) {}
         article.title = tds[2].querySelector('div.it5 a')!.text;
 
         article.uploader = tds[3].querySelector('div > a')!.attributes['href'];
@@ -279,7 +279,7 @@ class EHParser {
         article.type = tds[0].querySelector('a img')!.attributes['alt'];
 
         result.add(article);
-      } catch (e) {}
+      } catch (_) {}
     });
 
     return result;
@@ -305,7 +305,7 @@ class EHParser {
         article.url = node.querySelector('a')!.attributes['href'];
         try {
           article.thumbnail = node.querySelector('img')!.attributes['src'];
-        } catch (e) {}
+        } catch (_) {}
 
         var g13 = node.querySelectorAll('td')[1].querySelector('div > div');
         var g13div = g13!.querySelectorAll('div');
@@ -351,7 +351,7 @@ class EHParser {
         var next = node.querySelectorAll('tr');
 
         q.addAll(next);
-      } catch (e) {}
+      } catch (_) {}
     }
 
     return result;

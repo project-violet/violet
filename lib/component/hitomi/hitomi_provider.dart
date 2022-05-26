@@ -35,7 +35,7 @@ class HitomiImageProvider extends VioletImageProvider {
     //   'user-agent': HttpWrapper.userAgent,
     // };
 
-    return await ScriptManager.runHitomiGetHeaderContent(this.id);
+    return await ScriptManager.runHitomiGetHeaderContent(id);
   }
 
   @override

@@ -28,22 +28,22 @@ void main() {
       ],
     ];
 
-    var runTask = (url, fn) async {
-      int _nu = 0;
+    Future<void> runTask(String url, dynamic savePath) async {
+      int nu = 0;
       int latest = 0;
 
-      await dio.download(url, fn, onReceiveProgress: (rec, total) {
-        _nu += rec - latest;
+      await dio.download(url, savePath, onReceiveProgress: (rec, total) {
+        nu += rec - latest;
         latest = rec;
 
-        if (_nu <= 1024 * 1024) return;
+        if (nu <= 1024 * 1024) return;
 
-        _nu = 0;
+        nu = 0;
 
         var progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
         print('$url [${rec ~/ 1024}/${total ~/ 1024}] $progressString');
       });
-    };
+    }
 
     var t1 = runTask(tests[0][0], tests[0][1]);
     var t2 = runTask(tests[1][0], tests[1][1]);

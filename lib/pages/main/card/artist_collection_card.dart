@@ -12,17 +12,12 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 
 class ArtistCollectionCard extends StatefulWidget {
   @override
-  _ArtistCollectionCarddState createState() => _ArtistCollectionCarddState();
+  State<ArtistCollectionCard> createState() => _ArtistCollectionCarddState();
 }
 
 class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
     with TickerProviderStateMixin {
   bool pressed = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +96,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -112,7 +107,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)

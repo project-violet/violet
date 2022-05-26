@@ -44,7 +44,7 @@ class DownloadPageManager {
 // This page must remain alive until the app is closed.
 class DownloadPage extends StatefulWidget {
   @override
-  _DownloadPageState createState() => _DownloadPageState();
+  State<DownloadPage> createState() => _DownloadPageState();
 }
 
 class _DownloadPageState extends State<DownloadPage>
@@ -52,12 +52,12 @@ class _DownloadPageState extends State<DownloadPage>
   @override
   bool get wantKeepAlive => true;
 
-  ScrollController _scroll = ScrollController();
+  final ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = [];
   Map<int, DownloadItemModel> itemsMap = Map<int, DownloadItemModel>();
   List<DownloadItemModel> filterResult = [];
   Map<int, QueryResult> queryResults = Map<int, QueryResult>();
-  FilterController _filterController =
+  final FilterController _filterController =
       FilterController(heroKey: "downloadtype");
   ObjectKey _listKey = ObjectKey(Uuid().v4());
   late final FToast fToast;
@@ -77,8 +77,8 @@ class _DownloadPageState extends State<DownloadPage>
 
   @override
   void dispose() {
-    super.dispose();
     DownloadPageManager.taskController!.close();
+    super.dispose();
   }
 
   void refresh() {
@@ -160,7 +160,7 @@ class _DownloadPageState extends State<DownloadPage>
             var headers = await ScriptManager.runHitomiGetHeaderContent(
                 element.toString());
             var hh = await http.get(
-              'https://ltn.hitomi.la/galleryblock/${element}.html',
+              'https://ltn.hitomi.la/galleryblock/$element.html',
               headers: headers,
             );
             var article = await HitomiParser.parseGalleryBlock(hh.body);
@@ -171,7 +171,7 @@ class _DownloadPageState extends State<DownloadPage>
             };
             result.add(QueryResult(result: meta));
             return;
-          } catch (e, st) {}
+          } catch (_) {}
         }
         result.add(qr[element]!);
       });
@@ -182,7 +182,7 @@ class _DownloadPageState extends State<DownloadPage>
     });
   }
 
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -202,8 +202,6 @@ class _DownloadPageState extends State<DownloadPage>
             SliverPersistentHeader(
               floating: true,
               delegate: AnimatedOpacitySliver(
-                minExtent: 64 + 12.0,
-                maxExtent: 64.0 + 12,
                 searchBar: Stack(
                   children: <Widget>[
                     _urlBar(),
@@ -354,7 +352,7 @@ class _DownloadPageState extends State<DownloadPage>
       }
     }
 
-    throw new Exception('unreachable');
+    throw Exception('unreachable');
   }
 
   Widget _urlBar() {
@@ -808,7 +806,7 @@ class _DownloadPageState extends State<DownloadPage>
       filterResult = filterResult.reversed.toList();
     }
 
-    if (_filterController.tagStates.isNotEmpty && downloading.length > 0)
+    if (_filterController.tagStates.isNotEmpty && downloading.isNotEmpty)
       filterResult.addAll(downloading.map((e) => itemsMap[e]!).toList());
 
     setState(() {});

@@ -65,7 +65,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     }
   }
 
-  PageController _pageController =
+  final PageController _pageController =
       PageController(initialPage: defaultInitialPage);
 
   int get _currentPage => _pageController.hasClients
@@ -176,7 +176,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             ),
             onTap: () {
               setState(() {
-                this._pageController.jumpToPage(page);
+                _pageController.jumpToPage(page);
               });
               Navigator.pop(context);
             },
@@ -213,7 +213,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                     ),
                   ),
                   Text(
-                    '${UpdateSyncManager.currentVersion}',
+                    UpdateSyncManager.currentVersion,
                     style: const TextStyle(
                       fontFamily: "Calibre-Semibold",
                       fontSize: 17.0,

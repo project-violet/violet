@@ -67,7 +67,7 @@ class EHentaiManager extends Downloadable {
         .map((e) => QueryResult(result: e))
         .toList();
 
-    if (articles.length == 0) {
+    if (articles.isEmpty) {
       return null;
     }
 
@@ -104,7 +104,7 @@ class EHentaiManager extends Downloadable {
   }
 
   // https://stackoverflow.com/questions/15193983/is-there-a-built-in-method-to-pad-a-string
-  static String intToString(int i, {int pad: 0}) {
+  static String intToString(int i, {int pad = 0}) {
     var str = i.toString();
     var paddingToAdd = pad - str.length;
     return (paddingToAdd > 0)

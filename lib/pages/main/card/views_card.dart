@@ -14,7 +14,7 @@ import 'package:violet/settings/settings.dart';
 
 class ViewsCard extends StatefulWidget {
   @override
-  _ViewsCardState createState() => _ViewsCardState();
+  State<ViewsCard> createState() => _ViewsCardState();
 }
 
 class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
@@ -105,7 +105,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()
@@ -116,7 +116,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
     ..ripple(true)
     ..animate(150, Curves.easeOut);
 
-  final settingsItemIconStyle = (Color color) => ParentStyle()
+  ParentStyle settingsItemIconStyle(Color color) => ParentStyle()
     ..background.color(color)
     ..margin(left: 15)
     ..padding(all: 12)

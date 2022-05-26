@@ -19,15 +19,10 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ViewsPage extends StatefulWidget {
   @override
-  _ViewsPageState createState() => _ViewsPageState();
+  State<ViewsPage> createState() => _ViewsPageState();
 }
 
 class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return CardPanel.build(
@@ -160,7 +155,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         queryRaw += '(' + value.map((e) => 'Id=${e.item1}').join(' OR ') + ')';
         var query = await QueryManager.query(queryRaw);
 
-        if (query.results!.length == 0) return 901;
+        if (query.results!.isEmpty) return 901;
 
         var qr = Map<String, QueryResult>();
         query.results!.forEach((element) {

@@ -14,7 +14,7 @@ import 'package:violet/settings/settings.dart';
 
 class InfoPage extends StatefulWidget {
   @override
-  _InfoPageState createState() => _InfoPageState();
+  State<InfoPage> createState() => _InfoPageState();
 }
 
 class _InfoPageState extends State<InfoPage> {

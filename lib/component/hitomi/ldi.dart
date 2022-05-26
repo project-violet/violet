@@ -19,8 +19,8 @@ class LDI {
       data = await rootBundle.loadString('assets/rank/ldi.json');
     }
 
-    Map<String, dynamic> _ldi = json.decode(data);
-    ldi = _ldi.entries
+    Map<String, dynamic> dataLdi = json.decode(data);
+    ldi = dataLdi.entries
         .map((x) => Tuple2<int, double>(int.parse(x.key), x.value as double))
         .toList();
     ldi.sort((x, y) => y.item2.compareTo(x.item2));

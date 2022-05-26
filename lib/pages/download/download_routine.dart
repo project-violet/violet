@@ -77,7 +77,7 @@ class DownloadRoutine {
   }
 
   Future<bool> checkNothingToDownload() async {
-    if (tasks == null || tasks!.length == 0) {
+    if (tasks == null || tasks!.isEmpty) {
       await _setState(11);
       return true;
     }
@@ -201,8 +201,8 @@ class DownloadRoutine {
   }
 
   Future<void> setDownloadComplete() async {
-    await Download.getInstance()
-      ..appendDownloaded(int.parse(item.url()), item);
+    (await Download.getInstance())
+        .appendDownloaded(int.parse(item.url()), item);
     await _setState(0);
   }
 

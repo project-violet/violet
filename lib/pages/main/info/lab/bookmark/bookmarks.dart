@@ -24,7 +24,7 @@ class LabBookmarkPage extends StatefulWidget {
   });
 
   @override
-  _BookmarkPageState createState() => _BookmarkPageState();
+  State<LabBookmarkPage> createState() => _BookmarkPageState();
 }
 
 class _BookmarkPageState extends State<LabBookmarkPage> {
@@ -71,13 +71,13 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
               .toList();
           records = snapshot.data['record'] as List<dynamic>;
 
-          ScrollController _scrollController =
+          ScrollController scrollController =
               PrimaryScrollController.of(context) ?? ScrollController();
 
           return ListView.builder(
               padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
               physics: BouncingScrollPhysics(),
-              controller: _scrollController,
+              controller: scrollController,
               itemCount: groups.length + 1,
               itemBuilder: (BuildContext ctxt, int index) {
                 return _buildItem(index, index == 0 ? null : groups[index - 1]);

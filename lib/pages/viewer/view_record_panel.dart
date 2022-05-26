@@ -14,7 +14,7 @@ class ViewRecordPanel extends StatefulWidget {
   ViewRecordPanel({required this.articleId});
 
   @override
-  _ViewRecordPanelState createState() => _ViewRecordPanelState();
+  State<ViewRecordPanel> createState() => _ViewRecordPanelState();
 }
 
 class _ViewRecordPanelState extends State<ViewRecordPanel> {

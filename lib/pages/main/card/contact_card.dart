@@ -9,7 +9,7 @@ import 'package:violet/locale/locale.dart';
 
 class ContactCard extends StatefulWidget {
   @override
-  _ContactCardState createState() => _ContactCardState();
+  State<ContactCard> createState() => _ContactCardState();
 }
 
 class _ContactCardState extends State<ContactCard> {
@@ -70,7 +70,7 @@ class _ContactCardState extends State<ContactCard> {
     );
   }
 
-  final settingsItemStyle = (pressed) => ParentStyle()
+  ParentStyle settingsItemStyle(bool pressed) => ParentStyle()
     ..elevation(pressed ? 0 : 10000, color: Colors.transparent)
     ..scale(pressed ? 0.95 : 1.0)
     ..alignmentContent.center()

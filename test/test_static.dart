@@ -29,7 +29,7 @@ void main() {
   test("Test Population", () async {
     await Population.init();
 
-    expect(Population.population.length > 0, true);
+    expect(Population.population.isNotEmpty, true);
   });
 
   test("Test Related", () async {
@@ -37,6 +37,6 @@ void main() {
 
     print(Related.related);
 
-    expect(Related.related.length > 0, true);
+    expect(Related.related.isNotEmpty, true);
   });
 }

@@ -42,7 +42,7 @@ class AnimatedFloatingActionButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AnimatedFloatingActionButtonState createState() =>
+  State<AnimatedFloatingActionButton> createState() =>
       _AnimatedFloatingActionButtonState();
 }
 
@@ -53,11 +53,12 @@ class _AnimatedFloatingActionButtonState
   late AnimationController _animationController;
   late Animation<double> _animateIcon;
   late Animation<double> _translateButton;
-  Curve _curve = Curves.easeOut;
-  double _fabHeight = 56.0;
+  final Curve _curve = Curves.easeOut;
+  final double _fabHeight = 56.0;
 
   @override
-  initState() {
+  void initState() {
+    super.initState();
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300))
           ..addListener(() {
@@ -76,12 +77,11 @@ class _AnimatedFloatingActionButtonState
         curve: _curve,
       ),
     ));
-    super.initState();
     _animationController.forward();
   }
 
   @override
-  dispose() {
+  void dispose() {
     _animationController.dispose();
     super.dispose();
   }
