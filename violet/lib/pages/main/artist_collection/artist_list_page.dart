@@ -18,7 +18,8 @@ class ArtistListPage extends StatelessWidget {
   final List<String> artists;
   final bool isLast;
 
-  const ArtistListPage({required this.artists, required this.isLast});
+  const ArtistListPage({Key? key, required this.artists, required this.isLast})
+      : super(key: key);
 
   static final RegExp _chDot = RegExp('[cC]h\\.');
 

@@ -13,11 +13,12 @@ class ThumbnailViewPage extends StatefulWidget {
   final Size? size;
 
   ThumbnailViewPage({
+    Key? key,
     required this.thumbnail,
     required this.headers,
     this.size,
     required this.heroKey,
-  });
+  }) : super(key: key);
 
   @override
   State<ThumbnailViewPage> createState() => _ThumbnailViewPageState();
@@ -42,6 +43,19 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
     return GestureDetector(
       child: Container(
         padding: EdgeInsets.all(0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.2)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Transform.scale(
           scale: scale,
           child: Column(
@@ -77,19 +91,6 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
                   ),
                 ),
               ]),
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.2)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
         ),
       ),
       onScaleStart: (detail) {

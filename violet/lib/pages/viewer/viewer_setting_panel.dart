@@ -16,10 +16,11 @@ class ViewerSettingPanel extends StatefulWidget {
   final VoidCallback thumbSizeChangeEvent;
 
   ViewerSettingPanel({
+    Key? key,
     required this.viewerStyleChangeEvent,
     required this.setStateCallback,
     required this.thumbSizeChangeEvent,
-  });
+  }) : super(key: key);
 
   @override
   State<ViewerSettingPanel> createState() => _ViewerSettingPanelState();

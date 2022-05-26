@@ -45,6 +45,7 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   final ArticleListItem? articleListItem;
 
   ArticleListItemVerySimpleWidget({
+    Key? key,
     // this.queryResult,
     // this.addBottomPadding,
     // this.showDetail,
@@ -56,7 +57,7 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
     this.isChecked = false,
     this.isCheckMode = false,
     this.articleListItem,
-  });
+  }) : super(key: key);
 
   @override
   State<ArticleListItemVerySimpleWidget> createState() =>
@@ -280,6 +281,14 @@ class _ArticleListItemVerySimpleWidgetState
           particle: Rectangle2DemoParticle(),
           pimpedWidgetBuilder: (context, controller) {
             return GestureDetector(
+              onTapDown: _onTapDown,
+              onTapUp: _onTapUp,
+              onLongPress: () async {
+                await _onLongPress(controller);
+              },
+              onLongPressEnd: _onPressEnd,
+              onTapCancel: _onTapCancle,
+              onDoubleTap: _onDoubleTap,
               child: SizedBox(
                 width: thisWidth,
                 height: thisHeight,
@@ -293,14 +302,6 @@ class _ArticleListItemVerySimpleWidgetState
                   child: _body,
                 ),
               ),
-              onTapDown: _onTapDown,
-              onTapUp: _onTapUp,
-              onLongPress: () async {
-                await _onLongPress(controller);
-              },
-              onLongPressEnd: _onPressEnd,
-              onTapCancel: _onTapCancle,
-              onDoubleTap: _onDoubleTap,
             );
           },
         ),
@@ -368,9 +369,6 @@ class _ArticleListItemVerySimpleWidgetState
           builder: (_, controller) {
             if (cache == null) {
               cache = Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
                 value: ArticleInfo.fromArticleInfo(
                   queryResult: data.queryResult,
                   thumbnail: thumbnail!,
@@ -379,6 +377,9 @@ class _ArticleListItemVerySimpleWidgetState
                   isBookmarked: isBookmarked.value,
                   controller: controller,
                   usableTabList: data.usableTabList,
+                ),
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
             }
@@ -549,6 +550,7 @@ class BodyWidget extends StatelessWidget {
   final String? dateTime;
 
   BodyWidget({
+    Key? key,
     required this.data,
     required this.thumbnail,
     required this.imageCount,
@@ -563,7 +565,7 @@ class BodyWidget extends StatelessWidget {
     required this.artist,
     required this.title,
     required this.dateTime,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

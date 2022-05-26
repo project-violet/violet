@@ -19,6 +19,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabRecentRecords extends StatefulWidget {
+  const LabRecentRecords({Key? key}) : super(key: key);
+
   @override
   State<LabRecentRecords> createState() => _LabRecentRecordsState();
 }

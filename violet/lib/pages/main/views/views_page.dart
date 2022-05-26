@@ -18,6 +18,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ViewsPage extends StatefulWidget {
+  const ViewsPage({Key? key}) : super(key: key);
+
   @override
   State<ViewsPage> createState() => _ViewsPageState();
 }
@@ -43,6 +45,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
               tabs: [
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -54,10 +57,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -69,10 +72,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -84,10 +87,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -99,7 +102,6 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
               ],
             ),

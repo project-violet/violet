@@ -19,6 +19,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class BookmarkPage extends StatefulWidget {
+  const BookmarkPage({Key? key}) : super(key: key);
+
   @override
   State<BookmarkPage> createState() => _BookmarkPageState();
 }

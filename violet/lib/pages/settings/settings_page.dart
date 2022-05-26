@@ -133,6 +133,8 @@ class ExCountry extends Country {
 }
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -349,6 +351,33 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         _buildDivider(),
         InkWell(
+          onTap: _themeSwitch
+              ? () async {
+                  await Settings.setThemeBlack(!Settings.themeBlack);
+                  DynamicTheme.of(context)!.setThemeData(
+                    ThemeData(
+                      accentColor: Settings.majorColor,
+                      brightness: Theme.of(context).brightness,
+                      bottomSheetTheme: BottomSheetThemeData(
+                          backgroundColor: Colors.black.withOpacity(0)),
+                      scaffoldBackgroundColor:
+                          Settings.themeBlack && Settings.themeWhat
+                              ? Colors.black
+                              : null,
+                      dialogBackgroundColor:
+                          Settings.themeBlack && Settings.themeWhat
+                              ? const Color(0xFF141414)
+                              : null,
+                      cardColor: Settings.themeBlack && Settings.themeWhat
+                          ? const Color(0xFF141414)
+                          : null,
+                    ),
+                  );
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                }
+              : null,
           child: ListTile(
             leading: Icon(MdiIcons.brightness3, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('blackmode')),
@@ -385,33 +414,6 @@ class _SettingsPageState extends State<SettingsPage>
               activeColor: Settings.majorAccentColor,
             ),
           ),
-          onTap: _themeSwitch
-              ? () async {
-                  await Settings.setThemeBlack(!Settings.themeBlack);
-                  DynamicTheme.of(context)!.setThemeData(
-                    ThemeData(
-                      accentColor: Settings.majorColor,
-                      brightness: Theme.of(context).brightness,
-                      bottomSheetTheme: BottomSheetThemeData(
-                          backgroundColor: Colors.black.withOpacity(0)),
-                      scaffoldBackgroundColor:
-                          Settings.themeBlack && Settings.themeWhat
-                              ? Colors.black
-                              : null,
-                      dialogBackgroundColor:
-                          Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF141414)
-                              : null,
-                      cardColor: Settings.themeBlack && Settings.themeWhat
-                          ? const Color(0xFF141414)
-                          : null,
-                    ),
-                  );
-                  setState(() {
-                    _shouldReload = true;
-                  });
-                }
-              : null,
         ),
         _buildDivider(),
         InkWell(
@@ -933,12 +935,6 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading:
-                  Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('switching')),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
@@ -947,6 +943,12 @@ class _SettingsPageState extends State<SettingsPage>
                               switching: true,
                             )));
                   },
+            child: ListTile(
+              leading:
+                  Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('switching')),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
           ),
           _buildDivider(),
           InkWell(
@@ -1014,11 +1016,6 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('syncmanual')),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
@@ -1077,6 +1074,11 @@ class _SettingsPageState extends State<SettingsPage>
                       },
                     );
                   },
+            child: ListTile(
+              leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('syncmanual')),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
           ),
         ],
       ),
@@ -1231,6 +1233,15 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
+            onTap: Platform.isIOS
+                ? null
+                : () async {
+                    await Settings.setUserInnerStorage(
+                        !Settings.useInnerStorage);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
             child: ListTile(
               leading: Icon(
                 MdiIcons.downloadLock,
@@ -1251,15 +1262,6 @@ class _SettingsPageState extends State<SettingsPage>
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: Platform.isIOS
-                ? null
-                : () async {
-                    await Settings.setUserInnerStorage(
-                        !Settings.useInnerStorage);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
           ),
           _buildDivider(),
           ListTile(
@@ -1300,8 +1302,6 @@ class _SettingsPageState extends State<SettingsPage>
               TextEditingController text =
                   TextEditingController(text: tc.toString());
               Widget yesButton = TextButton(
-                child: Text(Translations.of(context).trans('change'),
-                    style: TextStyle(color: Settings.majorColor)),
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 onPressed: () async {
                   if (int.tryParse(text.text) == null) {
@@ -1322,14 +1322,16 @@ class _SettingsPageState extends State<SettingsPage>
 
                   Navigator.pop(context, true);
                 },
+                child: Text(Translations.of(context).trans('change'),
+                    style: TextStyle(color: Settings.majorColor)),
               );
               Widget noButton = TextButton(
-                child: Text(Translations.of(context).trans('cancel'),
-                    style: TextStyle(color: Settings.majorColor)),
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
+                child: Text(Translations.of(context).trans('cancel'),
+                    style: TextStyle(color: Settings.majorColor)),
               );
               var dialog = await showDialog(
                 context: context,
@@ -1369,10 +1371,9 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            //   customBorder: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.all(
-            //       Radius.circular(8.0),
-            //     ),
+            // customBorder: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.all(
+            //     Radius.circular(8.0),
             //   ),
             child: ListTile(
               leading:
@@ -1531,6 +1532,15 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
+            onTap: true
+                ? null
+                : () async {
+                    await Settings.setAutoBackupBookmark(
+                        !Settings.autobackupBookmark);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
             child: ListTile(
               leading: Icon(
                 MdiIcons.bookArrowUpOutline,
@@ -1551,15 +1561,6 @@ class _SettingsPageState extends State<SettingsPage>
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: true
-                ? null
-                : () async {
-                    await Settings.setAutoBackupBookmark(
-                        !Settings.autobackupBookmark);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
           ),
           _buildDivider(),
           ListTile(

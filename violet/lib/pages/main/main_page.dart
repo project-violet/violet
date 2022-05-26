@@ -47,6 +47,8 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
 class MainPage2 extends StatefulWidget {
+  const MainPage2({Key? key}) : super(key: key);
+
   @override
   State<MainPage2> createState() => _MainPage2State();
 }
@@ -369,6 +371,8 @@ class _MainPage2State extends State<MainPage2>
           //   width: 100,
           // )
           Container(
+            height: 40,
+            width: 105,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Settings.majorColor.withAlpha(220),
@@ -378,8 +382,6 @@ class _MainPage2State extends State<MainPage2>
               },
               child: Text(Translations.of(context).trans('patchnote')),
             ),
-            height: 40,
-            width: 105,
           ),
         ],
       ),

@@ -802,6 +802,8 @@ Thank you so much for using the beta version until now.'''
 ];
 
 class PatchNotePage extends StatefulWidget {
+  const PatchNotePage({Key? key}) : super(key: key);
+
   @override
   State<PatchNotePage> createState() => _PatchNotePageState();
 }

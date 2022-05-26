@@ -7,6 +7,8 @@ import 'package:violet/database/database.dart';
 import 'package:violet/settings/settings.dart';
 
 class DBRebuildPage extends StatefulWidget {
+  const DBRebuildPage({Key? key}) : super(key: key);
+
   @override
   State<DBRebuildPage> createState() => _DBRebuildPagePageState();
 }
@@ -32,6 +34,19 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
         return false;
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.4)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -65,19 +80,6 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
