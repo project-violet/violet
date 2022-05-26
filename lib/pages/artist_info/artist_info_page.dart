@@ -747,9 +747,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           PlatformNavigator.navigateSlide(context, what(), opaque: false);
         },
         child: Row(
-          children: [Text(Translations.of(context).trans('more'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('more'))],
         ),
       ),
     );
@@ -934,6 +934,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
+                width: 100,
+                height: 100,
                 // alignment: Alignment.center,
                 child: Align(
                   // alignment: Alignment.center,
@@ -942,8 +944,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                width: 100,
-                height: 100,
               )
             ],
           ),
@@ -1007,9 +1007,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       splashColor: Colors.white,
       child: ListTile(
         title: Row(
-          children: [Text(Translations.of(context).trans('writecomment'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('writecomment'))],
         ),
       ),
     );

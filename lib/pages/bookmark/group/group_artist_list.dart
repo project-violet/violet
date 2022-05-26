@@ -181,6 +181,18 @@ class _GroupArtistListState extends State<GroupArtistList>
           elevation: !Settings.themeFlat ? 100 : 0,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: InkWell(
+            onTap: _progressingFilter
+                ? null
+                : () async {
+                    setState(() {
+                      _progressingFilter = true;
+                    });
+                    await _sortByLatest();
+                    setState(() {
+                      _progressingFilter = false;
+                      _filterLevel = (_filterLevel + 1) % 2;
+                    });
+                  },
             child: SizedBox(
               height: 48,
               width: 48,
@@ -205,18 +217,6 @@ class _GroupArtistListState extends State<GroupArtistList>
                 ],
               ),
             ),
-            onTap: _progressingFilter
-                ? null
-                : () async {
-                    setState(() {
-                      _progressingFilter = true;
-                    });
-                    await _sortByLatest();
-                    setState(() {
-                      _progressingFilter = false;
-                      _filterLevel = (_filterLevel + 1) % 2;
-                    });
-                  },
           ),
         ),
       ),

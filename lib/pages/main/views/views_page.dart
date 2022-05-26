@@ -45,6 +45,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
               tabs: [
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -56,10 +57,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -71,10 +72,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -86,10 +87,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -101,7 +102,6 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
               ],
             ),

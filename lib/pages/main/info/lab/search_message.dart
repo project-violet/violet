@@ -199,10 +199,10 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                       height: 300,
                                       child: Center(
                                         child: SizedBox(
-                                          child: CircularProgressIndicator(
-                                              value: progress.progress),
                                           width: 30,
                                           height: 30,
+                                          child: CircularProgressIndicator(
+                                              value: progress.progress),
                                         ),
                                       ),
                                     );
@@ -285,7 +285,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               DropdownButtonHideUnderline(
                 child: DropdownButton(
                   items: ['Contains', 'Similar']
-                      .map((e) => DropdownMenuItem(child: Text(e), value: e))
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                       .toList(),
                   value: selected,
                   onChanged: (String? value) async {
@@ -487,9 +487,6 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
             builder: (_, controller) {
               if (cache == null) {
                 cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
                   value: ArticleInfo.fromArticleInfo(
                     queryResult: qr,
                     thumbnail: thumbnail,
@@ -497,6 +494,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     heroKey: 'zxcvzxcvzxcv',
                     isBookmarked: isBookmarked,
                     controller: controller,
+                  ),
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
                   ),
                 );
               }

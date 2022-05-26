@@ -232,7 +232,6 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
     final PhotoView photoView = isCustomChild
         ? PhotoView.customChild(
             key: ObjectKey(index),
-            child: pageOption.child,
             childSize: pageOption.childSize,
             backgroundDecoration: widget.backgroundDecoration,
             controller: pageOption.controller,
@@ -252,6 +251,7 @@ class _VPhotoViewGalleryState extends State<VPhotoViewGallery> {
             filterQuality: pageOption.filterQuality,
             basePosition: pageOption.basePosition,
             disableGestures: pageOption.disableGestures,
+            child: pageOption.child,
           )
         : PhotoView(
             key: ObjectKey(index),

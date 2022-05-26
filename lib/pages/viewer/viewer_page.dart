@@ -710,9 +710,6 @@ class _ViewerPageState extends State<ViewerPage>
               builder: (_, controller) {
                 if (cache == null) {
                   cache = Provider<ArticleInfo>.value(
-                    child: ArticleInfoPage(
-                      key: ObjectKey('asdfasdf'),
-                    ),
                     value: ArticleInfo.fromArticleInfo(
                       queryResult: qr,
                       thumbnail: thumbnail,
@@ -721,6 +718,9 @@ class _ViewerPageState extends State<ViewerPage>
                       isBookmarked: isBookmarked,
                       controller: controller,
                       lockRead: true,
+                    ),
+                    child: ArticleInfoPage(
+                      key: ObjectKey('asdfasdf'),
                     ),
                   );
                 }
@@ -1125,13 +1125,13 @@ class _ViewerPageState extends State<ViewerPage>
             loadingBuilder: (context, imageChunkEvent) {
               return Center(
                 child: SizedBox(
+                  width: 30,
+                  height: 30,
                   child: CircularProgressIndicator(
                       value: imageChunkEvent == null
                           ? 0
                           : imageChunkEvent.cumulativeBytesLoaded /
                               imageChunkEvent.expectedTotalBytes!.toDouble()),
-                  width: 30,
-                  height: 30,
                 ),
               );
             },
@@ -1260,9 +1260,9 @@ class _ViewerPageState extends State<ViewerPage>
               height: 300,
               child: Center(
                 child: SizedBox(
-                  child: CircularProgressIndicator(),
                   width: 30,
                   height: 30,
+                  child: CircularProgressIndicator(),
                 ),
               ),
             );
@@ -1529,9 +1529,9 @@ class _ViewerPageState extends State<ViewerPage>
             height: 300,
             child: Center(
               child: SizedBox(
-                child: CircularProgressIndicator(),
                 width: 30,
                 height: 30,
+                child: CircularProgressIndicator(),
               ),
             ),
           );
@@ -1566,9 +1566,9 @@ class _ViewerPageState extends State<ViewerPage>
                 height: 300,
                 child: Center(
                   child: SizedBox(
-                    child: CircularProgressIndicator(value: progress.progress),
                     width: 30,
                     height: 30,
+                    child: CircularProgressIndicator(value: progress.progress),
                   ),
                 ),
               );
@@ -1613,9 +1613,9 @@ class _ViewerPageState extends State<ViewerPage>
           height: _height![index] != 0 ? _height![index] : 300,
           child: Center(
             child: SizedBox(
-              child: CircularProgressIndicator(),
               width: 30,
               height: 30,
+              child: CircularProgressIndicator(),
             ),
           ),
         );
@@ -1709,9 +1709,9 @@ class _ViewerPageState extends State<ViewerPage>
                 : 300,
             child: Center(
               child: SizedBox(
-                child: CircularProgressIndicator(),
                 width: 30,
                 height: 30,
+                child: CircularProgressIndicator(),
               ),
             ),
           );
@@ -1739,9 +1739,9 @@ class _ViewerPageState extends State<ViewerPage>
                     : 300,
                 child: Center(
                   child: SizedBox(
-                    child: CircularProgressIndicator(),
                     width: 30,
                     height: 30,
+                    child: CircularProgressIndicator(),
                   ),
                 ),
               );
@@ -1787,10 +1787,10 @@ class _ViewerPageState extends State<ViewerPage>
                           : 300,
                       child: Center(
                         child: SizedBox(
-                          child: CircularProgressIndicator(
-                              value: progress.progress),
                           width: 30,
                           height: 30,
+                          child: CircularProgressIndicator(
+                              value: progress.progress),
                         ),
                       ),
                     );
@@ -2475,9 +2475,9 @@ class __FileImageState extends State<_FileImage> {
             height: _height,
             child: Center(
               child: SizedBox(
-                child: CircularProgressIndicator(),
                 width: 30,
                 height: 30,
+                child: CircularProgressIndicator(),
               ),
             ),
           );

@@ -408,9 +408,6 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
           builder: (_, controller) {
             if (cache == null) {
               cache = Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
                 value: ArticleInfo.fromArticleInfo(
                   queryResult: e,
                   thumbnail: thumbnail,
@@ -419,6 +416,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                   isBookmarked: isBookmarked,
                   controller: controller,
                   usableTabList: articleList,
+                ),
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
             }
