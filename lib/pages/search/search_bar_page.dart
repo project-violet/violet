@@ -22,6 +22,7 @@ class SearchBarPage extends StatefulWidget {
   final AssetProvider assetProvider;
   final FlareControls heroController;
   final String initText;
+
   const SearchBarPage({
     Key? key,
     required this.assetProvider,
@@ -63,7 +64,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       duration: Duration(milliseconds: 400),
       reverseDuration: Duration(milliseconds: 400),
     );
-    _searchController = TextEditingController(text: widget.initText ?? '');
+    _searchController = TextEditingController(text: widget.initText);
   }
 
   @override

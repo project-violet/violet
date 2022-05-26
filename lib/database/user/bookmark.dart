@@ -89,8 +89,8 @@ class BookmarkUser {
   String user() => result['User'];
   String datetime() => result['DateTime'];
   int group() => result['GroupId'];
-  String title() => result['Title'];
-  String subtitle() => result['Subtitle'];
+  String? title() => result['Title'];
+  String? subtitle() => result['Subtitle'];
 
   Future<void> update() async {
     var db = await CommonUserDatabase.getInstance();

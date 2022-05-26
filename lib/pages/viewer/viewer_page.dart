@@ -1599,7 +1599,7 @@ class _ViewerPageState extends State<ViewerPage>
           return _FileImage(
             path: _pageInfo.uris[index],
             cachedHeight: _height![index] != 0 ? _height![index] : null,
-            heightCallback: _height![index]! != 0
+            heightCallback: _height![index] != 0
                 ? null
                 : (height) async {
                     _height![index] = height;
@@ -2322,8 +2322,7 @@ class __FileImageState extends State<_FileImage> {
             !_loaded) {
           _loaded = true;
           Future.delayed(Duration(milliseconds: 100)).then((value) {
-            final aspectRatio =
-                imageInfo!.image.width / imageInfo!.image.height;
+            final aspectRatio = imageInfo!.image.width / imageInfo.image.height;
             if (widget.heightCallback != null)
               widget.heightCallback!(width / aspectRatio);
             setState(() {

@@ -102,9 +102,9 @@ class TagTranslate {
     part = part.replaceAll(' ', '');
     var result = _translateMap.entries
         .map((e) => Tuple2<DisplayedTag, int>(
-            DisplayedTag(tag: e.key, translated: e.value!.split('|')[0]),
+            DisplayedTag(tag: e.key, translated: e.value.split('|')[0]),
             Distance.levenshteinDistance(
-                e.value.replaceAll(' ', '')!.split('|')[0].runes.toList(),
+                e.value.replaceAll(' ', '').split('|')[0].runes.toList(),
                 part.runes.toList())))
         .toList();
     result.sort((x, y) => x.item2.compareTo(y.item2));
@@ -120,7 +120,7 @@ class TagTranslate {
                 tag: e.value,
                 translated: _translateMap[e.value]!.split('|')[0]),
             Distance.levenshteinDistance(
-                e.key.replaceAll(' ', '')!.split('|')[0].runes.toList(),
+                e.key.replaceAll(' ', '').split('|')[0].runes.toList(),
                 part.runes.toList())))
         .toList();
     result.sort((x, y) => x.item2.compareTo(y.item2));

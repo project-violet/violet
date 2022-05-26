@@ -23,12 +23,10 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
 class DataBaseDownloadPage extends StatefulWidget {
-  String? dbPath;
   final String? dbType;
   final bool isSync;
 
   DataBaseDownloadPage({
-    this.dbPath,
     this.dbType,
     this.isSync = false,
   });
@@ -545,13 +543,13 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                         ),
                       ),
                       Text(
-                        downString ?? '',
+                        downString,
                         style: TextStyle(
                           color: Colors.white,
                         ),
                       ),
                       Text(
-                        speedString ?? '',
+                        speedString,
                         style: TextStyle(
                           color: Colors.white,
                         ),
@@ -560,7 +558,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                   ),
                 ),
               )
-            : Text(baseString ?? ''),
+            : Text(baseString),
       ),
     );
   }
