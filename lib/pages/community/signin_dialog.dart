@@ -7,6 +7,8 @@ import 'package:violet/server/community/session.dart';
 import 'package:violet/settings/settings.dart';
 
 class SignInDialog extends StatefulWidget {
+  const SignInDialog({Key? key}) : super(key: key);
+
   @override
   State<SignInDialog> createState() => _SignInDialogState();
 }

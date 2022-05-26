@@ -15,6 +15,8 @@ import 'package:violet/server/community/anon.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabGlobalComments extends StatefulWidget {
+  const LabGlobalComments({Key? key}) : super(key: key);
+
   @override
   State<LabGlobalComments> createState() => _LabGlobalCommentsState();
 }
@@ -211,6 +213,7 @@ class CommentUnit extends StatelessWidget {
   static const String dev = '1918c652d3a9';
 
   const CommentUnit({
+    Key? key,
     required this.id,
     required this.author,
     required this.body,
@@ -218,7 +221,7 @@ class CommentUnit extends StatelessWidget {
     this.reply,
     required this.replies,
     this.isReply = false,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

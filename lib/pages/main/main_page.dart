@@ -47,6 +47,8 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
 class MainPage2 extends StatefulWidget {
+  const MainPage2({Key? key}) : super(key: key);
+
   @override
   State<MainPage2> createState() => _MainPage2State();
 }

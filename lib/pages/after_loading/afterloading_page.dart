@@ -20,6 +20,8 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
 class AfterLoadingPage extends StatefulWidget {
+  const AfterLoadingPage({Key? key}) : super(key: key);
+
   @override
   AfterLoadingPageState createState() => AfterLoadingPageState();
 }

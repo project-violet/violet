@@ -45,6 +45,7 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   final ArticleListItem? articleListItem;
 
   ArticleListItemVerySimpleWidget({
+    Key? key,
     // this.queryResult,
     // this.addBottomPadding,
     // this.showDetail,
@@ -56,7 +57,7 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
     this.isChecked = false,
     this.isCheckMode = false,
     this.articleListItem,
-  });
+  }) : super(key: key);
 
   @override
   State<ArticleListItemVerySimpleWidget> createState() =>
@@ -549,6 +550,7 @@ class BodyWidget extends StatelessWidget {
   final String? dateTime;
 
   BodyWidget({
+    Key? key,
     required this.data,
     required this.thumbnail,
     required this.imageCount,
@@ -563,7 +565,7 @@ class BodyWidget extends StatelessWidget {
     required this.artist,
     required this.title,
     required this.dateTime,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

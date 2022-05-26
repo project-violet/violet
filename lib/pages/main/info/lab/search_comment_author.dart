@@ -16,7 +16,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class LabSearchCommentsAuthor extends StatefulWidget {
   final String author;
 
-  LabSearchCommentsAuthor(this.author);
+  LabSearchCommentsAuthor(this.author, {Key? key}) : super(key: key);
 
   @override
   State<LabSearchCommentsAuthor> createState() =>

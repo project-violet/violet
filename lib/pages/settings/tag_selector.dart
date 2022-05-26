@@ -11,7 +11,7 @@ import 'package:violet/settings/settings.dart';
 class TagSelectorDialog extends StatefulWidget {
   final String what;
 
-  TagSelectorDialog({required this.what});
+  TagSelectorDialog({Key? key, required this.what}) : super(key: key);
 
   @override
   State<TagSelectorDialog> createState() => _TagSelectorDialogState();
