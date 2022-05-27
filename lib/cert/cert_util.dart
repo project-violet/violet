@@ -55,8 +55,8 @@ class CertUtil {
 
   static String exportRSAPublicKey(RSAPublicKey publicKey) {
     return utf8.fuse(base64).encode(jsonEncode({
-          "exponent": publicKey.exponent.toString(),
-          "modulus": publicKey.modulus.toString(),
+          'exponent': publicKey.exponent.toString(),
+          'modulus': publicKey.modulus.toString(),
         }));
   }
 
@@ -71,10 +71,10 @@ class CertUtil {
 
   static String exportRSAPrivateKey(RSAPrivateKey privateKey) {
     return utf8.fuse(base64).encode(jsonEncode({
-          "p": privateKey.p.toString(),
-          "q": privateKey.q.toString(),
-          "exponent": privateKey.privateExponent.toString(),
-          "modulus": privateKey.modulus.toString(),
+          'p': privateKey.p.toString(),
+          'q': privateKey.q.toString(),
+          'exponent': privateKey.privateExponent.toString(),
+          'modulus': privateKey.modulus.toString(),
         }));
   }
 

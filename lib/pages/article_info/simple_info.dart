@@ -16,6 +16,8 @@ class SimpleInfoWidget extends StatelessWidget {
   final FlareControls _flareController = FlareControls();
   static final DateFormat _dateFormat = DateFormat(' yyyy/MM/dd HH:mm');
 
+  SimpleInfoWidget({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<ArticleInfo>(context);
@@ -88,10 +90,10 @@ class SimpleInfoWidget extends StatelessWidget {
             width: 3 * 50.0,
             child: !Settings.simpleItemWidgetLoadingIcon
                 ? const FlareActor(
-                    "assets/flare/Loading2.flr",
+                    'assets/flare/Loading2.flr',
                     alignment: Alignment.center,
                     fit: BoxFit.fitHeight,
-                    animation: "Alarm",
+                    animation: 'Alarm',
                   )
                 : Center(
                     child: SizedBox(
@@ -116,7 +118,7 @@ class SimpleInfoWidget extends StatelessWidget {
             height: 40,
             child: FlareActor(
               'assets/flare/likeUtsua.flr',
-              animation: data.isBookmarked ? "Like" : "IdleUnlike",
+              animation: data.isBookmarked ? 'Like' : 'IdleUnlike',
               controller: _flareController,
             ),
           ),
@@ -188,13 +190,7 @@ class SimpleInfoWidget extends StatelessWidget {
           size: 20,
         ),
         Text(
-            ' ' +
-                (data.thumbnail != null
-                    ? ProviderManager.getIgnoreDirty(data.queryResult.id())
-                            .length()
-                            .toString() +
-                        ' Page'
-                    : ''),
+            ' ${data.thumbnail != null ? '${ProviderManager.getIgnoreDirty(data.queryResult.id()).length()} Page' : ''}',
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
       ],
     );

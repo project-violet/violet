@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/settings/settings.dart';
 
 class LibvioletPage extends StatelessWidget {
+  const LibvioletPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

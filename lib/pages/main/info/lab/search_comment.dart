@@ -16,6 +16,8 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class LabSearchComments extends StatefulWidget {
+  const LabSearchComments({Key? key}) : super(key: key);
+
   @override
   State<LabSearchComments> createState() => _LabSearchCommentsState();
 }
@@ -139,9 +141,6 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
             builder: (_, controller) {
               if (cache == null) {
                 cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
                   value: ArticleInfo.fromArticleInfo(
                     queryResult: qr,
                     thumbnail: thumbnail,
@@ -149,6 +148,9 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
                     heroKey: 'zxcvzxcvzxcv',
                     isBookmarked: isBookmarked,
                     controller: controller,
+                  ),
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
                   ),
                 );
               }

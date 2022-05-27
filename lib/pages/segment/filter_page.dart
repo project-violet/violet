@@ -21,15 +21,16 @@ class FilterController {
   var tagStates = Map<String, bool>();
   var groupStates = Map<String, bool>();
 
-  FilterController({this.heroKey = "searchtype"});
+  FilterController({this.heroKey = 'searchtype'});
 }
 
 class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
 
   FilterPage({
+    Key? key,
     required this.queryResult,
-  });
+  }) : super(key: key);
 
   @override
   State<FilterPage> createState() => _FilterPageState();
@@ -69,8 +70,8 @@ class _FilterPageState extends State<FilterPage> {
       }
       _groupCount[group] = _groupCount[group]! + 1;
       _tags.add(Tuple3<String, String, int>(group, name, value));
-      if (!c.tagStates.containsKey(group + '|' + name))
-        c.tagStates[group + '|' + name] = false;
+      if (!c.tagStates.containsKey('$group|$name'))
+        c.tagStates['$group|$name'] = false;
     });
     if (!c.groupStates.containsKey('tag')) c.groupStates['tag'] = false;
     if (!c.groupStates.containsKey('female')) c.groupStates['female'] = false;
@@ -105,8 +106,8 @@ class _FilterPageState extends State<FilterPage> {
     _groupCount[group] = _groupCount[group]! + tags.length;
     tags.forEach((key, value) {
       _tags.add(Tuple3<String, String, int>(group, key, value));
-      if (!c.tagStates.containsKey(group + '|' + key))
-        c.tagStates[group + '|' + key] = false;
+      if (!c.tagStates.containsKey('$group|$key'))
+        c.tagStates['$group|$key'] = false;
     });
   }
 
@@ -216,7 +217,7 @@ class _FilterPageState extends State<FilterPage> {
       runSpacing: -10.0,
       children: <Widget>[
         FilterChip(
-          label: Text("Population"),
+          label: Text('Population'),
           selected: c.isPopulationSort,
           onSelected: (bool value) {
             setState(() {
@@ -225,7 +226,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text("OR"),
+          label: Text('OR'),
           selected: c.isOr,
           onSelected: (bool value) {
             setState(() {
@@ -234,7 +235,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text("Search"),
+          label: Text('Search'),
           selected: c.isSearch,
           onSelected: (bool value) {
             setState(() {
@@ -248,21 +249,21 @@ class _FilterPageState extends State<FilterPage> {
 
   _buildTagsPanel() {
     var tags = _tags
-        .where((element) => c.tagStates[element.item1 + '|' + element.item2]!)
+        .where((element) => c.tagStates['${element.item1}|${element.item2}']!)
         .toList();
 
     if (c.isSearch)
       tags += _tags
           .where((element) =>
-              (element.item1 + ':' + element.item2)
+              ('${element.item1}:${element.item2}')
                   .contains(_searchController.text) &&
-              !c.tagStates[element.item1 + '|' + element.item2]!)
+              !c.tagStates['${element.item1}|${element.item2}']!)
           .toList();
     else
       tags += _tags
           .where((element) =>
               c.groupStates[element.item1]! &&
-              !c.tagStates[element.item1 + '|' + element.item2]!)
+              !c.tagStates['${element.item1}|${element.item2}']!)
           .toList();
 
     return Wrap(
@@ -272,12 +273,12 @@ class _FilterPageState extends State<FilterPage> {
         children: tags.take(100).map(
           (element) {
             return _Chip(
-              selected: c.tagStates[element.item1 + '|' + element.item2]!,
+              selected: c.tagStates['${element.item1}|${element.item2}']!,
               group: element.item1,
               name: element.item2,
               count: element.item3,
               callback: (selected) {
-                c.tagStates[element.item1 + '|' + element.item2] = selected;
+                c.tagStates['${element.item1}|${element.item2}'] = selected;
               },
             );
           },
@@ -345,7 +346,7 @@ class _FilterPageState extends State<FilterPage> {
             _tags
                 .where((element) => c.groupStates[element.item1]!)
                 .forEach((element) {
-              c.tagStates[element.item1 + '|' + element.item2] = true;
+              c.tagStates['${element.item1}|${element.item2}'] = true;
             });
             setState(() {});
           },
@@ -356,7 +357,7 @@ class _FilterPageState extends State<FilterPage> {
             _tags
                 .where((element) => c.groupStates[element.item1]!)
                 .forEach((element) {
-              c.tagStates[element.item1 + '|' + element.item2] = false;
+              c.tagStates['${element.item1}|${element.item2}'] = false;
             });
             setState(() {});
           },
@@ -367,8 +368,8 @@ class _FilterPageState extends State<FilterPage> {
             _tags
                 .where((element) => c.groupStates[element.item1]!)
                 .forEach((element) {
-              c.tagStates[element.item1 + '|' + element.item2] =
-                  !c.tagStates[element.item1 + '|' + element.item2]!;
+              c.tagStates['${element.item1}|${element.item2}'] =
+                  !c.tagStates['${element.item1}|${element.item2}']!;
             });
             setState(() {});
           },
@@ -448,11 +449,7 @@ class __ChipState extends State<_Chip> {
             child: avatar,
           ),
           label: Text(
-            ' ' +
-                HtmlUnescape().convert(tagDisplayed) +
-                ' (' +
-                widget.count.toString() +
-                ')',
+            ' ${HtmlUnescape().convert(tagDisplayed)} (${widget.count})',
             style: TextStyle(
               color: Colors.white,
             ),

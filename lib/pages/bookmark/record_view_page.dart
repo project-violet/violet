@@ -14,6 +14,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class RecordViewPage extends StatelessWidget {
+  const RecordViewPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
@@ -38,8 +40,7 @@ class RecordViewPage extends StatelessWidget {
                 });
 
                 var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                queryRaw +=
-                    'Id IN (' + rr.map((e) => e.articleId()).join(',') + ')';
+                queryRaw += 'Id IN (${rr.map((e) => e.articleId()).join(',')})';
                 var qm = await QueryManager.query(queryRaw +
                     (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -71,7 +72,7 @@ class RecordViewPage extends StatelessWidget {
                   snapshot.data!.map(
                     (e) {
                       return Padding(
-                        key: Key('record/' + e.id().toString()),
+                        key: Key('record/${e.id()}'),
                         padding: EdgeInsets.zero,
                         child: Align(
                           alignment: Alignment.bottomCenter,

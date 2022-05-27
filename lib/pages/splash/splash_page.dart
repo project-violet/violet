@@ -127,7 +127,7 @@ class _RadioTileState<T> extends State<RadioTile<T>> {
 class SplashPage extends StatefulWidget {
   final bool switching;
 
-  SplashPage({this.switching = false});
+  SplashPage({Key? key, this.switching = false}) : super(key: key);
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -170,7 +170,7 @@ class _SplashPageState extends State<SplashPage> {
       await (await SharedPreferences.getInstance())
           .setBool('checkauthalready', true);
       if (await Permission.storage.request() == PermissionStatus.denied) {
-        await showOkDialog(context, "파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.");
+        await showOkDialog(context, '파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.');
       }
 
       if (Platform.isAndroid) {
@@ -257,8 +257,8 @@ class _SplashPageState extends State<SplashPage> {
         } catch (e, st) {
           // If an error occurs, stops synchronization immediately.
           FirebaseCrashlytics.instance.recordError(e, st);
-          Logger.error(
-              '[Splash-Navigation] E: ' + e.toString() + '\n' + st.toString());
+          Logger.error('[Splash-Navigation] E: $e\n'
+              '$st');
         }
       }
 
@@ -319,7 +319,7 @@ class _SplashPageState extends State<SplashPage> {
               top: showFirst ? 130 : height / 2 - 50,
               left: width / 2 - 50,
               child: Image.asset(
-                'assets/images/logo-' + Settings.majorColor.name + '.png',
+                'assets/images/logo-${Settings.majorColor.name}.png',
                 width: 100,
                 height: 100,
               ),
@@ -532,6 +532,7 @@ class _SplashPageState extends State<SplashPage> {
                 ? Settings.majorColor.withAlpha(200)
                 : Colors.purple.shade400,
           ),
+          onPressed: _onDownloadButtonPressed,
           child: SizedBox(
             width: 90,
             child: Row(
@@ -543,7 +544,6 @@ class _SplashPageState extends State<SplashPage> {
               ],
             ),
           ),
-          onPressed: _onDownloadButtonPressed,
         ),
       ),
     );

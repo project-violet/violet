@@ -6,6 +6,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
 
 class VioletPage extends StatelessWidget {
+  const VioletPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -13,6 +15,17 @@ class VioletPage extends StatelessWidget {
         Navigator.pop(context);
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -25,6 +38,8 @@ class VioletPage extends StatelessWidget {
               child: SizedBox(
                 child: Container(
                   padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  width: 250,
+                  height: 190,
                   child: Column(
                     children: <Widget>[
                       Text(''),
@@ -39,29 +54,16 @@ class VioletPage extends StatelessWidget {
                       Text(''),
                       // Text('Project-Violet Android App'),
                       Text(
-                        'Violet은 강력한 검색기능 및 분석기능을 통해 사용자에게 다양한 경험을 제공하는 뷰어입니다. ' +
-                            'Violet이 제공하는 편리하고도 강력한 기능들을 체험해보세요!',
+                        'Violet은 강력한 검색기능 및 분석기능을 통해 사용자에게 다양한 경험을 제공하는 뷰어입니다.'
+                        ' Violet이 제공하는 편리하고도 강력한 기능들을 체험해보세요!',
                         // Translations.of(context).trans('infomessage'),
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 11),
                       ),
                     ],
                   ),
-                  width: 250,
-                  height: 190,
                 ),
               ),
-            ),
-          ],
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
             ),
           ],
         ),

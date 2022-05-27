@@ -42,12 +42,13 @@ class ArtistInfoPage extends StatefulWidget {
   final bool isCharacter;
 
   ArtistInfoPage({
+    Key? key,
     required this.artist,
     this.isGroup = false,
     this.isUploader = false,
     this.isSeries = false,
     this.isCharacter = false,
-  });
+  }) : super(key: key);
 
   @override
   State<ArtistInfoPage> createState() => _ArtistInfoPageState();
@@ -258,15 +259,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var unescape = HtmlUnescape();
     for (int i = 0; i < similars.length; i++) {
       var postfix = similars[i].item1.toLowerCase().replaceAll(' ', '_');
-      var queryString = HitomiManager.translate2query(prefix +
-          postfix +
-          ' ' +
-          Settings.includeTags +
-          ' ' +
-          Settings.excludeTags
-              .where((e) => e.trim() != '')
-              .map((e) => '-$e')
-              .join(' '));
+      var queryString = HitomiManager.translate2query(
+          '$prefix$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 10;
 
@@ -314,25 +308,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var isSeries = obj[3] as bool;
     var isCharacter = obj[4] as bool;
 
-    var query = HitomiManager.translate2query((isGroup
-            ? 'group:'
-            : isUploader
-                ? 'uploader:'
-                : isSeries
-                    ? 'series:'
-                    : isCharacter
-                        ? 'character:'
-                        : 'artist:') +
-        '${artist.replaceAll(' ', '_')} ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+    var query = HitomiManager.translate2query(
+        '${isGroup ? 'group:' : isUploader ? 'uploader:' : isSeries ? 'series:' : isCharacter ? 'character:' : 'artist:'}${artist.replaceAll(' ', '_')} ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
     // DateTime dt = DateTime.now();
-    QueryManager qm = await QueryManager.query(query + ' ORDER BY Id DESC');
+    QueryManager qm = await QueryManager.query('$query ORDER BY Id DESC');
     // print((DateTime.now().difference(dt)).inSeconds);
 
     return qm.results!;
@@ -421,7 +401,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             height: 28,
             child: FlareActor(
               'assets/flare/likeUtsua.flr',
-              animation: isBookmarked ? "Like" : "IdleUnlike",
+              animation: isBookmarked ? 'Like' : 'IdleUnlike',
               controller: flareController,
             ),
           ),
@@ -614,8 +594,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
                     padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(Translations.of(context).trans('comment') +
-                        ' (${(comments != null ? comments!.length : 0)})'),
+                    child: Text(
+                        '${Translations.of(context).trans('comment')} (${(comments != null ? comments!.length : 0)})'),
                   ),
                   expanded: commentArea(),
                   collapsed: Container(),
@@ -636,13 +616,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                 const Duration(milliseconds: 500)),
                         header: Padding(
                           padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                          child: Text(Translations.of(context)
-                                  .trans('related') +
-                              ' ' +
-                              (widget.isSeries
-                                  ? Translations.of(context).trans('iseries')
-                                  : Translations.of(context)
-                                      .trans('icharacter'))),
+                          child: Text(
+                              '${Translations.of(context).trans('related')} ${widget.isSeries ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                         ),
                         expanded: relatedArea(),
                         collapsed: Container(),
@@ -664,13 +639,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                 const Duration(milliseconds: 500)),
                         header: Padding(
                           padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                          child: Text(Translations.of(context)
-                                  .trans('related') +
-                              ' ' +
-                              (widget.isCharacter
-                                  ? Translations.of(context).trans('iseries')
-                                  : Translations.of(context)
-                                      .trans('icharacter'))),
+                          child: Text(
+                              '${Translations.of(context).trans('related')} ${widget.isCharacter ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                         ),
                         expanded: relatedSingleArea(),
                         collapsed: Container(),
@@ -690,19 +660,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
                     padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(Translations.of(context).trans('similar') +
-                        ' ' +
-                        (widget.isGroup
-                            ? Translations.of(context).trans('igroups')
-                            : widget.isUploader
-                                ? Translations.of(context).trans('iuploader')
-                                : widget.isSeries
-                                    ? Translations.of(context).trans('iseries')
-                                    : widget.isCharacter
-                                        ? Translations.of(context)
-                                            .trans('icharacter')
-                                        : Translations.of(context)
-                                            .trans('iartists'))),
+                    child: Text(
+                        '${Translations.of(context).trans('similar')} ${widget.isGroup ? Translations.of(context).trans('igroups') : widget.isUploader ? Translations.of(context).trans('iuploader') : widget.isSeries ? Translations.of(context).trans('iseries') : widget.isCharacter ? Translations.of(context).trans('icharacter') : Translations.of(context).trans('iartists')}'),
                   ),
                   expanded: similarArea(),
                   collapsed: Container(),
@@ -721,8 +680,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
                     padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
-                    child: Text(Translations.of(context).trans('series') +
-                        ' (${series.length})'),
+                    child: Text(
+                        '${Translations.of(context).trans('series')} (${series.length})'),
                   ),
                   expanded: seriesArea(),
                   collapsed: Container(),
@@ -746,9 +705,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           PlatformNavigator.navigateSlide(context, what(), opaque: false);
         },
         child: Row(
-          children: [Text(Translations.of(context).trans('more'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('more'))],
         ),
       ),
     );
@@ -933,6 +892,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Container(
+                width: 100,
+                height: 100,
                 // alignment: Alignment.center,
                 child: Align(
                   // alignment: Alignment.center,
@@ -941,8 +902,6 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                width: 100,
-                height: 100,
               )
             ],
           ),
@@ -1006,9 +965,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       splashColor: Colors.white,
       child: ListTile(
         title: Row(
-          children: [Text(Translations.of(context).trans('writecomment'))],
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text(Translations.of(context).trans('writecomment'))],
         ),
       ),
     );

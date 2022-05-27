@@ -19,6 +19,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class LabRecentRecords extends StatefulWidget {
+  const LabRecentRecords({Key? key}) : super(key: key);
+
   @override
   State<LabRecentRecords> createState() => _LabRecentRecordsState();
 }
@@ -70,15 +72,10 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
       latestId = max(latestId,
           xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
@@ -111,8 +108,8 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
       } else
         setState(() {});
     } catch (e, st) {
-      Logger.error(
-          '[lab-recent_record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-recent_record] E: $e\n'
+          '$st');
     }
   }
 
@@ -134,13 +131,8 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
               reverse: true,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
-                  key: Key('records' +
-                      index.toString() +
-                      '/' +
-                      xrecords[xrecords.length - index - 1]
-                          .item1
-                          .id()
-                          .toString()),
+                  key: Key(
+                      'records$index/${xrecords[xrecords.length - index - 1].item1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(

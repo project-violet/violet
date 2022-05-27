@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class ContactCard extends StatefulWidget {
+  const ContactCard({Key? key}) : super(key: key);
+
   @override
   State<ContactCard> createState() => _ContactCardState();
 }
@@ -56,7 +58,7 @@ class _ContactCardState extends State<ContactCard> {
                     '  ${Translations.of(context).trans('maincontact')}',
                     style: TextStyle(
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,
                       color: Colors.white,
                     ),

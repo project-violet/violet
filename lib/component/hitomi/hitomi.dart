@@ -89,7 +89,7 @@ class HitomiManager {
       if (!useTranslated) {
         if (opp == 'female' || opp == 'male') {
           ch.forEach((key, value) {
-            if (key.toLowerCase().startsWith(opp + ':') &&
+            if (key.toLowerCase().startsWith('$opp:') &&
                 key.toLowerCase().contains(prefix))
               results.add(Tuple2<DisplayedTag, int>(
                   DisplayedTag(group: opp, name: key), value));
@@ -217,7 +217,7 @@ class HitomiManager {
       if (!useTranslated) {
         if (opp == 'female' || opp == 'male') {
           ch.forEach((key, value) {
-            if (key.toLowerCase().startsWith(opp + ':'))
+            if (key.toLowerCase().startsWith('$opp:'))
               results.add(Tuple3<DisplayedTag, int, int>(
                   DisplayedTag(group: opp, name: key),
                   Distance.levenshteinDistance(
@@ -358,9 +358,8 @@ class HitomiManager {
       return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
     }
 
-    if (tokens == null || tokens.trim() == "")
-      return 'SELECT * FROM HitomiColumnModel WHERE ' +
-          (!Settings.searchPure ? 'ExistOnHitomi=1' : '');
+    if (tokens == null || tokens.trim() == '')
+      return 'SELECT * FROM HitomiColumnModel WHERE ${!Settings.searchPure ? 'ExistOnHitomi=1' : ''}';
 
     final split =
         splitTokens(tokens).map((x) => x.trim()).where((x) => x != '').toList();
@@ -381,12 +380,12 @@ class HitomiManager {
         switch (ss[0]) {
           case 'male':
           case 'female':
-            postfix = '|' + val.replaceAll('_', ' ') + '|';
+            postfix = '|${val.replaceAll('_', ' ')}|';
             prefix = 'Tags';
             break;
 
           case 'tag':
-            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|${ss[1].replaceAll('_', ' ')}|';
             prefix = 'Tags';
             break;
 
@@ -394,15 +393,15 @@ class HitomiManager {
             prefix = 'Language';
             break;
           case 'series':
-            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|${ss[1].replaceAll('_', ' ')}|';
             prefix = 'Series';
             break;
           case 'artist':
-            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|${ss[1].replaceAll('_', ' ')}|';
             prefix = 'Artists';
             break;
           case 'group':
-            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|${ss[1].replaceAll('_', ' ')}|';
             prefix = 'Groups';
             break;
           case 'uploader':
@@ -410,7 +409,7 @@ class HitomiManager {
             postfix = ss[1];
             break;
           case 'character':
-            postfix = '|' + ss[1].replaceAll('_', ' ') + '|';
+            postfix = '|${ss[1].replaceAll('_', ' ')}|';
             prefix = 'Characters';
             break;
           case 'type':
@@ -420,17 +419,16 @@ class HitomiManager {
             prefix = 'Class';
             break;
           case 'recent':
-            return 'SELECT * FROM HitomiColumnModel ' +
-                (!Settings.searchPure ? 'ExistOnHitomi=1' : '');
+            return 'SELECT * FROM HitomiColumnModel ${!Settings.searchPure ? 'ExistOnHitomi=1' : ''}';
         }
         if (prefix == '') return '';
         if (postfix == '') postfix = ss[1].replaceAll('_', ' ');
 
-        if (negative) where += "(";
+        if (negative) where += '(';
 
         where += "$prefix LIKE '%$postfix%'";
 
-        if (negative) where += ") IS NOT 1";
+        if (negative) where += ') IS NOT 1';
 
         if (prefix == 'Uploader') where += ' COLLATE NOCASE';
       } else if ('=<>()'.contains(split[i])) {
@@ -451,7 +449,6 @@ class HitomiManager {
       }
     }
 
-    return 'SELECT * FROM HitomiColumnModel WHERE $where ' +
-        (!Settings.searchPure ? ' AND ExistOnHitomi=1' : '');
+    return 'SELECT * FROM HitomiColumnModel WHERE $where ${!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''}';
   }
 }

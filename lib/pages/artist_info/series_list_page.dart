@@ -16,10 +16,11 @@ class SeriesListPage extends StatelessWidget {
   final List<QueryResult> cc;
 
   SeriesListPage({
+    Key? key,
     required this.prefix,
     required this.series,
     required this.cc,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

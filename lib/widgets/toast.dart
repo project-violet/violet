@@ -17,6 +17,7 @@ class ToastWrapper extends StatefulWidget {
   final bool reverse;
 
   ToastWrapper({
+    Key? key,
     this.isCheck = false,
     this.isWarning = false,
     required this.msg,
@@ -24,7 +25,7 @@ class ToastWrapper extends StatefulWidget {
     this.color,
     this.ignoreDrawer = false,
     this.reverse = false,
-  });
+  }) : super(key: key);
 
   @override
   State<ToastWrapper> createState() => _ToastWrapperState();

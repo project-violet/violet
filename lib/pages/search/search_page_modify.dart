@@ -12,9 +12,10 @@ class SearchPageModifyPage extends StatefulWidget {
   final int maxPage;
 
   const SearchPageModifyPage({
+    Key? key,
     required this.curPage,
     required this.maxPage,
-  });
+  }) : super(key: key);
 
   @override
   State<SearchPageModifyPage> createState() => _SearchPageModifyPageState();
@@ -63,7 +64,7 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
                 ),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () async {
-                  if (_pageController.text == "") {
+                  if (_pageController.text == '') {
                     Navigator.pop(context, [
                       1,
                       0,

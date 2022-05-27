@@ -59,10 +59,9 @@ Future<void> _sqlIntegrityTest() async {
  */
 
 Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
-  Logger.error('[unhandled-error] E: ' +
-      flutterErrorDetails.exceptionAsString() +
-      '\n' +
-      flutterErrorDetails.stack.toString());
+  Logger.error(
+      '[unhandled-error] E: ${flutterErrorDetails.exceptionAsString()}\n'
+      '${flutterErrorDetails.stack}');
 
   await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
 }
@@ -149,7 +148,7 @@ void main() async {
             }
 
             if (locale == null) {
-              debugPrint("*language locale is null!!!");
+              debugPrint('*language locale is null!!!');
               if (Settings.language == null) {
                 Settings.setLanguage(supportedLocales.first.languageCode);
               }
@@ -159,7 +158,7 @@ void main() async {
             for (Locale supportedLocale in supportedLocales) {
               if (supportedLocale.languageCode == locale.languageCode ||
                   supportedLocale.countryCode == locale.countryCode) {
-                debugPrint("*language ok $supportedLocale");
+                debugPrint('*language ok $supportedLocale');
                 if (Settings.language == null) {
                   Settings.setLanguage(supportedLocale.languageCode);
                 }
@@ -167,7 +166,7 @@ void main() async {
               }
             }
 
-            debugPrint("*language to fallback ${supportedLocales.first}");
+            debugPrint('*language to fallback ${supportedLocales.first}');
             if (Settings.language == null)
               Settings.setLanguage(supportedLocales.first.languageCode);
             return supportedLocales.first;

@@ -25,7 +25,7 @@ class EHentaiManager extends Downloadable {
 
   @override
   String defaultFormat() {
-    return "%(extractor)s/%(artist)s/[%(id)s] %(title)s/%(file)s.%(ext)s";
+    return '%(extractor)s/%(artist)s/[%(id)s] %(title)s/%(file)s.%(ext)s';
   }
 
   @override
@@ -63,7 +63,7 @@ class EHentaiManager extends Downloadable {
     var id = match.first.namedGroup('id')!.trim();
 
     var articles = (await (await DataBaseManager.getInstance()).query(
-            "SELECT * FROM HitomiColumnModel WHERE Id=$id ORDER BY Id DESC LIMIT 1 OFFSET 0"))
+            'SELECT * FROM HitomiColumnModel WHERE Id=$id ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
 
@@ -93,7 +93,7 @@ class EHentaiManager extends Downloadable {
             laugage: article.language(),
             uploadDate: article.getDateTime().toString(),
             filenameWithoutExtension: intToString(i, pad: 3),
-            extension: path.extension(img.split('/').last).replaceAll(".", ""),
+            extension: path.extension(img.split('/').last).replaceAll('.', ''),
             extractor: 'hitomi',
           ),
         ),

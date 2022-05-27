@@ -12,7 +12,7 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 class UpdateCard extends StatefulWidget {
   final VoidCallback clickEvent;
 
-  UpdateCard({required this.clickEvent});
+  UpdateCard({Key? key, required this.clickEvent}) : super(key: key);
 
   @override
   State<UpdateCard> createState() => _UpdateCardState();
@@ -107,7 +107,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                             child: Text(
                               '  Tap Me!',
                               style: TextStyle(
-                                  fontFamily: "Calibre-Semibold",
+                                  fontFamily: 'Calibre-Semibold',
                                   fontSize: 18,
                                   color: Colors.white),
                             ),

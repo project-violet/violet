@@ -10,7 +10,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Test Bookmark", () async {
+  test('Test Bookmark', () async {
     print(await VioletServer.resotreBookmark(''));
   });
 }

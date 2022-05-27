@@ -96,7 +96,7 @@ class EHParser {
   // ex: https://exhentai.org/g/1212396/71a853083e/ //  5 pages
   // ex: https://exhentai.org/g/1201400/48f9b8e20a/ // 43 pages
   static List<String> getPagesUrl(String html) {
-    var doc = parse(html).querySelector("div.gtb");
+    var doc = parse(html).querySelector('div.gtb');
 
     var url = <String>[];
     try {
@@ -109,18 +109,12 @@ class EHParser {
           url.add(a!.attributes['href']!);
         });
       } else {
-        url.add(doc
-                .querySelector("table tbody tr td.ptds")!
-                .querySelector('a')!
-                .attributes['href']! +
-            '?p=0');
+        url.add(
+            '${doc.querySelector('table tbody tr td.ptds')!.querySelector('a')!.attributes['href']!}?p=0');
       }
     } catch (e) {
-      url.add(doc!
-              .querySelector("table tbody tr td.ptds")!
-              .querySelector('a')!
-              .attributes['href']! +
-          '?p=0');
+      url.add(
+          '${doc!.querySelector('table tbody tr td.ptds')!.querySelector('a')!.attributes['href']!}?p=0');
     }
 
     int max = 0;
@@ -133,18 +127,18 @@ class EHParser {
 
     var result = <String>[];
     var prefix = url[0].split('?p=')[0];
-    for (int i = 0; i <= max; i++) result.add(prefix + '?p=' + i.toString());
+    for (int i = 0; i <= max; i++) result.add('$prefix?p=$i');
     return result;
   }
 
   static EHArticle parseArticleData(String html) {
     var article = EHArticle();
     var h = parse(html);
-    var doc = h.querySelector("div.gm");
+    var doc = h.querySelector('div.gm');
 
     article.thumbnail = _thumbnailPattern
         .stringMatch(
-            doc!.querySelector("div[id=gleft] div div")!.attributes['style']!)
+            doc!.querySelector('div[id=gleft] div div')!.attributes['style']!)
         .toString();
 
     article.title = doc.querySelector("div[id='gd2'] h1[id='gn']")!.text;
@@ -184,18 +178,19 @@ class EHParser {
             .map((x) => x.querySelector('a')!.text)
             .toList();
       } catch (e, st) {
-        Logger.error('[eh-parser] E: ' + e.toString() + '\n' + st.toString());
+        Logger.error('[eh-parser] E: $e\n'
+            '$st');
       }
     });
 
-    if (info.containsKey("language:")) article.languages = info["language:"];
-    if (info.containsKey("group:")) article.group = info["group:"];
-    if (info.containsKey("parody:")) article.parody = info["parody:"];
-    if (info.containsKey("character:")) article.character = info["character:"];
-    if (info.containsKey("artist:")) article.artist = info["artist:"];
-    if (info.containsKey("male:")) article.male = info["male:"];
-    if (info.containsKey("female:")) article.female = info["female:"];
-    if (info.containsKey("misc:")) article.misc = info["misc:"];
+    if (info.containsKey('language:')) article.languages = info['language:'];
+    if (info.containsKey('group:')) article.group = info['group:'];
+    if (info.containsKey('parody:')) article.parody = info['parody:'];
+    if (info.containsKey('character:')) article.character = info['character:'];
+    if (info.containsKey('artist:')) article.artist = info['artist:'];
+    if (info.containsKey('male:')) article.male = info['male:'];
+    if (info.containsKey('female:')) article.female = info['female:'];
+    if (info.containsKey('misc:')) article.misc = info['misc:'];
 
     var nodeComments = h.querySelectorAll("div[id='cdiv'] > div.c1");
     var comments = <Tuple3<DateTime, String, String>>[];
@@ -204,11 +199,11 @@ class EHParser {
     var df = DateFormat('dd MMMM yyyy, H:m');
     nodeComments.forEach((element) {
       var date =
-          hu.convert(element.querySelector("div.c2 div.c3")!.text.trim());
+          hu.convert(element.querySelector('div.c2 div.c3')!.text.trim());
       var author =
-          hu.convert(element.querySelector("div.c2 div.c3 > a")!.text.trim());
+          hu.convert(element.querySelector('div.c2 div.c3 > a')!.text.trim());
       var contents = hu.convert(element
-          .querySelector("div.c6")!
+          .querySelector('div.c6')!
           .innerHtml
           .replaceAll('<br>', '\r\n'));
       comments.add(Tuple3<DateTime, String, String>(
@@ -292,7 +287,7 @@ class EHParser {
 
     var q = <Element>[];
     parse(html)
-        .querySelectorAll("table.itg.glte")
+        .querySelectorAll('table.itg.glte')
         .forEach((element) => q.add(element));
 
     while (q.isNotEmpty) {

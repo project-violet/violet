@@ -70,10 +70,10 @@ class IsolateDownloaderTask {
   @override
   String toString() {
     return jsonEncode({
-      "id": id,
-      "url": url,
-      "fullpath": fullpath,
-      "header": header,
+      'id': id,
+      'url': url,
+      'fullpath': fullpath,
+      'header': header,
     });
   }
 }
@@ -201,10 +201,10 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
         ReceivePortData(
           type: ReceivePortType.retry,
           data: {
-            "id": task.id,
-            "url": task.url,
-            "count": retryCount,
-            "code": res.statusCode,
+            'id': task.id,
+            'url': task.url,
+            'count': retryCount,
+            'code': res.statusCode,
           },
         ),
       );

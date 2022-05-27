@@ -33,7 +33,7 @@ class Translations {
       dbLanguageCode = code;
       if (!code.contains('_')) {
         if (locale.scriptCode != null && locale.scriptCode != '')
-          code += '_' + locale.scriptCode!;
+          code += '_${locale.scriptCode!}';
       }
     } else if (code.contains('_')) {
       dbLanguageCode = code.split('_')[0];
@@ -83,7 +83,7 @@ class TranslationsDelegate extends LocalizationsDelegate<Translations> {
       await localizations.load('en');
     }
 
-    print("Load ${locale.languageCode}");
+    print('Load ${locale.languageCode}');
 
     return localizations;
   }
