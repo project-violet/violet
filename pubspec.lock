@@ -161,7 +161,21 @@ packages:
       name: cached_network_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.2.1"
+  cached_network_image_platform_interface:
+    dependency: transitive
+    description:
+      name: cached_network_image_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
+  cached_network_image_web:
+    dependency: transitive
+    description:
+      name: cached_network_image_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   carousel_slider:
     dependency: "direct main"
     description:
@@ -189,16 +203,14 @@ packages:
       name: charts_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.11.0"
+    version: "0.12.0"
   charts_flutter:
     dependency: "direct main"
     description:
-      path: charts_flutter
-      ref: HEAD
-      resolved-ref: "30477090290b348ed3101bc13017aae465f59017"
-      url: "https://github.com/google/charts"
-    source: git
-    version: "0.11.0"
+      name: charts_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.12.0"
   checked_yaml:
     dependency: transitive
     description:
@@ -664,7 +676,7 @@ packages:
       name: flutter_typeahead
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.5"
+    version: "4.0.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
