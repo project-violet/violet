@@ -76,7 +76,7 @@ class _ViewerPageState extends State<ViewerPage>
   /// for example, when a slide is manipulated in file system mode, the value
   /// displayed on the slider changes, but the page of the list does not change.
   int _prevPage = 1;
-  final ValueNotifier<int> _vPrevPage = ValueNotifier(0);
+  final ValueNotifier<int> _vPrevPage = ValueNotifier(1);
 
   /// these are used for overlay
   double _opacity = 0.0;
