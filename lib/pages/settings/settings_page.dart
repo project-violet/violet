@@ -212,7 +212,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 24.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               )),
         ],
@@ -292,7 +292,7 @@ class _SettingsPageState extends State<SettingsPage>
               height: 50,
               child: FlareActor(
                 'assets/flare/switch_daytime.flr',
-                animation: _themeSwitch ? "night_idle" : "day_idle",
+                animation: _themeSwitch ? 'night_idle' : 'day_idle',
                 controller: _flareController,
                 snapToEnd: true,
               ),
@@ -597,9 +597,8 @@ class _SettingsPageState extends State<SettingsPage>
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
-                    msg: Translations.of(context).trans('tagrebuild') +
-                        ' ' +
-                        Translations.of(context).trans('complete'),
+                    msg:
+                        '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -974,9 +973,8 @@ class _SettingsPageState extends State<SettingsPage>
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
-                    msg: Translations.of(context).trans('dbrebuild') +
-                        ' ' +
-                        Translations.of(context).trans('complete'),
+                    msg:
+                        '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -1126,7 +1124,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title:
-                Text('Image ' + Translations.of(context).trans('routing_rule')),
+                Text('Image ${Translations.of(context).trans('routing_rule')}'),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
@@ -1282,14 +1280,12 @@ class _SettingsPageState extends State<SettingsPage>
                       (context, AsyncSnapshot<SharedPreferences> snapshot) {
                     if (!snapshot.hasData) {
                       return Text(
-                        Translations.of(context).trans('curthread') + ': ',
+                        '${Translations.of(context).trans('curthread')}: ',
                         overflow: TextOverflow.ellipsis,
                       );
                     }
                     return Text(
-                      Translations.of(context).trans('curthread') +
-                          ': ' +
-                          snapshot.data!.getInt('thread_count').toString(),
+                      '${Translations.of(context).trans('curthread')}: ${snapshot.data!.getInt('thread_count')}',
                       overflow: TextOverflow.ellipsis,
                     );
                   },
@@ -1379,7 +1375,21 @@ class _SettingsPageState extends State<SettingsPage>
             //   borderRadius: BorderRadius.all(
             //     Radius.circular(8.0),
             //   ),
-            // ),
+            child: ListTile(
+              leading:
+                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(Translations.of(context).trans('downloadpath')),
+                  Text(
+                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
             onTap: Settings.useInnerStorage
                 ? null
                 : () async {
@@ -1436,23 +1446,6 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setBaseDownloadPath(text.text);
                     }
                   },
-            child: ListTile(
-              leading:
-                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(Translations.of(context).trans('downloadpath')),
-                  Text(
-                    Translations.of(context).trans('curdownloadpath') +
-                        ': ' +
-                        Settings.downloadBasePath,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
           ),
           _buildDivider(),
           InkWell(
@@ -1472,9 +1465,7 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Text(Translations.of(context).trans('downloadrule')),
                   Text(
-                    Translations.of(context).trans('curdownloadrule') +
-                        ': ' +
-                        Settings.downloadRule,
+                    '${Translations.of(context).trans('curdownloadrule')}: ${Settings.downloadRule}',
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -1639,7 +1630,7 @@ class _SettingsPageState extends State<SettingsPage>
                 if (versions == null) {
                   await showOkDialog(
                       context,
-                      "북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.",
+                      '북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.',
                       Translations.of(context).trans('restoringbookmark'));
                   return;
                 }
@@ -1678,14 +1669,12 @@ class _SettingsPageState extends State<SettingsPage>
                   return;
                 }
               } catch (e, st) {
-                Logger.error('[Restore Bookmark] ' +
-                    e.toString() +
-                    '\n' +
-                    st.toString());
+                Logger.error('[Restore Bookmark] $e\n'
+                    '$st');
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
-                    msg: "Bookmark Restoring Error!",
+                    msg: 'Bookmark Restoring Error!',
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -1989,10 +1978,8 @@ class _SettingsPageState extends State<SettingsPage>
 
                 await showOkDialog(context, 'Success!');
               } catch (e, st) {
-                Logger.error('[Import from hiyobi] ' +
-                    e.toString() +
-                    '\n' +
-                    st.toString());
+                Logger.error('[Import from hiyobi] $e\n'
+                    '$st');
 
                 await showOkDialog(context,
                     'Bookmark format is not correct. Please refer to Log Record for details.');
@@ -2275,7 +2262,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.github,
               color: Colors.black,
             ),
-            title: Text("GitHub " + Translations.of(context).trans('project')),
+            title: Text('GitHub ${Translations.of(context).trans('project')}'),
             trailing: Icon(Icons.open_in_new),
             onTap: () async {
               const url = 'https://github.com/project-violet/';
@@ -2391,7 +2378,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 16.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),
@@ -2400,7 +2387,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),

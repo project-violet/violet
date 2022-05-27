@@ -13,7 +13,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Test Downloader Isolate", () async {
+  test('Test Downloader Isolate', () async {
     var downloader = IsolateDownloader();
     await downloader.init();
 

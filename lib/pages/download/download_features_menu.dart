@@ -12,7 +12,7 @@ class DownloadFeaturesMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "features",
+        tag: 'features',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack

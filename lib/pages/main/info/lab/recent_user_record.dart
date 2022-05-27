@@ -55,15 +55,10 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       var xrecords = trecords as List<Tuple3<int, int, int>>;
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
@@ -127,8 +122,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       setState(() {});
     } catch (e, st) {
-      Logger.error(
-          '[lab-recent_record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-recent_record] E: $e\n'
+          '$st');
     }
   }
 
@@ -153,10 +148,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                       }
                       index -= 1;
                       return Align(
-                        key: Key('records' +
-                            index.toString() +
-                            '/' +
-                            records[index].item1.id().toString()),
+                        key: Key('records$index/${records[index].item1.id()}'),
                         alignment: Alignment.center,
                         child: Provider<ArticleListItem>.value(
                           value: ArticleListItem.fromArticleListItem(
@@ -269,7 +261,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
               height: 28,
               child: FlareActor(
                 'assets/flare/likeUtsua.flr',
-                animation: isBookmarked ? "Like" : "IdleUnlike",
+                animation: isBookmarked ? 'Like' : 'IdleUnlike',
                 controller: flareController,
               ),
             ),

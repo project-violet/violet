@@ -96,7 +96,7 @@ class HentaiDonwloadManager {
                 target.groups() != null ? target.groups().split('|')[1] : null,
             extension: page.contains('fullimg.php')
                 ? 'jpg'
-                : path.extension(page.split('/').last).replaceAll(".", ""),
+                : path.extension(page.split('/').last).replaceAll('.', ''),
             extractor: 'hentai',
             downloadDate: DateTime.now().toString(),
             className: target.classname(),

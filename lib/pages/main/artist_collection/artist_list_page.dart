@@ -29,15 +29,8 @@ class ArtistListPage extends StatelessWidget {
     }
 
     var postfix = e.trim().toLowerCase().replaceAll(' ', '_');
-    var queryString = HitomiManager.translate2query((isLast ? '' : 'artist:') +
-        postfix +
-        ' ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+    var queryString = HitomiManager.translate2query(
+        '${isLast ? '' : 'artist:'}$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
     final queryManager = QueryManager.queryPagination(queryString);
     queryManager.itemsPerPage = 10;

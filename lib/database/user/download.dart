@@ -47,7 +47,7 @@ class DownloadItemModel {
 
   Future<void> test() async {
     var db = await CommonUserDatabase.getInstance();
-    await db.query('SELECT * FROM DownloadItem WHERE Id=' + id().toString());
+    await db.query('SELECT * FROM DownloadItem WHERE Id=${id()}');
   }
 
   Future<void> delete() async {
@@ -56,7 +56,7 @@ class DownloadItemModel {
   }
 
   List<String> rawFiles() {
-    if (files() == null || files() == "") return [];
+    if (files() == null || files() == '') return [];
     return (jsonDecode(files()!) as List<dynamic>)
         .map((e) => e as String)
         .toList();
@@ -111,10 +111,8 @@ class Download {
               );
               ''');
           } catch (e, st) {
-            Logger.error('[Download-Instance] E: ' +
-                e.toString() +
-                '\n' +
-                st.toString());
+            Logger.error('[Download-Instance] E: $e\n'
+                '$st');
           }
         }
         _instance = Download();

@@ -160,7 +160,7 @@ class _InfoPageState extends State<InfoPage> {
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 16.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),
@@ -169,7 +169,7 @@ class _InfoPageState extends State<InfoPage> {
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),

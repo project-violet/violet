@@ -74,8 +74,8 @@ class User {
               Type integer);
               ''');
           } catch (e, st) {
-            Logger.error(
-                '[Record-Instance] E: ' + e.toString() + '\n' + st.toString());
+            Logger.error('[Record-Instance] E: $e\n'
+                '$st');
           }
         }
         _instance = User();

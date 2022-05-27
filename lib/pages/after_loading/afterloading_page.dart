@@ -210,14 +210,14 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                     style: TextStyle(
                       color: Settings.themeWhat ? Colors.white : Colors.black87,
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 1.0,
                     ),
                   ),
                   Text(
                     UpdateSyncManager.currentVersion,
                     style: const TextStyle(
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       fontSize: 17.0,
                       letterSpacing: 1.0,
                     ),
@@ -236,7 +236,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
               textAlign: TextAlign.center,

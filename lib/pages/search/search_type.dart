@@ -23,7 +23,7 @@ class SearchType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "searchtype",
+        tag: 'searchtype',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack

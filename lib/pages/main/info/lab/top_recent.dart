@@ -29,7 +29,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
   Timer? timer;
   final ScrollController _controller = ScrollController();
   bool isTop = false;
-  String desc = "로딩";
+  String desc = '로딩';
 
   @override
   void initState() {
@@ -60,15 +60,10 @@ class _LabTopRecentState extends State<LabTopRecent> {
 
       var xrecords = trecords as List<Tuple2<int, int>>;
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += 'Id IN (' + xrecords.map((e) => e.item1).join(',') + ')';
+      queryRaw += 'Id IN (${xrecords.map((e) => e.item1).join(',')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
@@ -105,17 +100,17 @@ class _LabTopRecentState extends State<LabTopRecent> {
 
       setState(() {
         if (x.inHours > 0)
-          desc = x.inHours.toString() + "시간";
+          desc = '${x.inHours}시간';
         else if (x.inMinutes > 0)
-          desc = x.inMinutes.toString() + "분";
+          desc = '${x.inMinutes}분';
         else if (x.inSeconds > 0)
-          desc = x.inSeconds.toString() + "초";
+          desc = '${x.inSeconds}초';
         else
-          desc = "?";
+          desc = '?';
       });
     } catch (e, st) {
-      Logger.error(
-          '[lab-top_recent] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-top_recent] E: $e\n'
+          '$st');
     }
   }
 
@@ -135,10 +130,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
               itemCount: records.length,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
-                  key: Key('records' +
-                      index.toString() +
-                      '/' +
-                      records[index].item1.id().toString()),
+                  key: Key('records$index/${records[index].item1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
