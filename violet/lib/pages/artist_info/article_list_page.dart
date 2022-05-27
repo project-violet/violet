@@ -110,7 +110,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
     return Align(
       alignment: Alignment.centerRight,
       child: Hero(
-        tag: "searchtype2",
+        tag: 'searchtype2',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
@@ -191,7 +191,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
   ObjectKey key = ObjectKey(Uuid().v4());
 
   final FilterController _filterController =
-      FilterController(heroKey: "searchtype2");
+      FilterController(heroKey: 'searchtype2');
   List<QueryResult> filterResult = [];
 
   bool isFilterUsed = false;

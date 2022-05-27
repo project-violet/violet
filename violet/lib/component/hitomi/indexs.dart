@@ -68,7 +68,8 @@ class HitomiIndexs {
       final path11 = File('${directory.path}$subdir/series-series.json');
       seriesSeries = jsonDecode(await path11.readAsString());
     } catch (e, st) {
-      Logger.error('[Hitomi-Indexs] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Hitomi-Indexs] E: $e\n'
+          '$st');
     }
 
     var relatedData = json.decode(await rootBundle.loadString(

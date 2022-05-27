@@ -258,7 +258,7 @@ class _BookmarkPageState extends State<BookmarkPage>
     var random = Random();
 
     return Container(
-      key: Key("bookmark_group_" + id.toString()),
+      key: Key('bookmark_group_$id'),
       child: ShakeAnimatedWidget(
         enabled: reorder,
         duration: Duration(milliseconds: 300 + random.nextInt(50)),

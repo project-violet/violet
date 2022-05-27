@@ -74,14 +74,14 @@ class QueryManager {
   Future<List<QueryResult>> next() async {
     curPage += 1;
     return (await (await DataBaseManager.getInstance()).query(
-            "$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage - 1)}"))
+            '$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET ${itemsPerPage * (curPage - 1)}'))
         .map((e) => QueryResult(result: e))
         .toList();
   }
 
   static Future<List<QueryResult>> queryIds(List<int> ids) async {
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-    queryRaw += 'Id IN (' + ids.join(',') + ')';
+    queryRaw += 'Id IN (${ids.join(',')})';
     var qm = await QueryManager.query(
         queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 

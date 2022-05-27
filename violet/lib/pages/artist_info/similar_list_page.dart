@@ -36,15 +36,8 @@ class SimilarListPage extends StatelessWidget {
     var unescape = HtmlUnescape();
     var postfix = e.toLowerCase().replaceAll(' ', '_');
     if (isUploader) postfix = e;
-    var queryString = HitomiManager.translate2query(prefix +
-        postfix +
-        ' ' +
-        Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+    var queryString = HitomiManager.translate2query(
+        '$prefix$postfix ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 10;
 
@@ -120,9 +113,8 @@ class SimilarListPage extends StatelessWidget {
                   ),
                   title:
                       ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1)})',
-                  count: '${Translations.of(context).trans('score')}: ' +
-                      e.item2.toStringAsFixed(1) +
-                      ' ',
+                  count:
+                      '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
                   articles: snapshot.data!,
                 );
               },

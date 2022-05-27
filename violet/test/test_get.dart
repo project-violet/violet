@@ -11,7 +11,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Test Bookmark", () async {
+  test('Test Bookmark', () async {
     var res = await http
         .get(Uri.parse('https://ltn.hitomi.la/galleries/2102839.js'), headers: {
       'referer': 'https://hitomi.la',

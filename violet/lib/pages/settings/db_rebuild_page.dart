@@ -89,7 +89,7 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
 
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     for (var tag in (qr as String).split('|'))
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
@@ -99,7 +99,7 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     var str = qr as String;
     if (str != null && str != '') {
       if (!map.containsKey(str)) map[str] = 0;
@@ -108,12 +108,8 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
   }
 
   Future indexing() async {
-    var sql = HitomiManager.translate2query(Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+    var sql = HitomiManager.translate2query(
+        '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
     await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
         'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);

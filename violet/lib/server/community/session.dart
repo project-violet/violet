@@ -20,7 +20,7 @@ class VioletCommunitySession {
     var vValid = getValid(vToken.toString());
 
     try {
-      var res = await http.post(VioletServer.api + '/community/sign/in',
+      var res = await http.post('${VioletServer.api}/community/sign/in',
           headers: {
             'v-token': vToken.toString(),
             'v-valid': vValid,
@@ -32,7 +32,8 @@ class VioletCommunitySession {
         return lastSession = VioletCommunitySession(bb['session'], id);
       }
     } catch (e, st) {
-      Logger.error('[API-signin] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-signin] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -43,7 +44,7 @@ class VioletCommunitySession {
 
     try {
       var res =
-          await http.post(VioletServer.api + '/community/sign/util/checkid',
+          await http.post('${VioletServer.api}/community/sign/util/checkid',
               headers: {
                 'v-token': vToken.toString(),
                 'v-valid': vValid,
@@ -53,7 +54,8 @@ class VioletCommunitySession {
       var bb = jsonDecode(res.body);
       return bb['msg'];
     } catch (e, st) {
-      Logger.error('[API-checkid] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-checkid] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -64,7 +66,7 @@ class VioletCommunitySession {
 
     try {
       var res = await http.post(
-          VioletServer.api + '/community/sign/util/checkuserappid',
+          '${VioletServer.api}/community/sign/util/checkuserappid',
           headers: {
             'v-token': vToken.toString(),
             'v-valid': vValid,
@@ -74,8 +76,8 @@ class VioletCommunitySession {
       var bb = jsonDecode(res.body);
       return bb['msg'];
     } catch (e, st) {
-      Logger.error(
-          '[API-checkuserappid] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-checkuserappid] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -86,7 +88,7 @@ class VioletCommunitySession {
 
     try {
       var res = await http.post(
-          VioletServer.api + '/community/sign/util/checknickname',
+          '${VioletServer.api}/community/sign/util/checknickname',
           headers: {
             'v-token': vToken.toString(),
             'v-valid': vValid,
@@ -96,8 +98,8 @@ class VioletCommunitySession {
       var bb = jsonDecode(res.body);
       return bb['msg'];
     } catch (e, st) {
-      Logger.error(
-          '[API-checknickname] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-checknickname] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -108,7 +110,7 @@ class VioletCommunitySession {
     var vValid = getValid(vToken.toString());
 
     try {
-      var res = await http.post(VioletServer.api + '/community/sign/up',
+      var res = await http.post('${VioletServer.api}/community/sign/up',
           headers: {
             'v-token': vToken.toString(),
             'v-valid': vValid,
@@ -119,12 +121,13 @@ class VioletCommunitySession {
             'Password': password,
             'UserAppId': userAppId,
             'NickName': nickName,
-            'Etc': 'Violet App ' + vToken.toString() + ' ' + vValid,
+            'Etc': 'Violet App $vToken $vValid',
           }));
       var bb = jsonDecode(res.body);
       return bb['msg'];
     } catch (e, st) {
-      Logger.error('[API-signup] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-signup] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -135,7 +138,7 @@ class VioletCommunitySession {
 
     try {
       var res = await http.get(
-        VioletServer.api + '/community/user/info' + '?id=$id',
+        '${VioletServer.api}/community/user/info?id=$id',
         headers: {
           'v-token': vToken.toString(),
           'v-valid': vValid,
@@ -145,7 +148,8 @@ class VioletCommunitySession {
       var bb = jsonDecode(res.body);
       return bb['result'];
     } catch (e, st) {
-      Logger.error('[API-userinfo] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-userinfo] E: $e\n'
+          '$st');
     }
     return null;
   }

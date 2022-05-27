@@ -42,24 +42,24 @@ class TagTranslate {
   }
 
   static String of(String classification, String key) {
-    if (_translateMap.containsKey(classification + ':' + key))
-      return _translateMap[classification + ':' + key]!.split('|').first;
+    if (_translateMap.containsKey('$classification:$key'))
+      return _translateMap['$classification:$key']!.split('|').first;
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
   }
 
   static String ofAny(String key) {
-    if (_translateMap.containsKey('series:' + key))
-      return _translateMap['series:' + key]!.split('|').first;
-    if (_translateMap.containsKey('character:' + key))
-      return _translateMap['character:' + key]!.split('|').first;
-    if (_translateMap.containsKey('tag:female:' + key))
-      return _translateMap['tag:female:' + key]!.split('|').first;
-    if (_translateMap.containsKey('tag:male:' + key))
-      return _translateMap['tag:male:' + key]!.split('|').first;
-    if (_translateMap.containsKey('tag:' + key))
-      return _translateMap['tag:' + key]!.split('|').first;
+    if (_translateMap.containsKey('series:$key'))
+      return _translateMap['series:$key']!.split('|').first;
+    if (_translateMap.containsKey('character:$key'))
+      return _translateMap['character:$key']!.split('|').first;
+    if (_translateMap.containsKey('tag:female:$key'))
+      return _translateMap['tag:female:$key']!.split('|').first;
+    if (_translateMap.containsKey('tag:male:$key'))
+      return _translateMap['tag:male:$key']!.split('|').first;
+    if (_translateMap.containsKey('tag:$key'))
+      return _translateMap['tag:$key']!.split('|').first;
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
@@ -142,34 +142,34 @@ class TagTranslate {
   }
 
   static const indexLetter2 = [
-    "r", "R", "rt", "s", "sw", "sg", "e", "E", //
-    "f", "fr", "fa", "fq", "ft", "fe", "fv", "fg", //
-    "a", "q", "Q", "qt", "t", "T", "d", "w", //
-    "W", "", "z", "e", "v", "g", "k", "o", //
-    "i", "O", "j", "p", "u", "P", "h", "hk", //
-    "ho", "hl", "y", "n", "nj", "np", "nl", "b", //
-    "m", "ml", "l", " ", "ss", "se", "st", " ", //
-    "frt", "fe", "fqt", " ", "fg", "aq", "at", " ", //
-    " ", "qr", "qe", "qtr", "qte", "qw", "qe", " ", //
-    " ", "tr", "ts", "te", "tq", "tw", " ", "dd", //
-    "d", "dt", " ", " ", "gg", " ", "yi", "yO", //
-    "yl", "bu", "bP", "bl"
+    'r', 'R', 'rt', 's', 'sw', 'sg', 'e', 'E', //
+    'f', 'fr', 'fa', 'fq', 'ft', 'fe', 'fv', 'fg', //
+    'a', 'q', 'Q', 'qt', 't', 'T', 'd', 'w', //
+    'W', '', 'z', 'e', 'v', 'g', 'k', 'o', //
+    'i', 'O', 'j', 'p', 'u', 'P', 'h', 'hk', //
+    'ho', 'hl', 'y', 'n', 'nj', 'np', 'nl', 'b', //
+    'm', 'ml', 'l', ' ', 'ss', 'se', 'st', ' ', //
+    'frt', 'fe', 'fqt', ' ', 'fg', 'aq', 'at', ' ', //
+    ' ', 'qr', 'qe', 'qtr', 'qte', 'qw', 'qe', ' ', //
+    ' ', 'tr', 'ts', 'te', 'tq', 'tw', ' ', 'dd', //
+    'd', 'dt', ' ', ' ', 'gg', ' ', 'yi', 'yO', //
+    'yl', 'bu', 'bP', 'bl'
   ];
   static const indexInitial2 = [
-    "r", "R", "s", "e", "E", "f", "a", "q", //
-    "Q", "t", "T", "d", "w", "W", "c", "z", //
-    "x", "v", "g" //
+    'r', 'R', 's', 'e', 'E', 'f', 'a', 'q', //
+    'Q', 't', 'T', 'd', 'w', 'W', 'c', 'z', //
+    'x', 'v', 'g' //
   ];
   static const indexMedial2 = [
-    "k", "o", "i", "O", "j", "p", "u", "P", //
-    "h", "hk", "ho", "hl", "y", "n", "nj", "np", //
-    "nl", "b", "m", "ml", "l" //
+    'k', 'o', 'i', 'O', 'j', 'p', 'u', 'P', //
+    'h', 'hk', 'ho', 'hl', 'y', 'n', 'nj', 'np', //
+    'nl', 'b', 'm', 'ml', 'l' //
   ];
   static const indexFinal2 = [
-    "", "r", "R", "rt", "s", "sw", "sg", "e", //
-    "f", "fr", "fa", "fq", "ft", "fx", "fv", "fg", //
-    "a", "q", "qt", "t", "T", "d", "w", "", //
-    "z", "x", "v", "g" //
+    '', 'r', 'R', 'rt', 's', 'sw', 'sg', 'e', //
+    'f', 'fr', 'fa', 'fq', 'ft', 'fx', 'fv', 'fg', //
+    'a', 'q', 'qt', 't', 'T', 'd', 'w', '', //
+    'z', 'x', 'v', 'g' //
   ];
   static const indexFinal2Du = [
     't', 'w', 'g', 'r', 'a', 'q', 'x', 'v' //

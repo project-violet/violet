@@ -40,10 +40,10 @@ class DataBaseDownloadPage extends StatefulWidget {
 
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   bool downloading = false;
-  var baseString = "";
-  var progressString = "";
-  var downString = "";
-  var speedString = "";
+  var baseString = '';
+  var progressString = '';
+  var downString = '';
+  var speedString = '';
 
   @override
   void initState() {
@@ -56,16 +56,16 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     try {
       if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
         var dbPath = Platform.isAndroid
-            ? "${(await getApplicationDocumentsDirectory()).path}/data/data.db"
-            : "${await getDatabasesPath()}/data.db";
+            ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
+            : '${await getDatabasesPath()}/data.db';
         if (await File(dbPath).exists()) await File(dbPath).delete();
         var dir = await getApplicationDocumentsDirectory();
         if (await Directory('${dir.path}/data').exists())
           await Directory('${dir.path}/data').delete(recursive: true);
       }
     } catch (e, st) {
-      Logger.error(
-          '[DBDownload-Check] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[DBDownload-Check] E: $e\n'
+          '$st');
     }
 
     if (Platform.isAndroid) {
@@ -87,19 +87,19 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     try {
       var dir = await getApplicationDocumentsDirectory();
-      if (await File("${dir.path}/db.sql.7z").exists())
-        await File("${dir.path}/db.sql.7z").delete();
+      if (await File('${dir.path}/db.sql.7z').exists())
+        await File('${dir.path}/db.sql.7z').delete();
       Timer timer = Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = (tlatest / 1024).toString() + " KB/S";
+                speedString = '${tlatest / 1024} KB/S';
                 tlatest = tnu;
                 tnu = 0;
               }));
       await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrl(widget.dbType!),
-          "${dir.path}/db.sql.7z", onReceiveProgress: (rec, total) {
+          '${dir.path}/db.sql.7z', onReceiveProgress: (rec, total) {
         nu += rec - latest;
         tnu += rec - latest;
         latest = rec;
@@ -110,8 +110,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         setState(
           () {
             downloading = true;
-            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-            downString = "[${numberWithComma(rec)}/${numberWithComma(total)}]";
+            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
+            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
           },
         );
       });
@@ -124,17 +124,17 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       });
 
       var pp = P7zip();
-      if (await Directory("${dir.path}/data2").exists())
-        await Directory("${dir.path}/data2").delete(recursive: true);
-      await pp.decompress(["${dir.path}/db.sql.7z"], path: "${dir.path}/data2");
+      if (await Directory('${dir.path}/data2').exists())
+        await Directory('${dir.path}/data2').delete(recursive: true);
+      await pp.decompress(['${dir.path}/db.sql.7z'], path: '${dir.path}/data2');
       Variables.databaseDecompressed = true;
       if (await Directory('${dir.path}/data').exists())
         await Directory('${dir.path}/data').delete(recursive: true);
-      await Directory("${dir.path}/data2").rename("${dir.path}/data");
-      if (await Directory("${dir.path}/data2").exists())
-        await Directory("${dir.path}/data2").delete(recursive: true);
+      await Directory('${dir.path}/data2').rename('${dir.path}/data');
+      if (await Directory('${dir.path}/data2').exists())
+        await Directory('${dir.path}/data2').delete(recursive: true);
 
-      await File("${dir.path}/db.sql.7z").delete();
+      await File('${dir.path}/db.sql.7z').delete();
 
       await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
       await (await SharedPreferences.getInstance())
@@ -159,7 +159,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       return;
     } catch (e, st) {
-      Logger.error('[DBDownload] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[DBDownload] E: $e\n'
+          '$st');
     }
 
     setState(() {
@@ -178,19 +179,19 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     try {
       var dir = await getDatabasesPath();
-      if (await File("$dir/data.db").exists())
-        await File("$dir/data.db").delete();
+      if (await File('$dir/data.db').exists())
+        await File('$dir/data.db').delete();
       Timer timer = Timer.periodic(
           Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = (tlatest / 1024).toString() + " KB/S";
+                speedString = '${tlatest / 1024} KB/S';
                 tlatest = tnu;
                 tnu = 0;
               }));
       await SyncManager.checkSync();
       await dio.download(
           SyncManager.getLatestDB().getDBDownloadUrliOS(widget.dbType!),
-          "$dir/data.db", onReceiveProgress: (rec, total) {
+          '$dir/data.db', onReceiveProgress: (rec, total) {
         nu += rec - latest;
         tnu += rec - latest;
         latest = rec;
@@ -201,8 +202,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         setState(
           () {
             downloading = true;
-            progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-            downString = "[${numberWithComma(rec)}/${numberWithComma(total)}]";
+            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
+            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
           },
         );
       });
@@ -233,7 +234,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       return;
     } catch (e, st) {
-      Logger.error('[DBDownload] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[DBDownload] E: $e\n'
+          '$st');
     }
 
     setState(() {
@@ -243,12 +245,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
   }
 
   Future deleteUnused() async {
-    var sql = HitomiManager.translate2query(Settings.includeTags +
-        ' ' +
-        Settings.excludeTags
-            .where((e) => e.trim() != '')
-            .map((e) => '-$e')
-            .join(' '));
+    var sql = HitomiManager.translate2query(
+        '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
     await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
         'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
@@ -256,7 +254,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     for (var tag in qr.split('|'))
       if (tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
@@ -266,7 +264,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     if (qr != '') {
       if (!map.containsKey(qr)) map[qr] = 0;
       map[qr] = map[qr]! + 1;
@@ -304,7 +302,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     int i = 0;
     while (true) {
       setState(() {
-        baseString = Translations.instance!.trans('dbdindexing') + '[$i/13]';
+        baseString = '${Translations.instance!.trans('dbdindexing')}[$i/13]';
       });
 
       var ll = await qm.next();
@@ -464,15 +462,15 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       if (ll.isEmpty) {
         var index = {
-          "tag": tags,
-          "artist": artists,
-          "group": groups,
-          "series": series,
-          "lang": languages,
-          "type": types,
-          "uploader": uploaders,
-          "character": characters,
-          "class": classes,
+          'tag': tags,
+          'artist': artists,
+          'group': groups,
+          'series': series,
+          'lang': languages,
+          'type': types,
+          'uploader': uploaders,
+          'character': characters,
+          'class': classes,
         };
 
         final directory = await getApplicationDocumentsDirectory();

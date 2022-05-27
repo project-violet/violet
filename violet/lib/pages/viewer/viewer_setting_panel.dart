@@ -40,11 +40,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           title: Row(
             children: [
               Text(
-                  Translations.instance!.trans('timersetting') +
-                      ' (' +
-                      Settings.timerTick.toStringAsFixed(1) +
-                      Translations.instance!.trans('second') +
-                      ')',
+                  '${Translations.instance!.trans('timersetting')} (${Settings.timerTick.toStringAsFixed(1)}${Translations.instance!.trans('second')})',
                   style: TextStyle(color: Colors.white)),
               Expanded(
                 child: Align(

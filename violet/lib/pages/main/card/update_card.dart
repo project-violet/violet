@@ -107,7 +107,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                             child: Text(
                               '  Tap Me!',
                               style: TextStyle(
-                                  fontFamily: "Calibre-Semibold",
+                                  fontFamily: 'Calibre-Semibold',
                                   fontSize: 18,
                                   color: Colors.white),
                             ),

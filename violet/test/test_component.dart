@@ -32,11 +32,11 @@ void main() {
   //   print(EHParser.getOriginalImageAddress(body));
   // });
 
-  test("EHentai Get Thumbnail Images Address", () async {
-    var body = """
+  test('EHentai Get Thumbnail Images Address', () async {
+    var body = '''
 Page 20: 020.jpg" src="https://exhentai.org/t/66/55/6655fb520e13eff74ebf9aa49c210cfb7fdfc1d9-1069560-2120-3000-jpg_l.jpg" /></a></div><
  src="https://ehgt.org/f5/f8/f5f8425827e4c8c0658385b4d3cb80adc23e1b94-518399-1280-1810-jpg_l.jpg" /></a
-        """;
+        ''';
 
     print(EHParser.getThumbnailImages(body));
   });

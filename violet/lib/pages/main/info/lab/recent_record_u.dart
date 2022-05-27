@@ -75,15 +75,10 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
       latestId = max(latestId,
           xrecords.reduce((x, y) => x.item1 > y.item1 ? x : y).item1 + 1);
 
-      var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-              ' ' +
-              Settings.excludeTags
-                  .where((e) => e.trim() != '')
-                  .map((e) => '-$e')
-                  .join(' ')) +
-          ' AND ';
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
 
-      queryRaw += '(' + xrecords.map((e) => 'Id=${e.item2}').join(' OR ') + ')';
+      queryRaw += '(${xrecords.map((e) => 'Id=${e.item2}').join(' OR ')})';
       var query = await QueryManager.query(queryRaw);
 
       if (query.results!.isEmpty) return;
@@ -116,8 +111,8 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
       } else
         setState(() {});
     } catch (e, st) {
-      Logger.error(
-          '[lab-recent_record] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[lab-recent_record] E: $e\n'
+          '$st');
     }
   }
 
@@ -139,13 +134,8 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
               reverse: true,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
-                  key: Key('records' +
-                      index.toString() +
-                      '/' +
-                      xrecords[xrecords.length - index - 1]
-                          .item1
-                          .id()
-                          .toString()),
+                  key: Key(
+                      'records$index/${xrecords[xrecords.length - index - 1].item1.id()}'),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(

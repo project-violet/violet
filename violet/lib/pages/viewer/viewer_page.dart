@@ -1796,8 +1796,8 @@ class _ViewerPageState extends State<ViewerPage>
                     );
                   },
                   loadingErrorWidgetBuilder: (context, url, error) {
-                    Logger.error(
-                        '[Viewer] E: image load failed\n' + error.toString());
+                    Logger.error('[Viewer] E: image load failed\n'
+                        '$error');
                     Future.delayed(Duration(milliseconds: 500))
                         .then((value) => setState(() {
                               _keys![index] = GlobalKey();

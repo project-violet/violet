@@ -26,7 +26,7 @@ class HitomiDonwloadManager extends Downloadable {
 
   @override
   String defaultFormat() {
-    return "%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s";
+    return '%(extractor)s/[%(id)s] %(title)s/%(file)s.%(ext)s';
   }
 
   @override
@@ -64,7 +64,7 @@ class HitomiDonwloadManager extends Downloadable {
     var id = match.first.namedGroup('id')!.trim();
 
     var articles = (await (await DataBaseManager.getInstance()).query(
-            "SELECT * FROM HitomiColumnModel WHERE Id=$id ORDER BY Id DESC LIMIT 1 OFFSET 0"))
+            'SELECT * FROM HitomiColumnModel WHERE Id=$id ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
 
@@ -92,7 +92,7 @@ class HitomiDonwloadManager extends Downloadable {
               uploadDate: article.getDateTime().toString(),
               filenameWithoutExtension: intToString(i, pad: 3),
               extension:
-                  path.extension(img.split('/').last).replaceAll(".", ""),
+                  path.extension(img.split('/').last).replaceAll('.', ''),
               extractor: 'hitomi',
             ),
           ),
@@ -120,7 +120,7 @@ class HitomiDonwloadManager extends Downloadable {
               id: id,
               filenameWithoutExtension: intToString(i, pad: 3),
               extension:
-                  path.extension(img.split('/').last).replaceAll(".", ""),
+                  path.extension(img.split('/').last).replaceAll('.', ''),
               extractor: 'hitomi',
             ),
           ),
