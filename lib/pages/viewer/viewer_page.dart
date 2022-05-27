@@ -1114,6 +1114,14 @@ class _ViewerPageState extends State<ViewerPage>
               _currentPage = page.toInt() + 1;
               _prevPage = page.toInt() + 1;
               _vPrevPage.value = page.toInt() + 1;
+              if (_pageInfo.useProvider) {
+                if (page.toInt() - 2 >= 0)
+                  CachedNetworkImage.evictFromCache(
+                      _urlCache![page.toInt() - 2]!);
+                if (page.toInt() + 2 < _pageInfo.uris.length)
+                  CachedNetworkImage.evictFromCache(
+                      _urlCache![page.toInt() + 2]!);
+              }
               await _precache(page.toInt() - 1);
               await _precache(page.toInt() + 1);
             },
@@ -1185,6 +1193,9 @@ class _ViewerPageState extends State<ViewerPage>
         CachedNetworkImageProvider(
           _urlCache![index]!,
           headers: _headerCache![index],
+          maxWidth: Settings.useLowPerf
+              ? (MediaQuery.of(context).size.width * 1.5).toInt()
+              : null,
         ),
         context,
       );
@@ -1197,6 +1208,9 @@ class _ViewerPageState extends State<ViewerPage>
         imageProvider: CachedNetworkImageProvider(
           _pageInfo.uris[index],
           headers: _pageInfo.headers,
+          maxWidth: Settings.useLowPerf
+              ? (MediaQuery.of(context).size.width * 1.5).toInt()
+              : null,
         ),
         filterQuality: SettingsWrapper.imageQuality,
         initialScale: PhotoViewComputedScale.contained,
@@ -1245,6 +1259,9 @@ class _ViewerPageState extends State<ViewerPage>
                 imageProvider: CachedNetworkImageProvider(
                   _urlCache![index]!,
                   headers: _headerCache![index],
+                  maxWidth: Settings.useLowPerf
+                      ? (MediaQuery.of(context).size.width * 1.5).toInt()
+                      : null,
                 ),
                 filterQuality: SettingsWrapper.imageQuality,
                 initialScale: PhotoViewComputedScale.contained,
