@@ -16,10 +16,11 @@ class ViewerSettingPanel extends StatefulWidget {
   final VoidCallback thumbSizeChangeEvent;
 
   ViewerSettingPanel({
+    Key? key,
     required this.viewerStyleChangeEvent,
     required this.setStateCallback,
     required this.thumbSizeChangeEvent,
-  });
+  }) : super(key: key);
 
   @override
   State<ViewerSettingPanel> createState() => _ViewerSettingPanelState();
@@ -39,11 +40,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           title: Row(
             children: [
               Text(
-                  Translations.instance!.trans('timersetting') +
-                      ' (' +
-                      Settings.timerTick.toStringAsFixed(1) +
-                      Translations.instance!.trans('second') +
-                      ')',
+                  '${Translations.instance!.trans('timersetting')} (${Settings.timerTick.toStringAsFixed(1)}${Translations.instance!.trans('second')})',
                   style: TextStyle(color: Colors.white)),
               Expanded(
                 child: Align(

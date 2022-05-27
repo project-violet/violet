@@ -13,6 +13,8 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class InfoPage extends StatefulWidget {
+  const InfoPage({Key? key}) : super(key: key);
+
   @override
   State<InfoPage> createState() => _InfoPageState();
 }
@@ -158,7 +160,7 @@ class _InfoPageState extends State<InfoPage> {
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 16.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),
@@ -167,7 +169,7 @@ class _InfoPageState extends State<InfoPage> {
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),

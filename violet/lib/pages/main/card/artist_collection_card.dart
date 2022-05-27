@@ -11,6 +11,8 @@ import 'package:violet/pages/main/card/update_card.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 
 class ArtistCollectionCard extends StatefulWidget {
+  const ArtistCollectionCard({Key? key}) : super(key: key);
+
   @override
   State<ArtistCollectionCard> createState() => _ArtistCollectionCarddState();
 }

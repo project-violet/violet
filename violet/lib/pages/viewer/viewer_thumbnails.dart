@@ -22,7 +22,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class ViewerThumbnail extends StatefulWidget {
   final int viewedPage;
 
-  ViewerThumbnail({required this.viewedPage});
+  ViewerThumbnail({Key? key, required this.viewedPage}) : super(key: key);
 
   @override
   State<ViewerThumbnail> createState() => _ViewerThumbnailState();
@@ -191,6 +191,8 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Container(
+          width: 100,
+          height: 100,
           // alignment: Alignment.center,
           child: Align(
             // alignment: Alignment.center,
@@ -199,8 +201,6 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
               textAlign: TextAlign.center,
             ),
           ),
-          width: 100,
-          height: 100,
         )
       ],
     );
@@ -298,11 +298,9 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         },
       );
     } catch (e, st) {
-      await Logger.error('[Viewer_thumbnails]\n' +
-          'E: ' +
-          e.toString() +
-          '\n' +
-          st.toString());
+      await Logger.error('[Viewer_thumbnails]\n'
+          'E: $e\n'
+          '$st');
     }
   }
 }

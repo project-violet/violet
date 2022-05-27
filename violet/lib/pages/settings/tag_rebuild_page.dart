@@ -12,6 +12,8 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
 class TagRebuildPage extends StatefulWidget {
+  const TagRebuildPage({Key? key}) : super(key: key);
+
   @override
   State<TagRebuildPage> createState() => _TagRebuildPageState();
 }
@@ -37,6 +39,19 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         return false;
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(1)),
+          boxShadow: [
+            BoxShadow(
+              color: Settings.themeWhat
+                  ? Colors.black.withOpacity(0.4)
+                  : Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 1,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -73,26 +88,13 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
             ),
           ],
         ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
-          boxShadow: [
-            BoxShadow(
-              color: Settings.themeWhat
-                  ? Colors.black.withOpacity(0.4)
-                  : Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
       ),
     );
   }
 
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     for (var tag in (qr as String).split('|'))
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
@@ -102,7 +104,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == "") return;
+    if (qr as String == '') return;
     var str = qr as String;
     if (str != null && str != '') {
       if (!map.containsKey(str)) map[str] = 0;
@@ -113,12 +115,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
   Future indexing() async {
     QueryManager qm;
     qm = QueryManager.queryPagination(HitomiManager.translate2query(
-        Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' ')));
+        '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}'));
     qm.itemsPerPage = 50000;
 
     var tags = Map<String, int>();
@@ -147,7 +144,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
     int i = 0;
     while (true) {
       setState(() {
-        baseString = Translations.instance!.trans('dbdindexing') + '[$i/20]';
+        baseString = '${Translations.instance!.trans('dbdindexing')}[$i/20]';
       });
 
       var ll = await qm.next();
@@ -308,15 +305,15 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
       if (ll.isEmpty) {
         var index = {
-          "tag": tags,
-          "artist": artists,
-          "group": groups,
-          "series": series,
-          "lang": languages,
-          "type": types,
-          "uploader": uploaders,
-          "character": characters,
-          "class": classes,
+          'tag': tags,
+          'artist': artists,
+          'group': groups,
+          'series': series,
+          'lang': languages,
+          'type': types,
+          'uploader': uploaders,
+          'character': characters,
+          'class': classes,
         };
         final subdir = Platform.isAndroid ? '/data' : '';
 

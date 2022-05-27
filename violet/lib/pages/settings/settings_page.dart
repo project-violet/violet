@@ -133,6 +133,8 @@ class ExCountry extends Country {
 }
 
 class SettingsPage extends StatefulWidget {
+  const SettingsPage({Key? key}) : super(key: key);
+
   @override
   State<SettingsPage> createState() => _SettingsPageState();
 }
@@ -210,7 +212,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 24.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               )),
         ],
@@ -290,7 +292,7 @@ class _SettingsPageState extends State<SettingsPage>
               height: 50,
               child: FlareActor(
                 'assets/flare/switch_daytime.flr',
-                animation: _themeSwitch ? "night_idle" : "day_idle",
+                animation: _themeSwitch ? 'night_idle' : 'day_idle',
                 controller: _flareController,
                 snapToEnd: true,
               ),
@@ -349,6 +351,33 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         _buildDivider(),
         InkWell(
+          onTap: _themeSwitch
+              ? () async {
+                  await Settings.setThemeBlack(!Settings.themeBlack);
+                  DynamicTheme.of(context)!.setThemeData(
+                    ThemeData(
+                      accentColor: Settings.majorColor,
+                      brightness: Theme.of(context).brightness,
+                      bottomSheetTheme: BottomSheetThemeData(
+                          backgroundColor: Colors.black.withOpacity(0)),
+                      scaffoldBackgroundColor:
+                          Settings.themeBlack && Settings.themeWhat
+                              ? Colors.black
+                              : null,
+                      dialogBackgroundColor:
+                          Settings.themeBlack && Settings.themeWhat
+                              ? const Color(0xFF141414)
+                              : null,
+                      cardColor: Settings.themeBlack && Settings.themeWhat
+                          ? const Color(0xFF141414)
+                          : null,
+                    ),
+                  );
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                }
+              : null,
           child: ListTile(
             leading: Icon(MdiIcons.brightness3, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('blackmode')),
@@ -385,33 +414,6 @@ class _SettingsPageState extends State<SettingsPage>
               activeColor: Settings.majorAccentColor,
             ),
           ),
-          onTap: _themeSwitch
-              ? () async {
-                  await Settings.setThemeBlack(!Settings.themeBlack);
-                  DynamicTheme.of(context)!.setThemeData(
-                    ThemeData(
-                      accentColor: Settings.majorColor,
-                      brightness: Theme.of(context).brightness,
-                      bottomSheetTheme: BottomSheetThemeData(
-                          backgroundColor: Colors.black.withOpacity(0)),
-                      scaffoldBackgroundColor:
-                          Settings.themeBlack && Settings.themeWhat
-                              ? Colors.black
-                              : null,
-                      dialogBackgroundColor:
-                          Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF141414)
-                              : null,
-                      cardColor: Settings.themeBlack && Settings.themeWhat
-                          ? const Color(0xFF141414)
-                          : null,
-                    ),
-                  );
-                  setState(() {
-                    _shouldReload = true;
-                  });
-                }
-              : null,
         ),
         _buildDivider(),
         InkWell(
@@ -595,9 +597,8 @@ class _SettingsPageState extends State<SettingsPage>
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
-                    msg: Translations.of(context).trans('tagrebuild') +
-                        ' ' +
-                        Translations.of(context).trans('complete'),
+                    msg:
+                        '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -934,12 +935,6 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading:
-                  Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('switching')),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
@@ -948,6 +943,12 @@ class _SettingsPageState extends State<SettingsPage>
                               switching: true,
                             )));
                   },
+            child: ListTile(
+              leading:
+                  Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('switching')),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
           ),
           _buildDivider(),
           InkWell(
@@ -972,9 +973,8 @@ class _SettingsPageState extends State<SettingsPage>
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: true,
-                    msg: Translations.of(context).trans('dbrebuild') +
-                        ' ' +
-                        Translations.of(context).trans('complete'),
+                    msg:
+                        '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -1016,11 +1016,6 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('syncmanual')),
-              trailing: Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
@@ -1079,6 +1074,11 @@ class _SettingsPageState extends State<SettingsPage>
                       },
                     );
                   },
+            child: ListTile(
+              leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('syncmanual')),
+              trailing: Icon(Icons.keyboard_arrow_right),
+            ),
           ),
         ],
       ),
@@ -1124,7 +1124,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title:
-                Text('Image ' + Translations.of(context).trans('routing_rule')),
+                Text('Image ${Translations.of(context).trans('routing_rule')}'),
             trailing: Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
@@ -1233,6 +1233,15 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
+            onTap: Platform.isIOS
+                ? null
+                : () async {
+                    await Settings.setUserInnerStorage(
+                        !Settings.useInnerStorage);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
             child: ListTile(
               leading: Icon(
                 MdiIcons.downloadLock,
@@ -1253,15 +1262,6 @@ class _SettingsPageState extends State<SettingsPage>
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: Platform.isIOS
-                ? null
-                : () async {
-                    await Settings.setUserInnerStorage(
-                        !Settings.useInnerStorage);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
           ),
           _buildDivider(),
           ListTile(
@@ -1280,14 +1280,12 @@ class _SettingsPageState extends State<SettingsPage>
                       (context, AsyncSnapshot<SharedPreferences> snapshot) {
                     if (!snapshot.hasData) {
                       return Text(
-                        Translations.of(context).trans('curthread') + ': ',
+                        '${Translations.of(context).trans('curthread')}: ',
                         overflow: TextOverflow.ellipsis,
                       );
                     }
                     return Text(
-                      Translations.of(context).trans('curthread') +
-                          ': ' +
-                          snapshot.data!.getInt('thread_count').toString(),
+                      '${Translations.of(context).trans('curthread')}: ${snapshot.data!.getInt('thread_count')}',
                       overflow: TextOverflow.ellipsis,
                     );
                   },
@@ -1304,8 +1302,6 @@ class _SettingsPageState extends State<SettingsPage>
               TextEditingController text =
                   TextEditingController(text: tc.toString());
               Widget yesButton = TextButton(
-                child: Text(Translations.of(context).trans('change'),
-                    style: TextStyle(color: Settings.majorColor)),
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 onPressed: () async {
                   if (int.tryParse(text.text) == null) {
@@ -1326,14 +1322,16 @@ class _SettingsPageState extends State<SettingsPage>
 
                   Navigator.pop(context, true);
                 },
+                child: Text(Translations.of(context).trans('change'),
+                    style: TextStyle(color: Settings.majorColor)),
               );
               Widget noButton = TextButton(
-                child: Text(Translations.of(context).trans('cancel'),
-                    style: TextStyle(color: Settings.majorColor)),
                 style: TextButton.styleFrom(primary: Settings.majorColor),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
+                child: Text(Translations.of(context).trans('cancel'),
+                    style: TextStyle(color: Settings.majorColor)),
               );
               var dialog = await showDialog(
                 context: context,
@@ -1373,10 +1371,9 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            //   customBorder: RoundedRectangleBorder(
-            //     borderRadius: BorderRadius.all(
-            //       Radius.circular(8.0),
-            //     ),
+            // customBorder: RoundedRectangleBorder(
+            //   borderRadius: BorderRadius.all(
+            //     Radius.circular(8.0),
             //   ),
             child: ListTile(
               leading:
@@ -1386,9 +1383,7 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Text(Translations.of(context).trans('downloadpath')),
                   Text(
-                    Translations.of(context).trans('curdownloadpath') +
-                        ': ' +
-                        Settings.downloadBasePath,
+                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -1470,9 +1465,7 @@ class _SettingsPageState extends State<SettingsPage>
                 children: [
                   Text(Translations.of(context).trans('downloadrule')),
                   Text(
-                    Translations.of(context).trans('curdownloadrule') +
-                        ': ' +
-                        Settings.downloadRule,
+                    '${Translations.of(context).trans('curdownloadrule')}: ${Settings.downloadRule}',
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
@@ -1539,6 +1532,15 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
+            onTap: true
+                ? null
+                : () async {
+                    await Settings.setAutoBackupBookmark(
+                        !Settings.autobackupBookmark);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
             child: ListTile(
               leading: Icon(
                 MdiIcons.bookArrowUpOutline,
@@ -1559,15 +1561,6 @@ class _SettingsPageState extends State<SettingsPage>
                 activeColor: Settings.majorAccentColor,
               ),
             ),
-            onTap: true
-                ? null
-                : () async {
-                    await Settings.setAutoBackupBookmark(
-                        !Settings.autobackupBookmark);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
           ),
           _buildDivider(),
           ListTile(
@@ -1637,7 +1630,7 @@ class _SettingsPageState extends State<SettingsPage>
                 if (versions == null) {
                   await showOkDialog(
                       context,
-                      "북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.",
+                      '북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.',
                       Translations.of(context).trans('restoringbookmark'));
                   return;
                 }
@@ -1676,14 +1669,12 @@ class _SettingsPageState extends State<SettingsPage>
                   return;
                 }
               } catch (e, st) {
-                Logger.error('[Restore Bookmark] ' +
-                    e.toString() +
-                    '\n' +
-                    st.toString());
+                Logger.error('[Restore Bookmark] $e\n'
+                    '$st');
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
-                    msg: "Bookmark Restoring Error!",
+                    msg: 'Bookmark Restoring Error!',
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: Duration(seconds: 4),
@@ -1987,10 +1978,8 @@ class _SettingsPageState extends State<SettingsPage>
 
                 await showOkDialog(context, 'Success!');
               } catch (e, st) {
-                Logger.error('[Import from hiyobi] ' +
-                    e.toString() +
-                    '\n' +
-                    st.toString());
+                Logger.error('[Import from hiyobi] $e\n'
+                    '$st');
 
                 await showOkDialog(context,
                     'Bookmark format is not correct. Please refer to Log Record for details.');
@@ -2273,7 +2262,7 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.github,
               color: Colors.black,
             ),
-            title: Text("GitHub " + Translations.of(context).trans('project')),
+            title: Text('GitHub ${Translations.of(context).trans('project')}'),
             trailing: Icon(Icons.open_in_new),
             onTap: () async {
               const url = 'https://github.com/project-violet/';
@@ -2389,7 +2378,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 16.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),
@@ -2398,7 +2387,7 @@ class _SettingsPageState extends State<SettingsPage>
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
-                fontFamily: "Calibre-Semibold",
+                fontFamily: 'Calibre-Semibold',
                 letterSpacing: 1.0,
               ),
             ),

@@ -93,7 +93,7 @@ class HentaiDonwloadManager extends Downloadable {
             artist: target.artists() != null
                 ? target.artists().split('|').first
                 : null,
-            extension: path.extension(page.split('/').last).replaceAll(".", ""),
+            extension: path.extension(page.split('/').last).replaceAll('.', ''),
             extractor: 'hentai',
           ),
         ),

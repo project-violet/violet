@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class DiscordCard extends StatefulWidget {
+  const DiscordCard({Key? key}) : super(key: key);
+
   @override
   State<DiscordCard> createState() => _DiscordCardState();
 }
@@ -55,7 +57,7 @@ class _DiscordCardState extends State<DiscordCard> {
                     '  ${Translations.of(context).trans('maindiscord')}',
                     style: TextStyle(
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,
                       color: Colors.white,
                     ),

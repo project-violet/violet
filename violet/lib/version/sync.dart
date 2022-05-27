@@ -42,7 +42,7 @@ class SyncInfoRecord {
 
 class SyncManager {
   static const String syncInfoURL =
-      "https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt";
+      'https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt';
 
   static bool firstSync = false;
   static bool syncRequire = false; // database sync require
@@ -122,7 +122,8 @@ class SyncManager {
       if (requestSize > ignoreUserAcceptThreshold) syncRequire = true;
       if (_rows!.any((element) => element.type == 'chunk')) chunkRequire = true;
     } catch (e, st) {
-      Logger.error('[Sync-check] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Sync-check] E: $e\n'
+          '$st');
     }
   }
 
@@ -219,19 +220,16 @@ class SyncManager {
       }
 
       if (Settings.useOptimizeDatabase && filteredIter.isNotEmpty) {
-        var sql = HitomiManager.translate2query(Settings.includeTags +
-            ' ' +
-            Settings.excludeTags
-                .where((e) => e.trim() != '')
-                .map((e) => '-$e')
-                .join(' '));
+        var sql = HitomiManager.translate2query(
+            '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
 
         await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
             'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
       }
     } catch (e, st) {
       // If an error occurs, stops synchronization immediately.
-      Logger.error('[Sync-chunk] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[Sync-chunk] E: $e\n'
+          '$st');
       FirebaseCrashlytics.instance.recordError(e, st);
     }
   }

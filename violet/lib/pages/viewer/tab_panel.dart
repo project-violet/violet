@@ -31,10 +31,11 @@ class TabPanel extends StatefulWidget {
   final List<QueryResult>? usableTabList;
 
   TabPanel({
+    Key? key,
     required this.articleId,
     this.usableTabList,
     required this.height,
-  });
+  }) : super(key: key);
 
   @override
   State<TabPanel> createState() => _TabPanelState();
@@ -257,17 +258,17 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
       if (mqr.artists() != null)
         what += (mqr.artists() as String)
             .split('|')
-            .where((element) => element != '' && element.toLowerCase() != "n/a")
+            .where((element) => element != '' && element.toLowerCase() != 'n/a')
             .map((element) => 'artist:${element.replaceAll(' ', '_')}')
-            .join(" or ");
+            .join(' or ');
 
       if (mqr.groups() != null) {
-        if (what != '') what += " or ";
+        if (what != '') what += ' or ';
         what += (mqr.groups() as String)
             .split('|')
-            .where((element) => element != '' && element.toLowerCase() != "n/a")
+            .where((element) => element != '' && element.toLowerCase() != 'n/a')
             .map((element) => 'group:${element.replaceAll(' ', '_')}')
-            .join(" or ");
+            .join(' or ');
       }
 
       if (what == '') {
@@ -275,17 +276,10 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
         return;
       }
 
-      final queryString = HitomiManager.translate2query("($what)" +
-          ' ' +
-          Settings.includeTags +
-          ' ' +
-          Settings.excludeTags
-              .where((e) => e.trim() != '')
-              .map((e) => '-$e')
-              .join(' ')
-              .trim());
+      final queryString = HitomiManager.translate2query(
+          '($what) ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
       var queryResult = (await (await DataBaseManager.getInstance())
-              .query("$queryString ORDER BY Id DESC LIMIT 500"))
+              .query('$queryString ORDER BY Id DESC LIMIT 500'))
           .map((e) => QueryResult(result: e))
           .toList();
 
@@ -407,9 +401,6 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
           builder: (_, controller) {
             if (cache == null) {
               cache = Provider<ArticleInfo>.value(
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
                 value: ArticleInfo.fromArticleInfo(
                   queryResult: e,
                   thumbnail: thumbnail,
@@ -418,6 +409,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                   isBookmarked: isBookmarked,
                   controller: controller,
                   usableTabList: articleList,
+                ),
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
             }

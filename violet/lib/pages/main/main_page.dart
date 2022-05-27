@@ -47,6 +47,8 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
 class MainPage2 extends StatefulWidget {
+  const MainPage2({Key? key}) : super(key: key);
+
   @override
   State<MainPage2> createState() => _MainPage2State();
 }
@@ -273,11 +275,11 @@ class _MainPage2State extends State<MainPage2>
                 if (!snapshot.hasData) {
                   return Text('??',
                       style: TextStyle(
-                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
                 }
                 return Text(numberWithComma(snapshot.data!.length),
                     style: TextStyle(
-                        fontFamily: "Calibre-Semibold", fontSize: 18));
+                        fontFamily: 'Calibre-Semibold', fontSize: 18));
               }),
             ],
           ),
@@ -294,11 +296,11 @@ class _MainPage2State extends State<MainPage2>
                 if (!snapshot.hasData) {
                   return Text('??',
                       style: TextStyle(
-                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
                 }
                 return Text(numberWithComma(snapshot.data!.length),
                     style: TextStyle(
-                        fontFamily: "Calibre-Semibold", fontSize: 18));
+                        fontFamily: 'Calibre-Semibold', fontSize: 18));
               }),
             ],
           ),
@@ -316,11 +318,11 @@ class _MainPage2State extends State<MainPage2>
                 if (!snapshot.hasData) {
                   return Text('??',
                       style: TextStyle(
-                          fontFamily: "Calibre-Semibold", fontSize: 18));
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
                 }
                 return Text(numberWithComma(snapshot.data!.length),
                     style: TextStyle(
-                        fontFamily: "Calibre-Semibold", fontSize: 18));
+                        fontFamily: 'Calibre-Semibold', fontSize: 18));
               }),
             ],
           ),
@@ -369,6 +371,8 @@ class _MainPage2State extends State<MainPage2>
           //   width: 100,
           // )
           Container(
+            height: 40,
+            width: 105,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Settings.majorColor.withAlpha(220),
@@ -378,8 +382,6 @@ class _MainPage2State extends State<MainPage2>
               },
               child: Text(Translations.of(context).trans('patchnote')),
             ),
-            height: 40,
-            width: 105,
           ),
         ],
       ),
@@ -406,9 +408,7 @@ class _MainPage2State extends State<MainPage2>
                           return Text(' ??');
                         }
                         return Text(
-                          ' ' +
-                              DateFormat('yyyy.MM.dd').format(DateTime.parse(
-                                  snapshot.data!.getString('databasesync')!)),
+                          ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(snapshot.data!.getString('databasesync')!))}',
                         );
                       }),
                 ],
@@ -419,9 +419,7 @@ class _MainPage2State extends State<MainPage2>
                   Text(Translations.of(context).trans('latest'),
                       style: TextStyle(color: Colors.grey)),
                   Text(
-                    ' ' +
-                        DateFormat('yyyy.MM.dd')
-                            .format(SyncManager.getLatestDB().getDateTime()),
+                    ' ${DateFormat('yyyy.MM.dd').format(SyncManager.getLatestDB().getDateTime())}',
                   ),
                 ],
               ),
@@ -786,13 +784,8 @@ class _MainPage2State extends State<MainPage2>
     bool updateContinued = false;
     Future.delayed(Duration(milliseconds: 100)).then((value) async {
       if (UpdateSyncManager.updateRequire) {
-        var bb = await showYesNoDialog(
-            context,
-            Translations.of(context).trans('newupdate') +
-                ' ' +
-                UpdateSyncManager.updateMessage +
-                ' ' +
-                Translations.of(context).trans('wouldyouupdate'));
+        var bb = await showYesNoDialog(context,
+            '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
         if (bb == null || bb == false) return;
       } else
         return;

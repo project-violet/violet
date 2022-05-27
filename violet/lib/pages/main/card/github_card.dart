@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:violet/locale/locale.dart';
 
 class GithubCard extends StatefulWidget {
+  const GithubCard({Key? key}) : super(key: key);
+
   @override
   State<GithubCard> createState() => _GithubCardState();
 }
@@ -55,7 +57,7 @@ class _GithubCardState extends State<GithubCard> {
                     '  ${Translations.of(context).trans('maingithub')}',
                     style: TextStyle(
                       fontSize: 18.0,
-                      fontFamily: "Calibre-Semibold",
+                      fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,
                       color: Colors.white,
                     ),

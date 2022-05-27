@@ -11,7 +11,7 @@ import 'package:violet/variables.dart';
 class ViewRecordPanel extends StatefulWidget {
   final int articleId;
 
-  ViewRecordPanel({required this.articleId});
+  ViewRecordPanel({Key? key, required this.articleId}) : super(key: key);
 
   @override
   State<ViewRecordPanel> createState() => _ViewRecordPanelState();
@@ -56,8 +56,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                       child: Text(
                         snapshot.data![index - 1].lastPage() == null
                             ? '??'
-                            : snapshot.data![index - 1].lastPage().toString() +
-                                ' Page',
+                            : '${snapshot.data![index - 1].lastPage()} Page',
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 16,

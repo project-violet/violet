@@ -18,9 +18,10 @@ class GroupArtistArticleList extends StatefulWidget {
   final int groupId;
 
   GroupArtistArticleList({
+    Key? key,
     required this.name,
     required this.groupId,
-  });
+  }) : super(key: key);
 
   @override
   State<GroupArtistArticleList> createState() => _GroupArtistArticleListState();
@@ -46,17 +47,13 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
         if (artists.isEmpty) return <QueryResult>[];
 
         var queryString = HitomiManager.translate2query(artists
-            .map((e) =>
-                '${[
+            .map((e) => '${[
                   'artist',
                   'group',
                   'uploader',
                   'series',
                   'character'
-                ][e.type()]}:' +
-                e.artist().toLowerCase().replaceAll(' ', '_') +
-                ' ' +
-                Settings.includeTags)
+                ][e.type()]}:${e.artist().toLowerCase().replaceAll(' ', '_')} ${Settings.includeTags}')
             .join(' or '));
         print(queryString);
         final qm = QueryManager.queryPagination(queryString);
@@ -103,7 +100,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                       snapshot.data!.map(
                         (e) {
                           return Padding(
-                            key: Key('gaal/' + e.id().toString()),
+                            key: Key('gaal/${e.id()}'),
                             padding: EdgeInsets.zero,
                             child: Align(
                               alignment: Alignment.bottomCenter,

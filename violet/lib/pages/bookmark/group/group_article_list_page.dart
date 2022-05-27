@@ -32,11 +32,12 @@ import 'package:violet/widgets/search_bar.dart';
 // https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
 class DotsIndicator extends AnimatedWidget {
   DotsIndicator({
+    Key? key,
     required this.controller,
     required this.itemCount,
     required this.onPageSelected,
     this.color = Colors.white,
-  }) : super(listenable: controller);
+  }) : super(key: key, listenable: controller);
 
   /// The PageController that this DotsIndicator is representing.
   final PageController controller;
@@ -102,9 +103,10 @@ class GroupArticleListPage extends StatefulWidget {
   final int groupId;
 
   GroupArticleListPage({
+    Key? key,
     required this.name,
     required this.groupId,
-  });
+  }) : super(key: key);
 
   @override
   State<GroupArticleListPage> createState() => _GroupArticleListPageState();
@@ -366,7 +368,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     return Align(
       alignment: Alignment.centerRight,
       child: Hero(
-        tag: "searchtype2",
+        tag: 'searchtype2',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
@@ -461,7 +463,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   ObjectKey key = ObjectKey(Uuid().v4());
 
   final FilterController _filterController =
-      FilterController(heroKey: "searchtype2");
+      FilterController(heroKey: 'searchtype2');
 
   bool isFilterUsed = false;
 
@@ -583,12 +585,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             ),
             delegate: SliverChildListDelegate(filterResult.map((e) {
               return Padding(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    e.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${e.id()}'),
                 padding: EdgeInsets.zero,
                 child: Align(
                   alignment: Alignment.bottomCenter,
@@ -627,12 +624,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
               return Align(
-                key: Key('group' +
-                    widget.groupId.toString() +
-                    '/' +
-                    nowType.toString() +
-                    '/' +
-                    x.id().toString()),
+                key: Key('group${widget.groupId}/$nowType/${x.id()}'),
                 alignment: Alignment.center,
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(

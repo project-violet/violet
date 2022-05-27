@@ -25,7 +25,8 @@ class GroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistList({required this.name, required this.groupId});
+  GroupArtistList({Key? key, required this.name, required this.groupId})
+      : super(key: key);
 
   @override
   State<GroupArtistList> createState() => _GroupArtistListState();
@@ -47,15 +48,12 @@ class _GroupArtistListState extends State<GroupArtistList>
     for (int i = 0; i < artists.length; i++) {
       var postfix = artists[i].artist().toLowerCase().replaceAll(' ', '_');
       var queryString = HitomiManager.translate2query('${[
-            'artist',
-            'group',
-            'uploader',
-            'series',
-            'character'
-          ][artists[i].type()]}:' +
-          postfix +
-          ' ' +
-          Settings.includeTags);
+        'artist',
+        'group',
+        'uploader',
+        'series',
+        'character'
+      ][artists[i].type()]}:$postfix ${Settings.includeTags}');
       final qm = QueryManager.queryPagination(queryString);
       qm.itemsPerPage = 1;
       var query = (await qm.next())[0].id();
@@ -73,11 +71,13 @@ class _GroupArtistListState extends State<GroupArtistList>
 
   Future<List<QueryResult>> _future(String e, int type) async {
     var postfix = e.toLowerCase().replaceAll(' ', '_');
-    var queryString = HitomiManager.translate2query(
-        '${['artist', 'group', 'uploader', 'series', 'character'][type]}:' +
-            postfix +
-            ' ' +
-            Settings.includeTags);
+    var queryString = HitomiManager.translate2query('${[
+      'artist',
+      'group',
+      'uploader',
+      'series',
+      'character'
+    ][type]}:$postfix ${Settings.includeTags}');
     final qm = QueryManager.queryPagination(queryString);
     qm.itemsPerPage = 3;
     return await qm.next();
@@ -165,7 +165,7 @@ class _GroupArtistListState extends State<GroupArtistList>
     return Align(
       alignment: Alignment.centerRight,
       child: Hero(
-        tag: "searchtype3",
+        tag: 'searchtype3',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
@@ -180,6 +180,18 @@ class _GroupArtistListState extends State<GroupArtistList>
           elevation: !Settings.themeFlat ? 100 : 0,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: InkWell(
+            onTap: _progressingFilter
+                ? null
+                : () async {
+                    setState(() {
+                      _progressingFilter = true;
+                    });
+                    await _sortByLatest();
+                    setState(() {
+                      _progressingFilter = false;
+                      _filterLevel = (_filterLevel + 1) % 2;
+                    });
+                  },
             child: SizedBox(
               height: 48,
               width: 48,
@@ -204,18 +216,6 @@ class _GroupArtistListState extends State<GroupArtistList>
                 ],
               ),
             ),
-            onTap: _progressingFilter
-                ? null
-                : () async {
-                    setState(() {
-                      _progressingFilter = true;
-                    });
-                    await _sortByLatest();
-                    setState(() {
-                      _progressingFilter = false;
-                      _filterLevel = (_filterLevel + 1) % 2;
-                    });
-                  },
           ),
         ),
       ),
@@ -284,25 +284,18 @@ class _GroupArtistListState extends State<GroupArtistList>
                   children: <Widget>[
                     Text(
                         ' ${[
+                          'artist',
+                          'group',
+                          'uploader',
+                          'series',
+                          'character'
+                        ][e.type()]}:${e.artist()} (${HitomiManager.getArticleCount([
                               'artist',
                               'group',
                               'uploader',
                               'series',
                               'character'
-                            ][e.type()]}:' +
-                            e.artist() +
-                            ' (' +
-                            HitomiManager.getArticleCount(
-                                    [
-                                      'artist',
-                                      'group',
-                                      'uploader',
-                                      'series',
-                                      'character'
-                                    ][e.type()],
-                                    e.artist())
-                                .toString() +
-                            ')',
+                            ][e.type()], e.artist())})',
                         style: TextStyle(fontSize: 17)),
                   ],
                 ),
@@ -330,10 +323,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         flex: 1,
         child: qq.length > index
             ? Padding(
-                key: Key(qq[index].id().toString() +
-                    '/' +
-                    index.toString() +
-                    '_thumbnail_bookmark'),
+                key: Key('${qq[index].id()}/${index}_thumbnail_bookmark'),
                 padding: EdgeInsets.all(4),
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
@@ -510,10 +500,9 @@ class _GroupArtistListState extends State<GroupArtistList>
         // 0. Sort Checked
         var invIdIndex = Map<String, int>();
         for (int i = 0; i < artists.length; i++)
-          invIdIndex[artists[i].artist() + '|' + artists[i].type().toString()] =
-              i;
-        checked.sort((x, y) => invIdIndex[x.item2 + '|' + x.item1.toString()]!
-            .compareTo(invIdIndex[y.item2 + '|' + y.item1.toString()]!));
+          invIdIndex['${artists[i].artist()}|${artists[i].type()}'] = i;
+        checked.sort((x, y) => invIdIndex['${x.item2}|${x.item1}']!
+            .compareTo(invIdIndex['${y.item2}|${y.item1}']!));
 
         // 1. Get bookmark articles on source groupid
         var bm = await Bookmark.getInstance();

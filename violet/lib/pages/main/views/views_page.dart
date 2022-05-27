@@ -18,6 +18,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ViewsPage extends StatefulWidget {
+  const ViewsPage({Key? key}) : super(key: key);
+
   @override
   State<ViewsPage> createState() => _ViewsPageState();
 }
@@ -43,6 +45,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
               tabs: [
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -54,10 +57,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -69,10 +72,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -84,10 +87,10 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
                 Container(
                   alignment: Alignment.center,
+                  height: 50,
                   child: Column(
                     children: [
                       Container(height: 4),
@@ -99,7 +102,6 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                               : TextStyle(color: Colors.black)),
                     ],
                   ),
-                  height: 50,
                 ),
               ],
             ),
@@ -144,15 +146,10 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
 
         if (value == null || value.length == 0) return 900;
 
-        var queryRaw = HitomiManager.translate2query(Settings.includeTags +
-                ' ' +
-                Settings.excludeTags
-                    .where((e) => e.trim() != '')
-                    .map((e) => '-$e')
-                    .join(' ')) +
-            ' AND ';
+        var queryRaw =
+            '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
         // var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-        queryRaw += '(' + value.map((e) => 'Id=${e.item1}').join(' OR ') + ')';
+        queryRaw += '(${value.map((e) => 'Id=${e.item1}').join(' OR ')})';
         var query = await QueryManager.query(queryRaw);
 
         if (query.results!.isEmpty) return 901;
@@ -215,10 +212,8 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
                 ),
-                Text('Error' +
-                    (errmsg[snapshot.data.toString()] != null
-                        ? ': ' + errmsg[snapshot.data.toString()]!
-                        : ' Code: ' + snapshot.data.toString()))
+                Text(
+                    'Error${errmsg[snapshot.data.toString()] != null ? ': ${errmsg[snapshot.data.toString()]!}' : ' Code: ${snapshot.data}'}')
               ],
             ),
           );
@@ -242,10 +237,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
           physics: BouncingScrollPhysics(),
           children: results.map((x) {
             return Align(
-              key: Key('views' +
-                  widget.index.toString() +
-                  '/' +
-                  x.item1.id().toString()),
+              key: Key('views${widget.index}/${x.item1.id()}'),
               alignment: Alignment.center,
               child: Provider<ArticleListItem>.value(
                 value: ArticleListItem.fromArticleListItem(

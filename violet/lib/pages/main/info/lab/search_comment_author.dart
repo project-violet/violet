@@ -16,7 +16,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class LabSearchCommentsAuthor extends StatefulWidget {
   final String author;
 
-  LabSearchCommentsAuthor(this.author);
+  LabSearchCommentsAuthor(this.author, {Key? key}) : super(key: key);
 
   @override
   State<LabSearchCommentsAuthor> createState() =>
@@ -135,9 +135,6 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
             builder: (_, controller) {
               if (cache == null) {
                 cache = Provider<ArticleInfo>.value(
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
                   value: ArticleInfo.fromArticleInfo(
                     queryResult: qr,
                     thumbnail: thumbnail,
@@ -145,6 +142,9 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
                     heroKey: 'zxcvzxcvzxcv',
                     isBookmarked: isBookmarked,
                     controller: controller,
+                  ),
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
                   ),
                 );
               }

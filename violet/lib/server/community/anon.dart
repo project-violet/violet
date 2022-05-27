@@ -13,8 +13,8 @@ class VioletCommunityAnonymous {
   static Future<dynamic> _getV(String api, String params) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
-    var gg = await http
-        .get(Uri.parse(VioletServer.api + api + '?' + params), headers: {
+    var gg =
+        await http.get(Uri.parse('${VioletServer.api}$api?$params'), headers: {
       'v-token': vToken.toString(),
       'v-valid': vValid,
       'Content-Type': 'application/json'
@@ -41,7 +41,8 @@ class VioletCommunityAnonymous {
           body: jsonEncode(body));
       return res;
     } catch (e, st) {
-      Logger.error('[API-postv] E: ' + e.toString() + '\n' + st.toString());
+      Logger.error('[API-postv] E: $e\n'
+          '$st');
     }
     return null;
   }
@@ -58,7 +59,7 @@ class VioletCommunityAnonymous {
   static Future<dynamic> getArtistComments(String artistName) async {
     // artistName = group:<name> | artist:<name>
     return await _getV(
-        '/community/anon/artistcomment/read', 'name=' + artistName);
+        '/community/anon/artistcomment/read', 'name=$artistName');
   }
 
   static Future<dynamic> getArtistCommentsRecent(

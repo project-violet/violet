@@ -6,11 +6,13 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:violet/settings/settings.dart';
 
 class DownloadFeaturesMenu extends StatelessWidget {
+  const DownloadFeaturesMenu({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "features",
+        tag: 'features',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack

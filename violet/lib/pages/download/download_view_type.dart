@@ -7,6 +7,8 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
 class DownloadViewType extends StatelessWidget {
+  const DownloadViewType({Key? key}) : super(key: key);
+
   Color getColor(int i) {
     return Settings.themeWhat
         ? Settings.downloadResultType == i
@@ -21,7 +23,7 @@ class DownloadViewType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "downloadtype",
+        tag: 'downloadtype',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack

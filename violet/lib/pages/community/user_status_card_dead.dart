@@ -16,6 +16,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
+  const UserStatusCard({Key? key}) : super(key: key);
+
   @override
   State<UserStatusCard> createState() => _UserStatusCardState();
 }
@@ -270,8 +272,8 @@ class _UserStatusCardState extends State<UserStatusCard>
 
                     var ync = await showYesNoDialog(
                         context,
-                        'You need to log in to use the community feature. ' +
-                            'If you have an existing id, press "YES" to log in. ' +
+                        'You need to log in to use the community feature. '
+                            'If you have an existing id, press "YES" to log in. '
                             'If you do not have an existing id, press "NO" to register for a new one.',
                         'Sign In/Up');
 
@@ -296,9 +298,9 @@ class _UserStatusCardState extends State<UserStatusCard>
                           'success') {
                         await showOkDialog(
                             context,
-                            'You cannot continue, there is an account registered with your UserAppId.' +
-                                ' If you have already registered as a member, please sign in with your existing id.' +
-                                ' If you forgot your login information, please contact developer.');
+                            'You cannot continue, there is an account registered with your UserAppId.'
+                            ' If you have already registered as a member, please sign in with your existing id.'
+                            ' If you forgot your login information, please contact developer.');
                         return;
                       }
                       var r = await showDialog(

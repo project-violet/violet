@@ -19,6 +19,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class BookmarkPage extends StatefulWidget {
+  const BookmarkPage({Key? key}) : super(key: key);
+
   @override
   State<BookmarkPage> createState() => _BookmarkPageState();
 }
@@ -256,7 +258,7 @@ class _BookmarkPageState extends State<BookmarkPage>
     var random = Random();
 
     return Container(
-      key: Key("bookmark_group_" + id.toString()),
+      key: Key('bookmark_group_$id'),
       child: ShakeAnimatedWidget(
         enabled: reorder,
         duration: Duration(milliseconds: 300 + random.nextInt(50)),

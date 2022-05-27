@@ -14,7 +14,7 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
   });
 
-  test("Create Cert", () async {
+  test('Create Cert', () async {
     var pair = CertUtil.createRSAKeyPair();
 
     var rootCA = RootCert(data: {
@@ -68,7 +68,7 @@ void main() {
     print(testCert.toBase64());
   });
 
-  test("Test Root Cert", () async {
+  test('Test Root Cert', () async {
     var testCert = CertData.testCert();
     expect(testCert.verify(RootCert.koromoCA()), true);
   });

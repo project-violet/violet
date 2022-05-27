@@ -7,6 +7,8 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
 class SearchType extends StatelessWidget {
+  const SearchType({Key? key}) : super(key: key);
+
   Color getColor(int i) {
     return Settings.themeWhat
         ? Settings.searchResultType == i
@@ -21,7 +23,7 @@ class SearchType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: "searchtype",
+        tag: 'searchtype',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack

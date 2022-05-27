@@ -290,7 +290,8 @@ class Settings {
             }
           }
         } catch (e, st) {
-          Logger.error('[Settings] E: ' + e.toString() + '\n' + st.toString());
+          Logger.error('[Settings] E: $e\n'
+              '$st');
           FirebaseCrashlytics.instance.recordError(e, st);
         }
       }
@@ -300,9 +301,9 @@ class Settings {
     downloadBasePath = tDownloadBasePath!;
 
     downloadRule = await _getString(
-        'downloadrule', "%(extractor)s/%(id)s/%(file)s.%(ext)s");
+        'downloadrule', '%(extractor)s/%(id)s/%(file)s.%(ext)s');
     searchMessageAPI = await _getString(
-        'searchmessageapi', "https://koromo.xyz/api/search/msg");
+        'searchmessageapi', 'https://koromo.xyz/api/search/msg');
 
     useVioletServer = await _getBool('usevioletserver');
     useDrawer = await _getBool('usedrawer');
@@ -376,7 +377,7 @@ class Settings {
   }
 
   static Future<String> _getString(String key,
-      [String defaultValue = ""]) async {
+      [String defaultValue = '']) async {
     var nn = (await SharedPreferences.getInstance()).getString(key);
     if (nn == null) {
       nn = defaultValue;

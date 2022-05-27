@@ -11,7 +11,7 @@ import 'package:violet/settings/settings.dart';
 class TagSelectorDialog extends StatefulWidget {
   final String what;
 
-  TagSelectorDialog({required this.what});
+  TagSelectorDialog({Key? key, required this.what}) : super(key: key);
 
   @override
   State<TagSelectorDialog> createState() => _TagSelectorDialogState();
@@ -236,7 +236,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
             : info.item1.group![0].toUpperCase()),
       ),
       label: Text(
-        ' ' + tagDisplayed + count,
+        ' $tagDisplayed$count',
         style: TextStyle(
           color: Colors.white,
         ),
@@ -266,18 +266,14 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         } else {
           var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
-            _searchController.text = _searchController.text
-                    .substring(0, _searchController.selection.base.offset) +
-                info.item1.name! +
-                ':' +
-                _searchController.text
-                    .substring(_searchController.selection.base.offset);
+            _searchController.text =
+                '${_searchController.text.substring(0, _searchController.selection.base.offset)}${info.item1.name!}:${_searchController.text.substring(_searchController.selection.base.offset)}';
             _searchController.selection = TextSelection(
               baseOffset: offset + info.item1.name!.length + 1,
               extentOffset: offset + info.item1.name!.length + 1,
             );
           } else {
-            _searchController.text = info.item1.name! + ':';
+            _searchController.text = '${info.item1.name!}:';
             _searchController.selection = TextSelection(
               baseOffset: info.item1.name!.length + 1,
               extentOffset: info.item1.name!.length + 1,

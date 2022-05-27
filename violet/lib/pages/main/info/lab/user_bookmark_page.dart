@@ -10,6 +10,8 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 
 class LabUserBookmarkPage extends StatefulWidget {
+  const LabUserBookmarkPage({Key? key}) : super(key: key);
+
   @override
   State<LabUserBookmarkPage> createState() => _LabUserBookmarkPageState();
 }
