@@ -52,6 +52,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   static const _kDuration = Duration(milliseconds: 300);
   static const _kCurve = Curves.ease;
 
+  final ScrollController _scroll = ScrollController();
+
+  Map<String, GlobalKey> itemKeys = Map<String, GlobalKey>();
+
   @override
   void initState() {
     super.initState();
@@ -66,6 +70,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   void _rebuild() {
     _shouldRebuild = true;
+    itemKeys.clear();
     setState(() {
       _shouldRebuild = true;
       key = ObjectKey(Uuid().v4());
@@ -165,7 +170,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 body: Padding(
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: PrimaryScrollController(
-                    controller: ScrollController(),
+                    controller: _scroll,
                     child: CupertinoScrollbar(
                       scrollbarOrientation:
                           Settings.bookmarkScrollbarPositionToLeft
@@ -345,6 +350,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   .then((value) async {
                 if (value == null) return;
                 nowType = value;
+                itemKeys.clear();
                 await (await SharedPreferences.getInstance())
                     .setInt('bookmark_${widget.groupId}', value);
                 await Future.delayed(Duration(milliseconds: 50), () {
@@ -514,8 +520,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               childAspectRatio: 3 / 4,
             ),
             delegate: SliverChildListDelegate(filterResult.map((e) {
+              var keyStr = 'group/${widget.groupId}/$nowType/${e.id()}';
+              if (!itemKeys.containsKey(keyStr)) itemKeys[keyStr] = GlobalKey();
               return Padding(
-                key: Key('group${widget.groupId}/$nowType/${e.id()}'),
+                key: itemKeys[keyStr],
                 padding: EdgeInsets.zero,
                 child: Align(
                   alignment: Alignment.bottomCenter,
@@ -553,8 +561,10 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           sliver: SliverList(
             key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
+              var keyStr = 'group/${widget.groupId}/$nowType/${x.id()}';
+              if (!itemKeys.containsKey(keyStr)) itemKeys[keyStr] = GlobalKey();
               return Align(
-                key: Key('group${widget.groupId}/$nowType/${x.id()}'),
+                key: itemKeys[keyStr],
                 alignment: Alignment.center,
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
