@@ -24,6 +24,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
+import 'package:violet/widgets/dots_indicator.dart';
 
 class TabPanel extends StatefulWidget {
   final int articleId;

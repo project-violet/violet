@@ -17,6 +17,7 @@ import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/dots_indicator.dart';
 
 class SearchBarPage extends StatefulWidget {
   final AssetProvider assetProvider;

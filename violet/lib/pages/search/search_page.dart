@@ -141,13 +141,16 @@ class _SearchPageState extends State<SearchPage>
       //
       if (itemKeys.isNotEmpty && itemHeight <= 0.1) {
         if (itemKeys[0].currentContext != null) {
-          itemHeight = itemKeys[0].currentContext!.size!.height + 8;
+          const bottomPadding = 8;
+          itemHeight = itemKeys[0].currentContext!.size!.height + bottomPadding;
         }
       }
 
       final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
+      const searchBarHeight = 64 + 16;
       final curI =
-          ((_scroll.offset - (64 + 16)) / itemHeight + 1).toInt() * itemPerRow;
+          ((_scroll.offset - searchBarHeight) / itemHeight + 1).toInt() *
+              itemPerRow;
 
       if (curI != searchPageNum.value && isExtended) {
         searchPageNum.value = curI;
