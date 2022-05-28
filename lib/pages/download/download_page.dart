@@ -56,9 +56,9 @@ class _DownloadPageState extends State<DownloadPage>
 
   final ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = [];
-  Map<int, DownloadItemModel> itemsMap = Map<int, DownloadItemModel>();
+  Map<int, DownloadItemModel> itemsMap = <int, DownloadItemModel>{};
   List<DownloadItemModel> filterResult = [];
-  Map<int, QueryResult> queryResults = Map<int, QueryResult>();
+  Map<int, QueryResult> queryResults = <int, QueryResult>{};
   final FilterController _filterController =
       FilterController(heroKey: 'downloadtype');
   ObjectKey _listKey = ObjectKey(Uuid().v4());
@@ -89,10 +89,10 @@ class _DownloadPageState extends State<DownloadPage>
         if (value.currentState != null) value.currentState.thubmanilReload();
       });
       items = await (await Download.getInstance()).getDownloadItems();
-      itemsMap = Map<int, DownloadItemModel>();
+      itemsMap = <int, DownloadItemModel>{};
       filterResult = [];
       _listKey = ObjectKey(Uuid().v4());
-      queryResults = Map<int, QueryResult>();
+      queryResults = <int, QueryResult>{};
       await _autoRecoveryFileName();
       await _buildQueryResults();
       _applyFilter();
@@ -150,7 +150,7 @@ class _DownloadPageState extends State<DownloadPage>
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
     queryRaw += 'Id IN (${articles.map((e) => e).join(',')})';
     QueryManager.query(queryRaw).then((value) async {
-      var qr = Map<int, QueryResult>();
+      var qr = <int, QueryResult>{};
       value.results!.forEach((element) {
         qr[element.id()] = element;
       });
@@ -222,11 +222,11 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys1 =
-      Map<int, GlobalKey<DownloadItemWidgetState>>();
+      <int, GlobalKey<DownloadItemWidgetState>>{};
   Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys2 =
-      Map<int, GlobalKey<DownloadItemWidgetState>>();
+      <int, GlobalKey<DownloadItemWidgetState>>{};
   Map<int, GlobalKey<DownloadItemWidgetState>> downloadItemWidgetKeys3 =
-      Map<int, GlobalKey<DownloadItemWidgetState>>();
+      <int, GlobalKey<DownloadItemWidgetState>>{};
 
   _getDownloadWidgetKey() {
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1)
@@ -744,7 +744,7 @@ class _DownloadPageState extends State<DownloadPage>
     if (Settings.downloadAlignType > 0) {
       final user = await User.getInstance();
       final userlog = await user.getUserLog();
-      final articlereadlog = Map<int, DateTime>();
+      final articlereadlog = <int, DateTime>{};
 
       userlog.forEach((element) {
         if (!articlereadlog.containsKey(int.tryParse(element.articleId())))

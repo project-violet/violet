@@ -66,7 +66,7 @@ class _SearchPageState extends State<SearchPage>
 
   DateTime datetime = DateTime.now();
 
-  Map<String, GlobalKey> itemKeys = Map<String, GlobalKey>();
+  Map<String, GlobalKey> itemKeys = <String, GlobalKey>{};
   double itemHeight = 0.0;
   ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
   int searchTotalResultCount = 0;

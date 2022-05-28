@@ -154,7 +154,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
 
         if (query.results!.isEmpty) return 901;
 
-        var qr = Map<String, QueryResult>();
+        var qr = <String, QueryResult>{};
         query.results!.forEach((element) {
           qr[element.id().toString()] = element;
         });

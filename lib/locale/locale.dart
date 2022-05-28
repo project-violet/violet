@@ -46,7 +46,7 @@ class Translations {
     String data = await rootBundle.loadString('assets/locale/$code.json');
     Map<String, dynamic> result = json.decode(data);
 
-    _sentences = Map();
+    _sentences = {};
     result.forEach((String key, dynamic value) {
       _sentences[key] = value.toString();
     });
