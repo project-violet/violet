@@ -87,21 +87,17 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
               itemCount: comments.length,
             ),
           ),
-          Row(
-            children: [
-              TextField(
-                controller: text,
-                // autofocus: true,
-                onEditingComplete: () async {
-                  var tcomments = (await VioletServer.searchComment(text.text))
-                      as List<dynamic>;
-                  comments = tcomments
-                      .map((e) => e as Tuple4<int, DateTime, String, String>)
-                      .toList();
-                  setState(() {});
-                },
-              ),
-            ],
+          TextField(
+            controller: text,
+            // autofocus: true,
+            onEditingComplete: () async {
+              var tcomments = (await VioletServer.searchComment(text.text))
+                  as List<dynamic>;
+              comments = tcomments
+                  .map((e) => e as Tuple4<int, DateTime, String, String>)
+                  .toList();
+              setState(() {});
+            },
           ),
         ],
       ),
