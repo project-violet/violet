@@ -755,7 +755,7 @@ class ResultPanelWidget extends StatelessWidget {
         return SliverPadding(
             padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: SliverGrid(
-              key: sliverKey,
+              key: key,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
                 crossAxisSpacing: 8,
@@ -802,7 +802,7 @@ class ResultPanelWidget extends StatelessWidget {
           return SliverPadding(
             padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: LiveSliverGrid(
-              key: sliverKey,
+              key: key,
               controller: _scrollController,
               showItemInterval: Duration(milliseconds: 50),
               showItemDuration: Duration(milliseconds: 150),
