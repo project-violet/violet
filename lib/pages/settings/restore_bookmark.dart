@@ -119,7 +119,7 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         Logger.error('[Restore Bookmark] $e\n'
             '$st');
         fToast.showToast(
-          child: ToastWrapper(
+          child: const ToastWrapper(
             isCheck: false,
             msg: 'Bookmark Restoring Error!',
           ),

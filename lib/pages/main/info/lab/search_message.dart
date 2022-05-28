@@ -498,8 +498,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   isBookmarked: isBookmarked,
                   controller: controller,
                 ),
-                child: ArticleInfoPage(
-                  key: const ObjectKey('asdfasdf'),
+                child: const ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
               return cache!;

@@ -52,7 +52,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           _alreadyLocked = true;
           Navigator.of(context)
               .push(MaterialPageRoute(
-                builder: (context) => LockScreen(
+                builder: (context) => const LockScreen(
                   isSecureMode: true,
                 ),
               ))

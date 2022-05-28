@@ -783,7 +783,7 @@ class ResultPanelWidget extends StatelessWidget {
                                 'thumbnail${resultList[index].id()}${dateTime}',
                             usableTabList: resultList,
                           ),
-                          child: ArticleListItemVerySimpleWidget(),
+                          child: const ArticleListItemVerySimpleWidget(),
                         ),
                       ),
                     ),
@@ -829,7 +829,7 @@ class ResultPanelWidget extends StatelessWidget {
                           'thumbnail${resultList[index].id()}${dateTime}',
                       usableTabList: resultList,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
@@ -856,7 +856,7 @@ class ResultPanelWidget extends StatelessWidget {
                           'thumbnail${resultList[index].id()}${dateTime}',
                       usableTabList: resultList,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },

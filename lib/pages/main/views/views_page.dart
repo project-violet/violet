@@ -105,7 +105,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            Expanded(
+            const Expanded(
               child: TabBarView(
                 children: [
                   _Tab(0),
@@ -251,7 +251,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   // isCheckMode: checkMode,
                   // isChecked: checked.contains(x.id()),
                 ),
-                child: ArticleListItemVerySimpleWidget(),
+                child: const ArticleListItemVerySimpleWidget(),
               ),
             );
           }).toList(),

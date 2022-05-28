@@ -34,7 +34,7 @@ class _LockSettingPageState extends State<LockSettingPage> {
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                  builder: (context) => LockScreen(
+                  builder: (context) => const LockScreen(
                     isRegisterMode: true,
                   ),
                 ),

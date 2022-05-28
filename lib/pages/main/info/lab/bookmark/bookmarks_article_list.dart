@@ -439,7 +439,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                         // isCheckMode: checkMode,
                         // isChecked: checked.contains(e.id()),
                       ),
-                      child: ArticleListItemVerySimpleWidget(),
+                      child: const ArticleListItemVerySimpleWidget(),
                     ),
                   ),
                 ),
@@ -469,7 +469,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                     // isCheckMode: checkMode,
                     // isChecked: checked.contains(x.id()),
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemVerySimpleWidget(),
                 ),
               );
             }).toList()),

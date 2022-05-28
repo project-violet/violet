@@ -558,7 +558,7 @@ class _DownloadPageState extends State<DownloadPage>
         Clipboard.setData(ClipboardData(
             text: filterResult.map((e) => int.tryParse(e.url())).join(', ')));
         fToast.showToast(
-          child: ToastWrapper(
+          child: const ToastWrapper(
             isCheck: true,
             isWarning: false,
             msg: 'Ids Copied!',

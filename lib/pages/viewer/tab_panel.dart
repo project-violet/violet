@@ -207,7 +207,7 @@ class __UsableTabListState extends State<_UsableTabList>
                             Navigator.pop(context, e);
                           },
                         ),
-                        child: ArticleListItemVerySimpleWidget(),
+                        child: const ArticleListItemVerySimpleWidget(),
                       ),
                     ),
                   );
@@ -368,7 +368,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                   }
                                 },
                               ),
-                              child: ArticleListItemVerySimpleWidget(),
+                              child: const ArticleListItemVerySimpleWidget(),
                             ),
                           ),
                         );
@@ -410,8 +410,8 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                 controller: controller,
                 usableTabList: articleList,
               ),
-              child: ArticleInfoPage(
-                key: const ObjectKey('asdfasdf'),
+              child: const ArticleInfoPage(
+                key: ObjectKey('asdfasdf'),
               ),
             );
             return cache!;

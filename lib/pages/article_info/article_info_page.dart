@@ -253,7 +253,7 @@ class ArticleInfoPage extends StatelessWidget {
       FToast ftoast = FToast();
       ftoast.init(context);
       ftoast.showToast(
-        child: ToastWrapper(
+        child: const ToastWrapper(
           isCheck: false,
           isWarning: true,
           msg: 'You need to open the download tab!',
@@ -915,8 +915,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                   isBookmarked: isBookmarked,
                   controller: controller,
                 ),
-                child: ArticleInfoPage(
-                  key: const ObjectKey('asdfasdf'),
+                child: const ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
               return cache!;
@@ -1205,7 +1205,7 @@ class _RelatedArea extends StatelessWidget {
                       thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 ),
               ),
