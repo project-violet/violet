@@ -904,7 +904,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
+              SizedBox(
                 width: 100,
                 height: 100,
                 // alignment: Alignment.center,

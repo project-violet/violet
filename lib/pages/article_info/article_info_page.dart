@@ -109,7 +109,7 @@ class ArticleInfoPage extends StatelessWidget {
                       ),
                       onPressed: () async =>
                           await _downloadButtonEvent(context, data),
-                      child: Container(
+                      child: SizedBox(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
                           Translations.of(context).trans('download'),
@@ -125,7 +125,7 @@ class ArticleInfoPage extends StatelessWidget {
                       onPressed: data.lockRead
                           ? null
                           : () async => await _readButtonEvent(context, data),
-                      child: Container(
+                      child: SizedBox(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
                           Translations.of(context).trans('read'),
@@ -587,7 +587,7 @@ class PreviewAreaWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Container(
+        SizedBox(
           width: 100,
           height: 100,
           // alignment: Alignment.center,
@@ -710,7 +710,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Container(
+              SizedBox(
                 width: 100,
                 height: 100,
                 // alignment: Alignment.center,
@@ -991,7 +991,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Container(
+          SizedBox(
             width: 100,
             height: 100,
             // alignment: Alignment.center,

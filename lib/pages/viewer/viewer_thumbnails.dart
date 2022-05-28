@@ -193,7 +193,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        Container(
+        SizedBox(
           width: 100,
           height: 100,
           // alignment: Alignment.center,
@@ -210,13 +210,13 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
   }
 
   Widget _buildTappableItem(int index, Widget image) {
-    return Container(
+    return SizedBox(
       key: itemKeys[index],
       width: double.infinity,
       height: double.infinity,
       child: Stack(
         children: <Widget>[
-          Container(
+          SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: image,

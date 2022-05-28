@@ -166,7 +166,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       ),
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          return Container(
+          return SizedBox(
             key: itemKeys[index],
             width: double.infinity,
             height: double.infinity,
@@ -225,7 +225,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       ),
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          return Container(
+          return SizedBox(
             key: itemKeys[index],
             width: double.infinity,
             height: double.infinity,
@@ -293,7 +293,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
           ),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Container(
+              return SizedBox(
                 key: itemKeys[index],
                 width: double.infinity,
                 height: double.infinity,
