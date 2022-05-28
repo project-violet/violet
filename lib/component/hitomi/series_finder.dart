@@ -82,8 +82,8 @@ class SeriesFinder {
     qm.itemsPerPage = 999999;
     final qr = await qm.next();
 
-    final artists = Map<String, List<int>>();
-    final groups = Map<String, List<int>>();
+    final artists = <String, List<int>>{};
+    final groups = <String, List<int>>{};
 
     for (int i = 0; i < qr.length; i++) {
       final element = qr[i];

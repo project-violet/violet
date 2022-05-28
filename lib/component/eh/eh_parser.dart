@@ -168,7 +168,7 @@ class EHParser {
 
     var nodesData =
         doc.querySelectorAll("div[id='gmid'] div[id='taglist'] table tr");
-    var info = Map<String, List<String>>();
+    var info = <String, List<String>>{};
 
     nodesData.forEach((element) {
       try {
@@ -316,7 +316,7 @@ class EHParser {
         article.title = gref!.querySelector('div')!.text;
 
         try {
-          var dict = Map<String, List<String>>();
+          var dict = <String, List<String>>{};
 
           var tagarea = gref.querySelector('div > table');
 

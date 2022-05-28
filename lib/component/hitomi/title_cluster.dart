@@ -53,7 +53,7 @@ class HitomiTitleCluster {
     var ctitles = <Map<String, Idata>>[];
 
     for (int i = 0; i < titles.length; i++) {
-      var mm = Map<String, Idata>();
+      var mm = <String, Idata>{};
       mm['t'] = Idata(title: titles[i], index: i);
       ctitles.add(mm);
     }
@@ -88,7 +88,7 @@ class HitomiTitleCluster {
       });
     });
 
-    var join = Map<int, List<int>>();
+    var join = <int, List<int>>{};
     for (int i = 0; i < titles.length; i++) {
       var v = ds.find(i);
       if (!join.containsKey(v)) join[v] = <int>[];

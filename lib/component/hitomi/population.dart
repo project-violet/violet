@@ -21,7 +21,7 @@ class Population {
       data = await rootBundle.loadString('assets/rank/population.json');
 
     List<dynamic> dataPopulation = json.decode(data);
-    population = Map<int, int>();
+    population = <int, int>{};
 
     for (int i = 0; i < dataPopulation.length; i++) {
       population[dataPopulation[i] as int] = i;
