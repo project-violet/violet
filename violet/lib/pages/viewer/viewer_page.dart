@@ -708,22 +708,20 @@ class _ViewerPageState extends State<ViewerPage>
               maxChildSize: 0.9,
               expand: false,
               builder: (_, controller) {
-                if (cache == null) {
-                  cache = Provider<ArticleInfo>.value(
-                    value: ArticleInfo.fromArticleInfo(
-                      queryResult: qr,
-                      thumbnail: thumbnail,
-                      headers: headers,
-                      heroKey: 'zxcvzxcvzxcv',
-                      isBookmarked: isBookmarked,
-                      controller: controller,
-                      lockRead: true,
-                    ),
-                    child: ArticleInfoPage(
-                      key: ObjectKey('asdfasdf'),
-                    ),
-                  );
-                }
+                cache ??= Provider<ArticleInfo>.value(
+                  value: ArticleInfo.fromArticleInfo(
+                    queryResult: qr,
+                    thumbnail: thumbnail,
+                    headers: headers,
+                    heroKey: 'zxcvzxcvzxcv',
+                    isBookmarked: isBookmarked,
+                    controller: controller,
+                    lockRead: true,
+                  ),
+                  child: ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
+                  ),
+                );
                 return cache!;
               },
             );
@@ -749,12 +747,11 @@ class _ViewerPageState extends State<ViewerPage>
             context: context,
             isScrollControlled: false,
             builder: (context) {
-              if (cache == null)
-                cache = TabPanel(
-                  articleId: _pageInfo.id,
-                  usableTabList: _pageInfo.usableTabList,
-                  height: height,
-                );
+              cache ??= TabPanel(
+                articleId: _pageInfo.id,
+                usableTabList: _pageInfo.usableTabList,
+                height: height,
+              );
               return cache!;
             }).then((value) async {
           if (value == null) return;
@@ -835,10 +832,9 @@ class _ViewerPageState extends State<ViewerPage>
             context: context,
             isScrollControlled: false,
             builder: (context) {
-              if (cache == null)
-                cache = ViewRecordPanel(
-                  articleId: _pageInfo.id,
-                );
+              cache ??= ViewRecordPanel(
+                articleId: _pageInfo.id,
+              );
               return cache!;
             }).then((value) {
           if (value != null) {
@@ -887,16 +883,15 @@ class _ViewerPageState extends State<ViewerPage>
             context: context,
             isScrollControlled: true,
             builder: (context) {
-              if (cache == null)
-                cache = FractionallySizedBox(
-                  heightFactor: 0.8,
-                  child: Provider<ViewerPageProvider>.value(
-                    value: _pageInfo,
-                    child: ViewerThumbnail(
-                      viewedPage: _currentPage - 1,
-                    ),
+              cache ??= FractionallySizedBox(
+                heightFactor: 0.8,
+                child: Provider<ViewerPageProvider>.value(
+                  value: _pageInfo,
+                  child: ViewerThumbnail(
+                    viewedPage: _currentPage - 1,
                   ),
-                );
+                ),
+              );
               return cache!;
             }).then((value) async {
           if (value != null) {
@@ -934,33 +929,32 @@ class _ViewerPageState extends State<ViewerPage>
             context: context,
             isScrollControlled: false,
             builder: (context) {
-              if (cache == null)
-                cache = ViewerSettingPanel(
-                  viewerStyleChangeEvent: () {
-                    if (Settings.isHorizontal) {
-                      _pageController =
-                          PreloadPageController(initialPage: _prevPage - 1);
-                    } else {
-                      var npage = _prevPage;
-                      _sliderOnChange = true;
-                      Future.delayed(Duration(milliseconds: 180)).then((value) {
-                        _itemScrollController.scrollTo(
-                          index: npage - 1,
-                          duration: Duration(microseconds: 1),
-                          alignment: 0.12,
-                        );
-                        _sliderOnChange = false;
-                      });
-                    }
-                    setState(() {});
-                  },
-                  thumbSizeChangeEvent: () {
-                    _preprocessImageInfoForFileImage();
-                  },
-                  setStateCallback: () {
-                    setState(() {});
-                  },
-                );
+              cache ??= ViewerSettingPanel(
+                viewerStyleChangeEvent: () {
+                  if (Settings.isHorizontal) {
+                    _pageController =
+                        PreloadPageController(initialPage: _prevPage - 1);
+                  } else {
+                    var npage = _prevPage;
+                    _sliderOnChange = true;
+                    Future.delayed(Duration(milliseconds: 180)).then((value) {
+                      _itemScrollController.scrollTo(
+                        index: npage - 1,
+                        duration: Duration(microseconds: 1),
+                        alignment: 0.12,
+                      );
+                      _sliderOnChange = false;
+                    });
+                  }
+                  setState(() {});
+                },
+                thumbSizeChangeEvent: () {
+                  _preprocessImageInfoForFileImage();
+                },
+                setStateCallback: () {
+                  setState(() {});
+                },
+              );
               return cache!;
             });
         startTimer();
@@ -1597,9 +1591,7 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   _storageImageItem(index) {
-    if (_height == null) {
-      _height = List<double>.filled(_pageInfo.uris.length, 0);
-    }
+    _height ??= List<double>.filled(_pageInfo.uris.length, 0);
 
     Future<dynamic> future;
 

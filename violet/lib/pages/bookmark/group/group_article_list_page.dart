@@ -188,9 +188,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             var result = <QueryResult>[];
             cc.forEach((element) async {
               var article = qr[element.article()];
-              if (article == null) {
-                article = await _tryGetArticleFromHitomi(element.article());
-              }
+              article ??= await _tryGetArticleFromHitomi(element.article());
               result.add(article);
             });
 

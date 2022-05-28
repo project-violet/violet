@@ -743,9 +743,7 @@ class ResultPanelWidget extends StatelessWidget {
     var mm = Settings.searchResultType == 0 ? 3 : 2;
     var windowWidth = MediaQuery.of(context).size.width;
 
-    if (_cachedItems == null) {
-      _cachedItems = List<Widget?>.generate(resultList.length, (x) => null);
-    }
+    _cachedItems ??= List<Widget?>.generate(resultList.length, (x) => null);
 
     switch (Settings.searchResultType) {
       case 0:
