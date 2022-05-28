@@ -84,7 +84,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
 
       if (query.results!.isEmpty) return;
 
-      var qr = Map<String, QueryResult>();
+      var qr = <String, QueryResult>{};
       query.results!.forEach((element) {
         qr[element.id().toString()] = element;
       });

@@ -43,7 +43,7 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
         var groups = widget.source['group'] as List<dynamic>;
 
         // 북마크 그룹 생성
-        var groupInv = Map<int, int>();
+        var groupInv = <int, int>{};
 
         total += articles.length + artists.length + groups.length;
 

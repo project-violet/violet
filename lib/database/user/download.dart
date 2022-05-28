@@ -123,7 +123,7 @@ class Download {
   }
 
   HashSet<int> _downloadedChecker = HashSet<int>();
-  Map<int, DownloadItemModel> _downloadedItems = Map<int, DownloadItemModel>();
+  Map<int, DownloadItemModel> _downloadedItems = <int, DownloadItemModel>{};
   Future<void> init() async {
     var items = await getDownloadItems();
     for (var item in items) {
@@ -137,13 +137,13 @@ class Download {
 
   Future<void> refresh() async {
     _downloadedChecker = HashSet<int>();
-    _downloadedItems = Map<int, DownloadItemModel>();
+    _downloadedItems = <int, DownloadItemModel>{};
     await init();
   }
 
   bool isDownloadedArticle(int id) => _downloadedChecker.contains(id);
 
-  final Map<int, bool> _validDownloadedArticleCache = Map<int, bool>();
+  final Map<int, bool> _validDownloadedArticleCache = <int, bool>{};
   bool _isValidDownloadedArticle(int id) {
     if (!isDownloadedArticle(id)) return false;
 

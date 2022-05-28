@@ -145,7 +145,7 @@ class __UsableTabListState extends State<_UsableTabList>
   bool get wantKeepAlive => true;
 
   final ScrollController _scrollController = ScrollController();
-  Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
+  Map<int, GlobalKey> itemKeys = <int, GlobalKey>{};
 
   @override
   void initState() {
@@ -240,7 +240,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
   bool get wantKeepAlive => true;
 
   final ScrollController _scrollController = ScrollController();
-  Map<int, GlobalKey> itemKeys = Map<int, GlobalKey>();
+  Map<int, GlobalKey> itemKeys = <int, GlobalKey>{};
   bool isLoaded = false;
   bool isJumped = false;
   List<QueryResult> articleList = [];

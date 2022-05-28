@@ -274,28 +274,28 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     qm = QueryManager.queryPagination('SELECT * FROM HitomiColumnModel');
     qm.itemsPerPage = 50000;
 
-    var tags = Map<String, int>();
-    var languages = Map<String, int>();
-    var artists = Map<String, int>();
-    var groups = Map<String, int>();
-    var types = Map<String, int>();
-    var uploaders = Map<String, int>();
-    var series = Map<String, int>();
-    var characters = Map<String, int>();
-    var classes = Map<String, int>();
+    var tags = <String, int>{};
+    var languages = <String, int>{};
+    var artists = <String, int>{};
+    var groups = <String, int>{};
+    var types = <String, int>{};
+    var uploaders = <String, int>{};
+    var series = <String, int>{};
+    var characters = <String, int>{};
+    var classes = <String, int>{};
 
-    var tagIndex = Map<String, int>();
-    var tagArtist = Map<String, Map<String, int>>();
-    var tagGroup = Map<String, Map<String, int>>();
-    var tagUploader = Map<String, Map<String, int>>();
-    var tagSeries = Map<String, Map<String, int>>();
-    var tagCharacter = Map<String, Map<String, int>>();
+    var tagIndex = <String, int>{};
+    var tagArtist = <String, Map<String, int>>{};
+    var tagGroup = <String, Map<String, int>>{};
+    var tagUploader = <String, Map<String, int>>{};
+    var tagSeries = <String, Map<String, int>>{};
+    var tagCharacter = <String, Map<String, int>>{};
 
-    var seriesSeries = Map<String, Map<String, int>>();
-    var seriesCharacter = Map<String, Map<String, int>>();
+    var seriesSeries = <String, Map<String, int>>{};
+    var seriesCharacter = <String, Map<String, int>>{};
 
-    var characterCharacter = Map<String, Map<String, int>>();
-    var characterSeries = Map<String, Map<String, int>>();
+    var characterCharacter = <String, Map<String, int>>{};
+    var characterSeries = <String, Map<String, int>>{};
 
     int i = 0;
     while (true) {
@@ -320,7 +320,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.artists() != null) {
           for (var artist in item.artists().split('|'))
             if (artist != '') if (!tagArtist.containsKey(artist))
-              tagArtist[artist] = Map<String, int>();
+              tagArtist[artist] = <String, int>{};
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
@@ -337,7 +337,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.groups() != null) {
           for (var artist in item.groups().split('|'))
             if (artist != '') if (!tagGroup.containsKey(artist))
-              tagGroup[artist] = Map<String, int>();
+              tagGroup[artist] = <String, int>{};
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
@@ -353,7 +353,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
         if (item.uploader() != null) {
           if (!tagUploader.containsKey(item.uploader()))
-            tagUploader[item.uploader()] = Map<String, int>();
+            tagUploader[item.uploader()] = <String, int>{};
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
@@ -368,7 +368,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.series() != null) {
           for (var artist in item.series().split('|'))
             if (artist != '') if (!tagSeries.containsKey(artist))
-              tagSeries[artist] = Map<String, int>();
+              tagSeries[artist] = <String, int>{};
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
@@ -385,7 +385,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         if (item.characters() != null) {
           for (var artist in item.characters().split('|'))
             if (artist != '') if (!tagCharacter.containsKey(artist))
-              tagCharacter[artist] = Map<String, int>();
+              tagCharacter[artist] = <String, int>{};
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
@@ -403,7 +403,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
             if (!characterSeries.containsKey(series))
-              characterSeries[series] = Map<String, int>();
+              characterSeries[series] = <String, int>{};
             for (var character in item.characters().split('|')) {
               if (character == '') continue;
               if (!characterSeries[series]!.containsKey(character))
@@ -416,7 +416,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           for (var character in item.series().split('|')) {
             if (character == '') continue;
             if (!seriesCharacter.containsKey(character))
-              seriesCharacter[character] = Map<String, int>();
+              seriesCharacter[character] = <String, int>{};
             for (var series in item.characters().split('|')) {
               if (series == '') continue;
               if (!seriesCharacter[character]!.containsKey(series))
@@ -431,7 +431,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
             if (!seriesSeries.containsKey(series))
-              seriesSeries[series] = Map<String, int>();
+              seriesSeries[series] = <String, int>{};
             for (var series2 in item.series().split('|')) {
               if (series2 == '' || series == series2) continue;
               if (!seriesSeries[series]!.containsKey(series2))
@@ -446,7 +446,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
           for (var character in item.characters().split('|')) {
             if (character == '') continue;
             if (!characterCharacter.containsKey(character))
-              characterCharacter[character] = Map<String, int>();
+              characterCharacter[character] = <String, int>{};
             for (var character2 in item.characters().split('|')) {
               if (character2 == '' || series == character2) continue;
               if (!characterCharacter[character]!.containsKey(character2))

@@ -72,7 +72,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       maleTags = 0;
       tags = 0;
 
-      var ffstat = Map<String, int>();
+      var ffstat = <String, int>{};
 
       query.results!.forEach((element) {
         if (element.tags() == null) return;
@@ -104,7 +104,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       /* -- Statistics */
 
-      var qr = Map<String, QueryResult>();
+      var qr = <String, QueryResult>{};
       query.results!.forEach((element) {
         qr[element.id().toString()] = element;
       });
