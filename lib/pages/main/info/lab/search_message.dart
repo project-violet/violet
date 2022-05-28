@@ -87,11 +87,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   }
 
   @override
-  void dispose() async {
+  void dispose() {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();
     imageCache.clear();
-    await Future.forEach<String>(
+    Future.forEach<String>(
         _urls!,
         (element) => (element) async {
               return CachedNetworkImageProvider(element).evict();

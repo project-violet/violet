@@ -297,12 +297,12 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   @override
-  void dispose() async {
+  void dispose() {
     if (_nextPageTimer != null) _nextPageTimer!.cancel();
     PaintingBinding.instance.imageCache.clear();
     if (_pageInfo.useWeb) {
-      await Future.forEach<String>(_pageInfo.uris, (element) async {
-        await CachedNetworkImageProvider(element).evict();
+      Future.forEach<String>(_pageInfo.uris, (element) async {
+        return CachedNetworkImageProvider(element).evict();
       });
     }
 
