@@ -23,18 +23,18 @@ class _LockSettingPageState extends State<LockSettingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red,
-        title: Text('LOCK SETTING'),
+        title: const Text('LOCK SETTING'),
       ),
       body: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.numbers),
+            leading: const Icon(Icons.numbers),
             title: Text(Translations.of(context).trans('pinsetting')),
             onTap: () {
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                  builder: (context) => LockScreen(
+                  builder: (context) => const LockScreen(
                     isRegisterMode: true,
                   ),
                 ),
@@ -43,7 +43,7 @@ class _LockSettingPageState extends State<LockSettingPage> {
             trailing: FutureBuilder(
                 future: SharedPreferences.getInstance(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) return Text('');
+                  if (!snapshot.hasData) return const Text('');
 
                   if ((snapshot.data as SharedPreferences)
                           .getString('pinPass') !=
@@ -61,7 +61,7 @@ class _LockSettingPageState extends State<LockSettingPage> {
           ),
           ListTile(
             enabled: false,
-            leading: Icon(Icons.fingerprint),
+            leading: const Icon(Icons.fingerprint),
             title: Text(Translations.of(context).trans('fingersetting')),
             onTap: () {},
             trailing: Text(Translations.of(context).trans('notsetted')),
@@ -75,7 +75,7 @@ class _LockSettingPageState extends State<LockSettingPage> {
           ),
           ListTile(
             enabled: false,
-            leading: Icon(MdiIcons.humanMaleBoard),
+            leading: const Icon(MdiIcons.humanMaleBoard),
             title: Text(Translations.of(context).trans('etchumansetting')),
             onTap: () {},
             trailing: Text(Translations.of(context).trans('notsetted')),
@@ -88,7 +88,7 @@ class _LockSettingPageState extends State<LockSettingPage> {
                 : Colors.grey.shade400,
           ),
           ListTile(
-            leading: Icon(Icons.lock),
+            leading: const Icon(Icons.lock),
             title: Text(Translations.of(context).trans('useapplocksetting')),
             onTap: () async {
               _toggleAppLock();

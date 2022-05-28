@@ -66,8 +66,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     }
 
     return AlertDialog(
-      insetPadding: EdgeInsets.all(16),
-      contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+      insetPadding: const EdgeInsets.all(16),
+      contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       content: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
@@ -80,7 +80,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
               // mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 ListTile(
-                  contentPadding: EdgeInsets.all(0),
+                  contentPadding: const EdgeInsets.all(0),
                   leading: Text('${Translations.of(context).trans('tag')}:'),
                   title: TextField(
                     controller: _searchController,
@@ -99,7 +99,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                               : Translations.of(context)
                                   .trans('inputsearchtoken')))
                       : Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 0),
+                          padding: const EdgeInsets.symmetric(horizontal: 0),
                           child: SingleChildScrollView(
                             controller: ScrollController(),
                             child: Wrap(
@@ -114,7 +114,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                 ),
                 widget.what == 'include'
                     ? Text(Translations.of(context).trans('tagmsgdefault'),
-                        style: TextStyle(fontSize: 14.0))
+                        style: const TextStyle(fontSize: 14.0))
                     : Container()
               ],
             ),
@@ -226,7 +226,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     else if (info.item1.group == 'type') color = Colors.orange;
 
     var fc = RawChip(
-      labelPadding: EdgeInsets.all(0.0),
+      labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
         child: Text(info.item1.group == 'tag' &&
@@ -237,14 +237,14 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       ),
       label: Text(
         ' $tagDisplayed$count',
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.white,
         ),
       ),
       backgroundColor: color,
       elevation: 6.0,
       shadowColor: Colors.grey[60],
-      padding: EdgeInsets.all(6.0),
+      padding: const EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {

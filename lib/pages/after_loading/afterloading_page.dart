@@ -52,7 +52,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           _alreadyLocked = true;
           Navigator.of(context)
               .push(MaterialPageRoute(
-                builder: (context) => LockScreen(
+                builder: (context) => const LockScreen(
                   isSecureMode: true,
                 ),
               ))
@@ -273,7 +273,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             msg: Translations.of(context).trans('closedoubletap'),
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
 
         return false;
@@ -285,11 +285,11 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         drawer: _usesDrawer ? _buildDrawer(context) : null,
         body: PageView(
           controller: _pageController,
-          physics: _usesDrawer ? NeverScrollableScrollPhysics() : null,
+          physics: _usesDrawer ? const NeverScrollableScrollPhysics() : null,
           onPageChanged: (newPage) {
             setState(() {});
           },
-          children: <Widget>[
+          children: const <Widget>[
             MainPage2(),
             SearchPage(),
             BookmarkPage(),

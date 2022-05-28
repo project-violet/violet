@@ -24,7 +24,7 @@ class DownloadFeaturesMenu extends StatelessWidget {
             width: 280,
             child: IntrinsicHeight(
               child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
                     _typeItem(context, MdiIcons.contentCopy,

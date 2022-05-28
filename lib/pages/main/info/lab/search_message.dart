@@ -43,7 +43,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var tmessages = (await VioletServer.searchMessage('contains', text.text))
           as List<dynamic>;
       messages = tmessages
@@ -69,7 +69,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
       setState(() {});
     });
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       const url =
           'https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json';
 
@@ -119,8 +119,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
         children: [
           Expanded(
             child: ListView.builder(
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.all(0),
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.all(0),
               cacheExtent: height * 3.0,
               itemCount: messages.length,
               itemBuilder: (BuildContext ctxt, int index) {
@@ -128,7 +128,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 var e = messages[index];
 
                 return FutureBuilder(
-                  future: Future.delayed(Duration(milliseconds: 100))
+                  future: Future.delayed(const Duration(milliseconds: 100))
                       .then((value) async {
                     VioletImageProvider provider;
                     if (ProviderManager.isExists(e.item2)) {
@@ -155,7 +155,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                           SizedBox(
                             height:
                                 _height![index] != 0 ? _height![index] : 300,
-                            child: Align(
+                            child: const Align(
                               alignment: Alignment.center,
                               child: SizedBox(
                                 width: 50,
@@ -189,7 +189,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                 child: VCachedNetworkImage(
                                   key: _keys![index],
                                   fit: BoxFit.cover,
-                                  fadeInDuration: Duration(microseconds: 500),
+                                  fadeInDuration:
+                                      const Duration(microseconds: 500),
                                   fadeInCurve: Curves.easeIn,
                                   imageUrl: snapshot.data!.item1,
                                   httpHeaders: snapshot.data!.item2,
@@ -211,7 +212,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                       (context, imageProvider, child) {
                                     if (_height![index] == 0 ||
                                         _height![index] == 300) {
-                                      Future.delayed(Duration(milliseconds: 50))
+                                      Future.delayed(
+                                              const Duration(milliseconds: 50))
                                           .then((value) {
                                         try {
                                           final RenderBox renderBoxRed =
@@ -344,12 +346,13 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   itemBuilder:
                       (context, Tuple3<String, String, int> suggestion) {
                     return ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 0.0, horizontal: 16.0),
                       title: Text(suggestion.item1),
                       trailing: Text(
                         '${suggestion.item3}회',
-                        style: TextStyle(color: Colors.grey, fontSize: 10.0),
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 10.0),
                       ),
                       dense: true,
                     );
@@ -359,7 +362,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                       (Tuple3<String, String, int> suggestion) {
                     text.text = suggestion.item1;
                     setState(() {});
-                    Future.delayed(Duration(milliseconds: 100))
+                    Future.delayed(const Duration(milliseconds: 100))
                         .then((value) async {
                       _onModifiedText();
                     });
@@ -367,7 +370,8 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   hideOnEmpty: true,
                   hideOnLoading: true,
                   textFieldConfiguration: TextFieldConfiguration(
-                    decoration: InputDecoration.collapsed(hintText: '대사 입력'),
+                    decoration:
+                        const InputDecoration.collapsed(hintText: '대사 입력'),
                     controller: text,
                     // autofocus: true,
                     onEditingComplete: _onModifiedText,
@@ -375,24 +379,24 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.segment),
+                icon: const Icon(Icons.segment),
                 color: Colors.grey,
                 onPressed: () async {
                   var search = await PlatformNavigator.navigateSlide<String>(
-                      context, SearchMessageRankPage());
+                      context, const SearchMessageRankPage());
 
                   if (search == null || search == '') return;
 
                   text.text = search;
                   setState(() {});
-                  Future.delayed(Duration(milliseconds: 100))
+                  Future.delayed(const Duration(milliseconds: 100))
                       .then((value) async {
                     _onModifiedText();
                   });
                 },
               ),
               IconButton(
-                icon: Icon(Icons.info_outline),
+                icon: const Icon(Icons.info_outline),
                 color: Colors.grey,
                 onPressed: () async {
                   await showOkDialog(
@@ -446,7 +450,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     Completer<Size> completer = Completer();
     Image image =
         Image(image: CachedNetworkImageProvider(url, headers: header));
-    image.image.resolve(ImageConfiguration()).addListener(
+    image.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
           var myImage = image.image;
@@ -494,7 +498,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                   isBookmarked: isBookmarked,
                   controller: controller,
                 ),
-                child: ArticleInfoPage(
+                child: const ArticleInfoPage(
                   key: ObjectKey('asdfasdf'),
                 ),
               );

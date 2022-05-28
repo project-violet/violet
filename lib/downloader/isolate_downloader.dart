@@ -147,7 +147,7 @@ class IsolateDownloader {
   }
 
   void close() {
-    _sendPort!.send(SendPortData(type: SendPortType.terminate));
+    _sendPort!.send(const SendPortData(type: SendPortType.terminate));
     _isolate.kill(priority: Isolate.immediate);
   }
 

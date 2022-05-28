@@ -40,7 +40,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
     final color = Settings.themeWhat
         ? Settings.themeBlack
             ? Colors.black
-            : Color(0xFF353535)
+            : const Color(0xFF353535)
         : Colors.grey.shade100;
 
     if (_cachedList == null || _shouldReload) {
@@ -66,7 +66,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
               color: Settings.themeWhat
                   ? Settings.themeBlack
                       ? const Color(0xFF141414)
-                      : Color(0xFF353535)
+                      : const Color(0xFF353535)
                   : Colors.grey.shade100,
               child: SizedBox(
                 width: width - 16,
@@ -75,7 +75,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                     (mediaQuery.padding + mediaQuery.viewInsets).bottom,
                 child: Container(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                     child: CustomScrollView(
                       physics: const BouncingScrollPhysics(),
                       slivers: <Widget>[
@@ -83,7 +83,8 @@ class _ArticleListPageState extends State<ArticleListPage> {
                           floating: true,
                           delegate: AnimatedOpacitySliver(
                             searchBar: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(
                                 children: <Widget>[
                                   _align(),
@@ -115,9 +116,9 @@ class _ArticleListPageState extends State<ArticleListPage> {
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -130,7 +131,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
               width: 48,
               child: Stack(
                 alignment: Alignment.center,
-                children: <Widget>[
+                children: const <Widget>[
                   Icon(
                     MdiIcons.formatListText,
                     color: Colors.grey,
@@ -147,7 +148,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
               ).then((value) async {
                 if (value == null) return;
                 nowType = value;
-                await Future.delayed(Duration(milliseconds: 50), () {
+                await Future.delayed(const Duration(milliseconds: 50), () {
                   _shouldReload = true;
                   setState(() {
                     _shouldReload = true;
@@ -170,7 +171,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 _shouldReload = true;
                 setState(() {
                   _shouldReload = true;
-                  key = ObjectKey(Uuid().v4());
+                  key = ObjectKey(const Uuid().v4());
                 });
               });
             },
@@ -182,13 +183,13 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.only(top: 24, left: 12),
+      padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(widget.name,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
   }
 
-  ObjectKey key = ObjectKey(Uuid().v4());
+  ObjectKey key = ObjectKey(const Uuid().v4());
 
   final FilterController _filterController =
       FilterController(heroKey: 'searchtype2');
@@ -303,12 +304,12 @@ class _ArticleListPageState extends State<ArticleListPage> {
       case 0:
       case 1:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverGrid(
             key: key,
             controller: _scrollControllers[nowType],
-            showItemInterval: Duration(milliseconds: 50),
-            showItemDuration: Duration(milliseconds: 150),
+            showItemInterval: const Duration(milliseconds: 50),
+            showItemDuration: const Duration(milliseconds: 150),
             visibleFraction: 0.001,
             itemCount: filter().length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -325,7 +326,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 ).animate(animation),
                 child: SlideTransition(
                   position: Tween<Offset>(
-                    begin: Offset(0, -0.1),
+                    begin: const Offset(0, -0.1),
                     end: Offset.zero,
                   ).animate(animation),
                   child: Padding(
@@ -339,10 +340,10 @@ class _ArticleListPageState extends State<ArticleListPage> {
                             showDetail: false,
                             addBottomPadding: false,
                             width: (windowWidth - 4.0) / mm,
-                            thumbnailTag: Uuid().v4(),
+                            thumbnailTag: const Uuid().v4(),
                             usableTabList: filter(),
                           ),
-                          child: ArticleListItemVerySimpleWidget(),
+                          child: const ArticleListItemVerySimpleWidget(),
                         ),
                       ),
                     ),
@@ -356,7 +357,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
       case 2:
       case 3:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverList(
             key: key,
             controller: _scrollControllers[nowType],
@@ -370,10 +371,10 @@ class _ArticleListPageState extends State<ArticleListPage> {
                     showDetail: nowType == 3,
                     queryResult: filter()[index],
                     width: windowWidth - 4.0,
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     usableTabList: filter(),
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemVerySimpleWidget(),
                 ),
               );
             },
@@ -382,7 +383,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
       default:
         return Container(
-          child: Center(
+          child: const Center(
             child: Text('Error :('),
           ),
         );

@@ -34,8 +34,8 @@ class _SearchPageModifyPageState extends State<SearchPageModifyPage> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Item Jump'),
-      contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+      title: const Text('Item Jump'),
+      contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

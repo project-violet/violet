@@ -24,7 +24,7 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
       enableBackgroundColor: true,
       child: Container(
         child: ListView.builder(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.zero,
           itemCount: Artists.collection.entries
               .where((element) => element.value.length > 0)
@@ -73,13 +73,13 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                   borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: ListTile(
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 0.0, horizontal: 16.0),
                   leading: CircleAvatar(
                     radius: 28,
                     backgroundImage: CachedNetworkImageProvider(images[index]),
                   ),
-                  title: Text(name, style: TextStyle(fontSize: 16.0)),
+                  title: Text(name, style: const TextStyle(fontSize: 16.0)),
                   subtitle: Text(
                     artists,
                     overflow: TextOverflow.ellipsis,

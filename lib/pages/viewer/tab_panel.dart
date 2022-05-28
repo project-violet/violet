@@ -179,9 +179,9 @@ class __UsableTabListState extends State<_UsableTabList>
       controller: _scrollController,
       slivers: <Widget>[
         SliverPadding(
-          padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
           sliver: SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
@@ -201,13 +201,13 @@ class __UsableTabListState extends State<_UsableTabList>
                           addBottomPadding: false,
                           showDetail: false,
                           width: (windowWidth - 4.0) / 3.0,
-                          thumbnailTag: Uuid().v4(),
+                          thumbnailTag: const Uuid().v4(),
                           selectMode: true,
                           selectCallback: () {
                             Navigator.pop(context, e);
                           },
                         ),
-                        child: ArticleListItemVerySimpleWidget(),
+                        child: const ArticleListItemVerySimpleWidget(),
                       ),
                     ),
                   );
@@ -297,7 +297,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
       if (!articleList.any((element) => element.id() == widget.articleId))
         return;
 
-      Future.delayed(Duration(milliseconds: 50)).then((value) {
+      Future.delayed(const Duration(milliseconds: 50)).then((value) {
         var row = articleList
                 .indexWhere((element) => element.id() == widget.articleId) ~/
             3;
@@ -335,9 +335,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
             controller: _scrollController,
             slivers: <Widget>[
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
                 sliver: SliverGrid(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 8,
@@ -357,7 +357,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                 addBottomPadding: false,
                                 showDetail: false,
                                 width: (windowWidth - 4.0) / 3.0,
-                                thumbnailTag: Uuid().v4(),
+                                thumbnailTag: const Uuid().v4(),
                                 selectMode: true,
                                 selectCallback: () async {
                                   if (!Settings
@@ -368,7 +368,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                   }
                                 },
                               ),
-                              child: ArticleListItemVerySimpleWidget(),
+                              child: const ArticleListItemVerySimpleWidget(),
                             ),
                           ),
                         );
@@ -410,7 +410,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                 controller: controller,
                 usableTabList: articleList,
               ),
-              child: ArticleInfoPage(
+              child: const ArticleInfoPage(
                 key: ObjectKey('asdfasdf'),
               ),
             );
@@ -423,7 +423,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
   Future<void> _showViewer(QueryResult e) async {
     if (Settings.useVioletServer) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         await VioletServer.view(e.id());
       });
     }
@@ -451,7 +451,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                 title: e.title(),
                 usableTabList: articleList,
               ),
-              child: ViewerPage());
+              child: const ViewerPage());
         },
       ),
     ).then((value) async {

@@ -40,7 +40,7 @@ class _UserStatusCardState extends State<UserStatusCard>
     fToast.init(context);
 
     // load boards
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       _userAppId =
           (await SharedPreferences.getInstance()).getString('fa_userid')!;
       setState(() {});
@@ -87,14 +87,14 @@ class _UserStatusCardState extends State<UserStatusCard>
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           alignment: Alignment.centerLeft,
           height: 80,
           decoration: !Settings.themeFlat
               ? BoxDecoration(
                   // color: Colors.white,
                   color: Settings.themeWhat ? Colors.black26 : Colors.white,
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8),
                       topRight: Radius.circular(8),
                       bottomLeft: Radius.circular(8),
@@ -106,7 +106,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                           : Colors.grey.withOpacity(0.1),
                       spreadRadius: Settings.themeWhat ? 0 : 5,
                       blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+                      offset: const Offset(0, 3), // changes position of shadow
                     ),
                   ],
                 )
@@ -197,17 +197,19 @@ class _UserStatusCardState extends State<UserStatusCard>
               ? SizedBox(
                   height: 48,
                   width: 48,
-                  child: Stack(alignment: Alignment.center, children: <Widget>[
-                    SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.grey),
-                        ))
-                  ]))
+                  child: Stack(
+                      alignment: Alignment.center,
+                      children: const <Widget>[
+                        SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                            ))
+                      ]))
               : InkWell(
-                  customBorder: RoundedRectangleBorder(
+                  customBorder: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(10.0),
                         bottomRight: Radius.circular(10.0)),
@@ -216,11 +218,11 @@ class _UserStatusCardState extends State<UserStatusCard>
                     alignment: Alignment.center,
                     child: Badge(
                       showBadge: false,
-                      badgeContent: Text('N',
+                      badgeContent: const Text('N',
                           style:
                               TextStyle(color: Colors.white, fontSize: 12.0)),
                       // badgeColor: Settings.majorAccentColor,
-                      child: Icon(MdiIcons.cloudUpload, size: 30),
+                      child: const Icon(MdiIcons.cloudUpload, size: 30),
                     ),
                   ),
                   onTap: () async {
@@ -259,22 +261,22 @@ class _UserStatusCardState extends State<UserStatusCard>
 
                     if (resc) {
                       fToast.showToast(
-                        child: ToastWrapper(
+                        child: const ToastWrapper(
                           isCheck: true,
                           msg: 'Bookmark Backup Success!',
                         ),
                         gravity: ToastGravity.BOTTOM,
-                        toastDuration: Duration(seconds: 4),
+                        toastDuration: const Duration(seconds: 4),
                       );
                     } else {
                       fToast.showToast(
-                        child: ToastWrapper(
+                        child: const ToastWrapper(
                           isCheck: false,
                           isWarning: false,
                           msg: 'Bookmark Backup Fail!',
                         ),
                         gravity: ToastGravity.BOTTOM,
-                        toastDuration: Duration(seconds: 4),
+                        toastDuration: const Duration(seconds: 4),
                       );
                     }
                   },

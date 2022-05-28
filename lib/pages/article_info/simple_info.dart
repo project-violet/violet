@@ -34,7 +34,7 @@ class SimpleInfoWidget extends StatelessWidget {
             height: 4 * 50.0,
             width: 3 * 50.0,
             child: Padding(
-              padding: EdgeInsets.all(4),
+              padding: const EdgeInsets.all(4),
               child: _simpleInfo(data),
             ),
           ),
@@ -47,7 +47,7 @@ class SimpleInfoWidget extends StatelessWidget {
     return Hero(
       tag: data.heroKey,
       child: Padding(
-        padding: EdgeInsets.all(8),
+        padding: const EdgeInsets.all(8),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(3.0),
           child: GestureDetector(
@@ -62,7 +62,7 @@ class SimpleInfoWidget extends StatelessWidget {
   void _thumbnailTapped(BuildContext context, ArticleInfo data) {
     Navigator.of(context).push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
@@ -109,7 +109,7 @@ class SimpleInfoWidget extends StatelessWidget {
 
   Widget _bookmark(ArticleInfo data) {
     return Padding(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: GestureDetector(
         child: Transform(
           transform: Matrix4.identity()..scale(1.0),
@@ -139,7 +139,7 @@ class SimpleInfoWidget extends StatelessWidget {
     return Stack(children: <Widget>[
       _simpleInfoTextArtist(data),
       Padding(
-        padding: EdgeInsets.fromLTRB(0, 4 * 50.0 - 50, 0, 0),
+        padding: const EdgeInsets.fromLTRB(0, 4 * 50.0 - 50, 0, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -160,7 +160,7 @@ class SimpleInfoWidget extends StatelessWidget {
         Text(data.title,
             maxLines: 5,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         Text(data.artist),
       ],
     );
@@ -169,7 +169,7 @@ class SimpleInfoWidget extends StatelessWidget {
   Widget _simpleInfoDateTime(ArticleInfo data) {
     return Row(
       children: <Widget>[
-        Icon(
+        const Icon(
           Icons.date_range,
           size: 20,
         ),
@@ -177,7 +177,7 @@ class SimpleInfoWidget extends StatelessWidget {
             data.queryResult.getDateTime() != null
                 ? _dateFormat.format(data.queryResult.getDateTime()!)
                 : '',
-            style: TextStyle(fontSize: 15)),
+            style: const TextStyle(fontSize: 15)),
       ],
     );
   }
@@ -185,13 +185,13 @@ class SimpleInfoWidget extends StatelessWidget {
   Widget _simpleInfoPages(ArticleInfo data) {
     return Row(
       children: <Widget>[
-        Icon(
+        const Icon(
           Icons.photo,
           size: 20,
         ),
         Text(
             ' ${data.thumbnail != null ? '${ProviderManager.getIgnoreDirty(data.queryResult.id()).length()} Page' : ''}',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
       ],
     );
   }

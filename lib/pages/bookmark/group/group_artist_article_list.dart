@@ -37,7 +37,8 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
     super.build(context);
     var windowWidth = MediaQuery.of(context).size.width;
     return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: 1)).then((value) async {
+      future:
+          Future.delayed(const Duration(milliseconds: 1)).then((value) async {
         var artists = (await (await Bookmark.getInstance()).getArtist())
             .where((element) => element.group() == widget.groupId)
             .toList()
@@ -62,7 +63,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData)
-          return Align(
+          return const Align(
               alignment: Alignment.center,
               child: SizedBox(
                   width: 64, height: 64, child: CircularProgressIndicator()));
@@ -79,7 +80,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                   floating: true,
                   delegate: AnimatedOpacitySliver(
                     searchBar: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Stack(children: <Widget>[
                           // _filter(),
                           _title(),
@@ -88,9 +89,10 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                 ),
                 SliverPadding(
                   // padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                  padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
                   sliver: SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
@@ -115,11 +117,11 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                                             addBottomPadding: false,
                                             showDetail: false,
                                             width: (windowWidth - 4.0 - 52) / 3,
-                                            thumbnailTag: Uuid().v4(),
+                                            thumbnailTag: const Uuid().v4(),
                                             usableTabList: snapshot.data,
                                           ),
                                           child:
-                                              ArticleListItemVerySimpleWidget(),
+                                              const ArticleListItemVerySimpleWidget(),
                                         )
                                       : Container()
                                 ],
@@ -219,7 +221,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
   }
 
   Widget _title() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.only(top: 24, left: 12),
       child: Text('Artists Article Collection',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),

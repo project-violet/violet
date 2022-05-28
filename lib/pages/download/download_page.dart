@@ -61,7 +61,7 @@ class _DownloadPageState extends State<DownloadPage>
   Map<int, QueryResult> queryResults = <int, QueryResult>{};
   final FilterController _filterController =
       FilterController(heroKey: 'downloadtype');
-  ObjectKey _listKey = ObjectKey(Uuid().v4());
+  ObjectKey _listKey = ObjectKey(const Uuid().v4());
   late final FToast fToast;
 
   @override
@@ -84,14 +84,14 @@ class _DownloadPageState extends State<DownloadPage>
   }
 
   void refresh() {
-    Future.delayed(Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       _getDownloadWidgetKey().forEach((key, value) {
         if (value.currentState != null) value.currentState.thubmanilReload();
       });
       items = await (await Download.getInstance()).getDownloadItems();
       itemsMap = <int, DownloadItemModel>{};
       filterResult = [];
-      _listKey = ObjectKey(Uuid().v4());
+      _listKey = ObjectKey(const Uuid().v4());
       queryResults = <int, QueryResult>{};
       await _autoRecoveryFileName();
       await _buildQueryResults();
@@ -247,7 +247,7 @@ class _DownloadPageState extends State<DownloadPage>
     if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
       var mm = Settings.downloadResultType == 0 ? 3 : 2;
       return SliverPadding(
-          padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: SliverGrid(
             key: _listKey,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -287,12 +287,12 @@ class _DownloadPageState extends State<DownloadPage>
       if (Settings.useTabletMode ||
           MediaQuery.of(context).orientation == Orientation.landscape) {
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
           sliver: LiveSliverGrid(
             key: _listKey,
             controller: _scrollController,
-            showItemInterval: Duration(milliseconds: 50),
-            showItemDuration: Duration(milliseconds: 150),
+            showItemInterval: const Duration(milliseconds: 50),
+            showItemDuration: const Duration(milliseconds: 150),
             visibleFraction: 0.001,
             itemCount: filterResult.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -359,11 +359,11 @@ class _DownloadPageState extends State<DownloadPage>
 
   Widget _urlBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(8, 8, 72 + 64.0 + 8, 0),
+      padding: const EdgeInsets.fromLTRB(8, 8, 72 + 64.0 + 8, 0),
       child: SizedBox(
         height: 64,
         child: Card(
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(4.0),
             ),
@@ -389,11 +389,11 @@ class _DownloadPageState extends State<DownloadPage>
                             enabledBorder: InputBorder.none,
                             errorBorder: InputBorder.none,
                             disabledBorder: InputBorder.none,
-                            contentPadding: EdgeInsets.only(
+                            contentPadding: const EdgeInsets.only(
                                 left: 15, bottom: 11, top: 11, right: 15),
                             hintText: Translations.of(context).trans('addurl')),
                       ),
-                      leading: SizedBox(
+                      leading: const SizedBox(
                         width: 25,
                         height: 25,
                         child: Icon(MdiIcons.instagram),
@@ -445,7 +445,8 @@ class _DownloadPageState extends State<DownloadPage>
                         useRootNavigator: false,
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-                          contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(12, 0, 12, 0),
                           title:
                               Text(Translations.of(context).trans('writeurl')),
                           content: TextField(
@@ -499,9 +500,9 @@ class _DownloadPageState extends State<DownloadPage>
             color: Settings.themeWhat
                 ? Settings.themeBlack
                     ? const Color(0xFF141414)
-                    : Color(0xFF353535)
+                    : const Color(0xFF353535)
                 : Colors.grey.shade100,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -515,7 +516,7 @@ class _DownloadPageState extends State<DownloadPage>
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(
                       MdiIcons.hammerWrench,
                       color: Colors.grey,
@@ -535,12 +536,12 @@ class _DownloadPageState extends State<DownloadPage>
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => DownloadFeaturesMenu(),
+      pageBuilder: (_, __, ___) => const DownloadFeaturesMenu(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
@@ -557,13 +558,13 @@ class _DownloadPageState extends State<DownloadPage>
         Clipboard.setData(ClipboardData(
             text: filterResult.map((e) => int.tryParse(e.url())).join(', ')));
         fToast.showToast(
-          child: ToastWrapper(
+          child: const ToastWrapper(
             isCheck: true,
             isWarning: false,
             msg: 'Ids Copied!',
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
       }
     });
@@ -581,9 +582,9 @@ class _DownloadPageState extends State<DownloadPage>
             color: Settings.themeWhat
                 ? Settings.themeBlack
                     ? const Color(0xFF141414)
-                    : Color(0xFF353535)
+                    : const Color(0xFF353535)
                 : Colors.grey.shade100,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -599,7 +600,7 @@ class _DownloadPageState extends State<DownloadPage>
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
+                  children: const <Widget>[
                     Icon(
                       MdiIcons.formatListText,
                       color: Colors.grey,
@@ -619,12 +620,12 @@ class _DownloadPageState extends State<DownloadPage>
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => DownloadViewType(),
+      pageBuilder: (_, __, ___) => const DownloadViewType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
@@ -633,7 +634,7 @@ class _DownloadPageState extends State<DownloadPage>
         var downloadWidgetKey = _getDownloadWidgetKey();
         downloadWidgetKey.forEach((key, value) =>
             downloadWidgetKey[key] = GlobalKey<DownloadItemWidgetState>());
-        await Future.delayed(Duration(milliseconds: 50), () {
+        await Future.delayed(const Duration(milliseconds: 50), () {
           setState(() {});
         });
       }
@@ -645,12 +646,12 @@ class _DownloadPageState extends State<DownloadPage>
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => DownloadAlignType(),
+      pageBuilder: (_, __, ___) => const DownloadAlignType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
