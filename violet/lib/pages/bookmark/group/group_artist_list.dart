@@ -498,7 +498,7 @@ class _GroupArtistListState extends State<GroupArtistList>
 
         // Atomic!!
         // 0. Sort Checked
-        var invIdIndex = Map<String, int>();
+        var invIdIndex = <String, int>{};
         for (int i = 0; i < artists.length; i++)
           invIdIndex['${artists[i].artist()}|${artists[i].type()}'] = i;
         checked.sort((x, y) => invIdIndex['${x.item2}|${x.item1}']!

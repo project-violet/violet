@@ -63,7 +63,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
@@ -90,7 +90,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
@@ -111,7 +111,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = Map<String, int>();
+                  var articleCount = <String, int>{};
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;
@@ -127,7 +127,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
@@ -149,7 +149,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = Map<String, int>();
+                  var articleCount = <String, int>{};
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;
@@ -288,7 +288,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });

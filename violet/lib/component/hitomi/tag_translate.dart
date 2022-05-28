@@ -28,8 +28,8 @@ class TagTranslate {
           .loadString('assets/locale/tag/$defaultLanguage.json');
     Map<String, dynamic> result = json.decode(data);
 
-    _translateMap = Map<String, String>();
-    _reverseAndroMap = Map<String, String>();
+    _translateMap = <String, String>{};
+    _reverseAndroMap = <String, String>{};
 
     result.entries.forEach((element) {
       if (element.value.toString().trim() == '') return;
@@ -87,7 +87,7 @@ class TagTranslate {
   // [<Origin, Translated>]
   static List<DisplayedTag> containsTotal(String part) {
     var result = contains(part) + containsAndro(part);
-    var overlap = Set<String>();
+    var overlap = <String>{};
     var rresult = <DisplayedTag>[];
     result.forEach((element) {
       if (overlap.contains(element.getTag())) return;
@@ -131,7 +131,7 @@ class TagTranslate {
   static List<Tuple2<DisplayedTag, int>> containsFuzzingTotal(String part) {
     var result = containsFuzzing(part) + containsFuzzingAndro(part);
     result.sort((x, y) => x.item2.compareTo(y.item2));
-    var overlap = Set<String>();
+    var overlap = <String>{};
     var rresult = <Tuple2<DisplayedTag, int>>[];
     result.forEach((element) {
       if (overlap.contains(element.item1.getTag())) return;
@@ -176,7 +176,7 @@ class TagTranslate {
   ];
 
   static Map<String, int> distortion(int ch) {
-    var ret = Map<String, int>();
+    var ret = <String, int>{};
     var unis = ch - 0xAC00;
     ret['initial'] = unis ~/ (21 * 28);
     ret['medial'] = (unis % (21 * 28)) ~/ 28;

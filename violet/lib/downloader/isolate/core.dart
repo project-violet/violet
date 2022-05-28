@@ -50,7 +50,7 @@ class IsolateDownloaderTask {
   });
 
   static IsolateDownloaderTask fromDownloadTask(int taskId, DownloadTask task) {
-    var header = Map<String, String>();
+    var header = <String, String>{};
     if (task.referer != null) header['referer'] = task.referer!;
     if (task.accept != null) header['accept'] = task.accept!;
     if (task.userAgent != null) header['user-agent'] = task.userAgent!;
@@ -260,7 +260,7 @@ void _appendTask(IsolateDownloaderTask task) {
 
 void _initIsolateDownloader(IsolateDownloaderOption option) {
   _dqueue = Queue<IsolateDownloaderTask>();
-  _workingMap = Map<int, IsolateDownloaderTask>();
+  _workingMap = <int, IsolateDownloaderTask>{};
   _maxTaskCount = option.threadCount;
 }
 
