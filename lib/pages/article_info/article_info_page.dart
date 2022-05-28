@@ -586,12 +586,12 @@ class PreviewAreaWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
+      children: const [
         SizedBox(
           width: 100,
           height: 100,
           // alignment: Alignment.center,
-          child: const Align(
+          child: Align(
             // alignment: Alignment.center,
             child: Text(
               '??? Unknown Error!',
@@ -709,12 +709,12 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
+            children: const [
               SizedBox(
                 width: 100,
                 height: 100,
                 // alignment: Alignment.center,
-                child: const Align(
+                child: Align(
                   // alignment: Alignment.center,
                   child: Text(
                     'No Comments',
@@ -990,12 +990,12 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
     return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
+        children: const [
           SizedBox(
             width: 100,
             height: 100,
             // alignment: Alignment.center,
-            child: const Align(
+            child: Align(
               // alignment: Alignment.center,
               child: Text(
                 '??? Unknown Error!',

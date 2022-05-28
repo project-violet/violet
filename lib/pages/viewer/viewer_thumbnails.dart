@@ -192,12 +192,12 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
+      children: const [
         SizedBox(
           width: 100,
           height: 100,
           // alignment: Alignment.center,
-          child: const Align(
+          child: Align(
             // alignment: Alignment.center,
             child: Text(
               'Thumbnail not found!',
