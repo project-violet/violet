@@ -33,14 +33,14 @@ class ThreeArticlePanel extends StatelessWidget {
       child: SizedBox(
         height: 195,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(title, style: TextStyle(fontSize: 17)),
+                  Text(title, style: const TextStyle(fontSize: 17)),
                   Text(
                     count,
                     style: TextStyle(
@@ -93,14 +93,14 @@ class _SubItem extends StatelessWidget {
     return Expanded(
       flex: 1,
       child: Padding(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         child: Provider<ArticleListItem>.value(
           value: ArticleListItem.fromArticleListItem(
             queryResult: articles[index],
             showDetail: false,
             addBottomPadding: false,
             width: width,
-            thumbnailTag: Uuid().v4(),
+            thumbnailTag: const Uuid().v4(),
             disableFilter: true,
             usableTabList: articles,
           ),

@@ -63,7 +63,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
   }
 
   void refresh() {
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
       var cc = widget.articles
           .where((e) => e.group() == widget.groupId)
@@ -77,7 +77,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         _shouldRebuild = true;
         setState(() {
           _shouldRebuild = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
         return;
       }
@@ -123,7 +123,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         _shouldRebuild = true;
         setState(() {
           _shouldRebuild = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
       });
     });
@@ -152,7 +152,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               Scaffold(
                 resizeToAvoidBottomInset: false,
                 body: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
                     slivers: <Widget>[
@@ -160,7 +160,8 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                         floating: true,
                         delegate: AnimatedOpacitySliver(
                           searchBar: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Stack(children: <Widget>[
                                 _filter(),
                                 _title(),
@@ -214,9 +215,9 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -230,7 +231,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               child: Stack(
                 alignment: Alignment.center,
                 children: <Widget>[
-                  Icon(
+                  const Icon(
                     MdiIcons.formatListText,
                     color: Colors.grey,
                   ),
@@ -241,7 +242,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               Navigator.of(context)
                   .push(PageRouteBuilder(
                 opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
+                transitionDuration: const Duration(milliseconds: 500),
                 transitionsBuilder: (BuildContext context,
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
@@ -255,7 +256,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                   .then((value) async {
                 if (value == null) return;
                 nowType = value;
-                await Future.delayed(Duration(milliseconds: 50), () {
+                await Future.delayed(const Duration(milliseconds: 50), () {
                   _shouldRebuild = true;
                   setState(() {
                     _shouldRebuild = true;
@@ -279,7 +280,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                 _shouldRebuild = true;
                 setState(() {
                   _shouldRebuild = true;
-                  key = ObjectKey(Uuid().v4());
+                  key = ObjectKey(const Uuid().v4());
                 });
               });
             },
@@ -291,13 +292,13 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.only(top: 24, left: 12),
+      padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(widget.name,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
   }
 
-  ObjectKey key = ObjectKey(Uuid().v4());
+  ObjectKey key = ObjectKey(const Uuid().v4());
 
   final FilterController _filterController =
       FilterController(heroKey: 'searchtype2');
@@ -411,7 +412,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
       case 0:
       case 1:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverGrid(
             key: key,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -433,7 +434,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                         showDetail: false,
                         addBottomPadding: false,
                         width: (windowWidth - 4.0) / mm,
-                        thumbnailTag: Uuid().v4(),
+                        thumbnailTag: const Uuid().v4(),
                         usableTabList: filterResult,
                         // isCheckMode: checkMode,
                         // isChecked: checked.contains(e.id()),
@@ -450,7 +451,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
       case 2:
       case 3:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverList(
             key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
@@ -463,7 +464,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                     showDetail: nowType == 3,
                     addBottomPadding: true,
                     width: (windowWidth - 4.0),
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     usableTabList: filterResult,
                     // isCheckMode: checkMode,
                     // isChecked: checked.contains(x.id()),
@@ -477,7 +478,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
 
       default:
         return Container(
-          child: Center(
+          child: const Center(
             child: Text('Error :('),
           ),
         );

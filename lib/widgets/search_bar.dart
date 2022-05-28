@@ -27,7 +27,7 @@ class AnimatedOpacitySliver implements SliverPersistentHeaderDelegate {
       children: [
         AnimatedOpacity(
           opacity: 1.0 - max(0.0, shrinkOffset - 20) / (maxExtent - 20),
-          duration: Duration(milliseconds: 100),
+          duration: const Duration(milliseconds: 100),
           child: searchBar,
         )
       ],

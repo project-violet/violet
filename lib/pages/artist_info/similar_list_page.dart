@@ -80,8 +80,8 @@ class SimilarListPage extends StatelessWidget {
       enableBackgroundColor: Settings.themeWhat && Settings.themeBlack,
       child: Container(
         child: ListView.builder(
-          padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-          physics: ClampingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+          physics: const ClampingScrollPhysics(),
           itemCount: similarsAll.length,
           itemBuilder: (BuildContext ctxt, int index) {
             var e = similarsAll[index];

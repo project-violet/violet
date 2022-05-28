@@ -94,7 +94,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     fToast = FToast();
     fToast.init(context);
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       //
       // Check bookmark
       //
@@ -221,12 +221,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         qureyLoaded = true;
       });
 
-      Future.delayed(Duration(milliseconds: 300)).then((value) {
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
         ec.expanded = true;
         commentAreaEC.expanded = true;
       });
 
-      Future.delayed(Duration(microseconds: 100))
+      Future.delayed(const Duration(microseconds: 100))
           .then((value) async => await readComments());
     });
   }
@@ -328,7 +328,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       color: Settings.themeWhat
           ? Settings.themeBlack
               ? const Color(0xFF141414)
-              : Color(0xFF353535)
+              : const Color(0xFF353535)
           : Colors.grey.shade100,
       child: Padding(
         // padding: EdgeInsets.all(0),
@@ -344,7 +344,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               color: Settings.themeWhat
                   ? Settings.themeBlack
                       ? const Color(0xFF141414)
-                      : Color(0xFF353535)
+                      : const Color(0xFF353535)
                   : Colors.grey.shade100,
               child: SizedBox(
                 width: width - 16,
@@ -370,7 +370,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                               height: 16,
                             ),
                             nameArea(),
-                            Expanded(
+                            const Expanded(
                               child: Align(
                                 alignment: Alignment.center,
                                 child: SizedBox(
@@ -416,7 +416,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                   ? 'Character: '
                                   : 'Artist: ') +
                   widget.artist,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
       ),
       onTap: () async {
@@ -439,7 +440,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                 '${widget.artist}${Translations.of(context).trans(isBookmarked ? 'addtobookmark' : 'removetobookmark')}',
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
 
         if (!isBookmarked) {
@@ -464,9 +465,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             labelStyle: charts.TextStyleSpec(
                 fontSize: isExpanded ? 10 : 14,
                 color: charts.MaterialPalette.white),
-            lineStyle: charts.LineStyleSpec(
+            lineStyle: const charts.LineStyleSpec(
                 color: charts.MaterialPalette.transparent)));
-    var axis2 = charts.NumericAxisSpec(
+    var axis2 = const charts.NumericAxisSpec(
         renderSpec: charts.GridlineRendererSpec(
       labelStyle: charts.TextStyleSpec(
           fontSize: 10, color: charts.MaterialPalette.white),
@@ -475,7 +476,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       child: Column(
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.fromLTRB(64, 16, 64, 0),
+            padding: const EdgeInsets.fromLTRB(64, 16, 64, 0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Row(
@@ -503,7 +504,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
           ),
           InkWell(
             child: SizedBox(
@@ -549,7 +550,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           ExpandableNotifier(
             controller: ec,
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: ScrollOnExpand(
                 child: ExpandablePanel(
                   theme: ExpandableThemeData(
@@ -557,7 +558,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                           Settings.themeWhat ? Colors.white : Colors.grey,
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                     child: Text(
                         '${Translations.of(context).trans('articles')} (${cc.length})'),
                   ),
@@ -585,7 +586,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           ),
           ExpandableNotifier(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: ScrollOnExpand(
                 child: ExpandablePanel(
                   theme: ExpandableThemeData(
@@ -593,7 +594,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                           Settings.themeWhat ? Colors.white : Colors.grey,
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                     child: Text(
                         '${Translations.of(context).trans('comment')} (${(comments != null ? comments!.length : 0)})'),
                   ),
@@ -606,7 +607,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           widget.isCharacter || widget.isSeries
               ? ExpandableNotifier(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: ScrollOnExpand(
                       child: ExpandablePanel(
                         theme: ExpandableThemeData(
@@ -615,7 +616,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                             animationDuration:
                                 const Duration(milliseconds: 500)),
                         header: Padding(
-                          padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                          padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                           child: Text(
                               '${Translations.of(context).trans('related')} ${widget.isSeries ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                         ),
@@ -629,7 +630,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           widget.isCharacter || widget.isSeries
               ? ExpandableNotifier(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: ScrollOnExpand(
                       child: ExpandablePanel(
                         theme: ExpandableThemeData(
@@ -638,7 +639,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                             animationDuration:
                                 const Duration(milliseconds: 500)),
                         header: Padding(
-                          padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                          padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                           child: Text(
                               '${Translations.of(context).trans('related')} ${widget.isCharacter ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                         ),
@@ -651,7 +652,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
               : Container(),
           ExpandableNotifier(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: ScrollOnExpand(
                 child: ExpandablePanel(
                   theme: ExpandableThemeData(
@@ -659,7 +660,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                           Settings.themeWhat ? Colors.white : Colors.grey,
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                     child: Text(
                         '${Translations.of(context).trans('similar')} ${widget.isGroup ? Translations.of(context).trans('igroups') : widget.isUploader ? Translations.of(context).trans('iuploader') : widget.isSeries ? Translations.of(context).trans('iseries') : widget.isCharacter ? Translations.of(context).trans('icharacter') : Translations.of(context).trans('iartists')}'),
                   ),
@@ -671,7 +672,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           ),
           ExpandableNotifier(
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: ScrollOnExpand(
                 child: ExpandablePanel(
                   theme: ExpandableThemeData(
@@ -679,7 +680,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                           Settings.themeWhat ? Colors.white : Colors.grey,
                       animationDuration: const Duration(milliseconds: 500)),
                   header: Padding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                    padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
                     child: Text(
                         '${Translations.of(context).trans('series')} (${series.length})'),
                   ),
@@ -717,13 +718,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
     var windowWidth = MediaQuery.of(context).size.width;
     return LiveGrid(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
-      showItemInterval: Duration(milliseconds: 50),
-      showItemDuration: Duration(milliseconds: 150),
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      showItemInterval: const Duration(milliseconds: 50),
+      showItemDuration: const Duration(milliseconds: 150),
       visibleFraction: 0.001,
       itemCount: min(cc.length, 6),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
@@ -737,7 +738,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           ).animate(animation),
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: Offset(0, -0.1),
+              begin: const Offset(0, -0.1),
               end: Offset.zero,
             ).animate(animation),
             child: Padding(
@@ -751,7 +752,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       showDetail: false,
                       addBottomPadding: false,
                       width: (windowWidth - 4.0) / 3,
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
@@ -767,9 +768,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Widget similarArea() {
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: similars.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == similars.length) {
@@ -815,9 +816,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
   Widget seriesArea() {
     var unescape = HtmlUnescape();
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: min(series.length, 6) + (series.length > 6 ? 1 : 0),
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == 6) {
@@ -867,7 +868,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       child: Text(
                           DateFormat('yyyy-MM-dd HH:mm')
                               .format(e.item1.toLocal()),
-                          style: TextStyle(fontSize: 12)),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ]),
@@ -877,7 +878,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       }));
 
       return Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: children + [comment(context)],
@@ -952,7 +953,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           useRootNavigator: false,
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+            contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
             title: Text(Translations.of(context).trans('writecomment')),
             content: TextField(
               controller: text,
@@ -975,9 +976,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Widget relatedArea() {
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: relatedCharacterOrSeries.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCharacterOrSeries.length) {
@@ -1016,9 +1017,9 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
   Widget relatedSingleArea() {
     return ListView.builder(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: relatedCOSSingle.length + 1,
       itemBuilder: (BuildContext ctxt, int index) {
         if (index == relatedCOSSingle.length) {

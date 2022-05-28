@@ -51,12 +51,13 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
         isTop = false;
     });
 
-    Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
-            _controller.animateTo(_controller.position.maxScrollExtent,
-                duration: Duration(milliseconds: 300),
+    Future.delayed(const Duration(milliseconds: 100)).then(updateRercord).then(
+        (value) => Future.delayed(const Duration(milliseconds: 100)).then(
+            (value) => _controller.animateTo(
+                _controller.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn)));
-    timer = Timer.periodic(Duration(seconds: 1), updateRercord);
+    timer = Timer.periodic(const Duration(seconds: 1), updateRercord);
   }
 
   @override
@@ -101,10 +102,10 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
 
       if (isTop) {
         setState(() {});
-        Future.delayed(Duration(milliseconds: 50)).then((x) {
+        Future.delayed(const Duration(milliseconds: 50)).then((x) {
           _controller.animateTo(
             _controller.position.maxScrollExtent,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.fastOutSlowIn,
           );
         });
@@ -127,9 +128,9 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
         children: [
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               controller: _controller,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: xrecords.length,
               reverse: true,
               itemBuilder: (BuildContext ctxt, int index) {
@@ -143,7 +144,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       seconds: xrecords[xrecords.length - index - 1].item2,
                       doubleTapCallback: () => _doubleTapCallback(
                           xrecords[xrecords.length - index - 1].item3),
@@ -163,7 +164,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
                   dense: true,
                   title: Align(
                     child: SliderTheme(
-                      data: SliderThemeData(
+                      data: const SliderThemeData(
                         activeTrackColor: Colors.blue,
                         inactiveTrackColor: Color(0xffd0d2d3),
                         trackHeight: 3,

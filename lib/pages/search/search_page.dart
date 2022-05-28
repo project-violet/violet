@@ -83,7 +83,7 @@ class _SearchPageState extends State<SearchPage>
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(),
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
         ),
         child: Text(message),
       ),
@@ -102,7 +102,7 @@ class _SearchPageState extends State<SearchPage>
       await cachedActor(asset);
     })();
 
-    Future.delayed(Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       try {
         final result =
             await HentaiManager.search('').timeout(const Duration(seconds: 5));
@@ -116,7 +116,7 @@ class _SearchPageState extends State<SearchPage>
         setState(() {});
 
         if (searchTotalResultCount == 0) {
-          Future.delayed(Duration(milliseconds: 100)).then((value) async {
+          Future.delayed(const Duration(milliseconds: 100)).then((value) async {
             searchTotalResultCount = await HentaiManager.countSearch('');
             setState(() {});
           });
@@ -194,7 +194,7 @@ class _SearchPageState extends State<SearchPage>
       if (scrollInProgress || queryEnd) return;
       if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
         scrollInProgress = true;
-        Future.delayed(Duration(milliseconds: 100), () async {
+        Future.delayed(const Duration(milliseconds: 100), () async {
           try {
             await loadNextQuery();
           } catch (e) {
@@ -266,7 +266,7 @@ class _SearchPageState extends State<SearchPage>
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Settings.majorColor,
         label: AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           switchInCurve: Curves.easeIn,
           switchOutCurve: Curves.easeOut,
           transitionBuilder: (Widget child, Animation<double> animation) =>
@@ -279,11 +279,11 @@ class _SearchPageState extends State<SearchPage>
             ),
           ),
           child: !isExtended
-              ? Icon(MdiIcons.bookOpenPageVariantOutline)
+              ? const Icon(MdiIcons.bookOpenPageVariantOutline)
               : Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 4.0),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 4.0),
                       child: Icon(MdiIcons.bookOpenPageVariantOutline),
                     ),
                     ValueListenableBuilder(
@@ -326,7 +326,7 @@ class _SearchPageState extends State<SearchPage>
             setState(() {
               _cachedPannel = null;
               _shouldReload = true;
-              key = ObjectKey(Uuid().v4());
+              key = ObjectKey(const Uuid().v4());
             });
           }
         },
@@ -336,13 +336,13 @@ class _SearchPageState extends State<SearchPage>
 
   Widget _searchBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(8, 8, 72, 0),
+      padding: const EdgeInsets.fromLTRB(8, 8, 72, 0),
       child: SizedBox(
         height: 64,
         child: Hero(
           tag: 'searchbar',
           child: Card(
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -368,7 +368,7 @@ class _SearchPageState extends State<SearchPage>
                               enabledBorder: InputBorder.none,
                               errorBorder: InputBorder.none,
                               disabledBorder: InputBorder.none,
-                              contentPadding: EdgeInsets.only(
+                              contentPadding: const EdgeInsets.only(
                                   left: 15, bottom: 11, top: 11, right: 15),
                               hintText: latestQuery != null &&
                                       latestQuery!.item2.trim() != ''
@@ -411,7 +411,7 @@ class _SearchPageState extends State<SearchPage>
                         setState(() {
                           _cachedPannel = null;
                           _shouldReload = true;
-                          key = ObjectKey(Uuid().v4());
+                          key = ObjectKey(const Uuid().v4());
                         });
                       },
                     ),
@@ -426,7 +426,7 @@ class _SearchPageState extends State<SearchPage>
   }
 
   Future<void> _showSearchBar() async {
-    await Future.delayed(Duration(milliseconds: 200));
+    await Future.delayed(const Duration(milliseconds: 200));
     heroFlareControls.play('search2close');
     final query = await Navigator.push(
       context,
@@ -462,7 +462,7 @@ class _SearchPageState extends State<SearchPage>
         setState(() {
           _cachedPannel = null;
           _shouldReload = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
       });
     } catch (e, st) {
@@ -483,9 +483,9 @@ class _SearchPageState extends State<SearchPage>
             color: Settings.themeWhat
                 ? Settings.themeBlack
                     ? const Color(0xFF141414)
-                    : Color(0xFF353535)
+                    : const Color(0xFF353535)
                 : Colors.grey.shade100,
-            shape: RoundedRectangleBorder(
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
               ),
@@ -501,7 +501,7 @@ class _SearchPageState extends State<SearchPage>
                 child: Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
-                    Icon(
+                    const Icon(
                       MdiIcons.formatListText,
                       color: Colors.grey,
                     ),
@@ -519,17 +519,17 @@ class _SearchPageState extends State<SearchPage>
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
-      transitionDuration: Duration(milliseconds: 500),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
           Animation<double> secondaryAnimation, Widget wi) {
         return FadeTransition(opacity: animation, child: wi);
       },
-      pageBuilder: (_, __, ___) => SearchType(),
+      pageBuilder: (_, __, ___) => const SearchType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
     ))
         .then((value) async {
-      await Future.delayed(Duration(milliseconds: 50), () {
+      await Future.delayed(const Duration(milliseconds: 50), () {
         _shouldReload = true;
         itemHeight = 0.0;
         setState(() {});
@@ -553,7 +553,7 @@ class _SearchPageState extends State<SearchPage>
       setState(() {
         _cachedPannel = null;
         _shouldReload = true;
-        key = ObjectKey(Uuid().v4());
+        key = ObjectKey(const Uuid().v4());
       });
     });
   }
@@ -608,7 +608,7 @@ class _SearchPageState extends State<SearchPage>
   List<QueryResult> queryResult = [];
   List<QueryResult> filterResult = [];
 
-  ObjectKey key = ObjectKey(Uuid().v4());
+  ObjectKey key = ObjectKey(const Uuid().v4());
 
   bool queryEnd = false;
   final Semaphore _querySem = Semaphore(maxCount: 1);
@@ -644,7 +644,7 @@ class _SearchPageState extends State<SearchPage>
           _cachedPannel = null;
           queryEnd = true;
           _shouldReload = true;
-          key = ObjectKey(Uuid().v4());
+          key = ObjectKey(const Uuid().v4());
         });
         return;
       }
@@ -656,7 +656,7 @@ class _SearchPageState extends State<SearchPage>
 
       if (searchTotalResultCount == 0 &&
           !latestQuery!.item2.contains('random:')) {
-        Future.delayed(Duration(milliseconds: 100)).then((value) async {
+        Future.delayed(const Duration(milliseconds: 100)).then((value) async {
           searchTotalResultCount =
               await HentaiManager.countSearch(latestQuery!.item2);
           setState(() {});
@@ -666,7 +666,7 @@ class _SearchPageState extends State<SearchPage>
       setState(() {
         _cachedPannel = null;
         _shouldReload = true;
-        key = ObjectKey(Uuid().v4());
+        key = ObjectKey(const Uuid().v4());
       });
 
       ScriptManager.refresh();
@@ -753,7 +753,7 @@ class ResultPanelWidget extends StatelessWidget {
       case 0:
       case 1:
         return SliverPadding(
-            padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: SliverGrid(
               key: sliverKey,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -798,12 +798,12 @@ class ResultPanelWidget extends StatelessWidget {
         if (Settings.useTabletMode ||
             MediaQuery.of(context).orientation == Orientation.landscape) {
           return SliverPadding(
-            padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: LiveSliverGrid(
               key: sliverKey,
               controller: ScrollController(),
-              showItemInterval: Duration(milliseconds: 50),
-              showItemDuration: Duration(milliseconds: 150),
+              showItemInterval: const Duration(milliseconds: 50),
+              showItemDuration: const Duration(milliseconds: 150),
               visibleFraction: 0.001,
               itemCount: resultList.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -866,7 +866,7 @@ class ResultPanelWidget extends StatelessWidget {
         }
       default:
         return Container(
-          child: Center(
+          child: const Center(
             child: Text('Error :('),
           ),
         );

@@ -119,7 +119,7 @@ void main() async {
             const Locale('eo', 'ES'),
           ],
           routes: <String, WidgetBuilder>{
-            '/AfterLoading': (context) => AfterLoadingPage(),
+            '/AfterLoading': (context) => const AfterLoadingPage(),
             '/DatabaseDownload': (context) => DataBaseDownloadPage(),
             '/SplashPage': (context) => SplashPage(),
           },

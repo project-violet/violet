@@ -16,13 +16,13 @@ class VioletPage extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
+          borderRadius: const BorderRadius.all(Radius.circular(1)),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -37,23 +37,23 @@ class VioletPage extends StatelessWidget {
               elevation: 10,
               child: SizedBox(
                 child: Container(
-                  padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                   width: 250,
                   height: 190,
                   child: Column(
                     children: <Widget>[
-                      Text(''),
-                      Text(
+                      const Text(''),
+                      const Text(
                         'Violet',
                         style: TextStyle(fontSize: 30),
                       ),
-                      Text(
+                      const Text(
                         '${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
                         style: TextStyle(fontSize: 20),
                       ),
-                      Text(''),
+                      const Text(''),
                       // Text('Project-Violet Android App'),
-                      Text(
+                      const Text(
                         'Violet은 강력한 검색기능 및 분석기능을 통해 사용자에게 다양한 경험을 제공하는 뷰어입니다.'
                         ' Violet이 제공하는 편리하고도 강력한 기능들을 체험해보세요!',
                         // Translations.of(context).trans('infomessage'),

@@ -147,7 +147,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   }
 
   _downloadProcedure() {
-    Future.delayed(Duration(milliseconds: 500)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 500)).then((value) async {
       if (once) return;
       once = true;
       // var downloader = await BuiltinDownloader.getInstance();
@@ -183,7 +183,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       await routine.extractFilePath();
 
-      var timer = Timer.periodic(Duration(milliseconds: 100), (Timer timer) {
+      var timer =
+          Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
         setState(() {
           if (downloadSec / 1024 < 500.0)
             downloadSpeed = '${(downloadSec / 1024).toStringAsFixed(1)} KB/S';
@@ -211,7 +212,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
         // Wait for download complete
         while (downloadTotalFileCount != downloadedFileCount) {
-          await Future.delayed(Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
       } else {
         downloadedFileCount = downloadTotalFileCount;
@@ -248,7 +249,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         );
 
         while (downloadTotalFileCount != downloadedFileCount) {
-          await Future.delayed(Duration(milliseconds: 500));
+          await Future.delayed(const Duration(milliseconds: 500));
         }
       }
 
@@ -267,7 +268,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
         ),
         gravity: ToastGravity.BOTTOM,
-        toastDuration: Duration(seconds: 4),
+        toastDuration: const Duration(seconds: 4),
       );
     });
   }
@@ -283,7 +284,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         child: AnimatedContainer(
           // alignment: FractionalOffset.center,
           curve: Curves.easeInOut,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           // padding: EdgeInsets.all(pad),
           transform: Matrix4.identity()
             ..translate(thisWidth / 2, thisHeight / 2)
@@ -299,7 +300,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
         var v = await showDialog(
           context: context,
-          builder: (BuildContext context) => DownloadImageMenu(),
+          builder: (BuildContext context) => const DownloadImageMenu(),
         );
 
         if (v == -1) {
@@ -322,7 +323,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               msg: 'URL Copied!',
             ),
             gravity: ToastGravity.BOTTOM,
-            toastDuration: Duration(seconds: 4),
+            toastDuration: const Duration(seconds: 4),
           );
         } else if (v == 1) {
           _retry();
@@ -347,7 +348,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                       id: int.tryParse(widget.item.url()) ?? -1,
                       title: widget.item.info()!,
                     ),
-                    child: ViewerPage());
+                    child: const ViewerPage());
               },
             ),
           );
@@ -415,7 +416,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                   controller: controller,
                 ),
                 child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
+                  key: const ObjectKey('asdfasdf'),
                 ),
               );
               return cache!;
@@ -481,7 +482,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),
-              borderRadius: BorderRadius.all(Radius.circular(5)),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat
@@ -489,7 +490,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                       : Colors.grey.withOpacity(0.4),
                   spreadRadius: 5,
                   blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             )
@@ -650,15 +651,16 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     }
 
     return AnimatedContainer(
-      margin: EdgeInsets.fromLTRB(8, 4, 4, 4),
-      duration: Duration(milliseconds: 300),
+      margin: const EdgeInsets.fromLTRB(8, 4, 4, 4),
+      duration: const Duration(milliseconds: 300),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text('${Translations.instance!.trans('dinfo')}: $title',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
           Container(
             height: 2,
           ),
@@ -674,17 +676,17 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               ? Text(pp,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 15))
+                  style: const TextStyle(fontSize: 15))
               : Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(pp,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 15)),
+                        style: const TextStyle(fontSize: 15)),
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(right: 16),
+                        padding: const EdgeInsets.only(right: 16),
                         child: LinearProgressIndicator(
                           value: downloadedFileCount / downloadTotalFileCount,
                           minHeight: 18,
@@ -702,7 +704,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                 children: [
                   Row(children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
                       child: Container(),
                     ),
                   ]),

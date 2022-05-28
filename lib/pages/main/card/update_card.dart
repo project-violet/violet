@@ -51,7 +51,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                     rotationController.reverse(from: 0.7);
                   setState(() => pressed = isTapped);
                   controller!.forward(from: 0.0);
-                  Future.delayed(Duration(milliseconds: 200),
+                  Future.delayed(const Duration(milliseconds: 200),
                       () => controller.forward(from: 0.0));
                   // Future.delayed(Duration(milliseconds: 200),
                   //     () => controller.forward(from: 0.0));
@@ -76,7 +76,7 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 15),
+                      offset: const Offset(0, 15),
                       color:
                           Gradients.backToFuture.colors.first.withOpacity(.3),
                       spreadRadius: -9,
@@ -95,14 +95,14 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                             child: RotationTransition(
                               turns: Tween(begin: 0.0, end: 0.7)
                                   .animate(rotationController),
-                              child: Icon(
+                              child: const Icon(
                                 MdiIcons.update,
                                 color: Colors.white,
                                 size: 30,
                               ),
                             ),
                           ),
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.only(top: 4),
                             child: Text(
                               '  Tap Me!',
@@ -170,8 +170,8 @@ class MyRectangle2DemoParticle extends Particle {
           numberOfParticles: random.nextInt(6) + 4,
           particleBuilder: (int int) {
             return AnimatedPositionedParticle(
-              begin: Offset(0.0, -10.0),
-              end: Offset(0.0, -60.0),
+              begin: const Offset(0.0, -10.0),
+              end: const Offset(0.0, -60.0),
               child:
                   FadingRect(width: 5.0, height: 15.0, color: intToColor(int)),
             );

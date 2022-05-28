@@ -43,7 +43,8 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                   if (!isTapped) {
                     controller!.forward(from: 0.0);
 
-                    PlatformNavigator.navigateSlide(context, PatchNotePage());
+                    PlatformNavigator.navigateSlide(
+                        context, const PatchNotePage());
                   }
                 }),
               child: Container(
@@ -54,7 +55,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 8),
+                      offset: const Offset(0, 8),
                       color: Gradients.taitanum.colors.first.withOpacity(.3),
                       spreadRadius: -9,
                     ),
@@ -68,7 +69,7 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                         children: [
                           Text(
                             Translations.of(context).trans('patchnote'),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ]),
                   ),

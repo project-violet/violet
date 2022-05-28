@@ -820,7 +820,7 @@ class _PatchNotePageState extends State<PatchNotePage> {
             top: statusBarHeight + 16, bottom: mediaQuery.padding.bottom),
         child: Column(
           children: [
-            Text(
+            const Text(
               'Patch Note',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -829,8 +829,8 @@ class _PatchNotePageState extends State<PatchNotePage> {
             ),
             Expanded(
               child: ListView.separated(
-                physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.all(8),
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(8),
                 // addAutomaticKeepAlives: false,
                 itemBuilder: (c, i) {
                   var ii = patches[i];
@@ -857,12 +857,12 @@ class _PatchNotePageState extends State<PatchNotePage> {
                                 : ii.isMinor
                                     ? MdiIcons.chevronDoubleUp
                                     : MdiIcons.trendingUp),
-                            SizedBox(
+                            const SizedBox(
                               width: 12.0,
                             ),
                             Text(
                               ii.version,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 15),
                             ),
                             Expanded(

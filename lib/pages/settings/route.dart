@@ -18,7 +18,7 @@ class _RouteDialogState extends State<RouteDialog> {
     final width = MediaQuery.of(context).size.width;
 
     return AlertDialog(
-      contentPadding: EdgeInsets.all(16),
+      contentPadding: const EdgeInsets.all(16),
       content: Container(
         height: 80 * 5.0,
         width: width,
@@ -44,7 +44,7 @@ class _RouteDialogState extends State<RouteDialog> {
             return ListTile(
               key: Key(e),
               title: Text(e),
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
               leading: Image.network(
                 {
                   'Hitomi':
@@ -59,7 +59,8 @@ class _RouteDialogState extends State<RouteDialog> {
                 width: 25,
                 fit: BoxFit.fill,
               ),
-              trailing: Icon(Icons.reorder, color: Colors.grey, size: 24.0),
+              trailing:
+                  const Icon(Icons.reorder, color: Colors.grey, size: 24.0),
             );
           }).toList(),
         ),
@@ -81,7 +82,7 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
     final width = MediaQuery.of(context).size.width;
 
     return AlertDialog(
-      contentPadding: EdgeInsets.all(16),
+      contentPadding: const EdgeInsets.all(16),
       content: Container(
         height: 80 * 5.0,
         width: width,
@@ -107,7 +108,7 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
             return ListTile(
               key: Key(e),
               title: Text(e),
-              contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
               leading: Image.network(
                 {
                   'Hitomi':
@@ -122,7 +123,8 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
                 width: 25,
                 fit: BoxFit.fill,
               ),
-              trailing: Icon(Icons.reorder, color: Colors.grey, size: 24.0),
+              trailing:
+                  const Icon(Icons.reorder, color: Colors.grey, size: 24.0),
             );
           }).toList(),
         ),
