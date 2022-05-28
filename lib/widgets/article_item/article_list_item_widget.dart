@@ -547,7 +547,7 @@ class BodyWidget extends StatelessWidget {
   final String? title;
   final String? dateTime;
 
-  BodyWidget({
+  const BodyWidget({
     Key? key,
     required this.data,
     required this.thumbnail,
@@ -657,7 +657,7 @@ class _DetailWidget extends StatelessWidget {
   final int? viewed;
   final int? seconds;
 
-  _DetailWidget({
+  const _DetailWidget({
     required this.title,
     required this.artist,
     required this.imageCount,

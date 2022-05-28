@@ -18,7 +18,7 @@ class LabBookmarkPage extends StatefulWidget {
   final String userAppId;
   final String? version;
 
-  LabBookmarkPage({
+  const LabBookmarkPage({
     Key? key,
     required this.userAppId,
     this.version,

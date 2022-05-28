@@ -52,10 +52,10 @@ class DownloadItemWidget extends StatefulWidget {
   // final double width;
   final DownloadItemModel item;
   final DownloadListItem initialStyle;
-  bool download;
+  final bool download;
   final VoidCallback refeshCallback;
 
-  DownloadItemWidget({
+  const DownloadItemWidget({
     Key? key,
     // this.width,
     required this.item,
@@ -91,9 +91,13 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   int latestReadPage = 0;
   late final FToast fToast;
 
+  bool downloaded = false;
+
   @override
   void initState() {
     super.initState();
+    downloaded = widget.download;
+
     fToast = FToast();
     fToast.init(context);
 
@@ -159,7 +163,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         return;
       await routine.selectExtractor();
 
-      if (!widget.download) {
+      if (!downloaded) {
         await routine.setToStop();
         return;
       }
@@ -428,7 +432,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     copy['State'] = 1;
     widget.item.result = copy;
     once = false;
-    widget.download = true;
+    downloaded = true;
     _downloadProcedure();
     setState(() {
       _shouldReload = true;
@@ -440,7 +444,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     var copy = Map<String, dynamic>.from(widget.item.result);
     copy['State'] = 1;
     widget.item.result = copy;
-    widget.download = true;
+    downloaded = true;
     once = false;
     recoveryMode = true;
     _downloadProcedure();
@@ -719,7 +723,7 @@ class _ThumbnailWidget extends StatelessWidget {
   final bool showDetail;
   final int? id;
 
-  _ThumbnailWidget({
+  const _ThumbnailWidget({
     required this.thumbnail,
     required this.thumbnailHeader,
     required this.thumbnailTag,
@@ -833,7 +837,7 @@ class _FileThumbnailWidget extends StatelessWidget {
   final bool usingRawImage;
   final double height;
 
-  _FileThumbnailWidget({
+  const _FileThumbnailWidget({
     required this.thumbnailPath,
     required this.thumbnailTag,
     required this.showDetail,

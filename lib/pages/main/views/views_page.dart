@@ -125,7 +125,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
 class _Tab extends StatefulWidget {
   final int index;
 
-  _Tab(this.index);
+  const _Tab(this.index);
 
   @override
   __TabState createState() => __TabState();

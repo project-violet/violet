@@ -22,7 +22,7 @@ class SimilarListPage extends StatelessWidget {
   final bool isCharacter;
   final List<Tuple2<String, double>> similarsAll;
 
-  SimilarListPage({
+  const SimilarListPage({
     Key? key,
     required this.prefix,
     required this.similarsAll,

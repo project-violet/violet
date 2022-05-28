@@ -36,7 +36,7 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
 class RadioTile<T> extends StatefulWidget {
-  RadioTile({
+  const RadioTile({
     Key? key,
     required this.value,
     required this.groupValue,
@@ -127,7 +127,7 @@ class _RadioTileState<T> extends State<RadioTile<T>> {
 class SplashPage extends StatefulWidget {
   final bool switching;
 
-  SplashPage({Key? key, this.switching = false}) : super(key: key);
+  const SplashPage({Key? key, this.switching = false}) : super(key: key);
 
   @override
   State<SplashPage> createState() => _SplashPageState();
