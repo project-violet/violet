@@ -22,8 +22,8 @@ class LabGlobalComments extends StatefulWidget {
 }
 
 class _LabGlobalCommentsState extends State<LabGlobalComments> {
-  List<Tuple5<int, DateTime, String, String, int>> comments =
-      <Tuple5<int, DateTime, String, String, int>>[];
+  List<Tuple5<int, DateTime, String, String, int?>> comments =
+      <Tuple5<int, DateTime, String, String, int?>>[];
   final ScrollController _controller = ScrollController();
   FocusNode myFocusNode = FocusNode();
 
@@ -42,7 +42,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
         'global_general'))['result'] as List<dynamic>;
 
     comments = tcomments
-        .map((e) => Tuple5<int, DateTime, String, String, int>(
+        .map((e) => Tuple5<int, DateTime, String, String, int?>(
             e['Id'],
             DateTime.parse(e['TimeStamp']),
             e['UserAppId'],
@@ -78,7 +78,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                   replies: comments
                       .where((x) =>
                           x.item5 != null &&
-                          x.item5 == pureComments[index].item1)
+                          x.item5! == pureComments[index].item1)
                       .toList()
                       .reversed
                       .toList(),
@@ -208,7 +208,7 @@ class CommentUnit extends StatelessWidget {
   final int id;
   final ReplyCallback? reply;
   final bool isReply;
-  final List<Tuple5<int, DateTime, String, String, int>> replies;
+  final List<Tuple5<int, DateTime, String, String, int?>> replies;
 
   static const String dev = '1918c652d3a9';
 
