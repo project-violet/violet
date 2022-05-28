@@ -645,7 +645,8 @@ class _SearchPageState extends State<SearchPage>
       if (_filterController.isPopulationSort)
         Population.sortByPopulation(queryResult);
 
-      if (searchTotalResultCount == 0) {
+      if (searchTotalResultCount == 0 &&
+          !latestQuery!.item2.contains('random:')) {
         Future.delayed(Duration(milliseconds: 100)).then((value) async {
           searchTotalResultCount =
               await HentaiManager.countSearch(latestQuery!.item2);
@@ -763,7 +764,9 @@ class ResultPanelWidget extends StatelessWidget {
                 (BuildContext context, int index) {
                   if (_cachedItems![index] == null) {
                     _cachedItems![index] = Padding(
-                      key: itemKeys.length > index ? itemKeys[index] : null,
+                      key: itemKeys.length > index
+                          ? itemKeys[index]
+                          : GlobalKey(),
                       padding: EdgeInsets.zero,
                       child: Align(
                         alignment: Alignment.bottomCenter,
@@ -811,7 +814,7 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               itemBuilder: (context, index, animation) {
                 return Align(
-                  key: itemKeys.length > index ? itemKeys[index] : null,
+                  key: itemKeys.length > index ? itemKeys[index] : GlobalKey(),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
@@ -835,7 +838,7 @@ class ResultPanelWidget extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return Align(
-                  key: itemKeys.length > index ? itemKeys[index] : null,
+                  key: itemKeys.length > index ? itemKeys[index] : GlobalKey(),
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
