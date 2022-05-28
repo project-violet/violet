@@ -109,7 +109,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                 floating: true,
                 delegate: AnimatedOpacitySliver(
                   searchBar: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Stack(children: <Widget>[
                         _filter(),
                         _title(),
@@ -154,9 +154,9 @@ class _GroupArtistListState extends State<LabGroupArtistList>
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -183,7 +183,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                 alignment: Alignment.center,
                 children: <Widget>[
                   _progressingFilter
-                      ? SizedBox(
+                      ? const SizedBox(
                           height: 30,
                           width: 30,
                           child: CircularProgressIndicator(
@@ -207,7 +207,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
   }
 
   Widget _title() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.only(top: 24, left: 12),
       child: Text('Artists Collection',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -235,7 +235,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
         child: SizedBox(
           height: 195,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
@@ -256,7 +256,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                               'series',
                               'character'
                             ][e.type()], e.artist())})',
-                        style: TextStyle(fontSize: 17)),
+                        style: const TextStyle(fontSize: 17)),
                   ],
                 ),
                 SizedBox(
@@ -284,14 +284,14 @@ class _GroupArtistListState extends State<LabGroupArtistList>
         child: qq.length > index
             ? Padding(
                 key: Key('${qq[index].id()}/${index}_thumbnail_bookmark'),
-                padding: EdgeInsets.all(4),
+                padding: const EdgeInsets.all(4),
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
                     queryResult: qq[index],
                     showDetail: false,
                     addBottomPadding: false,
                     width: (windowWidth - 16 - 4.0 - 16.0) / 3,
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     disableFilter: true,
                     usableTabList: qq,
                   ),

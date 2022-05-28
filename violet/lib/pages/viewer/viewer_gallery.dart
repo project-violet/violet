@@ -63,17 +63,17 @@ class _ViewerGalleryState extends State<ViewerGallery> {
               delegate: AnimatedOpacitySliver(
                 searchBar: Container(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(10.0),
                         bottomRight: Radius.circular(10.0)),
                     color: Settings.themeWhat
                         ? Settings.themeBlack
                             ? const Color(0xFF141414)
-                            : Color(0xFF353535)
+                            : const Color(0xFF353535)
                         : Colors.grey.shade100,
                   ),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -87,7 +87,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
               ),
             ),
             SliverPadding(
-              padding: EdgeInsets.all(4),
+              padding: const EdgeInsets.all(4),
               sliver: _delegate(),
             ),
           ],
@@ -98,10 +98,10 @@ class _ViewerGalleryState extends State<ViewerGallery> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.only(top: 24, left: 12),
+      padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(
         _pageInfo.title,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         overflow: TextOverflow.ellipsis,
       ),
     );
@@ -127,9 +127,9 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     return Align(
       alignment: Alignment.center,
       child: RawMaterialButton(
-        constraints: BoxConstraints(),
-        padding: EdgeInsets.all(12),
-        shape: CircleBorder(),
+        constraints: const BoxConstraints(),
+        padding: const EdgeInsets.all(12),
+        shape: const CircleBorder(),
         onPressed: () async {
           setState(() {
             viewStyle = (viewStyle + 1) % icons.length;
@@ -184,13 +184,13 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                 Align(
                   alignment: Alignment.topCenter,
                   child: Container(
-                    padding: EdgeInsets.only(bottom: 1),
+                    padding: const EdgeInsets.only(bottom: 1),
                     width: double.infinity,
                     color: Colors.black.withOpacity(0.7),
                     child: Text(
                       '${index + 1} page',
                       textAlign: TextAlign.right,
-                      style: TextStyle(fontSize: 11, color: Colors.white),
+                      style: const TextStyle(fontSize: 11, color: Colors.white),
                     ),
                   ),
                 ),
@@ -311,13 +311,14 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                     Align(
                       alignment: Alignment.topCenter,
                       child: Container(
-                        padding: EdgeInsets.only(bottom: 1),
+                        padding: const EdgeInsets.only(bottom: 1),
                         width: double.infinity,
                         color: Colors.black.withOpacity(0.7),
                         child: Text(
                           '${index + 1} page',
                           textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 11, color: Colors.white),
+                          style: const TextStyle(
+                              fontSize: 11, color: Colors.white),
                         ),
                       ),
                     ),

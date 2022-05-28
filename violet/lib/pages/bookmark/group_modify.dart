@@ -36,7 +36,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(Translations.of(context).trans('modifygroupinfo')),
-      contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+      contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

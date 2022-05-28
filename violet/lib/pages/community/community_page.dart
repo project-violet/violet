@@ -35,7 +35,7 @@ class _CommunityPageState extends State<CommunityPage>
     super.initState();
 
     // load boards
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var id = (await SharedPreferences.getInstance())
           .getString('saved_community_id');
       var pw = (await SharedPreferences.getInstance())
@@ -90,7 +90,7 @@ class _CommunityPageState extends State<CommunityPage>
     return Container(
       padding: EdgeInsets.only(top: statusBarHeight),
       child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -106,14 +106,14 @@ class _CommunityPageState extends State<CommunityPage>
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
           alignment: Alignment.centerLeft,
           height: 80,
           // decoration:
           child: Ink(
             decoration: BoxDecoration(
               color: Settings.themeWhat ? Colors.black26 : Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
               boxShadow: [
                 BoxShadow(
                   color: Settings.themeWhat
@@ -121,7 +121,7 @@ class _CommunityPageState extends State<CommunityPage>
                       : Colors.grey.withOpacity(0.1),
                   spreadRadius: Settings.themeWhat ? 0 : 5,
                   blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             ),
@@ -129,23 +129,23 @@ class _CommunityPageState extends State<CommunityPage>
               children: [
                 Expanded(
                   child: InkWell(
-                    customBorder: RoundedRectangleBorder(
+                    customBorder: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10.0),
                           bottomLeft: Radius.circular(10.0)),
                     ),
                     child: Container(
-                      padding: EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              Text('User: ',
+                              const Text('User: ',
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 16)),
                               Text(' $_userNickName ($_userId)',
-                                  style: TextStyle(fontSize: 16)),
+                                  style: const TextStyle(fontSize: 16)),
                             ],
                           ),
                           Container(
@@ -153,12 +153,12 @@ class _CommunityPageState extends State<CommunityPage>
                           ),
                           Row(
                             children: [
-                              Text('User App Id: ',
+                              const Text('User App Id: ',
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 16)),
                               Text(
                                   ' ${_userAppId != null ? _userAppId.substring(0, 16) : ''}...',
-                                  style: TextStyle(fontSize: 16)),
+                                  style: const TextStyle(fontSize: 16)),
                             ],
                           )
                         ],
@@ -183,7 +183,7 @@ class _CommunityPageState extends State<CommunityPage>
                           child: Stack(
                               alignment: Alignment.center,
                               children: <Widget>[
-                                SizedBox(
+                                const SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: CircularProgressIndicator(
@@ -192,7 +192,7 @@ class _CommunityPageState extends State<CommunityPage>
                                     ))
                               ]))
                       : InkWell(
-                          customBorder: RoundedRectangleBorder(
+                          customBorder: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
                                 topRight: Radius.circular(10.0),
                                 bottomRight: Radius.circular(10.0)),
@@ -201,7 +201,7 @@ class _CommunityPageState extends State<CommunityPage>
                             alignment: Alignment.center,
                             child: Badge(
                               showBadge: false,
-                              badgeContent: Text('N',
+                              badgeContent: const Text('N',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 12.0)),
                               // badgeColor: Settings.majorAccentColor,
@@ -235,7 +235,7 @@ class _CommunityPageState extends State<CommunityPage>
                               var r = await showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return SignInDialog();
+                                    return const SignInDialog();
                                   });
                               if (r == null) return;
                               id = r[0];
@@ -258,7 +258,7 @@ class _CommunityPageState extends State<CommunityPage>
                               var r = await showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return SignUpDialog();
+                                    return const SignUpDialog();
                                   });
 
                               if (r == null) return;

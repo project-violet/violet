@@ -41,11 +41,11 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             children: [
               Text(
                   '${Translations.instance!.trans('timersetting')} (${Settings.timerTick.toStringAsFixed(1)}${Translations.instance!.trans('second')})',
-                  style: TextStyle(color: Colors.white)),
+                  style: const TextStyle(color: Colors.white)),
               Expanded(
                 child: Align(
                   child: SliderTheme(
-                    data: SliderThemeData(
+                    data: const SliderThemeData(
                       activeTrackColor: Colors.blue,
                       inactiveTrackColor: Color(0xffd0d2d3),
                       trackHeight: 3,
@@ -204,7 +204,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             dense: true,
             title: Text(
               Translations.of(context).trans('imgquality'),
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             trailing: Text(
               [
@@ -213,7 +213,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
                 Translations.of(context).trans('middle'),
                 Translations.of(context).trans('low')
               ][imgqualityOption],
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -242,7 +242,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
             dense: true,
             title: Text(
               Translations.of(context).trans('thumbnailslidersize'),
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
             trailing: Text(
               [
@@ -250,7 +250,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
                 Translations.of(context).trans('middle'),
                 Translations.of(context).trans('small')
               ][Settings.thumbSize],
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -300,7 +300,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         value: value,
         activeColor: Settings.majorColor,
       ),
-      title: Text(title, style: TextStyle(color: Colors.white)),
+      title: Text(title, style: const TextStyle(color: Colors.white)),
       onTap: () => onChanged(value),
     );
   }

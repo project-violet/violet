@@ -35,7 +35,7 @@ class DownloadViewType extends StatelessWidget {
             width: 280,
             child: IntrinsicHeight(
               child: SingleChildScrollView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 child: Column(
                   children: <Widget>[
                     _typeItem(context, Icons.grid_on, 'srt0', 0),

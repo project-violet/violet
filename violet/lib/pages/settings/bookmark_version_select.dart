@@ -60,8 +60,8 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
       context,
       enableBackgroundColor: true,
       child: ListView.builder(
-        padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
-        physics: BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+        physics: const BouncingScrollPhysics(),
         controller: _scrollController,
         itemCount: widget.versions.length,
         itemBuilder: (BuildContext ctxt, int index) {
@@ -80,11 +80,11 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
 
   _buildItem(Map<String, dynamic> data) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Settings.themeWhat ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
             bottomLeft: Radius.circular(8),
@@ -96,7 +96,7 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
                 : Colors.grey.withOpacity(0.1),
             spreadRadius: Settings.themeWhat ? 0 : 5,
             blurRadius: 7,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -108,7 +108,7 @@ class _BookmarkVersionSelectPageState extends State<BookmarkVersionSelectPage> {
             title: Text(
                 timeago.format(DateTime.parse(data['dt']).toLocal(),
                     locale: Translations.of(context).locale.languageCode),
-                style: TextStyle(fontSize: 16.0)),
+                style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
             onTap: () async {
               await PlatformNavigator.navigateSlide(

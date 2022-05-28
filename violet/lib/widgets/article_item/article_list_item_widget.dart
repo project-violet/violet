@@ -204,7 +204,7 @@ class _ArticleListItemVerySimpleWidgetState
           });
       });
     } else {
-      Future.delayed(Duration(milliseconds: 1)).then((v) async {
+      Future.delayed(const Duration(milliseconds: 1)).then((v) async {
         var provider = await ProviderManager.get(data.queryResult.id());
         thumbnail = await provider.getThumbnailUrl();
         imageCount = provider.length();
@@ -234,7 +234,7 @@ class _ArticleListItemVerySimpleWidgetState
         !onScaling &&
         scale != 1.0) {
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 1.0;
@@ -244,7 +244,7 @@ class _ArticleListItemVerySimpleWidgetState
         isChecked &&
         scale != 0.95) {
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 0.95;
@@ -318,7 +318,7 @@ class _ArticleListItemVerySimpleWidgetState
     if (onScaling) return;
     onScaling = true;
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       // pad = 10.0;
@@ -338,7 +338,7 @@ class _ArticleListItemVerySimpleWidgetState
       isChecked = !isChecked;
       data.bookmarkCheckCallback!(data.queryResult.id(), isChecked);
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         if (isChecked)
@@ -350,7 +350,7 @@ class _ArticleListItemVerySimpleWidgetState
     }
     if (firstChecked) return;
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       scale = 1.0;
@@ -381,7 +381,7 @@ class _ArticleListItemVerySimpleWidgetState
                 usableTabList: data.usableTabList,
               ),
               child: ArticleInfoPage(
-                key: ObjectKey('asdfasdf'),
+                key: const ObjectKey('asdfasdf'),
               ),
             );
             return cache!;
@@ -397,7 +397,7 @@ class _ArticleListItemVerySimpleWidgetState
       if (widget.isCheckMode) {
         isChecked = !isChecked;
         _shouldReloadCachedBuildWidget = true;
-        Future.delayed(Duration(milliseconds: 500))
+        Future.delayed(const Duration(milliseconds: 500))
             .then((value) => _shouldReloadCachedBuildWidget = false);
         setState(() {
           scale = 1.0;
@@ -407,7 +407,7 @@ class _ArticleListItemVerySimpleWidgetState
       isChecked = true;
       firstChecked = true;
       _shouldReloadCachedBuildWidget = true;
-      Future.delayed(Duration(milliseconds: 500))
+      Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
         scale = 0.95;
@@ -430,7 +430,7 @@ class _ArticleListItemVerySimpleWidgetState
               '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
         ),
         gravity: ToastGravity.BOTTOM,
-        toastDuration: Duration(seconds: 4),
+        toastDuration: const Duration(seconds: 4),
       );
     } catch (e, st) {
       Logger.error('[ArticleList-LongPress] E: $e\n'
@@ -453,7 +453,7 @@ class _ArticleListItemVerySimpleWidgetState
     await HapticFeedback.lightImpact();
 
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -468,7 +468,7 @@ class _ArticleListItemVerySimpleWidgetState
       return;
     }
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -479,7 +479,7 @@ class _ArticleListItemVerySimpleWidgetState
   _onTapCancle() {
     onScaling = false;
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -494,7 +494,7 @@ class _ArticleListItemVerySimpleWidgetState
       var sz = await _calculateImageDimension(thumbnail!);
       Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
-        transitionDuration: Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 500),
         transitionsBuilder: (BuildContext context, Animation<double> animation,
             Animation<double> secondaryAnimation, Widget wi) {
           return FadeTransition(opacity: animation, child: wi);
@@ -511,7 +511,7 @@ class _ArticleListItemVerySimpleWidgetState
     }
 
     _shouldReloadCachedBuildWidget = true;
-    Future.delayed(Duration(milliseconds: 500))
+    Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
       pad = 0;
@@ -521,7 +521,7 @@ class _ArticleListItemVerySimpleWidgetState
   Future<Size> _calculateImageDimension(String url) {
     Completer<Size> completer = Completer();
     Image image = Image(image: CachedNetworkImageProvider(url));
-    image.image.resolve(ImageConfiguration()).addListener(
+    image.image.resolve(const ImageConfiguration()).addListener(
       ImageStreamListener(
         (ImageInfo image, bool synchronousCall) {
           var myImage = image.image;

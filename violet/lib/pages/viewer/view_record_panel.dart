@@ -28,15 +28,15 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
       builder: (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
         if (!snapshot.hasData) return Container();
         return ListView.builder(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.zero,
           itemExtent: 50.0,
           itemBuilder: (context, index) {
             if (index == 0)
               return Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Text(
                   'View Record',
                   style: TextStyle(
                     fontSize: 16,
@@ -52,13 +52,13 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                 children: [
                   Flexible(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         snapshot.data![index - 1].lastPage() == null
                             ? '??'
                             : '${snapshot.data![index - 1].lastPage()} Page',
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                         ),
@@ -66,7 +66,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       snapshot.data![index - 1].datetimeStart().toString(),
                       style: TextStyle(color: Colors.grey.shade600),

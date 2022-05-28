@@ -46,10 +46,10 @@ class _LabTopRecentState extends State<LabTopRecent> {
         isTop = false;
     });
 
-    Future.delayed(Duration(milliseconds: 100)).then(updateRercord).then(
-        (value) => Future.delayed(Duration(milliseconds: 100)).then((value) =>
-            _controller.animateTo(0.0,
-                duration: Duration(milliseconds: 300),
+    Future.delayed(const Duration(milliseconds: 100)).then(updateRercord).then(
+        (value) => Future.delayed(const Duration(milliseconds: 100)).then(
+            (value) => _controller.animateTo(0.0,
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.fastOutSlowIn)));
   }
 
@@ -85,10 +85,10 @@ class _LabTopRecentState extends State<LabTopRecent> {
       records = result;
 
       setState(() {});
-      Future.delayed(Duration(milliseconds: 50)).then((x) {
+      Future.delayed(const Duration(milliseconds: 50)).then((x) {
         _controller.animateTo(
           0.0,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.fastOutSlowIn,
         );
       });
@@ -124,9 +124,9 @@ class _LabTopRecentState extends State<LabTopRecent> {
         children: [
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.all(0),
+              padding: const EdgeInsets.all(0),
               controller: _controller,
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: records.length,
               itemBuilder: (BuildContext ctxt, int index) {
                 return Align(
@@ -138,7 +138,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
                       showDetail: true,
                       addBottomPadding: true,
                       width: (windowWidth - 4.0),
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       viewed: records[index].item2,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
@@ -156,7 +156,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
                   dense: true,
                   title: Align(
                     child: SliderTheme(
-                      data: SliderThemeData(
+                      data: const SliderThemeData(
                         activeTrackColor: Colors.blue,
                         inactiveTrackColor: Color(0xffd0d2d3),
                         trackHeight: 3,

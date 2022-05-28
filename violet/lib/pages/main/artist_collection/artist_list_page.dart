@@ -67,7 +67,7 @@ class ArtistListPage extends StatelessWidget {
     final color = Settings.themeWhat
         ? Settings.themeBlack
             ? Colors.black
-            : Color(0xFF353535)
+            : const Color(0xFF353535)
         : Colors.grey.shade100;
 
     return Container(
@@ -83,11 +83,11 @@ class ArtistListPage extends StatelessWidget {
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
           child: ListView.builder(
-            padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
-            physics: ClampingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+            physics: const ClampingScrollPhysics(),
             itemCount: artists.length,
             itemBuilder: (context, index) {
               final artist = artists[index];
@@ -119,7 +119,7 @@ class ArtistListPage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.error),
+                          const Icon(Icons.error),
                           Text(
                             snapshot.error.toString(),
                             overflow: TextOverflow.fade,
@@ -205,7 +205,7 @@ class ArtistListPage extends StatelessWidget {
                 showDetail: false,
                 addBottomPadding: false,
                 width: width,
-                thumbnailTag: Uuid().v4(),
+                thumbnailTag: const Uuid().v4(),
                 disableFilter: true,
                 usableTabList: queryResults,
               ),

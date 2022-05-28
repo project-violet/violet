@@ -273,7 +273,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             msg: Translations.of(context).trans('closedoubletap'),
           ),
           gravity: ToastGravity.BOTTOM,
-          toastDuration: Duration(seconds: 4),
+          toastDuration: const Duration(seconds: 4),
         );
 
         return false;
@@ -285,16 +285,16 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         drawer: _usesDrawer ? _buildDrawer(context) : null,
         body: PageView(
           controller: _pageController,
-          physics: _usesDrawer ? NeverScrollableScrollPhysics() : null,
+          physics: _usesDrawer ? const NeverScrollableScrollPhysics() : null,
           onPageChanged: (newPage) {
             setState(() {});
           },
           children: <Widget>[
-            MainPage2(),
-            SearchPage(),
-            BookmarkPage(),
-            DownloadPage(),
-            SettingsPage(),
+            const MainPage2(),
+            const SearchPage(),
+            const BookmarkPage(),
+            const DownloadPage(),
+            const SettingsPage(),
           ],
         ),
       ),

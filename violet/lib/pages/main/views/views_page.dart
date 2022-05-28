@@ -40,7 +40,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                 indicatorHeight: 40.0,
                 indicatorColor: Settings.majorColor,
                 tabBarIndicatorSize: TabBarIndicatorSize.tab,
-                insets: EdgeInsets.only(left: 8, right: 8, top: 21),
+                insets: const EdgeInsets.only(left: 8, right: 8, top: 21),
               ),
               tabs: [
                 Container(
@@ -54,7 +54,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('daily'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -69,7 +69,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('weekly'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -84,7 +84,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('monthly'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -99,7 +99,7 @@ class _ViewsPageState extends State<ViewsPage> with TickerProviderStateMixin {
                       Text(Translations.of(context).trans('alltime'),
                           style: Settings.themeWhat
                               ? null
-                              : TextStyle(color: Colors.black)),
+                              : const TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -173,7 +173,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
       }),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -202,12 +202,12 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   ),
                 ),
                 Container(height: 16),
-                Text(
+                const Text(
                   'Oops! Something was wrong!',
                   style: TextStyle(fontSize: 24),
                 ),
                 Container(height: 2),
-                Text(
+                const Text(
                   'If you still encounter this error, please contact the developer!',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
@@ -234,7 +234,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         var results = snapshot.data as List<Tuple2<QueryResult, int>>;
 
         return ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           children: results.map((x) {
             return Align(
               key: Key('views${widget.index}/${x.item1.id()}'),
@@ -245,7 +245,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   showDetail: true,
                   addBottomPadding: true,
                   width: (windowWidth - 4.0),
-                  thumbnailTag: Uuid().v4(),
+                  thumbnailTag: const Uuid().v4(),
                   viewed: x.item2,
                   usableTabList: results.map((e) => e.item1).toList(),
                   // isCheckMode: checkMode,

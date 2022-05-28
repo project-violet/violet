@@ -100,9 +100,9 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     final width = MediaQuery.of(context).size.width;
 
     return GridView.count(
-      padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
       controller: _scrollController,
-      physics: BouncingScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       shrinkWrap: true,
       crossAxisCount: 3,
       childAspectRatio: 3 / 4,
@@ -155,13 +155,13 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         builder: (context,
             AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
           if (!snapshot.hasData)
-            return Container(child: CircularProgressIndicator());
-          Future.delayed(Duration(milliseconds: 50))
+            return Container(child: const CircularProgressIndicator());
+          Future.delayed(const Duration(milliseconds: 50))
               .then((value) => _jumpToViewedPage());
           return GridView.count(
-            padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
             controller: _scrollController,
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 3 / 4,
@@ -194,7 +194,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           width: 100,
           height: 100,
           // alignment: Alignment.center,
-          child: Align(
+          child: const Align(
             // alignment: Alignment.center,
             child: Text(
               'Thumbnail not found!',
@@ -221,13 +221,13 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           Align(
             alignment: Alignment.topCenter,
             child: Container(
-              padding: EdgeInsets.only(bottom: 1),
+              padding: const EdgeInsets.only(bottom: 1),
               width: double.infinity,
               color: Colors.black.withOpacity(0.7),
               child: Text(
                 '${index + 1} page',
                 textAlign: TextAlign.right,
-                style: TextStyle(fontSize: 11, color: Colors.white),
+                style: const TextStyle(fontSize: 11, color: Colors.white),
               ),
             ),
           ),

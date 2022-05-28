@@ -162,16 +162,16 @@ class _ViewerPageState extends State<ViewerPage>
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
 
     if (Settings.showRecordJumpMessage)
-      Future.delayed(Duration(milliseconds: 100))
+      Future.delayed(const Duration(milliseconds: 100))
           .then((value) => _checkLatestRead());
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async =>
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async =>
         _vIsBookmarked.value =
             await (await Bookmark.getInstance()).isBookmark(_pageInfo.id));
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
     )..addListener(() {
         if (_animation != null)
           _transformationController.value = _animation!.value;
@@ -248,7 +248,7 @@ class _ViewerPageState extends State<ViewerPage>
       if (_pageInfo.useFileSystem) _preprocessImageInfoForFileImage();
 
       Timer.periodic(
-        Duration(milliseconds: 100),
+        const Duration(milliseconds: 100),
         pageReadTimerCallback,
       );
     }
@@ -369,18 +369,18 @@ class _ViewerPageState extends State<ViewerPage>
       if (!Settings.animation) {
         await _itemScrollController.scrollTo(
           index: next - 1,
-          duration: Duration(microseconds: 1),
+          duration: const Duration(microseconds: 1),
           alignment: 0.12,
         );
       } else {
         _sliderOnChange = true;
         await _itemScrollController.scrollTo(
           index: next - 1,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           alignment: 0.12,
         );
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           _sliderOnChange = false;
         });
       }
@@ -390,7 +390,7 @@ class _ViewerPageState extends State<ViewerPage>
       } else {
         _pageController.animateToPage(
           next - 1,
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
         );
       }
@@ -426,7 +426,7 @@ class _ViewerPageState extends State<ViewerPage>
                 _latestIndex = e.lastPage()! - 1;
                 _itemScrollController.scrollTo(
                   index: e.lastPage()! - 1,
-                  duration: Duration(microseconds: 1),
+                  duration: const Duration(microseconds: 1),
                   alignment: 0.12,
                 );
               } else {
@@ -466,7 +466,7 @@ class _ViewerPageState extends State<ViewerPage>
           );
         } else {
           return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle(
+            value: const SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
               systemNavigationBarColor: Colors.transparent,
             ),
@@ -489,12 +489,12 @@ class _ViewerPageState extends State<ViewerPage>
     final height = MediaQuery.of(context).size.height;
     return AnimatedOpacity(
       opacity: _opacity,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       child: Container(
         alignment: Alignment.center,
         width: double.infinity,
         child: AnimatedPadding(
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           padding: EdgeInsets.only(
             top: height -
@@ -524,9 +524,9 @@ class _ViewerPageState extends State<ViewerPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.arrow_back, size: 20.0),
+                const Icon(Icons.arrow_back, size: 20.0),
                 Container(width: 10),
-                Text('Exit'),
+                const Text('Exit'),
               ],
             ),
           ),
@@ -541,7 +541,7 @@ class _ViewerPageState extends State<ViewerPage>
     final height = MediaQuery.of(context).size.height;
     return AnimatedOpacity(
       opacity: _opacity,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       child: Stack(
         children: [
           !Settings.disableFullScreen
@@ -617,7 +617,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   _appBarBack() {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       color: Colors.white,
       onPressed: () async {
         _isSessionOutdated = true;
@@ -655,7 +655,7 @@ class _ViewerPageState extends State<ViewerPage>
                     '${_pageInfo.id}${Translations.of(context).trans(!_vIsBookmarked.value ? 'addtobookmark' : 'removetobookmark')}',
               ),
               gravity: ToastGravity.TOP,
-              toastDuration: Duration(seconds: 4),
+              toastDuration: const Duration(seconds: 4),
             );
 
             _vIsBookmarked.value = !_vIsBookmarked.value;
@@ -671,7 +671,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   _appBarInfo() {
     return IconButton(
-      icon: Icon(MdiIcons.information),
+      icon: const Icon(MdiIcons.information),
       color: Colors.white,
       onPressed: () async {
         final height = MediaQuery.of(context).size.height;
@@ -719,7 +719,7 @@ class _ViewerPageState extends State<ViewerPage>
                     lockRead: true,
                   ),
                   child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
+                    key: const ObjectKey('asdfasdf'),
                   ),
                 );
                 return cache!;
@@ -737,7 +737,7 @@ class _ViewerPageState extends State<ViewerPage>
   _appBarTab() {
     final height = MediaQuery.of(context).size.height;
     return IconButton(
-      icon: Icon(MdiIcons.tab),
+      icon: const Icon(MdiIcons.tab),
       color: Colors.white,
       onPressed: () async {
         stopTimer();
@@ -766,7 +766,7 @@ class _ViewerPageState extends State<ViewerPage>
           if (!Settings.isHorizontal) {
             _itemScrollController.scrollTo(
               index: 0,
-              duration: Duration(microseconds: 1),
+              duration: const Duration(microseconds: 1),
               alignment: 0.12,
             );
           } else {
@@ -811,7 +811,7 @@ class _ViewerPageState extends State<ViewerPage>
 
           setState(() {});
 
-          Future.delayed(Duration(milliseconds: 300))
+          Future.delayed(const Duration(milliseconds: 300))
               .then((value) => _checkLatestRead(true));
         });
         startTimer();
@@ -822,7 +822,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   _appBarHistory() {
     return IconButton(
-      icon: Icon(MdiIcons.history),
+      icon: const Icon(MdiIcons.history),
       color: Colors.white,
       onPressed: () async {
         stopTimer();
@@ -841,7 +841,7 @@ class _ViewerPageState extends State<ViewerPage>
             if (!Settings.isHorizontal) {
               _itemScrollController.scrollTo(
                 index: value,
-                duration: Duration(microseconds: 1),
+                duration: const Duration(microseconds: 1),
                 alignment: 0.12,
               );
             } else {
@@ -873,7 +873,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   _appBarGallery() {
     return IconButton(
-      icon: Icon(MdiIcons.folderImage),
+      icon: const Icon(MdiIcons.folderImage),
       color: Colors.white,
       onPressed: () async {
         stopTimer();
@@ -899,7 +899,7 @@ class _ViewerPageState extends State<ViewerPage>
               if (!Settings.isHorizontal) {
                 _itemScrollController.scrollTo(
                   index: value,
-                  duration: Duration(microseconds: 1),
+                  duration: const Duration(microseconds: 1),
                   alignment: 0.12,
                 );
               } else {
@@ -919,7 +919,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   _appBarSettings() {
     return IconButton(
-      icon: Icon(Icons.settings),
+      icon: const Icon(Icons.settings),
       color: Colors.white,
       onPressed: () async {
         stopTimer();
@@ -937,10 +937,11 @@ class _ViewerPageState extends State<ViewerPage>
                   } else {
                     var npage = _prevPage;
                     _sliderOnChange = true;
-                    Future.delayed(Duration(milliseconds: 180)).then((value) {
+                    Future.delayed(const Duration(milliseconds: 180))
+                        .then((value) {
                       _itemScrollController.scrollTo(
                         index: npage - 1,
-                        duration: Duration(microseconds: 1),
+                        duration: const Duration(microseconds: 1),
                         alignment: 0.12,
                       );
                       _sliderOnChange = false;
@@ -1017,8 +1018,8 @@ class _ViewerPageState extends State<ViewerPage>
             child: NotificationListener(
               child: ScrollablePositionedList.builder(
                 physics: _scrollListEnable
-                    ? AlwaysScrollableScrollPhysics()
-                    : NeverScrollableScrollPhysics(),
+                    ? const AlwaysScrollableScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 itemCount: _pageInfo.uris.length,
                 itemScrollController: _itemScrollController,
@@ -1038,17 +1039,17 @@ class _ViewerPageState extends State<ViewerPage>
                     if (_pageInfo.useWeb)
                       image = Padding(
                         child: _networkImageItem(index),
-                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                       );
                     else if (_pageInfo.useFileSystem)
                       image = Padding(
                         child: _storageImageItem(index),
-                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                       );
                     else if (_pageInfo.useProvider)
                       image = Padding(
                         child: _providerImageItem(index),
-                        padding: EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                       );
                   }
 
@@ -1267,7 +1268,7 @@ class _ViewerPageState extends State<ViewerPage>
               );
             }
 
-            return SizedBox(
+            return const SizedBox(
               height: 300,
               child: Center(
                 child: SizedBox(
@@ -1372,7 +1373,7 @@ class _ViewerPageState extends State<ViewerPage>
       if (!Settings.disableFullScreen) {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
       }
-      Future.delayed(Duration(milliseconds: 300)).then((value) {
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
         setState(() {
           _disableBottom = true;
         });
@@ -1400,7 +1401,7 @@ class _ViewerPageState extends State<ViewerPage>
             _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
         _thumbController.animateTo(
           jumpOffset > 0 ? jumpOffset : 0,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       });
@@ -1433,18 +1434,18 @@ class _ViewerPageState extends State<ViewerPage>
       if (!Settings.animation) {
         _itemScrollController.scrollTo(
           index: next - 1,
-          duration: Duration(microseconds: 1),
+          duration: const Duration(microseconds: 1),
           alignment: 0.12,
         );
       } else {
         _sliderOnChange = true;
         await _itemScrollController.scrollTo(
           index: next - 1,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           alignment: 0.12,
         );
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           _sliderOnChange = false;
         });
       }
@@ -1454,7 +1455,7 @@ class _ViewerPageState extends State<ViewerPage>
       } else {
         _pageController.animateToPage(
           next - 1,
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
         );
       }
@@ -1490,18 +1491,18 @@ class _ViewerPageState extends State<ViewerPage>
       if (!Settings.animation) {
         _itemScrollController.scrollTo(
           index: next - 1,
-          duration: Duration(microseconds: 1),
+          duration: const Duration(microseconds: 1),
           alignment: 0.12,
         );
       } else {
         _sliderOnChange = true;
         await _itemScrollController.scrollTo(
           index: next - 1,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
           alignment: 0.12,
         );
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           _sliderOnChange = false;
         });
       }
@@ -1511,7 +1512,7 @@ class _ViewerPageState extends State<ViewerPage>
       } else {
         _pageController.animateToPage(
           next - 1,
-          duration: Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
         );
       }
@@ -1531,12 +1532,13 @@ class _ViewerPageState extends State<ViewerPage>
     }
     return FutureBuilder(
       // to avoid loading all images when fast scrolling
-      future: Future.delayed(Duration(milliseconds: 300)).then((value) => 1),
+      future:
+          Future.delayed(const Duration(milliseconds: 300)).then((value) => 1),
       builder: (context, snapshot) {
         // To prevent the scroll from being chewed,
         // it is necessary to put an empty box for the invisible part.
         if (!snapshot.hasData && _height![index] == 0) {
-          return SizedBox(
+          return const SizedBox(
             height: 300,
             child: Center(
               child: SizedBox(
@@ -1556,7 +1558,7 @@ class _ViewerPageState extends State<ViewerPage>
             imageUrl: _pageInfo.uris[index],
             httpHeaders: _pageInfo.headers,
             fit: BoxFit.cover,
-            fadeInDuration: Duration(microseconds: 500),
+            fadeInDuration: const Duration(microseconds: 500),
             fadeInCurve: Curves.easeIn,
             imageBuilder: (context, imageProvider, child) {
               if (_height![index] == 0 || _height![index] == 300) {
@@ -1596,7 +1598,7 @@ class _ViewerPageState extends State<ViewerPage>
     Future<dynamic> future;
 
     if (_height![index] == 0)
-      future = Future.delayed(Duration(milliseconds: 300));
+      future = Future.delayed(const Duration(milliseconds: 300));
     else
       future = Future.value(0);
 
@@ -1620,7 +1622,7 @@ class _ViewerPageState extends State<ViewerPage>
 
         return SizedBox(
           height: _height![index] != 0 ? _height![index] : 300,
-          child: Center(
+          child: const Center(
             child: SizedBox(
               width: 30,
               height: 30,
@@ -1686,7 +1688,7 @@ class _ViewerPageState extends State<ViewerPage>
 
     if (_loadingEstimaed![index] == false) {
       _loadingEstimaed![index] = true;
-      Future.delayed(Duration(milliseconds: 1)).then((value) async {
+      Future.delayed(const Duration(milliseconds: 1)).then((value) async {
         if (_isSessionOutdated) return;
         final h =
             await _pageInfo.provider!.getEstimatedImageHeight(index, width);
@@ -1701,7 +1703,7 @@ class _ViewerPageState extends State<ViewerPage>
     Future<dynamic> future;
 
     if (_height![index] == 0)
-      future = Future.delayed(Duration(milliseconds: 300));
+      future = Future.delayed(const Duration(milliseconds: 300));
     else
       future = Future.value(0);
 
@@ -1716,7 +1718,7 @@ class _ViewerPageState extends State<ViewerPage>
             height: _estimatedImageHeight![index] != 0
                 ? _estimatedImageHeight![index]
                 : 300,
-            child: Center(
+            child: const Center(
               child: SizedBox(
                 width: 30,
                 height: 30,
@@ -1746,7 +1748,7 @@ class _ViewerPageState extends State<ViewerPage>
                 height: _estimatedImageHeight![index] != 0
                     ? _estimatedImageHeight![index]
                     : 300,
-                child: Center(
+                child: const Center(
                   child: SizedBox(
                     width: 30,
                     height: 30,
@@ -1769,7 +1771,8 @@ class _ViewerPageState extends State<ViewerPage>
                   imgHeader: _headerCache![index],
                   imageWidgetBuilder: (context, imageProvider, child) {
                     if (_height![index] == 0 || _height![index] == 300) {
-                      Future.delayed(Duration(milliseconds: 50)).then((value) {
+                      Future.delayed(const Duration(milliseconds: 50))
+                          .then((value) {
                         try {
                           final RenderBox renderBoxRed = _keys![index]
                               .currentContext!
@@ -1807,7 +1810,7 @@ class _ViewerPageState extends State<ViewerPage>
                   loadingErrorWidgetBuilder: (context, url, error) {
                     Logger.error('[Viewer] E: image load failed\n'
                         '$error');
-                    Future.delayed(Duration(milliseconds: 500))
+                    Future.delayed(const Duration(milliseconds: 500))
                         .then((value) => setState(() {
                               _keys![index] = GlobalKey();
                             }));
@@ -1947,7 +1950,7 @@ class _ViewerPageState extends State<ViewerPage>
     if (_sliderOnChange) return;
     _itemScrollController.scrollTo(
       index: _latestIndex,
-      duration: Duration(microseconds: 1),
+      duration: const Duration(microseconds: 1),
       alignment: _latestAlign,
     );
   }
@@ -1959,7 +1962,7 @@ class _ViewerPageState extends State<ViewerPage>
     final height = MediaQuery.of(context).size.height;
     return AnimatedOpacity(
       opacity: _opacity,
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       child: Stack(
         children: [
           !Settings.disableFullScreen && !Settings.moveToAppBarToBottom
@@ -1972,7 +1975,7 @@ class _ViewerPageState extends State<ViewerPage>
                 )
               : Container(),
           AnimatedPadding(
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.only(
                 top: height -
                     Variables.bottomBarHeight -
@@ -1983,7 +1986,7 @@ class _ViewerPageState extends State<ViewerPage>
                     (Settings.moveToAppBarToBottom ? 48 : 0)),
             curve: Curves.easeInOut,
             child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               alignment: Alignment.bottomCenter,
               height: Variables.bottomBarHeight +
                   (Platform.isIOS ? 48 : 0) +
@@ -1999,9 +2002,9 @@ class _ViewerPageState extends State<ViewerPage>
                     if (_pageInfo.useFileSystem)
                       AnimatedOpacity(
                         opacity: _isThumbMode ? 1.0 : 0,
-                        duration: Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         child: AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                           height: _isThumbMode ? _thumbHeight : 0,
                           child: _thumbArea(),
@@ -2013,12 +2016,13 @@ class _ViewerPageState extends State<ViewerPage>
                         if (_pageInfo.useFileSystem)
                           IconButton(
                             color: Colors.white,
-                            icon: Icon(Icons.keyboard_arrow_up),
+                            icon: const Icon(Icons.keyboard_arrow_up),
                             onPressed: () async {
                               _isThumbMode = !_isThumbMode;
                               if (_isThumbMode)
-                                Future.delayed(Duration(milliseconds: 10)).then(
-                                    (value) => _thumbAnimateTo(_prevPage - 1));
+                                Future.delayed(const Duration(milliseconds: 10))
+                                    .then((value) =>
+                                        _thumbAnimateTo(_prevPage - 1));
                               await Settings.setEnableThumbSlider(_isThumbMode);
                               setState(() {});
                             },
@@ -2033,7 +2037,7 @@ class _ViewerPageState extends State<ViewerPage>
                                   builder: (BuildContext context, int value,
                                       Widget? child) {
                                     return Text('$value',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             color: Colors.white70,
                                             fontSize: 16.0));
                                   }),
@@ -2044,7 +2048,7 @@ class _ViewerPageState extends State<ViewerPage>
                           child: Container(
                             // width: 200,
                             child: SliderTheme(
-                              data: SliderThemeData(
+                              data: const SliderThemeData(
                                 activeTrackColor: Colors.blue,
                                 inactiveTrackColor: Color(0xffd0d2d3),
                                 trackHeight: 3,
@@ -2074,7 +2078,7 @@ class _ViewerPageState extends State<ViewerPage>
                                     },
                                     onChangeEnd: (value) {
                                       Future.delayed(
-                                              Duration(milliseconds: 300))
+                                              const Duration(milliseconds: 300))
                                           .then((value) {
                                         _sliderOnChange = false;
                                       });
@@ -2082,7 +2086,8 @@ class _ViewerPageState extends State<ViewerPage>
                                           _pageInfo.useFileSystem)
                                         _itemScrollController.scrollTo(
                                           index: value.toInt() - 1,
-                                          duration: Duration(microseconds: 1),
+                                          duration:
+                                              const Duration(microseconds: 1),
                                           alignment: 0.12,
                                         );
                                     },
@@ -2111,7 +2116,7 @@ class _ViewerPageState extends State<ViewerPage>
                           ),
                         ),
                         Text('${_pageInfo.uris.length}',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: Colors.white70, fontSize: 15.0)),
                         Container(
                           width: 16.0,
@@ -2141,10 +2146,10 @@ class _ViewerPageState extends State<ViewerPage>
       controller: _thumbController,
       scrollDirection: Axis.horizontal,
       itemCount: _pageInfo.uris.length,
-      physics: BouncingScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         return Container(
-          padding: EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
+          padding: const EdgeInsets.only(top: 4.0, left: 2.0, right: 2.0),
           width: _thumbImageWidth[index],
           child: GestureDetector(
             child: Column(
@@ -2166,14 +2171,15 @@ class _ViewerPageState extends State<ViewerPage>
                 ),
                 Container(height: 2.0),
                 Text((index + 1).toString(),
-                    style: TextStyle(color: Colors.white, fontSize: 12.0)),
+                    style:
+                        const TextStyle(color: Colors.white, fontSize: 12.0)),
               ],
             ),
             onTap: () {
               if (!Settings.isHorizontal) {
                 _itemScrollController.scrollTo(
                   index: index,
-                  duration: Duration(microseconds: 1),
+                  duration: const Duration(microseconds: 1),
                   alignment: 0.12,
                 );
               } else {
@@ -2185,7 +2191,7 @@ class _ViewerPageState extends State<ViewerPage>
                   _thumbImageWidth[index] / 2;
               _thumbController.animateTo(
                 jumpOffset > 0 ? jumpOffset : 0,
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOut,
               );
 
@@ -2202,7 +2208,7 @@ class _ViewerPageState extends State<ViewerPage>
   _verticalPageLabel() {
     return Container(
       alignment: Alignment.bottomCenter,
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       child: ValueListenableBuilder(
         valueListenable: _vPrevPage,
         builder: (BuildContext context, int value, Widget? child) {
@@ -2405,7 +2411,7 @@ class __ProviderImageState extends State<_ProviderImage> {
       imageUrl: widget.imgUrl,
       httpHeaders: widget.imgHeader,
       fit: BoxFit.cover,
-      fadeInDuration: Duration(microseconds: 500),
+      fadeInDuration: const Duration(microseconds: 500),
       fadeInCurve: Curves.easeIn,
       filterQuality: SettingsWrapper.imageQuality,
       imageBuilder: widget.imageWidgetBuilder,
@@ -2471,7 +2477,7 @@ class __FileImageState extends State<_FileImage> {
                 imageInfo != null) &&
             !_loaded) {
           _loaded = true;
-          Future.delayed(Duration(milliseconds: 100)).then((value) {
+          Future.delayed(const Duration(milliseconds: 100)).then((value) {
             final aspectRatio = imageInfo!.image.width / imageInfo.image.height;
             if (widget.heightCallback != null)
               widget.heightCallback!(width / aspectRatio);
@@ -2482,7 +2488,7 @@ class __FileImageState extends State<_FileImage> {
         } else if (state.extendedImageLoadState == LoadState.loading) {
           return SizedBox(
             height: _height,
-            child: Center(
+            child: const Center(
               child: SizedBox(
                 width: 30,
                 height: 30,
