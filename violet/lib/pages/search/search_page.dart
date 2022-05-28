@@ -66,7 +66,7 @@ class _SearchPageState extends State<SearchPage>
 
   DateTime datetime = DateTime.now();
 
-  List<GlobalKey> itemKeys = <GlobalKey>[];
+  Map<String, GlobalKey> itemKeys = Map<String, GlobalKey>();
   double itemHeight = 0.0;
   ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
   int searchTotalResultCount = 0;
@@ -140,9 +140,14 @@ class _SearchPageState extends State<SearchPage>
       // scroll position
       //
       if (itemKeys.isNotEmpty && itemHeight <= 0.1) {
-        if (itemKeys[0].currentContext != null) {
-          const bottomPadding = 8;
-          itemHeight = itemKeys[0].currentContext!.size!.height + bottomPadding;
+        for (var key in itemKeys.entries) {
+          // invisible article is not rendered yet
+          // so we can find live elements
+          if (key.value.currentContext != null) {
+            const bottomPadding = 8;
+            itemHeight = key.value.currentContext!.size!.height + bottomPadding;
+            break;
+          }
         }
       }
 
@@ -223,7 +228,6 @@ class _SearchPageState extends State<SearchPage>
       _shouldReload = false;
 
       itemKeys.clear();
-      itemKeys.add(GlobalKey());
 
       final panel = ResultPanelWidget(
         dateTime: datetime,
@@ -724,11 +728,11 @@ class _SearchPageState extends State<SearchPage>
   }
 }
 
-class ResultPanelWidget extends StatefulWidget {
+class ResultPanelWidget extends StatelessWidget {
   final List<QueryResult> resultList;
   final DateTime dateTime;
   final ObjectKey sliverKey;
-  final List<GlobalKey> itemKeys;
+  final Map<String, GlobalKey> itemKeys;
 
   const ResultPanelWidget({
     Key? key,
@@ -739,21 +743,9 @@ class ResultPanelWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ResultPanelWidget> createState() => _ResultPanelWidgetState();
-}
-
-class _ResultPanelWidgetState extends State<ResultPanelWidget> {
-  final ScrollController _scrollController = ScrollController();
-
-  List<Widget?>? _cachedItems;
-
-  @override
   Widget build(BuildContext context) {
     var mm = Settings.searchResultType == 0 ? 3 : 2;
     var windowWidth = MediaQuery.of(context).size.width;
-
-    _cachedItems ??=
-        List<Widget?>.generate(widget.resultList.length, (x) => null);
 
     switch (Settings.searchResultType) {
       case 0:
@@ -761,7 +753,7 @@ class _ResultPanelWidgetState extends State<ResultPanelWidget> {
         return SliverPadding(
             padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: SliverGrid(
-              key: widget.key,
+              key: sliverKey,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: Settings.useTabletMode ? mm * 2 : mm,
                 crossAxisSpacing: 8,
@@ -770,34 +762,32 @@ class _ResultPanelWidgetState extends State<ResultPanelWidget> {
               ),
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  if (_cachedItems![index] == null) {
-                    _cachedItems![index] = Padding(
-                      key: widget.itemKeys.length > index
-                          ? widget.itemKeys[index]
-                          : GlobalKey(),
-                      padding: EdgeInsets.zero,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SizedBox(
-                          child: Provider<ArticleListItem>.value(
-                            value: ArticleListItem.fromArticleListItem(
-                              queryResult: widget.resultList[index],
-                              showDetail: false,
-                              addBottomPadding: false,
-                              width: (windowWidth - 4.0) / mm,
-                              thumbnailTag:
-                                  'thumbnail${widget.resultList[index].id()}${widget.dateTime}',
-                              usableTabList: widget.resultList,
-                            ),
-                            child: ArticleListItemVerySimpleWidget(),
+                  var keyStr = 'search/${resultList[index].id()}/$index';
+                  if (!itemKeys.containsKey(keyStr))
+                    itemKeys[keyStr] = GlobalKey();
+                  return Padding(
+                    key: itemKeys[keyStr],
+                    padding: EdgeInsets.zero,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        child: Provider<ArticleListItem>.value(
+                          value: ArticleListItem.fromArticleListItem(
+                            queryResult: resultList[index],
+                            showDetail: false,
+                            addBottomPadding: false,
+                            width: (windowWidth - 4.0) / mm,
+                            thumbnailTag:
+                                'thumbnail${resultList[index].id()}${dateTime}',
+                            usableTabList: resultList,
                           ),
+                          child: ArticleListItemVerySimpleWidget(),
                         ),
                       ),
-                    );
-                  }
-                  return _cachedItems![index];
+                    ),
+                  );
                 },
-                childCount: widget.resultList.length,
+                childCount: resultList.length,
               ),
             ));
 
@@ -808,12 +798,12 @@ class _ResultPanelWidgetState extends State<ResultPanelWidget> {
           return SliverPadding(
             padding: EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: LiveSliverGrid(
-              key: widget.key,
-              controller: _scrollController,
+              key: sliverKey,
+              controller: ScrollController(),
               showItemInterval: Duration(milliseconds: 50),
               showItemDuration: Duration(milliseconds: 150),
               visibleFraction: 0.001,
-              itemCount: widget.resultList.length,
+              itemCount: resultList.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 8,
@@ -821,20 +811,21 @@ class _ResultPanelWidgetState extends State<ResultPanelWidget> {
                 childAspectRatio: (windowWidth / 2) / 130,
               ),
               itemBuilder: (context, index, animation) {
+                var keyStr = 'search/${resultList[index].id()}/$index';
+                if (!itemKeys.containsKey(keyStr))
+                  itemKeys[keyStr] = GlobalKey();
                 return Align(
-                  key: widget.itemKeys.length > index
-                      ? widget.itemKeys[index]
-                      : GlobalKey(),
+                  key: itemKeys[keyStr],
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
                       showDetail: Settings.searchResultType == 3,
-                      queryResult: widget.resultList[index],
+                      queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag:
-                          'thumbnail${widget.resultList[index].id()}${widget.dateTime}',
-                      usableTabList: widget.resultList,
+                          'thumbnail${resultList[index].id()}${dateTime}',
+                      usableTabList: resultList,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
@@ -844,29 +835,30 @@ class _ResultPanelWidgetState extends State<ResultPanelWidget> {
           );
         } else {
           return SliverList(
-            key: widget.key,
+            key: key,
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
+                var keyStr = 'search/${resultList[index].id()}/$index';
+                if (!itemKeys.containsKey(keyStr))
+                  itemKeys[keyStr] = GlobalKey();
                 return Align(
-                  key: widget.itemKeys.length > index
-                      ? widget.itemKeys[index]
-                      : GlobalKey(),
+                  key: itemKeys[keyStr],
                   alignment: Alignment.center,
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
                       showDetail: Settings.searchResultType == 3,
-                      queryResult: widget.resultList[index],
+                      queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag:
-                          'thumbnail${widget.resultList[index].id()}${widget.dateTime}',
-                      usableTabList: widget.resultList,
+                          'thumbnail${resultList[index].id()}${dateTime}',
+                      usableTabList: resultList,
                     ),
                     child: ArticleListItemVerySimpleWidget(),
                   ),
                 );
               },
-              childCount: widget.resultList.length,
+              childCount: resultList.length,
             ),
           );
         }
