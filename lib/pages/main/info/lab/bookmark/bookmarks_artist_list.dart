@@ -22,7 +22,7 @@ class LabGroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  LabGroupArtistList({
+  const LabGroupArtistList({
     Key? key,
     required this.artists,
     required this.name,

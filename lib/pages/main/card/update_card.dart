@@ -12,7 +12,7 @@ import 'package:pimp_my_button/pimp_my_button.dart';
 class UpdateCard extends StatefulWidget {
   final VoidCallback clickEvent;
 
-  UpdateCard({Key? key, required this.clickEvent}) : super(key: key);
+  const UpdateCard({Key? key, required this.clickEvent}) : super(key: key);
 
   @override
   State<UpdateCard> createState() => _UpdateCardState();

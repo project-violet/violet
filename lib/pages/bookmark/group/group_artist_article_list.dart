@@ -17,7 +17,7 @@ class GroupArtistArticleList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistArticleList({
+  const GroupArtistArticleList({
     Key? key,
     required this.name,
     required this.groupId,

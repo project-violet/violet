@@ -50,7 +50,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
 
 class ArticleInfoPage extends StatelessWidget {
-  ArticleInfoPage({
+  const ArticleInfoPage({
     Key? key,
   }) : super(key: key);
 
@@ -465,7 +465,7 @@ class SingleChipWidget extends StatelessWidget {
   final String name;
   final String raw;
 
-  SingleChipWidget(this.target, this.name, this.raw, {Key? key})
+  const SingleChipWidget(this.target, this.name, this.raw, {Key? key})
       : super(key: key);
 
   @override
@@ -524,7 +524,8 @@ class MultiChipWidget extends StatelessWidget {
 class PreviewAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  PreviewAreaWidget({Key? key, required this.queryResult}) : super(key: key);
+  const PreviewAreaWidget({Key? key, required this.queryResult})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -609,7 +610,7 @@ class _CommentArea extends StatefulWidget {
   final QueryResult queryResult;
   final Map<String, String> headers;
 
-  _CommentArea({required this.queryResult, required this.headers});
+  const _CommentArea({required this.queryResult, required this.headers});
 
   @override
   __CommentAreaState createState() => __CommentAreaState();
@@ -664,7 +665,7 @@ class _InfoAreaWidget extends StatefulWidget {
   final Map<String, String> headers;
   final List<Tuple3<DateTime, String, String>> comments;
 
-  _InfoAreaWidget({
+  const _InfoAreaWidget({
     required this.queryResult,
     required this.headers,
     required this.comments,

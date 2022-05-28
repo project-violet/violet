@@ -11,7 +11,7 @@ import 'package:violet/variables.dart';
 class ViewRecordPanel extends StatefulWidget {
   final int articleId;
 
-  ViewRecordPanel({Key? key, required this.articleId}) : super(key: key);
+  const ViewRecordPanel({Key? key, required this.articleId}) : super(key: key);
 
   @override
   State<ViewRecordPanel> createState() => _ViewRecordPanelState();

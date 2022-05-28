@@ -15,7 +15,7 @@ class RestoreBookmarkPage extends StatefulWidget {
   final dynamic source;
   final bool restoreWithRecord;
 
-  RestoreBookmarkPage({
+  const RestoreBookmarkPage({
     Key? key,
     required this.source,
     required this.restoreWithRecord,
