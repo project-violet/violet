@@ -527,7 +527,7 @@
 //   final int preloadPagesCount;
 
 //   @override
-//   _PreloadPageViewState createState() =>
+//   State<PreloadPageView> createState() =>
 //       _PreloadPageViewState(preloadPagesCount);
 // }
 
