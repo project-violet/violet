@@ -54,7 +54,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   final ScrollController _scroll = ScrollController();
 
-  Map<String, GlobalKey> itemKeys = Map<String, GlobalKey>();
+  Map<String, GlobalKey> itemKeys = <String, GlobalKey>{};
 
   @override
   void initState() {
