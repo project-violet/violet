@@ -211,6 +211,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
 
     return CardPanel.build(
       context,
+      enableBackgroundColor: true,
       child: Stack(
         children: [
           PageView(
