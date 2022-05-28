@@ -11,6 +11,7 @@ import 'package:synchronized/synchronized.dart';
 class DataBaseManager {
   String? dbPath;
   Database? db;
+  Lock lock = Lock();
   static DataBaseManager? _instance;
 
   DataBaseManager({this.dbPath});
@@ -22,7 +23,7 @@ class DataBaseManager {
   @protected
   @mustCallSuper
   void dispose() async {
-    if (db != null) db!.close();
+    // await close();
   }
 
   static Future<DataBaseManager> getInstance() async {
@@ -31,7 +32,6 @@ class DataBaseManager {
           ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
           : '${await getDatabasesPath()}/data.db';
       _instance = create(dbPath);
-      _instance!._open();
     }
     return _instance!;
   }
@@ -44,40 +44,66 @@ class DataBaseManager {
   }
 
   Future _open() async {
-    if (db == null) db = await openDatabase(dbPath!);
+    db = await openDatabase(dbPath!);
+  }
+
+  Future _close() async {
+    await db!.close();
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {
     List<Map<String, dynamic>> result = [];
-    result = await db!.rawQuery(str);
+    await lock.synchronized(() async {
+      await _open();
+      result = await db!.rawQuery(str);
+      await _close();
+    }, timeout: Duration(seconds: 5));
     return result;
   }
 
   Future<void> execute(String str) async {
-    await db!.execute(str);
+    await lock.synchronized(() async {
+      await _open();
+      await db!.execute(str);
+      await _close();
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<int> insert(String name, Map<String, dynamic> wh) async {
     int result = -1;
-    result = await db!.insert(name, wh);
+    await lock.synchronized(() async {
+      await _open();
+      result = await db!.insert(name, wh);
+      await _close();
+    }, timeout: Duration(seconds: 5));
     return result;
   }
 
   Future<void> update(String name, Map<String, dynamic> wh, String where,
       List<dynamic> args) async {
-    await db!.update(name, wh, where: where, whereArgs: args);
+    await lock.synchronized(() async {
+      await _open();
+      await db!.update(name, wh, where: where, whereArgs: args);
+      await _close();
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<void> swap(String name, String key, String what, int key1, int key2,
       int s1, int s2) async {
-    await db!.transaction((txn) async {
-      await txn.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s2, key1]);
-      await txn.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s1, key2]);
-    });
+    await lock.synchronized(() async {
+      await _open();
+      await db!.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s2, key1]);
+      await db!.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s1, key2]);
+      await _close();
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<void> delete(String name, String where, List<dynamic> args) async {
-    await db!.delete(name, where: where, whereArgs: args);
+    await lock.synchronized(() async {
+      await _open();
+      await db!.delete(name, where: where, whereArgs: args);
+      await _close();
+    }, timeout: Duration(seconds: 5));
   }
 
   Future<bool> test() async {
