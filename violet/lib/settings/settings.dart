@@ -397,8 +397,6 @@ class Settings {
   }
 
   static Future<String> getDefaultDownloadPath() async {
-    final String path = await ExtStorage.getExternalStorageDirectory();
-
     var androidInfo = await DeviceInfoPlugin().androidInfo;
     var sdkInt = androidInfo.version.sdkInt!;
 
@@ -408,6 +406,7 @@ class Settings {
     }
 
     if (downloadBasePath == null) {
+      final String path = await ExtStorage.getExternalStorageDirectory();
       downloadBasePath = join(path, '.violet');
     }
 

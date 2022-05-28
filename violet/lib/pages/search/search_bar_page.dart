@@ -107,8 +107,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       );
     }
 
-    if (_initBottomPadding == null)
-      _initBottomPadding = (mediaQuery.padding + mediaQuery.viewInsets).bottom;
+    _initBottomPadding ??= (mediaQuery.padding + mediaQuery.viewInsets).bottom;
 
     return Container(
       color: Settings.themeWhat

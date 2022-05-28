@@ -257,8 +257,7 @@ class VioletServer {
 
   static String? _userId;
   static Future<String> getUserAppId() async {
-    if (_userId == null)
-      _userId = (await SharedPreferences.getInstance()).getString('fa_userid');
+    _userId ??= (await SharedPreferences.getInstance()).getString('fa_userid');
     return _userId!;
   }
 
