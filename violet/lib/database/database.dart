@@ -22,6 +22,7 @@ class DataBaseManager {
   @protected
   @mustCallSuper
   void dispose() async {
+    print("close: " + dbPath!);
     if (db != null) db!.close();
   }
 
@@ -31,7 +32,7 @@ class DataBaseManager {
           ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
           : '${await getDatabasesPath()}/data.db';
       _instance = create(dbPath);
-      _instance!.open();
+      await _instance!.open();
     }
     return _instance!;
   }
