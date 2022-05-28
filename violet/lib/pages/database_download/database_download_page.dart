@@ -26,7 +26,7 @@ class DataBaseDownloadPage extends StatefulWidget {
   final String? dbType;
   final bool isSync;
 
-  DataBaseDownloadPage({
+  const DataBaseDownloadPage({
     Key? key,
     this.dbType,
     this.isSync = false,

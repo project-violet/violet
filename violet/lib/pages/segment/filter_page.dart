@@ -27,7 +27,7 @@ class FilterController {
 class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
 
-  FilterPage({
+  const FilterPage({
     Key? key,
     required this.queryResult,
   }) : super(key: key);

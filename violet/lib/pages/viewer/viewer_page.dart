@@ -2236,7 +2236,7 @@ class _DoublePointListener extends StatefulWidget {
   final Widget child;
   final BoolCallback onStateChanged;
 
-  _DoublePointListener({
+  const _DoublePointListener({
     required this.child,
     required this.onStateChanged,
   });
@@ -2284,7 +2284,7 @@ class _CustomDoubleTapGestureDectector extends StatefulWidget {
   final GestureTapDownCallback onDoubleTap;
   final Duration doubleTapMaxDelay;
 
-  _CustomDoubleTapGestureDectector({
+  const _CustomDoubleTapGestureDectector({
     required this.onTap,
     required this.onDoubleTap,
     // ignore: unused_element

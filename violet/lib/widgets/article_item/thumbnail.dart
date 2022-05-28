@@ -25,7 +25,7 @@ class ThumbnailWidget extends StatelessWidget {
   final bool disableFiltering;
   final Map<String, String>? headers;
 
-  ThumbnailWidget({
+  const ThumbnailWidget({
     Key? key,
     required this.pad,
     required this.showDetail,
@@ -117,7 +117,7 @@ class ThumbnailImageWidget extends StatelessWidget {
   final Map<String, String> headers;
   final bool isBlurred;
 
-  ThumbnailImageWidget({
+  const ThumbnailImageWidget({
     Key? key,
     required this.thumbnail,
     required this.thumbnailTag,
@@ -177,7 +177,7 @@ class BookmarkIndicatorWidget extends StatelessWidget {
   final ValueNotifier<bool> isBookmarked;
   final FlareControls flareController;
 
-  BookmarkIndicatorWidget({
+  const BookmarkIndicatorWidget({
     Key? key,
     required this.isBookmarked,
     required this.flareController,
@@ -220,7 +220,7 @@ class ReadProgressOverlayWidget extends StatelessWidget {
   final int latestReadPage;
   final int imageCount;
 
-  ReadProgressOverlayWidget({
+  const ReadProgressOverlayWidget({
     Key? key,
     required this.isLastestRead,
     required this.latestReadPage,

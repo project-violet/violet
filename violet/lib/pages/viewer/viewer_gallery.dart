@@ -16,7 +16,7 @@ import 'package:violet/widgets/search_bar.dart';
 class ViewerGallery extends StatefulWidget {
   final int viewedPage;
 
-  ViewerGallery({Key? key, required this.viewedPage}) : super(key: key);
+  const ViewerGallery({Key? key, required this.viewedPage}) : super(key: key);
 
   @override
   State<ViewerGallery> createState() => _ViewerGalleryState();

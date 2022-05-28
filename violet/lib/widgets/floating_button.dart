@@ -34,7 +34,7 @@ class AnimatedFloatingActionButton extends StatefulWidget {
   final AnimatedIconData animatedIconData;
   final VoidCallback exitCallback;
 
-  AnimatedFloatingActionButton({
+  const AnimatedFloatingActionButton({
     Key? key,
     required this.fabButtons,
     required this.animatedIconData,

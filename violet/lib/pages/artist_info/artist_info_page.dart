@@ -41,7 +41,7 @@ class ArtistInfoPage extends StatefulWidget {
   final bool isSeries;
   final bool isCharacter;
 
-  ArtistInfoPage({
+  const ArtistInfoPage({
     Key? key,
     required this.artist,
     this.isGroup = false,
