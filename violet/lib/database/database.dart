@@ -48,29 +48,38 @@ class DataBaseManager {
     db ??= await openDatabase(dbPath!);
   }
 
+  Future checkOpen() async {
+    if (db!.isOpen) db = await openDatabase(dbPath!);
+  }
+
   Future<List<Map<String, dynamic>>> query(String str) async {
     List<Map<String, dynamic>> result = [];
+    await checkOpen();
     result = await db!.rawQuery(str);
     return result;
   }
 
   Future<void> execute(String str) async {
+    await checkOpen();
     await db!.execute(str);
   }
 
   Future<int> insert(String name, Map<String, dynamic> wh) async {
     int result = -1;
+    await checkOpen();
     result = await db!.insert(name, wh);
     return result;
   }
 
   Future<void> update(String name, Map<String, dynamic> wh, String where,
       List<dynamic> args) async {
+    await checkOpen();
     await db!.update(name, wh, where: where, whereArgs: args);
   }
 
   Future<void> swap(String name, String key, String what, int key1, int key2,
       int s1, int s2) async {
+    await checkOpen();
     await db!.transaction((txn) async {
       await txn.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s2, key1]);
       await txn.rawUpdate('UPDATE $name SET $what=? WHERE $key=?', [s1, key2]);
@@ -78,6 +87,7 @@ class DataBaseManager {
   }
 
   Future<void> delete(String name, String where, List<dynamic> args) async {
+    await checkOpen();
     await db!.delete(name, where: where, whereArgs: args);
   }
 
