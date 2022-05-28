@@ -65,7 +65,7 @@ class DownloadItemWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  DownloadItemWidgetState createState() => DownloadItemWidgetState();
+  State<DownloadItemWidget> createState() => DownloadItemWidgetState();
 }
 
 class DownloadItemWidgetState extends State<DownloadItemWidget>
