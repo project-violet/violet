@@ -15,7 +15,7 @@ class SeriesListPage extends StatelessWidget {
   final List<List<int>> series;
   final List<QueryResult> cc;
 
-  SeriesListPage({
+  const SeriesListPage({
     Key? key,
     required this.prefix,
     required this.series,

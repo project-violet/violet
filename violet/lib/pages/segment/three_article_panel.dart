@@ -16,7 +16,7 @@ class ThreeArticlePanel extends StatelessWidget {
   final String count;
   final List<QueryResult> articles;
 
-  ThreeArticlePanel({
+  const ThreeArticlePanel({
     Key? key,
     required this.tappedRoute,
     required this.title,
@@ -79,7 +79,7 @@ class _SubItem extends StatelessWidget {
   final int index;
   final double width;
 
-  _SubItem(this.width, this.articles, this.index);
+  const _SubItem(this.width, this.articles, this.index);
 
   @override
   Widget build(BuildContext context) {

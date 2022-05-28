@@ -16,7 +16,7 @@ class ToastWrapper extends StatefulWidget {
   final bool ignoreDrawer;
   final bool reverse;
 
-  ToastWrapper({
+  const ToastWrapper({
     Key? key,
     this.isCheck = false,
     this.isWarning = false,

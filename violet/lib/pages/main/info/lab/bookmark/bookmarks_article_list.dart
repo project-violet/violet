@@ -25,7 +25,7 @@ import 'package:violet/widgets/search_bar.dart';
 
 // https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
 class DotsIndicator extends AnimatedWidget {
-  DotsIndicator({
+  const DotsIndicator({
     Key? key,
     required this.controller,
     required this.itemCount,
@@ -98,7 +98,7 @@ class LabGroupArticleListPage extends StatefulWidget {
   final String name;
   final int groupId;
 
-  LabGroupArticleListPage({
+  const LabGroupArticleListPage({
     Key? key,
     required this.articles,
     required this.artists,

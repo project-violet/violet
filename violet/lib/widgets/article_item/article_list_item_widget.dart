@@ -40,11 +40,11 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   // final bool bookmarkMode;
   // final BookmarkCallback bookmarkCallback;
   // final BookmarkCheckCallback bookmarkCheckCallback;
-  bool isChecked;
+  final bool isChecked;
   final bool isCheckMode;
   final ArticleListItem? articleListItem;
 
-  ArticleListItemVerySimpleWidget({
+  const ArticleListItemVerySimpleWidget({
     Key? key,
     // this.queryResult,
     // this.addBottomPadding,
@@ -90,11 +90,14 @@ class _ArticleListItemVerySimpleWidgetState
   final FlareControls _flareController = FlareControls();
   double? thisWidth, thisHeight;
 
+  bool isChecked = false;
+
   late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
+    isChecked = widget.isChecked;
     fToast = FToast();
     fToast.init(context);
   }
@@ -238,7 +241,7 @@ class _ArticleListItemVerySimpleWidgetState
       });
     } else if (data.bookmarkMode &&
         widget.isCheckMode &&
-        widget.isChecked &&
+        isChecked &&
         scale != 0.95) {
       _shouldReloadCachedBuildWidget = true;
       Future.delayed(Duration(milliseconds: 500))
@@ -276,7 +279,7 @@ class _ArticleListItemVerySimpleWidgetState
       }
 
       _cachedBuildWidget = Container(
-        color: widget.isChecked ? Colors.amber : Colors.transparent,
+        color: isChecked ? Colors.amber : Colors.transparent,
         child: PimpedButton(
           particle: Rectangle2DemoParticle(),
           pimpedWidgetBuilder: (context, controller) {
@@ -332,13 +335,13 @@ class _ArticleListItemVerySimpleWidgetState
     onScaling = false;
 
     if (widget.isCheckMode) {
-      widget.isChecked = !widget.isChecked;
-      data.bookmarkCheckCallback!(data.queryResult.id(), widget.isChecked);
+      isChecked = !isChecked;
+      data.bookmarkCheckCallback!(data.queryResult.id(), isChecked);
       _shouldReloadCachedBuildWidget = true;
       Future.delayed(Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
-        if (widget.isChecked)
+        if (isChecked)
           scale = 0.95;
         else
           scale = 1.0;
@@ -392,7 +395,7 @@ class _ArticleListItemVerySimpleWidgetState
     onScaling = false;
     if (data.bookmarkMode) {
       if (widget.isCheckMode) {
-        widget.isChecked = !widget.isChecked;
+        isChecked = !isChecked;
         _shouldReloadCachedBuildWidget = true;
         Future.delayed(Duration(milliseconds: 500))
             .then((value) => _shouldReloadCachedBuildWidget = false);
@@ -401,7 +404,7 @@ class _ArticleListItemVerySimpleWidgetState
         });
         return;
       }
-      widget.isChecked = true;
+      isChecked = true;
       firstChecked = true;
       _shouldReloadCachedBuildWidget = true;
       Future.delayed(Duration(milliseconds: 500))
@@ -547,7 +550,7 @@ class BodyWidget extends StatelessWidget {
   final String? title;
   final String? dateTime;
 
-  BodyWidget({
+  const BodyWidget({
     Key? key,
     required this.data,
     required this.thumbnail,
@@ -657,7 +660,7 @@ class _DetailWidget extends StatelessWidget {
   final int? viewed;
   final int? seconds;
 
-  _DetailWidget({
+  const _DetailWidget({
     required this.title,
     required this.artist,
     required this.imageCount,

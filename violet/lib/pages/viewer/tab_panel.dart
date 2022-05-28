@@ -30,7 +30,7 @@ class TabPanel extends StatefulWidget {
   final double height;
   final List<QueryResult>? usableTabList;
 
-  TabPanel({
+  const TabPanel({
     Key? key,
     required this.articleId,
     this.usableTabList,

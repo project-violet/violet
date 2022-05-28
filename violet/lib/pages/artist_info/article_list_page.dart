@@ -20,7 +20,7 @@ class ArticleListPage extends StatefulWidget {
   final List<QueryResult> cc;
   final String name;
 
-  ArticleListPage({Key? key, required this.name, required this.cc})
+  const ArticleListPage({Key? key, required this.name, required this.cc})
       : super(key: key);
 
   @override

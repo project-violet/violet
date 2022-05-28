@@ -34,7 +34,7 @@ class BookmarkVersionSelectPage extends StatefulWidget {
   final String userAppId;
   final List<dynamic> versions;
 
-  BookmarkVersionSelectPage({
+  const BookmarkVersionSelectPage({
     Key? key,
     required this.userAppId,
     required this.versions,

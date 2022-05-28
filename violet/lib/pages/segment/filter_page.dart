@@ -27,7 +27,7 @@ class FilterController {
 class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
 
-  FilterPage({
+  const FilterPage({
     Key? key,
     required this.queryResult,
   }) : super(key: key);
@@ -382,13 +382,13 @@ class _FilterPageState extends State<FilterPage> {
 typedef ChipCallback = void Function(bool);
 
 class _Chip extends StatefulWidget {
-  bool selected;
+  final bool selected;
   final String group;
   final String name;
   final int count;
   final ChipCallback callback;
 
-  _Chip({
+  const _Chip({
     required this.selected,
     required this.group,
     required this.name,
@@ -401,6 +401,14 @@ class _Chip extends StatefulWidget {
 }
 
 class __ChipState extends State<_Chip> {
+  bool selected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    selected = widget.selected;
+  }
+
   @override
   Widget build(BuildContext context) {
     var tagDisplayed = widget.name;
@@ -442,7 +450,7 @@ class __ChipState extends State<_Chip> {
     var fc = Transform.scale(
         scale: 0.90,
         child: RawChip(
-          selected: widget.selected,
+          selected: selected,
           labelPadding: EdgeInsets.all(0.0),
           avatar: CircleAvatar(
             backgroundColor: Colors.grey.shade600,
@@ -460,7 +468,7 @@ class __ChipState extends State<_Chip> {
           onSelected: (value) async {
             widget.callback(value);
             setState(() {
-              widget.selected = value;
+              selected = value;
             });
           },
         ));

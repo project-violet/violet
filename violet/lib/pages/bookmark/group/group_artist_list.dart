@@ -25,7 +25,7 @@ class GroupArtistList extends StatefulWidget {
   final String name;
   final int groupId;
 
-  GroupArtistList({Key? key, required this.name, required this.groupId})
+  const GroupArtistList({Key? key, required this.name, required this.groupId})
       : super(key: key);
 
   @override
