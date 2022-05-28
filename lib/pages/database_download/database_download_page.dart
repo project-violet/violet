@@ -33,9 +33,7 @@ class DataBaseDownloadPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  DataBaseDownloadPagepState createState() {
-    return DataBaseDownloadPagepState();
-  }
+  State<DataBaseDownloadPage> createState() => DataBaseDownloadPagepState();
 }
 
 class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {

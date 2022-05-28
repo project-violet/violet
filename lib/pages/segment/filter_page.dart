@@ -397,7 +397,7 @@ class _Chip extends StatefulWidget {
   });
 
   @override
-  __ChipState createState() => __ChipState();
+  State<_Chip> createState() => __ChipState();
 }
 
 class __ChipState extends State<_Chip> {

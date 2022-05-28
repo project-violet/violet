@@ -128,7 +128,7 @@ class _Tab extends StatefulWidget {
   _Tab(this.index);
 
   @override
-  __TabState createState() => __TabState();
+  State<_Tab> createState() => __TabState();
 }
 
 class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {

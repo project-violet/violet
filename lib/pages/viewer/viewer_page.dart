@@ -2427,7 +2427,7 @@ class _FileImage extends StatefulWidget {
       {required this.path, this.heightCallback, this.cachedHeight});
 
   @override
-  __FileImageState createState() => __FileImageState();
+  State<_FileImage> createState() => __FileImageState();
 }
 
 class __FileImageState extends State<_FileImage> {
