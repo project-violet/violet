@@ -19,7 +19,7 @@ class HisokiHash {
     }
 
     Map<String, dynamic> hashs = json.decode(data);
-    hash = Map<String, String>();
+    hash = <String, String>{};
     hash.addEntries(
         hashs.entries.map((e) => MapEntry(e.key, e.value as String)).toList());
   }

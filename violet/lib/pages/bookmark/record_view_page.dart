@@ -44,7 +44,7 @@ class RecordViewPage extends StatelessWidget {
                 var qm = await QueryManager.query(queryRaw +
                     (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                var qr = Map<String, QueryResult>();
+                var qr = <String, QueryResult>{};
                 qm.results!.forEach((element) {
                   qr[element.id().toString()] = element;
                 });

@@ -131,7 +131,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //
       //  Statistics
       //
-      var ffstat = Map<String, int>();
+      var ffstat = <String, int>{};
 
       cc.forEach((element) {
         if (element.tags() == null) return;

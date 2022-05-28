@@ -117,7 +117,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
           QueryManager.queryIds(cc.map((e) => int.parse(e.article())).toList())
               .then((value) async {
-            var qr = Map<String, QueryResult>();
+            var qr = <String, QueryResult>{};
             value.forEach((element) {
               qr[element.id().toString()] = element;
             });
@@ -691,7 +691,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
         // Atomic!!
         // 0. Sort Checked
-        var invIdIndex = Map<int, int>();
+        var invIdIndex = <int, int>{};
         for (int i = 0; i < queryResult.length; i++)
           invIdIndex[queryResult[i].id()] = i;
         checked.sort((x, y) => invIdIndex[x]!.compareTo(invIdIndex[y]!));
