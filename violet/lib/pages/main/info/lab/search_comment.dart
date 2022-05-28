@@ -135,21 +135,19 @@ class _LabSearchCommentsState extends State<LabSearchComments> {
             maxChildSize: 0.9,
             expand: false,
             builder: (_, controller) {
-              if (cache == null) {
-                cache = Provider<ArticleInfo>.value(
-                  value: ArticleInfo.fromArticleInfo(
-                    queryResult: qr,
-                    thumbnail: thumbnail,
-                    headers: headers,
-                    heroKey: 'zxcvzxcvzxcv',
-                    isBookmarked: isBookmarked,
-                    controller: controller,
-                  ),
-                  child: ArticleInfoPage(
-                    key: ObjectKey('asdfasdf'),
-                  ),
-                );
-              }
+              cache ??= Provider<ArticleInfo>.value(
+                value: ArticleInfo.fromArticleInfo(
+                  queryResult: qr,
+                  thumbnail: thumbnail,
+                  headers: headers,
+                  heroKey: 'zxcvzxcvzxcv',
+                  isBookmarked: isBookmarked,
+                  controller: controller,
+                ),
+                child: ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
+                ),
+              );
               return cache!;
             },
           );

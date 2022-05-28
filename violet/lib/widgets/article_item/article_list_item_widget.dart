@@ -367,22 +367,20 @@ class _ArticleListItemVerySimpleWidgetState
           maxChildSize: 0.9,
           expand: false,
           builder: (_, controller) {
-            if (cache == null) {
-              cache = Provider<ArticleInfo>.value(
-                value: ArticleInfo.fromArticleInfo(
-                  queryResult: data.queryResult,
-                  thumbnail: thumbnail!,
-                  headers: headers!,
-                  heroKey: data.thumbnailTag,
-                  isBookmarked: isBookmarked.value,
-                  controller: controller,
-                  usableTabList: data.usableTabList,
-                ),
-                child: ArticleInfoPage(
-                  key: ObjectKey('asdfasdf'),
-                ),
-              );
-            }
+            cache ??= Provider<ArticleInfo>.value(
+              value: ArticleInfo.fromArticleInfo(
+                queryResult: data.queryResult,
+                thumbnail: thumbnail!,
+                headers: headers!,
+                heroKey: data.thumbnailTag,
+                isBookmarked: isBookmarked.value,
+                controller: controller,
+                usableTabList: data.usableTabList,
+              ),
+              child: ArticleInfoPage(
+                key: ObjectKey('asdfasdf'),
+              ),
+            );
             return cache!;
           },
         );
