@@ -59,7 +59,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
                   queryRaw +=
-                      'Id IN (${LDI.ldi.map((e) => e.item1).take(1500).join(',')})';
+                      'Id IN (${LDI.ldi!.map((e) => e.item1).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -68,7 +68,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     qr[element.id().toString()] = element;
                   });
 
-                  var rr = LDI.ldi
+                  var rr = LDI.ldi!
                       .where((e) => qr.containsKey(e.item1.toString()))
                       .map((e) => qr[e.item1.toString()]!)
                       .toList();
@@ -86,7 +86,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
                   queryRaw +=
-                      'Id IN (${LDI.ldi.reversed.map((e) => e.item1).take(1500).join(',')})';
+                      'Id IN (${LDI.ldi!.reversed.map((e) => e.item1).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -95,7 +95,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     qr[element.id().toString()] = element;
                   });
 
-                  var rr = LDI.ldi.reversed
+                  var rr = LDI.ldi!.reversed
                       .where((e) => qr.containsKey(e.item1.toString()))
                       .map((e) => qr[e.item1.toString()]!)
                       .toList();
@@ -284,7 +284,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
 
                   var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
                   queryRaw +=
-                      'Id IN (${CommentsCount.counts.map((e) => e.item1).take(1500).join(',')})';
+                      'Id IN (${CommentsCount.counts!.map((e) => e.item1).take(1500).join(',')})';
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
@@ -293,7 +293,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     qr[element.id().toString()] = element;
                   });
 
-                  var rr = CommentsCount.counts
+                  var rr = CommentsCount.counts!
                       .where((e) => qr.containsKey(e.item1.toString()))
                       .map((e) => qr[e.item1.toString()]!)
                       .toList();

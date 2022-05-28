@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 
 class LDI {
-  static late List<Tuple2<int, double>> ldi;
+  static List<Tuple2<int, double>>? ldi;
 
   static Future<void> init() async {
     String data;
@@ -23,6 +23,6 @@ class LDI {
     ldi = dataLdi.entries
         .map((x) => Tuple2<int, double>(int.parse(x.key), x.value as double))
         .toList();
-    ldi.sort((x, y) => y.item2.compareTo(x.item2));
+    ldi!.sort((x, y) => y.item2.compareTo(x.item2));
   }
 }

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 
 class CommentsCount {
-  static late List<Tuple2<int, int>> counts;
+  static List<Tuple2<int, int>>? counts;
 
   static Future<void> init() async {
     String data;
@@ -23,6 +23,6 @@ class CommentsCount {
     counts = dataCounts.entries
         .map((x) => Tuple2<int, int>(int.parse(x.key), x.value as int))
         .toList();
-    counts.sort((x, y) => y.item2.compareTo(x.item2));
+    counts!.sort((x, y) => y.item2.compareTo(x.item2));
   }
 }
