@@ -39,24 +39,24 @@ class _ContactCardState extends State<ContactCard> {
         child: Container(
           width: width - 16,
           height: 65,
-          margin: EdgeInsets.symmetric(horizontal: 0.0),
+          margin: const EdgeInsets.symmetric(horizontal: 0.0),
           child: Card(
             color: Colors.redAccent,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   MdiIcons.gmail,
                   color: Colors.white,
                 ),
                 Padding(
                   padding: Translations.of(context).dbLanguageCode == 'en'
-                      ? EdgeInsets.only(top: 4)
-                      : EdgeInsets.only(top: 4),
+                      ? const EdgeInsets.only(top: 4)
+                      : const EdgeInsets.only(top: 4),
                   child: Text(
                     '  ${Translations.of(context).trans('maincontact')}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18.0,
                       fontFamily: 'Calibre-Semibold',
                       letterSpacing: 0.5,

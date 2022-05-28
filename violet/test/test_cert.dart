@@ -20,8 +20,10 @@ void main() {
     var rootCA = RootCert(data: {
       'PubKey': CertUtil.exportRSAPublicKey(pair.item1),
       'AuthStarts': DateTime.now().toUtc().toString(),
-      'AuthEnds':
-          DateTime.now().add(Duration(days: 365 * 20 + 4)).toUtc().toString(),
+      'AuthEnds': DateTime.now()
+          .add(const Duration(days: 365 * 20 + 4))
+          .toUtc()
+          .toString(),
       'AuthVersion': '1.0',
       'Owner': 'koromo the violet project leader',
     });
@@ -49,8 +51,10 @@ void main() {
     var testCert = CertData(data: {
       'PubKey': CertUtil.exportRSAPublicKey(pubKey),
       'AuthStarts': DateTime.now().toUtc().toString(),
-      'AuthEnds':
-          DateTime.now().add(Duration(days: 365 * 10 + 4)).toUtc().toString(),
+      'AuthEnds': DateTime.now()
+          .add(const Duration(days: 365 * 10 + 4))
+          .toUtc()
+          .toString(),
       'AuthVersion': '1.0',
       'Owner': 'test user',
     });

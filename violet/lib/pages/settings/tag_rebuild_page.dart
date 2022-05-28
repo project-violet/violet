@@ -25,7 +25,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       await indexing();
 
       Navigator.pop(context);
@@ -40,7 +40,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
+          borderRadius: const BorderRadius.all(Radius.circular(1)),
           boxShadow: [
             BoxShadow(
               color: Settings.themeWhat
@@ -48,7 +48,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
                   : Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -57,24 +57,25 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Card(
-              color:
-                  Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+              color: Settings.themeWhat
+                  ? const Color(0xFF353535)
+                  : Colors.grey.shade100,
               elevation: 100,
               child: SizedBox(
                 child: SizedBox(
                   width: 280,
                   height: (56 * 4 + 16).toDouble(),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                     child: Stack(
                       children: [
-                        Center(
+                        const Center(
                           child: CircularProgressIndicator(),
                         ),
                         Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
-                            padding: EdgeInsets.only(bottom: 33),
+                            padding: const EdgeInsets.only(bottom: 33),
                             child: Text(
                               baseString,
                             ),

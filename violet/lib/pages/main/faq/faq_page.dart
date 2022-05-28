@@ -13,10 +13,10 @@ class FAQPageKorean extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Settings.majorColor,
-        title: Text('FAQ'),
+        title: const Text('FAQ'),
       ),
       body: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             _subitem(
@@ -101,21 +101,21 @@ class FAQPageKorean extends StatelessWidget {
   Widget _subitem(String title, String body) {
     return ExpandableNotifier(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: ScrollOnExpand(
           child: ExpandablePanel(
             theme: ExpandableThemeData(
                 iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
                 animationDuration: const Duration(milliseconds: 500)),
             header: Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+              padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
               child: Text(title),
             ),
             expanded: Padding(
-              padding: EdgeInsets.fromLTRB(16, 4, 16, 4),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
               child: Column(
                 children: [
-                  Text(body, style: TextStyle(fontSize: 12)),
+                  Text(body, style: const TextStyle(fontSize: 12)),
                 ],
               ),
             ),

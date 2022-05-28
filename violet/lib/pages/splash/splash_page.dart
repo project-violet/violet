@@ -174,7 +174,7 @@ class _SplashPageState extends State<SplashPage> {
       }
 
       if (Platform.isAndroid) {
-        await AndroidIntent(
+        await const AndroidIntent(
           action: 'ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION',
         ).launch();
       }
@@ -182,7 +182,7 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   startTime() async {
-    var duration = Duration(milliseconds: 100);
+    var duration = const Duration(milliseconds: 100);
     return Timer(duration, navigationPage);
   }
 
@@ -265,19 +265,20 @@ class _SplashPageState extends State<SplashPage> {
       // We must show main page to user anyway
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     } else {
-      if (!widget.switching) await Future.delayed(Duration(milliseconds: 1400));
+      if (!widget.switching)
+        await Future.delayed(const Duration(milliseconds: 1400));
       setState(() {
         showFirst = true;
       });
-      await Future.delayed(Duration(milliseconds: 400));
+      await Future.delayed(const Duration(milliseconds: 400));
       setState(() {
         animateBox = true;
       });
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(const Duration(milliseconds: 200));
       setState(() {
         languageBox = true;
       });
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       setState(() {
         _database = Database.userLanguage;
       });
@@ -333,7 +334,7 @@ class _SplashPageState extends State<SplashPage> {
         ),
       ),
       backgroundColor: showFirst && !widget.switching
-          ? Color(0x7FB200ED)
+          ? const Color(0x7FB200ED)
           : Settings.majorColor.withAlpha(200),
     );
   }
@@ -344,7 +345,7 @@ class _SplashPageState extends State<SplashPage> {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: EdgeInsets.only(bottom: 120),
+          padding: const EdgeInsets.only(bottom: 120),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -382,11 +383,11 @@ class _SplashPageState extends State<SplashPage> {
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: EdgeInsets.only(bottom: 120),
+          padding: const EdgeInsets.only(bottom: 120),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text(message, style: TextStyle(color: Colors.white)),
+              Text(message, style: const TextStyle(color: Colors.white)),
               Container(
                 height: 16,
               ),
@@ -412,7 +413,7 @@ class _SplashPageState extends State<SplashPage> {
       child: Align(
         alignment: Alignment.center,
         child: Padding(
-          padding: EdgeInsets.only(top: 140),
+          padding: const EdgeInsets.only(top: 140),
           child: Card(
             elevation: 100,
             color: widget.switching
@@ -420,13 +421,13 @@ class _SplashPageState extends State<SplashPage> {
                 : Colors.purple.shade50,
             child: AnimatedOpacity(
               opacity: animateBox ? 1.0 : 0,
-              duration: Duration(milliseconds: 500),
+              duration: const Duration(milliseconds: 500),
               child: AnimatedContainer(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.ease,
                 width: animateBox ? 300 : 300,
                 height: animateBox ? 300 : 0,
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: AnimationConfiguration.toStaggeredList(
                     duration: const Duration(milliseconds: 900),
@@ -439,7 +440,7 @@ class _SplashPageState extends State<SplashPage> {
                     children: <Widget>[
                       _welcomeMessage(),
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 4.0),
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
                       ),
                       RadioTile(
                         value: Database.userLanguage,
@@ -447,11 +448,11 @@ class _SplashPageState extends State<SplashPage> {
                         setGroupValue: _setDatabase,
                         title: Text(
                           translations.trans('dbuser'),
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                         subtitle: Text(
                           '${imgZipSize['ko']}${translations.trans('dbdownloadsize')}',
-                          style: TextStyle(fontSize: 12),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         onLongPress: () {
                           showOkDialog(
@@ -466,11 +467,11 @@ class _SplashPageState extends State<SplashPage> {
                         setGroupValue: _setDatabase,
                         title: Text(
                           translations.trans('dballname'),
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
                         subtitle: Text(
                           '${imgZipSize['global']}${translations.trans('dbdownloadsize')}',
-                          style: TextStyle(fontSize: 12),
+                          style: const TextStyle(fontSize: 12),
                         ),
                         onLongPress: () {
                           showOkDialog(
@@ -503,7 +504,7 @@ class _SplashPageState extends State<SplashPage> {
               : Colors.grey,
         ),
         Container(
-          padding: EdgeInsets.all(4),
+          padding: const EdgeInsets.all(4),
         ),
         Expanded(
           child: Text(
@@ -511,7 +512,7 @@ class _SplashPageState extends State<SplashPage> {
                 ? '${Translations.of(context).trans('database')} ${Translations.of(context).trans('switching')}'
                 : Translations.of(context).trans('welcome'),
             maxLines: 4,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -525,7 +526,7 @@ class _SplashPageState extends State<SplashPage> {
     return Align(
       alignment: Alignment.bottomRight,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(0, 0, 16, 0),
+        padding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             primary: widget.switching
@@ -540,7 +541,7 @@ class _SplashPageState extends State<SplashPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(Translations.of(context).trans('download')),
-                Icon(Icons.keyboard_arrow_right),
+                const Icon(Icons.keyboard_arrow_right),
               ],
             ),
           ),
@@ -578,11 +579,11 @@ class _SplashPageState extends State<SplashPage> {
   _dbSelector() {
     return AnimatedOpacity(
       opacity: languageBox ? 1.0 : 0.0,
-      duration: Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 700),
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 0, 100),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
           child: GestureDetector(
             child: SizedBox(
               child: Text(Translations.of(context).trans('dbalready'),
@@ -614,13 +615,13 @@ class _SplashPageState extends State<SplashPage> {
   _languageSelector() {
     return AnimatedOpacity(
       opacity: languageBox ? 1.0 : 0.0,
-      duration: Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 700),
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
           child: InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             child: SizedBox(
               width: 150,
@@ -628,7 +629,7 @@ class _SplashPageState extends State<SplashPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
+                children: const <Widget>[
                   Icon(
                     Icons.language,
                     size: 35,
@@ -648,12 +649,12 @@ class _SplashPageState extends State<SplashPage> {
                 builder: (context) => Theme(
                   data: Theme.of(context).copyWith(primaryColor: Colors.pink),
                   child: CountryPickerDialog(
-                    titlePadding: EdgeInsets.symmetric(vertical: 16),
+                    titlePadding: const EdgeInsets.symmetric(vertical: 16),
                     // searchCursorColor: Colors.pinkAccent,
                     // searchInputDecoration:
                     //     InputDecoration(hintText: 'Search...'),
                     // isSearchable: true,
-                    title: Text('Select Language'),
+                    title: const Text('Select Language'),
                     onValuePicked: (Country country) async {
                       var exc = country as ExCountry;
                       await Translations.of(context).load(exc.toString());
@@ -676,7 +677,7 @@ class _SplashPageState extends State<SplashPage> {
                         child: Row(
                           children: <Widget>[
                             CountryPickerUtils.getDefaultFlagImage(country),
-                            SizedBox(
+                            const SizedBox(
                               width: 8.0,
                               height: 30,
                             ),

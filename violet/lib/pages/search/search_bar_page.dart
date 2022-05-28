@@ -62,8 +62,8 @@ class _SearchBarPageState extends State<SearchBarPage>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
-      reverseDuration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
+      reverseDuration: const Duration(milliseconds: 400),
     );
     _searchController = TextEditingController(text: widget.initText);
   }
@@ -161,7 +161,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   _seperator() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Container(
         height: 1.0,
         color: Colors.black12,
@@ -191,13 +191,13 @@ class _SearchBarPageState extends State<SearchBarPage>
               onPressed: () async {
                 _searchController.clear();
                 _searchController.selection =
-                    TextSelection(baseOffset: 0, extentOffset: 0);
+                    const TextSelection(baseOffset: 0, extentOffset: 0);
                 await searchProcess('', _searchController.selection);
               },
-              icon: Icon(Icons.clear),
+              icon: const Icon(Icons.clear),
             ),
             contentPadding:
-                EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+                const EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
             hintText: Translations.of(context).trans('search'),
           ),
         ),
@@ -210,7 +210,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               onPressed: () {
                 Navigator.pop(context);
               },
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
               child: Transform.scale(
                 scale: 0.65,
                 child: FlareActor.asset(widget.assetProvider,
@@ -226,7 +226,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   _searchButton() {
     return Container(
       height: 40,
-      padding: EdgeInsets.fromLTRB(8, 2, 8, 2),
+      padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           primary: Settings.majorColor,
@@ -292,8 +292,8 @@ class _SearchBarPageState extends State<SearchBarPage>
               ? Translations.of(context).trans('nosearchresult')
               : Translations.of(context).trans('inputsearchtoken')));
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      physics: BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      physics: const BouncingScrollPhysics(),
       children: [
         Wrap(
           spacing: 4.0,
@@ -309,8 +309,8 @@ class _SearchBarPageState extends State<SearchBarPage>
       return Center(
           child: Text(Translations.of(context).trans('nosearchresult')));
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      physics: BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      physics: const BouncingScrollPhysics(),
       children: [
         Wrap(
           spacing: 4.0,
@@ -365,7 +365,7 @@ class _SearchBarPageState extends State<SearchBarPage>
 
   _searchOptionPage() {
     return Padding(
-      padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+      padding: const EdgeInsets.fromLTRB(10, 4, 10, 4),
       child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         return SingleChildScrollView(
@@ -414,7 +414,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                     ListTile(
                       leading: Icon(MdiIcons.layersSearch,
                           color: Settings.majorColor),
-                      title: Text('한글 검색'),
+                      title: const Text('한글 검색'),
                       trailing: Switch(
                         value: Settings.searchUseTranslated,
                         onChanged: (newValue) async {
@@ -538,7 +538,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                                       : Colors.grey,
                                   onPrimary: Colors.black,
                                 ),
-                                child: Icon(MdiIcons.keyboardBackspace),
+                                child: const Icon(MdiIcons.keyboardBackspace),
                                 onPressed: () {
                                   deleteProcess();
                                 },
@@ -553,7 +553,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                                       : Colors.grey,
                                   onPrimary: Colors.black,
                                 ),
-                                child: Icon(MdiIcons.keyboardSpace),
+                                child: const Icon(MdiIcons.keyboardSpace),
                                 onPressed: () {
                                   spaceProcess();
                                 },
@@ -589,8 +589,8 @@ class _SearchBarPageState extends State<SearchBarPage>
             if (index == 0)
               return Container(
                 alignment: Alignment.centerLeft,
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const Text(
                   'Search Log',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
@@ -602,16 +602,16 @@ class _SearchBarPageState extends State<SearchBarPage>
                 children: [
                   Flexible(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         logs[index - 1].searchWhat(),
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
                       logs[index - 1].datetime().toString(),
                       style: TextStyle(color: Colors.grey.shade600),
@@ -797,7 +797,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         tagDisplayed.contains(latestToken) &&
         !related) {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken)[0]));
@@ -808,7 +808,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           ),
           text: latestToken));
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken)[1]));
@@ -818,7 +818,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         tagDisplayed.contains(latestToken.split(':')[1]) &&
         !related) {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken.split(':')[1])[0]));
@@ -829,7 +829,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           ),
           text: latestToken.split(':')[1]));
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed.split(latestToken.split(':')[1])[1]));
@@ -837,7 +837,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         !Settings.searchUseTranslated &&
         !related) {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed));
@@ -855,14 +855,14 @@ class _SearchBarPageState extends State<SearchBarPage>
       }
     } else {
       ts.add(TextSpan(
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
           ),
           text: tagDisplayed));
     }
 
     var fc = RawChip(
-      labelPadding: EdgeInsets.all(0.0),
+      labelPadding: const EdgeInsets.all(0.0),
       avatar: CircleAvatar(
         backgroundColor: Colors.grey.shade600,
         child: Text(info.item1.group == 'tag' &&
@@ -873,18 +873,18 @@ class _SearchBarPageState extends State<SearchBarPage>
       ),
       label: RichText(
           text: TextSpan(
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
               ),
               children: [
-            TextSpan(text: ' '),
+            const TextSpan(text: ' '),
             TextSpan(children: ts),
             TextSpan(text: count),
           ])),
       backgroundColor: color,
       elevation: 6.0,
       shadowColor: Colors.grey[60],
-      padding: EdgeInsets.all(6.0),
+      padding: const EdgeInsets.all(6.0),
       onPressed: () async {
         // Insert text to cursor.
         if (info.item1.group != 'prefix') {

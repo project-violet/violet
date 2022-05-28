@@ -21,7 +21,7 @@ class _SignInDialogState extends State<SignInDialog> {
   Widget build(BuildContext context) {
     Widget yesButton = TextButton(
       style: TextButton.styleFrom(primary: Settings.majorColor),
-      child: Text('Log In'),
+      child: const Text('Log In'),
       onPressed: () async {
         var id = _nameController.text.trim();
         var pw = _descController.text.trim();
@@ -37,15 +37,15 @@ class _SignInDialogState extends State<SignInDialog> {
     );
     Widget noButton = TextButton(
       style: TextButton.styleFrom(primary: Settings.majorColor),
-      child: Text('Cancel'),
+      child: const Text('Cancel'),
       onPressed: () {
         Navigator.pop(context, null);
       },
     );
 
     return AlertDialog(
-      title: Text('Log In'),
-      contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+      title: const Text('Log In'),
+      contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
       actions: [
         yesButton,
         noButton,
@@ -54,7 +54,7 @@ class _SignInDialogState extends State<SignInDialog> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Row(children: [
-            Text('Id: '),
+            const Text('Id: '),
             Expanded(
               child: TextField(
                 controller: _nameController,
@@ -63,7 +63,7 @@ class _SignInDialogState extends State<SignInDialog> {
           ]),
           Row(
             children: [
-              Text('Pw: '),
+              const Text('Pw: '),
               Expanded(
                 child: TextField(
                   obscureText: true,

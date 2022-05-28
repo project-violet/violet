@@ -92,7 +92,7 @@ class HentaiManager {
           '$st');
     }
 
-    return Tuple2<List<QueryResult>, int>([], -1);
+    return const Tuple2<List<QueryResult>, int>([], -1);
   }
 
   // static double _latestSeed = 0;
@@ -114,7 +114,7 @@ class HentaiManager {
       if (seed == null) {
         Logger.error('[hentai-randomSearch] E: Seed must be double type!');
 
-        return Tuple2<List<QueryResult>, int>([], -1);
+        return const Tuple2<List<QueryResult>, int>([], -1);
       }
     }
     final queryString = HitomiManager.translate2query(

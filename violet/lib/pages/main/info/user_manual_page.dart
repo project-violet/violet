@@ -29,7 +29,7 @@ class _UserManualPageState extends State<UserManualPage> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) return Container();
           return Markdown(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               selectable: true,
               onTapLink: (text, href, title) async {
                 if (await canLaunch(href!)) {

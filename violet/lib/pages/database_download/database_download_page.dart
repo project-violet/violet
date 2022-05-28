@@ -88,7 +88,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       if (await File('${dir.path}/db.sql.7z').exists())
         await File('${dir.path}/db.sql.7z').delete();
       Timer timer = Timer.periodic(
-          Duration(seconds: 1),
+          const Duration(seconds: 1),
           (Timer timer) => setState(() {
                 speedString = '${tlatest / 1024} KB/S';
                 tlatest = tnu;
@@ -180,7 +180,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       if (await File('$dir/data.db').exists())
         await File('$dir/data.db').delete();
       Timer timer = Timer.periodic(
-          Duration(seconds: 1),
+          const Duration(seconds: 1),
           (Timer timer) => setState(() {
                 speedString = '${tlatest / 1024} KB/S';
                 tlatest = tnu;
@@ -529,25 +529,25 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      CircularProgressIndicator(),
-                      SizedBox(
+                      const CircularProgressIndicator(),
+                      const SizedBox(
                         height: 20.0,
                       ),
                       Text(
                         "${Translations.of(context).trans('dbddownloading')} $progressString",
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
                       Text(
                         downString,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),
                       Text(
                         speedString,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       )

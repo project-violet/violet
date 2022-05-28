@@ -68,7 +68,7 @@ class ArticleInfoPage extends StatelessWidget {
       color: Settings.themeWhat
           ? Settings.themeBlack
               ? const Color(0xFF141414)
-              : Color(0xFF353535)
+              : const Color(0xFF353535)
           : Colors.grey.shade200,
       padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
       child: Card(
@@ -76,7 +76,7 @@ class ArticleInfoPage extends StatelessWidget {
         color: Settings.themeWhat
             ? Settings.themeBlack
                 ? const Color(0xFF141414)
-                : Color(0xFF353535)
+                : const Color(0xFF353535)
             : Colors.grey.shade200,
         child: SizedBox(
           width: width - 16,
@@ -136,12 +136,12 @@ class ArticleInfoPage extends StatelessWidget {
                   ],
                 ),
                 TagInfoAreaWidget(queryResult: data.queryResult),
-                DividerWidget(),
+                const DividerWidget(),
                 _CommentArea(
                   headers: data.headers,
                   queryResult: data.queryResult,
                 ),
-                DividerWidget(),
+                const DividerWidget(),
                 ExpandableNotifier(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -167,7 +167,7 @@ class ArticleInfoPage extends StatelessWidget {
                   ),
                 ),
                 if (Related.existsRelated(data.queryResult.id()))
-                  DividerWidget(),
+                  const DividerWidget(),
                 if (Related.existsRelated(data.queryResult.id()))
                   ExpandableNotifier(
                     child: Padding(
@@ -253,13 +253,13 @@ class ArticleInfoPage extends StatelessWidget {
       FToast ftoast = FToast();
       ftoast.init(context);
       ftoast.showToast(
-        child: ToastWrapper(
+        child: const ToastWrapper(
           isCheck: false,
           isWarning: true,
           msg: 'You need to open the download tab!',
         ),
         gravity: ToastGravity.BOTTOM,
-        toastDuration: Duration(seconds: 4),
+        toastDuration: const Duration(seconds: 4),
       );
       return;
     }
@@ -283,7 +283,7 @@ class ArticleInfoPage extends StatelessWidget {
             Translations.of(context).trans('addtodownloadqueue'),
       ),
       gravity: ToastGravity.BOTTOM,
-      toastDuration: Duration(seconds: 4),
+      toastDuration: const Duration(seconds: 4),
     );
 
     await ScriptManager.refresh();
@@ -294,7 +294,7 @@ class ArticleInfoPage extends StatelessWidget {
 
   _readButtonEvent(context, data) async {
     if (Settings.useVioletServer) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         await VioletServer.view(data.queryResult.id());
       });
     }
@@ -329,7 +329,7 @@ class ArticleInfoPage extends StatelessWidget {
                 title: data.queryResult.title(),
                 usableTabList: data.usableTabList,
               ),
-              child: ViewerPage());
+              child: const ViewerPage());
         },
       ),
     ).then((value) async {
@@ -364,7 +364,7 @@ class TagInfoAreaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       children: [
         MultiChipWidget(
@@ -442,10 +442,10 @@ class TagInfoAreaWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 10.0),
+          padding: const EdgeInsets.only(top: 10.0),
           child: Text(
             '    $name: ',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
@@ -473,10 +473,10 @@ class SingleChipWidget extends StatelessWidget {
     if (target == null) return Container();
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
       Padding(
-        padding: EdgeInsets.only(top: 10.0),
+        padding: const EdgeInsets.only(top: 10.0),
         child: Text(
           '    $name: ',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
       ),
       Wrap(
@@ -501,10 +501,10 @@ class MultiChipWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 10.0),
+          padding: const EdgeInsets.only(top: 10.0),
           child: Text(
             '    $name: ',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
@@ -558,10 +558,10 @@ class PreviewAreaWidget extends StatelessWidget {
         builder: (context,
             AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
           if (!snapshot.hasData)
-            return Container(child: CircularProgressIndicator());
+            return Container(child: const CircularProgressIndicator());
           return GridView.count(
             controller: null,
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 3 / 4,
@@ -586,7 +586,7 @@ class PreviewAreaWidget extends StatelessWidget {
           width: 100,
           height: 100,
           // alignment: Alignment.center,
-          child: Align(
+          child: const Align(
             // alignment: Alignment.center,
             child: Text(
               '??? Unknown Error!',
@@ -623,7 +623,7 @@ class __CommentAreaState extends State<_CommentArea> {
   void initState() {
     super.initState();
     if (widget.queryResult.ehash() != null) {
-      Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         var cookie =
             (await SharedPreferences.getInstance()).getString('eh_cookies');
         if (cookie != null) {
@@ -680,14 +680,14 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
   Widget build(BuildContext context) {
     return ExpandableNotifier(
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
         child: ScrollOnExpand(
           child: ExpandablePanel(
             theme: ExpandableThemeData(
                 iconColor: Settings.themeWhat ? Colors.white : Colors.grey,
                 animationDuration: const Duration(milliseconds: 500)),
             header: Padding(
-              padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+              padding: const EdgeInsets.fromLTRB(12, 12, 0, 0),
               child: Text(
                   '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
             ),
@@ -712,7 +712,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                 width: 100,
                 height: 100,
                 // alignment: Alignment.center,
-                child: Align(
+                child: const Align(
                   // alignment: Alignment.center,
                   child: Text(
                     'No Comments',
@@ -759,7 +759,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                       alignment: Alignment.centerRight,
                       child: Text(
                           DateFormat('yyyy-MM-dd HH:mm').format(e.item1),
-                          style: TextStyle(fontSize: 12)),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ]),
@@ -769,7 +769,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       }));
 
       return Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
         child: Column(
             // mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -832,8 +832,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           useRootNavigator: false,
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-            title: Text('Write Comment'),
+            contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+            title: const Text('Write Comment'),
             content: TextField(
               controller: text,
               autofocus: true,
@@ -849,7 +849,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text('Write Comment')],
+          children: const [Text('Write Comment')],
         ),
       ),
     );
@@ -857,7 +857,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
 
   TextSpan buildLinkComponent(String text, String linkToOpen) => TextSpan(
         text: text,
-        style: TextStyle(
+        style: const TextStyle(
           color: Colors.blueAccent,
           decoration: TextDecoration.underline,
         ),
@@ -915,7 +915,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                   isBookmarked: isBookmarked,
                   controller: controller,
                 ),
-                child: ArticleInfoPage(
+                child: const ArticleInfoPage(
                   key: ObjectKey('asdfasdf'),
                 ),
               );
@@ -966,10 +966,10 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             .then((value) => value.getSmallImagesUrl()),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
-            return Container(child: CircularProgressIndicator());
+            return Container(child: const CircularProgressIndicator());
           return GridView.count(
             controller: null,
-            physics: ScrollPhysics(),
+            physics: const ScrollPhysics(),
             shrinkWrap: true,
             crossAxisCount: 3,
             childAspectRatio: 3 / 4,
@@ -992,7 +992,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             width: 100,
             height: 100,
             // alignment: Alignment.center,
-            child: Align(
+            child: const Align(
               // alignment: Alignment.center,
               child: Text(
                 '??? Unknown Error!',
@@ -1038,35 +1038,35 @@ class _Chip extends StatelessWidget {
     Widget avatar = Text(group[0].toUpperCase());
 
     if (group == 'female')
-      avatar = Icon(MdiIcons.genderFemale, size: 18.0);
+      avatar = const Icon(MdiIcons.genderFemale, size: 18.0);
     else if (group == 'male')
-      avatar = Icon(MdiIcons.genderMale, size: 18.0);
+      avatar = const Icon(MdiIcons.genderMale, size: 18.0);
     else if (group == 'language')
-      avatar = Icon(Icons.language, size: 18.0);
+      avatar = const Icon(Icons.language, size: 18.0);
     else if (group == 'artists')
-      avatar = Icon(MdiIcons.account, size: 18.0);
+      avatar = const Icon(MdiIcons.account, size: 18.0);
     else if (group == 'groups')
-      avatar = Icon(MdiIcons.accountGroup, size: 15.0);
+      avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
 
     var fc = Transform.scale(
       scale: 0.95,
       child: GestureDetector(
         child: RawChip(
-          labelPadding: EdgeInsets.all(0.0),
+          labelPadding: const EdgeInsets.all(0.0),
           avatar: CircleAvatar(
             backgroundColor: Colors.grey.shade600,
             child: avatar,
           ),
           label: Text(
             ' $tagDisplayed',
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
             ),
           ),
           backgroundColor: color,
           elevation: 6.0,
           // shadowColor: Colors.grey[60],
-          padding: EdgeInsets.all(6.0),
+          padding: const EdgeInsets.all(6.0),
         ),
         onLongPress: () async {
           if (!Settings.excludeTags
@@ -1110,7 +1110,7 @@ class _Chip extends StatelessWidget {
                 msg: Translations.of(context).trans('copied'),
               ),
               gravity: ToastGravity.BOTTOM,
-              toastDuration: Duration(seconds: 4),
+              toastDuration: const Duration(seconds: 4),
             );
           }
         },
@@ -1168,13 +1168,13 @@ class _RelatedArea extends StatelessWidget {
     var windowWidth = MediaQuery.of(context).size.width;
     return LiveGrid(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(12, 8, 12, 12),
-      showItemInterval: Duration(milliseconds: 50),
-      showItemDuration: Duration(milliseconds: 150),
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      showItemInterval: const Duration(milliseconds: 50),
+      showItemDuration: const Duration(milliseconds: 150),
       visibleFraction: 0.001,
       itemCount: min(cc.length, 6),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
@@ -1188,7 +1188,7 @@ class _RelatedArea extends StatelessWidget {
           ).animate(animation),
           child: SlideTransition(
             position: Tween<Offset>(
-              begin: Offset(0, -0.1),
+              begin: const Offset(0, -0.1),
               end: Offset.zero,
             ).animate(animation),
             child: Padding(
@@ -1202,10 +1202,10 @@ class _RelatedArea extends StatelessWidget {
                       showDetail: false,
                       addBottomPadding: false,
                       width: (windowWidth - 4.0) / 3,
-                      thumbnailTag: Uuid().v4(),
+                      thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 ),
               ),

@@ -59,11 +59,11 @@ class _AnimatedFloatingActionButtonState
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300))
-          ..addListener(() {
-            setState(() {});
-          });
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300))
+      ..addListener(() {
+        setState(() {});
+      });
     _animateIcon =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _translateButton = Tween<double>(

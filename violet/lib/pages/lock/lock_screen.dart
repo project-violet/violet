@@ -63,7 +63,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       child: Material(
         color: Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
         child: Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           width: double.infinity,
           height: double.infinity,
           // color: Colors.white,
@@ -74,7 +74,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                 children: [
                   Text(
                     Translations.of(context).trans('pinauth'),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.0,
                     ),
@@ -82,8 +82,8 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                   Container(height: 8.0),
                   Text(_message!),
                   Container(height: 36),
-                  Icon(Icons.lock),
-                  Spacer(),
+                  const Icon(Icons.lock),
+                  const Spacer(),
                   Container(
                     width: 200.0,
                     height: 30.0,
@@ -97,7 +97,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   SizedBox(
                       height: 64.0,
                       child: Center(
@@ -106,7 +106,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                           child: Text.rich(TextSpan(
                               text:
                                   Translations.of(context).trans('missingpass'),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.blue,
                                 decoration: TextDecoration.underline,
                               ))),
@@ -154,7 +154,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       return Container(
         width: 10.0,
         height: 10.0,
-        child: Material(
+        child: const Material(
           color: Color.fromARGB(255, 207, 207, 207),
           type: MaterialType.circle,
         ),
@@ -162,7 +162,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
     return Text(
       _pin[index].toString(),
-      style: TextStyle(
+      style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20.0,
       ),
@@ -187,16 +187,16 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         color: Colors.transparent,
         child: SizedBox(
           child: Ink(
-            decoration: BoxDecoration(shape: BoxShape.circle),
+            decoration: const BoxDecoration(shape: BoxShape.circle),
             child: InkWell(
-              customBorder: CircleBorder(),
+              customBorder: const CircleBorder(),
               child: Center(
                 child: index == -1
-                    ? Icon(Icons.backspace)
+                    ? const Icon(Icons.backspace)
                     // : index == -2
                     //     ? Icon(Icons.fingerprint)
                     : Text(text,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20.0)),
               ),
               onTap: () async {
@@ -244,7 +244,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       useRootNavigator: false,
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+        contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
         title: Text(Translations.of(context).trans('entersecondpass')),
         content: TextField(
           controller: text,
@@ -261,7 +261,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         Navigator.pushReplacementNamed(context, '/SplashPage');
       } else {
         _controller.forward();
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           _controller.reverse();
           setState(() {});
         });
@@ -292,7 +292,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       SystemSound.play(SystemSoundType.alert);
       HapticFeedback.heavyImpact();
       _controller.forward();
-      Future.delayed(Duration(milliseconds: 300)).then((value) {
+      Future.delayed(const Duration(milliseconds: 300)).then((value) {
         _controller.reverse();
         _pin = List.filled(4, null);
         setState(() {
@@ -303,7 +303,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       if (_isFirstPINInserted) {
         await (await SharedPreferences.getInstance())
             .setString('pinPass', _pin.join());
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           fToast.showToast(
             child: ToastWrapper(
               isCheck: true,
@@ -311,7 +311,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
               msg: Translations.of(context).trans('pinisregistered'),
             ),
             gravity: ToastGravity.BOTTOM,
-            toastDuration: Duration(seconds: 4),
+            toastDuration: const Duration(seconds: 4),
           );
           Navigator.pop(context);
         });
@@ -320,7 +320,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         _firstPIN = _pin.join();
         _pin = List.filled(4, null);
         _message = Translations.of(context).trans('retrypin');
-        Future.delayed(Duration(milliseconds: 300)).then((value) {
+        Future.delayed(const Duration(milliseconds: 300)).then((value) {
           setState(() {});
         });
       }
