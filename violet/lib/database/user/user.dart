@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
 
 class CommonUserDatabase extends DataBaseManager {
@@ -13,6 +14,7 @@ class CommonUserDatabase extends DataBaseManager {
     if (_instance == null) {
       var dir = await getApplicationDocumentsDirectory();
       _instance = DataBaseManager.create('${dir.path}/user.db');
+      await _instance!.open();
     }
     return _instance!;
   }

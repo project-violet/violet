@@ -31,7 +31,7 @@ class DataBaseManager {
           ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
           : '${await getDatabasesPath()}/data.db';
       _instance = create(dbPath);
-      _instance!._open();
+      _instance!.open();
     }
     return _instance!;
   }
@@ -43,7 +43,7 @@ class DataBaseManager {
     _instance = create(dbPath);
   }
 
-  Future _open() async {
+  Future open() async {
     if (db == null) db = await openDatabase(dbPath!);
   }
 
