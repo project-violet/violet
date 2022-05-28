@@ -314,7 +314,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .toList()))
                         .toList();
 
-                    await Future.forEach<String>(
+                    Future.forEach<String>(
                         _urls!,
                         (element) => (element) async {
                               return CachedNetworkImageProvider(element)
@@ -438,7 +438,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 .toList()))
         .toList();
 
-    await Future.forEach<String>(
+    Future.forEach<String>(
         _urls!,
         (element) => (element) async {
               return CachedNetworkImageProvider(element).evict();
