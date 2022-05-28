@@ -1,7 +1,7 @@
 # Tag Info
 
 ```
-character: 22.44 %
-sereis: 58.18 %
-tag: 2.54 %
+character: 23.39 %
+sereis: 57.30 %
+tag: 2.94 %
 ```
