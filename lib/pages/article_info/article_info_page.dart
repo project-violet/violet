@@ -562,7 +562,7 @@ class PreviewAreaWidget extends StatelessWidget {
         builder: (context,
             AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
           if (!snapshot.hasData) {
-            return Container(child: const CircularProgressIndicator());
+            return const CircularProgressIndicator();
           }
           return GridView.count(
             controller: null,
@@ -968,7 +968,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
             .then((value) => value.getSmallImagesUrl()),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Container(child: const CircularProgressIndicator());
+            return const CircularProgressIndicator();
           }
           return GridView.count(
             controller: null,

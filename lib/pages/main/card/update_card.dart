@@ -88,44 +88,42 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
                   gradient: Gradients.aliHussien,
                   // shadowColor: Gradients.backToFuture.colors.last.withOpacity(0.2),
                   // elevation: 8,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: RotationTransition(
-                              turns: Tween(begin: 0.0, end: 0.7)
-                                  .animate(rotationController),
-                              child: const Icon(
-                                MdiIcons.update,
-                                color: Colors.white,
-                                size: 30,
-                              ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: RotationTransition(
+                            turns: Tween(begin: 0.0, end: 0.7)
+                                .animate(rotationController),
+                            child: const Icon(
+                              MdiIcons.update,
+                              color: Colors.white,
+                              size: 30,
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Text(
-                              '  Tap Me!',
-                              style: TextStyle(
-                                  fontFamily: 'Calibre-Semibold',
-                                  fontSize: 18,
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ]
-                        // child: Text(
-                        //   // 'New Version',
-                        //   '',
-                        //   style: TextStyle(
-                        //     fontSize: 30,
-                        //     fontWeight: FontWeight.bold,
-                        //     fontFamily: "Calibre-Semibold",
-                        //     // letterSpacing: 1.0,
-                        //   ),
-                        // ),
                         ),
-                  ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 4),
+                          child: Text(
+                            '  Tap Me!',
+                            style: TextStyle(
+                                fontFamily: 'Calibre-Semibold',
+                                fontSize: 18,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ]
+                      // child: Text(
+                      //   // 'New Version',
+                      //   '',
+                      //   style: TextStyle(
+                      //     fontSize: 30,
+                      //     fontWeight: FontWeight.bold,
+                      //     fontFamily: "Calibre-Semibold",
+                      //     // letterSpacing: 1.0,
+                      //   ),
+                      // ),
+                      ),
                 ),
               ));
         },
