@@ -48,10 +48,9 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    if (_message == null)
-      _message = widget.isRegisterMode
-          ? Translations.of(context).trans('insertpinforregister')
-          : Translations.of(context).trans('insertpinforcheck');
+    _message ??= widget.isRegisterMode
+        ? Translations.of(context).trans('insertpinforregister')
+        : Translations.of(context).trans('insertpinforcheck');
   }
 
   @override
@@ -209,7 +208,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                   if (pos == -1) pos = 4;
                   if (pos != 0) setState(() => _pin[pos - 1] = null);
                 } else if (index >= 0) {
-                  if (pos == null) pos = 0;
+                  if (pos == -1) pos = 0;
                   setState(() => _pin[pos] = index);
 
                   if (pos == 3) {
