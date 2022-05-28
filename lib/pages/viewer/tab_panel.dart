@@ -135,7 +135,7 @@ class _UsableTabList extends StatefulWidget {
   });
 
   @override
-  __UsableTabListState createState() => __UsableTabListState();
+  State<_UsableTabList> createState() => __UsableTabListState();
 }
 
 class __UsableTabListState extends State<_UsableTabList>
@@ -230,7 +230,7 @@ class _ArtistsArticleTabList extends StatefulWidget {
   });
 
   @override
-  __ArtistsArticleTabListState createState() => __ArtistsArticleTabListState();
+  State<_ArtistsArticleTabList> createState() => __ArtistsArticleTabListState();
 }
 
 class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>

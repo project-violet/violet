@@ -23,7 +23,7 @@ class AfterLoadingPage extends StatefulWidget {
   const AfterLoadingPage({Key? key}) : super(key: key);
 
   @override
-  AfterLoadingPageState createState() => AfterLoadingPageState();
+  State<AfterLoadingPage> createState() => AfterLoadingPageState();
 }
 
 class AfterLoadingPageState extends State<AfterLoadingPage>
