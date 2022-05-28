@@ -159,7 +159,7 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                             thumbnailTag: const Uuid().v4(),
                             seconds: records[index].item2,
                           ),
-                          child: ArticleListItemVerySimpleWidget(),
+                          child: const ArticleListItemVerySimpleWidget(),
                         ),
                       );
                     },

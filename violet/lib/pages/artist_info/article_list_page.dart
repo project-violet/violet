@@ -343,7 +343,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                             thumbnailTag: const Uuid().v4(),
                             usableTabList: filter(),
                           ),
-                          child: ArticleListItemVerySimpleWidget(),
+                          child: const ArticleListItemVerySimpleWidget(),
                         ),
                       ),
                     ),
@@ -374,7 +374,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                     thumbnailTag: const Uuid().v4(),
                     usableTabList: filter(),
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemVerySimpleWidget(),
                 ),
               );
             },

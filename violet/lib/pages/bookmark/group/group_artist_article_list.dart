@@ -121,7 +121,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                                             usableTabList: snapshot.data,
                                           ),
                                           child:
-                                              ArticleListItemVerySimpleWidget(),
+                                              const ArticleListItemVerySimpleWidget(),
                                         )
                                       : Container()
                                 ],

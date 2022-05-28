@@ -539,7 +539,7 @@ class _SettingsPageState extends State<SettingsPage>
               final vv = await showDialog(
                 context: context,
                 builder: (BuildContext context) =>
-                    TagSelectorDialog(what: 'include'),
+                    const TagSelectorDialog(what: 'include'),
               );
 
               if (vv != null && vv.item1 == 1) {
@@ -562,7 +562,7 @@ class _SettingsPageState extends State<SettingsPage>
               final vv = await showDialog(
                 context: context,
                 builder: (BuildContext context) =>
-                    TagSelectorDialog(what: 'exclude'),
+                    const TagSelectorDialog(what: 'exclude'),
               );
 
               if (vv.item1 == 1) {
@@ -939,7 +939,7 @@ class _SettingsPageState extends State<SettingsPage>
                 ? null
                 : () async {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => SplashPage(
+                        builder: (context) => const SplashPage(
                               switching: true,
                             )));
                   },
@@ -1113,7 +1113,7 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => RouteDialog(),
+                builder: (BuildContext context) => const RouteDialog(),
               );
             },
           ),
@@ -1129,7 +1129,7 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => ImageRouteDialog(),
+                builder: (BuildContext context) => const ImageRouteDialog(),
               );
             },
           ),
@@ -1672,7 +1672,7 @@ class _SettingsPageState extends State<SettingsPage>
                 Logger.error('[Restore Bookmark] $e\n'
                     '$st');
                 flutterToast.showToast(
-                  child: ToastWrapper(
+                  child: const ToastWrapper(
                     isCheck: false,
                     msg: 'Bookmark Restoring Error!',
                   ),
@@ -2048,7 +2048,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                 if (result != null) {
                   flutterToast.showToast(
-                    child: ToastWrapper(
+                    child: const ToastWrapper(
                       isCheck: true,
                       msg: 'Login Success!',
                     ),

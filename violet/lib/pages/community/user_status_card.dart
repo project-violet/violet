@@ -259,7 +259,7 @@ class _UserStatusCardState extends State<UserStatusCard>
 
                     if (resc) {
                       fToast.showToast(
-                        child: ToastWrapper(
+                        child: const ToastWrapper(
                           isCheck: true,
                           msg: 'Bookmark Backup Success!',
                         ),
@@ -268,7 +268,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                       );
                     } else {
                       fToast.showToast(
-                        child: ToastWrapper(
+                        child: const ToastWrapper(
                           isCheck: false,
                           isWarning: false,
                           msg: 'Bookmark Backup Fail!',

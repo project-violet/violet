@@ -718,8 +718,8 @@ class _ViewerPageState extends State<ViewerPage>
                     controller: controller,
                     lockRead: true,
                   ),
-                  child: ArticleInfoPage(
-                    key: const ObjectKey('asdfasdf'),
+                  child: const ArticleInfoPage(
+                    key: ObjectKey('asdfasdf'),
                   ),
                 );
                 return cache!;

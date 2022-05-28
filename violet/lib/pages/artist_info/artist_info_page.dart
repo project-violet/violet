@@ -755,7 +755,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                       thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
-                    child: ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemVerySimpleWidget(),
                   ),
                 ),
               ),

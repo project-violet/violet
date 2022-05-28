@@ -317,7 +317,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           // Copy Url
           Clipboard.setData(ClipboardData(text: widget.item.url()));
           fToast.showToast(
-            child: ToastWrapper(
+            child: const ToastWrapper(
               isCheck: true,
               isWarning: false,
               msg: 'URL Copied!',
@@ -415,8 +415,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                   isBookmarked: isBookmarked,
                   controller: controller,
                 ),
-                child: ArticleInfoPage(
-                  key: const ObjectKey('asdfasdf'),
+                child: const ArticleInfoPage(
+                  key: ObjectKey('asdfasdf'),
                 ),
               );
               return cache!;

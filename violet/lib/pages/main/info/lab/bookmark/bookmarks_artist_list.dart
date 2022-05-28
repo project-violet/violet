@@ -295,7 +295,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                     disableFilter: true,
                     usableTabList: qq,
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemVerySimpleWidget(),
                 ),
               )
             : Container());

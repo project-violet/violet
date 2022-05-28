@@ -58,7 +58,7 @@ class _BookmarkPageState extends State<BookmarkPage>
           void _onReorder(int oldIndex, int newIndex) async {
             if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
               fToast.showToast(
-                child: ToastWrapper(
+                child: const ToastWrapper(
                   isCheck: false,
                   isWarning: false,
                   msg: 'You cannot move like that!',

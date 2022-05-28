@@ -440,7 +440,7 @@ class _MainPage2State extends State<MainPage2>
                 ? null
                 : () {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => SplashPage(
+                        builder: (context) => const SplashPage(
                               switching: true,
                             )));
                   },

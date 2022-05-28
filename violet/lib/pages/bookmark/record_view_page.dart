@@ -90,7 +90,8 @@ class RecordViewPage extends StatelessWidget {
                                         thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),
-                                      child: ArticleListItemVerySimpleWidget(),
+                                      child:
+                                          const ArticleListItemVerySimpleWidget(),
                                     )
                                   : Container()
                             ],
