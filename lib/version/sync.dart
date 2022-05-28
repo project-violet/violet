@@ -103,7 +103,7 @@ class SyncManager {
         //
         // 마지막으로 동기화한 시간보다 작은 경우 해당 청크는 무시한다.
         //
-        if (type == 'chunk' && timestamp <= latest!) continue;
+        if (type == 'chunk' && timestamp <= latest) continue;
 
         requestSize += size;
         _rows!.add(SyncInfoRecord(
