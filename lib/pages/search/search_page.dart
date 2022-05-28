@@ -144,12 +144,14 @@ class _SearchPageState extends State<SearchPage>
           // invisible article is not rendered yet
           // so we can find live elements
           if (key.value.currentContext != null) {
-            const bottomPadding = 8;
+            final bottomPadding = [8, 8, 0, 0][Settings.searchResultType];
             itemHeight = key.value.currentContext!.size!.height + bottomPadding;
             break;
           }
         }
       }
+
+      if (_scroll.offset.isNaN) return;
 
       final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
       const searchBarHeight = 64 + 16;
