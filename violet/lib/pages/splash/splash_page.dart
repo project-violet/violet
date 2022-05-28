@@ -629,13 +629,13 @@ class _SplashPageState extends State<SplashPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Icon(
+                children: const <Widget>[
+                  Icon(
                     Icons.language,
                     size: 35,
                     color: Colors.white70,
                   ),
-                  const Text('  Language',
+                  Text('  Language',
                       style: TextStyle(
                           color: Colors.white70,
                           fontSize: 16,

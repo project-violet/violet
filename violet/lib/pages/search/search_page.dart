@@ -500,8 +500,8 @@ class _SearchPageState extends State<SearchPage>
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
-                    const Icon(
+                  children: const <Widget>[
+                    Icon(
                       MdiIcons.formatListText,
                       color: Colors.grey,
                     ),

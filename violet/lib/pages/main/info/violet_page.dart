@@ -41,19 +41,19 @@ class VioletPage extends StatelessWidget {
                   width: 250,
                   height: 190,
                   child: Column(
-                    children: <Widget>[
-                      const Text(''),
-                      const Text(
+                    children: const <Widget>[
+                      Text(''),
+                      Text(
                         'Violet',
                         style: TextStyle(fontSize: 30),
                       ),
-                      const Text(
+                      Text(
                         '${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}',
                         style: TextStyle(fontSize: 20),
                       ),
-                      const Text(''),
+                      Text(''),
                       // Text('Project-Violet Android App'),
-                      const Text(
+                      Text(
                         'Violet은 강력한 검색기능 및 분석기능을 통해 사용자에게 다양한 경험을 제공하는 뷰어입니다.'
                         ' Violet이 제공하는 편리하고도 강력한 기능들을 체험해보세요!',
                         // Translations.of(context).trans('infomessage'),

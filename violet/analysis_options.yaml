@@ -27,7 +27,6 @@ linter:
     prefer_collection_literals: false # TODO(ykh09242): Enable this lint. Too many changes.
     avoid_print: false
     avoid_unnecessary_containers: false # TODO(ykh09242): Enable this lint. Too many changes.
-    prefer_const_literals_to_create_immutables: false # TODO(ykh09242): Enable this lint. Too many changes.
     sized_box_for_whitespace: false # TODO(ykh09242): Enable this lint. Too many changes.
     use_build_context_synchronously: false # TODO(ykh09242): Enable this lint.
 

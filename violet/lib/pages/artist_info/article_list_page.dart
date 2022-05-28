@@ -131,8 +131,8 @@ class _ArticleListPageState extends State<ArticleListPage> {
               width: 48,
               child: Stack(
                 alignment: Alignment.center,
-                children: <Widget>[
-                  const Icon(
+                children: const <Widget>[
+                  Icon(
                     MdiIcons.formatListText,
                     color: Colors.grey,
                   ),

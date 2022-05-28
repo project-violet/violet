@@ -313,7 +313,7 @@ class CommentUnit extends StatelessWidget {
                   author: x.item3,
                   body: x.item4,
                   isReply: true,
-                  replies: [],
+                  replies: const [],
                 ),
               )
               .toList(),

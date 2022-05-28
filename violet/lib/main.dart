@@ -109,22 +109,23 @@ void main() async {
             FirebaseAnalyticsObserver(analytics: analytics),
           ],
           theme: theme,
-          home: Settings.useLockScreen ? LockScreen() : SplashPage(),
-          supportedLocales: [
-            const Locale('en', 'US'),
-            const Locale('ko', 'KR'),
-            const Locale('ja', 'JP'),
-            const Locale('zh', 'CH'),
-            const Locale('it', 'IT'),
-            const Locale('eo', 'ES'),
+          home:
+              Settings.useLockScreen ? const LockScreen() : const SplashPage(),
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('ko', 'KR'),
+            Locale('ja', 'JP'),
+            Locale('zh', 'CH'),
+            Locale('it', 'IT'),
+            Locale('eo', 'ES'),
           ],
           routes: <String, WidgetBuilder>{
             '/AfterLoading': (context) => const AfterLoadingPage(),
-            '/DatabaseDownload': (context) => DataBaseDownloadPage(),
-            '/SplashPage': (context) => SplashPage(),
+            '/DatabaseDownload': (context) => const DataBaseDownloadPage(),
+            '/SplashPage': (context) => const SplashPage(),
           },
-          localizationsDelegates: [
-            const TranslationsDelegate(),
+          localizationsDelegates: const [
+            TranslationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate
