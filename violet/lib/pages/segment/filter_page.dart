@@ -18,8 +18,8 @@ class FilterController {
   var isPopulationSort = false;
   String heroKey;
 
-  var tagStates = Map<String, bool>();
-  var groupStates = Map<String, bool>();
+  var tagStates = <String, bool>{};
+  var groupStates = <String, bool>{};
 
   FilterController({this.heroKey = 'searchtype'});
 }
@@ -44,11 +44,11 @@ class _FilterPageState extends State<FilterPage> {
   bool test = false;
 
   final _tags = <Tuple3<String, String, int>>[];
-  final _groupCount = Map<String, int>();
+  final _groupCount = <String, int>{};
   final _groups = <Tuple2<String, int>>[];
 
   _initTagPad() {
-    Map<String, int> tags = Map<String, int>();
+    Map<String, int> tags = <String, int>{};
     widget.queryResult.forEach((element) {
       if (element.tags() != null) {
         element.tags().split('|').forEach((element) {
@@ -93,7 +93,7 @@ class _FilterPageState extends State<FilterPage> {
   void append(String group, String vv) {
     if (!c.groupStates.containsKey(group)) c.groupStates[group] = false;
     _groupCount[group] = 0;
-    Map<String, int> tags = Map<String, int>();
+    Map<String, int> tags = <String, int>{};
     widget.queryResult.forEach((element) {
       if (element.result[vv] != null) {
         element.result[vv].split('|').forEach((element) {

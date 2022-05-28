@@ -72,14 +72,14 @@ class IsolateDownloader {
     _receivePort.listen((dynamic message) => _listen(message));
     _isolate =
         await Isolate.spawn(_downloadIsolateRoutine, _receivePort.sendPort);
-    _tasks = Map<int, DownloadTask>();
-    _taskTotalSizes = Map<int, int>();
-    _taskCountSizes = Map<int, int>();
+    _tasks = <int, DownloadTask>{};
+    _taskTotalSizes = <int, int>{};
+    _taskCountSizes = <int, int>{};
     _appendedTask = HashSet<int>();
     _completedTask = HashSet<int>();
     _erroredTask = HashSet<int>();
     _canceledTask = HashSet<int>();
-    _errorContent = Map<int, IsolateDownloaderErrorUnit>();
+    _errorContent = <int, IsolateDownloaderErrorUnit>{};
     _taskTotalCount = 0;
   }
 

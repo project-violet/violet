@@ -87,7 +87,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
       QueryManager.query(
               queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''))
           .then((value) async {
-        var qr = Map<String, QueryResult>();
+        var qr = <String, QueryResult>{};
         value.results!.forEach((element) {
           qr[element.id().toString()] = element;
         });

@@ -20,7 +20,7 @@ class Related {
 
     Map<String, dynamic> dataMap = json.decode(data);
 
-    related = Map<int, List<int>>();
+    related = <int, List<int>>{};
 
     dataMap.entries.forEach((element) {
       related[int.parse(element.key)] =
