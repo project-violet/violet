@@ -26,77 +26,9 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/dots_indicator.dart';
 import 'package:violet/widgets/floating_button.dart';
 import 'package:violet/widgets/search_bar.dart';
-
-// https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
-class DotsIndicator extends AnimatedWidget {
-  const DotsIndicator({
-    Key? key,
-    required this.controller,
-    required this.itemCount,
-    required this.onPageSelected,
-    this.color = Colors.white,
-  }) : super(key: key, listenable: controller);
-
-  /// The PageController that this DotsIndicator is representing.
-  final PageController controller;
-
-  /// The number of items managed by the PageController
-  final int itemCount;
-
-  /// Called when a dot is tapped
-  final ValueChanged<int> onPageSelected;
-
-  /// The color of the dots.
-  ///
-  /// Defaults to `Colors.white`.
-  final Color color;
-
-  // The base size of the dots
-  static const double _kDotSize = 6.0;
-
-  // The increase in the size of the selected dot
-  static const double _kMaxZoom = 2.0;
-
-  // The distance between the center of each dot
-  static const double _kDotSpacing = 20.0;
-
-  Widget _buildDot(int index) {
-    double selectedness = Curves.easeOut.transform(
-      max(
-        0.0,
-        1.0 - ((controller.page ?? controller.initialPage) - index).abs(),
-      ),
-    );
-    double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness;
-    return Container(
-      width: _kDotSpacing,
-      child: Center(
-        child: Material(
-          color: (Settings.themeWhat ? Colors.grey.shade100 : Color(0xFF353535))
-              .withAlpha((max(zoom - 1, 0.5) * 255).toInt()),
-          type: MaterialType.circle,
-          child: Container(
-            width: _kDotSize * zoom,
-            height: _kDotSize * zoom,
-            child: InkWell(
-              onTap: () => onPageSelected(index),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List<Widget>.generate(itemCount, _buildDot),
-    );
-  }
-}
 
 class GroupArticleListPage extends StatefulWidget {
   final String name;
