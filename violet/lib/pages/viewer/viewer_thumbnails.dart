@@ -157,7 +157,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         builder: (context,
             AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
           if (!snapshot.hasData) {
-            return Container(child: const CircularProgressIndicator());
+            return const CircularProgressIndicator();
           }
           Future.delayed(const Duration(milliseconds: 50))
               .then((value) => _jumpToViewedPage());

@@ -673,17 +673,15 @@ class _SplashPageState extends State<SplashPage> {
                       // CountryPickerUtils.getCountryByIsoCode('RU'),
                     ],
                     itemBuilder: (Country country) {
-                      return Container(
-                        child: Row(
-                          children: <Widget>[
-                            CountryPickerUtils.getDefaultFlagImage(country),
-                            const SizedBox(
-                              width: 8.0,
-                              height: 30,
-                            ),
-                            Text((country as ExCountry).getDisplayLanguage()),
-                          ],
-                        ),
+                      return Row(
+                        children: <Widget>[
+                          CountryPickerUtils.getDefaultFlagImage(country),
+                          const SizedBox(
+                            width: 8.0,
+                            height: 30,
+                          ),
+                          Text((country as ExCountry).getDisplayLanguage()),
+                        ],
                       );
                     },
                   ),

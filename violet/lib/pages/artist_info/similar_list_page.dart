@@ -82,52 +82,50 @@ class SimilarListPage extends StatelessWidget {
     return CardPanel.build(
       context,
       enableBackgroundColor: Settings.themeWhat && Settings.themeBlack,
-      child: Container(
-        child: ListView.builder(
-          padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-          physics: const ClampingScrollPhysics(),
-          itemCount: similarsAll.length,
-          itemBuilder: (BuildContext ctxt, int index) {
-            var e = similarsAll[index];
-            return FutureBuilder<List<QueryResult>>(
-              future: _future(e.item1),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<QueryResult>> snapshot) {
-                if (!snapshot.hasData) {
-                  return Container(
-                    height: 195,
-                  );
-                }
-
-                var type = 'artist';
-                if (isGroup) {
-                  type = 'group';
-                } else if (isUploader) {
-                  type = 'uploader';
-                } else if (isSeries) {
-                  type = 'series';
-                } else if (isCharacter) {
-                  type = 'character';
-                }
-
-                return ThreeArticlePanel(
-                  tappedRoute: () => ArtistInfoPage(
-                    isGroup: isGroup,
-                    isUploader: isUploader,
-                    isCharacter: isCharacter,
-                    isSeries: isSeries,
-                    artist: e.item1,
-                  ),
-                  title:
-                      ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1)})',
-                  count:
-                      '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
-                  articles: snapshot.data!,
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+        physics: const ClampingScrollPhysics(),
+        itemCount: similarsAll.length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          var e = similarsAll[index];
+          return FutureBuilder<List<QueryResult>>(
+            future: _future(e.item1),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<QueryResult>> snapshot) {
+              if (!snapshot.hasData) {
+                return Container(
+                  height: 195,
                 );
-              },
-            );
-          },
-        ),
+              }
+
+              var type = 'artist';
+              if (isGroup) {
+                type = 'group';
+              } else if (isUploader) {
+                type = 'uploader';
+              } else if (isSeries) {
+                type = 'series';
+              } else if (isCharacter) {
+                type = 'character';
+              }
+
+              return ThreeArticlePanel(
+                tappedRoute: () => ArtistInfoPage(
+                  isGroup: isGroup,
+                  isUploader: isUploader,
+                  isCharacter: isCharacter,
+                  isSeries: isSeries,
+                  artist: e.item1,
+                ),
+                title:
+                    ' ${e.item1} (${HitomiManager.getArticleCount(type, e.item1)})',
+                count:
+                    '${Translations.of(context).trans('score')}: ${e.item2.toStringAsFixed(1)} ',
+                articles: snapshot.data!,
+              );
+            },
+          );
+        },
       ),
     );
   }

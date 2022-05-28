@@ -53,45 +53,43 @@ class _ViewerGalleryState extends State<ViewerGallery> {
     return CardPanel.build(
       context,
       enableBackgroundColor: true,
-      child: Container(
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverPersistentHeader(
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                searchBar: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(10.0),
-                        bottomRight: Radius.circular(10.0)),
-                    color: Settings.themeWhat
-                        ? Settings.themeBlack
-                            ? const Color(0xFF141414)
-                            : const Color(0xFF353535)
-                        : Colors.grey.shade100,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _title()),
-                        _view(),
-                        // _clustering(),
-                      ],
-                    ),
+      child: CustomScrollView(
+        controller: _scrollController,
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverPersistentHeader(
+            floating: true,
+            delegate: AnimatedOpacitySliver(
+              searchBar: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0)),
+                  color: Settings.themeWhat
+                      ? Settings.themeBlack
+                          ? const Color(0xFF141414)
+                          : const Color(0xFF353535)
+                      : Colors.grey.shade100,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _title()),
+                      _view(),
+                      // _clustering(),
+                    ],
                   ),
                 ),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.all(4),
-              sliver: _delegate(),
-            ),
-          ],
-        ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.all(4),
+            sliver: _delegate(),
+          ),
+        ],
       ),
     );
   }
