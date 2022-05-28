@@ -56,9 +56,9 @@ class P7zip {
       return null;
     }
     String filesStr = '';
-    files.forEach((element) {
+    for (var element in files) {
       filesStr += ' $element';
-    });
+    }
 
     final receivePort = ReceivePort();
     await Isolate.spawn(

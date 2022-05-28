@@ -133,12 +133,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //
       var ffstat = <String, int>{};
 
-      cc.forEach((element) {
-        if (element.tags() == null) return;
-        (element.tags() as String)
+      for (var element in cc) {
+        if (element.tags() == null) continue;
+        var result = (element.tags() as String)
             .split('|')
-            .where((element) => element != '')
-            .forEach((element) {
+            .where((element) => element != '');
+        for (var element in result) {
           if (element.startsWith('female:')) {
             femaleTags += 1;
           } else if (element.startsWith('male:')) {
@@ -149,8 +149,8 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] = ffstat[element]! + 1;
-        });
-      });
+        }
+      }
 
       ffstat.forEach((key, value) {
         lff.add(Tuple2<String, int>(key, value));

@@ -49,15 +49,15 @@ class _FilterPageState extends State<FilterPage> {
 
   _initTagPad() {
     Map<String, int> tags = <String, int>{};
-    widget.queryResult.forEach((element) {
+    for (var element in widget.queryResult) {
       if (element.tags() != null) {
-        element.tags().split('|').forEach((element) {
+        for (var element in element.tags().split('|')) {
           if (element == '') return;
           if (!tags.containsKey(element)) tags[element] = 0;
           tags[element] = tags[element]! + 1;
-        });
+        }
       }
-    });
+    }
     _groupCount['tag'] = 0;
     _groupCount['female'] = 0;
     _groupCount['male'] = 0;
@@ -95,15 +95,15 @@ class _FilterPageState extends State<FilterPage> {
     if (!c.groupStates.containsKey(group)) c.groupStates[group] = false;
     _groupCount[group] = 0;
     Map<String, int> tags = <String, int>{};
-    widget.queryResult.forEach((element) {
+    for (var element in widget.queryResult) {
       if (element.result[vv] != null) {
-        element.result[vv].split('|').forEach((element) {
+        for (var element in element.result[vv].split('|')) {
           if (element == '') return;
           if (!tags.containsKey(element)) tags[element] = 0;
           tags[element] = tags[element]! + 1;
-        });
+        }
       }
-    });
+    }
     _groupCount[group] = _groupCount[group]! + tags.length;
     tags.forEach((key, value) {
       _tags.add(Tuple3<String, String, int>(group, key, value));
@@ -346,34 +346,34 @@ class _FilterPageState extends State<FilterPage> {
         FilterChip(
           label: Text(trans.Translations.of(context).trans('selectall')),
           onSelected: (bool value) {
-            _tags
-                .where((element) => c.groupStates[element.item1]!)
-                .forEach((element) {
+            var result =
+                _tags.where((element) => c.groupStates[element.item1]!);
+            for (var element in result) {
               c.tagStates['${element.item1}|${element.item2}'] = true;
-            });
+            }
             setState(() {});
           },
         ),
         FilterChip(
           label: Text(trans.Translations.of(context).trans('deselectall')),
           onSelected: (bool value) {
-            _tags
-                .where((element) => c.groupStates[element.item1]!)
-                .forEach((element) {
+            var result =
+                _tags.where((element) => c.groupStates[element.item1]!);
+            for (var element in result) {
               c.tagStates['${element.item1}|${element.item2}'] = false;
-            });
+            }
             setState(() {});
           },
         ),
         FilterChip(
           label: Text(trans.Translations.of(context).trans('inverse')),
           onSelected: (bool value) {
-            _tags
-                .where((element) => c.groupStates[element.item1]!)
-                .forEach((element) {
+            var result =
+                _tags.where((element) => c.groupStates[element.item1]!);
+            for (var element in result) {
               c.tagStates['${element.item1}|${element.item2}'] =
                   !c.tagStates['${element.item1}|${element.item2}']!;
-            });
+            }
             setState(() {});
           },
         ),

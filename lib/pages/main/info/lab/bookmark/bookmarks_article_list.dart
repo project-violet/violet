@@ -88,12 +88,12 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
               queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''))
           .then((value) async {
         var qr = <String, QueryResult>{};
-        value.results!.forEach((element) {
+        for (var element in value.results!) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         var result = <QueryResult>[];
-        cc.forEach((element) async {
+        await Future.forEach<BookmarkArticle>(cc, (element) async {
           if (qr[element.article()] == null) {
             // TODO: Handle qurey not found
             var headers = await ScriptManager.runHitomiGetHeaderContent(
@@ -311,7 +311,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -347,7 +347,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;

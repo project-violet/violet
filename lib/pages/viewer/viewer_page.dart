@@ -297,14 +297,15 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     if (_nextPageTimer != null) _nextPageTimer!.cancel();
     PaintingBinding.instance.imageCache.clear();
     if (_pageInfo.useWeb) {
-      _pageInfo.uris.forEach((element) async {
+      await Future.forEach<String>(_pageInfo.uris, (element) async {
         await CachedNetworkImageProvider(element).evict();
       });
     }
+
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
       SystemUiOverlay.top,
       SystemUiOverlay.bottom,

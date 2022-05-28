@@ -36,11 +36,12 @@ class LabRecordViewPage extends StatelessWidget {
         var overap = HashSet<String>();
         var rr = <ArticleReadLog>[];
 
-        records.map((x) => ArticleReadLog(result: x)).forEach((element) {
-          if (overap.contains(element.articleId())) return;
+        var result = records.map((x) => ArticleReadLog(result: x));
+        for (var element in result) {
+          if (overap.contains(element.articleId())) continue;
           rr.add(element);
           overap.add(element.articleId());
-        });
+        }
 
         var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
         queryRaw += 'Id IN (${rr.map((e) => e.articleId()).join(',')})';
@@ -48,9 +49,9 @@ class LabRecordViewPage extends StatelessWidget {
             queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
         var qr = <String, QueryResult>{};
-        qm.results!.forEach((element) {
+        for (var element in qm.results!) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         return rr
             .where((e) => qr.containsKey(e.articleId()))

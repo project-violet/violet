@@ -351,10 +351,10 @@ class _GroupArtistListState extends State<GroupArtistList>
         Container(
           child: FloatingActionButton(
             onPressed: () {
-              artists.forEach((element) {
+              for (var element in artists) {
                 checked
                     .add(Tuple2<int, String>(element.type(), element.artist()));
-              });
+              }
               setState(() {});
             },
             elevation: 4,
@@ -372,9 +372,9 @@ class _GroupArtistListState extends State<GroupArtistList>
                       .replaceAll('%s', checked.length.toString()),
                   Translations.of(context).trans('bookmark'))) {
                 var bookmark = await Bookmark.getInstance();
-                checked.forEach((element) async {
+                for (var element in checked) {
                   bookmark.unbookmarkArtist(element.item2, element.item1);
-                });
+                }
                 checked.clear();
                 refresh();
                 setState(() {

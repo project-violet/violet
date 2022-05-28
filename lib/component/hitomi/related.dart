@@ -23,10 +23,10 @@ class Related {
 
     related = <int, List<int>>{};
 
-    dataMap.entries.forEach((element) {
+    for (var element in dataMap.entries) {
       related[int.parse(element.key)] =
           (element.value as List<dynamic>).map((e) => e as int).toList();
-    });
+    }
   }
 
   static bool existsRelated(int articleId) {

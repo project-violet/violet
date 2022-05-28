@@ -563,7 +563,7 @@ class _SearchPageState extends State<SearchPage>
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -599,7 +599,7 @@ class _SearchPageState extends State<SearchPage>
         }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;

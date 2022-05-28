@@ -76,10 +76,10 @@ class HitomiIndexs {
             'assets/locale/tag/related-tag-${TagTranslate.defaultLanguage}.json'))
         as List<dynamic>;
     relatedTag = <String, dynamic>{};
-    relatedData.forEach((element) {
+    for (var element in relatedData) {
       var kv = (element as Map<String, dynamic>).entries.first;
       relatedTag[kv.key] = kv.value;
-    });
+    }
   }
 
   static List<Tuple2<String, double>> _calculateSimilars(

@@ -14,7 +14,7 @@ class HiyobiManager {
     var files = jsonDecode(urls) as List<dynamic>;
     var result = <String>[];
 
-    files.forEach((value) {
+    for (var value in files) {
       var item = value as Map<String, dynamic>;
       if (item['haswebp'] == 1 && item.containsKey('hash')) {
         result.add('https://cdn.hiyobi.me/data/$id/${item['hash']}.webp');
@@ -22,7 +22,7 @@ class HiyobiManager {
         result.add('https://cdn.hiyobi.me/data/$id/${item['name']}');
         // result.add('https://rcdn.hiyobi.me/data_r/$id/${value['name']}');
       }
-    });
+    }
 
     return Tuple2<String, List<String>>(
         'https://tn.hiyobi.me/tn/$id.jpg', result);

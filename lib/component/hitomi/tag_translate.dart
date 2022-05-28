@@ -32,14 +32,14 @@ class TagTranslate {
     _translateMap = <String, String>{};
     _reverseAndroMap = <String, String>{};
 
-    result.entries.forEach((element) {
-      if (element.value.toString().trim() == '') return;
-      if (_translateMap.containsKey(element.key)) return;
+    for (var element in result.entries) {
+      if (element.value.toString().trim() == '') continue;
+      if (_translateMap.containsKey(element.key)) continue;
       _translateMap[element.key] = element.value as String;
       _reverseAndroMap[disassembly((element.value as String)
           .replaceAll('female:', '')
           .replaceAll('male:', ''))] = element.key;
-    });
+    }
   }
 
   static String of(String classification, String key) {
@@ -96,11 +96,11 @@ class TagTranslate {
     var result = contains(part) + containsAndro(part);
     var overlap = <String>{};
     var rresult = <DisplayedTag>[];
-    result.forEach((element) {
-      if (overlap.contains(element.getTag())) return;
+    for (var element in result) {
+      if (overlap.contains(element.getTag())) continue;
       overlap.add(element.getTag());
       rresult.add(element);
-    });
+    }
     return rresult;
   }
 
@@ -140,11 +140,11 @@ class TagTranslate {
     result.sort((x, y) => x.item2.compareTo(y.item2));
     var overlap = <String>{};
     var rresult = <Tuple2<DisplayedTag, int>>[];
-    result.forEach((element) {
-      if (overlap.contains(element.item1.getTag())) return;
+    for (var element in result) {
+      if (overlap.contains(element.item1.getTag())) continue;
       overlap.add(element.item1.getTag());
       rresult.add(element);
-    });
+    }
     return rresult;
   }
 

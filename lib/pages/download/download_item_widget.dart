@@ -757,9 +757,9 @@ class _ThumbnailWidget extends StatelessWidget {
       Map<String, String> headers = {};
       if (thumbnailHeader != null) {
         var hh = jsonDecode(thumbnailHeader!) as Map<String, dynamic>;
-        hh.entries.forEach((element) {
+        for (var element in hh.entries) {
           headers[element.key] = element.value as String;
-        });
+        }
       }
       return Hero(
         tag: thumbnailTag!,

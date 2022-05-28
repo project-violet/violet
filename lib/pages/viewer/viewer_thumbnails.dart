@@ -38,9 +38,9 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     super.didChangeDependencies();
 
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    List.generate(_pageInfo.uris.length, (index) => index).forEach((element) {
+    for (int i = 0; i < _pageInfo.uris.length; i++) {
       itemKeys.add(GlobalKey());
-    });
+    }
 
     if (_pageInfo.useFileSystem) _jumpToViewedPage();
   }

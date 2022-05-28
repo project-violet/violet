@@ -98,9 +98,7 @@ class Logger {
   }
 
   static Future<void> showLogs() async {
-    (await logFile.readAsLines()).forEach((element) {
-      print(element);
-    });
+    (await logFile.readAsLines()).forEach(print);
   }
 
   static Future<void> exportLog() async {

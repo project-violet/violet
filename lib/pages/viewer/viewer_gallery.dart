@@ -31,9 +31,9 @@ class _ViewerGalleryState extends State<ViewerGallery> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    List.generate(_pageInfo.uris.length, (index) => index).forEach((element) {
+    for (int i = 0; i < _pageInfo.uris.length; i++) {
       itemKeys.add(GlobalKey());
-    });
+    }
 
     Future.value(1).then((value) {
       var row = widget.viewedPage ~/ 4;

@@ -152,8 +152,9 @@ class __UsableTabListState extends State<_UsableTabList>
   void initState() {
     super.initState();
 
-    widget.usableTabList
-        .forEach((element) => itemKeys[element.id()] = GlobalKey());
+    for (var element in widget.usableTabList) {
+      itemKeys[element.id()] = GlobalKey();
+    }
 
     Future.value(1).then((value) {
       var row = widget.usableTabList
@@ -292,7 +293,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
       }
 
       articleList = queryResult;
-      articleList.forEach((element) => itemKeys[element.id()] = GlobalKey());
+      for (var element in articleList) {
+        itemKeys[element.id()] = GlobalKey();
+      }
 
       setState(() => isLoaded = true);
 

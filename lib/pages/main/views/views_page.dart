@@ -155,19 +155,19 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
         if (query.results!.isEmpty) return 901;
 
         var qr = <String, QueryResult>{};
-        query.results!.forEach((element) {
+        for (var element in query.results!) {
           qr[element.id().toString()] = element;
-        });
+        }
 
         var result = <Tuple2<QueryResult, int>>[];
-        value.forEach((element) {
+        for (var element in value) {
           if (qr[element.item1.toString()] == null) {
             // TODO: Handle qurey not found
-            return;
+            continue;
           }
           result.add(Tuple2<QueryResult, int>(
               qr[element.item1.toString()]!, element.item2));
-        });
+        }
 
         return result;
       }),

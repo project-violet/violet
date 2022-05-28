@@ -33,11 +33,11 @@ class RecordViewPage extends StatelessWidget {
           .then((value) => value.getUserLog().then((value) async {
                 var overap = HashSet<String>();
                 var rr = <ArticleReadLog>[];
-                value.forEach((element) {
-                  if (overap.contains(element.articleId())) return;
+                for (var element in value) {
+                  if (overap.contains(element.articleId())) continue;
                   rr.add(element);
                   overap.add(element.articleId());
-                });
+                }
 
                 var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
                 queryRaw += 'Id IN (${rr.map((e) => e.articleId()).join(',')})';
@@ -45,9 +45,9 @@ class RecordViewPage extends StatelessWidget {
                     (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                 var qr = <String, QueryResult>{};
-                qm.results!.forEach((element) {
+                for (var element in qm.results!) {
                   qr[element.id().toString()] = element;
-                });
+                }
 
                 return rr
                     .where((e) => qr.containsKey(e.articleId()))

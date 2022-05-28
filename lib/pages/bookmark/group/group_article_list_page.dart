@@ -118,12 +118,12 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           QueryManager.queryIds(cc.map((e) => int.parse(e.article())).toList())
               .then((value) async {
             var qr = <String, QueryResult>{};
-            value.forEach((element) {
+            for (var element in value) {
               qr[element.id().toString()] = element;
-            });
+            }
 
             var result = <QueryResult>[];
-            cc.forEach((element) async {
+            await Future.forEach<BookmarkArticle>(cc, (element) async {
               var article = qr[element.article()];
               article ??= await _tryGetArticleFromHitomi(element.article());
               result.add(article);
@@ -236,9 +236,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         Container(
           child: FloatingActionButton(
             onPressed: () {
-              filterResult.forEach((element) {
+              for (var element in filterResult) {
                 checked.add(element.id());
-              });
+              }
               _shouldRebuild = true;
               setState(() {
                 _shouldRebuild = true;
@@ -259,9 +259,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                       .replaceAll('%s', checked.length.toString()),
                   Translations.of(context).trans('bookmark'))) {
                 var bookmark = await Bookmark.getInstance();
-                checked.forEach((element) async {
+                for (var element in checked) {
                   bookmark.unbookmark(element);
-                });
+                }
                 checked.clear();
                 refresh();
               }
@@ -410,7 +410,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -446,7 +446,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;

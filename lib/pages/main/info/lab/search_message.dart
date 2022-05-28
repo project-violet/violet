@@ -87,13 +87,15 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();
     imageCache.clear();
-    _urls!.forEach((element) async {
-      await CachedNetworkImageProvider(element).evict();
-    });
+    await Future.forEach<String>(
+        _urls!,
+        (element) => (element) async {
+              return CachedNetworkImageProvider(element).evict();
+            });
     super.dispose();
   }
 
@@ -312,9 +314,12 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     .toList()))
                         .toList();
 
-                    _urls!.forEach((element) async {
-                      await CachedNetworkImageProvider(element).evict();
-                    });
+                    await Future.forEach<String>(
+                        _urls!,
+                        (element) => (element) async {
+                              return CachedNetworkImageProvider(element)
+                                  .evict();
+                            });
 
                     _height = List<double>.filled(messages.length, 0);
                     _keys = List<GlobalKey>.generate(
@@ -433,9 +438,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 .toList()))
         .toList();
 
-    _urls!.forEach((element) async {
-      await CachedNetworkImageProvider(element).evict();
-    });
+    await Future.forEach<String>(
+        _urls!,
+        (element) => (element) async {
+              return CachedNetworkImageProvider(element).evict();
+            });
 
     _height = List<double>.filled(messages.length, 0);
     _keys = List<GlobalKey>.generate(messages.length, (index) => GlobalKey());

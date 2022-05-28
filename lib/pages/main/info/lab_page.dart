@@ -64,9 +64,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
+                  for (var element in qm.results!) {
                     qr[element.id().toString()] = element;
-                  });
+                  }
 
                   var rr = LDI.ldi!
                       .where((e) => qr.containsKey(e.item1.toString()))
@@ -91,9 +91,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
+                  for (var element in qm.results!) {
                     qr[element.id().toString()] = element;
-                  });
+                  }
 
                   var rr = LDI.ldi!.reversed
                       .where((e) => qr.containsKey(e.item1.toString()))
@@ -112,13 +112,13 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
                   var articleCount = <String, int>{};
-                  userLog.forEach((element) {
+                  for (var element in userLog) {
                     if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
                     }
                     articleCount[element.articleId()] =
                         articleCount[element.articleId()]! + 1;
-                  });
+                  }
                   var ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));
 
@@ -129,9 +129,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
+                  for (var element in qm.results!) {
                     qr[element.id().toString()] = element;
-                  });
+                  }
 
                   var rr = ll
                       .where((e) => qr.containsKey(e.key))
@@ -151,11 +151,11 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
                   var articleCount = <String, int>{};
-                  userLog.forEach((element) {
+                  for (var element in userLog) {
                     if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
                     }
-                  });
+                  }
                   var ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));
 
@@ -295,9 +295,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
                   var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
+                  for (var element in qm.results!) {
                     qr[element.id().toString()] = element;
-                  });
+                  }
 
                   var rr = CommentsCount.counts!
                       .where((e) => qr.containsKey(e.item1.toString()))

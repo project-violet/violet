@@ -83,18 +83,18 @@ class _LabRecentRecordsState extends State<LabRecentRecords> {
       if (query.results!.isEmpty) return;
 
       var qr = <String, QueryResult>{};
-      query.results!.forEach((element) {
+      for (var element in query.results!) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple2<QueryResult, int>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item2.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple2<QueryResult, int>(
             qr[element.item2.toString()]!, element.item3));
-      });
+      }
 
       records.insertAll(0, result);
 

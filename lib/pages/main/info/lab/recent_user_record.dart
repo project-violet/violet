@@ -74,12 +74,12 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
       var ffstat = <String, int>{};
 
-      query.results!.forEach((element) {
-        if (element.tags() == null) return;
-        (element.tags() as String)
+      for (var element in query.results!) {
+        if (element.tags() == null) continue;
+        var result = (element.tags() as String)
             .split('|')
-            .where((element) => element != '')
-            .forEach((element) {
+            .where((element) => element != '');
+        for (var element in result) {
           if (element.startsWith('female:')) {
             femaleTags += 1;
           } else if (element.startsWith('male:')) {
@@ -90,8 +90,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] = ffstat[element]! + 1;
-        });
-      });
+        }
+      }
 
       ffstat.forEach((key, value) {
         lff.add(Tuple2<String, int>(key, value));
@@ -106,18 +106,18 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
       /* -- Statistics */
 
       var qr = <String, QueryResult>{};
-      query.results!.forEach((element) {
+      for (var element in query.results!) {
         qr[element.id().toString()] = element;
-      });
+      }
 
       var result = <Tuple2<QueryResult, int>>[];
-      xrecords.forEach((element) {
+      for (var element in xrecords) {
         if (qr[element.item2.toString()] == null) {
-          return;
+          continue;
         }
         result.add(Tuple2<QueryResult, int>(
             qr[element.item2.toString()]!, element.item3));
-      });
+      }
 
       records.insertAll(0, result);
 

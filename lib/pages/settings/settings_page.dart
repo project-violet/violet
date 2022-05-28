@@ -1839,9 +1839,9 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               int count = 0;
-              EHBookmark.bookmarkInfo!.forEach((element) {
+              for (var element in EHBookmark.bookmarkInfo!) {
                 count += element.length;
-              });
+              }
 
               var qqq = await showYesNoDialog(
                   context,

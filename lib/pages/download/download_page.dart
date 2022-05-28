@@ -153,12 +153,12 @@ class _DownloadPageState extends State<DownloadPage>
     queryRaw += 'Id IN (${articles.map((e) => e).join(',')})';
     QueryManager.query(queryRaw).then((value) async {
       var qr = <int, QueryResult>{};
-      value.results!.forEach((element) {
+      for (var element in value.results!) {
         qr[element.id()] = element;
-      });
+      }
 
       var result = <QueryResult>[];
-      articles.forEach((element) async {
+      await Future.forEach<int>(articles, (element) async {
         if (qr[element] == null) {
           try {
             var headers = await ScriptManager.runHitomiGetHeaderContent(
@@ -180,9 +180,9 @@ class _DownloadPageState extends State<DownloadPage>
         result.add(qr[element]!);
       });
 
-      result.forEach((element) {
+      for (var element in result) {
         queryResults[element.id()] = element;
-      });
+      }
     });
   }
 
@@ -691,19 +691,19 @@ class _DownloadPageState extends State<DownloadPage>
     var downloading = <int>[];
     var result = <int>[];
     var isOr = _filterController.isOr;
-    itemsMap.entries.forEach((element) {
+    for (var element in itemsMap.entries) {
       // 1: Pending
       // 2: Extracting
       // 3: Downloading
       // 4: Post Processing
       if (1 <= element.value.state() && element.value.state() <= 4) {
         downloading.add(element.key);
-        return;
+        continue;
       }
 
-      if (int.tryParse(element.value.url()) == null) return;
+      if (int.tryParse(element.value.url()) == null) continue;
       final qr = queryResults[int.parse(element.value.url())];
-      if (qr == null) return;
+      if (qr == null) continue;
 
       // key := <group>:<name>
       var succ = !_filterController.isOr;
@@ -740,7 +740,7 @@ class _DownloadPageState extends State<DownloadPage>
         }
       });
       if (succ) result.add(element.key);
-    });
+    }
 
     if (_filterController.tagStates.isNotEmpty) {
       filterResult = result.map((e) => itemsMap[e]!).toList();
@@ -757,12 +757,12 @@ class _DownloadPageState extends State<DownloadPage>
       final userlog = await user.getUserLog();
       final articlereadlog = <int, DateTime>{};
 
-      userlog.forEach((element) {
+      for (var element in userlog) {
         if (!articlereadlog.containsKey(int.tryParse(element.articleId()))) {
           articlereadlog[int.parse(element.articleId())] =
               DateTime.parse(element.datetimeStart());
         }
-      });
+      }
 
       filterResult.sort((x, y) {
         if (int.tryParse(x.url()) == null) return 1;
