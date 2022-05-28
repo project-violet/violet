@@ -114,25 +114,23 @@ class HistoryUser {
 
 class Bookmark {
   static Bookmark? _instance;
-  static Lock lock = Lock();
   static Future<Bookmark> getInstance() async {
     if (_instance == null) {
-      await lock.synchronized(() async {
-        var db = await CommonUserDatabase.getInstance();
-        var ee = await db.query(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkGroup';");
-        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
-          try {
-            await db.execute(
-                'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer, Gorder integer)');
-            await db.execute('''CREATE TABLE BookmarkArticle (
+      var db = await CommonUserDatabase.getInstance();
+      var ee = await db.query(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkGroup';");
+      if (ee == null || ee.isEmpty || ee[0].isEmpty) {
+        try {
+          await db.execute(
+              'CREATE TABLE BookmarkGroup (Id integer primary key autoincrement, Name text, DateTime text, Description text, Color integer, Gorder integer)');
+          await db.execute('''CREATE TABLE BookmarkArticle (
               Id integer primary key autoincrement, 
               Article text, 
               DateTime text,
               GroupId integer,
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
               ''');
-            await db.execute('''CREATE TABLE BookmarkArtist (
+          await db.execute('''CREATE TABLE BookmarkArtist (
               Id integer primary key autoincrement, 
               Artist text, 
               IsGroup integer,
@@ -141,23 +139,23 @@ class Bookmark {
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
               ''');
 
-            // Insert default bookmark group.
-            await db.insert('BookmarkGroup', {
-              'Name': 'violet_default', // 미분류
-              'Description': 'Unclassified bookmarks.',
-              'DateTime': DateTime.now().toString(),
-              'Color': Colors.grey.value,
-              'Gorder': 1,
-            });
-          } catch (e, st) {
-            Logger.error('[Bookmark Instance] E: $e\n'
-                '$st');
-          }
+          // Insert default bookmark group.
+          await db.insert('BookmarkGroup', {
+            'Name': 'violet_default', // 미분류
+            'Description': 'Unclassified bookmarks.',
+            'DateTime': DateTime.now().toString(),
+            'Color': Colors.grey.value,
+            'Gorder': 1,
+          });
+        } catch (e, st) {
+          Logger.error('[Bookmark Instance] E: $e\n'
+              '$st');
         }
-        var ex = await db.query(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkUser';");
-        if (ex == null || ex.isEmpty || ex[0].isEmpty) {
-          await db.execute('''CREATE TABLE BookmarkUser (
+      }
+      var ex = await db.query(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='BookmarkUser';");
+      if (ex == null || ex.isEmpty || ex[0].isEmpty) {
+        await db.execute('''CREATE TABLE BookmarkUser (
               Id integer primary key autoincrement, 
               User text,
               Title text,
@@ -166,18 +164,17 @@ class Bookmark {
               GroupId integer,
               FOREIGN KEY(GroupId) REFERENCES BookmarkGroup(Id));
               ''');
-        }
-        var ex2 = await db.query(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='HistoryUser';");
-        if (ex2 == null || ex2.isEmpty || ex2[0].isEmpty) {
-          await db.execute('''CREATE TABLE HistoryUser (
+      }
+      var ex2 = await db.query(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='HistoryUser';");
+      if (ex2 == null || ex2.isEmpty || ex2[0].isEmpty) {
+        await db.execute('''CREATE TABLE HistoryUser (
               Id integer primary key autoincrement, 
               User text,
               DateTime text);
               ''');
-        }
-        _instance = Bookmark();
-      });
+      }
+      _instance = Bookmark();
     }
     return _instance!;
   }
@@ -344,30 +341,24 @@ class Bookmark {
   }
 
   Future<void> modfiyGroup(BookmarkGroup group) async {
-    await lock.synchronized(() async {
-      await (await CommonUserDatabase.getInstance())
-          .update('BookmarkGroup', group.result, 'Id=?', [group.id()]);
-    });
+    await (await CommonUserDatabase.getInstance())
+        .update('BookmarkGroup', group.result, 'Id=?', [group.id()]);
   }
 
   Future<void> modfiyUser(BookmarkUser user) async {
-    await lock.synchronized(() async {
-      await (await CommonUserDatabase.getInstance())
-          .update('BookmarkUser', user.result, 'Id=?', [user.id()]);
-    });
+    await (await CommonUserDatabase.getInstance())
+        .update('BookmarkUser', user.result, 'Id=?', [user.id()]);
   }
 
   HashSet<int>? bookmarkSet;
   Future<bool> isBookmark(int id) async {
-    await lock.synchronized(() async {
-      if (bookmarkSet == null) {
-        var article = await getArticle();
-        bookmarkSet = HashSet<int>();
-        article.forEach((element) {
-          bookmarkSet!.add(int.parse(element.article()));
-        });
-      }
-    });
+    if (bookmarkSet == null) {
+      var article = await getArticle();
+      bookmarkSet = HashSet<int>();
+      article.forEach((element) {
+        bookmarkSet!.add(int.parse(element.article()));
+      });
+    }
 
     return bookmarkSet!.contains(id);
   }
@@ -387,50 +378,44 @@ class Bookmark {
 
   Map<int, HashSet<String>>? bookmarkArtistSet;
   Future<bool> isBookmarkArtist(String name, int type) async {
-    await lock.synchronized(() async {
-      if (bookmarkArtistSet == null) {
-        var artist = await getArtist();
-        bookmarkArtistSet = Map<int, HashSet<String>>();
-        bookmarkArtistSet![0] = HashSet<String>();
-        bookmarkArtistSet![1] = HashSet<String>();
-        bookmarkArtistSet![2] = HashSet<String>();
-        bookmarkArtistSet![3] = HashSet<String>();
-        bookmarkArtistSet![4] = HashSet<String>();
-        artist.forEach((element) {
-          bookmarkArtistSet![element.type()]!.add(element.artist());
-        });
-      }
-    });
+    if (bookmarkArtistSet == null) {
+      var artist = await getArtist();
+      bookmarkArtistSet = Map<int, HashSet<String>>();
+      bookmarkArtistSet![0] = HashSet<String>();
+      bookmarkArtistSet![1] = HashSet<String>();
+      bookmarkArtistSet![2] = HashSet<String>();
+      bookmarkArtistSet![3] = HashSet<String>();
+      bookmarkArtistSet![4] = HashSet<String>();
+      artist.forEach((element) {
+        bookmarkArtistSet![element.type()]!.add(element.artist());
+      });
+    }
 
     return bookmarkArtistSet![type]!.contains(name);
   }
 
   HashSet<String>? bookmarkUserSet;
   Future<bool> isBookmarkUser(String user) async {
-    await lock.synchronized(() async {
-      if (bookmarkUserSet == null) {
-        var user = await getUser();
-        bookmarkUserSet = HashSet<String>();
-        user.forEach((element) {
-          bookmarkUserSet!.add(element.user());
-        });
-      }
-    });
+    if (bookmarkUserSet == null) {
+      var user = await getUser();
+      bookmarkUserSet = HashSet<String>();
+      user.forEach((element) {
+        bookmarkUserSet!.add(element.user());
+      });
+    }
 
     return bookmarkUserSet!.contains(user);
   }
 
   HashSet<String>? historyUserSet;
   Future<bool> isHistoryUser(String user) async {
-    await lock.synchronized(() async {
-      if (historyUserSet == null) {
-        var user = await getHistoryUser();
-        historyUserSet = HashSet<String>();
-        user.forEach((element) {
-          historyUserSet!.add(element.user());
-        });
-      }
-    });
+    if (historyUserSet == null) {
+      var user = await getHistoryUser();
+      historyUserSet = HashSet<String>();
+      user.forEach((element) {
+        historyUserSet!.add(element.user());
+      });
+    }
 
     return historyUserSet!.contains(user);
   }
