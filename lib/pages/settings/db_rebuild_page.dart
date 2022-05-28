@@ -63,11 +63,11 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                     child: Stack(
-                      children: [
-                        const Center(
+                      children: const [
+                        Center(
                           child: CircularProgressIndicator(),
                         ),
-                        const Align(
+                        Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 33),

@@ -182,8 +182,8 @@ class _CommunityPageState extends State<CommunityPage>
                           width: 48,
                           child: Stack(
                               alignment: Alignment.center,
-                              children: <Widget>[
-                                const SizedBox(
+                              children: const <Widget>[
+                                SizedBox(
                                     height: 30,
                                     width: 30,
                                     child: CircularProgressIndicator(

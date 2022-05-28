@@ -69,11 +69,11 @@ class _ImportFromEHPageState extends State<ImportFromEHPage> {
                     //   ],
                     // ),
                     child: Stack(
-                      children: [
-                        const Center(
+                      children: const [
+                        Center(
                           child: CircularProgressIndicator(),
                         ),
-                        const Align(
+                        Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 33),
@@ -82,7 +82,7 @@ class _ImportFromEHPageState extends State<ImportFromEHPage> {
                             ),
                           ),
                         ),
-                        const Align(
+                        Align(
                           alignment: Alignment.bottomCenter,
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 15),

@@ -35,8 +35,8 @@ class LibvioletPage extends StatelessWidget {
                     expanded: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                       child: Column(
-                        children: [
-                          const Text(
+                        children: const [
+                          Text(
                               'Libviolet is a very fast download library implemented based on Rust. '
                               'This download library allows downloads up to the network maximum download speed.',
                               style: TextStyle(fontSize: 12)),

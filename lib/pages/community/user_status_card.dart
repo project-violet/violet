@@ -197,15 +197,17 @@ class _UserStatusCardState extends State<UserStatusCard>
               ? SizedBox(
                   height: 48,
                   width: 48,
-                  child: Stack(alignment: Alignment.center, children: <Widget>[
-                    const SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.grey),
-                        ))
-                  ]))
+                  child: Stack(
+                      alignment: Alignment.center,
+                      children: const <Widget>[
+                        SizedBox(
+                            height: 30,
+                            width: 30,
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.grey),
+                            ))
+                      ]))
               : InkWell(
                   customBorder: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(

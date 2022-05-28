@@ -516,8 +516,8 @@ class _DownloadPageState extends State<DownloadPage>
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
-                    const Icon(
+                  children: const <Widget>[
+                    Icon(
                       MdiIcons.hammerWrench,
                       color: Colors.grey,
                     ),
@@ -600,8 +600,8 @@ class _DownloadPageState extends State<DownloadPage>
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: <Widget>[
-                    const Icon(
+                  children: const <Widget>[
+                    Icon(
                       MdiIcons.formatListText,
                       color: Colors.grey,
                     ),

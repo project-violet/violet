@@ -289,12 +289,12 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           onPageChanged: (newPage) {
             setState(() {});
           },
-          children: <Widget>[
-            const MainPage2(),
-            const SearchPage(),
-            const BookmarkPage(),
-            const DownloadPage(),
-            const SettingsPage(),
+          children: const <Widget>[
+            MainPage2(),
+            SearchPage(),
+            BookmarkPage(),
+            DownloadPage(),
+            SettingsPage(),
           ],
         ),
       ),

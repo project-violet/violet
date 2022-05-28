@@ -165,8 +165,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                     },
                   )
                 : Column(
-                    children: <Widget>[
-                      const Expanded(
+                    children: const <Widget>[
+                      Expanded(
                         child: Align(
                           alignment: Alignment.center,
                           child: SizedBox(

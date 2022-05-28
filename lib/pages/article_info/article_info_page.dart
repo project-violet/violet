@@ -849,7 +849,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [const Text('Write Comment')],
+          children: const [Text('Write Comment')],
         ),
       ),
     );
