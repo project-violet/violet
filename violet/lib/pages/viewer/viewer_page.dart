@@ -1634,39 +1634,6 @@ class _ViewerPageState extends State<ViewerPage>
     );
   }
 
-  // Future<Size> _calculateImageDimension(String uri) async {
-  //   Completer<Size> completer = Completer();
-  //   Image image = Image.file(File(uri));
-  //   image.image.resolve(ImageConfiguration()).addListener(
-  //     ImageStreamListener(
-  //       (ImageInfo image, bool synchronousCall) {
-  //         var myImage = image.image;
-  //         Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-  //         if (!completer.isCompleted) completer.complete(size);
-  //       },
-  //     ),
-  //   );
-  //   return completer.future;
-  // }
-
-  /*
-  Future<Size> _calculateNetworkImageDimension(String uri) async {
-    Completer<Size> completer = Completer();
-    Image image = Image(
-        image: OptimizedCacheImageProvider(uri, headers: _pageInfo.headers));
-    image.image.resolve(ImageConfiguration()).addListener(
-      ImageStreamListener(
-        (ImageInfo image, bool synchronousCall) {
-          var myImage = image.image;
-          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-          completer.complete(size);
-        },
-      ),
-    );
-    return completer.future;
-  }
-   */
-
   _providerImageItem(index) {
     if (_headerCache == null) {
       _headerCache =
@@ -1758,161 +1725,83 @@ class _ViewerPageState extends State<ViewerPage>
               );
             }
             return Container(
-                // height: _height[index] != 0 ? _height[index] : null,
-                constraints: _height![index] != 0
-                    ? BoxConstraints(minHeight: _height![index])
-                    : _estimatedImageHeight![index] != 0
-                        ? BoxConstraints(
-                            minHeight: _estimatedImageHeight![index])
-                        : null,
-                child: _ProviderImage(
-                  imgKey: _keys![index],
-                  imgUrl: _urlCache![index]!,
-                  imgHeader: _headerCache![index],
-                  imageWidgetBuilder: (context, imageProvider, child) {
-                    if (_height![index] == 0 || _height![index] == 300) {
-                      Future.delayed(const Duration(milliseconds: 50))
-                          .then((value) {
-                        try {
-                          final RenderBox renderBoxRed = _keys![index]
-                              .currentContext!
-                              .findRenderObject() as RenderBox;
-                          final sizeRender = renderBoxRed.size;
-                          if (sizeRender.height != 300) {
-                            _height![index] =
-                                (width / sizeRender.aspectRatio - 1.5)
-                                    .floor()
-                                    .toDouble();
-                          }
-                          _isImageLoaded[index] = true;
-                          if (_latestIndex >= index && !_onScroll)
-                            _patchHeightForDynamicLoadedImage();
-                        } catch (_) {}
-                      });
-                    }
-                    return child;
-                  },
-                  progressIndicatorBuilder: (context, string, progress) {
-                    return SizedBox(
-                      height: _estimatedImageHeight![index] != 0
-                          ? _estimatedImageHeight![index]
-                          : 300,
-                      child: Center(
-                        child: SizedBox(
-                          width: 30,
-                          height: 30,
-                          child: CircularProgressIndicator(
-                              value: progress.progress),
-                        ),
+              constraints: _height![index] != 0
+                  ? BoxConstraints(minHeight: _height![index])
+                  : _estimatedImageHeight![index] != 0
+                      ? BoxConstraints(minHeight: _estimatedImageHeight![index])
+                      : null,
+              child: _ProviderImage(
+                imgKey: _keys![index],
+                imgUrl: _urlCache![index]!,
+                imgHeader: _headerCache![index],
+                imageWidgetBuilder: (context, imageProvider, child) {
+                  if (_height![index] == 0 || _height![index] == 300) {
+                    Future.delayed(const Duration(milliseconds: 50))
+                        .then((value) {
+                      try {
+                        final RenderBox renderBoxRed = _keys![index]
+                            .currentContext!
+                            .findRenderObject() as RenderBox;
+                        final sizeRender = renderBoxRed.size;
+                        if (sizeRender.height != 300) {
+                          _height![index] =
+                              (width / sizeRender.aspectRatio - 1.5)
+                                  .floor()
+                                  .toDouble();
+                        }
+                        _isImageLoaded[index] = true;
+                        if (_latestIndex >= index && !_onScroll)
+                          _patchHeightForDynamicLoadedImage();
+                      } catch (_) {}
+                    });
+                  }
+                  return child;
+                },
+                progressIndicatorBuilder: (context, string, progress) {
+                  return SizedBox(
+                    height: _estimatedImageHeight![index] != 0
+                        ? _estimatedImageHeight![index]
+                        : 300,
+                    child: Center(
+                      child: SizedBox(
+                        width: 30,
+                        height: 30,
+                        child:
+                            CircularProgressIndicator(value: progress.progress),
                       ),
-                    );
-                  },
-                  loadingErrorWidgetBuilder: (context, url, error) {
-                    Logger.error('[Viewer] E: image load failed\n'
-                        '$error');
-                    Future.delayed(const Duration(milliseconds: 500))
-                        .then((value) => setState(() {
-                              _keys![index] = GlobalKey();
-                            }));
-                    return SizedBox(
-                      height: _estimatedImageHeight![index] != 0
-                          ? _estimatedImageHeight![index]
-                          : 300,
-                      child: Center(
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.refresh,
-                              color: Settings.majorColor,
-                            ),
-                            onPressed: () => setState(() {
-                              _keys![index] = GlobalKey();
-                            }),
+                    ),
+                  );
+                },
+                loadingErrorWidgetBuilder: (context, url, error) {
+                  Logger.error('[Viewer] E: image load failed\n'
+                      '$error');
+                  Future.delayed(const Duration(milliseconds: 500))
+                      .then((value) => setState(() {
+                            _keys![index] = GlobalKey();
+                          }));
+                  return SizedBox(
+                    height: _estimatedImageHeight![index] != 0
+                        ? _estimatedImageHeight![index]
+                        : 300,
+                    child: Center(
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.refresh,
+                            color: Settings.majorColor,
                           ),
+                          onPressed: () => setState(() {
+                            _keys![index] = GlobalKey();
+                          }),
                         ),
                       ),
-                    );
-                  },
-                )
-                // child: VCachedNetworkImage(
-                //   key: _keys![index],
-                //   imageUrl: _urlCache![index]!,
-                //   httpHeaders: _headerCache![index],
-                //   fit: BoxFit.cover,
-                //   fadeInDuration: Duration(microseconds: 500),
-                //   fadeInCurve: Curves.easeIn,
-                //   filterQuality: SettingsWrapper.imageQuality,
-                //   imageBuilder: (context, imageProvider, child) {
-                //     if (_height![index] == 0 || _height![index] == 300) {
-                //       Future.delayed(Duration(milliseconds: 50)).then((value) {
-                //         try {
-                //           final RenderBox renderBoxRed = _keys![index]
-                //               .currentContext!
-                //               .findRenderObject() as RenderBox;
-                //           final sizeRender = renderBoxRed.size;
-                //           if (sizeRender.height != 300) {
-                //             _height![index] =
-                //                 (width / sizeRender.aspectRatio - 1.5)
-                //                     .floor()
-                //                     .toDouble();
-                //           }
-
-                //           _isImageLoaded[index] = true;
-
-                //           if (_latestIndex >= index && !_onScroll)
-                //             _patchHeightForDynamicLoadedImage();
-                //         } catch (_) {}
-                //       });
-                //     }
-                //     return child;
-                //   },
-                //   progressIndicatorBuilder: (context, string, progress) {
-                //     return SizedBox(
-                //       height: _estimatedImageHeight![index] != 0
-                //           ? _estimatedImageHeight![index]
-                //           : 300,
-                //       child: Center(
-                //         child: SizedBox(
-                //           child:
-                //               CircularProgressIndicator(value: progress.progress),
-                //           width: 30,
-                //           height: 30,
-                //         ),
-                //       ),
-                //     );
-                //   },
-                //   errorWidget: (context, url, error) {
-                //     Logger.error(
-                //         '[Viewer] E: image load failed\n' + error.toString());
-                //     Future.delayed(Duration(milliseconds: 500))
-                //         .then((value) => setState(() {
-                //               _keys![index] = GlobalKey();
-                //             }));
-                //     return SizedBox(
-                //       height: _estimatedImageHeight![index] != 0
-                //           ? _estimatedImageHeight![index]
-                //           : 300,
-                //       child: Center(
-                //         child: SizedBox(
-                //           width: 50,
-                //           height: 50,
-                //           child: IconButton(
-                //             icon: Icon(
-                //               Icons.refresh,
-                //               color: Settings.majorColor,
-                //             ),
-                //             onPressed: () => setState(() {
-                //               _keys![index] = GlobalKey();
-                //             }),
-                //           ),
-                //         ),
-                //       ),
-                //     );
-                //   },
-                // ),
-                );
+                    ),
+                  );
+                },
+              ),
+            );
           },
         );
       },
@@ -1956,10 +1845,107 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   _bottomAppBar() {
-    final width = MediaQuery.of(context).size.width;
     final statusBarHeight =
         Settings.disableFullScreen ? MediaQuery.of(context).padding.top : 0;
     final height = MediaQuery.of(context).size.height;
+
+    final sliderWidget = SliderTheme(
+      data: const SliderThemeData(
+        activeTrackColor: Colors.blue,
+        inactiveTrackColor: Color(0xffd0d2d3),
+        trackHeight: 3,
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
+        // thumbShape: SliderThumbShape(),
+      ),
+      child: ValueListenableBuilder(
+        valueListenable: _vPrevPage,
+        builder: (BuildContext context, int value, Widget? child) {
+          return Slider(
+            value: value.toDouble() > 0
+                ? value <= _pageInfo.uris.length
+                    ? value.toDouble()
+                    : _pageInfo.uris.length.toDouble()
+                : 1,
+            max: _pageInfo.uris.length.toDouble(),
+            min: 1,
+            label: value.toString(),
+            divisions: _pageInfo.uris.length,
+            inactiveColor: Settings.majorColor.withOpacity(0.7),
+            activeColor: Settings.majorColor,
+            onChangeStart: (value) {
+              _sliderOnChange = true;
+            },
+            onChangeEnd: (value) {
+              Future.delayed(const Duration(milliseconds: 300)).then((value) {
+                _sliderOnChange = false;
+              });
+              if (!Settings.isHorizontal && _pageInfo.useFileSystem)
+                _itemScrollController.scrollTo(
+                  index: value.toInt() - 1,
+                  duration: const Duration(microseconds: 1),
+                  alignment: 0.12,
+                );
+            },
+            onChanged: (value) {
+              if (!Settings.isHorizontal) {
+                if (!_pageInfo.useFileSystem)
+                  _itemScrollController.jumpTo(
+                    index: value.toInt() - 1,
+                    alignment: 0.12,
+                  );
+              } else {
+                _pageController.jumpToPage(value.toInt() - 1);
+              }
+
+              _thumbJumpTo(value.toInt() - 1);
+
+              _currentPage = value.toInt();
+              _prevPage = value.toInt();
+              _vPrevPage.value = value.toInt();
+            },
+          );
+        },
+      ),
+    );
+
+    final leftPageIndicator = SizedBox(
+      width: 30.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          ValueListenableBuilder(
+            valueListenable: _vPrevPage,
+            builder: (BuildContext context, int value, Widget? child) {
+              return Text('$value',
+                  style:
+                      const TextStyle(color: Colors.white70, fontSize: 16.0));
+            },
+          ),
+        ],
+      ),
+    );
+
+    final rightPageIndicator = Text(
+      '${_pageInfo.uris.length}',
+      style: const TextStyle(
+        color: Colors.white70,
+        fontSize: 15.0,
+      ),
+    );
+
+    final thumbBarIndicator = IconButton(
+      color: Colors.white,
+      icon: const Icon(Icons.keyboard_arrow_up),
+      onPressed: () async {
+        _isThumbMode = !_isThumbMode;
+        if (_isThumbMode)
+          Future.delayed(const Duration(milliseconds: 10))
+              .then((value) => _thumbAnimateTo(_prevPage - 1));
+        await Settings.setEnableThumbSlider(_isThumbMode);
+        setState(() {});
+      },
+    );
+
     return AnimatedOpacity(
       opacity: _opacity,
       duration: const Duration(milliseconds: 300),
@@ -2013,111 +1999,12 @@ class _ViewerPageState extends State<ViewerPage>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (_pageInfo.useFileSystem)
-                          IconButton(
-                            color: Colors.white,
-                            icon: const Icon(Icons.keyboard_arrow_up),
-                            onPressed: () async {
-                              _isThumbMode = !_isThumbMode;
-                              if (_isThumbMode)
-                                Future.delayed(const Duration(milliseconds: 10))
-                                    .then((value) =>
-                                        _thumbAnimateTo(_prevPage - 1));
-                              await Settings.setEnableThumbSlider(_isThumbMode);
-                              setState(() {});
-                            },
-                          ),
-                        SizedBox(
-                          width: 30.0,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              ValueListenableBuilder(
-                                  valueListenable: _vPrevPage,
-                                  builder: (BuildContext context, int value,
-                                      Widget? child) {
-                                    return Text('$value',
-                                        style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 16.0));
-                                  }),
-                            ],
-                          ),
-                        ),
+                        if (_pageInfo.useFileSystem) thumbBarIndicator,
+                        leftPageIndicator,
                         Expanded(
-                          child: Container(
-                            // width: 200,
-                            child: SliderTheme(
-                              data: const SliderThemeData(
-                                activeTrackColor: Colors.blue,
-                                inactiveTrackColor: Color(0xffd0d2d3),
-                                trackHeight: 3,
-                                thumbShape: RoundSliderThumbShape(
-                                    enabledThumbRadius: 6.0),
-                                // thumbShape: SliderThumbShape(),
-                              ),
-                              child: ValueListenableBuilder(
-                                valueListenable: _vPrevPage,
-                                builder: (BuildContext context, int value,
-                                    Widget? child) {
-                                  return Slider(
-                                    value: value.toDouble() > 0
-                                        ? value <= _pageInfo.uris.length
-                                            ? value.toDouble()
-                                            : _pageInfo.uris.length.toDouble()
-                                        : 1,
-                                    max: _pageInfo.uris.length.toDouble(),
-                                    min: 1,
-                                    label: value.toString(),
-                                    divisions: _pageInfo.uris.length,
-                                    inactiveColor:
-                                        Settings.majorColor.withOpacity(0.7),
-                                    activeColor: Settings.majorColor,
-                                    onChangeStart: (value) {
-                                      _sliderOnChange = true;
-                                    },
-                                    onChangeEnd: (value) {
-                                      Future.delayed(
-                                              const Duration(milliseconds: 300))
-                                          .then((value) {
-                                        _sliderOnChange = false;
-                                      });
-                                      if (!Settings.isHorizontal &&
-                                          _pageInfo.useFileSystem)
-                                        _itemScrollController.scrollTo(
-                                          index: value.toInt() - 1,
-                                          duration:
-                                              const Duration(microseconds: 1),
-                                          alignment: 0.12,
-                                        );
-                                    },
-                                    onChanged: (value) {
-                                      if (!Settings.isHorizontal) {
-                                        if (!_pageInfo.useFileSystem)
-                                          _itemScrollController.jumpTo(
-                                            index: value.toInt() - 1,
-                                            alignment: 0.12,
-                                          );
-                                      } else {
-                                        _pageController
-                                            .jumpToPage(value.toInt() - 1);
-                                      }
-
-                                      _thumbJumpTo(value.toInt() - 1);
-
-                                      _currentPage = value.toInt();
-                                      _prevPage = value.toInt();
-                                      _vPrevPage.value = value.toInt();
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
+                          child: sliderWidget,
                         ),
-                        Text('${_pageInfo.uris.length}',
-                            style: const TextStyle(
-                                color: Colors.white70, fontSize: 15.0)),
+                        rightPageIndicator,
                         Container(
                           width: 16.0,
                         )
