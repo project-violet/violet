@@ -46,28 +46,24 @@ import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
-class MainPage2 extends StatefulWidget {
-  const MainPage2({Key? key}) : super(key: key);
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
 
   @override
-  State<MainPage2> createState() => _MainPage2State();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPage2State extends State<MainPage2>
-    with AutomaticKeepAliveClientMixin<MainPage2> {
+class _MainPageState extends State<MainPage>
+    with AutomaticKeepAliveClientMixin<MainPage> {
   @override
   bool get wantKeepAlive => true;
   // int count = 0;
   // bool ee = false;
   int _current = 0;
-  bool _syncAvailable = false;
-  late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
 
     Future.delayed(const Duration(milliseconds: 200)).then((value) async {
       // var latestDB = SyncManager.getLatestDB().getDateTime();
@@ -91,13 +87,6 @@ class _MainPage2State extends State<MainPage2>
       if (!Platform.isIOS) {
         updateCheckAndDownload(); // @dependent: android
       }
-
-      if (SyncManager.syncRequire) {
-        setState(() {
-          _shouldReload = true;
-          _syncAvailable = true;
-        });
-      }
     });
   }
 
@@ -119,7 +108,10 @@ class _MainPage2State extends State<MainPage2>
       _shouldReload = false;
       _cachedGroups = <Widget>[
         Container(height: 16),
-        _buildGroup(Translations.of(context).trans('userstat'), _statArea()),
+        _BuildGroupWidget(
+          name: Translations.of(context).trans('userstat'),
+          content: const _StatAreaWidget(),
+        ),
         CarouselSlider(
           options: CarouselOptions(
             height: 70,
@@ -169,10 +161,14 @@ class _MainPage2State extends State<MainPage2>
             );
           }).toList(),
         ),
-        // _buildGroup('데이터베이스', _databaseArea()),
-        _buildGroup(Translations.of(context).trans('versionmanagement'),
-            _versionArea()),
-        _buildGroup(Translations.of(context).trans('service'), _serviceArea()),
+        _BuildGroupWidget(
+          name: Translations.of(context).trans('versionmanagement'),
+          content: const _VersionAreaWidget(),
+        ),
+        _BuildGroupWidget(
+          name: Translations.of(context).trans('service'),
+          content: const _ServiceAreaWidget(),
+        ),
         Container(height: 32)
       ];
     }
@@ -189,343 +185,411 @@ class _MainPage2State extends State<MainPage2>
     );
   }
 
-  // _databaseArea() {
-  //   return [
-  //     Row(
-  //       children: [
-  //         Text(Settings.databaseType.toUpperCase() + '언어 데이터베이스',
-  //             style: TextStyle(fontWeight: FontWeight.bold)),
-  //         Expanded(child: Container()),
-  //         Column(
-  //           children: [
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Text('로컬', style: TextStyle(color: Colors.grey)),
-  //                 FutureBuilder(
-  //                     future: SharedPreferences.getInstance(),
-  //                     builder: (context, snapshot) {
-  //                       if (!snapshot.hasData) {
-  //                         return Text(' ??');
-  //                       }
-  //                       return Text(
-  //                         ' ' +
-  //                             DateFormat('yyyy.MM.dd').format(DateTime.parse(
-  //                                 snapshot.data.getString('databasesync'))),
-  //                       );
-  //                     }),
-  //               ],
-  //             ),
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.center,
-  //               children: [
-  //                 Text('최신', style: TextStyle(color: Colors.grey)),
-  //                 Text(
-  //                   ' ' +
-  //                       DateFormat('yyyy.MM.dd').format(UpdateSyncManager
-  //                           .rawlangDB[Settings.databaseType].item1),
-  //                 ),
-  //               ],
-  //             ),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //     _buildDivider(),
-  //     Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //       children: [
-  //         RaisedButton(
-  //           color: Settings.majorColor.withAlpha(220),
-  //           onPressed: () {},
-  //           child: Text('    스위칭    '),
-  //           elevation: 3.0,
-  //         ),
-  //         Badge(
-  //           showBadge: _syncAvailable,
-  //           badgeContent: Text('N',
-  //               style: TextStyle(color: Colors.white, fontSize: 12.0)),
-  //           // badgeColor: Settings.majorAccentColor,
-  //           child: RaisedButton(
-  //             color: Settings.majorColor.withAlpha(220),
-  //             onPressed: () {},
-  //             child: Text('    동기화    '),
-  //             elevation: 3.0,
-  //           ),
-  //         ),
-  //       ],
-  //     )
-  //   ];
-  // }
+  // @dependent: android [
+  final ReceivePort _port = ReceivePort();
 
-  _statArea() {
-    return [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Column(
-            children: [
-              Text(Translations.of(context).trans('readpresent')),
-              Container(height: 8),
-              FutureBuilder(future: Future.sync(
-                () async {
-                  return await (await User.getInstance()).getUserLog();
-                },
-              ), builder:
-                  (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
-                if (!snapshot.hasData) {
-                  return const Text('??',
-                      style: TextStyle(
-                          fontFamily: 'Calibre-Semibold', fontSize: 18));
-                }
-                return Text(numberWithComma(snapshot.data!.length),
-                    style: const TextStyle(
-                        fontFamily: 'Calibre-Semibold', fontSize: 18));
-              }),
-            ],
-          ),
-          Column(
-            children: [
-              Text(Translations.of(context).trans('bookmark')),
-              Container(height: 8),
-              FutureBuilder(future: Future.sync(
-                () async {
-                  return await (await Bookmark.getInstance()).getArticle();
-                },
-              ), builder:
-                  (context, AsyncSnapshot<List<BookmarkArticle>> snapshot) {
-                if (!snapshot.hasData) {
-                  return const Text('??',
-                      style: TextStyle(
-                          fontFamily: 'Calibre-Semibold', fontSize: 18));
-                }
-                return Text(numberWithComma(snapshot.data!.length),
-                    style: const TextStyle(
-                        fontFamily: 'Calibre-Semibold', fontSize: 18));
-              }),
-            ],
-          ),
-          Column(
-            children: [
-              Text(Translations.of(context).trans('download')),
-              Container(height: 8),
-              FutureBuilder(future: Future.sync(
-                () async {
-                  return await (await Download.getInstance())
-                      .getDownloadItems();
-                },
-              ), builder:
-                  (context, AsyncSnapshot<List<DownloadItemModel>> snapshot) {
-                if (!snapshot.hasData) {
-                  return const Text('??',
-                      style: TextStyle(
-                          fontFamily: 'Calibre-Semibold', fontSize: 18));
-                }
-                return Text(numberWithComma(snapshot.data!.length),
-                    style: const TextStyle(
-                        fontFamily: 'Calibre-Semibold', fontSize: 18));
-              }),
-            ],
-          ),
-        ],
-      )
-    ];
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port')!;
+    send.send([id, status, progress]);
   }
 
-  _versionArea() {
-    return [
-      // Version Info
-      Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(Translations.of(context).trans('curversion'),
-                      style: const TextStyle(color: Colors.grey)),
-                  const Text(
-                      ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}'),
-                ],
-              ),
-              ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}' !=
-                      ' ${UpdateSyncManager.latestVersion}'
-                  ? Row(
-                      children: [
-                        Text(Translations.of(context).trans('latestversion'),
-                            style: const TextStyle(color: Colors.grey)),
-                        Text(' ${UpdateSyncManager.latestVersion}'),
-                      ],
-                    )
-                  : Row(
-                      children: [
-                        Text(Translations.of(context).trans('curlatestversion'),
-                            style: const TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-            ],
-          ),
-          Expanded(child: Container()),
-          // Container(
-          //   child: UpdateLogCard(),
-          //   height: 50,
-          //   width: 100,
-          // )
-          Container(
-            height: 40,
-            width: 105,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Settings.majorColor.withAlpha(220),
-              ),
-              onPressed: () {
-                PlatformNavigator.navigateSlide(context, const PatchNotePage());
-              },
-              child: Text(Translations.of(context).trans('patchnote')),
+  void updateCheckAndDownload() {
+    bool updateContinued = false;
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+      if (UpdateSyncManager.updateRequire) {
+        var bb = await showYesNoDialog(context,
+            '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
+        if (bb == false) return;
+      } else
+        return;
+
+      if (!await Permission.storage.isGranted) {
+        if (await Permission.storage.request() == PermissionStatus.denied) {
+          await showOkDialog(context,
+              'If you do not allow file permissions, you cannot continue :(');
+          return;
+        }
+      }
+      updateContinued = true;
+      var ext = (await getExternalStorageDirectory())!;
+      bool once = false;
+      IsolateNameServer.registerPortWithName(
+          _port.sendPort, 'downloader_send_port');
+      _port.listen((dynamic data) {
+        // String id = data[0];
+        // DownloadTaskStatus status = data[1];
+        int progress = data[2];
+        if (progress == 100 && !once) {
+          OpenFile.open(
+              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
+          once = true;
+        }
+        setState(() {
+          _shouldReload = true;
+        });
+      });
+
+      if (await File(
+              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
+          .exists()) {
+        await File('${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
+            .delete();
+      }
+
+      FlutterDownloader.registerCallback(downloadCallback);
+      await FlutterDownloader.enqueue(
+        url: UpdateSyncManager.updateUrl,
+        savedDir: ext.path,
+        fileName: UpdateSyncManager.updateUrl.split('/').last,
+        showNotification:
+            true, // show download progress in status bar (for Android)
+        openFileFromNotification:
+            true, // click on notification to open downloaded file (for Android)
+      );
+    }).then((value) async {
+      if (updateContinued) return;
+      if ((await SharedPreferences.getInstance())
+              .getBool('usevioletserver_check') !=
+          null) return;
+
+      var bb = await showYesNoDialog(
+          context, Translations.of(context).trans('violetservermsg'));
+      if (bb == false) {
+        await (await SharedPreferences.getInstance())
+            .setBool('usevioletserver_check', false);
+        return;
+      }
+
+      await Settings.setUseVioletServer(true);
+      await (await SharedPreferences.getInstance())
+          .setBool('usevioletserver_check', false);
+    });
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    super.dispose();
+  }
+  // @dependent: android ]
+}
+
+class _VersionAreaWidget extends StatefulWidget {
+  const _VersionAreaWidget({Key? key}) : super(key: key);
+
+  @override
+  State<_VersionAreaWidget> createState() => _VersionAreaWidgetState();
+}
+
+class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
+  bool syncAvailable = false;
+  late final FToast fToast;
+
+  @override
+  void initState() {
+    super.initState();
+    fToast = FToast();
+    fToast.init(context);
+
+    Future.delayed(const Duration(milliseconds: 200)).then((value) async {
+      if (SyncManager.syncRequire) {
+        setState(() {
+          syncAvailable = true;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var versionInfo = Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(Translations.of(context).trans('curversion'),
+                    style: const TextStyle(color: Colors.grey)),
+                const Text(
+                    ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}'),
+              ],
             ),
-          ),
-        ],
-      ),
-      // Database
-      _buildDivider(),
-      Row(
-        children: [
-          Text(Translations.of(context).trans('database'),
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-          Expanded(child: Container()),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(Translations.of(context).trans('local'),
-                      style: const TextStyle(color: Colors.grey)),
-                  FutureBuilder(
-                      future: SharedPreferences.getInstance(),
-                      builder:
-                          (context, AsyncSnapshot<SharedPreferences> snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Text(' ??');
-                        }
-                        return Text(
-                          ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(snapshot.data!.getString('databasesync')!))}',
-                        );
-                      }),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(Translations.of(context).trans('latest'),
-                      style: const TextStyle(color: Colors.grey)),
-                  Text(
-                    ' ${DateFormat('yyyy.MM.dd').format(SyncManager.getLatestDB().getDateTime())}',
+            ' ${UpdateSyncManager.majorVersion}.${UpdateSyncManager.minorVersion}.${UpdateSyncManager.patchVersion}' !=
+                    ' ${UpdateSyncManager.latestVersion}'
+                ? Row(
+                    children: [
+                      Text(Translations.of(context).trans('latestversion'),
+                          style: const TextStyle(color: Colors.grey)),
+                      Text(' ${UpdateSyncManager.latestVersion}'),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Text(Translations.of(context).trans('curlatestversion'),
+                          style: const TextStyle(color: Colors.grey)),
+                    ],
                   ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-      Container(height: 16),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          ElevatedButton(
+          ],
+        ),
+        Expanded(child: Container()),
+        Container(
+          height: 40,
+          width: 105,
+          child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               primary: Settings.majorColor.withAlpha(220),
             ),
-            onPressed: Variables.databaseDecompressed
-                ? null
-                : () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const SplashPage(
-                              switching: true,
-                            )));
-                  },
-            child:
-                Text('    ${Translations.of(context).trans('switching')}    '),
+            onPressed: () {
+              PlatformNavigator.navigateSlide(context, const PatchNotePage());
+            },
+            child: Text(Translations.of(context).trans('patchnote')),
           ),
-          Badge(
-            showBadge: _syncAvailable,
-            badgeContent: const Text('N',
-                style: TextStyle(color: Colors.white, fontSize: 12.0)),
-            // badgeColor: Settings.majorAccentColor,
-            child: ElevatedButton(
+        ),
+      ],
+    );
+    var databaseInfo = Row(
+      children: [
+        Text(Translations.of(context).trans('database'),
+            style: const TextStyle(fontWeight: FontWeight.bold)),
+        Expanded(child: Container()),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(Translations.of(context).trans('local'),
+                    style: const TextStyle(color: Colors.grey)),
+                FutureBuilder(
+                    future: SharedPreferences.getInstance(),
+                    builder:
+                        (context, AsyncSnapshot<SharedPreferences> snapshot) {
+                      if (!snapshot.hasData) {
+                        return const Text(' ??');
+                      }
+                      return Text(
+                        ' ${DateFormat('yyyy.MM.dd').format(DateTime.parse(snapshot.data!.getString('databasesync')!))}',
+                      );
+                    }),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(Translations.of(context).trans('latest'),
+                    style: const TextStyle(color: Colors.grey)),
+                Text(
+                  ' ${DateFormat('yyyy.MM.dd').format(SyncManager.getLatestDB().getDateTime())}',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+    return Column(
+      children: [
+        versionInfo,
+        // Database
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 12.0),
+          width: double.infinity,
+          height: 1.0,
+          color:
+              Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
+        ),
+        databaseInfo,
+        Container(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Settings.majorColor.withAlpha(220),
               ),
               onPressed: Variables.databaseDecompressed
                   ? null
-                  : () async {
-                      var latestDB = SyncManager.getLatestDB().getDateTime();
-                      var lastDB = (await SharedPreferences.getInstance())
-                          .getString('databasesync');
-
-                      if (lastDB != null &&
-                          latestDB.difference(DateTime.parse(lastDB)).inHours <
-                              1) {
-                        fToast.showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context)
-                                .trans('thisislatestbookmark'),
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: const Duration(seconds: 4),
-                        );
-                        return;
-                      }
-
-                      var dir = await getApplicationDocumentsDirectory();
-                      try {
-                        await ((await openDatabase('${dir.path}/data/data.db'))
-                            .close());
-                        await deleteDatabase('${dir.path}/data/data.db');
-                        await Directory('${dir.path}/data')
-                            .delete(recursive: true);
-                      } catch (_) {}
-
-                      setState(() {
-                        _shouldReload = true;
-                        _syncAvailable = false;
-                      });
-
-                      await Navigator.of(context)
-                          .push(MaterialPageRoute(
-                              builder: (context) => DataBaseDownloadPage(
-                                    dbType: Settings.databaseType,
-                                    isSync: true,
-                                  )))
-                          .then((value) async {
-                        HitomiIndexs.init();
-                        final directory =
-                            await getApplicationDocumentsDirectory();
-                        final path = File('${directory.path}/data/index.json');
-                        final text = path.readAsStringSync();
-                        HitomiManager.tagmap = jsonDecode(text);
-                        await DataBaseManager.reloadInstance();
-
-                        fToast.showToast(
-                          child: ToastWrapper(
-                            isCheck: true,
-                            msg: Translations.of(context).trans('synccomplete'),
-                          ),
-                          gravity: ToastGravity.BOTTOM,
-                          toastDuration: const Duration(seconds: 4),
-                        );
-                      });
+                  : () {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const SplashPage(
+                                switching: true,
+                              )));
                     },
-              child: Text('    ${Translations.of(context).trans('sync')}    '),
+              child: Text(
+                  '    ${Translations.of(context).trans('switching')}    '),
             ),
-          ),
-        ],
-      )
-    ];
+            Badge(
+              showBadge: syncAvailable,
+              badgeContent: const Text('N',
+                  style: TextStyle(color: Colors.white, fontSize: 12.0)),
+              // badgeColor: Settings.majorAccentColor,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: Settings.majorColor.withAlpha(220),
+                ),
+                onPressed:
+                    Variables.databaseDecompressed ? null : _onSyncPressed,
+                child:
+                    Text('    ${Translations.of(context).trans('sync')}    '),
+              ),
+            ),
+          ],
+        )
+      ],
+    );
   }
 
-  _serviceArea() {
+  _onSyncPressed() async {
+    var latestDB = SyncManager.getLatestDB().getDateTime();
+    var lastDB =
+        (await SharedPreferences.getInstance()).getString('databasesync');
+
+    if (lastDB != null &&
+        latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
+      fToast.showToast(
+        child: ToastWrapper(
+          isCheck: true,
+          msg: Translations.of(context).trans('thisislatestbookmark'),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: const Duration(seconds: 4),
+      );
+      return;
+    }
+
+    var dir = await getApplicationDocumentsDirectory();
+
+    try {
+      await ((await openDatabase('${dir.path}/data/data.db')).close());
+      await deleteDatabase('${dir.path}/data/data.db');
+      await Directory('${dir.path}/data').delete(recursive: true);
+    } catch (_) {}
+
+    setState(() {
+      syncAvailable = false;
+    });
+
+    await Navigator.of(context)
+        .push(MaterialPageRoute(
+            builder: (context) => DataBaseDownloadPage(
+                  dbType: Settings.databaseType,
+                  isSync: true,
+                )))
+        .then((value) async {
+      HitomiIndexs.init();
+      final directory = await getApplicationDocumentsDirectory();
+      final path = File('${directory.path}/data/index.json');
+      final text = path.readAsStringSync();
+      HitomiManager.tagmap = jsonDecode(text);
+      await DataBaseManager.reloadInstance();
+
+      fToast.showToast(
+        child: ToastWrapper(
+          isCheck: true,
+          msg: Translations.of(context).trans('synccomplete'),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: const Duration(seconds: 4),
+      );
+    });
+  }
+}
+
+class _StatAreaWidget extends StatelessWidget {
+  const _StatAreaWidget({Key? key}) : super(key: key);
+
+  String numberWithComma(int param) {
+    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              children: [
+                Text(Translations.of(context).trans('readpresent')),
+                Container(height: 8),
+                FutureBuilder(future: Future.sync(
+                  () async {
+                    return await (await User.getInstance()).getUserLog();
+                  },
+                ), builder:
+                    (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Text('??',
+                        style: TextStyle(
+                            fontFamily: 'Calibre-Semibold', fontSize: 18));
+                  }
+                  return Text(numberWithComma(snapshot.data!.length),
+                      style: const TextStyle(
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
+                }),
+              ],
+            ),
+            Column(
+              children: [
+                Text(Translations.of(context).trans('bookmark')),
+                Container(height: 8),
+                FutureBuilder(future: Future.sync(
+                  () async {
+                    return await (await Bookmark.getInstance()).getArticle();
+                  },
+                ), builder:
+                    (context, AsyncSnapshot<List<BookmarkArticle>> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Text('??',
+                        style: TextStyle(
+                            fontFamily: 'Calibre-Semibold', fontSize: 18));
+                  }
+                  return Text(numberWithComma(snapshot.data!.length),
+                      style: const TextStyle(
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
+                }),
+              ],
+            ),
+            Column(
+              children: [
+                Text(Translations.of(context).trans('download')),
+                Container(height: 8),
+                FutureBuilder(future: Future.sync(
+                  () async {
+                    return await (await Download.getInstance())
+                        .getDownloadItems();
+                  },
+                ), builder:
+                    (context, AsyncSnapshot<List<DownloadItemModel>> snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Text('??',
+                        style: TextStyle(
+                            fontFamily: 'Calibre-Semibold', fontSize: 18));
+                  }
+                  return Text(numberWithComma(snapshot.data!.length),
+                      style: const TextStyle(
+                          fontFamily: 'Calibre-Semibold', fontSize: 18));
+                }),
+              ],
+            ),
+          ],
+        )
+      ],
+    );
+  }
+}
+
+class _ServiceAreaWidget extends StatelessWidget {
+  const _ServiceAreaWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final buttonStyle = ElevatedButton.styleFrom(
       primary: Settings.majorColor.withAlpha(220),
       onPrimary: Colors.white,
@@ -535,165 +599,111 @@ class _MainPage2State extends State<MainPage2>
       padding: const EdgeInsets.all(16),
     );
 
-    return [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Tooltip(
-            message: '작가별 모음',
-            child: ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                PlatformNavigator.navigateSlide(
-                    context, const ArtistCollectionPage());
-              },
-              child: const Icon(MdiIcons.star),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Tooltip(
+              message: '작가별 모음',
+              child: ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  PlatformNavigator.navigateSlide(
+                      context, const ArtistCollectionPage());
+                },
+                child: const Icon(MdiIcons.star),
+              ),
             ),
-          ),
-          Tooltip(
-            message: '조회수 베스트',
-            child: ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                PlatformNavigator.navigateSlide(context, const ViewsPage());
-              },
-              child: const Icon(MdiIcons.starShooting),
+            Tooltip(
+              message: '조회수 베스트',
+              child: ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  PlatformNavigator.navigateSlide(context, const ViewsPage());
+                },
+                child: const Icon(MdiIcons.starShooting),
+              ),
             ),
-          ),
-          Tooltip(
-            message: '정보',
-            child: ElevatedButton(
-              style: buttonStyle,
-              onPressed: () {
-                PlatformNavigator.navigateSlide(context, const InfoPage());
-              },
-              child: const Icon(MdiIcons.heart),
+            Tooltip(
+              message: '정보',
+              child: ElevatedButton(
+                style: buttonStyle,
+                onPressed: () {
+                  PlatformNavigator.navigateSlide(context, const InfoPage());
+                },
+                child: const Icon(MdiIcons.heart),
+              ),
             ),
-          ),
-        ],
-      ),
-      Container(height: 24),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Tooltip(
-            message: '실시간 유저 레코드',
-            child: ElevatedButton(
-              style: buttonStyle,
-              onPressed: () async {
-                PlatformNavigator.navigateSlide(
-                    context, const LabRecentRecordsU());
-              },
-              child: const Icon(MdiIcons.accessPointNetwork),
-            ),
-          ),
-          // Tooltip(
-          //   message: '유저 북마크 리스트',
-          //   child: ElevatedButton(
-          //     style: buttonStyle,
-          //     onPressed: () async {
-          //       if (await _checkMaterKey()) {
-          //         Navigator.of(context).push(
-          //             _buildServicePageRoute(() => LabUserBookmarkPage()));
-          //       } else {
-          //         await showOkDialog(
-          //             context,
-          //             'You must unlock this feature using the master key! ' +
-          //                 '이 기능은 현재 인가된 사용자만 사용할 수 있습니다.');
-          //       }
-          //     },
-          //     child: const Icon(MdiIcons.incognito),
-          //   ),
-          // ),
-          Badge(
-            showBadge: true,
-            badgeContent: const Text('N',
-                style: TextStyle(color: Colors.white, fontSize: 12.0)),
-            child: Tooltip(
-              message: '댓글',
+          ],
+        ),
+        Container(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Tooltip(
+              message: '실시간 유저 레코드',
               child: ElevatedButton(
                 style: buttonStyle,
                 onPressed: () async {
                   PlatformNavigator.navigateSlide(
-                      context, const LabGlobalComments());
+                      context, const LabRecentRecordsU());
                 },
-                child: const Icon(MdiIcons.commentTextMultiple),
+                child: const Icon(MdiIcons.accessPointNetwork),
               ),
             ),
-          ),
-          Badge(
-            showBadge: true,
-            badgeContent: const Text('N',
-                style: TextStyle(color: Colors.white, fontSize: 12.0)),
-            // badgeColor: Settings.majorAccentColor,
-            child: Tooltip(
-              message: '대사 검색기',
-              child: ElevatedButton(
-                style: buttonStyle,
-                onPressed: () async {
-                  PlatformNavigator.navigateSlide(
-                      context, const LabSearchMessage());
-                },
-                child: const Icon(MdiIcons.commentSearch),
+            Badge(
+              showBadge: true,
+              badgeContent: const Text('N',
+                  style: TextStyle(color: Colors.white, fontSize: 12.0)),
+              child: Tooltip(
+                message: '댓글',
+                child: ElevatedButton(
+                  style: buttonStyle,
+                  onPressed: () async {
+                    PlatformNavigator.navigateSlide(
+                        context, const LabGlobalComments());
+                  },
+                  child: const Icon(MdiIcons.commentTextMultiple),
+                ),
               ),
             ),
-          ),
-          // Tooltip(
-          //   message: '마스터 모드 해금',
-          //   child: ElevatedButton(
-          //     style: buttonStyle,
-          //     onPressed: () async {
-          //       if (await _checkMaterKey()) {
-          //         await showOkDialog(context, 'Alread Unlocked!');
-          //         return;
-          //       }
-          //       Widget yesButton = TextButton(
-          //         style: TextButton.styleFrom(primary: Settings.majorColor),
-          //         child: Text(Translations.of(context).trans('ok')),
-          //         onPressed: () {
-          //           Navigator.pop(context, true);
-          //         },
-          //       );
-          //       Widget noButton = TextButton(
-          //         style: TextButton.styleFrom(primary: Settings.majorColor),
-          //         child: Text(Translations.of(context).trans('cancel')),
-          //         onPressed: () {
-          //           Navigator.pop(context, false);
-          //         },
-          //       );
-          //       TextEditingController text = TextEditingController();
-          //       var dialog = await showDialog(
-          //         useRootNavigator: false,
-          //         context: context,
-          //         builder: (BuildContext context) => AlertDialog(
-          //           contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-          //           title: Text('Input Master Key'),
-          //           content: TextField(
-          //             controller: text,
-          //             autofocus: true,
-          //           ),
-          //           actions: [yesButton, noButton],
-          //         ),
-          //       );
-          //       if (dialog == true) {
-          //         if (getValid(text.text + 'saltff') == '605f372') {
-          //           await showOkDialog(context, 'Successful!');
-          //           await (await SharedPreferences.getInstance())
-          //               .setString('labmasterkey', text.text);
-          //         } else {
-          //           await showOkDialog(context, 'Fail!');
-          //         }
-          //       }
-          //     },
-          //     child: const Icon(MdiIcons.keyChainVariant),
-          //   ),
-          // ),
-        ],
-      ),
-    ];
+            Badge(
+              showBadge: true,
+              badgeContent: const Text('N',
+                  style: TextStyle(color: Colors.white, fontSize: 12.0)),
+              // badgeColor: Settings.majorAccentColor,
+              child: Tooltip(
+                message: '대사 검색기',
+                child: ElevatedButton(
+                  style: buttonStyle,
+                  onPressed: () async {
+                    PlatformNavigator.navigateSlide(
+                        context, const LabSearchMessage());
+                  },
+                  child: const Icon(MdiIcons.commentSearch),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
+}
 
-  _buildGroup(name, content) {
+class _BuildGroupWidget extends StatelessWidget {
+  final String name;
+  final Widget content;
+
+  const _BuildGroupWidget({
+    Key? key,
+    required this.name,
+    required this.content,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
@@ -751,116 +761,10 @@ class _MainPage2State extends State<MainPage2>
                               : Colors.black38
                           : Colors.white,
                       child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(children: content))))
-              : Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(children: content)),
+                          padding: const EdgeInsets.all(20.0), child: content)))
+              : Padding(padding: const EdgeInsets.all(20.0), child: content),
         ),
       ],
     );
   }
-
-  Container _buildDivider() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 12.0),
-      width: double.infinity,
-      height: 1.0,
-      color: Settings.themeWhat ? Colors.grey.shade600 : Colors.grey.shade400,
-    );
-  }
-
-  String numberWithComma(int param) {
-    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
-  }
-
-  // @dependent: android [
-  final ReceivePort _port = ReceivePort();
-
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port')!;
-    send.send([id, status, progress]);
-  }
-
-  void updateCheckAndDownload() {
-    bool updateContinued = false;
-    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-      if (UpdateSyncManager.updateRequire) {
-        var bb = await showYesNoDialog(context,
-            '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
-        if (bb == null || bb == false) return;
-      } else
-        return;
-
-      if (!await Permission.storage.isGranted) {
-        if (await Permission.storage.request() == PermissionStatus.denied) {
-          await showOkDialog(context,
-              'If you do not allow file permissions, you cannot continue :(');
-          return;
-        }
-      }
-      updateContinued = true;
-      var ext = (await getExternalStorageDirectory())!;
-      bool once = false;
-      IsolateNameServer.registerPortWithName(
-          _port.sendPort, 'downloader_send_port');
-      _port.listen((dynamic data) {
-        // String id = data[0];
-        // DownloadTaskStatus status = data[1];
-        int progress = data[2];
-        if (progress == 100 && !once) {
-          OpenFile.open(
-              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
-          once = true;
-        }
-        setState(() {
-          _shouldReload = true;
-        });
-      });
-
-      if (await File(
-              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
-          .exists()) {
-        await File('${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
-            .delete();
-      }
-
-      FlutterDownloader.registerCallback(downloadCallback);
-      await FlutterDownloader.enqueue(
-        url: UpdateSyncManager.updateUrl,
-        savedDir: ext.path,
-        fileName: UpdateSyncManager.updateUrl.split('/').last,
-        showNotification:
-            true, // show download progress in status bar (for Android)
-        openFileFromNotification:
-            true, // click on notification to open downloaded file (for Android)
-      );
-    }).then((value) async {
-      if (updateContinued) return;
-      if ((await SharedPreferences.getInstance())
-              .getBool('usevioletserver_check') !=
-          null) return;
-
-      var bb = await showYesNoDialog(
-          context, Translations.of(context).trans('violetservermsg'));
-      if (bb == null || bb == false) {
-        await (await SharedPreferences.getInstance())
-            .setBool('usevioletserver_check', false);
-        return;
-      }
-
-      await Settings.setUseVioletServer(true);
-      await (await SharedPreferences.getInstance())
-          .setBool('usevioletserver_check', false);
-    });
-  }
-
-  @override
-  void dispose() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
-    super.dispose();
-  }
-  // @dependent: android ]
 }

@@ -290,7 +290,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             setState(() {});
           },
           children: const <Widget>[
-            MainPage2(),
+            MainPage(),
             SearchPage(),
             BookmarkPage(),
             DownloadPage(),
