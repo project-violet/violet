@@ -51,7 +51,9 @@ class DotsIndicator extends AnimatedWidget {
       width: _kDotSpacing,
       child: Center(
         child: Material(
-          color: (Settings.themeWhat ? Colors.grey.shade100 : Color(0xFF353535))
+          color: (Settings.themeWhat
+                  ? Colors.grey.shade100
+                  : const Color(0xFF353535))
               .withAlpha((max(zoom - 1, 0.5) * 255).toInt()),
           type: MaterialType.circle,
           child: Container(

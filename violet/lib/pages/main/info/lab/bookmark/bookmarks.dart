@@ -49,14 +49,14 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (!snapshot.hasData)
             return Container(
-              child: Center(
+              child: const Center(
                 child: Text('Loading ...'),
               ),
             );
 
           if (snapshot.data == null)
             return Container(
-              child: Center(
+              child: const Center(
                 child: Text('Error Occured!'),
               ),
             );
@@ -77,7 +77,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
 
           return ListView.builder(
               padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               controller: scrollController,
               itemCount: groups.length + 1,
               itemBuilder: (BuildContext ctxt, int index) {
@@ -117,11 +117,11 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     return Container(
       key: Key('lab_bookmark_group_$id'),
       child: Container(
-        margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         width: double.infinity,
         decoration: BoxDecoration(
           color: Settings.themeWhat ? Colors.black26 : Colors.white,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(8),
               topRight: Radius.circular(8),
               bottomLeft: Radius.circular(8),
@@ -133,7 +133,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                   : Colors.grey.withOpacity(0.1),
               spreadRadius: Settings.themeWhat ? 0 : 5,
               blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -216,7 +216,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                       context, '북마크 그룹을 성공적으로 끌어왔습니다!', 'Bookmark Spy');
                 }
               },
-              title: Text(name, style: TextStyle(fontSize: 16.0)),
+              title: Text(name, style: const TextStyle(fontSize: 16.0)),
               subtitle: Text(desc),
               trailing: Text(date),
             ),

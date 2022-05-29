@@ -54,7 +54,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   final ScrollController _scroll = ScrollController();
 
-  Map<String, GlobalKey> itemKeys = Map<String, GlobalKey>();
+  Map<String, GlobalKey> itemKeys = <String, GlobalKey>{};
 
   @override
   void initState() {
@@ -73,7 +73,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     itemKeys.clear();
     setState(() {
       _shouldRebuild = true;
-      key = ObjectKey(Uuid().v4());
+      key = ObjectKey(const Uuid().v4());
     });
   }
 
@@ -117,7 +117,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
           QueryManager.queryIds(cc.map((e) => int.parse(e.article())).toList())
               .then((value) async {
-            var qr = Map<String, QueryResult>();
+            var qr = <String, QueryResult>{};
             value.forEach((element) {
               qr[element.id().toString()] = element;
             });
@@ -162,13 +162,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                   visible: checkMode,
                   child: AnimatedOpacity(
                     opacity: checkModePre ? 1.0 : 0.0,
-                    duration: Duration(milliseconds: 500),
+                    duration: const Duration(milliseconds: 500),
                     child: _floatingButton(),
                   ),
                 ),
                 // floatingActionButton: Container(child: Text('asdf')),
                 body: Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: PrimaryScrollController(
                     controller: _scroll,
                     child: CupertinoScrollbar(
@@ -183,8 +183,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                             floating: true,
                             delegate: AnimatedOpacitySliver(
                               searchBar: Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   child: Stack(children: <Widget>[
                                     _filter(),
                                     _title(),
@@ -246,7 +246,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             },
             elevation: 4,
             heroTag: 'a',
-            child: Icon(MdiIcons.checkAll),
+            child: const Icon(MdiIcons.checkAll),
           ),
         ),
         Container(
@@ -268,7 +268,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             },
             elevation: 4,
             heroTag: 'b',
-            child: Icon(MdiIcons.delete),
+            child: const Icon(MdiIcons.delete),
           ),
         ),
         Container(
@@ -276,7 +276,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             onPressed: moveChecked,
             elevation: 4,
             heroTag: 'c',
-            child: Icon(MdiIcons.folderMove),
+            child: const Icon(MdiIcons.folderMove),
           ),
         ),
       ],
@@ -288,7 +288,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           _shouldRebuild = true;
           setState(() {
             _shouldRebuild = true;
@@ -308,9 +308,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -323,7 +323,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               width: 48,
               child: Stack(
                 alignment: Alignment.center,
-                children: <Widget>[
+                children: const <Widget>[
                   Icon(
                     MdiIcons.formatListText,
                     color: Colors.grey,
@@ -336,7 +336,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
               Navigator.of(context)
                   .push(PageRouteBuilder(
                 opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
+                transitionDuration: const Duration(milliseconds: 500),
                 transitionsBuilder: (BuildContext context,
                     Animation<double> animation,
                     Animation<double> secondaryAnimation,
@@ -353,7 +353,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 itemKeys.clear();
                 await (await SharedPreferences.getInstance())
                     .setInt('bookmark_${widget.groupId}', value);
-                await Future.delayed(Duration(milliseconds: 50), () {
+                await Future.delayed(const Duration(milliseconds: 50), () {
                   _shouldRebuild = true;
                   setState(() {
                     _shouldRebuild = true;
@@ -378,7 +378,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 _shouldRebuild = true;
                 setState(() {
                   _shouldRebuild = true;
-                  key = ObjectKey(Uuid().v4());
+                  key = ObjectKey(const Uuid().v4());
                 });
               });
             },
@@ -390,13 +390,13 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
   Widget _title() {
     return Padding(
-      padding: EdgeInsets.only(top: 24, left: 12),
+      padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(widget.name,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
   }
 
-  ObjectKey key = ObjectKey(Uuid().v4());
+  ObjectKey key = ObjectKey(const Uuid().v4());
 
   final FilterController _filterController =
       FilterController(heroKey: 'searchtype2');
@@ -510,7 +510,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 0:
       case 1:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverGrid(
             key: key,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -534,7 +534,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                         showDetail: false,
                         addBottomPadding: false,
                         width: (windowWidth - 4.0) / mm,
-                        thumbnailTag: Uuid().v4(),
+                        thumbnailTag: const Uuid().v4(),
                         bookmarkMode: true,
                         bookmarkCallback: longpress,
                         bookmarkCheckCallback: check,
@@ -557,7 +557,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       case 2:
       case 3:
         return SliverPadding(
-          padding: EdgeInsets.fromLTRB(12, 0, 12, 16),
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverList(
             key: key,
             delegate: SliverChildListDelegate(filterResult.map((x) {
@@ -572,7 +572,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     showDetail: nowType == 3,
                     addBottomPadding: true,
                     width: (windowWidth - 4.0),
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     bookmarkMode: true,
                     bookmarkCallback: longpress,
                     bookmarkCheckCallback: check,
@@ -592,7 +592,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
       default:
         return Container(
-          child: Center(
+          child: const Center(
             child: Text('Error :('),
           ),
         );
@@ -628,7 +628,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           _shouldRebuild = true;
           setState(() {
             _shouldRebuild = true;
@@ -691,7 +691,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
 
         // Atomic!!
         // 0. Sort Checked
-        var invIdIndex = Map<int, int>();
+        var invIdIndex = <int, int>{};
         for (int i = 0; i < queryResult.length; i++)
           invIdIndex[queryResult[i].id()] = i;
         checked.sort((x, y) => invIdIndex[x]!.compareTo(invIdIndex[y]!));
@@ -724,7 +724,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
           checked.clear();
         });
         _shouldRebuild = true;
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             _shouldRebuild = true;
             checkMode = false;

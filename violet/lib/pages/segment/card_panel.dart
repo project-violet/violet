@@ -20,7 +20,7 @@ class CardPanel {
     final color = Settings.themeWhat
         ? Settings.themeBlack
             ? Colors.black
-            : Color(0xFF353535)
+            : const Color(0xFF353535)
         : Colors.grey.shade100;
     final bottomPadding = (mediaQuery.padding + mediaQuery.viewInsets).bottom;
 

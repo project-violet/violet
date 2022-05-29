@@ -15,19 +15,19 @@ class VioletLicensePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Settings.majorColor,
-        title: Text('LICENSES'),
+        title: const Text('LICENSES'),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             ListTile(
-              title: Text('Libviolet License'),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              title: const Text('Libviolet License'),
+              trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
                 Navigator.push(
                   context,
                   CupertinoPageRoute(
-                    builder: (context) => LibvioletPage(),
+                    builder: (context) => const LibvioletPage(),
                   ),
                 );
               },
@@ -40,8 +40,8 @@ class VioletLicensePage extends StatelessWidget {
                   : Colors.grey.shade400,
             ),
             ListTile(
-              title: Text('Flutter & App License'),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              title: const Text('Flutter & App License'),
+              trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () {
                 Navigator.push(
                   context,

@@ -39,7 +39,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                     controller!.forward(from: 0.0);
 
                     PlatformNavigator.navigateSlide(
-                        context, ArtistCollectionPage());
+                        context, const ArtistCollectionPage());
                   }
                 }),
               child: Container(
@@ -50,7 +50,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 8),
+                      offset: const Offset(0, 8),
                       color: Gradients.coldLinear.colors.first.withOpacity(.3),
                       spreadRadius: -9,
                     ),
@@ -84,7 +84,7 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                           // ),
                           Text(
                             Translations.of(context).trans('artistcollection'),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 // fontFamily: "Calibre-Semibold",
                                 // fontSize: 18,
                                 color: Colors.white),

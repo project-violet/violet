@@ -32,7 +32,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       bookmarks = await VioletServer.bookmarkLists();
       bookmarks!.removeWhere((element) =>
           ((element as Map<String, dynamic>)['user'] as String)
@@ -48,10 +48,10 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
       context,
       enableBackgroundColor: true,
       child: bookmarks == null
-          ? Container(child: Center(child: Text('Loading ...')))
+          ? Container(child: const Center(child: Text('Loading ...')))
           : ListView.builder(
-              padding: EdgeInsets.fromLTRB(4, 8, 4, 8),
-              physics: BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+              physics: const BouncingScrollPhysics(),
               controller: _scrollController,
               itemCount: bookmarks!.length,
               itemBuilder: (BuildContext ctxt, int index) {
@@ -70,11 +70,11 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
 
   _buildItem(Map<String, dynamic> data) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Settings.themeWhat ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
             bottomLeft: Radius.circular(8),
@@ -86,7 +86,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                 : Colors.grey.withOpacity(0.1),
             spreadRadius: Settings.themeWhat ? 0 : 5,
             blurRadius: 7,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -96,10 +96,10 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
           color: Settings.themeWhat ? Colors.black38 : Colors.white,
           child: ListTile(
             title: Text(data['user'].substring(0, 8),
-                style: TextStyle(fontSize: 16.0)),
+                style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(formatBytes(data['size'] as int, 2)),
             trailing: (_latestAccessUserAppId == data['user'] as String)
-                ? Icon(
+                ? const Icon(
                     MdiIcons.starCircle,
                     color: Colors.green,
                   )
@@ -114,13 +114,13 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                       if (!snapshot.hasData) return Container();
 
                       if (snapshot.data!.item1)
-                        return Icon(
+                        return const Icon(
                           MdiIcons.starCircleOutline,
                           color: Colors.yellow,
                         );
 
                       if (snapshot.data!.item2)
-                        return Icon(
+                        return const Icon(
                           MdiIcons.rayStartVertexEnd,
                           color: Colors.grey,
                         );

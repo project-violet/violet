@@ -50,7 +50,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                       return;
                     }
 
-                    PlatformNavigator.navigateSlide(context, ViewsPage());
+                    PlatformNavigator.navigateSlide(context, const ViewsPage());
                   }
                 }),
               child: Container(
@@ -61,7 +61,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                   boxShadow: [
                     BoxShadow(
                       blurRadius: 8,
-                      offset: Offset(0, 8),
+                      offset: const Offset(0, 8),
                       color:
                           Gradients.cosmicFusion.colors.first.withOpacity(.3),
                       spreadRadius: -9,
@@ -96,7 +96,7 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                           // ),
                           Text(
                             Translations.of(context).trans('realtimebest'),
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ]),
                   ),

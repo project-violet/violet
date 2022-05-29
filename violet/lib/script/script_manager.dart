@@ -85,7 +85,7 @@ class ScriptManager {
 
   static Future<Map<String, String>> runHitomiGetHeaderContent(
       String id) async {
-    if (_scriptCache == null) return Map<String, String>();
+    if (_scriptCache == null) return <String, String>{};
     try {
       final jResult =
           _runtime.evaluate("hitomi_get_header_content('$id')").stringResult;

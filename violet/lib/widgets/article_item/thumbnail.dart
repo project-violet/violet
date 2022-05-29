@@ -204,7 +204,7 @@ class BookmarkIndicatorWidget extends StatelessWidget {
               } else {
                 return Icon(
                   value ? MdiIcons.heart : MdiIcons.heartOutline,
-                  color: value ? Color(0xFFE2264D) : null,
+                  color: value ? const Color(0xFFE2264D) : null,
                 );
               }
             },
@@ -240,9 +240,9 @@ class ReadProgressOverlayWidget extends StatelessWidget {
               height: 5,
               color: Colors.transparent,
               child: ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 child: LinearProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
                   value: isLastestRead && imageCount - latestReadPage <= 2
                       ? 1.0
                       : latestReadPage / imageCount,
@@ -275,10 +275,10 @@ class PagesOverlayWidget extends StatelessWidget {
           child: Theme(
             data: ThemeData(canvasColor: Colors.transparent),
             child: RawChip(
-              labelPadding: EdgeInsets.all(0.0),
+              labelPadding: const EdgeInsets.all(0.0),
               label: Text(
                 '$imageCount Page',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                 ),
               ),

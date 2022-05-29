@@ -18,8 +18,8 @@ class FilterController {
   var isPopulationSort = false;
   String heroKey;
 
-  var tagStates = Map<String, bool>();
-  var groupStates = Map<String, bool>();
+  var tagStates = <String, bool>{};
+  var groupStates = <String, bool>{};
 
   FilterController({this.heroKey = 'searchtype'});
 }
@@ -44,11 +44,11 @@ class _FilterPageState extends State<FilterPage> {
   bool test = false;
 
   final _tags = <Tuple3<String, String, int>>[];
-  final _groupCount = Map<String, int>();
+  final _groupCount = <String, int>{};
   final _groups = <Tuple2<String, int>>[];
 
   _initTagPad() {
-    Map<String, int> tags = Map<String, int>();
+    Map<String, int> tags = <String, int>{};
     widget.queryResult.forEach((element) {
       if (element.tags() != null) {
         element.tags().split('|').forEach((element) {
@@ -93,7 +93,7 @@ class _FilterPageState extends State<FilterPage> {
   void append(String group, String vv) {
     if (!c.groupStates.containsKey(group)) c.groupStates[group] = false;
     _groupCount[group] = 0;
-    Map<String, int> tags = Map<String, int>();
+    Map<String, int> tags = <String, int>{};
     widget.queryResult.forEach((element) {
       if (element.result[vv] != null) {
         element.result[vv].split('|').forEach((element) {
@@ -130,13 +130,13 @@ class _FilterPageState extends State<FilterPage> {
       heroTag: c.heroKey,
       enableBackgroundColor: true,
       child: Padding(
-        padding: EdgeInsets.all(4),
+        padding: const EdgeInsets.all(4),
         child: Column(
           children: <Widget>[
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 children: [
                   _buildTagsPanel(),
                 ],
@@ -217,7 +217,7 @@ class _FilterPageState extends State<FilterPage> {
       runSpacing: -10.0,
       children: <Widget>[
         FilterChip(
-          label: Text('Population'),
+          label: const Text('Population'),
           selected: c.isPopulationSort,
           onSelected: (bool value) {
             setState(() {
@@ -226,7 +226,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text('OR'),
+          label: const Text('OR'),
           selected: c.isOr,
           onSelected: (bool value) {
             setState(() {
@@ -235,7 +235,7 @@ class _FilterPageState extends State<FilterPage> {
           },
         ),
         FilterChip(
-          label: Text('Search'),
+          label: const Text('Search'),
           selected: c.isSearch,
           onSelected: (bool value) {
             setState(() {
@@ -322,13 +322,13 @@ class _FilterPageState extends State<FilterPage> {
           onPressed: () async {
             _searchController.clear();
             _searchController.selection =
-                TextSelection(baseOffset: 0, extentOffset: 0);
+                const TextSelection(baseOffset: 0, extentOffset: 0);
             // await searchProcess('', _searchController.selection);
           },
-          icon: Icon(Icons.clear),
+          icon: const Icon(Icons.clear),
         ),
         contentPadding:
-            EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+            const EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
         hintText: trans.Translations.of(context).trans('search'),
       ),
     );
@@ -434,37 +434,38 @@ class __ChipState extends State<_Chip> {
     Widget avatar = Text(group[0].toUpperCase());
 
     if (group == 'female')
-      avatar = Icon(MdiIcons.genderFemale, size: 18.0);
+      avatar = const Icon(MdiIcons.genderFemale, size: 18.0);
     else if (group == 'male')
-      avatar = Icon(MdiIcons.genderMale, size: 18.0);
+      avatar = const Icon(MdiIcons.genderMale, size: 18.0);
     else if (group == 'language')
-      avatar = Icon(Icons.language, size: 18.0);
+      avatar = const Icon(Icons.language, size: 18.0);
     else if (group == 'artist')
-      avatar = Icon(MdiIcons.account, size: 18.0);
+      avatar = const Icon(MdiIcons.account, size: 18.0);
     else if (group == 'group')
-      avatar = Icon(MdiIcons.accountGroup, size: 15.0);
+      avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
     else if (group == 'type')
-      avatar = Icon(MdiIcons.bookOpenPageVariant, size: 15.0);
-    else if (group == 'series') avatar = Icon(MdiIcons.notebook, size: 15.0);
+      avatar = const Icon(MdiIcons.bookOpenPageVariant, size: 15.0);
+    else if (group == 'series')
+      avatar = const Icon(MdiIcons.notebook, size: 15.0);
 
     var fc = Transform.scale(
         scale: 0.90,
         child: RawChip(
           selected: selected,
-          labelPadding: EdgeInsets.all(0.0),
+          labelPadding: const EdgeInsets.all(0.0),
           avatar: CircleAvatar(
             backgroundColor: Colors.grey.shade600,
             child: avatar,
           ),
           label: Text(
             ' ${HtmlUnescape().convert(tagDisplayed)} (${widget.count})',
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
             ),
           ),
           backgroundColor: color,
           elevation: 6.0,
-          padding: EdgeInsets.all(6.0),
+          padding: const EdgeInsets.all(6.0),
           onSelected: (value) async {
             widget.callback(value);
             setState(() {

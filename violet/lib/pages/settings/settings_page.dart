@@ -164,7 +164,7 @@ class _SettingsPageState extends State<SettingsPage>
     if (_cachedGroups == null || _shouldReload) {
       _shouldReload = false;
       _cachedGroups = _themeGroup()
-        ..add(UserStatusCard())
+        ..add(const UserStatusCard())
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
         ..addAll(_securityGroup())
@@ -182,7 +182,7 @@ class _SettingsPageState extends State<SettingsPage>
     return Container(
       child: SingleChildScrollView(
         padding: EdgeInsets.only(top: statusBarHeight),
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: _cachedGroups!,
@@ -204,7 +204,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   Padding _buildGroup(String name) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -222,12 +222,12 @@ class _SettingsPageState extends State<SettingsPage>
 
   Container _buildItems(List<Widget> items) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: !Settings.themeFlat
           ? BoxDecoration(
               color: Settings.themeWhat ? Colors.black26 : Colors.white,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(8),
                   topRight: Radius.circular(8),
                   bottomLeft: Radius.circular(8),
@@ -239,7 +239,7 @@ class _SettingsPageState extends State<SettingsPage>
                       : Colors.grey.withOpacity(0.1),
                   spreadRadius: Settings.themeWhat ? 0 : 5,
                   blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: const Offset(0, 3), // changes position of shadow
                 ),
               ],
             )
@@ -272,19 +272,19 @@ class _SettingsPageState extends State<SettingsPage>
       _buildGroup(Translations.of(context).trans('theme')),
       _buildItems([
         InkWell(
-          customBorder: RoundedRectangleBorder(
+          customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8.0),
                   topRight: Radius.circular(8.0))),
           child: ListTile(
             leading: ShaderMask(
-              shaderCallback: (bounds) => RadialGradient(
+              shaderCallback: (bounds) => const RadialGradient(
                 center: Alignment.topLeft,
                 radius: 1.0,
                 colors: [Colors.black, Colors.white],
                 tileMode: TileMode.clamp,
               ).createShader(bounds),
-              child: Icon(MdiIcons.themeLightDark, color: Colors.white),
+              child: const Icon(MdiIcons.themeLightDark, color: Colors.white),
             ),
             title: Text(Translations.of(context).trans('darkmode')),
             trailing: SizedBox(
@@ -315,16 +315,16 @@ class _SettingsPageState extends State<SettingsPage>
         _buildDivider(),
         ListTile(
           leading: ShaderMask(
-            shaderCallback: (bounds) => RadialGradient(
+            shaderCallback: (bounds) => const RadialGradient(
               center: Alignment.bottomLeft,
               radius: 1.2,
               colors: [Colors.orange, Colors.pink],
               tileMode: TileMode.clamp,
             ).createShader(bounds),
-            child: Icon(MdiIcons.formatColorFill, color: Colors.white),
+            child: const Icon(MdiIcons.formatColorFill, color: Colors.white),
           ),
           title: Text(Translations.of(context).trans('colorsetting')),
-          trailing: Icon(
+          trailing: const Icon(
               // Icons.message,
               Icons.keyboard_arrow_right),
           onTap: () {
@@ -465,7 +465,7 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         _buildDivider(),
         InkWell(
-          customBorder: RoundedRectangleBorder(
+          customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(8.0),
                   bottomRight: Radius.circular(8.0))),
@@ -513,7 +513,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
@@ -533,13 +533,13 @@ class _SettingsPageState extends State<SettingsPage>
                   ),
                 ],
               ),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               final vv = await showDialog(
                 context: context,
                 builder: (BuildContext context) =>
-                    TagSelectorDialog(what: 'include'),
+                    const TagSelectorDialog(what: 'include'),
               );
 
               if (vv != null && vv.item1 == 1) {
@@ -557,12 +557,12 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('excludetag')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               final vv = await showDialog(
                 context: context,
                 builder: (BuildContext context) =>
-                    TagSelectorDialog(what: 'exclude'),
+                    const TagSelectorDialog(what: 'exclude'),
               );
 
               if (vv.item1 == 1) {
@@ -580,7 +580,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('tagrebuild')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               if (await showYesNoDialog(
                   context,
@@ -588,7 +588,7 @@ class _SettingsPageState extends State<SettingsPage>
                   Translations.of(context).trans('tagrebuild'))) {
                 await showDialog(
                   context: context,
-                  builder: (BuildContext context) => TagRebuildPage(),
+                  builder: (BuildContext context) => const TagRebuildPage(),
                 );
 
                 await HitomiIndexs.init();
@@ -601,7 +601,7 @@ class _SettingsPageState extends State<SettingsPage>
                         '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
@@ -610,7 +610,7 @@ class _SettingsPageState extends State<SettingsPage>
           InkWell(
             child: ListTile(
               leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
-              title: Text('Pure Search'),
+              title: const Text('Pure Search'),
               trailing: Switch(
                 value: Settings.searchPure,
                 onChanged: (newValue) async {
@@ -632,7 +632,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -672,36 +672,36 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(Icons.receipt, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('logrecord')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {
-              PlatformNavigator.navigateSlide(context, LogPage());
+              PlatformNavigator.navigateSlide(context, const LogPage());
             },
           ),
           _buildDivider(),
           ListTile(
             leading: Icon(Icons.language, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('language')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) => Theme(
                     data: Theme.of(context).copyWith(primaryColor: Colors.pink),
                     child: CountryPickerDialog(
-                        titlePadding: EdgeInsets.symmetric(vertical: 16),
+                        titlePadding: const EdgeInsets.symmetric(vertical: 16),
                         // searchCursorColor: Colors.pinkAccent,
                         // searchInputDecoration:
                         //     InputDecoration(hintText: 'Search...'),
                         // isSearchable: true,
-                        title: Text('Select Language'),
+                        title: const Text('Select Language'),
                         onValuePicked: (Country country) async {
                           var exc = country as ExCountry;
                           await Translations.of(context).load(exc.toString());
@@ -726,7 +726,7 @@ class _SettingsPageState extends State<SettingsPage>
                             child: Row(
                               children: <Widget>[
                                 CountryPickerUtils.getDefaultFlagImage(country),
-                                SizedBox(
+                                const SizedBox(
                                   width: 8.0,
                                   height: 30,
                                 ),
@@ -790,7 +790,7 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('exportlog')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await Logger.exportLog();
 
@@ -800,7 +800,7 @@ class _SettingsPageState extends State<SettingsPage>
                   msg: Translations.of(context).trans('complete'),
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
+                toastDuration: const Duration(seconds: 4),
               );
             },
           ),
@@ -808,26 +808,26 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('info')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return VersionViewPage();
+                  return const VersionViewPage();
                 },
               );
             },
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
             child: ListTile(
-              leading: Icon(Icons.developer_mode, color: Colors.orange),
+              leading: const Icon(Icons.developer_mode, color: Colors.orange),
               title: Text(Translations.of(context).trans('devtool')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               if (kDebugMode) {
@@ -854,7 +854,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
@@ -865,7 +865,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('lockapp')),
-              trailing: Icon(
+              trailing: const Icon(
                   // Icons.message,
                   Icons.keyboard_arrow_right),
             ),
@@ -873,14 +873,14 @@ class _SettingsPageState extends State<SettingsPage>
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                  builder: (context) => LockSettingPage(),
+                  builder: (context) => const LockSettingPage(),
                 ),
               );
             },
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -931,7 +931,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
@@ -939,7 +939,7 @@ class _SettingsPageState extends State<SettingsPage>
                 ? null
                 : () async {
                     Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => SplashPage(
+                        builder: (context) => const SplashPage(
                               switching: true,
                             )));
                   },
@@ -947,7 +947,7 @@ class _SettingsPageState extends State<SettingsPage>
               leading:
                   Icon(MdiIcons.swapHorizontal, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('switching')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
           _buildDivider(),
@@ -958,7 +958,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('dbrebuild')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               if (await showYesNoDialog(
@@ -967,7 +967,7 @@ class _SettingsPageState extends State<SettingsPage>
                   Translations.of(context).trans('dbrebuild'))) {
                 await showDialog(
                   context: context,
-                  builder: (BuildContext context) => DBRebuildPage(),
+                  builder: (BuildContext context) => const DBRebuildPage(),
                 );
 
                 flutterToast.showToast(
@@ -977,7 +977,7 @@ class _SettingsPageState extends State<SettingsPage>
                         '${Translations.of(context).trans('dbrebuild')} ${Translations.of(context).trans('complete')}',
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
@@ -1012,7 +1012,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -1033,7 +1033,7 @@ class _SettingsPageState extends State<SettingsPage>
                               .trans('thisislatestbookmark'),
                         ),
                         gravity: ToastGravity.BOTTOM,
-                        toastDuration: Duration(seconds: 4),
+                        toastDuration: const Duration(seconds: 4),
                       );
                       return;
                     }
@@ -1069,7 +1069,7 @@ class _SettingsPageState extends State<SettingsPage>
                             msg: Translations.of(context).trans('synccomplete'),
                           ),
                           gravity: ToastGravity.BOTTOM,
-                          toastDuration: Duration(seconds: 4),
+                          toastDuration: const Duration(seconds: 4),
                         );
                       },
                     );
@@ -1077,7 +1077,7 @@ class _SettingsPageState extends State<SettingsPage>
             child: ListTile(
               leading: Icon(MdiIcons.databaseSync, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('syncmanual')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
           ),
         ],
@@ -1091,14 +1091,14 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
-              title: Text('VPN'),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              title: const Text('VPN'),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {},
           ),
@@ -1109,11 +1109,11 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('routing_rule')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => RouteDialog(),
+                builder: (BuildContext context) => const RouteDialog(),
               );
             },
           ),
@@ -1125,11 +1125,11 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             title:
                 Text('Image ${Translations.of(context).trans('routing_rule')}'),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => ImageRouteDialog(),
+                builder: (BuildContext context) => const ImageRouteDialog(),
               );
             },
           ),
@@ -1140,7 +1140,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('messagesearchapi')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               TextEditingController text =
                   TextEditingController(text: Settings.searchMessageAPI);
@@ -1171,8 +1171,8 @@ class _SettingsPageState extends State<SettingsPage>
                 useRootNavigator: false,
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                  title: Text('대사 검색기 API'),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  title: const Text('대사 검색기 API'),
                   content: TextField(
                     controller: text,
                     autofocus: true,
@@ -1188,7 +1188,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -1229,7 +1229,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
@@ -1293,7 +1293,7 @@ class _SettingsPageState extends State<SettingsPage>
                 )
               ],
             ),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               // 32개 => 50mb/s
               var tc = (await SharedPreferences.getInstance())
@@ -1336,7 +1336,7 @@ class _SettingsPageState extends State<SettingsPage>
               var dialog = await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                   title: Text(Translations.of(context).trans('setthread')),
                   content: TextField(
                     controller: text,
@@ -1362,7 +1362,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('changedthread'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
 
                 setState(() {});
@@ -1388,7 +1388,7 @@ class _SettingsPageState extends State<SettingsPage>
                   ),
                 ],
               ),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: Settings.useInnerStorage
                 ? null
@@ -1422,7 +1422,7 @@ class _SettingsPageState extends State<SettingsPage>
                       useRootNavigator: false,
                       context: context,
                       builder: (BuildContext context) => AlertDialog(
-                        contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                        contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                         title: Text(
                             Translations.of(context).trans('downloadpath')),
                         content: TextField(
@@ -1449,7 +1449,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -1470,7 +1470,7 @@ class _SettingsPageState extends State<SettingsPage>
                   ),
                 ],
               ),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               TextEditingController text =
@@ -1502,7 +1502,7 @@ class _SettingsPageState extends State<SettingsPage>
                 useRootNavigator: false,
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
                   title: Text(Translations.of(context).trans('downloadrule')),
                   content: TextField(
                     controller: text,
@@ -1528,7 +1528,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
@@ -1569,7 +1569,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('restoringbookmark')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showOkDialog(
                   context,
@@ -1599,8 +1599,8 @@ class _SettingsPageState extends State<SettingsPage>
                 useRootNavigator: false,
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                  title: Text('Enter User App Id'),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                  title: const Text('Enter User App Id'),
                   content: TextField(
                     controller: text,
                     autofocus: true,
@@ -1672,12 +1672,12 @@ class _SettingsPageState extends State<SettingsPage>
                 Logger.error('[Restore Bookmark] $e\n'
                     '$st');
                 flutterToast.showToast(
-                  child: ToastWrapper(
+                  child: const ToastWrapper(
                     isCheck: false,
                     msg: 'Bookmark Restoring Error!',
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
                 return;
               }
@@ -1690,7 +1690,7 @@ class _SettingsPageState extends State<SettingsPage>
                   msg: Translations.of(context).trans('importbookmark'),
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
+                toastDuration: const Duration(seconds: 4),
               );
             },
           ),
@@ -1698,7 +1698,7 @@ class _SettingsPageState extends State<SettingsPage>
           ListTile(
             leading: Icon(MdiIcons.import, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('importingbookmark')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
@@ -1709,7 +1709,7 @@ class _SettingsPageState extends State<SettingsPage>
                       msg: Translations.of(context).trans('noauth'),
                     ),
                     gravity: ToastGravity.BOTTOM,
-                    toastDuration: Duration(seconds: 4),
+                    toastDuration: const Duration(seconds: 4),
                   );
                   return;
                 }
@@ -1730,7 +1730,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('noselectedb'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
 
                 return;
@@ -1748,7 +1748,7 @@ class _SettingsPageState extends State<SettingsPage>
                   msg: Translations.of(context).trans('importbookmark'),
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
+                toastDuration: const Duration(seconds: 4),
               );
             },
           ),
@@ -1759,7 +1759,7 @@ class _SettingsPageState extends State<SettingsPage>
               color: Settings.majorColor,
             ),
             title: Text(Translations.of(context).trans('exportingbookmark')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               if (!await Permission.storage.isGranted) {
                 if (await Permission.storage.request() ==
@@ -1770,7 +1770,7 @@ class _SettingsPageState extends State<SettingsPage>
                       msg: Translations.of(context).trans('noauth'),
                     ),
                     gravity: ToastGravity.BOTTOM,
-                    toastDuration: Duration(seconds: 4),
+                    toastDuration: const Duration(seconds: 4),
                   );
 
                   return;
@@ -1789,7 +1789,7 @@ class _SettingsPageState extends State<SettingsPage>
                   msg: Translations.of(context).trans('exportbookmark'),
                 ),
                 gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 4),
+                toastDuration: const Duration(seconds: 4),
               );
             },
           ),
@@ -1801,7 +1801,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('importfromeh')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               var ehc = (await SharedPreferences.getInstance())
@@ -1814,14 +1814,14 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('setcookiefirst'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
                 return;
               }
 
               await showDialog(
                 context: context,
-                builder: (BuildContext context) => ImportFromEHPage(),
+                builder: (BuildContext context) => const ImportFromEHPage(),
               );
 
               if (EHBookmark.bookmarkInfo == null) {
@@ -1832,7 +1832,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('bookmarkisempty'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
                 return;
               }
@@ -1872,14 +1872,14 @@ class _SettingsPageState extends State<SettingsPage>
                         .trans('completeimportbookmark'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(8.0),
                   bottomRight: Radius.circular(8.0)),
@@ -1890,21 +1890,21 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('importfromjson')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               TextEditingController textController = TextEditingController();
 
               Widget importButton = TextButton(
                 style: TextButton.styleFrom(primary: Settings.majorColor),
-                child: Text('Import'),
+                child: const Text('Import'),
                 onPressed: () async {
                   Navigator.pop(context, textController.text);
                 },
               );
               Widget cancelButton = TextButton(
                 style: TextButton.styleFrom(primary: Settings.majorColor),
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
                 onPressed: () {
                   Navigator.pop(context, null);
                 },
@@ -1916,7 +1916,7 @@ class _SettingsPageState extends State<SettingsPage>
                   return AlertDialog(
                     title:
                         Text(Translations.of(context).trans('importfromjson')),
-                    contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                     actions: [
                       importButton,
                       cancelButton,
@@ -1932,10 +1932,10 @@ class _SettingsPageState extends State<SettingsPage>
                               .trans('pasteyourbookmarktext')),
                           Row(
                             children: [
-                              Text('JSON: '),
+                              const Text('JSON: '),
                               Expanded(
                                 child: TextField(
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       hintText:
                                           'ex: ["1207894", "artist:michiking", ...]'),
@@ -1997,7 +1997,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
             ),
             child: ListTile(
@@ -2005,15 +2005,15 @@ class _SettingsPageState extends State<SettingsPage>
                 imageUrl: 'https://e-hentai.org/favicon.ico',
                 width: 25,
               ),
-              title: Text('E-Hentai/ExHentai'),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              title: const Text('E-Hentai/ExHentai'),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
               var dialog = await showDialog(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title: Text('E-Hentai Login'),
-                  contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                  title: const Text('E-Hentai Login'),
+                  contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                   content: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2022,14 +2022,14 @@ class _SettingsPageState extends State<SettingsPage>
                         style: ElevatedButton.styleFrom(
                           primary: Settings.majorColor,
                         ),
-                        child: Text('Login From WebPage'),
+                        child: const Text('Login From WebPage'),
                         onPressed: () => Navigator.pop(context, 1),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           primary: Settings.majorColor,
                         ),
-                        child: Text('Enter Cookie Information'),
+                        child: const Text('Enter Cookie Information'),
                         onPressed: () => Navigator.pop(context, 2),
                       ),
                     ],
@@ -2040,20 +2040,20 @@ class _SettingsPageState extends State<SettingsPage>
               if (dialog == null) return;
 
               if (dialog == 1) {
-                var result = await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => LoginScreen()));
+                var result = await Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const LoginScreen()));
 
                 await (await SharedPreferences.getInstance())
                     .setString('eh_cookies', result);
 
                 if (result != null) {
                   flutterToast.showToast(
-                    child: ToastWrapper(
+                    child: const ToastWrapper(
                       isCheck: true,
                       msg: 'Login Success!',
                     ),
                     gravity: ToastGravity.BOTTOM,
-                    toastDuration: Duration(seconds: 4),
+                    toastDuration: const Duration(seconds: 4),
                   );
                 }
               } else if (dialog == 2) {
@@ -2089,13 +2089,13 @@ class _SettingsPageState extends State<SettingsPage>
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
                     actions: [okButton, cancelButton],
-                    title: Text('E-Hentai Login'),
-                    contentPadding: EdgeInsets.fromLTRB(12, 8, 12, 8),
+                    title: const Text('E-Hentai Login'),
+                    contentPadding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Row(children: [
-                          Text('igneous: '),
+                          const Text('igneous: '),
                           Expanded(
                             child: TextField(
                               controller: iController,
@@ -2103,7 +2103,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ]),
                         Row(children: [
-                          Text('ipb_member_id: '),
+                          const Text('ipb_member_id: '),
                           Expanded(
                             child: TextField(
                               controller: imiController,
@@ -2111,7 +2111,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ),
                         ]),
                         Row(children: [
-                          Text('ipb_pass_hash: '),
+                          const Text('ipb_pass_hash: '),
                           Expanded(
                             child: TextField(
                               controller: iphController,
@@ -2148,7 +2148,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
             child: ListTile(
               leading: Icon(
@@ -2198,7 +2198,7 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('checkupdate')),
-              trailing: Icon(
+              trailing: const Icon(
                   // Icons.message,
                   Icons.keyboard_arrow_right),
             ),
@@ -2212,7 +2212,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('newupdate'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               } else {
                 flutterToast.showToast(
@@ -2221,7 +2221,7 @@ class _SettingsPageState extends State<SettingsPage>
                     msg: Translations.of(context).trans('latestver'),
                   ),
                   gravity: ToastGravity.BOTTOM,
-                  toastDuration: Duration(seconds: 4),
+                  toastDuration: const Duration(seconds: 4),
                 );
               }
             },
@@ -2237,17 +2237,17 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
-              leading: Icon(
+              leading: const Icon(
                 MdiIcons.discord,
                 color: Color(0xFF7189da),
               ),
               title: Text(Translations.of(context).trans('discord')),
-              trailing: Icon(Icons.open_in_new),
+              trailing: const Icon(Icons.open_in_new),
             ),
             onTap: () async {
               const url = 'https://discord.gg/K8qny6E';
@@ -2258,12 +2258,12 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               MdiIcons.github,
               color: Colors.black,
             ),
             title: Text('GitHub ${Translations.of(context).trans('project')}'),
-            trailing: Icon(Icons.open_in_new),
+            trailing: const Icon(Icons.open_in_new),
             onTap: () async {
               const url = 'https://github.com/project-violet/';
               if (await canLaunch(url)) {
@@ -2273,12 +2273,12 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               MdiIcons.gmail,
               color: Colors.redAccent,
             ),
             title: Text(Translations.of(context).trans('contact')),
-            trailing: Icon(Icons.keyboard_arrow_right),
+            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               const url =
                   'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
@@ -2289,12 +2289,12 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           ListTile(
-            leading: Icon(
+            leading: const Icon(
               MdiIcons.heart,
               color: Colors.orange,
             ),
             title: Text(Translations.of(context).trans('donate')),
-            trailing: Icon(
+            trailing: const Icon(
                 // Icons.email,
                 Icons.open_in_new),
             onTap: () async {
@@ -2310,8 +2310,8 @@ class _SettingsPageState extends State<SettingsPage>
               MdiIcons.humanHandsup,
               color: Settings.majorColor,
             ),
-            title: Text('Developers'),
-            trailing: Icon(
+            title: const Text('Developers'),
+            trailing: const Icon(
                 // Icons.email,
                 Icons.keyboard_arrow_right),
             onTap: () async {
@@ -2323,7 +2323,7 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            customBorder: RoundedRectangleBorder(
+            customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
@@ -2333,13 +2333,13 @@ class _SettingsPageState extends State<SettingsPage>
                 color: Settings.majorColor,
               ),
               title: Text(Translations.of(context).trans('license')),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () {
               Navigator.push(
                 context,
                 CupertinoPageRoute(
-                  builder: (context) => VioletLicensePage(),
+                  builder: (context) => const VioletLicensePage(),
                 ),
               );
             },
@@ -2351,7 +2351,7 @@ class _SettingsPageState extends State<SettingsPage>
 
   _bottomInfo() {
     return Container(
-      margin: EdgeInsets.all(40),
+      margin: const EdgeInsets.all(40),
       child: Center(
         child: Column(
           children: <Widget>[
@@ -2370,7 +2370,7 @@ class _SettingsPageState extends State<SettingsPage>
               //onTap: () {},
             ),
             // ),
-            Padding(
+            const Padding(
               padding: EdgeInsets.only(top: 12),
             ),
             Text(

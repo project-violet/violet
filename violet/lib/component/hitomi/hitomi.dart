@@ -19,7 +19,7 @@ class HitomiManager {
       String id) async {
     var result = await ScriptManager.runHitomiGetImageList(int.parse(id));
     if (result != null) return result;
-    return Tuple3<List<String>, List<String>, List<String>>(
+    return const Tuple3<List<String>, List<String>, List<String>>(
         <String>[], <String>[], <String>[]);
   }
 
