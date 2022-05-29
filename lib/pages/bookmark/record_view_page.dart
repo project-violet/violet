@@ -44,7 +44,7 @@ class RecordViewPage extends StatelessWidget {
                 var qm = await QueryManager.query(queryRaw +
                     (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                var qr = Map<String, QueryResult>();
+                var qr = <String, QueryResult>{};
                 qm.results!.forEach((element) {
                   qr[element.id().toString()] = element;
                 });
@@ -60,9 +60,9 @@ class RecordViewPage extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -87,10 +87,11 @@ class RecordViewPage extends StatelessWidget {
                                         addBottomPadding: false,
                                         showDetail: false,
                                         width: (windowWidth - 4.0 - 48) / 3,
-                                        thumbnailTag: Uuid().v4(),
+                                        thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),
-                                      child: ArticleListItemVerySimpleWidget(),
+                                      child:
+                                          const ArticleListItemVerySimpleWidget(),
                                     )
                                   : Container()
                             ],

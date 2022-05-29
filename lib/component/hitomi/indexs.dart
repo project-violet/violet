@@ -75,7 +75,7 @@ class HitomiIndexs {
     var relatedData = json.decode(await rootBundle.loadString(
             'assets/locale/tag/related-tag-${TagTranslate.defaultLanguage}.json'))
         as List<dynamic>;
-    relatedTag = Map<String, dynamic>();
+    relatedTag = <String, dynamic>{};
     relatedData.forEach((element) {
       var kv = (element as Map<String, dynamic>).entries.first;
       relatedTag[kv.key] = kv.value;

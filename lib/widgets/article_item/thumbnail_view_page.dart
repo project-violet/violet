@@ -42,9 +42,9 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(1)),
+          borderRadius: const BorderRadius.all(Radius.circular(1)),
           boxShadow: [
             BoxShadow(
               color: Settings.themeWhat
@@ -52,7 +52,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
                   : Colors.grey.withOpacity(0.2),
               spreadRadius: 1,
               blurRadius: 1,
-              offset: Offset(0, 3), // changes position of shadow
+              offset: const Offset(0, 3), // changes position of shadow
             ),
           ],
         ),
@@ -126,7 +126,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
         DateTime now = DateTime.now();
         if (currentBackPressTime == null ||
             now.difference(currentBackPressTime!) >
-                Duration(milliseconds: 300)) {
+                const Duration(milliseconds: 300)) {
           currentBackPressTime = now;
           return;
         }

@@ -19,7 +19,7 @@ void main() {
 
     // while (!downloader.isReady()) {}
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     var task = DownloadTask(
       downloadPath: 't1.db',
@@ -52,7 +52,7 @@ void main() {
     //   headers: {},
     // ));
 
-    await Future.delayed(Duration(seconds: 10));
-    sleep(Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 10));
+    sleep(const Duration(seconds: 10));
   });
 }

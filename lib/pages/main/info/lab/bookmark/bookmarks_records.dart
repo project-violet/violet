@@ -31,7 +31,8 @@ class LabRecordViewPage extends StatelessWidget {
   Widget future(context, double width) {
     var windowWidth = MediaQuery.of(context).size.width;
     return FutureBuilder(
-      future: Future.delayed(Duration(milliseconds: 100)).then((value) async {
+      future:
+          Future.delayed(const Duration(milliseconds: 100)).then((value) async {
         var overap = HashSet<String>();
         var rr = <ArticleReadLog>[];
 
@@ -46,7 +47,7 @@ class LabRecordViewPage extends StatelessWidget {
         var qm = await QueryManager.query(
             queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-        var qr = Map<String, QueryResult>();
+        var qr = <String, QueryResult>{};
         qm.results!.forEach((element) {
           qr[element.id().toString()] = element;
         });
@@ -62,9 +63,9 @@ class LabRecordViewPage extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+              padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
               sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -89,10 +90,11 @@ class LabRecordViewPage extends StatelessWidget {
                                         addBottomPadding: false,
                                         showDetail: false,
                                         width: (windowWidth - 4.0 - 48) / 3,
-                                        thumbnailTag: Uuid().v4(),
+                                        thumbnailTag: const Uuid().v4(),
                                         usableTabList: snapshot.data,
                                       ),
-                                      child: ArticleListItemVerySimpleWidget(),
+                                      child:
+                                          const ArticleListItemVerySimpleWidget(),
                                     )
                                   : Container()
                             ],

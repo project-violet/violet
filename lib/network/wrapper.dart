@@ -16,8 +16,7 @@ class HttpWrapper {
       'Mozilla/5.0 (Linux; Android 6.0.1; Moto G (4)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Mobile Safari/537.36';
   static Semaphore throttlerExHentai = Semaphore(maxCount: 1);
   static Semaphore throttlerEHentai = Semaphore(maxCount: 4);
-  static Map<String, http.Response> cacheResponse =
-      Map<String, http.Response>();
+  static Map<String, http.Response> cacheResponse = <String, http.Response>{};
 }
 
 Future<http.Response> get(String url, {Map<String, String>? headers}) async {

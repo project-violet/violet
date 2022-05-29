@@ -31,7 +31,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
       var tcomments = (await VioletServer.searchCommentAuthor(widget.author))
           as List<dynamic>;
       comments = tcomments
@@ -47,8 +47,8 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
       context,
       enableBackgroundColor: true,
       child: ListView.builder(
-        physics: BouncingScrollPhysics(),
-        padding: EdgeInsets.all(0),
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(0),
         itemBuilder: (BuildContext ctxt, int index) {
           var e = comments[index];
           return InkWell(
@@ -68,7 +68,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
                       child: Text(
                           DateFormat('yyyy-MM-dd HH:mm')
                               .format(e.item2.toLocal()),
-                          style: TextStyle(fontSize: 12)),
+                          style: const TextStyle(fontSize: 12)),
                     ),
                   ),
                 ],
@@ -142,7 +142,7 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
                   isBookmarked: isBookmarked,
                   controller: controller,
                 ),
-                child: ArticleInfoPage(
+                child: const ArticleInfoPage(
                   key: ObjectKey('asdfasdf'),
                 ),
               );

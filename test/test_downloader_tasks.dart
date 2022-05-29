@@ -180,7 +180,7 @@ void main() {
 
     // while (!downloader.isReady()) {}
 
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
 
     var tasks = <DownloadTask>[];
     for (int i = 0; i < urls.length; i++) {
@@ -220,7 +220,7 @@ void main() {
 
     downloader.appendTasks(tasks);
 
-    await Future.delayed(Duration(seconds: 100));
-    sleep(Duration(seconds: 10));
+    await Future.delayed(const Duration(seconds: 100));
+    sleep(const Duration(seconds: 10));
   });
 }

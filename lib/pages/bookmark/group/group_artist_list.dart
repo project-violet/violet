@@ -101,7 +101,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         visible: checkMode,
         child: AnimatedOpacity(
           opacity: checkModePre ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           child: _floatingButton(),
         ),
       ),
@@ -123,7 +123,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                     floating: true,
                     delegate: AnimatedOpacitySliver(
                       searchBar: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Stack(children: <Widget>[
                             _filter(),
                             _title(),
@@ -170,9 +170,9 @@ class _GroupArtistListState extends State<GroupArtistList>
           color: Settings.themeWhat
               ? Settings.themeBlack
                   ? const Color(0xFF141414)
-                  : Color(0xFF353535)
+                  : const Color(0xFF353535)
               : Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
@@ -199,7 +199,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                 alignment: Alignment.center,
                 children: <Widget>[
                   _progressingFilter
-                      ? SizedBox(
+                      ? const SizedBox(
                           height: 30,
                           width: 30,
                           child: CircularProgressIndicator(
@@ -223,7 +223,7 @@ class _GroupArtistListState extends State<GroupArtistList>
   }
 
   Widget _title() {
-    return Padding(
+    return const Padding(
       padding: EdgeInsets.only(top: 24, left: 12),
       child: Text('Artists Collection',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
@@ -275,7 +275,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         child: SizedBox(
           height: 195,
           child: Padding(
-            padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
@@ -296,7 +296,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                               'series',
                               'character'
                             ][e.type()], e.artist())})',
-                        style: TextStyle(fontSize: 17)),
+                        style: const TextStyle(fontSize: 17)),
                   ],
                 ),
                 SizedBox(
@@ -324,18 +324,18 @@ class _GroupArtistListState extends State<GroupArtistList>
         child: qq.length > index
             ? Padding(
                 key: Key('${qq[index].id()}/${index}_thumbnail_bookmark'),
-                padding: EdgeInsets.all(4),
+                padding: const EdgeInsets.all(4),
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
                     queryResult: qq[index],
                     showDetail: false,
                     addBottomPadding: false,
                     width: (windowWidth - 16 - 4.0 - 16.0) / 3,
-                    thumbnailTag: Uuid().v4(),
+                    thumbnailTag: const Uuid().v4(),
                     disableFilter: true,
                     usableTabList: qq,
                   ),
-                  child: ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemVerySimpleWidget(),
                 ),
               )
             : Container());
@@ -355,7 +355,7 @@ class _GroupArtistListState extends State<GroupArtistList>
             },
             elevation: 4,
             heroTag: 'a',
-            child: Icon(MdiIcons.checkAll),
+            child: const Icon(MdiIcons.checkAll),
           ),
         ),
         Container(
@@ -377,7 +377,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                   checkModePre = false;
                   checked.clear();
                 });
-                Future.delayed(Duration(milliseconds: 500)).then((value) {
+                Future.delayed(const Duration(milliseconds: 500)).then((value) {
                   setState(() {
                     checkMode = false;
                   });
@@ -386,7 +386,7 @@ class _GroupArtistListState extends State<GroupArtistList>
             },
             elevation: 4,
             heroTag: 'b',
-            child: Icon(MdiIcons.delete),
+            child: const Icon(MdiIcons.delete),
           ),
         ),
         Container(
@@ -394,7 +394,7 @@ class _GroupArtistListState extends State<GroupArtistList>
             onPressed: moveChecked,
             elevation: 4,
             heroTag: 'c',
-            child: Icon(MdiIcons.folderMove),
+            child: const Icon(MdiIcons.folderMove),
           ),
         ),
       ],
@@ -404,7 +404,7 @@ class _GroupArtistListState extends State<GroupArtistList>
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             checkMode = false;
           });
@@ -437,7 +437,7 @@ class _GroupArtistListState extends State<GroupArtistList>
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             checkMode = false;
           });
@@ -498,7 +498,7 @@ class _GroupArtistListState extends State<GroupArtistList>
 
         // Atomic!!
         // 0. Sort Checked
-        var invIdIndex = Map<String, int>();
+        var invIdIndex = <String, int>{};
         for (int i = 0; i < artists.length; i++)
           invIdIndex['${artists[i].artist()}|${artists[i].type()}'] = i;
         checked.sort((x, y) => invIdIndex['${x.item2}|${x.item1}']!
@@ -529,7 +529,7 @@ class _GroupArtistListState extends State<GroupArtistList>
           checkModePre = false;
           checked.clear();
         });
-        Future.delayed(Duration(milliseconds: 500)).then((value) {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
           setState(() {
             checkMode = false;
           });

@@ -43,14 +43,14 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
       child: Padding(
         padding: EdgeInsets.zero,
         child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
               Container(height: 16),
               _buildTitle(),
               // Container(height: 30),
               _buildItem(
-                Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
+                const Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
                 '#001 Articles',
                 'Likes and Dislikes Index (LDI) DESC',
                 null,
@@ -63,7 +63,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
@@ -77,7 +77,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
+                const Icon(MdiIcons.meteor, size: 40, color: Colors.brown),
                 '#002 Articles',
                 'Likes and Dislikes Index (LDI) ASC',
                 null,
@@ -90,7 +90,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
@@ -104,14 +104,14 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.binoculars, size: 40, color: Colors.grey),
+                const Icon(MdiIcons.binoculars, size: 40, color: Colors.grey),
                 '#003 Articles',
                 'User Read Count DESC',
                 null,
                 () async {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = Map<String, int>();
+                  var articleCount = <String, int>{};
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;
@@ -127,7 +127,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
@@ -142,14 +142,14 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.binoculars, size: 40, color: Colors.grey),
+                const Icon(MdiIcons.binoculars, size: 40, color: Colors.grey),
                 '#004 Articles',
                 'User Reverse Read Record',
                 null,
                 () async {
                   var userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = Map<String, int>();
+                  var articleCount = <String, int>{};
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId()))
                       articleCount[element.articleId()] = 0;
@@ -168,31 +168,33 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.commentTextMultiple, size: 40, color: Colors.red),
+                const Icon(MdiIcons.commentTextMultiple,
+                    size: 40, color: Colors.red),
                 '#005 Comments',
                 'Recent Artist Comments',
                 null,
                 () async {
-                  _navigate(LabRecentComments());
+                  _navigate(const LabRecentComments());
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.accessPointNetwork,
+                const Icon(MdiIcons.accessPointNetwork,
                     size: 40, color: Colors.orange),
                 '#006 Articles',
                 'Real-Time User Article Record',
                 null,
                 () async {
-                  _navigate(LabRecentRecords());
+                  _navigate(const LabRecentRecords());
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.accessPointNetwork, size: 40, color: Colors.red),
+                const Icon(MdiIcons.accessPointNetwork,
+                    size: 40, color: Colors.red),
                 '#007 Articles',
                 'Real-Time User Article Record Picking User',
                 null,
                 () async {
-                  _navigate(LabRecentRecordsU());
+                  _navigate(const LabRecentRecordsU());
                 },
               ),
               _buildItem(
@@ -202,7 +204,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'User Bookmark List',
                 null,
                 () async {
-                  _navigate(LabUserBookmarkPage());
+                  _navigate(const LabUserBookmarkPage());
                 },
               ),
               _buildItem(
@@ -231,8 +233,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     useRootNavigator: false,
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
-                      contentPadding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                      title: Text('Input Unlock Key'),
+                      contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                      title: const Text('Input Unlock Key'),
                       content: TextField(
                         controller: text,
                         autofocus: true,
@@ -257,25 +259,26 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.speedometer, size: 40, color: Colors.red),
+                const Icon(MdiIcons.speedometer, size: 40, color: Colors.red),
                 '#010 Top Recent',
                 'Top Recent',
                 null,
                 () async {
-                  _navigate(LabTopRecent());
+                  _navigate(const LabTopRecent());
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.commentSearch, size: 40, color: Colors.grey),
+                const Icon(MdiIcons.commentSearch,
+                    size: 40, color: Colors.grey),
                 '#011 Search Comment',
                 'Search ExHentai Comment',
                 null,
                 () async {
-                  _navigate(LabSearchComments());
+                  _navigate(const LabSearchComments());
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
+                const Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
                 '#012 Articles',
                 'Sort with ExHentai Comments Count',
                 null,
@@ -288,7 +291,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   var qm = await QueryManager.query(queryRaw +
                       (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
-                  var qr = Map<String, QueryResult>();
+                  var qr = <String, QueryResult>{};
                   qm.results!.forEach((element) {
                     qr[element.id().toString()] = element;
                   });
@@ -302,12 +305,12 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
+                const Icon(MdiIcons.commentFlash, size: 40, color: Colors.cyan),
                 '#013 Images',
                 'Message Search',
                 null,
                 () async {
-                  _navigate(LabSearchMessage());
+                  _navigate(const LabSearchMessage());
                 },
               ),
               _buildItem(
@@ -321,7 +324,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     await showOkDialog(context, 'You cannot use this feature!');
                     return;
                   }
-                  _navigate(LabBookmarkSpyPage());
+                  _navigate(const LabBookmarkSpyPage());
                 },
               ),
               _buildItem(
@@ -330,7 +333,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'Log Message',
                 null,
                 () async {
-                  _navigate(LogPage());
+                  _navigate(const LogPage());
                 },
               ),
               _buildItem(
@@ -339,7 +342,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'Lab Settings',
                 null,
                 () async {
-                  _navigate(LabSetting());
+                  _navigate(const LabSetting());
                 },
               ),
             ],
@@ -359,12 +362,12 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
 
   _buildTitle() {
     return Container(
-      margin: EdgeInsets.all(40),
+      margin: const EdgeInsets.all(40),
       child: Center(
         child: Column(
           children: <Widget>[
-            Icon(MdiIcons.flask, size: 100, color: Color(0xFF73BE1E)),
-            Padding(
+            const Icon(MdiIcons.flask, size: 100, color: Color(0xFF73BE1E)),
+            const Padding(
               padding: EdgeInsets.only(top: 12),
             ),
             Text(
@@ -384,11 +387,11 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
 
   _buildItem(image, title, subtitle, [warp, run]) {
     return Container(
-      margin: EdgeInsets.fromLTRB(16, 0, 16, 8),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       width: double.infinity,
       decoration: BoxDecoration(
         color: Settings.themeWhat ? Colors.black26 : Colors.white,
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(8),
             topRight: Radius.circular(8),
             bottomLeft: Radius.circular(8),
@@ -400,7 +403,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 : Colors.grey.withOpacity(0.1),
             spreadRadius: Settings.themeWhat ? 0 : 5,
             blurRadius: 7,
-            offset: Offset(0, 3), // changes position of shadow
+            offset: const Offset(0, 3), // changes position of shadow
           ),
         ],
       ),
@@ -414,9 +417,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
               : Colors.white,
           child: ListTile(
             contentPadding:
-                EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
             leading: image,
-            title: Text(title, style: TextStyle(fontSize: 16.0)),
+            title: Text(title, style: const TextStyle(fontSize: 16.0)),
             subtitle: Text(subtitle),
             onTap: () async {
               if (warp != null) {

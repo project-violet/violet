@@ -380,7 +380,7 @@ class Bookmark {
   Future<bool> isBookmarkArtist(String name, int type) async {
     if (bookmarkArtistSet == null) {
       var artist = await getArtist();
-      bookmarkArtistSet = Map<int, HashSet<String>>();
+      bookmarkArtistSet = <int, HashSet<String>>{};
       bookmarkArtistSet![0] = HashSet<String>();
       bookmarkArtistSet![1] = HashSet<String>();
       bookmarkArtistSet![2] = HashSet<String>();
