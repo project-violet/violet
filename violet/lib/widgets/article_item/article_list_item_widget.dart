@@ -373,8 +373,8 @@ class _ArticleListItemVerySimpleWidgetState
             cache ??= Provider<ArticleInfo>.value(
               value: ArticleInfo.fromArticleInfo(
                 queryResult: data.queryResult,
-                thumbnail: thumbnail!,
-                headers: headers!,
+                thumbnail: thumbnail,
+                headers: headers,
                 heroKey: data.thumbnailTag,
                 isBookmarked: isBookmarked.value,
                 controller: controller,

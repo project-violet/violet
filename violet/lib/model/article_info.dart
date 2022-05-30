@@ -8,9 +8,9 @@ import 'package:violet/database/user/bookmark.dart';
 
 class ArticleInfo {
   final QueryResult queryResult;
-  final String thumbnail;
+  final String? thumbnail;
   final String heroKey;
-  final Map<String, String> headers;
+  final Map<String, String>? headers;
   final ScrollController controller;
   final String title;
   final String artist;
@@ -33,9 +33,9 @@ class ArticleInfo {
 
   factory ArticleInfo.fromArticleInfo({
     required QueryResult queryResult,
-    required String thumbnail,
+    required String? thumbnail,
     required String heroKey,
-    required Map<String, String> headers,
+    required Map<String, String>? headers,
     required bool isBookmarked,
     required ScrollController controller,
     List<QueryResult>? usableTabList,

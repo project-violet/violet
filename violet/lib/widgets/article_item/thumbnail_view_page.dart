@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:violet/settings/settings.dart';
 
 class ThumbnailViewPage extends StatefulWidget {
-  final String thumbnail;
+  final String? thumbnail;
   final String heroKey;
-  final Map<String, String> headers;
+  final Map<String, String>? headers;
   final Size? size;
 
   const ThumbnailViewPage({
@@ -65,7 +65,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
                 Hero(
                   tag: widget.heroKey,
                   child: CachedNetworkImage(
-                    imageUrl: widget.thumbnail,
+                    imageUrl: widget.thumbnail ?? '',
                     fit: BoxFit.cover,
                     httpHeaders: widget.headers,
                     placeholder: (b, c) {
