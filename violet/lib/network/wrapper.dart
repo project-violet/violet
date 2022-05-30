@@ -37,6 +37,10 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
           .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
         timeout = true;
         return http.Response('', 0);
+      }).catchError((e, st) {
+        Logger.error('[Http Request] GET: $url\n'
+            'E:$e\n'
+            '$st');
       });
       retry++;
       if (timeout) {
