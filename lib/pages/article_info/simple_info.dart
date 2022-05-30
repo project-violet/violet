@@ -79,7 +79,7 @@ class SimpleInfoWidget extends StatelessWidget {
   Widget _thumbnailImage(ArticleInfo data) {
     return data.thumbnail != null
         ? CachedNetworkImage(
-            imageUrl: data.thumbnail,
+            imageUrl: data.thumbnail ?? '',
             fit: BoxFit.cover,
             httpHeaders: data.headers,
             height: 4 * 50.0,

@@ -138,7 +138,6 @@ class ArticleInfoPage extends StatelessWidget {
                 TagInfoAreaWidget(queryResult: data.queryResult),
                 const DividerWidget(),
                 _CommentArea(
-                  headers: data.headers,
                   queryResult: data.queryResult,
                 ),
                 const DividerWidget(),
@@ -301,6 +300,10 @@ class ArticleInfoPage extends StatelessWidget {
     await (await User.getInstance()).insertUserLog(data.queryResult.id(), 0);
 
     await ScriptManager.refresh();
+
+    if (!ProviderManager.isExists(data.queryResult.id())) {
+      return;
+    }
 
     var prov = await ProviderManager.get(data.queryResult.id());
 
@@ -608,9 +611,8 @@ final RegExp linkRegExp = RegExp(
 
 class _CommentArea extends StatefulWidget {
   final QueryResult queryResult;
-  final Map<String, String> headers;
 
-  const _CommentArea({required this.queryResult, required this.headers});
+  const _CommentArea({required this.queryResult});
 
   @override
   __CommentAreaState createState() => __CommentAreaState();
@@ -654,7 +656,6 @@ class __CommentAreaState extends State<_CommentArea> {
   Widget build(BuildContext context) {
     return _InfoAreaWidget(
       queryResult: widget.queryResult,
-      headers: widget.headers,
       comments: comments,
     );
   }
@@ -662,12 +663,10 @@ class __CommentAreaState extends State<_CommentArea> {
 
 class _InfoAreaWidget extends StatefulWidget {
   final QueryResult queryResult;
-  final Map<String, String> headers;
   final List<Tuple3<DateTime, String, String>> comments;
 
   const _InfoAreaWidget({
     required this.queryResult,
-    required this.headers,
     required this.comments,
   });
 

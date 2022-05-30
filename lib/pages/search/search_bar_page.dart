@@ -604,7 +604,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        logs[index - 1].searchWhat(),
+                        logs[index - 1].searchWhat() ?? '',
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 16),
                       ),
@@ -621,7 +621,7 @@ class _SearchBarPageState extends State<SearchBarPage>
               ),
               onTap: () {
                 setState(() {
-                  _searchController.text = logs[index - 1].searchWhat();
+                  _searchController.text = logs[index - 1].searchWhat() ?? '';
                 });
               },
             );

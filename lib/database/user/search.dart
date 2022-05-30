@@ -16,7 +16,7 @@ class SearchLog {
   SearchLog({required this.result});
 
   int id() => result['Id'];
-  String searchWhat() => result['SearchWhat'];
+  String? searchWhat() => result['SearchWhat'];
   String datetime() => result['DateTime'];
 }
 
