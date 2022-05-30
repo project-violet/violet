@@ -252,15 +252,17 @@ class _ViewerPageState extends State<ViewerPage>
         pageReadTimerCallback,
       );
     }
-    volumeKeyChannel.receiveBroadcastStream().listen((event) {
-      if (event is String) {
-        if (event == 'down') {
-          _rightButtonEvent();
-        } else if (event == 'up') {
-          _leftButtonEvent();
+    if (Platform.isAndroid) {
+      volumeKeyChannel.receiveBroadcastStream().listen((event) {
+        if (event is String) {
+          if (event == 'down') {
+            _rightButtonEvent();
+          } else if (event == 'up') {
+            _leftButtonEvent();
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   _preprocessImageInfoForFileImage() {
