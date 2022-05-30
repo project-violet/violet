@@ -245,8 +245,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   if (dialog == true) {
                     if (getValid('${text.text}saltff') == '605f372') {
                       await showOkDialog(context, 'Successful!');
-                      await (await SharedPreferences.getInstance())
-                          .setString('labmasterkey', text.text);
+
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setString('labmasterkey', text.text);
                     } else {
                       await showOkDialog(context, 'Fail!');
                     }
@@ -353,7 +354,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
   }
 
   Future<bool> _checkMaterKey() async {
-    var key = (await SharedPreferences.getInstance()).getString('labmasterkey');
+    final prefs = await SharedPreferences.getInstance();
+    var key = prefs.getString('labmasterkey');
     if (key != null && getValid('${key}saltff') == '605f372') {
       return true;
     }

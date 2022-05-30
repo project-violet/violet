@@ -274,8 +274,8 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _checkPasswordIsCorret() async {
-    final pinPass =
-        (await SharedPreferences.getInstance()).getString('pinPass');
+    final prefs = await SharedPreferences.getInstance();
+    final pinPass = prefs.getString('pinPass');
 
     if (!widget.isRegisterMode && _pin.join() == pinPass) {
       if (widget.isSecureMode)
@@ -301,8 +301,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       });
     } else {
       if (_isFirstPINInserted) {
-        await (await SharedPreferences.getInstance())
-            .setString('pinPass', _pin.join());
+        await prefs.setString('pinPass', _pin.join());
         Future.delayed(const Duration(milliseconds: 300)).then((value) {
           fToast.showToast(
             child: ToastWrapper(

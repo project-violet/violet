@@ -66,9 +66,9 @@ class _MainPageState extends State<MainPage>
     super.initState();
 
     Future.delayed(const Duration(milliseconds: 200)).then((value) async {
+      // final prefs = await SharedPreferences.getInstance();
       // var latestDB = SyncManager.getLatestDB().getDateTime();
-      // var lastDB =
-      //     (await SharedPreferences.getInstance()).getString('databasesync');
+      // var lastDB = prefs.getString('databasesync');
       // if (lastDB != null &&
       //     latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
       //   return;
@@ -250,21 +250,19 @@ class _MainPageState extends State<MainPage>
       );
     }).then((value) async {
       if (updateContinued) return;
-      if ((await SharedPreferences.getInstance())
-              .getBool('usevioletserver_check') !=
-          null) return;
+
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getBool('usevioletserver_check') != null) return;
 
       var bb = await showYesNoDialog(
           context, Translations.of(context).trans('violetservermsg'));
       if (bb == false) {
-        await (await SharedPreferences.getInstance())
-            .setBool('usevioletserver_check', false);
+        await prefs.setBool('usevioletserver_check', false);
         return;
       }
 
       await Settings.setUseVioletServer(true);
-      await (await SharedPreferences.getInstance())
-          .setBool('usevioletserver_check', false);
+      await prefs.setBool('usevioletserver_check', false);
     });
   }
 
@@ -443,9 +441,9 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
   }
 
   _onSyncPressed() async {
+    final prefs = await SharedPreferences.getInstance();
     var latestDB = SyncManager.getLatestDB().getDateTime();
-    var lastDB =
-        (await SharedPreferences.getInstance()).getString('databasesync');
+    var lastDB = prefs.getString('databasesync');
 
     if (lastDB != null &&
         latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {

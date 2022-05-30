@@ -36,8 +36,9 @@ class _RouteDialogState extends State<RouteDialog> {
               }
               Settings.searchRule[newIndex - 1] = old;
             }
-            await (await SharedPreferences.getInstance())
-                .setString('searchrule', Settings.searchRule.join('|'));
+
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString('searchrule', Settings.searchRule.join('|'));
             setState(() {});
           },
           children: Settings.searchRule.map((e) {
@@ -100,8 +101,10 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
               }
               Settings.routingRule[newIndex - 1] = old;
             }
-            await (await SharedPreferences.getInstance())
-                .setString('routingrule', Settings.routingRule.join('|'));
+
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString(
+                'routingrule', Settings.routingRule.join('|'));
             setState(() {});
           },
           children: Settings.routingRule.map((e) {
