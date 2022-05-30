@@ -41,7 +41,7 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
         Logger.error('[Http Request] GET: $url\n'
             'E:$e\n'
             '$st');
-        return http.Response('', 0);
+        HttpWrapper.throttlerExHentai.release();
       });
       retry++;
       if (timeout) {
@@ -78,7 +78,7 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
         Logger.error('[Http Request] GET: $url\n'
             'E:$e\n'
             '$st');
-        return http.Response('', 0);
+        HttpWrapper.throttlerEHentai.release();
       });
       retry++;
       if (timeout) {
