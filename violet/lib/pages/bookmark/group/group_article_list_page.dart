@@ -26,6 +26,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/dots_indicator.dart';
 import 'package:violet/widgets/floating_button.dart';
 import 'package:violet/widgets/search_bar.dart';
@@ -522,29 +523,31 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             delegate: SliverChildListDelegate(filterResult.map((e) {
               var keyStr = 'group/${widget.groupId}/$nowType/${e.id()}';
               if (!itemKeys.containsKey(keyStr)) itemKeys[keyStr] = GlobalKey();
-              return Padding(
-                key: itemKeys[keyStr],
-                padding: EdgeInsets.zero,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    child: Provider<ArticleListItem>.value(
-                      value: ArticleListItem.fromArticleListItem(
-                        queryResult: e,
-                        showDetail: false,
-                        addBottomPadding: false,
-                        width: (windowWidth - 4.0) / mm,
-                        thumbnailTag: const Uuid().v4(),
-                        bookmarkMode: true,
-                        bookmarkCallback: longpress,
-                        bookmarkCheckCallback: check,
-                        usableTabList: filterResult,
-                        // isCheckMode: checkMode,
-                        // isChecked: checked.contains(e.id()),
-                      ),
-                      child: ArticleListItemVerySimpleWidget(
-                        isCheckMode: checkMode,
-                        isChecked: checked.contains(e.id()),
+              return DebounceWidget(
+                child: Padding(
+                  key: itemKeys[keyStr],
+                  padding: EdgeInsets.zero,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      child: Provider<ArticleListItem>.value(
+                        value: ArticleListItem.fromArticleListItem(
+                          queryResult: e,
+                          showDetail: false,
+                          addBottomPadding: false,
+                          width: (windowWidth - 4.0) / mm,
+                          thumbnailTag: const Uuid().v4(),
+                          bookmarkMode: true,
+                          bookmarkCallback: longpress,
+                          bookmarkCheckCallback: check,
+                          usableTabList: filterResult,
+                          // isCheckMode: checkMode,
+                          // isChecked: checked.contains(e.id()),
+                        ),
+                        child: ArticleListItemVerySimpleWidget(
+                          isCheckMode: checkMode,
+                          isChecked: checked.contains(e.id()),
+                        ),
                       ),
                     ),
                   ),
@@ -563,26 +566,28 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             delegate: SliverChildListDelegate(filterResult.map((x) {
               var keyStr = 'group/${widget.groupId}/$nowType/${x.id()}';
               if (!itemKeys.containsKey(keyStr)) itemKeys[keyStr] = GlobalKey();
-              return Align(
-                key: itemKeys[keyStr],
-                alignment: Alignment.center,
-                child: Provider<ArticleListItem>.value(
-                  value: ArticleListItem.fromArticleListItem(
-                    queryResult: x,
-                    showDetail: nowType == 3,
-                    addBottomPadding: true,
-                    width: (windowWidth - 4.0),
-                    thumbnailTag: const Uuid().v4(),
-                    bookmarkMode: true,
-                    bookmarkCallback: longpress,
-                    bookmarkCheckCallback: check,
-                    usableTabList: filterResult,
-                    // isCheckMode: checkMode,
-                    // isChecked: checked.contains(x.id()),
-                  ),
-                  child: ArticleListItemVerySimpleWidget(
-                    isCheckMode: checkMode,
-                    isChecked: checked.contains(x.id()),
+              return DebounceWidget(
+                child: Align(
+                  key: itemKeys[keyStr],
+                  alignment: Alignment.center,
+                  child: Provider<ArticleListItem>.value(
+                    value: ArticleListItem.fromArticleListItem(
+                      queryResult: x,
+                      showDetail: nowType == 3,
+                      addBottomPadding: true,
+                      width: (windowWidth - 4.0),
+                      thumbnailTag: const Uuid().v4(),
+                      bookmarkMode: true,
+                      bookmarkCallback: longpress,
+                      bookmarkCheckCallback: check,
+                      usableTabList: filterResult,
+                      // isCheckMode: checkMode,
+                      // isChecked: checked.contains(x.id()),
+                    ),
+                    child: ArticleListItemVerySimpleWidget(
+                      isCheckMode: checkMode,
+                      isChecked: checked.contains(x.id()),
+                    ),
                   ),
                 ),
               );

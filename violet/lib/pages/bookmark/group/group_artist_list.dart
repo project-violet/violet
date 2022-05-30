@@ -18,6 +18,7 @@ import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
 import 'package:violet/widgets/search_bar.dart';
 
@@ -301,13 +302,15 @@ class _GroupArtistListState extends State<GroupArtistList>
                 ),
                 SizedBox(
                   height: 162,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      _image(qq, 0, windowWidth),
-                      _image(qq, 1, windowWidth),
-                      _image(qq, 2, windowWidth),
-                    ],
+                  child: DebounceWidget(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        _image(qq, 0, windowWidth),
+                        _image(qq, 1, windowWidth),
+                        _image(qq, 2, windowWidth),
+                      ],
+                    ),
                   ),
                 ),
               ],
