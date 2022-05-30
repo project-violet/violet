@@ -52,7 +52,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
   Future checkDownload() async {
     try {
-      if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1) {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getInt('db_exists') == 1) {
         var dbPath = Platform.isAndroid
             ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
             : '${await getDatabasesPath()}/data.db';
@@ -134,13 +135,12 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
       await File('${dir.path}/db.sql.7z').delete();
 
-      await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance())
-          .setString('databasetype', widget.dbType!);
-      await (await SharedPreferences.getInstance()).setString(
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('db_exists', 1);
+      await prefs.setString('databasetype', widget.dbType!);
+      await prefs.setString(
           'databasesync', SyncManager.getLatestDB().getDateTime().toString());
-      await (await SharedPreferences.getInstance())
-          .setInt('synclatest', SyncManager.getLatestDB().timestamp);
+      await prefs.setInt('synclatest', SyncManager.getLatestDB().timestamp);
 
       if (Settings.useOptimizeDatabase) {
         await deleteUnused();
@@ -207,13 +207,12 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       });
       timer.cancel();
 
-      await (await SharedPreferences.getInstance()).setInt('db_exists', 1);
-      await (await SharedPreferences.getInstance())
-          .setString('databasetype', widget.dbType!);
-      await (await SharedPreferences.getInstance()).setString(
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('db_exists', 1);
+      await prefs.setString('databasetype', widget.dbType!);
+      await prefs.setString(
           'databasesync', SyncManager.getLatestDB().getDateTime().toString());
-      await (await SharedPreferences.getInstance())
-          .setInt('synclatest', SyncManager.getLatestDB().timestamp);
+      await prefs.setInt('synclatest', SyncManager.getLatestDB().timestamp);
 
       setState(() {
         downloading = false;

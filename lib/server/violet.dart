@@ -201,8 +201,8 @@ class VioletServer {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
     var userId = await getUserAppId();
-    // var upload = (await SharedPreferences.getInstance())
-    //     .getBool('upload_bookmark_179_test');
+    // final prefs = await SharedPreferences.getInstance();
+    // var upload = prefs.getBool('upload_bookmark_179_test');
     // if (upload != null && upload != false) return false;
 
     /*
@@ -244,8 +244,8 @@ class VioletServer {
         return value;
       });
 
-      // await (await SharedPreferences.getInstance())
-      //     .setBool('upload_bookmark_179', true);
+      // final prefs = await SharedPreferences.getInstance();
+      // await prefs.setBool('upload_bookmark_179', true);
 
       return res.statusCode == 200;
     } catch (e, st) {
@@ -257,7 +257,10 @@ class VioletServer {
 
   static String? _userId;
   static Future<String> getUserAppId() async {
-    _userId ??= (await SharedPreferences.getInstance()).getString('fa_userid');
+    if (_userId == null) {
+      final prefs = await SharedPreferences.getInstance();
+      _userId = prefs.getString('fa_userid');
+    }
     return _userId!;
   }
 

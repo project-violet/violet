@@ -411,12 +411,10 @@ class _DownloadPageState extends State<DownloadPage>
                   type: MaterialType.transparency,
                   child: InkWell(
                     onTap: () async {
+                      final prefs = await SharedPreferences.getInstance();
                       if (!Settings.useInnerStorage &&
-                          (await SharedPreferences.getInstance())
-                                  .getBool('checkauthalready') ==
-                              null) {
-                        await (await SharedPreferences.getInstance())
-                            .setBool('checkauthalready', true);
+                          prefs.getBool('checkauthalready') == null) {
+                        await prefs.setBool('checkauthalready', true);
                         if (await Permission.storage.request() ==
                             PermissionStatus.denied) {
                           await showOkDialog(context,

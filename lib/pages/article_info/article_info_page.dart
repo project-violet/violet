@@ -626,8 +626,8 @@ class __CommentAreaState extends State<_CommentArea> {
     super.initState();
     if (widget.queryResult.ehash() != null) {
       Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-        var cookie =
-            (await SharedPreferences.getInstance()).getString('eh_cookies');
+        final prefs = await SharedPreferences.getInstance();
+        var cookie = prefs.getString('eh_cookies');
         if (cookie != null) {
           try {
             var html = await EHSession.requestString(
@@ -796,8 +796,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           return;
         }
 
-        var cookie =
-            (await SharedPreferences.getInstance()).getString('eh_cookies');
+        final prefs = await SharedPreferences.getInstance();
+        var cookie = prefs.getString('eh_cookies');
         if (cookie == null || !cookie.contains('ipb_pass_hash')) {
           await showOkDialog(context, 'Please, Login First!');
           return;

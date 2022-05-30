@@ -53,8 +53,8 @@ class EHentaiImageProvider extends VioletImageProvider {
 
   @override
   Future<Map<String, String>> getHeader(int page) async {
-    var cookie =
-        (await SharedPreferences.getInstance()).getString('eh_cookies');
+    final prefs = await SharedPreferences.getInstance();
+    var cookie = prefs.getString('eh_cookies');
     return {'Cookie': cookie ?? ''};
   }
 
