@@ -36,7 +36,7 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
           .get(Uri.parse(url), headers: headers)
           .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
         timeout = true;
-        return http.Response('', 0);
+        return http.Response('', 200);
       }).catchError((e, st) {
         Logger.error('[Http Request] GET: $url\n'
             'E:$e\n'
@@ -45,6 +45,7 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
       });
       retry++;
       if (timeout) {
+        if (retry > 3) HttpWrapper.throttlerExHentai.release();
         Logger.info('[Http Request] GETS: $url, $retry');
         continue;
       }
@@ -73,15 +74,17 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
           .get(Uri.parse(url), headers: headers)
           .timeout(Duration(seconds: retry > 3 ? 1000000 : 3), onTimeout: () {
         timeout = true;
-        return http.Response('', 0);
+        return http.Response('', 200);
       }).catchError((e, st) {
         Logger.error('[Http Request] GET: $url\n'
             'E:$e\n'
             '$st');
         HttpWrapper.throttlerEHentai.release();
+        throw e;
       });
       retry++;
       if (timeout) {
+        if (retry > 3) HttpWrapper.throttlerEHentai.release();
         Logger.info('[Http Request] GETS: $url, $retry');
         continue;
       }
