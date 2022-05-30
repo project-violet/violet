@@ -11,6 +11,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 
 class GroupArtistArticleList extends StatefulWidget {
@@ -101,30 +102,31 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                     delegate: SliverChildListDelegate(
                       snapshot.data!.map(
                         (e) {
-                          return Padding(
-                            key: Key('gaal/${e.id()}'),
-                            padding: EdgeInsets.zero,
-                            child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: <Widget>[
-                                  snapshot.hasData
-                                      ? Provider<ArticleListItem>.value(
-                                          value: ArticleListItem
-                                              .fromArticleListItem(
-                                            queryResult: e,
-                                            addBottomPadding: false,
-                                            showDetail: false,
-                                            width: (windowWidth - 4.0 - 52) / 3,
-                                            thumbnailTag: const Uuid().v4(),
-                                            usableTabList: snapshot.data,
-                                          ),
-                                          child:
-                                              const ArticleListItemVerySimpleWidget(),
-                                        )
-                                      : Container()
-                                ],
+                          return DebounceWidget(
+                            child: Padding(
+                              key: Key('gaal/${e.id()}'),
+                              padding: EdgeInsets.zero,
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    Provider<ArticleListItem>.value(
+                                      value:
+                                          ArticleListItem.fromArticleListItem(
+                                        queryResult: e,
+                                        addBottomPadding: false,
+                                        showDetail: false,
+                                        width: (windowWidth - 4.0 - 52) / 3,
+                                        thumbnailTag: const Uuid().v4(),
+                                        usableTabList: snapshot.data,
+                                      ),
+                                      child:
+                                          const ArticleListItemVerySimpleWidget(),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           );
