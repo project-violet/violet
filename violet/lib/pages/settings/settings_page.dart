@@ -1019,9 +1019,9 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: Variables.databaseDecompressed
                 ? null
                 : () async {
+                    final prefs = await SharedPreferences.getInstance();
                     var latestDB = SyncManager.getLatestDB().getDateTime();
-                    var lastDB = (await SharedPreferences.getInstance())
-                        .getString('databasesync');
+                    var lastDB = prefs.getString('databasesync');
 
                     if (lastDB != null &&
                         latestDB.difference(DateTime.parse(lastDB)).inHours <
@@ -1295,9 +1295,9 @@ class _SettingsPageState extends State<SettingsPage>
             ),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
               // 32개 => 50mb/s
-              var tc = (await SharedPreferences.getInstance())
-                  .getInt('thread_count');
+              var tc = prefs.getInt('thread_count');
 
               TextEditingController text =
                   TextEditingController(text: tc.toString());
@@ -1353,8 +1353,7 @@ class _SettingsPageState extends State<SettingsPage>
                 (await IsolateDownloader.getInstance())
                     .changeThreadCount(int.parse(text.text));
 
-                await (await SharedPreferences.getInstance())
-                    .setInt('thread_count', int.parse(text.text));
+                await prefs.setInt('thread_count', int.parse(text.text));
 
                 flutterToast.showToast(
                   child: ToastWrapper(
@@ -1576,8 +1575,8 @@ class _SettingsPageState extends State<SettingsPage>
                   Translations.of(context).trans('restorebookmarkmsg'),
                   Translations.of(context).trans('warning'));
 
-              var myappid = (await SharedPreferences.getInstance())
-                  .getString('fa_userid');
+              final prefs = await SharedPreferences.getInstance();
+              var myappid = prefs.getString('fa_userid');
 
               // 1. 북마크 유저 아이디 선택
               TextEditingController text = TextEditingController(text: myappid);
@@ -1804,8 +1803,8 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
-              var ehc = (await SharedPreferences.getInstance())
-                  .getString('eh_cookies');
+              final prefs = await SharedPreferences.getInstance();
+              var ehc = prefs.getString('eh_cookies');
 
               if (ehc == null || ehc == '') {
                 flutterToast.showToast(
@@ -2039,12 +2038,12 @@ class _SettingsPageState extends State<SettingsPage>
 
               if (dialog == null) return;
 
+              final prefs = await SharedPreferences.getInstance();
               if (dialog == 1) {
                 var result = await Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => const LoginScreen()));
 
-                await (await SharedPreferences.getInstance())
-                    .setString('eh_cookies', result);
+                await prefs.setString('eh_cookies', result);
 
                 if (result != null) {
                   flutterToast.showToast(
@@ -2057,8 +2056,7 @@ class _SettingsPageState extends State<SettingsPage>
                   );
                 }
               } else if (dialog == 2) {
-                var cookie = (await SharedPreferences.getInstance())
-                    .getString('eh_cookies');
+                var cookie = prefs.getString('eh_cookies');
 
                 var iController = TextEditingController(
                     text:
@@ -2126,14 +2124,13 @@ class _SettingsPageState extends State<SettingsPage>
                 if (dialog != null && dialog == true) {
                   var ck =
                       'igneous=${iController.text};ipb_member_id=${imiController.text};ipb_pass_hash=${iphController.text};';
-                  await (await SharedPreferences.getInstance())
-                      .setString('eh_cookies', ck);
+                  await prefs.setString('eh_cookies', ck);
                 }
               }
 
               Settings.searchRule =
                   'ExHentai|EHentai|Hitomi|NHentai|Hisoki'.split('|');
-              await (await SharedPreferences.getInstance()).setString(
+              await prefs.setString(
                   'searchrule', 'ExHentai|EHentai|Hitomi|NHentai|Hisoki');
             },
           ),

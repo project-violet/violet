@@ -73,13 +73,15 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FlutterError.onError = recordFlutterError;
 
-  var analytics = FirebaseAnalytics.instance;
-  var id = (await SharedPreferences.getInstance()).getString('fa_userid');
+  final prefs = await SharedPreferences.getInstance();
+  var id = prefs.getString('fa_userid');
   if (id == null) {
     var ii = sha1.convert(utf8.encode(DateTime.now().toString()));
     id = ii.toString();
-    (await SharedPreferences.getInstance()).setString('fa_userid', id);
+    prefs.setString('fa_userid', id);
   }
+
+  var analytics = FirebaseAnalytics.instance;
   await analytics.setUserId(id: id);
 
   await Settings.initFirst();

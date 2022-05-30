@@ -84,14 +84,15 @@ class IsolateDownloader {
   }
 
   Future<void> _initThreadCount() async {
-    var tc = (await SharedPreferences.getInstance()).getInt('thread_count');
+    final prefs = await SharedPreferences.getInstance();
+    var tc = prefs.getInt('thread_count');
     if (tc == null) {
       tc = 4;
-      await (await SharedPreferences.getInstance()).setInt('thread_count', 4);
+      await prefs.setInt('thread_count', 4);
     }
     if (tc > 128) {
       tc = 128;
-      await (await SharedPreferences.getInstance()).setInt('thread_count', 128);
+      await prefs.setInt('thread_count', 128);
     }
 
     _threadCount = tc;

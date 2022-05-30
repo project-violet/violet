@@ -41,8 +41,8 @@ class _UserStatusCardState extends State<UserStatusCard>
 
     // load boards
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-      _userAppId =
-          (await SharedPreferences.getInstance()).getString('fa_userid')!;
+      final prefs = await SharedPreferences.getInstance();
+      _userAppId = prefs.getString('fa_userid')!;
       setState(() {});
 
       // if (id != null && pw != null) {
@@ -67,13 +67,12 @@ class _UserStatusCardState extends State<UserStatusCard>
   }
 
   // Future<void> _trylogin() async {
-  //   var id =
-  //       (await SharedPreferences.getInstance()).getString('saved_community_id');
-  //   var pw =
-  //       (await SharedPreferences.getInstance()).getString('saved_community_pw');
+  //   final prefs = await SharedPreferences.getInstance();
+  //   var id = prefs.getString('saved_community_id');
+  //   var pw = prefs.getString('saved_community_pw');
 
   //   _userId = id != null ? id : 'None';
-  //   _userAppId = (await SharedPreferences.getInstance()).getString('fa_userid');
+  //   _userAppId = prefs.getString('fa_userid');
   //   setState(() {});
 
   //   if (id != null && pw != null) {

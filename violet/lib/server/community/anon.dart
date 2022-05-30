@@ -49,8 +49,10 @@ class VioletCommunityAnonymous {
 
   static String? _userAppId;
   static Future<String> _getUserAppId() async {
-    _userAppId ??=
-        (await SharedPreferences.getInstance()).getString('fa_userid');
+    if (_userAppId == null) {
+      final prefs = await SharedPreferences.getInstance();
+      _userAppId = prefs.getString('fa_userid');
+    }
     return _userAppId!;
   }
 
