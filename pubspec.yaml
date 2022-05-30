@@ -93,7 +93,7 @@ dependencies:
   fluttertoast: ^8.0.9
   freezed_annotation:
   get: ^4.1.4
-  gradient_widgets:
+  gradient_widgets: ^0.6.0
   html: ^0.15.0
   html_unescape: ^2.0.0
   http:
