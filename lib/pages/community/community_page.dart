@@ -36,14 +36,12 @@ class _CommunityPageState extends State<CommunityPage>
 
     // load boards
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-      var id = (await SharedPreferences.getInstance())
-          .getString('saved_community_id');
-      var pw = (await SharedPreferences.getInstance())
-          .getString('saved_community_pw');
+      final prefs = await SharedPreferences.getInstance();
+      var id = prefs.getString('saved_community_id');
+      var pw = prefs.getString('saved_community_pw');
 
       _userId = id ?? 'None';
-      _userAppId =
-          (await SharedPreferences.getInstance()).getString('fa_userid')!;
+      _userAppId = prefs.getString('fa_userid')!;
       setState(() {});
 
       if (id != null && pw != null) {
@@ -68,14 +66,12 @@ class _CommunityPageState extends State<CommunityPage>
   }
 
   Future<void> _trylogin() async {
-    var id =
-        (await SharedPreferences.getInstance()).getString('saved_community_id');
-    var pw =
-        (await SharedPreferences.getInstance()).getString('saved_community_pw');
+    final prefs = await SharedPreferences.getInstance();
+    var id = prefs.getString('saved_community_id');
+    var pw = prefs.getString('saved_community_pw');
 
     _userId = id ?? 'None';
-    _userAppId =
-        (await SharedPreferences.getInstance()).getString('fa_userid')!;
+    _userAppId = prefs.getString('fa_userid')!;
     setState(() {});
 
     if (id != null && pw != null) {
@@ -280,10 +276,9 @@ class _CommunityPageState extends State<CommunityPage>
                               }
                             }
 
-                            await (await SharedPreferences.getInstance())
-                                .setString('saved_community_id', id);
-                            await (await SharedPreferences.getInstance())
-                                .setString('saved_community_pw', pw);
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setString('saved_community_id', id);
+                            await prefs.setString('saved_community_pw', pw);
 
                             await _trylogin();
                             setState(() {});

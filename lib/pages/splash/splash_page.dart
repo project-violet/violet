@@ -165,10 +165,9 @@ class _SplashPageState extends State<SplashPage> {
   };
 
   Future<void> checkAuth() async {
-    if ((await SharedPreferences.getInstance()).getBool('checkauthalready') ==
-        null) {
-      await (await SharedPreferences.getInstance())
-          .setBool('checkauthalready', true);
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('checkauthalready') == null) {
+      await prefs.setBool('checkauthalready', true);
       if (await Permission.storage.request() == PermissionStatus.denied) {
         await showOkDialog(context, '파일 권한을 허용하지 않으면 다운로드 기능을 이용할 수 없습니다.');
       }
@@ -235,8 +234,8 @@ class _SplashPageState extends State<SplashPage> {
     //     await Logger.exportLog();
     //   } catch (_) {}
 
-    if ((await SharedPreferences.getInstance()).getInt('db_exists') == 1 &&
-        !widget.switching) {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getInt('db_exists') == 1 && !widget.switching) {
       if (connectivityResult != ConnectivityResult.none) {
         try {
           _changeMessage('check sync...');
