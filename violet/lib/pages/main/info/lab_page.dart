@@ -113,8 +113,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .then((value) => value.getUserLog());
                   var articleCount = <String, int>{};
                   userLog.forEach((element) {
-                    if (!articleCount.containsKey(element.articleId()))
+                    if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
+                    }
                     articleCount[element.articleId()] =
                         articleCount[element.articleId()]! + 1;
                   });
@@ -151,8 +152,9 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                       .then((value) => value.getUserLog());
                   var articleCount = <String, int>{};
                   userLog.forEach((element) {
-                    if (!articleCount.containsKey(element.articleId()))
+                    if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
+                    }
                   });
                   var ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));

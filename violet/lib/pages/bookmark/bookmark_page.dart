@@ -49,12 +49,13 @@ class _BookmarkPageState extends State<BookmarkPage>
       body: FutureBuilder(
         future: Bookmark.getInstance().then((value) => value.getGroup()),
         builder: (context, AsyncSnapshot<List<BookmarkGroup>> snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Container(
               child: const Center(
                 child: Text('Loading ...'),
               ),
             );
+          }
           void _onReorder(int oldIndex, int newIndex) async {
             if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
               fToast.showToast(
@@ -311,13 +312,13 @@ class _BookmarkPageState extends State<BookmarkPage>
                       },
                       onLongPress: () async {
                         if (index == -1 ||
-                            (oname == 'violet_default' && index == 0))
+                            (oname == 'violet_default' && index == 0)) {
                           await showOkDialog(
                               context,
                               Translations.of(context)
                                   .trans('cannotmodifydefaultgroup'),
                               Translations.of(context).trans('bookmark'));
-                        else {
+                        } else {
                           var rr = await showDialog(
                             context: context,
                             builder: (BuildContext context) => GroupModifyPage(

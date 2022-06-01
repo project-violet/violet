@@ -333,15 +333,18 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (['female', 'male'].contains(split[0]))
+          if (['female', 'male'].contains(split[0])) {
             tag = '${split[0]}:${split[1]}';
-          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+          }
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr) {
             succ = isOr;
+          }
         }
 
         // If Multitag
-        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+        else if ((element.result[dbColumn] as String == split[1]) == isOr) {
           succ = isOr;
+        }
       });
       if (succ) result.add(element);
     });
@@ -349,8 +352,9 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
     filterResult = result;
     isFilterUsed = true;
 
-    if (_filterController.isPopulationSort)
+    if (_filterController.isPopulationSort) {
       Population.sortByPopulation(filterResult);
+    }
   }
 
   static String prefix2Tag(String prefix) {

@@ -138,16 +138,18 @@ void main() async {
             if (Settings.language != null) {
               if (Settings.language!.contains('_')) {
                 var ss = Settings.language!.split('_');
-                if (ss.length == 2)
+                if (ss.length == 2) {
                   return Locale.fromSubtags(
                       languageCode: ss[0], scriptCode: ss[1]);
-                else
+                } else {
                   return Locale.fromSubtags(
                       languageCode: ss[0],
                       scriptCode: ss[1],
                       countryCode: ss[2]);
-              } else
+                }
+              } else {
                 return Locale(Settings.language!);
+              }
             }
 
             if (locale == null) {
@@ -170,8 +172,9 @@ void main() async {
             }
 
             debugPrint('*language to fallback ${supportedLocales.first}');
-            if (Settings.language == null)
+            if (Settings.language == null) {
               Settings.setLanguage(supportedLocales.first.languageCode);
+            }
             return supportedLocales.first;
           },
         );

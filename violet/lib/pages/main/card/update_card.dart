@@ -45,10 +45,11 @@ class _UpdateCardState extends State<UpdateCard> with TickerProviderStateMixin {
               style: settingsItemStyle(pressed),
               gesture: Gestures()
                 ..isTap((isTapped) {
-                  if (isTapped)
+                  if (isTapped) {
                     rotationController.forward(from: 0.0);
-                  else
+                  } else {
                     rotationController.reverse(from: 0.7);
+                  }
                   setState(() => pressed = isTapped);
                   controller!.forward(from: 0.0);
                   Future.delayed(const Duration(milliseconds: 200),

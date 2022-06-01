@@ -329,8 +329,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               Expanded(
                 child: TypeAheadField(
                   suggestionsCallback: (pattern) async {
-                    if (autocompleteTarget == null)
+                    if (autocompleteTarget == null) {
                       return <Tuple3<String, String, int>>[];
+                    }
 
                     var ppattern = TagTranslate.disassembly(pattern);
 

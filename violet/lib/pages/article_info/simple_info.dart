@@ -125,9 +125,9 @@ class SimpleInfoWidget extends StatelessWidget {
         ),
         onTap: () async {
           await data.setIsBookmarked(!data.isBookmarked);
-          if (!data.isBookmarked)
+          if (!data.isBookmarked) {
             _flareController.play('Unlike');
-          else {
+          } else {
             _flareController.play('Like');
           }
         },

@@ -70,8 +70,9 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
                   if (await showYesNoDialog(
                       context,
                       Translations.of(context).trans('deletegroupmsg'),
-                      Translations.of(context).trans('bookmark')))
+                      Translations.of(context).trans('bookmark'))) {
                     Navigator.pop(context, [2]);
+                  }
                 },
               ),
               const Spacer(),

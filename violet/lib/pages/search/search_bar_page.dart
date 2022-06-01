@@ -286,11 +286,12 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchAutoCompletePanel() {
-    if (_searchLists.isEmpty || _nothing)
+    if (_searchLists.isEmpty || _nothing) {
       return Center(
           child: Text(_nothing
               ? Translations.of(context).trans('nosearchresult')
               : Translations.of(context).trans('inputsearchtoken')));
+    }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       physics: const BouncingScrollPhysics(),
@@ -305,9 +306,10 @@ class _SearchBarPageState extends State<SearchBarPage>
   }
 
   _searchRelatedPanel() {
-    if (_relatedLists.isEmpty)
+    if (_relatedLists.isEmpty) {
       return Center(
           child: Text(Translations.of(context).trans('nosearchresult')));
+    }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       physics: const BouncingScrollPhysics(),
@@ -586,7 +588,7 @@ class _SearchBarPageState extends State<SearchBarPage>
           padding: EdgeInsets.zero,
           itemExtent: 50.0,
           itemBuilder: (context, index) {
-            if (index == 0)
+            if (index == 0) {
               return Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -595,6 +597,7 @@ class _SearchBarPageState extends State<SearchBarPage>
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               );
+            }
             return InkWell(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -643,11 +646,12 @@ class _SearchBarPageState extends State<SearchBarPage>
     }
 
     int pos = selection.base.offset - 1;
-    for (; pos > 0; pos--)
+    for (; pos > 0; pos--) {
       if (target[pos] == ' ') {
         pos++;
         break;
       }
+    }
 
     var last = target.indexOf(' ', pos);
     var token =
@@ -725,17 +729,19 @@ class _SearchBarPageState extends State<SearchBarPage>
 
     // Delete one token
     int fpos = selection.base.offset - 1;
-    for (; fpos < text.length; fpos++)
+    for (; fpos < text.length; fpos++) {
       if (text[fpos] == ' ') {
         break;
       }
+    }
 
     int pos = fpos - 1;
-    for (; pos > 0; pos--)
+    for (; pos > 0; pos--) {
       if (text[pos] == ' ') {
         pos++;
         break;
       }
+    }
 
     text = text.substring(0, pos) + text.substring(fpos);
     _searchController.text = text;
@@ -766,26 +772,31 @@ class _SearchBarPageState extends State<SearchBarPage>
     var count = '';
     Color color = Colors.grey;
 
-    if (Settings.searchTagTranslation || Settings.searchUseTranslated)
+    if (Settings.searchTagTranslation || Settings.searchUseTranslated) {
       tagDisplayed = info.item1.getTranslated();
+    }
 
-    if (info.item2 > 0 && Settings.searchShowCount)
+    if (info.item2 > 0 && Settings.searchShowCount) {
       count =
           ' (${info.item2.toString() + (related && info.item1.group == 'tag' ? '%' : '')})';
+    }
 
-    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:'))
+    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:')) {
       color = Colors.pink;
-    else if (info.item1.group == 'tag' && info.item1.name!.startsWith('male:'))
+    } else if (info.item1.group == 'tag' &&
+        info.item1.name!.startsWith('male:')) {
       color = Colors.blue;
-    else if (info.item1.group == 'prefix')
+    } else if (info.item1.group == 'prefix') {
       color = Colors.orange;
-    else if (info.item1.group == 'language')
+    } else if (info.item1.group == 'language') {
       color = Colors.teal;
-    else if (info.item1.group == 'series')
+    } else if (info.item1.group == 'series') {
       color = Colors.cyan;
-    else if (info.item1.group == 'artist' || info.item1.group == 'group')
+    } else if (info.item1.group == 'artist' || info.item1.group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    else if (info.item1.group == 'type') color = Colors.orange;
+    } else if (info.item1.group == 'type') {
+      color = Colors.orange;
+    }
 
     var ts = <TextSpan>[];
     var accColor = Colors.pink;

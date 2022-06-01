@@ -158,12 +158,14 @@ class _ViewerPageState extends State<ViewerPage>
     fToast = FToast();
     fToast.init(context);
 
-    if (!Settings.disableFullScreen)
+    if (!Settings.disableFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+    }
 
-    if (Settings.showRecordJumpMessage)
+    if (Settings.showRecordJumpMessage) {
       Future.delayed(const Duration(milliseconds: 100))
           .then((value) => _checkLatestRead());
+    }
 
     Future.delayed(const Duration(milliseconds: 100)).then((value) async =>
         _vIsBookmarked.value =
@@ -173,8 +175,9 @@ class _ViewerPageState extends State<ViewerPage>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     )..addListener(() {
-        if (_animation != null)
+        if (_animation != null) {
           _transformationController.value = _animation!.value;
+        }
       });
 
     _itemPositionsListener.itemPositions.addListener(() {
@@ -281,11 +284,12 @@ class _ViewerPageState extends State<ViewerPage>
     for (var i = 0; i < imageSizes.length; i++) {
       final sz = imageSizes[i];
 
-      if (sz != null)
+      if (sz != null) {
         _thumbImageStartPos[i + 1] =
             (_thumbHeight - 14.0) * sz.width / sz.height;
-      else
+      } else {
         _thumbImageStartPos[i + 1] = (_thumbHeight - 14.0) / 36 * 25;
+      }
 
       _thumbImageWidth[i] = _thumbImageStartPos[i + 1];
       _thumbImageStartPos[i + 1] += _thumbImageStartPos[i];
@@ -296,10 +300,11 @@ class _ViewerPageState extends State<ViewerPage>
   void dispose() {
     if (_nextPageTimer != null) _nextPageTimer!.cancel();
     PaintingBinding.instance.imageCache.clear();
-    if (_pageInfo.useWeb)
+    if (_pageInfo.useWeb) {
       _pageInfo.uris.forEach((element) async {
         await CachedNetworkImageProvider(element).evict();
       });
+    }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
       SystemUiOverlay.top,
       SystemUiOverlay.bottom,
@@ -661,10 +666,11 @@ class _ViewerPageState extends State<ViewerPage>
             );
 
             _vIsBookmarked.value = !_vIsBookmarked.value;
-            if (_vIsBookmarked.value)
+            if (_vIsBookmarked.value) {
               await (await Bookmark.getInstance()).bookmark(_pageInfo.id);
-            else
+            } else {
               await (await Bookmark.getInstance()).unbookmark(_pageInfo.id);
+            }
           },
         );
       },
@@ -683,10 +689,11 @@ class _ViewerPageState extends State<ViewerPage>
 
         final qr = search.item1[0];
 
-        if (!ProviderManager.isExists(qr.id()))
+        if (!ProviderManager.isExists(qr.id())) {
           await HentaiManager.getImageProvider(qr).then((value) async {
             ProviderManager.insert(qr.id(), value);
           });
+        }
 
         var prov = await ProviderManager.get(_pageInfo.id);
         var thumbnail = await prov.getThumbnailUrl();
@@ -1031,28 +1038,30 @@ class _ViewerPageState extends State<ViewerPage>
                 itemBuilder: (context, index) {
                   Widget? image;
                   if (!Settings.padding) {
-                    if (_pageInfo.useWeb)
+                    if (_pageInfo.useWeb) {
                       image = _networkImageItem(index);
-                    else if (_pageInfo.useFileSystem)
+                    } else if (_pageInfo.useFileSystem) {
                       image = _storageImageItem(index);
-                    else if (_pageInfo.useProvider)
+                    } else if (_pageInfo.useProvider) {
                       image = _providerImageItem(index);
+                    }
                   } else {
-                    if (_pageInfo.useWeb)
+                    if (_pageInfo.useWeb) {
                       image = Padding(
                         child: _networkImageItem(index),
                         padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                       );
-                    else if (_pageInfo.useFileSystem)
+                    } else if (_pageInfo.useFileSystem) {
                       image = Padding(
                         child: _storageImageItem(index),
                         padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                       );
-                    else if (_pageInfo.useProvider)
+                    } else if (_pageInfo.useProvider) {
                       image = Padding(
                         child: _providerImageItem(index),
                         padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
                       );
+                    }
                   }
 
                   if (image == null) throw Exception('Dead Reaching');
@@ -1114,12 +1123,14 @@ class _ViewerPageState extends State<ViewerPage>
               _prevPage = page.toInt() + 1;
               _vPrevPage.value = page.toInt() + 1;
               if (_pageInfo.useProvider) {
-                if (page.toInt() - 2 >= 0)
+                if (page.toInt() - 2 >= 0) {
                   CachedNetworkImage.evictFromCache(
                       _urlCache![page.toInt() - 2]!);
-                if (page.toInt() + 2 < _pageInfo.uris.length)
+                }
+                if (page.toInt() + 2 < _pageInfo.uris.length) {
                   CachedNetworkImage.evictFromCache(
                       _urlCache![page.toInt() + 2]!);
+                }
               }
               await _precache(page.toInt() - 1);
               await _precache(page.toInt() + 1);
@@ -1202,7 +1213,7 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   PhotoViewGalleryPageOptions _buildItem(BuildContext context, int index) {
-    if (_pageInfo.useWeb)
+    if (_pageInfo.useWeb) {
       return PhotoViewGalleryPageOptions(
         imageProvider: CachedNetworkImageProvider(
           _pageInfo.uris[index],
@@ -1216,7 +1227,7 @@ class _ViewerPageState extends State<ViewerPage>
         minScale: PhotoViewComputedScale.contained * 1.0,
         maxScale: PhotoViewComputedScale.contained * 5.0,
       );
-    else if (_pageInfo.useFileSystem) {
+    } else if (_pageInfo.useFileSystem) {
       return PhotoViewGalleryPageOptions(
         imageProvider: FileImage(File(_pageInfo.uris[index])),
         filterQuality: SettingsWrapper.imageQuality,
@@ -1569,8 +1580,9 @@ class _ViewerPageState extends State<ViewerPage>
                       .currentContext!
                       .findRenderObject()! as RenderBox;
                   final sizeRender = renderBoxRed.size;
-                  if (sizeRender.height != 300)
+                  if (sizeRender.height != 300) {
                     _height![index] = width / sizeRender.aspectRatio;
+                  }
                   _isImageLoaded[index] = true;
                 } catch (_) {}
               }
@@ -1599,10 +1611,11 @@ class _ViewerPageState extends State<ViewerPage>
 
     Future<dynamic> future;
 
-    if (_height![index] == 0)
+    if (_height![index] == 0) {
       future = Future.delayed(const Duration(milliseconds: 300));
-    else
+    } else {
       future = Future.value(0);
+    }
 
     return FutureBuilder(
       // to avoid loading all images when fast scrolling
@@ -1671,10 +1684,11 @@ class _ViewerPageState extends State<ViewerPage>
 
     Future<dynamic> future;
 
-    if (_height![index] == 0)
+    if (_height![index] == 0) {
       future = Future.delayed(const Duration(milliseconds: 300));
-    else
+    } else {
       future = Future.value(0);
+    }
 
     return FutureBuilder(
       // to avoid loading all images when fast scrolling
@@ -1752,8 +1766,9 @@ class _ViewerPageState extends State<ViewerPage>
                                   .toDouble();
                         }
                         _isImageLoaded[index] = true;
-                        if (_latestIndex >= index && !_onScroll)
+                        if (_latestIndex >= index && !_onScroll) {
                           _patchHeightForDynamicLoadedImage();
+                        }
                       } catch (_) {}
                     });
                   }
@@ -1881,20 +1896,22 @@ class _ViewerPageState extends State<ViewerPage>
               Future.delayed(const Duration(milliseconds: 300)).then((value) {
                 _sliderOnChange = false;
               });
-              if (!Settings.isHorizontal && _pageInfo.useFileSystem)
+              if (!Settings.isHorizontal && _pageInfo.useFileSystem) {
                 _itemScrollController.scrollTo(
                   index: value.toInt() - 1,
                   duration: const Duration(microseconds: 1),
                   alignment: 0.12,
                 );
+              }
             },
             onChanged: (value) {
               if (!Settings.isHorizontal) {
-                if (!_pageInfo.useFileSystem)
+                if (!_pageInfo.useFileSystem) {
                   _itemScrollController.jumpTo(
                     index: value.toInt() - 1,
                     alignment: 0.12,
                   );
+                }
               } else {
                 _pageController.jumpToPage(value.toInt() - 1);
               }
@@ -1940,9 +1957,10 @@ class _ViewerPageState extends State<ViewerPage>
       icon: const Icon(Icons.keyboard_arrow_up),
       onPressed: () async {
         _isThumbMode = !_isThumbMode;
-        if (_isThumbMode)
+        if (_isThumbMode) {
           Future.delayed(const Duration(milliseconds: 10))
               .then((value) => _thumbAnimateTo(_prevPage - 1));
+        }
         await Settings.setEnableThumbSlider(_isThumbMode);
         setState(() {});
       },
@@ -2333,10 +2351,11 @@ class __FileImageState extends State<_FileImage> {
   void initState() {
     super.initState();
 
-    if (widget.cachedHeight != null && widget.cachedHeight! > 0)
+    if (widget.cachedHeight != null && widget.cachedHeight! > 0) {
       _height = widget.cachedHeight!;
-    else
+    } else {
       _height = 300;
+    }
   }
 
   @override
@@ -2358,8 +2377,9 @@ class __FileImageState extends State<_FileImage> {
           ? (MediaQuery.of(context).size.width * 1.5).toInt()
           : null,
       loadStateChanged: (ExtendedImageState state) {
-        if (widget.cachedHeight != null && widget.cachedHeight! > 0)
+        if (widget.cachedHeight != null && widget.cachedHeight! > 0) {
           return state.completedWidget;
+        }
 
         final ImageInfo? imageInfo = state.extendedImageInfo;
         if ((state.extendedImageLoadState == LoadState.completed ||
@@ -2368,8 +2388,9 @@ class __FileImageState extends State<_FileImage> {
           _loaded = true;
           Future.delayed(const Duration(milliseconds: 100)).then((value) {
             final aspectRatio = imageInfo!.image.width / imageInfo.image.height;
-            if (widget.heightCallback != null)
+            if (widget.heightCallback != null) {
               widget.heightCallback!(width / aspectRatio);
+            }
             setState(() {
               _height = width / aspectRatio;
             });

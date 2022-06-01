@@ -96,11 +96,12 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
     if (qr as String == '') return;
-    for (var tag in (qr as String).split('|'))
+    for (var tag in (qr as String).split('|')) {
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
         map[tag] = map[tag]! + 1;
       }
+    }
   }
 
   void insertSingle(Map<String, int> map, dynamic qr) {
@@ -164,82 +165,104 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.tags() == null) continue;
 
         if (item.artists() != null) {
-          for (var artist in item.artists().split('|'))
-            if (artist != '') if (!tagArtist.containsKey(artist))
-              tagArtist[artist] = <String, int>{};
+          for (var artist in item.artists().split('|')) {
+            if (artist != '') {
+              if (!tagArtist.containsKey(artist)) {
+                tagArtist[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.artists().split('|')) {
               if (artist == '') continue;
-              if (!tagArtist[artist]!.containsKey(index))
+              if (!tagArtist[artist]!.containsKey(index)) {
                 tagArtist[artist]![index] = 0;
+              }
               tagArtist[artist]![index] = tagArtist[artist]![index]! + 1;
             }
           }
         }
 
         if (item.groups() != null) {
-          for (var artist in item.groups().split('|'))
-            if (artist != '') if (!tagGroup.containsKey(artist))
-              tagGroup[artist] = <String, int>{};
+          for (var artist in item.groups().split('|')) {
+            if (artist != '') {
+              if (!tagGroup.containsKey(artist)) {
+                tagGroup[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.groups().split('|')) {
               if (artist == '') continue;
-              if (!tagGroup[artist]!.containsKey(index))
+              if (!tagGroup[artist]!.containsKey(index)) {
                 tagGroup[artist]![index] = 0;
+              }
               tagGroup[artist]![index] = tagGroup[artist]![index]! + 1;
             }
           }
         }
 
         if (item.uploader() != null) {
-          if (!tagUploader.containsKey(item.uploader()))
+          if (!tagUploader.containsKey(item.uploader())) {
             tagUploader[item.uploader()] = <String, int>{};
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
-            if (!tagUploader[item.uploader()]!.containsKey(index))
+            if (!tagUploader[item.uploader()]!.containsKey(index)) {
               tagUploader[item.uploader()]![index] = 0;
+            }
             tagUploader[item.uploader()]![index] =
                 tagGroup[item.uploader()]![index]! + 1;
           }
         }
 
         if (item.series() != null) {
-          for (var artist in item.series().split('|'))
-            if (artist != '') if (!tagSeries.containsKey(artist))
-              tagSeries[artist] = <String, int>{};
+          for (var artist in item.series().split('|')) {
+            if (artist != '') {
+              if (!tagSeries.containsKey(artist)) {
+                tagSeries[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.series().split('|')) {
               if (artist == '') continue;
-              if (!tagSeries[artist]!.containsKey(index))
+              if (!tagSeries[artist]!.containsKey(index)) {
                 tagSeries[artist]![index] = 0;
+              }
               tagSeries[artist]![index] = tagSeries[artist]![index]! + 1;
             }
           }
         }
 
         if (item.characters() != null) {
-          for (var artist in item.characters().split('|'))
-            if (artist != '') if (!tagCharacter.containsKey(artist))
-              tagCharacter[artist] = <String, int>{};
+          for (var artist in item.characters().split('|')) {
+            if (artist != '') {
+              if (!tagCharacter.containsKey(artist)) {
+                tagCharacter[artist] = <String, int>{};
+              }
+            }
+          }
           for (var tag in item.tags().split('|')) {
             if (tag == null || tag == '') continue;
             if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
             var index = tagIndex[tag].toString();
             for (var artist in item.characters().split('|')) {
               if (artist == '') continue;
-              if (!tagCharacter[artist]!.containsKey(index))
+              if (!tagCharacter[artist]!.containsKey(index)) {
                 tagCharacter[artist]![index] = 0;
+              }
               tagCharacter[artist]![index] = tagCharacter[artist]![index]! + 1;
             }
           }
@@ -248,12 +271,14 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.series() != null && item.characters() != null) {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
-            if (!characterSeries.containsKey(series))
+            if (!characterSeries.containsKey(series)) {
               characterSeries[series] = <String, int>{};
+            }
             for (var character in item.characters().split('|')) {
               if (character == '') continue;
-              if (!characterSeries[series]!.containsKey(character))
+              if (!characterSeries[series]!.containsKey(character)) {
                 characterSeries[series]![character] = 0;
+              }
               characterSeries[series]![character] =
                   characterSeries[series]![character]! + 1;
             }
@@ -261,12 +286,14 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
           for (var character in item.characters().split('|')) {
             if (character == '') continue;
-            if (!seriesCharacter.containsKey(character))
+            if (!seriesCharacter.containsKey(character)) {
               seriesCharacter[character] = <String, int>{};
+            }
             for (var series in item.series().split('|')) {
               if (series == '') continue;
-              if (!seriesCharacter[character]!.containsKey(series))
+              if (!seriesCharacter[character]!.containsKey(series)) {
                 seriesCharacter[character]![series] = 0;
+              }
               seriesCharacter[character]![series] =
                   seriesCharacter[character]![series]! + 1;
             }
@@ -276,12 +303,14 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.series() != null) {
           for (var series in item.series().split('|')) {
             if (series == '') continue;
-            if (!seriesSeries.containsKey(series))
+            if (!seriesSeries.containsKey(series)) {
               seriesSeries[series] = <String, int>{};
+            }
             for (var series2 in item.series().split('|')) {
               if (series2 == '' || series == series2) continue;
-              if (!seriesSeries[series]!.containsKey(series2))
+              if (!seriesSeries[series]!.containsKey(series2)) {
                 seriesSeries[series]![series2] = 0;
+              }
               seriesSeries[series]![series2] =
                   seriesSeries[series]![series2]! + 1;
             }
@@ -291,12 +320,14 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
         if (item.characters() != null) {
           for (var character in item.characters().split('|')) {
             if (character == '') continue;
-            if (!characterCharacter.containsKey(character))
+            if (!characterCharacter.containsKey(character)) {
               characterCharacter[character] = <String, int>{};
+            }
             for (var character2 in item.characters().split('|')) {
               if (character2 == '' || character == character2) continue;
-              if (!characterCharacter[character]!.containsKey(character2))
+              if (!characterCharacter[character]!.containsKey(character2)) {
                 characterCharacter[character]![character2] = 0;
+              }
               characterCharacter[character]![character2] =
                   characterCharacter[character]![character2]! + 1;
             }
