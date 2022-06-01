@@ -127,7 +127,9 @@ class EHParser {
 
     var result = <String>[];
     var prefix = url[0].split('?p=')[0];
-    for (int i = 0; i <= max; i++) result.add('$prefix?p=$i');
+    for (int i = 0; i <= max; i++) {
+      result.add('$prefix?p=$i');
+    }
     return result;
   }
 
@@ -366,9 +368,10 @@ class EHParser {
       article.type =
           element.querySelector('td > div')!.text.trim().toLowerCase();
       article.thumbnail = element.querySelector('img')!.attributes['src'];
-      if (article.thumbnail!.startsWith('data'))
+      if (article.thumbnail!.startsWith('data')) {
         article.thumbnail =
             element.querySelector('img')!.attributes['data-src'];
+      }
       article.published = element
           .querySelectorAll('td')[1]
           .querySelectorAll('div')[1]

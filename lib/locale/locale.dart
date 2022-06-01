@@ -17,10 +17,11 @@ class Translations {
 
   static Translations of(BuildContext context) {
     var trans = Localizations.of<Translations>(context, Translations);
-    if (trans != null)
+    if (trans != null) {
       return Localizations.of<Translations>(context, Translations)!;
-    else
+    } else {
       return instance!;
+    }
   }
 
   late Map<String, String> _sentences;
@@ -32,8 +33,9 @@ class Translations {
       code = locale.languageCode;
       dbLanguageCode = code;
       if (!code.contains('_')) {
-        if (locale.scriptCode != null && locale.scriptCode != '')
+        if (locale.scriptCode != null && locale.scriptCode != '') {
           code += '_${locale.scriptCode!}';
+        }
       }
     } else if (code.contains('_')) {
       dbLanguageCode = code.split('_')[0];

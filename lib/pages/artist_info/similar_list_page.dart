@@ -45,16 +45,20 @@ class SimilarListPage extends StatelessWidget {
     var y = [x[0]];
 
     var titles = [unescape.convert((x[0].title() as String).trim())];
-    if (titles[0].contains('Ch.'))
+    if (titles[0].contains('Ch.')) {
       titles[0] = titles[0].split('Ch.')[0];
-    else if (titles[0].contains('ch.')) titles[0] = titles[0].split('ch.')[0];
+    } else if (titles[0].contains('ch.')) {
+      titles[0] = titles[0].split('ch.')[0];
+    }
 
     for (int i = 1; i < x.length; i++) {
       var skip = false;
       var ff = unescape.convert((x[i].title() as String).trim());
-      if (ff.contains('Ch.'))
+      if (ff.contains('Ch.')) {
         ff = ff.split('Ch.')[0];
-      else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
+      } else if (ff.contains('ch.')) {
+        ff = ff.split('ch.')[0];
+      }
       for (int j = 0; j < titles.length; j++) {
         var tt = titles[j];
         if (Distance.levenshteinDistanceComparable(
@@ -89,19 +93,22 @@ class SimilarListPage extends StatelessWidget {
               future: _future(e.item1),
               builder: (BuildContext context,
                   AsyncSnapshot<List<QueryResult>> snapshot) {
-                if (!snapshot.hasData)
+                if (!snapshot.hasData) {
                   return Container(
                     height: 195,
                   );
+                }
 
                 var type = 'artist';
-                if (isGroup)
+                if (isGroup) {
                   type = 'group';
-                else if (isUploader)
+                } else if (isUploader) {
                   type = 'uploader';
-                else if (isSeries)
+                } else if (isSeries) {
                   type = 'series';
-                else if (isCharacter) type = 'character';
+                } else if (isCharacter) {
+                  type = 'character';
+                }
 
                 return ThreeArticlePanel(
                   tappedRoute: () => ArtistInfoPage(

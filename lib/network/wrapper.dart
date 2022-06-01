@@ -21,8 +21,9 @@ class HttpWrapper {
 
 Future<http.Response> get(String url, {Map<String, String>? headers}) async {
   if (url.contains('exhentai.org')) {
-    if (HttpWrapper.cacheResponse.containsKey(url))
+    if (HttpWrapper.cacheResponse.containsKey(url)) {
       return HttpWrapper.cacheResponse[url]!;
+    }
     await HttpWrapper.throttlerExHentai.acquire();
     if (HttpWrapper.cacheResponse.containsKey(url)) {
       HttpWrapper.throttlerExHentai.release();
@@ -53,14 +54,17 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
         Logger.warning('[Http Response] CODE: ${res.statusCode}, GET: $url');
       }
       Logger.info('[Http Request] GETS: $url');
-      if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200)
+      if (!HttpWrapper.cacheResponse.containsKey(url) &&
+          res.statusCode == 200) {
         HttpWrapper.cacheResponse[url] = res;
+      }
       HttpWrapper.throttlerExHentai.release();
       return res;
     }
   } else if (url.contains('e-hentai.org')) {
-    if (HttpWrapper.cacheResponse.containsKey(url))
+    if (HttpWrapper.cacheResponse.containsKey(url)) {
       return HttpWrapper.cacheResponse[url]!;
+    }
     await HttpWrapper.throttlerEHentai.acquire();
     if (HttpWrapper.cacheResponse.containsKey(url)) {
       HttpWrapper.throttlerEHentai.release();
@@ -92,8 +96,10 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
         Logger.warning('[Http Response] CODE: ${res.statusCode}, GET: $url');
       }
       Logger.info('[Http Request] GETS: $url');
-      if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200)
+      if (!HttpWrapper.cacheResponse.containsKey(url) &&
+          res.statusCode == 200) {
         HttpWrapper.cacheResponse[url] = res;
+      }
       HttpWrapper.throttlerEHentai.release();
       return res;
     }
@@ -108,8 +114,9 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
     if (res.statusCode != 200) {
       Logger.warning('[Http Response] CODE: ${res.statusCode}, GET: $url');
     }
-    if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200)
+    if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200) {
       HttpWrapper.cacheResponse[url] = res;
+    }
     return res;
   } else {
     Logger.info('[Http Request] GET: $url');

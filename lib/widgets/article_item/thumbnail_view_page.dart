@@ -118,8 +118,9 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
           latest = scale;
           if (scale < 0.6) Navigator.pop(context);
         } else if (tapCount != 2 ||
-            (detail.localPosition.dy - dragStart).abs() > 70)
+            (detail.localPosition.dy - dragStart).abs() > 70) {
           Navigator.pop(context);
+        }
       },
       onTapDown: (detail) {
         tapCount++;

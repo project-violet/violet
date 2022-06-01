@@ -128,10 +128,11 @@ class Settings {
 
   static Future<void> _setSecureMode() async {
     if (Platform.isAndroid) {
-      if (Settings.useSecureMode)
+      if (Settings.useSecureMode) {
         await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-      else
+      } else {
         await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+      }
     }
   }
 
@@ -149,11 +150,13 @@ class Settings {
     if (includetags == null) {
       var language = 'lang:english';
       var langcode = Platform.localeName.split('_')[0];
-      if (langcode == 'ko')
+      if (langcode == 'ko') {
         language = 'lang:korean';
-      else if (langcode == 'ja')
+      } else if (langcode == 'ja') {
         language = 'lang:japanese';
-      else if (langcode == 'zh') language = 'lang:chinese';
+      } else if (langcode == 'zh') {
+        language = 'lang:chinese';
+      }
       includetags = '($language)';
       await prefs.setString('includetags', includetags);
     }
@@ -263,12 +266,14 @@ class Settings {
             for (var download in downloaded) {
               Map<String, dynamic> result =
                   Map<String, dynamic>.from(download.result);
-              if (download.files() != null)
+              if (download.files() != null) {
                 result['Files'] =
                     download.files()!.replaceAll('/Violet/', '/.violet/');
-              if (download.path() != null)
+              }
+              if (download.path() != null) {
                 result['Path'] =
                     download.path()!.replaceAll('/Violet/', '/.violet/');
+              }
               download.result = result;
               await download.update();
             }
@@ -327,10 +332,12 @@ class Settings {
   static Future regacy1_20_2() async {
     if (await _checkLegacyExists('regacy1_20_2')) return;
 
-    if (!simpleItemWidgetLoadingIcon)
+    if (!simpleItemWidgetLoadingIcon) {
       await setSimpleItemWidgetLoadingIcon(true);
-    if (!showNewViewerWhenArtistArticleListItemTap)
+    }
+    if (!showNewViewerWhenArtistArticleListItemTap) {
       await setShowNewViewerWhenArtistArticleListItemTap(true);
+    }
   }
 
   static Future<bool> _checkLegacyExists(String name) async {
@@ -404,10 +411,11 @@ class Settings {
 
   static Future<void> setThemeWhat(bool wh) async {
     themeWhat = wh;
-    if (!themeWhat)
+    if (!themeWhat) {
       themeColor = Colors.white;
-    else
+    } else {
       themeColor = Colors.black;
+    }
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('themeColor', themeWhat);
@@ -435,20 +443,23 @@ class Settings {
     majorColor = color;
 
     Color? accent;
-    for (int i = 0; i < Colors.primaries.length - 2; i++)
+    for (int i = 0; i < Colors.primaries.length - 2; i++) {
       if (color.value == Colors.primaries[i].value) {
         accent = Colors.accents[i];
         break;
       }
+    }
 
     if (accent == null) {
-      if (color == Colors.grey)
+      if (color == Colors.grey) {
         accent = Colors.grey.shade700;
-      else if (color == Colors.brown)
+      } else if (color == Colors.brown) {
         accent = Colors.brown.shade700;
-      else if (color == Colors.blueGrey)
+      } else if (color == Colors.blueGrey) {
         accent = Colors.blueGrey.shade700;
-      else if (color == Colors.black) accent = Colors.black;
+      } else if (color == Colors.black) {
+        accent = Colors.black;
+      }
     }
 
     await prefs.setInt('majorAccentColor', accent!.value);

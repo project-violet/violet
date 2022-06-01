@@ -47,19 +47,21 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
                 widget.version!,
               ),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Container(
               child: const Center(
                 child: Text('Loading ...'),
               ),
             );
+          }
 
-          if (snapshot.data == null)
+          if (snapshot.data == null) {
             return Container(
               child: const Center(
                 child: Text('Error Occured!'),
               ),
             );
+          }
 
           articles = (snapshot.data['article'] as List<dynamic>)
               .map((x) => BookmarkArticle(result: x))

@@ -206,20 +206,23 @@ class IsolateDownloader {
   void _progressTask(IsolateDownloaderProgressProtocolUnit unit) {
     if (!_tasks[unit.id]!.isSizeEnsued) {
       _tasks[unit.id]!.isSizeEnsued = true;
-      if (_tasks[unit.id]!.sizeCallback != null)
+      if (_tasks[unit.id]!.sizeCallback != null) {
         _tasks[unit.id]!.sizeCallback!(unit.totalSize.toDouble());
+      }
     }
-    if (_tasks[unit.id]!.downloadCallback != null)
+    if (_tasks[unit.id]!.downloadCallback != null) {
       _tasks[unit.id]!.downloadCallback!(
           (unit.countSize - _tasks[unit.id]!.accDownloadSize).toDouble());
+    }
     _taskTotalSizes[unit.id] = unit.totalSize;
     _taskCountSizes[unit.id] = unit.countSize;
     _tasks[unit.id]!.accDownloadSize = unit.countSize;
   }
 
   void _completeTask(int taskId) {
-    if (_tasks[taskId]!.completeCallback != null)
+    if (_tasks[taskId]!.completeCallback != null) {
       _tasks[taskId]!.completeCallback!();
+    }
     _taskCountSizes.remove(taskId);
     _taskTotalSizes.remove(taskId);
     _completedTask.add(taskId);
@@ -227,8 +230,9 @@ class IsolateDownloader {
   }
 
   Future<void> _errorTask(IsolateDownloaderErrorUnit unit) async {
-    if (_tasks[unit.id]!.errorCallback != null)
+    if (_tasks[unit.id]!.errorCallback != null) {
       _tasks[unit.id]!.errorCallback!(unit.error);
+    }
     _erroredTask.add(unit.id);
     _errorContent[unit.id] = unit;
 

@@ -23,9 +23,10 @@ class TagTranslate {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       var file = File('/home/ubuntu/violet/assets/locale/tag/korean.json');
       data = await file.readAsString();
-    } else
+    } else {
       data = await rootBundle
           .loadString('assets/locale/tag/$defaultLanguage.json');
+    }
     Map<String, dynamic> result = json.decode(data);
 
     _translateMap = <String, String>{};
@@ -42,24 +43,30 @@ class TagTranslate {
   }
 
   static String of(String classification, String key) {
-    if (_translateMap.containsKey('$classification:$key'))
+    if (_translateMap.containsKey('$classification:$key')) {
       return _translateMap['$classification:$key']!.split('|').first;
+    }
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));
   }
 
   static String ofAny(String key) {
-    if (_translateMap.containsKey('series:$key'))
+    if (_translateMap.containsKey('series:$key')) {
       return _translateMap['series:$key']!.split('|').first;
-    if (_translateMap.containsKey('character:$key'))
+    }
+    if (_translateMap.containsKey('character:$key')) {
       return _translateMap['character:$key']!.split('|').first;
-    if (_translateMap.containsKey('tag:female:$key'))
+    }
+    if (_translateMap.containsKey('tag:female:$key')) {
       return _translateMap['tag:female:$key']!.split('|').first;
-    if (_translateMap.containsKey('tag:male:$key'))
+    }
+    if (_translateMap.containsKey('tag:male:$key')) {
       return _translateMap['tag:male:$key']!.split('|').first;
-    if (_translateMap.containsKey('tag:$key'))
+    }
+    if (_translateMap.containsKey('tag:$key')) {
       return _translateMap['tag:$key']!.split('|').first;
+    }
 
     return TagTranslatedRegacy.mapSeries2Kor(
         TagTranslatedRegacy.mapTag2Kor(key));

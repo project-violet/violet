@@ -125,10 +125,11 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                       future: _future(e.artist(), e.type()),
                       builder: (BuildContext context,
                           AsyncSnapshot<List<QueryResult>> snapshot) {
-                        if (!snapshot.hasData)
+                        if (!snapshot.hasData) {
                           return Container(
                             height: 195,
                           );
+                        }
                         return _listItem(context, e, snapshot.data!);
                       },
                     );

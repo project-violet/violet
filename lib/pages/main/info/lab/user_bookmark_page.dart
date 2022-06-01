@@ -27,12 +27,13 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
       child: FutureBuilder(
         future: Bookmark.getInstance().then((value) => value.getUser()),
         builder: (context, AsyncSnapshot<List<BookmarkUser>> snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Container(
               child: const Center(
                 child: Text('Loading ...'),
               ),
             );
+          }
           return ListView.builder(
               padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
               physics: const BouncingScrollPhysics(),

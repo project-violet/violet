@@ -117,8 +117,9 @@ class DownloadRoutine {
   }) async {
     var downloader = await IsolateDownloader.getInstance();
     var basepath = Settings.downloadBasePath;
-    if (Settings.useInnerStorage)
+    if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
+    }
     downloader.appendTasks(tasks!.map((e) {
       e.downloadPath = join(
           basepath,
@@ -141,8 +142,9 @@ class DownloadRoutine {
   Future<List<int>> checkDownloadFiles() async {
     var basepath = Settings.downloadBasePath;
 
-    if (Settings.useInnerStorage)
+    if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
+    }
 
     var filenames = tasks!
         .map((e) => join(
@@ -179,8 +181,9 @@ class DownloadRoutine {
   }) async {
     var downloader = await IsolateDownloader.getInstance();
     var basepath = Settings.downloadBasePath;
-    if (Settings.useInnerStorage)
+    if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
+    }
     downloader.appendTasks(invalidIndex.map((e) => tasks![e]).map((e) {
       e.downloadPath = join(
           basepath,

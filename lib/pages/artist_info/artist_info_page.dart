@@ -139,12 +139,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             .split('|')
             .where((element) => element != '')
             .forEach((element) {
-          if (element.startsWith('female:'))
+          if (element.startsWith('female:')) {
             femaleTags += 1;
-          else if (element.startsWith('male:'))
+          } else if (element.startsWith('male:')) {
             maleTags += 1;
-          else
+          } else {
             tags += 1;
+          }
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] = ffstat[element]! + 1;
@@ -165,28 +166,31 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       //  Similar Artists (or group, uploader)
       //
 
-      if (widget.isGroup)
+      if (widget.isGroup) {
         similars = HitomiIndexs.calculateSimilarGroups(widget.artist);
-      else if (widget.isUploader)
+      } else if (widget.isUploader) {
         similars = HitomiIndexs.calculateSimilarUploaders(widget.artist);
-      else if (widget.isSeries)
+      } else if (widget.isSeries) {
         similars = HitomiIndexs.calculateSimilarSeries(widget.artist);
-      else if (widget.isCharacter)
+      } else if (widget.isCharacter) {
         similars = HitomiIndexs.calculateSimilarCharacter(widget.artist);
-      else
+      } else {
         similars = HitomiIndexs.calculateSimilarArtists(widget.artist);
+      }
 
       similarsAll = similars;
       similars = similars.take(6).toList();
 
       prefix = 'artist:';
-      if (widget.isGroup)
+      if (widget.isGroup) {
         prefix = 'group:';
-      else if (widget.isUploader)
+      } else if (widget.isUploader) {
         prefix = 'uploader:';
-      else if (widget.isSeries)
+      } else if (widget.isSeries) {
         prefix = 'series:';
-      else if (widget.isCharacter) prefix = 'character:';
+      } else if (widget.isCharacter) {
+        prefix = 'character:';
+      }
 
       await querySimilars(similars, prefix, qrs);
 
@@ -272,16 +276,20 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       var y = [x[0]];
 
       var titles = [unescape.convert((x[0].title() as String).trim())];
-      if (titles[0].contains('Ch.'))
+      if (titles[0].contains('Ch.')) {
         titles[0] = titles[0].split('Ch.')[0];
-      else if (titles[0].contains('ch.')) titles[0] = titles[0].split('ch.')[0];
+      } else if (titles[0].contains('ch.')) {
+        titles[0] = titles[0].split('ch.')[0];
+      }
 
       for (int i = 1; i < x.length; i++) {
         var skip = false;
         var ff = unescape.convert((x[i].title() as String).trim());
-        if (ff.contains('Ch.'))
+        if (ff.contains('Ch.')) {
           ff = ff.split('Ch.')[0];
-        else if (ff.contains('ch.')) ff = ff.split('ch.')[0];
+        } else if (ff.contains('ch.')) {
+          ff = ff.split('ch.')[0];
+        }
         for (int j = 0; j < titles.length; j++) {
           var tt = titles[j];
           if (Distance.levenshteinDistanceComparable(
@@ -524,12 +532,13 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         measureFn: (Tuple2<String, int> sales, _) =>
                             sales.item2,
                         colorFn: (Tuple2<String, int> sales, _) {
-                          if (sales.item1.startsWith('female:'))
+                          if (sales.item1.startsWith('female:')) {
                             return charts.MaterialPalette.pink.shadeDefault;
-                          else if (sales.item1.startsWith('male:'))
+                          } else if (sales.item1.startsWith('male:')) {
                             return charts.MaterialPalette.blue.shadeDefault;
-                          else
+                          } else {
                             return charts.MaterialPalette.gray.shadeDefault;
+                          }
                         }),
                   ],
                   primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
@@ -540,10 +549,11 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
             onTap: () {},
             onTapCancel: () {
               isExpanded = !isExpanded;
-              if (isExpanded)
+              if (isExpanded) {
                 lff = lffOrigin;
-              else
+              } else {
                 lff = lffOrigin.take(5).toList();
+              }
               setState(() {});
             },
           ),
@@ -787,13 +797,15 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         var qq = qrs[index];
 
         var type = 'artist';
-        if (widget.isGroup)
+        if (widget.isGroup) {
           type = 'group';
-        else if (widget.isUploader)
+        } else if (widget.isUploader) {
           type = 'uploader';
-        else if (widget.isSeries)
+        } else if (widget.isSeries) {
           type = 'series';
-        else if (widget.isCharacter) type = 'character';
+        } else if (widget.isCharacter) {
+          type = 'character';
+        }
 
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(

@@ -311,8 +311,9 @@ class ArticleInfoPage extends StatelessWidget {
 
     dynamic navigatorFunc = Navigator.push;
 
-    if (Settings.usingPushReplacementOnArticleRead)
+    if (Settings.usingPushReplacementOnArticleRead) {
       navigatorFunc = Navigator.pushReplacement;
+    }
 
     navigatorFunc(
       context,
@@ -560,8 +561,9 @@ class PreviewAreaWidget extends StatelessWidget {
         }),
         builder: (context,
             AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Container(child: const CircularProgressIndicator());
+          }
           return GridView.count(
             controller: null,
             physics: const ScrollPhysics(),
@@ -642,8 +644,9 @@ class __CommentAreaState extends State<_CommentArea> {
         var html = (await http.get(
                 'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l'))
             .body;
-        if (html.contains('This gallery has been removed or is unavailable.'))
+        if (html.contains('This gallery has been removed or is unavailable.')) {
           return;
+        }
         var article = EHParser.parseArticleData(html);
         setState(() {
           comments = article.comment ?? [];
@@ -964,8 +967,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         future: ProviderManager.get(widget.queryResult.id())
             .then((value) => value.getSmallImagesUrl()),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Container(child: const CircularProgressIndicator());
+          }
           return GridView.count(
             controller: null,
             physics: const ScrollPhysics(),
@@ -1022,30 +1026,34 @@ class _Chip extends StatelessWidget {
     var tagDisplayed = name;
     var color = Colors.grey;
 
-    if (Settings.translateTags)
+    if (Settings.translateTags) {
       tagDisplayed =
           TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
+    }
 
-    if (group == 'female')
+    if (group == 'female') {
       color = Colors.pink;
-    else if (group == 'male')
+    } else if (group == 'male') {
       color = Colors.blue;
-    else if (group == 'prefix')
+    } else if (group == 'prefix') {
       color = Colors.orange;
-    else if (group == 'id') color = Colors.orange;
+    } else if (group == 'id') {
+      color = Colors.orange;
+    }
 
     Widget avatar = Text(group[0].toUpperCase());
 
-    if (group == 'female')
+    if (group == 'female') {
       avatar = const Icon(MdiIcons.genderFemale, size: 18.0);
-    else if (group == 'male')
+    } else if (group == 'male') {
       avatar = const Icon(MdiIcons.genderMale, size: 18.0);
-    else if (group == 'language')
+    } else if (group == 'language') {
       avatar = const Icon(Icons.language, size: 18.0);
-    else if (group == 'artists')
+    } else if (group == 'artists') {
       avatar = const Icon(MdiIcons.account, size: 18.0);
-    else if (group == 'groups')
+    } else if (group == 'groups') {
       avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
+    }
 
     var fc = Transform.scale(
       scale: 0.95,

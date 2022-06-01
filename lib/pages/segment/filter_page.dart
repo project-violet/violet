@@ -70,8 +70,9 @@ class _FilterPageState extends State<FilterPage> {
       }
       _groupCount[group] = _groupCount[group]! + 1;
       _tags.add(Tuple3<String, String, int>(group, name, value));
-      if (!c.tagStates.containsKey('$group|$name'))
+      if (!c.tagStates.containsKey('$group|$name')) {
         c.tagStates['$group|$name'] = false;
+      }
     });
     if (!c.groupStates.containsKey('tag')) c.groupStates['tag'] = false;
     if (!c.groupStates.containsKey('female')) c.groupStates['female'] = false;
@@ -106,8 +107,9 @@ class _FilterPageState extends State<FilterPage> {
     _groupCount[group] = _groupCount[group]! + tags.length;
     tags.forEach((key, value) {
       _tags.add(Tuple3<String, String, int>(group, key, value));
-      if (!c.tagStates.containsKey('$group|$key'))
+      if (!c.tagStates.containsKey('$group|$key')) {
         c.tagStates['$group|$key'] = false;
+      }
     });
   }
 
@@ -252,19 +254,20 @@ class _FilterPageState extends State<FilterPage> {
         .where((element) => c.tagStates['${element.item1}|${element.item2}']!)
         .toList();
 
-    if (c.isSearch)
+    if (c.isSearch) {
       tags += _tags
           .where((element) =>
               ('${element.item1}:${element.item2}')
                   .contains(_searchController.text) &&
               !c.tagStates['${element.item1}|${element.item2}']!)
           .toList();
-    else
+    } else {
       tags += _tags
           .where((element) =>
               c.groupStates[element.item1]! &&
               !c.tagStates['${element.item1}|${element.item2}']!)
           .toList();
+    }
 
     return Wrap(
         // alignment: WrapAlignment.center,
@@ -415,38 +418,42 @@ class __ChipState extends State<_Chip> {
     var group = widget.group;
     Color color = Colors.grey;
 
-    if (Settings.translateTags)
+    if (Settings.translateTags) {
       tagDisplayed =
           TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
+    }
 
-    if (group == 'female')
+    if (group == 'female') {
       color = Colors.pink;
-    else if (group == 'male')
+    } else if (group == 'male') {
       color = Colors.blue;
-    else if (group == 'language')
+    } else if (group == 'language') {
       color = Colors.teal;
-    else if (group == 'series')
+    } else if (group == 'series') {
       color = Colors.cyan;
-    else if (group == 'artist' || group == 'group')
+    } else if (group == 'artist' || group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    else if (group == 'type') color = Colors.orange;
+    } else if (group == 'type') {
+      color = Colors.orange;
+    }
 
     Widget avatar = Text(group[0].toUpperCase());
 
-    if (group == 'female')
+    if (group == 'female') {
       avatar = const Icon(MdiIcons.genderFemale, size: 18.0);
-    else if (group == 'male')
+    } else if (group == 'male') {
       avatar = const Icon(MdiIcons.genderMale, size: 18.0);
-    else if (group == 'language')
+    } else if (group == 'language') {
       avatar = const Icon(Icons.language, size: 18.0);
-    else if (group == 'artist')
+    } else if (group == 'artist') {
       avatar = const Icon(MdiIcons.account, size: 18.0);
-    else if (group == 'group')
+    } else if (group == 'group') {
       avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
-    else if (group == 'type')
+    } else if (group == 'type') {
       avatar = const Icon(MdiIcons.bookOpenPageVariant, size: 15.0);
-    else if (group == 'series')
+    } else if (group == 'series') {
       avatar = const Icon(MdiIcons.notebook, size: 15.0);
+    }
 
     var fc = Transform.scale(
         scale: 0.90,

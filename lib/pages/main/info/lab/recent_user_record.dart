@@ -80,12 +80,13 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
             .split('|')
             .where((element) => element != '')
             .forEach((element) {
-          if (element.startsWith('female:'))
+          if (element.startsWith('female:')) {
             femaleTags += 1;
-          else if (element.startsWith('male:'))
+          } else if (element.startsWith('male:')) {
             maleTags += 1;
-          else
+          } else {
             tags += 1;
+          }
 
           if (!ffstat.containsKey(element)) ffstat[element] = 0;
           ffstat[element] = ffstat[element]! + 1;
@@ -331,12 +332,13 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                             : sales.item1,
                     measureFn: (Tuple2<String, int> sales, _) => sales.item2,
                     colorFn: (Tuple2<String, int> sales, _) {
-                      if (sales.item1.startsWith('female:'))
+                      if (sales.item1.startsWith('female:')) {
                         return charts.MaterialPalette.pink.shadeDefault;
-                      else if (sales.item1.startsWith('male:'))
+                      } else if (sales.item1.startsWith('male:')) {
                         return charts.MaterialPalette.blue.shadeDefault;
-                      else
+                      } else {
                         return charts.MaterialPalette.gray.shadeDefault;
+                      }
                     }),
               ],
               primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
@@ -347,10 +349,11 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
         onTap: () {},
         onTapCancel: () {
           isExpanded = !isExpanded;
-          if (isExpanded)
+          if (isExpanded) {
             lff = lffOrigin!;
-          else
+          } else {
             lff = lffOrigin!.take(5).toList();
+          }
           setState(() {});
           Future.delayed(const Duration(milliseconds: 100)).then((value) =>
               _controller.animateTo(0.0,

@@ -17,8 +17,9 @@ class Population {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       var file = File('/home/ubuntu/violet/assets/rank/population.json');
       data = await file.readAsString();
-    } else
+    } else {
       data = await rootBundle.loadString('assets/rank/population.json');
+    }
 
     List<dynamic> dataPopulation = json.decode(data);
     population = <int, int>{};
