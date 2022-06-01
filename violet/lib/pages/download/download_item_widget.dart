@@ -159,8 +159,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                 _shouldReload = true;
               }));
 
-      if (!await routine.checkValidState() || !await routine.checkValidUrl())
+      if (!await routine.checkValidState() || !await routine.checkValidUrl()) {
         return;
+      }
       await routine.selectExtractor();
 
       if (!downloaded) {
@@ -186,11 +187,12 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       var timer =
           Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
         setState(() {
-          if (downloadSec / 1024 < 500.0)
+          if (downloadSec / 1024 < 500.0) {
             downloadSpeed = '${(downloadSec / 1024).toStringAsFixed(1)} KB/S';
-          else
+          } else {
             downloadSpeed =
                 '${(downloadSec / 1024 / 1024).toStringAsFixed(1)} MB/S';
+          }
           downloadSec = 0;
         });
       });
@@ -225,8 +227,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
       while (retryCount < maxRetryCount) {
         var invalidFiles = await routine.checkDownloadFiles();
 
-        if (invalidFiles.isEmpty || invalidFiles.length == errorFileCount)
+        if (invalidFiles.isEmpty || invalidFiles.length == errorFileCount) {
           break;
+        }
 
         errorFileCount = 0;
         retryCount += 1;
@@ -373,8 +376,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
         setState(() {
           scale = 1.0;
         });
-        if (int.tryParse(widget.item.url()) != null)
+        if (int.tryParse(widget.item.url()) != null) {
           _showArticleInfo(int.parse(widget.item.url()));
+        }
       },
     );
   }

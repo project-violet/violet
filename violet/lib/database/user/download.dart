@@ -159,8 +159,9 @@ class Download {
   }
 
   bool isValidDownloadedArticle(int id) {
-    if (_validDownloadedArticleCache.containsKey(id))
+    if (_validDownloadedArticleCache.containsKey(id)) {
       return _validDownloadedArticleCache[id]!;
+    }
 
     var v = _isValidDownloadedArticle(id);
     _validDownloadedArticleCache[id] = v;

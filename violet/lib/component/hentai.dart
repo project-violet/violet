@@ -367,12 +367,15 @@ class HentaiManager {
       var tag = <String>[];
 
       if (element.descripts != null) {
-        if (element.descripts!['female'] != null)
+        if (element.descripts!['female'] != null) {
           tag.addAll(element.descripts!['female']!.map((e) => 'female:$e'));
-        if (element.descripts!['male'] != null)
+        }
+        if (element.descripts!['male'] != null) {
           tag.addAll(element.descripts!['male']!.map((e) => 'male:$e'));
-        if (element.descripts!['misc'] != null)
+        }
+        if (element.descripts!['misc'] != null) {
           tag.addAll(element.descripts!['misc']!);
+        }
       }
 
       var map = {

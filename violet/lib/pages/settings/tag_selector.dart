@@ -21,14 +21,15 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
   @override
   void initState() {
     super.initState();
-    if (widget.what == 'include')
+    if (widget.what == 'include') {
       _searchController = TextEditingController(text: Settings.includeTags);
-    else if (widget.what == 'exclude')
+    } else if (widget.what == 'exclude') {
       _searchController =
           TextEditingController(text: Settings.excludeTags.join(' '));
-    else if (widget.what == 'blurred')
+    } else if (widget.what == 'blurred') {
       _searchController =
           TextEditingController(text: Settings.blurredTags.join(' '));
+    }
   }
 
   @override
@@ -166,11 +167,12 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     }
 
     int pos = selection.base.offset - 1;
-    for (; pos > 0; pos--)
+    for (; pos > 0; pos--) {
       if (target[pos] == ' ') {
         pos++;
         break;
       }
+    }
 
     var last = target.indexOf(' ', pos);
     var token =
@@ -206,24 +208,28 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     var count = '';
     Color color = Colors.grey;
 
-    if (_tagTranslation) // Korean
+    if (_tagTranslation) {
       tagDisplayed = info.item1.getTranslated();
+    }
 
     if (info.item2 > 0 && _showCount) count = ' (${info.item2})';
 
-    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:'))
+    if (info.item1.group == 'tag' && info.item1.name!.startsWith('female:')) {
       color = Colors.pink;
-    else if (info.item1.group == 'tag' && info.item1.name!.startsWith('male:'))
+    } else if (info.item1.group == 'tag' &&
+        info.item1.name!.startsWith('male:')) {
       color = Colors.blue;
-    else if (info.item1.group == 'prefix')
+    } else if (info.item1.group == 'prefix') {
       color = Colors.orange;
-    else if (info.item1.group == 'language')
+    } else if (info.item1.group == 'language') {
       color = Colors.teal;
-    else if (info.item1.group == 'series')
+    } else if (info.item1.group == 'series') {
       color = Colors.cyan;
-    else if (info.item1.group == 'artist' || info.item1.group == 'group')
+    } else if (info.item1.group == 'artist' || info.item1.group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    else if (info.item1.group == 'type') color = Colors.orange;
+    } else if (info.item1.group == 'type') {
+      color = Colors.orange;
+    }
 
     var fc = RawChip(
       labelPadding: const EdgeInsets.all(0.0),

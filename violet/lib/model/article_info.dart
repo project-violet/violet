@@ -71,9 +71,10 @@ class ArticleInfo {
 
   Future<void> setIsBookmarked(bool isBookmarked) async {
     this.isBookmarked = isBookmarked;
-    if (isBookmarked)
+    if (isBookmarked) {
       await (await Bookmark.getInstance()).bookmark(queryResult.id());
-    else
+    } else {
       await (await Bookmark.getInstance()).unbookmark(queryResult.id());
+    }
   }
 }
