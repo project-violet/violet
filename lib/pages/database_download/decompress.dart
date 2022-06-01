@@ -79,10 +79,11 @@ class P7zip {
       if (kDebugMode) soResource = 'assets/p7zip/x86/lib7zr.so';
       final support64 = deviceInfo.supported64BitAbis;
       if (support64.isNotEmpty) {
-        if (kDebugMode)
+        if (kDebugMode) {
           soResource = 'assets/p7zip/x86_64/lib7zr.so';
-        else
+        } else {
           soResource = 'assets/p7zip/arm64-v8a/lib7zr.so';
+        }
       }
       final data = await rootBundle.load(soResource);
       final createFile = await libFile.create();

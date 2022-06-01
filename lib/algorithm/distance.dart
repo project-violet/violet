@@ -10,7 +10,9 @@ class Distance {
     if (l1.length != l2.length) return -1;
 
     int result = 0;
-    for (int i = 0; i < l1.length; i++) if (l1[i] != l2[i]) result++;
+    for (int i = 0; i < l1.length; i++) {
+      if (l1[i] != l2[i]) result++;
+    }
 
     return result;
   }
@@ -26,13 +28,18 @@ class Distance {
     if (y == 0) return y;
     var v0 = List.filled((y + 1) << 1, 0);
 
-    for (i = 0; i < y + 1; i++) v0[i] = i;
+    for (i = 0; i < y + 1; i++) {
+      v0[i] = i;
+    }
     for (i = 0; i < x; i++) {
       v0[y + 1] = i + 1;
-      for (j = 0; j < y; j++)
+      for (j = 0; j < y; j++) {
         v0[y + j + 2] = min(min(v0[y + j + 1], v0[j + 1]) + 1,
             v0[j] + ((l1[i] == l2[j]) ? 0 : 1));
-      for (j = 0; j < y + 1; j++) v0[j] = v0[y + j + 1];
+      }
+      for (j = 0; j < y + 1; j++) {
+        v0[j] = v0[y + j + 1];
+      }
     }
 
     return v0[y + y + 1];
@@ -48,13 +55,18 @@ class Distance {
     if (y == 0) return y;
     var v0 = List.filled((y + 1) << 1, 0);
 
-    for (i = 0; i < y + 1; i++) v0[i] = i;
+    for (i = 0; i < y + 1; i++) {
+      v0[i] = i;
+    }
     for (i = 0; i < x; i++) {
       v0[y + 1] = i + 1;
-      for (j = 0; j < y; j++)
+      for (j = 0; j < y; j++) {
         v0[y + j + 2] = min(min(v0[y + j + 1], v0[j + 1]) + 1,
             v0[j] + ((l1[i] == l2[j]) ? 0 : 1));
-      for (j = 0; j < y + 1; j++) v0[j] = v0[y + j + 1];
+      }
+      for (j = 0; j < y + 1; j++) {
+        v0[j] = v0[y + j + 1];
+      }
     }
 
     return v0[y + y + 1];
@@ -72,16 +84,21 @@ class Distance {
         l1.length + 1, (i) => List.filled(l2.length + 1, 0),
         growable: false);
 
-    for (int i = 0; i <= l1.length; i++) dist[i][0] = i;
-    for (int j = 0; j <= l2.length; j++) dist[0][j] = j;
+    for (int i = 0; i <= l1.length; i++) {
+      dist[i][0] = i;
+    }
+    for (int j = 0; j <= l2.length; j++) {
+      dist[0][j] = j;
+    }
 
     for (int j = 1; j <= l2.length; j++) {
       for (int i = 1; i <= l1.length; i++) {
-        if (l1[i - 1] == l2[j - 1])
+        if (l1[i - 1] == l2[j - 1]) {
           dist[i][j] = dist[i - 1][j - 1];
-        else
+        } else {
           dist[i][j] = min(dist[i - 1][j - 1] + 1,
               min(dist[i][j - 1] + 1, dist[i - 1][j] + 1));
+        }
       }
     }
 
@@ -99,10 +116,11 @@ class Distance {
       if (mm == lu) {
         i--;
         j--;
-      } else if (mm == u)
+      } else if (mm == u) {
         i--;
-      else
+      } else {
         j--;
+      }
       fz = mm;
     }
     return route;
