@@ -267,7 +267,7 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
       ],
     );
 
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -278,12 +278,13 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: listview,
       );
+    }
   }
 
   _checkBox({

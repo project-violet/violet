@@ -124,11 +124,11 @@ class HitomiIndexs {
 
   static List<Tuple2<String, double>> calculateRelatedCharacterSeries(
       String series) {
-    if (seriesSeries == null)
+    if (seriesSeries == null) {
       return _calculateSimilars(characterSeries!, series)
           .where((element) => element.item2 >= 0.000001)
           .toList();
-    else {
+    } else {
       var ll = (seriesSeries![series] as Map<String, dynamic>)
           .entries
           .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
@@ -140,11 +140,11 @@ class HitomiIndexs {
 
   static List<Tuple2<String, double>> calculateRelatedSeriesCharacter(
       String character) {
-    if (characterCharacter == null)
+    if (characterCharacter == null) {
       return _calculateSimilars(seriesCharacter!, character)
           .where((element) => element.item2 >= 0.000001)
           .toList();
-    else {
+    } else {
       var ll = (characterCharacter![character] as Map<String, dynamic>)
           .entries
           .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
@@ -155,8 +155,9 @@ class HitomiIndexs {
   }
 
   static List<Tuple2<String, double>> getRelatedCharacters(String series) {
-    if (!characterSeries!.containsKey(series))
+    if (!characterSeries!.containsKey(series)) {
       return <Tuple2<String, double>>[];
+    }
     var ll = (characterSeries![series] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))
@@ -166,8 +167,9 @@ class HitomiIndexs {
   }
 
   static List<Tuple2<String, double>> getRelatedSeries(String character) {
-    if (!seriesCharacter!.containsKey(character))
+    if (!seriesCharacter!.containsKey(character)) {
       return <Tuple2<String, double>>[];
+    }
     var ll = (seriesCharacter![character] as Map<String, dynamic>)
         .entries
         .map((e) => Tuple2<String, double>(e.key, e.value.toDouble()))

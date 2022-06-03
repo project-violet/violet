@@ -202,8 +202,9 @@ class _MainPageState extends State<MainPage>
         var bb = await showYesNoDialog(context,
             '${Translations.of(context).trans('newupdate')} ${UpdateSyncManager.updateMessage} ${Translations.of(context).trans('wouldyouupdate')}');
         if (bb == false) return;
-      } else
+      } else {
         return;
+      }
 
       if (!await Permission.storage.isGranted) {
         if (await Permission.storage.request() == PermissionStatus.denied) {

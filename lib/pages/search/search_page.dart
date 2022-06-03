@@ -110,8 +110,9 @@ class _SearchPageState extends State<SearchPage>
         latestQuery =
             Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
         queryResult = latestQuery!.item1!.item1;
-        if (_filterController.isPopulationSort)
+        if (_filterController.isPopulationSort) {
           Population.sortByPopulation(queryResult);
+        }
         _shouldReload = true;
         setState(() {});
 
@@ -169,10 +170,11 @@ class _SearchPageState extends State<SearchPage>
       var upScrolling =
           _scroll.position.userScrollDirection == ScrollDirection.forward;
 
-      if (upScrolling)
+      if (upScrolling) {
         scrollQueue.add(-1);
-      else
+      } else {
         scrollQueue.add(1);
+      }
 
       if (scrollQueue.length > 64) {
         scrollQueue.removeRange(0, scrollQueue.length - 65);
@@ -583,15 +585,18 @@ class _SearchPageState extends State<SearchPage>
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (['female', 'male'].contains(split[0]))
+          if (['female', 'male'].contains(split[0])) {
             tag = '${split[0]}:${split[1]}';
-          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr)
+          }
+          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr) {
             succ = isOr;
+          }
         }
 
         // If Multitag
-        else if ((element.result[dbColumn] as String == split[1]) == isOr)
+        else if ((element.result[dbColumn] as String == split[1]) == isOr) {
           succ = isOr;
+        }
       });
       if (succ) result.add(element);
     });
@@ -599,8 +604,9 @@ class _SearchPageState extends State<SearchPage>
     filterResult = result;
     isFilterUsed = true;
 
-    if (_filterController.isPopulationSort)
+    if (_filterController.isPopulationSort) {
       Population.sortByPopulation(filterResult);
+    }
   }
 
   FilterController _filterController = FilterController();
@@ -625,8 +631,9 @@ class _SearchPageState extends State<SearchPage>
 
     try {
       if (queryEnd ||
-          (latestQuery!.item1 != null && latestQuery!.item1!.item2 == -1))
+          (latestQuery!.item1 != null && latestQuery!.item1!.item2 == -1)) {
         return;
+      }
 
       var next = await HentaiManager.search(latestQuery!.item2,
               latestQuery!.item1 == null ? 0 : latestQuery!.item1!.item2)
@@ -651,8 +658,9 @@ class _SearchPageState extends State<SearchPage>
 
       queryResult.addAll(next.item1);
 
-      if (_filterController.isPopulationSort)
+      if (_filterController.isPopulationSort) {
         Population.sortByPopulation(queryResult);
+      }
 
       if (searchTotalResultCount == 0 &&
           !latestQuery!.item2.contains('random:')) {
@@ -765,8 +773,9 @@ class ResultPanelWidget extends StatelessWidget {
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
                   var keyStr = 'search/${resultList[index].id()}/$index';
-                  if (!itemKeys.containsKey(keyStr))
+                  if (!itemKeys.containsKey(keyStr)) {
                     itemKeys[keyStr] = GlobalKey();
+                  }
                   return Padding(
                     key: itemKeys[keyStr],
                     padding: EdgeInsets.zero,
@@ -814,8 +823,9 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               itemBuilder: (context, index, animation) {
                 var keyStr = 'search/${resultList[index].id()}/$index';
-                if (!itemKeys.containsKey(keyStr))
+                if (!itemKeys.containsKey(keyStr)) {
                   itemKeys[keyStr] = GlobalKey();
+                }
                 return Align(
                   key: itemKeys[keyStr],
                   alignment: Alignment.center,
@@ -841,8 +851,9 @@ class ResultPanelWidget extends StatelessWidget {
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 var keyStr = 'search/${resultList[index].id()}/$index';
-                if (!itemKeys.containsKey(keyStr))
+                if (!itemKeys.containsKey(keyStr)) {
                   itemKeys[keyStr] = GlobalKey();
+                }
                 return Align(
                   key: itemKeys[keyStr],
                   alignment: Alignment.center,

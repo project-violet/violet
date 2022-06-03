@@ -42,8 +42,9 @@ class _LabTopRecentState extends State<LabTopRecent> {
         } else {
           isTop = true;
         }
-      } else
+      } else {
         isTop = false;
+      }
     });
 
     Future.delayed(const Duration(milliseconds: 100)).then(updateRercord).then(
@@ -99,14 +100,15 @@ class _LabTopRecentState extends State<LabTopRecent> {
       var x = cts.difference(sts);
 
       setState(() {
-        if (x.inHours > 0)
+        if (x.inHours > 0) {
           desc = '${x.inHours}시간';
-        else if (x.inMinutes > 0)
+        } else if (x.inMinutes > 0) {
           desc = '${x.inMinutes}분';
-        else if (x.inSeconds > 0)
+        } else if (x.inSeconds > 0) {
           desc = '${x.inSeconds}초';
-        else
+        } else {
           desc = '?';
+        }
       });
     } catch (e, st) {
       Logger.error('[lab-top_recent] E: $e\n'

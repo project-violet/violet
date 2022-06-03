@@ -32,7 +32,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
           padding: EdgeInsets.zero,
           itemExtent: 50.0,
           itemBuilder: (context, index) {
-            if (index == 0)
+            if (index == 0) {
               return Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -45,6 +45,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
                   ),
                 ),
               );
+            }
             return InkWell(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +85,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
       },
     );
 
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -95,11 +96,12 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: records,
       );
+    }
   }
 }

@@ -150,7 +150,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   }
 
   _pinIcon(index) {
-    if (_pin[index] == null)
+    if (_pin[index] == null) {
       return Container(
         width: 10.0,
         height: 10.0,
@@ -159,6 +159,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
           type: MaterialType.circle,
         ),
       );
+    }
 
     return Text(
       _pin[index].toString(),
@@ -278,10 +279,11 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     final pinPass = prefs.getString('pinPass');
 
     if (!widget.isRegisterMode && _pin.join() == pinPass) {
-      if (widget.isSecureMode)
+      if (widget.isSecureMode) {
         Navigator.of(context).pop();
-      else
+      } else {
         Navigator.pushReplacementNamed(context, '/SplashPage');
+      }
       return;
     }
 

@@ -978,8 +978,9 @@ class PageScrollPhysics extends ScrollPhysics {
   }
 
   double _getPage(ScrollPosition position) {
-    if (position is _PagePosition && position.page != null)
+    if (position is _PagePosition && position.page != null) {
       return position.page!;
+    }
     return position.pixels / position.viewportDimension;
   }
 
@@ -991,9 +992,11 @@ class PageScrollPhysics extends ScrollPhysics {
   double _getTargetPixels(
       ScrollPosition position, Tolerance tolerance, double velocity) {
     double? page = _getPage(position);
-    if (velocity < -tolerance.velocity)
+    if (velocity < -tolerance.velocity) {
       page -= 0.5;
-    else if (velocity > tolerance.velocity) page += 0.5;
+    } else if (velocity > tolerance.velocity) {
+      page += 0.5;
+    }
     return _getPixels(position, page.roundToDouble());
   }
 
@@ -1003,14 +1006,16 @@ class PageScrollPhysics extends ScrollPhysics {
     // If we're out of range and not headed back in range, defer to the parent
     // ballistics, which should put us back in range at a page boundary.
     if ((velocity <= 0.0 && position.pixels <= position.minScrollExtent) ||
-        (velocity >= 0.0 && position.pixels >= position.maxScrollExtent))
+        (velocity >= 0.0 && position.pixels >= position.maxScrollExtent)) {
       return super.createBallisticSimulation(position, velocity);
+    }
     final Tolerance tolerance = this.tolerance;
     final double target =
         _getTargetPixels(position as ScrollPosition, tolerance, velocity);
-    if (target != position.pixels)
+    if (target != position.pixels) {
       return ScrollSpringSimulation(spring, position.pixels, target, velocity,
           tolerance: tolerance);
+    }
     return null;
   }
 

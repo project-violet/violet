@@ -184,8 +184,9 @@ class FileNameFormat {
           continue;
         }
 
-        if (raw[i++] != '(')
+        if (raw[i++] != '(') {
           throw Exception('Filename formatting error! pos=$i');
+        }
 
         var tokenb = StringBuffer();
 
@@ -221,16 +222,17 @@ class FileNameFormat {
         var pptk = pp.toString();
 
         if (type == 's') {
-          if (pptk != '')
+          if (pptk != '') {
             builder.write(literal
                 .substring(0, int.parse(pptk))
                 .replaceAll('|', 'ㅣ')
                 .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
-          else
+          } else {
             builder.write(literal
                 .toString()
                 .replaceAll('|', 'ㅣ')
                 .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
+          }
         }
         // else if (type == 'd')
         // {
@@ -244,8 +246,9 @@ class FileNameFormat {
         // {
         //     builder.Append(float.Parse(literal).ToString(pptk));
         // }
-      } else
+      } else {
         builder.write(raw[i]);
+      }
     }
 
     var result = builder.toString();

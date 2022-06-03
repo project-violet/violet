@@ -113,17 +113,19 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                         (context, AsyncSnapshot<Tuple2<bool, bool>> snapshot) {
                       if (!snapshot.hasData) return Container();
 
-                      if (snapshot.data!.item1)
+                      if (snapshot.data!.item1) {
                         return const Icon(
                           MdiIcons.starCircleOutline,
                           color: Colors.yellow,
                         );
+                      }
 
-                      if (snapshot.data!.item2)
+                      if (snapshot.data!.item2) {
                         return const Icon(
                           MdiIcons.rayStartVertexEnd,
                           color: Colors.grey,
                         );
+                      }
 
                       return Container();
                     },

@@ -230,9 +230,10 @@ class CommentUnit extends StatelessWidget {
       children: <Widget>[
             InkWell(
               onDoubleTap: () {
-                if (!author.startsWith(dev))
+                if (!author.startsWith(dev)) {
                   PlatformNavigator.navigateSlide(
                       context, LabUserRecentRecords(author));
+                }
               },
               onLongPress: !isReply
                   ? () {

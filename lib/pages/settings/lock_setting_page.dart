@@ -47,8 +47,9 @@ class _LockSettingPageState extends State<LockSettingPage> {
 
                   if ((snapshot.data as SharedPreferences)
                           .getString('pinPass') !=
-                      null)
+                      null) {
                     return Text(Translations.of(context).trans('setted'));
+                  }
                   return Text(Translations.of(context).trans('notsetted'));
                 }),
           ),

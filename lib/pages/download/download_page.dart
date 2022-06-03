@@ -128,10 +128,12 @@ class _DownloadPageState extends State<DownloadPage>
 
       Map<String, dynamic> result = Map<String, dynamic>.from(item.result);
 
-      if (item.files() != null)
+      if (item.files() != null) {
         result['Files'] = item.files()!.replaceAll(oldPath, newPath);
-      if (item.path() != null)
+      }
+      if (item.path() != null) {
         result['Path'] = item.path()!.replaceAll(oldPath, newPath);
+      }
       item.result = result;
 
       await item.update();
@@ -229,14 +231,16 @@ class _DownloadPageState extends State<DownloadPage>
       <int, GlobalKey<DownloadItemWidgetState>>{};
 
   _getDownloadWidgetKey() {
-    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1)
+    if (Settings.downloadResultType == 0 || Settings.downloadResultType == 1) {
       return downloadItemWidgetKeys1;
+    }
     if (Settings.downloadResultType == 2 || Settings.downloadResultType == 3) {
       if (Settings.useTabletMode ||
-          MediaQuery.of(context).orientation == Orientation.landscape)
+          MediaQuery.of(context).orientation == Orientation.landscape) {
         return downloadItemWidgetKeys2;
-      else
+      } else {
         return downloadItemWidgetKeys3;
+      }
     }
   }
 
@@ -260,9 +264,10 @@ class _DownloadPageState extends State<DownloadPage>
               (BuildContext context, int index) {
                 var e = filterResult[filterResult.length - index - 1];
                 if (!downloadItemWidgetKeys1
-                    .containsKey(filterResult[index].id()))
+                    .containsKey(filterResult[index].id())) {
                   downloadItemWidgetKeys1[filterResult[index].id()] =
                       GlobalKey<DownloadItemWidgetState>();
+                }
                 return Align(
                   key: Key('dp${e.id()}${e.url()}'),
                   alignment: Alignment.bottomCenter,
@@ -304,9 +309,10 @@ class _DownloadPageState extends State<DownloadPage>
             itemBuilder: (context, index, animation) {
               var e = filterResult[filterResult.length - index - 1];
               if (!downloadItemWidgetKeys2
-                  .containsKey(filterResult[index].id()))
+                  .containsKey(filterResult[index].id())) {
                 downloadItemWidgetKeys2[filterResult[index].id()] =
                     GlobalKey<DownloadItemWidgetState>();
+              }
               return Align(
                 key: Key('dp${e.id()}${e.url()}'),
                 alignment: Alignment.center,
@@ -330,9 +336,10 @@ class _DownloadPageState extends State<DownloadPage>
           key: _listKey,
           delegate: SliverChildListDelegate(
             filterResult.reversed.map((e) {
-              if (!downloadItemWidgetKeys3.containsKey(e.id()))
+              if (!downloadItemWidgetKeys3.containsKey(e.id())) {
                 downloadItemWidgetKeys3[e.id()] =
                     GlobalKey<DownloadItemWidgetState>();
+              }
               return Align(
                 key: Key('dp${e.id()}${e.url()}'),
                 alignment: Alignment.center,
@@ -546,13 +553,13 @@ class _DownloadPageState extends State<DownloadPage>
         .then((value) async {
       if (value == null) return;
 
-      if (value == 0)
+      if (value == 0) {
         _getDownloadWidgetKey()
             .forEach((key, value) => value.currentState.retryWhenRequired());
-      else if (value == 1)
+      } else if (value == 1) {
         _getDownloadWidgetKey()
             .forEach((key, value) => value.currentState.recovery());
-      else if (value == 2) {
+      } else if (value == 2) {
         Clipboard.setData(ClipboardData(
             text: filterResult.map((e) => int.tryParse(e.url())).join(', ')));
         fToast.showToast(
@@ -719,26 +726,31 @@ class _DownloadPageState extends State<DownloadPage>
         // If Single Tag
         if (!isSingleTag(split[0])) {
           var tag = split[1];
-          if (['female', 'male'].contains(split[0]))
+          if (['female', 'male'].contains(split[0])) {
             tag = '${split[0]}:${split[1]}';
-          if ((qr.result[dbColumn] as String).contains('|$tag|') == isOr)
+          }
+          if ((qr.result[dbColumn] as String).contains('|$tag|') == isOr) {
             succ = isOr;
+          }
         }
 
         // If Multitag
-        else if ((qr.result[dbColumn] as String == split[1]) == isOr)
+        else if ((qr.result[dbColumn] as String == split[1]) == isOr) {
           succ = isOr;
+        }
       });
       if (succ) result.add(element.key);
     });
 
-    if (_filterController.tagStates.isNotEmpty)
+    if (_filterController.tagStates.isNotEmpty) {
       filterResult = result.map((e) => itemsMap[e]!).toList();
-    else
+    } else {
       filterResult = items.toList();
+    }
 
-    if (_filterController.isPopulationSort)
+    if (_filterController.isPopulationSort) {
       Population.sortByPopulationDownloadItem(filterResult);
+    }
 
     if (Settings.downloadAlignType > 0) {
       final user = await User.getInstance();
@@ -746,9 +758,10 @@ class _DownloadPageState extends State<DownloadPage>
       final articlereadlog = <int, DateTime>{};
 
       userlog.forEach((element) {
-        if (!articlereadlog.containsKey(int.tryParse(element.articleId())))
+        if (!articlereadlog.containsKey(int.tryParse(element.articleId()))) {
           articlereadlog[int.parse(element.articleId())] =
               DateTime.parse(element.datetimeStart());
+        }
       });
 
       filterResult.sort((x, y) {
@@ -758,12 +771,12 @@ class _DownloadPageState extends State<DownloadPage>
         var xx = int.tryParse(x.url());
         var yy = int.tryParse(y.url());
 
-        if (Settings.downloadAlignType == 3)
+        if (Settings.downloadAlignType == 3) {
           return y
               .filesWithoutThumbnail()
               .length
               .compareTo(x.filesWithoutThumbnail().length);
-        else if (Settings.downloadAlignType == 2) {
+        } else if (Settings.downloadAlignType == 2) {
           if (!queryResults.containsKey(xx)) return 1;
           if (!queryResults.containsKey(yy)) return -1;
 
@@ -807,8 +820,9 @@ class _DownloadPageState extends State<DownloadPage>
       filterResult = filterResult.reversed.toList();
     }
 
-    if (_filterController.tagStates.isNotEmpty && downloading.isNotEmpty)
+    if (_filterController.tagStates.isNotEmpty && downloading.isNotEmpty) {
       filterResult.addAll(downloading.map((e) => itemsMap[e]!).toList());
+    }
 
     setState(() {});
   }

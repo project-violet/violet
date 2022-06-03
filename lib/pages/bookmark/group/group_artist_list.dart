@@ -140,10 +140,11 @@ class _GroupArtistListState extends State<GroupArtistList>
                           future: _future(e.artist(), e.type()),
                           builder: (BuildContext context,
                               AsyncSnapshot<List<QueryResult>> snapshot) {
-                            if (!snapshot.hasData)
+                            if (!snapshot.hasData) {
                               return Container(
                                 height: 195,
                               );
+                            }
                             return _listItem(context, e, snapshot.data!);
                           },
                         );
@@ -430,9 +431,9 @@ class _GroupArtistListState extends State<GroupArtistList>
   }
 
   void check(int type, String artist, bool check) {
-    if (check)
+    if (check) {
       checked.add(Tuple2<int, String>(type, artist));
-    else {
+    } else {
       checked.removeWhere(
           (element) => element.item1 == type && element.item2 == artist);
       if (checked.isEmpty) {
@@ -502,8 +503,9 @@ class _GroupArtistListState extends State<GroupArtistList>
         // Atomic!!
         // 0. Sort Checked
         var invIdIndex = <String, int>{};
-        for (int i = 0; i < artists.length; i++)
+        for (int i = 0; i < artists.length; i++) {
           invIdIndex['${artists[i].artist()}|${artists[i].type()}'] = i;
+        }
         checked.sort((x, y) => invIdIndex['${x.item2}|${x.item1}']!
             .compareTo(invIdIndex['${y.item2}|${y.item1}']!));
 
