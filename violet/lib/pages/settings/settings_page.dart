@@ -299,10 +299,11 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ),
           onTap: () async {
-            if (!_themeSwitch)
+            if (!_themeSwitch) {
               _flareController.play('switch_night');
-            else
+            } else {
               _flareController.play('switch_day');
+            }
             _themeSwitch = !_themeSwitch;
             await Settings.setThemeWhat(_themeSwitch);
             DynamicTheme.of(context)!.setBrightness(
@@ -918,10 +919,11 @@ class _SettingsPageState extends State<SettingsPage>
 
   Future<void> _setSecureMode() async {
     if (Platform.isAndroid) {
-      if (Settings.useSecureMode)
+      if (Settings.useSecureMode) {
         await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-      else
+      } else {
         await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+      }
     }
   }
 
@@ -1966,9 +1968,9 @@ class _SettingsPageState extends State<SettingsPage>
                     .id();
                 for (int j = 0; j < json.length; j++) {
                   var tar = json.elementAt(j).toString();
-                  if (int.tryParse(tar) != null)
+                  if (int.tryParse(tar) != null) {
                     await bookmark.insertArticle(tar, DateTime.now(), group);
-                  else if (tar.contains(':') &&
+                  } else if (tar.contains(':') &&
                       ['artist', 'group'].contains(tar.split(':')[0])) {
                     await bookmark.bookmarkArtist(tar.split(':')[1],
                         tar.split(':')[0] == 'artist' ? 0 : 1, group);

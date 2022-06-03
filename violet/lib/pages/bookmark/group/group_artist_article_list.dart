@@ -63,11 +63,12 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
         return await qm.next();
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
-        if (!snapshot.hasData)
+        if (!snapshot.hasData) {
           return const Align(
               alignment: Alignment.center,
               child: SizedBox(
                   width: 64, height: 64, child: CircularProgressIndicator()));
+        }
         return PrimaryScrollController(
           controller: ScrollController(),
           child: CupertinoScrollbar(

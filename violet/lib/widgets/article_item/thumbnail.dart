@@ -104,10 +104,11 @@ class ThumbnailWidget extends StatelessWidget {
                 ),
     );
 
-    if (showDetail)
+    if (showDetail) {
       return Material(child: result);
-    else
+    } else {
       return result;
+    }
   }
 }
 

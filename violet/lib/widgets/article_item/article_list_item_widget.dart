@@ -133,10 +133,11 @@ class _ArticleListItemVerySimpleWidgetState
       thisHeight = 130.0;
     } else {
       thisWidth = data.width - (data.addBottomPadding ? 100 : 0);
-      if (data.addBottomPadding)
+      if (data.addBottomPadding) {
         thisHeight = 500.0;
-      else
+      } else {
         thisHeight = data.width * 4 / 3;
+      }
     }
 
     _checkIsBookmarked();
@@ -198,10 +199,11 @@ class _ArticleListItemVerySimpleWidgetState
         imageCount = value.length();
         headers = await value.getHeader(0);
         ProviderManager.insert(data.queryResult.id(), value);
-        if (!disposed)
+        if (!disposed) {
           setState(() {
             _shouldReload = true;
           });
+        }
       });
     } else {
       Future.delayed(const Duration(milliseconds: 1)).then((v) async {
@@ -209,10 +211,11 @@ class _ArticleListItemVerySimpleWidgetState
         thumbnail = await provider.getThumbnailUrl();
         imageCount = provider.length();
         headers = await provider.getHeader(0);
-        if (!disposed)
+        if (!disposed) {
           setState(() {
             _shouldReload = true;
           });
+        }
       });
     }
   }
@@ -341,10 +344,11 @@ class _ArticleListItemVerySimpleWidgetState
       Future.delayed(const Duration(milliseconds: 500))
           .then((value) => _shouldReloadCachedBuildWidget = false);
       setState(() {
-        if (isChecked)
+        if (isChecked) {
           scale = 0.95;
-        else
+        } else {
           scale = 1.0;
+        }
       });
       return;
     }
@@ -438,14 +442,15 @@ class _ArticleListItemVerySimpleWidgetState
     }
     isBookmarked.value = !isBookmarked.value;
 
-    if (isBookmarked.value)
+    if (isBookmarked.value) {
       await (await Bookmark.getInstance()).bookmark(data.queryResult.id());
-    else
+    } else {
       await (await Bookmark.getInstance()).unbookmark(data.queryResult.id());
+    }
 
-    if (!isBookmarked.value)
+    if (!isBookmarked.value) {
       _flareController.play('Unlike');
-    else {
+    } else {
       controller.forward(from: 0.0);
       _flareController.play('Like');
     }

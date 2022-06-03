@@ -129,8 +129,9 @@ class SyncManager {
 
   static SyncInfoRecord getLatestDB() {
     if (_rows != null) {
-      for (int i = 0; i < _rows!.length; i++)
+      for (int i = 0; i < _rows!.length; i++) {
         if (_rows![i].type == 'db') return _rows![i];
+      }
     }
 
     //
@@ -208,9 +209,10 @@ class SyncManager {
         var dbraw = await openDatabase(db.dbPath!);
         await dbraw.transaction((txn) async {
           final batch = txn.batch();
-          for (var query in quries)
+          for (var query in quries) {
             batch.insert('HitomiColumnModel', query.result,
                 conflictAlgorithm: ConflictAlgorithm.replace);
+          }
           await batch.commit();
         });
         await dbraw.close();

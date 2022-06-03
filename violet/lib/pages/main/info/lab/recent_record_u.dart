@@ -47,8 +47,9 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
         } else {
           isTop = true;
         }
-      } else
+      } else {
         isTop = false;
+      }
     });
 
     Future.delayed(const Duration(milliseconds: 100)).then(updateRercord).then(
@@ -109,8 +110,9 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
             curve: Curves.fastOutSlowIn,
           );
         });
-      } else
+      } else {
         setState(() {});
+      }
     } catch (e, st) {
       Logger.error('[lab-recent_record] E: $e\n'
           '$st');

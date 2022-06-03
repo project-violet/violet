@@ -91,11 +91,12 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
     if (qr as String == '') return;
-    for (var tag in (qr as String).split('|'))
+    for (var tag in (qr as String).split('|')) {
       if (tag != null && tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
         map[tag] = map[tag]! + 1;
       }
+    }
   }
 
   void insertSingle(Map<String, int> map, dynamic qr) {

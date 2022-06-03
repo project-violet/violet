@@ -15,8 +15,9 @@ class Related {
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
       var file = File('/home/ubuntu/violet/assets/rank/related.json');
       data = await file.readAsString();
-    } else
+    } else {
       data = await rootBundle.loadString('assets/rank/related.json');
+    }
 
     Map<String, dynamic> dataMap = json.decode(data);
 

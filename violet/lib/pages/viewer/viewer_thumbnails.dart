@@ -65,7 +65,7 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
 
   @override
   Widget build(BuildContext context) {
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -76,12 +76,13 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: _buildThumbanilsList(),
       );
+    }
   }
 
   Widget _buildThumbanilsList() {
@@ -146,16 +147,18 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
                 }
               } catch (_) {}
             }
-          } else
+          } else {
             prov = await ProviderManager.get(_pageInfo.id * 1000000);
+          }
 
           return Tuple2(
               await prov.getSmallImagesUrl(), await prov.getHeader(0));
         }),
         builder: (context,
             AsyncSnapshot<Tuple2<List<String>, Map<String, String>>> snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Container(child: const CircularProgressIndicator());
+          }
           Future.delayed(const Duration(milliseconds: 50))
               .then((value) => _jumpToViewedPage());
           return GridView.count(

@@ -66,21 +66,23 @@ class HitomiManager {
       final opp = prefix.split(':')[0];
       var pp = opp;
 
-      if (pp == 'female' || pp == 'male' || pp == 'tags')
+      if (pp == 'female' || pp == 'male' || pp == 'tags') {
         pp = 'tag';
-      else if (pp == 'language' || pp == 'languages')
+      } else if (pp == 'language' || pp == 'languages') {
         pp = 'lang';
-      else if (pp == 'artists')
+      } else if (pp == 'artists') {
         pp = 'aritst';
-      else if (pp == 'groups')
+      } else if (pp == 'groups') {
         pp = 'group';
-      else if (pp == 'uploaders')
+      } else if (pp == 'uploaders') {
         pp = 'uploader';
-      else if (pp == 'types')
+      } else if (pp == 'types') {
         pp = 'type';
-      else if (pp == 'characters')
+      } else if (pp == 'characters') {
         pp = 'character';
-      else if (pp == 'classes') pp = 'class';
+      } else if (pp == 'classes') {
+        pp = 'class';
+      }
 
       var results = <Tuple2<DisplayedTag, int>>[];
       if (!tagmap!.containsKey(pp)) return results;
@@ -90,25 +92,28 @@ class HitomiManager {
         if (opp == 'female' || opp == 'male') {
           ch.forEach((key, value) {
             if (key.toLowerCase().startsWith('$opp:') &&
-                key.toLowerCase().contains(prefix))
+                key.toLowerCase().contains(prefix)) {
               results.add(Tuple2<DisplayedTag, int>(
                   DisplayedTag(group: opp, name: key), value));
+            }
           });
         } else if (opp == 'tag') {
           var po = prefix.split(':')[1];
           ch.forEach((key, value) {
             if (!key.toLowerCase().startsWith('female:') &&
                 !key.toLowerCase().startsWith('male:') &&
-                key.toLowerCase().contains(po))
+                key.toLowerCase().contains(po)) {
               results.add(Tuple2<DisplayedTag, int>(
                   DisplayedTag(group: opp, name: key), value));
+            }
           });
         } else {
           var po = prefix.split(':')[1];
           ch.forEach((key, value) {
-            if (key.toLowerCase().contains(po))
+            if (key.toLowerCase().contains(po)) {
               results.add(Tuple2<DisplayedTag, int>(
                   DisplayedTag(group: pp, name: key), value));
+            }
           });
         }
         results.sort((a, b) => b.item2.compareTo(a.item2));
@@ -137,25 +142,28 @@ class HitomiManager {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
               if (key2.contains(':')) {
-                if (key2.split(':')[1].contains(prefix))
+                if (key2.split(':')[1].contains(prefix)) {
                   results.add(Tuple2<DisplayedTag, int>(
                       DisplayedTag(group: key2.split(':')[0], name: key2),
                       value2));
+                }
               } else if (key2.contains(prefix)) {
-                if (key2.contains(':'))
+                if (key2.contains(':')) {
                   results.add(Tuple2<DisplayedTag, int>(
                       DisplayedTag(group: key2.split(':')[0], name: key2),
                       value2));
-                else
+                } else {
                   results.add(Tuple2<DisplayedTag, int>(
                       DisplayedTag(group: 'tag', name: key2), value2));
+                }
               }
             });
           } else {
             value.forEach((key2, value2) {
-              if (key2.toLowerCase().contains(prefix))
+              if (key2.toLowerCase().contains(prefix)) {
                 results.add(Tuple2<DisplayedTag, int>(
                     DisplayedTag(group: key1, name: key2), value2));
+              }
             });
           }
         });
@@ -194,21 +202,23 @@ class HitomiManager {
       final opp = prefix.split(':')[0];
       var pp = opp;
 
-      if (pp == 'female' || pp == 'male' || pp == 'tags')
+      if (pp == 'female' || pp == 'male' || pp == 'tags') {
         pp = 'tag';
-      else if (pp == 'language' || pp == 'languages')
+      } else if (pp == 'language' || pp == 'languages') {
         pp = 'lang';
-      else if (pp == 'artists')
+      } else if (pp == 'artists') {
         pp = 'aritst';
-      else if (pp == 'groups')
+      } else if (pp == 'groups') {
         pp = 'group';
-      else if (pp == 'uploaders')
+      } else if (pp == 'uploaders') {
         pp = 'uploader';
-      else if (pp == 'types')
+      } else if (pp == 'types') {
         pp = 'type';
-      else if (pp == 'characters')
+      } else if (pp == 'characters') {
         pp = 'character';
-      else if (pp == 'classes') pp = 'class';
+      } else if (pp == 'classes') {
+        pp = 'class';
+      }
 
       var results = <Tuple3<DisplayedTag, int, int>>[];
       if (!tagmap!.containsKey(pp)) return <Tuple2<DisplayedTag, int>>[];
@@ -217,23 +227,25 @@ class HitomiManager {
       if (!useTranslated) {
         if (opp == 'female' || opp == 'male') {
           ch.forEach((key, value) {
-            if (key.toLowerCase().startsWith('$opp:'))
+            if (key.toLowerCase().startsWith('$opp:')) {
               results.add(Tuple3<DisplayedTag, int, int>(
                   DisplayedTag(group: opp, name: key),
                   Distance.levenshteinDistance(
                       prefix.runes.toList(), key.runes.toList()),
                   value));
+            }
           });
         } else if (opp == 'tag') {
           var po = prefix.split(':')[1];
           ch.forEach((key, value) {
             if (!key.toLowerCase().startsWith('female:') &&
-                !key.toLowerCase().startsWith('male:'))
+                !key.toLowerCase().startsWith('male:')) {
               results.add(Tuple3<DisplayedTag, int, int>(
                   DisplayedTag(group: opp, name: key),
                   Distance.levenshteinDistance(
                       po.runes.toList(), key.runes.toList()),
                   value));
+            }
           });
         } else {
           var po = prefix.split(':')[1];
@@ -284,18 +296,19 @@ class HitomiManager {
                         prefix.runes.toList(), key2.runes.toList()),
                     value2));
               } else {
-                if (key2.contains(':'))
+                if (key2.contains(':')) {
                   results.add(Tuple3<DisplayedTag, int, int>(
                       DisplayedTag(group: key2.split(':')[0], name: key2),
                       Distance.levenshteinDistance(
                           prefix.runes.toList(), key2.runes.toList()),
                       value2));
-                else
+                } else {
                   results.add(Tuple3<DisplayedTag, int, int>(
                       DisplayedTag(group: 'tag', name: key2),
                       Distance.levenshteinDistance(
                           prefix.runes.toList(), key2.runes.toList()),
                       value2));
+                }
               }
             });
           } else {
@@ -358,8 +371,9 @@ class HitomiManager {
       return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
     }
 
-    if (tokens == null || tokens.trim() == '')
+    if (tokens == null || tokens.trim() == '') {
       return 'SELECT * FROM HitomiColumnModel WHERE ${!Settings.searchPure ? 'ExistOnHitomi=1' : ''}';
+    }
 
     final split =
         splitTokens(tokens).map((x) => x.trim()).where((x) => x != '').toList();
@@ -435,17 +449,20 @@ class HitomiManager {
         where += split[i];
         if (split[i] == '(') continue;
       } else {
-        if (negative)
+        if (negative) {
           where += "Title NOT LIKE '%$val%'";
-        else
+        } else {
           where += "Title LIKE '%$val%'";
+        }
       }
 
       if (i != split.length - 1) {
         if (split[i + 1].toLowerCase() == 'or') {
           where += ' OR ';
           i++;
-        } else if (split[i + 1] != ')') where += ' AND ';
+        } else if (split[i + 1] != ')') {
+          where += ' AND ';
+        }
       }
     }
 

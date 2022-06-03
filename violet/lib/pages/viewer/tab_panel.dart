@@ -106,7 +106,7 @@ class _TabPanelState extends State<TabPanel> {
       ],
     );
 
-    if (Settings.enableViewerFunctionBackdropFilter)
+    if (Settings.enableViewerFunctionBackdropFilter) {
       return ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
@@ -117,12 +117,13 @@ class _TabPanelState extends State<TabPanel> {
           ),
         ),
       );
-    else
+    } else {
       return Container(
         color: Colors.black.withOpacity(0.8),
         padding: EdgeInsets.only(bottom: Variables.bottomBarHeight),
         child: view,
       );
+    }
   }
 }
 
@@ -256,12 +257,13 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
       var mqr = mqrr.item1.first;
 
       var what = '';
-      if (mqr.artists() != null)
+      if (mqr.artists() != null) {
         what += (mqr.artists() as String)
             .split('|')
             .where((element) => element != '' && element.toLowerCase() != 'n/a')
             .map((element) => 'artist:${element.replaceAll(' ', '_')}')
             .join(' or ');
+      }
 
       if (mqr.groups() != null) {
         if (what != '') what += ' or ';
@@ -294,8 +296,9 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
 
       setState(() => isLoaded = true);
 
-      if (!articleList.any((element) => element.id() == widget.articleId))
+      if (!articleList.any((element) => element.id() == widget.articleId)) {
         return;
+      }
 
       Future.delayed(const Duration(milliseconds: 50)).then((value) {
         var row = articleList
