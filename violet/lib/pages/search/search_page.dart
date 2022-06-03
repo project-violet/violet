@@ -428,7 +428,7 @@ class _SearchPageState extends State<SearchPage>
   Future<void> _showSearchBar() async {
     await Future.delayed(const Duration(milliseconds: 200));
     heroFlareControls.play('search2close');
-    final query = await Navigator.push(
+    final query = await Navigator.push<String>(
       context,
       MaterialPageRoute(
         builder: (context) {
