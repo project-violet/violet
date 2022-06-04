@@ -55,7 +55,7 @@ class RecordViewPage extends StatelessWidget {
                     .toList();
               })),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
-        if (!snapshot.hasData) return Container();
+        if (!snapshot.hasData) return const SizedBox.shrink();
         return CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
@@ -93,7 +93,7 @@ class RecordViewPage extends StatelessWidget {
                                       child:
                                           const ArticleListItemVerySimpleWidget(),
                                     )
-                                  : Container()
+                                  : const SizedBox.shrink()
                             ],
                           ),
                         ),
@@ -133,7 +133,7 @@ class RecordViewPage extends StatelessWidget {
         //                       ),
         //                       child: ArticleListItemVerySimpleWidget(),
         //                     )
-        //                   : Container();
+        //                   : const SizedBox.shrink();
         // return Column(
         //   crossAxisAlignment: CrossAxisAlignment.stretch,
         //   children: <Widget>[
@@ -148,7 +148,7 @@ class RecordViewPage extends StatelessWidget {
         //             ),
         //             child: ArticleListItemVerySimpleWidget(),
         //           )
-        //         : Container(),
+        //         : const SizedBox.shrink(),
         //     Row(
         //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
         //       // crossAxisAlignment: CrossAxisAlignment,

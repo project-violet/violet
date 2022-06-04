@@ -160,7 +160,7 @@ class ArticleInfoPage extends StatelessWidget {
                         ),
                         expanded:
                             PreviewAreaWidget(queryResult: data.queryResult),
-                        collapsed: Container(),
+                        collapsed: const SizedBox.shrink(),
                       ),
                     ),
                   ),
@@ -189,7 +189,7 @@ class ArticleInfoPage extends StatelessWidget {
                           expanded: _RelatedArea(
                               relatedIds:
                                   Related.getRelated(data.queryResult.id())),
-                          collapsed: Container(),
+                          collapsed: const SizedBox.shrink(),
                         ),
                       ),
                     ),
@@ -441,7 +441,7 @@ class TagInfoAreaWidget extends StatelessWidget {
   }
 
   Widget multipleChip(dynamic target, String name, List<Widget> wrap) {
-    if (target == null) return Container();
+    if (target == null) return const SizedBox.shrink();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -474,7 +474,7 @@ class SingleChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (target == null) return Container();
+    if (target == null) return const SizedBox.shrink();
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
       Padding(
         padding: const EdgeInsets.only(top: 10.0),
@@ -500,7 +500,7 @@ class MultiChipWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (target == null) return Container();
+    if (target == null) return const SizedBox.shrink();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -694,7 +694,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                   '${Translations.of(context).trans('comment')} (${widget.comments.length})'),
             ),
             expanded: commentArea(context),
-            collapsed: Container(),
+            collapsed: const SizedBox.shrink(),
           ),
         ),
       ),
@@ -1136,7 +1136,7 @@ class _RelatedArea extends StatelessWidget {
     return FutureBuilder(
       future: QueryManager.queryIds(relatedIds),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
-        if (!snapshot.hasData) return Container();
+        if (!snapshot.hasData) return const SizedBox.shrink();
 
         return Column(children: <Widget>[
           articleArea(context, snapshot.data!),

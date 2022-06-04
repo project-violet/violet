@@ -148,7 +148,7 @@ class ThumbnailImageWidget extends StatelessWidget {
                         BoxDecoration(color: Colors.white.withOpacity(0.0)),
                   ),
                 )
-              : Container(),
+              : const SizedBox.shrink(),
         ),
         placeholder: (b, c) {
           if (!Settings.simpleItemWidgetLoadingIcon) {
@@ -232,7 +232,7 @@ class ReadProgressOverlayWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return !isLastestRead || !Settings.showArticleProgress
-        ? Container()
+        ? const SizedBox.shrink()
         : Align(
             alignment: FractionalOffset.topRight,
             child: Container(

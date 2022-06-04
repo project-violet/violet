@@ -91,10 +91,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();
     imageCache.clear();
-    if (_urls != null)
+    if (_urls != null) {
       _urls!.forEach((element) async {
         await CachedNetworkImageProvider(element).evict();
       });
+    }
     super.dispose();
   }
 
@@ -125,7 +126,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               cacheExtent: height * 3.0,
               itemCount: messages.length,
               itemBuilder: (BuildContext ctxt, int index) {
-                // if (messages.length == 0) return Container();
+                // if (messages.length == 0) return const SizedBox.shrink();
                 var e = messages[index];
 
                 return FutureBuilder(
@@ -239,7 +240,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                                     snapshot.data!.item1, snapshot.data!.item2),
                                 builder:
                                     (context, AsyncSnapshot<Size> snapshot2) {
-                                  if (!snapshot2.hasData) return Container();
+                                  if (!snapshot2.hasData) {
+                                    return const SizedBox.shrink();
+                                  }
 
                                   var brtx = e.item5[0];
                                   var brty = e.item5[1];

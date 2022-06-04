@@ -119,7 +119,7 @@ class FAQPageKorean extends StatelessWidget {
                 ],
               ),
             ),
-            collapsed: Container(),
+            collapsed: const SizedBox.shrink(),
           ),
         ),
       ),

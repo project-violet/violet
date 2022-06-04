@@ -230,7 +230,7 @@ class _ArticleListItemVerySimpleWidgetState
   Widget build(BuildContext context) {
     super.build(context);
 
-    if (disposed) return Container();
+    if (disposed) return const SizedBox.shrink();
 
     if (data.bookmarkMode &&
         !widget.isCheckMode &&

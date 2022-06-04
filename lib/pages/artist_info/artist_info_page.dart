@@ -589,7 +589,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                                                 : 'Artist: ') +
                                 widget.artist)))
                   ]),
-                  collapsed: Container(),
+                  collapsed: const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -609,7 +609,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         '${Translations.of(context).trans('comment')} (${(comments != null ? comments!.length : 0)})'),
                   ),
                   expanded: commentArea(),
-                  collapsed: Container(),
+                  collapsed: const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -631,12 +631,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                               '${Translations.of(context).trans('related')} ${widget.isSeries ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                         ),
                         expanded: relatedArea(),
-                        collapsed: Container(),
+                        collapsed: const SizedBox.shrink(),
                       ),
                     ),
                   ),
                 )
-              : Container(),
+              : const SizedBox.shrink(),
           widget.isCharacter || widget.isSeries
               ? ExpandableNotifier(
                   child: Padding(
@@ -654,12 +654,12 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                               '${Translations.of(context).trans('related')} ${widget.isCharacter ? Translations.of(context).trans('iseries') : Translations.of(context).trans('icharacter')}'),
                         ),
                         expanded: relatedSingleArea(),
-                        collapsed: Container(),
+                        collapsed: const SizedBox.shrink(),
                       ),
                     ),
                   ),
                 )
-              : Container(),
+              : const SizedBox.shrink(),
           ExpandableNotifier(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -675,7 +675,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         '${Translations.of(context).trans('similar')} ${widget.isGroup ? Translations.of(context).trans('igroups') : widget.isUploader ? Translations.of(context).trans('iuploader') : widget.isSeries ? Translations.of(context).trans('iseries') : widget.isCharacter ? Translations.of(context).trans('icharacter') : Translations.of(context).trans('iartists')}'),
                   ),
                   expanded: similarArea(),
-                  collapsed: Container(),
+                  collapsed: const SizedBox.shrink(),
                 ),
               ),
             ),
@@ -695,7 +695,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
                         '${Translations.of(context).trans('series')} (${series.length})'),
                   ),
                   expanded: seriesArea(),
-                  collapsed: Container(),
+                  collapsed: const SizedBox.shrink(),
                 ),
               ),
             ),

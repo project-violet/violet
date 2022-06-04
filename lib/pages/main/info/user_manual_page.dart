@@ -27,7 +27,7 @@ class _UserManualPageState extends State<UserManualPage> {
                 'https://raw.githubusercontent.com/project-violet/violet/dev/manual/ko.md')
             .then((value) => value.body),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Container();
+          if (!snapshot.hasData) return const SizedBox.shrink();
           return Markdown(
               physics: const BouncingScrollPhysics(),
               selectable: true,

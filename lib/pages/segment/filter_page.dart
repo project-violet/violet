@@ -144,7 +144,7 @@ class _FilterPageState extends State<FilterPage> {
                 ],
               ),
             ),
-            c.isSearch ? Container() : _buildSelectPanel(),
+            c.isSearch ? const SizedBox.shrink() : _buildSelectPanel(),
             c.isSearch
                 ? _buildSearchControlPanel()
                 : _buildSelectControlPanel(),
@@ -199,7 +199,7 @@ class _FilterPageState extends State<FilterPage> {
                     ],
                   ),
                 ),
-                c.isSearch ? Container() : _buildSelectPanel(),
+                c.isSearch ? const SizedBox.shrink() : _buildSelectPanel(),
                 c.isSearch
                     ? _buildSearchControlPanel()
                     : _buildSelectControlPanel(),

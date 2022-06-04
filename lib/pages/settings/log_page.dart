@@ -107,7 +107,7 @@ class _LogPageState extends State<LogPage> {
                                       ),
                                     ),
                                   )
-                                : Container(),
+                                : const SizedBox.shrink(),
                           ],
                         ),
                         Container(height: 4),

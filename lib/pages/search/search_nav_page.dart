@@ -16,7 +16,7 @@ class _SearchNavPageState extends State<SearchNavPage> {
   Widget build(BuildContext context) {
     return CardPanel.build(
       context,
-      child: Container(),
+      child: const SizedBox.shrink(),
     );
   }
 }

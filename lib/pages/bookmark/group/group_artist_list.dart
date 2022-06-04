@@ -110,7 +110,7 @@ class _GroupArtistListState extends State<GroupArtistList>
         future: _bookmark(),
         builder: (BuildContext context,
             AsyncSnapshot<List<BookmarkArtist>> snapshot) {
-          if (!snapshot.hasData) return Container();
+          if (!snapshot.hasData) return const SizedBox.shrink();
           return PrimaryScrollController(
             controller: ScrollController(),
             child: CupertinoScrollbar(
@@ -342,7 +342,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                   child: const ArticleListItemVerySimpleWidget(),
                 ),
               )
-            : Container());
+            : const SizedBox.shrink());
   }
 
   Widget _floatingButton() {

@@ -256,7 +256,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       FutureBuilder(
         future: Future.value(1),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Container();
+          if (!snapshot.hasData) return const SizedBox.shrink();
 
           return Positioned(
             bottom: 0.0,
@@ -336,7 +336,7 @@ class _SearchBarPageState extends State<SearchBarPage>
         FutureBuilder(
           future: Future.value(1),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return Container();
+            if (!snapshot.hasData) return const SizedBox.shrink();
             return Positioned(
               bottom: 0.0,
               left: 0.0,
@@ -580,7 +580,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       future: SearchLogDatabase.getInstance()
           .then((value) async => await value.getSearchLog()),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return Container();
+        if (!snapshot.hasData) return const SizedBox.shrink();
         var logs = (snapshot.data as List<SearchLog>)
             .where((element) => element.searchWhat() != null)
             .toList();

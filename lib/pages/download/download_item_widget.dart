@@ -706,10 +706,10 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(children: <Widget>[
+                  Row(children: const <Widget>[
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-                      child: Container(),
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 4),
+                      child: SizedBox.shrink(),
                     ),
                   ]),
                 ],
@@ -771,7 +771,7 @@ class _ThumbnailWidget extends StatelessWidget {
             decoration: BoxDecoration(
               image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
             ),
-            child: Container(),
+            child: const SizedBox.shrink(),
           ),
           placeholder: (b, c) {
             return _getLoadingAnimation();
@@ -802,7 +802,7 @@ class _ThumbnailWidget extends StatelessWidget {
                   image:
                       DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 ),
-                child: Container(),
+                child: const SizedBox.shrink(),
               ),
               placeholder: (b, c) {
                 return _getLoadingAnimation();
@@ -884,7 +884,7 @@ class _FileThumbnailWidget extends StatelessWidget {
               image: DecorationImage(
                   image: state.imageProvider, fit: BoxFit.cover),
             ),
-            child: Container(),
+            child: const SizedBox.shrink(),
           );
         },
       ),

@@ -116,7 +116,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
                 widget.what == 'include'
                     ? Text(Translations.of(context).trans('tagmsgdefault'),
                         style: const TextStyle(fontSize: 14.0))
-                    : Container()
+                    : const SizedBox.shrink()
               ],
             ),
           ),

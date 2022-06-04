@@ -246,7 +246,7 @@ class VCachedNetworkImage extends StatelessWidget {
     ///CachedNetworkImage.
     if (octoPlaceholderBuilder == null &&
         octoProgressIndicatorBuilder == null) {
-      octoPlaceholderBuilder = (context) => Container();
+      octoPlaceholderBuilder = (context) => const SizedBox.shrink();
     }
 
     return OctoImage(

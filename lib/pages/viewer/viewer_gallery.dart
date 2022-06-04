@@ -275,7 +275,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return Container();
+                return const SizedBox.shrink();
               },
             ),
           );

@@ -43,7 +43,7 @@ class LibvioletPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    collapsed: Container(),
+                    collapsed: const SizedBox.shrink(),
                   ),
                 ),
               ),

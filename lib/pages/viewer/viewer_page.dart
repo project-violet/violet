@@ -559,7 +559,7 @@ class _ViewerPageState extends State<ViewerPage>
                     color: Colors.black,
                   ),
                 )
-              : Container(),
+              : const SizedBox.shrink(),
           Container(
             padding: !Settings.moveToAppBarToBottom
                 ? EdgeInsets.only(
@@ -613,7 +613,7 @@ class _ViewerPageState extends State<ViewerPage>
                             ? Colors.black.withOpacity(0.8)
                             : Colors.black,
                       )
-                    : Container(),
+                    : const SizedBox.shrink(),
               ],
             ),
           ),
@@ -1979,7 +1979,7 @@ class _ViewerPageState extends State<ViewerPage>
                     color: Colors.black,
                   ),
                 )
-              : Container(),
+              : const SizedBox.shrink(),
           AnimatedPadding(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.only(

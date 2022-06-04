@@ -168,7 +168,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
         //                       ),
         //                       child: ArticleListItemVerySimpleWidget(),
         //                     )
-        //                   : Container();
+        //                   : const SizedBox.shrink();
         // return Column(
         //   crossAxisAlignment: CrossAxisAlignment.stretch,
         //   children: <Widget>[
@@ -183,7 +183,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
         //             ),
         //             child: ArticleListItemVerySimpleWidget(),
         //           )
-        //         : Container(),
+        //         : const SizedBox.shrink(),
         //     Row(
         //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
         //       // crossAxisAlignment: CrossAxisAlignment,

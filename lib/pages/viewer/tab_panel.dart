@@ -78,7 +78,7 @@ class _TabPanelState extends State<TabPanel> {
         FutureBuilder(
           future: Future.value(1),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) return Container();
+            if (!snapshot.hasData) return const SizedBox.shrink();
             return Positioned(
               bottom: 0.0,
               left: 0.0,

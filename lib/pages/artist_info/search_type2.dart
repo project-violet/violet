@@ -95,8 +95,8 @@ class SearchType2 extends StatelessWidget {
                             Navigator.pop(context, 3);
                           },
                         ),
-                        Expanded(
-                          child: Container(),
+                        const Expanded(
+                          child: SizedBox.shrink(),
                         )
                       ],
                     ),

@@ -26,7 +26,7 @@ class _ViewRecordPanelState extends State<ViewRecordPanel> {
               .where((e) => e.articleId() == widget.articleId.toString())
               .toList())),
       builder: (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
-        if (!snapshot.hasData) return Container();
+        if (!snapshot.hasData) return const SizedBox.shrink();
         return ListView.builder(
           physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.zero,

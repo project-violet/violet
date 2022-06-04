@@ -57,8 +57,8 @@ class DownloadImageMenu extends StatelessWidget {
                         _typeItem(context, MdiIcons.rotateLeft, 'Recovery', 3),
                         // _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
                         _typeItem(context, MdiIcons.trashCan, 'Delete', -1),
-                        Expanded(
-                          child: Container(),
+                        const Expanded(
+                          child: SizedBox.shrink(),
                         )
                       ],
                     ),

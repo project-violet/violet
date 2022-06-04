@@ -333,7 +333,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
                   ),
           ],
         ),
-        Expanded(child: Container()),
+        const Expanded(child: SizedBox.shrink()),
         SizedBox(
           height: 40,
           width: 105,
@@ -353,7 +353,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
       children: [
         Text(Translations.of(context).trans('database'),
             style: const TextStyle(fontWeight: FontWeight.bold)),
-        Expanded(child: Container()),
+        const Expanded(child: SizedBox.shrink()),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

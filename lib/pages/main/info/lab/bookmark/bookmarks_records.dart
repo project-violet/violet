@@ -58,7 +58,7 @@ class LabRecordViewPage extends StatelessWidget {
             .toList();
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
-        if (!snapshot.hasData) return Container();
+        if (!snapshot.hasData) return const SizedBox.shrink();
         return CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
@@ -96,7 +96,7 @@ class LabRecordViewPage extends StatelessWidget {
                                       child:
                                           const ArticleListItemVerySimpleWidget(),
                                     )
-                                  : Container()
+                                  : const SizedBox.shrink()
                             ],
                           ),
                         ),

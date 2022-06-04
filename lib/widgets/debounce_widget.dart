@@ -29,7 +29,7 @@ class _DebounceWidgetState extends State<DebounceWidget> {
           isLoaded = true;
           return widget.child;
         }
-        return widget.loadingWidget ?? Container();
+        return widget.loadingWidget ?? const SizedBox.shrink();
       },
     );
   }

@@ -893,7 +893,7 @@ class _PatchNotePageState extends State<PatchNotePage> {
                             //           ),
                             //         ),
                             //       )
-                            //     : Container(),
+                            //     : const SizedBox.shrink(),
                           ],
                         ),
                         Container(height: 4),

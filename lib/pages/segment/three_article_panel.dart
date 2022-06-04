@@ -84,9 +84,9 @@ class _SubItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (articles.length <= index) {
-      return Expanded(
+      return const Expanded(
         flex: 1,
-        child: Container(),
+        child: SizedBox.shrink(),
       );
     }
 

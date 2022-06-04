@@ -101,7 +101,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
         future: _bookmark(),
         builder: (BuildContext context,
             AsyncSnapshot<List<BookmarkArtist>> snapshot) {
-          if (!snapshot.hasData) return Container();
+          if (!snapshot.hasData) return const SizedBox.shrink();
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: <Widget>[
@@ -299,6 +299,6 @@ class _GroupArtistListState extends State<LabGroupArtistList>
                   child: const ArticleListItemVerySimpleWidget(),
                 ),
               )
-            : Container());
+            : const SizedBox.shrink());
   }
 }
