@@ -111,7 +111,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                     }),
                     builder:
                         (context, AsyncSnapshot<Tuple2<bool, bool>> snapshot) {
-                      if (!snapshot.hasData) return Container();
+                      if (!snapshot.hasData) return const SizedBox();
 
                       if (snapshot.data!.item1) {
                         return const Icon(
@@ -127,7 +127,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                         );
                       }
 
-                      return Container();
+                      return const SizedBox();
                     },
                   ),
             onTap: () async {
