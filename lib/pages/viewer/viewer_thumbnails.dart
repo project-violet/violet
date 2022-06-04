@@ -210,17 +210,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
   }
 
   Widget _buildTappableItem(int index, Widget image) {
-    return SizedBox(
+    return SizedBox.expand(
       key: itemKeys[index],
-      width: double.infinity,
-      height: double.infinity,
       child: Stack(
         children: <Widget>[
-          SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: image,
-          ),
+          SizedBox.expand(child: image),
           Align(
             alignment: Alignment.topCenter,
             child: Container(
