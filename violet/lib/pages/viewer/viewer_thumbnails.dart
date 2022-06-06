@@ -192,13 +192,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Container(
+      children: const [
+        SizedBox(
           width: 100,
           height: 100,
-          // alignment: Alignment.center,
-          child: const Align(
-            // alignment: Alignment.center,
+          child: Align(
             child: Text(
               'Thumbnail not found!',
               textAlign: TextAlign.center,
@@ -210,17 +208,11 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
   }
 
   Widget _buildTappableItem(int index, Widget image) {
-    return Container(
+    return SizedBox.expand(
       key: itemKeys[index],
-      width: double.infinity,
-      height: double.infinity,
       child: Stack(
         children: <Widget>[
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: image,
-          ),
+          SizedBox.expand(child: image),
           Align(
             alignment: Alignment.topCenter,
             child: Container(

@@ -164,10 +164,8 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       ),
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          return Container(
+          return SizedBox.expand(
             key: itemKeys[index],
-            width: double.infinity,
-            height: double.infinity,
             child: Stack(
               children: <Widget>[
                 Image.file(
@@ -223,10 +221,8 @@ class _ViewerGalleryState extends State<ViewerGallery> {
       ),
       delegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          return Container(
+          return SizedBox.expand(
             key: itemKeys[index],
-            width: double.infinity,
-            height: double.infinity,
             child: Stack(
               children: <Widget>[
                 CachedNetworkImage(
@@ -291,10 +287,8 @@ class _ViewerGalleryState extends State<ViewerGallery> {
           ),
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
-              return Container(
+              return SizedBox.expand(
                 key: itemKeys[index],
-                width: double.infinity,
-                height: double.infinity,
                 child: Stack(
                   children: <Widget>[
                     CachedNetworkImage(
