@@ -1008,7 +1008,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         var qq = qrsCharacterOrSeries[index];
 
         var cls = 'character';
-        if (widget.isCharacter) cls = 'series';
+        if (widget.isSeries) cls = 'series';
 
         return ThreeArticlePanel(
           tappedRoute: () => ArtistInfoPage(
