@@ -11,12 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_size_getter/file_input.dart';
-import 'package:image_size_getter/image_size_getter.dart';
+import 'package:image_size_getter/image_size_getter.dart' as ImageSizeGetter;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+// import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -43,6 +43,9 @@ import 'package:violet/settings/settings_wrapper.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
+
+// import 'others/scrollable_positioned_list/src/item_positions_listener.dart';
+import 'others/scrollable_positioned_list/scrollable_positioned_list.dart';
 
 const volumeKeyChannel = EventChannel('xyz.project.violet/volume');
 
@@ -275,7 +278,7 @@ class _ViewerPageState extends State<ViewerPage>
     var imageSizes = _pageInfo.uris.map((e) {
       final image = File(e);
       if (!image.existsSync()) return null;
-      return ImageSizeGetter.getSize(FileInput(image));
+      return ImageSizeGetter.ImageSizeGetter.getSize(FileInput(image));
     }).toList();
 
     _thumbImageStartPos = List.filled(imageSizes.length + 1, 0);
@@ -1013,80 +1016,86 @@ class _ViewerPageState extends State<ViewerPage>
 
   _bodyVertical() {
     final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
+    final scrollablePositionedList = ScrollablePositionedList.builder(
+      physics: _scrollListEnable
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      itemCount: _pageInfo.uris.length,
+      itemScrollController: _itemScrollController,
+      itemPositionsListener: _itemPositionsListener,
+      minCacheExtent: _pageInfo.useFileSystem ? height * 3.0 : height * 3.0,
+      itemBuilder: (context, index) {
+        Widget? image;
+        if (!Settings.padding) {
+          if (_pageInfo.useWeb) {
+            image = _networkImageItem(index);
+          } else if (_pageInfo.useFileSystem) {
+            image = _storageImageItem(index);
+          } else if (_pageInfo.useProvider) {
+            image = _providerImageItem(index);
+          }
+        } else {
+          if (_pageInfo.useWeb) {
+            image = Padding(
+              child: _networkImageItem(index),
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+            );
+          } else if (_pageInfo.useFileSystem) {
+            image = Padding(
+              child: _storageImageItem(index),
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+            );
+          } else if (_pageInfo.useProvider) {
+            image = Padding(
+              child: _providerImageItem(index),
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+            );
+          }
+        }
+
+        if (image == null) throw Exception('Dead Reaching');
+
+        return _DoublePointListener(
+          child: image,
+          onStateChanged: (value) {
+            setState(() {
+              _scrollListEnable = value;
+            });
+          },
+        );
+      },
+    );
+
+    final interactiveViewer = InteractiveViewer(
+      transformationController: _transformationController,
+      minScale: 1.0,
+      child: AbsorbPointer(
+        absorbing: !_scrollListEnable,
+        child: ColoredBox(
+          color: Settings.themeWhat && Settings.themeBlack
+              ? Colors.black
+              : const Color(0xff444444),
+          child: NotificationListener(
+            child: scrollablePositionedList,
+            onNotification: (t) {
+              if (t is ScrollStartNotification) {
+                _onScroll = true;
+              } else if (t is ScrollEndNotification) {
+                _onScroll = false;
+              }
+              return false;
+            },
+          ),
+        ),
+      ),
+    );
 
     return Stack(
       children: <Widget>[
-        // PhotoView.customChild(
-        InteractiveViewer(
-          transformationController: _transformationController,
-          minScale: 1.0,
-          child: Container(
-            color: Settings.themeWhat && Settings.themeBlack
-                ? Colors.black
-                : const Color(0xff444444),
-            child: NotificationListener(
-              child: ScrollablePositionedList.builder(
-                physics: _scrollListEnable
-                    ? const AlwaysScrollableScrollPhysics()
-                    : const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.zero,
-                itemCount: _pageInfo.uris.length,
-                itemScrollController: _itemScrollController,
-                itemPositionsListener: _itemPositionsListener,
-                minCacheExtent:
-                    _pageInfo.useFileSystem ? height * 3.0 : height * 3.0,
-                itemBuilder: (context, index) {
-                  Widget? image;
-                  if (!Settings.padding) {
-                    if (_pageInfo.useWeb) {
-                      image = _networkImageItem(index);
-                    } else if (_pageInfo.useFileSystem) {
-                      image = _storageImageItem(index);
-                    } else if (_pageInfo.useProvider) {
-                      image = _providerImageItem(index);
-                    }
-                  } else {
-                    if (_pageInfo.useWeb) {
-                      image = Padding(
-                        child: _networkImageItem(index),
-                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                      );
-                    } else if (_pageInfo.useFileSystem) {
-                      image = Padding(
-                        child: _storageImageItem(index),
-                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                      );
-                    } else if (_pageInfo.useProvider) {
-                      image = Padding(
-                        child: _providerImageItem(index),
-                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-                      );
-                    }
-                  }
-
-                  if (image == null) throw Exception('Dead Reaching');
-
-                  return _DoublePointListener(
-                    child: image,
-                    onStateChanged: (value) {
-                      setState(() {
-                        _scrollListEnable = value;
-                      });
-                    },
-                  );
-                },
-              ),
-              onNotification: (t) {
-                if (t is ScrollStartNotification) {
-                  _onScroll = true;
-                } else if (t is ScrollEndNotification) {
-                  _onScroll = false;
-                }
-                return false;
-              },
-            ),
-          ),
-        ),
+        interactiveViewer,
         if (Settings.showPageNumberIndicator) _verticalPageLabel(),
         _touchArea(),
         if (!_disableBottom &&
