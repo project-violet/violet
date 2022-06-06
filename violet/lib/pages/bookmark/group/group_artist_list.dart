@@ -348,58 +348,52 @@ class _GroupArtistListState extends State<GroupArtistList>
   Widget _floatingButton() {
     return AnimatedFloatingActionButton(
       fabButtons: <Widget>[
-        Container(
-          child: FloatingActionButton(
-            onPressed: () {
-              artists.forEach((element) {
-                checked
-                    .add(Tuple2<int, String>(element.type(), element.artist()));
+        FloatingActionButton(
+          onPressed: () {
+            artists.forEach((element) {
+              checked
+                  .add(Tuple2<int, String>(element.type(), element.artist()));
+            });
+            setState(() {});
+          },
+          elevation: 4,
+          heroTag: 'a',
+          child: const Icon(MdiIcons.checkAll),
+        ),
+        FloatingActionButton(
+          onPressed: () async {
+            if (await showYesNoDialog(
+                context,
+                Translations.of(context)
+                    .trans('deletebookmarkmsg')
+                    .replaceAll('%s', checked.length.toString()),
+                Translations.of(context).trans('bookmark'))) {
+              var bookmark = await Bookmark.getInstance();
+              checked.forEach((element) async {
+                bookmark.unbookmarkArtist(element.item2, element.item1);
               });
-              setState(() {});
-            },
-            elevation: 4,
-            heroTag: 'a',
-            child: const Icon(MdiIcons.checkAll),
-          ),
-        ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: () async {
-              if (await showYesNoDialog(
-                  context,
-                  Translations.of(context)
-                      .trans('deletebookmarkmsg')
-                      .replaceAll('%s', checked.length.toString()),
-                  Translations.of(context).trans('bookmark'))) {
-                var bookmark = await Bookmark.getInstance();
-                checked.forEach((element) async {
-                  bookmark.unbookmarkArtist(element.item2, element.item1);
-                });
+              checked.clear();
+              refresh();
+              setState(() {
+                checkModePre = false;
                 checked.clear();
-                refresh();
+              });
+              Future.delayed(const Duration(milliseconds: 500)).then((value) {
                 setState(() {
-                  checkModePre = false;
-                  checked.clear();
+                  checkMode = false;
                 });
-                Future.delayed(const Duration(milliseconds: 500)).then((value) {
-                  setState(() {
-                    checkMode = false;
-                  });
-                });
-              }
-            },
-            elevation: 4,
-            heroTag: 'b',
-            child: const Icon(MdiIcons.delete),
-          ),
+              });
+            }
+          },
+          elevation: 4,
+          heroTag: 'b',
+          child: const Icon(MdiIcons.delete),
         ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: moveChecked,
-            elevation: 4,
-            heroTag: 'c',
-            child: const Icon(MdiIcons.folderMove),
-          ),
+        FloatingActionButton(
+          onPressed: moveChecked,
+          elevation: 4,
+          heroTag: 'c',
+          child: const Icon(MdiIcons.folderMove),
         ),
       ],
       animatedIconData: AnimatedIcons.menu_close,

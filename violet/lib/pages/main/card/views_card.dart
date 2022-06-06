@@ -70,36 +70,34 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
                 ),
                 child: GradientCard(
                   gradient: Gradients.cosmicFusion,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // SizedBox(
-                          //   width: 50,
-                          //   height: 50,
-                          //   child: Transform.translate(
-                          //     offset: Offset(-20, 0),
-                          //     child: Transform.scale(
-                          //       scale: 1.3,
-                          //       child: Center(
-                          //         child: Lottie.asset(
-                          //           'assets/lottie/5040-shooting-star.json',
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   // Icon(
-                          //   //   MdiIcons.group,
-                          //   //   color: Colors.white,
-                          //   //   size: 30,
-                          //   // ),
-                          // ),
-                          Text(
-                            Translations.of(context).trans('realtimebest'),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ]),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(
+                        //   width: 50,
+                        //   height: 50,
+                        //   child: Transform.translate(
+                        //     offset: Offset(-20, 0),
+                        //     child: Transform.scale(
+                        //       scale: 1.3,
+                        //       child: Center(
+                        //         child: Lottie.asset(
+                        //           'assets/lottie/5040-shooting-star.json',
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        //   // Icon(
+                        //   //   MdiIcons.group,
+                        //   //   color: Colors.white,
+                        //   //   size: 30,
+                        //   // ),
+                        // ),
+                        Text(
+                          Translations.of(context).trans('realtimebest'),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ]),
                 ),
               ));
         },

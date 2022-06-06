@@ -63,16 +63,14 @@ class _UpdateLogCardState extends State<UpdateLogCard>
                 ),
                 child: GradientCard(
                   gradient: Gradients.taitanum,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            Translations.of(context).trans('patchnote'),
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ]),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          Translations.of(context).trans('patchnote'),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ]),
                 ),
               ));
         },

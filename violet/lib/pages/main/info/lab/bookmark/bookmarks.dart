@@ -48,18 +48,14 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
               ),
         builder: (context, AsyncSnapshot<dynamic> snapshot) {
           if (!snapshot.hasData) {
-            return Container(
-              child: const Center(
-                child: Text('Loading ...'),
-              ),
+            return const Center(
+              child: Text('Loading ...'),
             );
           }
 
           if (snapshot.data == null) {
-            return Container(
-              child: const Center(
-                child: Text('Error Occured!'),
-              ),
+            return const Center(
+              child: Text('Error Occured!'),
             );
           }
 

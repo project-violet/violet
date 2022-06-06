@@ -233,51 +233,45 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   Widget _floatingButton() {
     return AnimatedFloatingActionButton(
       fabButtons: <Widget>[
-        Container(
-          child: FloatingActionButton(
-            onPressed: () {
-              filterResult.forEach((element) {
-                checked.add(element.id());
-              });
+        FloatingActionButton(
+          onPressed: () {
+            filterResult.forEach((element) {
+              checked.add(element.id());
+            });
+            _shouldRebuild = true;
+            setState(() {
               _shouldRebuild = true;
-              setState(() {
-                _shouldRebuild = true;
+            });
+          },
+          elevation: 4,
+          heroTag: 'a',
+          child: const Icon(MdiIcons.checkAll),
+        ),
+        FloatingActionButton(
+          onPressed: () async {
+            if (await showYesNoDialog(
+                context,
+                Translations.of(context)
+                    .trans('deletebookmarkmsg')
+                    .replaceAll('%s', checked.length.toString()),
+                Translations.of(context).trans('bookmark'))) {
+              var bookmark = await Bookmark.getInstance();
+              checked.forEach((element) async {
+                bookmark.unbookmark(element);
               });
-            },
-            elevation: 4,
-            heroTag: 'a',
-            child: const Icon(MdiIcons.checkAll),
-          ),
+              checked.clear();
+              refresh();
+            }
+          },
+          elevation: 4,
+          heroTag: 'b',
+          child: const Icon(MdiIcons.delete),
         ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: () async {
-              if (await showYesNoDialog(
-                  context,
-                  Translations.of(context)
-                      .trans('deletebookmarkmsg')
-                      .replaceAll('%s', checked.length.toString()),
-                  Translations.of(context).trans('bookmark'))) {
-                var bookmark = await Bookmark.getInstance();
-                checked.forEach((element) async {
-                  bookmark.unbookmark(element);
-                });
-                checked.clear();
-                refresh();
-              }
-            },
-            elevation: 4,
-            heroTag: 'b',
-            child: const Icon(MdiIcons.delete),
-          ),
-        ),
-        Container(
-          child: FloatingActionButton(
-            onPressed: moveChecked,
-            elevation: 4,
-            heroTag: 'c',
-            child: const Icon(MdiIcons.folderMove),
-          ),
+        FloatingActionButton(
+          onPressed: moveChecked,
+          elevation: 4,
+          heroTag: 'c',
+          child: const Icon(MdiIcons.folderMove),
         ),
       ],
       animatedIconData: AnimatedIcons.menu_close,
@@ -600,10 +594,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
         );
 
       default:
-        return Container(
-          child: const Center(
-            child: Text('Error :('),
-          ),
+        return const Center(
+          child: Text('Error :('),
         );
     }
   }

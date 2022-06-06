@@ -58,39 +58,37 @@ class _ArtistCollectionCarddState extends State<ArtistCollectionCard>
                 ),
                 child: GradientCard(
                   gradient: Gradients.coldLinear,
-                  child: Container(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // SizedBox(
-                          //   width: 50,
-                          //   height: 50,
-                          //   child: Transform.translate(
-                          //     offset: Offset(-10, -20),
-                          //     child: Transform.scale(
-                          //       scale: 3.8,
-                          //       child: Center(
-                          //         child: Lottie.asset(
-                          //           'assets/lottie/28446-floward-gift-box.json',
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          //   // Icon(
-                          //   //   MdiIcons.group,
-                          //   //   color: Colors.white,
-                          //   //   size: 30,
-                          //   // ),
-                          // ),
-                          Text(
-                            Translations.of(context).trans('artistcollection'),
-                            style: const TextStyle(
-                                // fontFamily: "Calibre-Semibold",
-                                // fontSize: 18,
-                                color: Colors.white),
-                          ),
-                        ]),
-                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // SizedBox(
+                        //   width: 50,
+                        //   height: 50,
+                        //   child: Transform.translate(
+                        //     offset: Offset(-10, -20),
+                        //     child: Transform.scale(
+                        //       scale: 3.8,
+                        //       child: Center(
+                        //         child: Lottie.asset(
+                        //           'assets/lottie/28446-floward-gift-box.json',
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        //   // Icon(
+                        //   //   MdiIcons.group,
+                        //   //   color: Colors.white,
+                        //   //   size: 30,
+                        //   // ),
+                        // ),
+                        Text(
+                          Translations.of(context).trans('artistcollection'),
+                          style: const TextStyle(
+                              // fontFamily: "Calibre-Semibold",
+                              // fontSize: 18,
+                              color: Colors.white),
+                        ),
+                      ]),
                 ),
               ));
         },
