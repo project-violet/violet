@@ -1016,7 +1016,6 @@ class _ViewerPageState extends State<ViewerPage>
 
   _bodyVertical() {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
 
     final scrollablePositionedList = ScrollablePositionedList.builder(
       physics: _scrollListEnable
@@ -1069,6 +1068,18 @@ class _ViewerPageState extends State<ViewerPage>
       },
     );
 
+    final notificationListener = NotificationListener(
+      child: scrollablePositionedList,
+      onNotification: (t) {
+        if (t is ScrollStartNotification) {
+          _onScroll = true;
+        } else if (t is ScrollEndNotification) {
+          _onScroll = false;
+        }
+        return false;
+      },
+    );
+
     final interactiveViewer = InteractiveViewer(
       transformationController: _transformationController,
       minScale: 1.0,
@@ -1078,17 +1089,7 @@ class _ViewerPageState extends State<ViewerPage>
           color: Settings.themeWhat && Settings.themeBlack
               ? Colors.black
               : const Color(0xff444444),
-          child: NotificationListener(
-            child: scrollablePositionedList,
-            onNotification: (t) {
-              if (t is ScrollStartNotification) {
-                _onScroll = true;
-              } else if (t is ScrollEndNotification) {
-                _onScroll = false;
-              }
-              return false;
-            },
-          ),
+          child: notificationListener,
         ),
       ),
     );
