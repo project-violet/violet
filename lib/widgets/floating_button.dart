@@ -97,17 +97,15 @@ class _AnimatedFloatingActionButtonState
   }
 
   Widget toggle() {
-    return Container(
-      child: FloatingActionButton(
-        backgroundColor:
-            Settings.themeWhat ? Colors.grey.shade800 : Colors.grey.shade100,
-        onPressed: animate,
-        elevation: 2,
-        foregroundColor: Settings.majorColor,
-        child: AnimatedIcon(
-          icon: widget.animatedIconData,
-          progress: _animateIcon,
-        ),
+    return FloatingActionButton(
+      backgroundColor:
+          Settings.themeWhat ? Colors.grey.shade800 : Colors.grey.shade100,
+      onPressed: animate,
+      elevation: 2,
+      foregroundColor: Settings.majorColor,
+      child: AnimatedIcon(
+        icon: widget.animatedIconData,
+        progress: _animateIcon,
       ),
     );
   }

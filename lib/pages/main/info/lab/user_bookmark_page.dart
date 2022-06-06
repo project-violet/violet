@@ -28,10 +28,8 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
         future: Bookmark.getInstance().then((value) => value.getUser()),
         builder: (context, AsyncSnapshot<List<BookmarkUser>> snapshot) {
           if (!snapshot.hasData) {
-            return Container(
-              child: const Center(
-                child: Text('Loading ...'),
-              ),
+            return const Center(
+              child: Text('Loading ...'),
             );
           }
           return ListView.builder(

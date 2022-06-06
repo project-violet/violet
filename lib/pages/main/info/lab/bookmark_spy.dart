@@ -48,7 +48,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
       context,
       enableBackgroundColor: true,
       child: bookmarks == null
-          ? Container(child: const Center(child: Text('Loading ...')))
+          ? const Center(child: Text('Loading ...'))
           : ListView.builder(
               padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
               physics: const BouncingScrollPhysics(),
