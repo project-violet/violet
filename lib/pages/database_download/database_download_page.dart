@@ -560,7 +560,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       ),
       body: Center(
         child: downloading
-            ? Container(
+            ? SizedBox(
                 height: 170.0,
                 width: 240.0,
                 child: Card(
