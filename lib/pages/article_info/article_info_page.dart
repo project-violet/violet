@@ -109,7 +109,7 @@ class ArticleInfoPage extends StatelessWidget {
                       ),
                       onPressed: () async =>
                           await _downloadButtonEvent(context, data),
-                      child: Container(
+                      child: SizedBox(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
                           Translations.of(context).trans('download'),
@@ -125,7 +125,7 @@ class ArticleInfoPage extends StatelessWidget {
                       onPressed: data.lockRead
                           ? null
                           : () async => await _readButtonEvent(context, data),
-                      child: Container(
+                      child: SizedBox(
                         width: (width - 32 - 64 - 32) / 2,
                         child: Text(
                           Translations.of(context).trans('read'),
@@ -586,13 +586,11 @@ class PreviewAreaWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Container(
+      children: const [
+        SizedBox(
           width: 100,
           height: 100,
-          // alignment: Alignment.center,
-          child: const Align(
-            // alignment: Alignment.center,
+          child: Align(
             child: Text(
               '??? Unknown Error!',
               textAlign: TextAlign.center,
@@ -709,13 +707,11 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
+            children: const [
+              SizedBox(
                 width: 100,
                 height: 100,
-                // alignment: Alignment.center,
-                child: const Align(
-                  // alignment: Alignment.center,
+                child: Align(
                   child: Text(
                     'No Comments',
                     textAlign: TextAlign.center,
@@ -990,13 +986,11 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
     return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
+        children: const [
+          SizedBox(
             width: 100,
             height: 100,
-            // alignment: Alignment.center,
-            child: const Align(
-              // alignment: Alignment.center,
+            child: Align(
               child: Text(
                 '??? Unknown Error!',
                 textAlign: TextAlign.center,

@@ -84,7 +84,7 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
                   Container(height: 36),
                   const Icon(Icons.lock),
                   const Spacer(),
-                  Container(
+                  SizedBox(
                     width: 200.0,
                     height: 30.0,
                     child: Row(
@@ -151,10 +151,10 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
   _pinIcon(index) {
     if (_pin[index] == null) {
-      return Container(
+      return const SizedBox(
         width: 10.0,
         height: 10.0,
-        child: const Material(
+        child: Material(
           color: Color.fromARGB(255, 207, 207, 207),
           type: MaterialType.circle,
         ),
