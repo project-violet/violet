@@ -131,9 +131,9 @@ class ArtistListPage extends StatelessWidget {
                   }
 
                   if (!snapshot.hasData) {
-                    return Container(
+                    return const SizedBox(
                       height: 195,
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: Center(child: CircularProgressIndicator()),
                     );
                   }
 

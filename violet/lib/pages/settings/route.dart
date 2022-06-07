@@ -19,7 +19,7 @@ class _RouteDialogState extends State<RouteDialog> {
 
     return AlertDialog(
       contentPadding: const EdgeInsets.all(16),
-      content: Container(
+      content: SizedBox(
         height: 80 * 5.0,
         width: width,
         child: ReorderableListView(
@@ -84,7 +84,7 @@ class _ImageRouteDialogState extends State<ImageRouteDialog> {
 
     return AlertDialog(
       contentPadding: const EdgeInsets.all(16),
-      content: Container(
+      content: SizedBox(
         height: 80 * 5.0,
         width: width,
         child: ReorderableListView(

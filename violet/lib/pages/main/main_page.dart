@@ -332,7 +332,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
           ],
         ),
         Expanded(child: Container()),
-        Container(
+        SizedBox(
           height: 40,
           width: 105,
           child: ElevatedButton(
