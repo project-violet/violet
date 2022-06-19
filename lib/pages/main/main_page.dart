@@ -173,14 +173,12 @@ class _MainPageState extends State<MainPage>
       ];
     }
 
-    return Container(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(top: statusBarHeight),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: _cachedGroups!,
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(top: statusBarHeight),
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: _cachedGroups!,
       ),
     );
   }
@@ -334,7 +332,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
           ],
         ),
         Expanded(child: Container()),
-        Container(
+        SizedBox(
           height: 40,
           width: 105,
           child: ElevatedButton(

@@ -169,7 +169,7 @@ class _CommunityPageState extends State<CommunityPage>
                   ),
                 ),
                 _buildDivider(),
-                Container(
+                SizedBox(
                   height: double.infinity,
                   width: 88,
                   child: _logining

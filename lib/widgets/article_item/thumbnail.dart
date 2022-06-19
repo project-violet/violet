@@ -58,33 +58,28 @@ class ThumbnailWidget extends StatelessWidget {
           : null,
       width: showDetail ? 100 - pad / 6 * 5 : null,
       child: thumbnail != null
-          ? ClipRRect(
-              borderRadius: showDetail
-                  ? const BorderRadius.horizontal(left: Radius.circular(3.0))
-                  : BorderRadius.circular(3.0),
-              child: Stack(
-                children: <Widget>[
-                  ThumbnailImageWidget(
-                    headers: headers!,
-                    thumbnail: thumbnail!,
-                    thumbnailTag: thumbnailTag,
-                    isBlurred: isBlurred,
-                  ),
-                  BookmarkIndicatorWidget(
-                    flareController: flareController,
-                    isBookmarked: isBookmarked,
-                  ),
-                  ReadProgressOverlayWidget(
-                    imageCount: imageCount,
-                    latestReadPage: latestReadPage,
-                    isLastestRead: isLastestRead,
-                  ),
-                  PagesOverlayWidget(
-                    imageCount: imageCount,
-                    showDetail: showDetail,
-                  ),
-                ],
-              ),
+          ? Stack(
+              children: <Widget>[
+                ThumbnailImageWidget(
+                  headers: headers!,
+                  thumbnail: thumbnail!,
+                  thumbnailTag: thumbnailTag,
+                  isBlurred: isBlurred,
+                ),
+                BookmarkIndicatorWidget(
+                  flareController: flareController,
+                  isBookmarked: isBookmarked,
+                ),
+                ReadProgressOverlayWidget(
+                  imageCount: imageCount,
+                  latestReadPage: latestReadPage,
+                  isLastestRead: isLastestRead,
+                ),
+                PagesOverlayWidget(
+                  imageCount: imageCount,
+                  showDetail: showDetail,
+                ),
+              ],
             )
           : !Settings.simpleItemWidgetLoadingIcon
               ? const FlareActor(
@@ -105,9 +100,15 @@ class ThumbnailWidget extends StatelessWidget {
     );
 
     if (showDetail) {
-      return Material(child: result);
+      return ClipRRect(
+        borderRadius: const BorderRadius.horizontal(left: Radius.circular(3.0)),
+        child: Material(child: result),
+      );
     } else {
-      return result;
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(3.0),
+        child: result,
+      );
     }
   }
 }

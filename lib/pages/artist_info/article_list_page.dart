@@ -73,30 +73,28 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 height: height -
                     16 -
                     (mediaQuery.padding + mediaQuery.viewInsets).bottom,
-                child: Container(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    child: CustomScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      slivers: <Widget>[
-                        SliverPersistentHeader(
-                          floating: true,
-                          delegate: AnimatedOpacitySliver(
-                            searchBar: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Stack(
-                                children: <Widget>[
-                                  _align(),
-                                  _title(),
-                                ],
-                              ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverPersistentHeader(
+                        floating: true,
+                        delegate: AnimatedOpacitySliver(
+                          searchBar: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Stack(
+                              children: <Widget>[
+                                _align(),
+                                _title(),
+                              ],
                             ),
                           ),
                         ),
-                        _cachedList!
-                      ],
-                    ),
+                      ),
+                      _cachedList!
+                    ],
                   ),
                 ),
               ),
@@ -386,10 +384,8 @@ class _ArticleListPageState extends State<ArticleListPage> {
         );
 
       default:
-        return Container(
-          child: const Center(
-            child: Text('Error :('),
-          ),
+        return const Center(
+          child: Text('Error :('),
         );
     }
   }

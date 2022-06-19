@@ -430,7 +430,7 @@ class _SearchPageState extends State<SearchPage>
   Future<void> _showSearchBar() async {
     await Future.delayed(const Duration(milliseconds: 200));
     heroFlareControls.play('search2close');
-    final query = await Navigator.push(
+    final query = await Navigator.push<String>(
       context,
       MaterialPageRoute(
         builder: (context) {
@@ -876,10 +876,8 @@ class ResultPanelWidget extends StatelessWidget {
           );
         }
       default:
-        return Container(
-          child: const Center(
-            child: Text('Error :('),
-          ),
+        return const Center(
+          child: Text('Error :('),
         );
     }
   }

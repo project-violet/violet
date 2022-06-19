@@ -48,7 +48,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
       context,
       enableBackgroundColor: true,
       child: bookmarks == null
-          ? Container(child: const Center(child: Text('Loading ...')))
+          ? const Center(child: Text('Loading ...'))
           : ListView.builder(
               padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
               physics: const BouncingScrollPhysics(),
@@ -111,7 +111,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                     }),
                     builder:
                         (context, AsyncSnapshot<Tuple2<bool, bool>> snapshot) {
-                      if (!snapshot.hasData) return Container();
+                      if (!snapshot.hasData) return const SizedBox();
 
                       if (snapshot.data!.item1) {
                         return const Icon(
@@ -127,7 +127,7 @@ class _LabBookmarkSpyPageState extends State<LabBookmarkSpyPage> {
                         );
                       }
 
-                      return Container();
+                      return const SizedBox();
                     },
                   ),
             onTap: () async {

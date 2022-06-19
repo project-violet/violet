@@ -739,7 +739,7 @@ class _ThumbnailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: showDetail ? 100 : double.infinity,
       child: thumbnail != null
           ? ClipRRect(
@@ -853,7 +853,7 @@ class _FileThumbnailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: showDetail ? 100 : double.infinity,
       child: thumbnailPath != null
           ? ClipRRect(

@@ -133,23 +133,21 @@ class _SearchBarPageState extends State<SearchBarPage>
                 color: Settings.themeWhat && Settings.themeBlack
                     ? const Color(0xFF141414)
                     : null,
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      _searchBar(),
-                      _seperator(),
-                      _searchButton(),
-                      _seperator(),
-                      Expanded(
-                        child: _searchTopPanel(),
-                      ),
-                      _seperator(),
-                      Expanded(
-                        child: _searchBottomPanel(),
-                      ),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    _searchBar(),
+                    _seperator(),
+                    _searchButton(),
+                    _seperator(),
+                    Expanded(
+                      child: _searchTopPanel(),
+                    ),
+                    _seperator(),
+                    Expanded(
+                      child: _searchBottomPanel(),
+                    ),
+                  ],
                 ),
               ),
             ),

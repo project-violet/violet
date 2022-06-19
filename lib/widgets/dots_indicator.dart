@@ -47,7 +47,7 @@ class DotsIndicator extends AnimatedWidget {
       ),
     );
     double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness;
-    return Container(
+    return SizedBox(
       width: _kDotSpacing,
       child: Center(
         child: Material(
@@ -56,7 +56,7 @@ class DotsIndicator extends AnimatedWidget {
                   : const Color(0xFF353535))
               .withAlpha((max(zoom - 1, 0.5) * 255).toInt()),
           type: MaterialType.circle,
-          child: Container(
+          child: SizedBox(
             width: _kDotSize * zoom,
             height: _kDotSize * zoom,
             child: InkWell(

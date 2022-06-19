@@ -147,8 +147,8 @@ class EHParser {
     article.title = doc.querySelector("div[id='gd2'] h1[id='gn']")!.text;
     article.subTitle = doc.querySelector("div[id='gd2'] h1[id='gj']")!.text;
 
-    article.uploader =
-        doc.querySelector("div[id='gmid'] div[id='gdn'] a")!.text;
+    var tryUploader = doc.querySelector("div[id='gmid'] div[id='gdn'] a");
+    if (tryUploader != null) article.uploader = tryUploader!.text;
 
     var nodeStatic =
         doc.querySelectorAll("div[id='gmid'] div[id='gdd'] table tr");
