@@ -44,6 +44,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
+import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
 class MainPage extends StatefulWidget {
@@ -53,13 +54,16 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage>
+class _MainPageState extends ThemeSwitchableState<MainPage>
     with AutomaticKeepAliveClientMixin<MainPage> {
   @override
   bool get wantKeepAlive => true;
   // int count = 0;
   // bool ee = false;
   int _current = 0;
+
+  @override
+  VoidCallback? get shouldReloadCallback => null;
 
   @override
   void initState() {
@@ -79,9 +83,7 @@ class _MainPageState extends State<MainPage>
 
       await UpdateSyncManager.checkUpdateSync();
 
-      setState(() {
-        _shouldReload = true;
-      });
+      setState(() {});
 
       // Update is not available for iOS.
       if (!Platform.isIOS) {
@@ -89,9 +91,6 @@ class _MainPageState extends State<MainPage>
       }
     });
   }
-
-  List<Widget>? _cachedGroups;
-  bool _shouldReload = false;
 
   @override
   Widget build(BuildContext context) {
@@ -104,81 +103,76 @@ class _MainPageState extends State<MainPage>
       const GithubCard(),
     ];
 
-    if (_cachedGroups == null || _shouldReload) {
-      _shouldReload = false;
-      _cachedGroups = <Widget>[
-        Container(height: 16),
-        _BuildGroupWidget(
-          name: Translations.of(context).trans('userstat'),
-          content: const _StatAreaWidget(),
+    final groups = <Widget>[
+      Container(height: 16),
+      _BuildGroupWidget(
+        name: Translations.of(context).trans('userstat'),
+        content: const _StatAreaWidget(),
+      ),
+      CarouselSlider(
+        options: CarouselOptions(
+          height: 70,
+          aspectRatio: 16 / 9,
+          viewportFraction: 1.0,
+          initialPage: 0,
+          enableInfiniteScroll: false,
+          reverse: false,
+          autoPlay: true,
+          autoPlayInterval: const Duration(seconds: 10),
+          autoPlayAnimationDuration: const Duration(milliseconds: 800),
+          autoPlayCurve: Curves.fastOutSlowIn,
+          enlargeCenterPage: true,
+          scrollDirection: Axis.horizontal,
+          onPageChanged: (index, reason) {
+            setState(() {
+              _current = index;
+            });
+          },
         ),
-        CarouselSlider(
-          options: CarouselOptions(
-            height: 70,
-            aspectRatio: 16 / 9,
-            viewportFraction: 1.0,
-            initialPage: 0,
-            enableInfiniteScroll: false,
-            reverse: false,
-            autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 10),
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-            autoPlayCurve: Curves.fastOutSlowIn,
-            enlargeCenterPage: true,
-            scrollDirection: Axis.horizontal,
-            onPageChanged: (index, reason) {
-              setState(() {
-                _shouldReload = true;
-                _current = index;
-              });
-            },
-          ),
-          items: cardList.map((card) {
-            return Builder(
-              builder: (BuildContext context) => card,
-            );
-          }).toList(),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [1, 2, 3].map((url) {
-            int index = [1, 2, 3].indexOf(url);
-            return Container(
-              width: 8.0,
-              height: 8.0,
-              margin:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: _current == index
-                    ? Settings.themeWhat
-                        ? const Color.fromRGBO(255, 255, 255, 0.9)
-                        : const Color.fromRGBO(0, 0, 0, 0.9)
-                    : Settings.themeWhat
-                        ? const Color.fromRGBO(255, 255, 255, 0.4)
-                        : const Color.fromRGBO(0, 0, 0, 0.4),
-              ),
-            );
-          }).toList(),
-        ),
-        _BuildGroupWidget(
-          name: Translations.of(context).trans('versionmanagement'),
-          content: const _VersionAreaWidget(),
-        ),
-        _BuildGroupWidget(
-          name: Translations.of(context).trans('service'),
-          content: const _ServiceAreaWidget(),
-        ),
-        Container(height: 32)
-      ];
-    }
+        items: cardList.map((card) {
+          return Builder(
+            builder: (BuildContext context) => card,
+          );
+        }).toList(),
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [1, 2, 3].map((url) {
+          int index = [1, 2, 3].indexOf(url);
+          return Container(
+            width: 8.0,
+            height: 8.0,
+            margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _current == index
+                  ? Settings.themeWhat
+                      ? const Color.fromRGBO(255, 255, 255, 0.9)
+                      : const Color.fromRGBO(0, 0, 0, 0.9)
+                  : Settings.themeWhat
+                      ? const Color.fromRGBO(255, 255, 255, 0.4)
+                      : const Color.fromRGBO(0, 0, 0, 0.4),
+            ),
+          );
+        }).toList(),
+      ),
+      _BuildGroupWidget(
+        name: Translations.of(context).trans('versionmanagement'),
+        content: const _VersionAreaWidget(),
+      ),
+      _BuildGroupWidget(
+        name: Translations.of(context).trans('service'),
+        content: const _ServiceAreaWidget(),
+      ),
+      Container(height: 32)
+    ];
 
     return SingleChildScrollView(
       padding: EdgeInsets.only(top: statusBarHeight),
       physics: const BouncingScrollPhysics(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: _cachedGroups!,
+        children: groups,
       ),
     );
   }
@@ -225,9 +219,7 @@ class _MainPageState extends State<MainPage>
               '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
           once = true;
         }
-        setState(() {
-          _shouldReload = true;
-        });
+        setState(() {});
       });
 
       if (await File(
@@ -270,6 +262,7 @@ class _MainPageState extends State<MainPage>
     IsolateNameServer.removePortNameMapping('downloader_send_port');
     super.dispose();
   }
+
   // @dependent: android ]
 }
 

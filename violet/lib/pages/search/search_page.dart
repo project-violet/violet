@@ -34,6 +34,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
+import 'package:violet/widgets/theme_switchable_state.dart';
 
 bool blurred = false;
 
@@ -44,10 +45,13 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage>
+class _SearchPageState extends ThemeSwitchableState<SearchPage>
     with AutomaticKeepAliveClientMixin<SearchPage> {
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  VoidCallback? get shouldReloadCallback => null;
 
   Color color = Colors.green;
   bool into = false;

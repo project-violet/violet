@@ -11,6 +11,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/server/community/session.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
@@ -20,10 +21,13 @@ class UserStatusCard extends StatefulWidget {
   State<UserStatusCard> createState() => _UserStatusCardState();
 }
 
-class _UserStatusCardState extends State<UserStatusCard>
+class _UserStatusCardState extends ThemeSwitchableState<UserStatusCard>
     with AutomaticKeepAliveClientMixin<UserStatusCard> {
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  VoidCallback? get shouldReloadCallback => null;
 
   late VioletCommunitySession sess;
   final String _userId = 'None';

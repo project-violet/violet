@@ -25,6 +25,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/downloader/isolate_downloader.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/act_log.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/other/named_color.dart';
@@ -201,6 +202,8 @@ class _SplashPageState extends State<SplashPage> {
     await HitomiIndexs.init();
     _changeMessage('init logger...');
     await Logger.init();
+    _changeMessage('init act-logger...');
+    await ActLogger.init();
     _changeMessage('loading translate...');
     await TagTranslate.init();
     _changeMessage('init population...');

@@ -16,6 +16,7 @@ import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
 class BookmarkPage extends StatefulWidget {
@@ -25,12 +26,15 @@ class BookmarkPage extends StatefulWidget {
   State<BookmarkPage> createState() => _BookmarkPageState();
 }
 
-class _BookmarkPageState extends State<BookmarkPage>
+class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
     with AutomaticKeepAliveClientMixin<BookmarkPage> {
   @override
   bool get wantKeepAlive => true;
   // List<Widget> _rows;
   bool reorder = false;
+
+  @override
+  VoidCallback? get shouldReloadCallback => null;
 
   late final FToast fToast;
 
