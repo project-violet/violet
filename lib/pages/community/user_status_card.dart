@@ -193,7 +193,7 @@ class _UserStatusCardState extends ThemeSwitchableState<UserStatusCard>
           ),
         ),
         _buildDivider(),
-        Container(
+        SizedBox(
           height: double.infinity,
           width: 88,
           child: _logining
