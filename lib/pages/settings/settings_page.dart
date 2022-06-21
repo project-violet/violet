@@ -56,6 +56,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
+import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
 class ExCountry extends Country {
@@ -306,6 +307,7 @@ class _SettingsPageState extends State<SettingsPage>
             await Settings.setThemeWhat(_themeSwitch);
             DynamicTheme.of(context)!.setBrightness(
                 !_themeSwitch ? Brightness.light : Brightness.dark);
+            ThemeSwitchableStateTargetStore.doChange();
             setState(() {
               _shouldReload = true;
             });
@@ -372,6 +374,7 @@ class _SettingsPageState extends State<SettingsPage>
                           : null,
                     ),
                   );
+                  ThemeSwitchableStateTargetStore.doChange();
                   setState(() {
                     _shouldReload = true;
                   });

@@ -32,6 +32,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/search_bar.dart';
+import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
 typedef StringCallback = Future Function(String);
@@ -49,10 +50,13 @@ class DownloadPage extends StatefulWidget {
   State<DownloadPage> createState() => _DownloadPageState();
 }
 
-class _DownloadPageState extends State<DownloadPage>
+class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     with AutomaticKeepAliveClientMixin<DownloadPage> {
   @override
   bool get wantKeepAlive => true;
+
+  @override
+  VoidCallback? get shouldReloadCallback => null;
 
   final ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = [];
