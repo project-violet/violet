@@ -14,45 +14,45 @@ enum ActLogType {
   // on/off
   appSuspense,
   appResume,
-  // after loading
-  pageSwipe,
-  serviceButton,
-  databaseSync,
-  databaseSwitching,
-  // search
-  openSearch,
-  searchWhat,
-  searchTypeChange,
-  filterOn,
-  filterData,
-  // bookmark
-  articleBookmark,
-  artistBookmark,
-  openBookmarkGroup,
-  moveBookmarkArticle,
-  addBookmarkGroup,
-  removeBookmarkGroup,
-  // settings
-  settingChange,
-  // article
-  openArticleInfo,
-  openArtistInfo,
-  downloadArticle,
-  readArticle,
-  // download
-  readDownloadedArticle,
-  // viewer
-  viewStart,
-  viewEnd,
-  viewTab,
-  viewTabReplace,
-  viewBookmark,
-  viewOpenArticleInfo,
-  viewOpenSettingInfo,
-  viewThumbnail,
-  viewThumbnailJump,
-  viewSlide,
-  viewThumbBar,
+  // // after loading
+  // pageSwipe,
+  // serviceButton,
+  // databaseSync,
+  // databaseSwitching,
+  // // search
+  // openSearch,
+  // searchWhat,
+  // searchTypeChange,
+  // filterOn,
+  // filterData,
+  // // bookmark
+  // articleBookmark,
+  // artistBookmark,
+  // openBookmarkGroup,
+  // moveBookmarkArticle,
+  // addBookmarkGroup,
+  // removeBookmarkGroup,
+  // // settings
+  // settingChange,
+  // // article
+  // openArticleInfo,
+  // openArtistInfo,
+  // downloadArticle,
+  // readArticle,
+  // // download
+  // readDownloadedArticle,
+  // // viewer
+  // viewStart,
+  // viewEnd,
+  // viewTab,
+  // viewTabReplace,
+  // viewBookmark,
+  // viewOpenArticleInfo,
+  // viewOpenSettingInfo,
+  // viewThumbnail,
+  // viewThumbnailJump,
+  // viewSlide,
+  // viewThumbBar,
 }
 
 class ActLogEvent {
@@ -66,6 +66,14 @@ class ActLogEvent {
     required this.type,
   }) {
     dateTime ??= DateTime.now();
+  }
+
+  toJson() {
+    return jsonEncode({
+      'dt': dateTime.toString(),
+      'type': type.toString(),
+      'detail': detail,
+    });
   }
 }
 
@@ -91,12 +99,12 @@ class ActLogger {
   }
 
   static Future<void> log(ActLogEvent msg) async {
-    print(msg);
+    print('$session ${msg.toJson()}');
 
     if (!Platform.environment.containsKey('FLUTTER_TEST')) {
       await lock.synchronized(() async {
         events.add(msg);
-        await logFile.writeAsString('$session ${jsonEncode(msg)}\n',
+        await logFile.writeAsString('$session ${msg.toJson()}\n',
             mode: FileMode.append);
       });
     }

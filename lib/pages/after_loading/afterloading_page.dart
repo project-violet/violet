@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/act_log.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
@@ -18,6 +19,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
+
+import '../viewer/others/lifecycle_event_handler.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   const AfterLoadingPage({Key? key}) : super(key: key);
@@ -58,9 +61,11 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
               ))
               .then((value) => _alreadyLocked = false);
         }
+        ActLogger.log(ActLogEvent(type: ActLogType.appSuspense));
         break;
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
+        ActLogger.log(ActLogEvent(type: ActLogType.appResume));
         break;
       case AppLifecycleState.detached:
         break;
