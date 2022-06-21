@@ -17,6 +17,7 @@ import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/info/lab/setting.dart';
+import 'package:violet/pages/main/info/lab/statistics.dart';
 import 'package:violet/pages/main/info/lab/top_recent.dart';
 import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
@@ -346,6 +347,15 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 null,
                 () async {
                   _navigate(const LabSetting());
+                },
+              ),
+              _buildItem(
+                const Icon(MdiIcons.chartBar, size: 40, color: Colors.lime),
+                '#017 Statistics',
+                'Lab Settings',
+                null,
+                () async {
+                  _navigate(const Statistics());
                 },
               ),
             ],
