@@ -69,7 +69,7 @@ class HentaiManager {
             .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
         .map((e) => QueryResult(result: e))
         .toList();
-    int? no = int.tryParse(what);
+    int no = int.parse(what);
 
     if (queryResult.isNotEmpty) {
       return Tuple2<List<QueryResult>, int>(queryResult, -1);
