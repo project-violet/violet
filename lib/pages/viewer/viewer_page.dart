@@ -160,10 +160,12 @@ class _ViewerPageState extends State<ViewerPage>
   List<Tuple5<double, int, int, double, List<double>>> messages =
       <Tuple5<double, int, int, double, List<double>>>[];
   bool _isSearchMode = false;
-  TextEditingController text = TextEditingController(text: '은근슬쩍');
-  String latestSearch = '은근슬쩍';
+  TextEditingController text = TextEditingController(text: '');
+  String latestSearch = '';
   List<Tuple3<String, String, int>>? autocompleteTarget;
   int _messageIndex = 0;
+  final SuggestionsBoxController _suggestionsBoxController =
+      SuggestionsBoxController();
 
   /// Thumbnail slider height including image and page text
   double _thumbHeight = 140.0;
@@ -542,10 +544,12 @@ class _ViewerPageState extends State<ViewerPage>
             top: height -
                 Variables.bottomBarHeight -
                 (48 + 48 + 48 + 32 - 24) -
+                (_isSearchMode ? 48 : 0) -
                 (_isThumbMode ? _thumbHeight.toInt() : 0) -
                 (Settings.showSlider ? 48.0 : 0) -
                 statusBarHeight,
             bottom: (48 + 48.0 + 32 - 24) +
+                (_isSearchMode ? 48 : 0) +
                 (_isThumbMode ? _thumbHeight.toInt() : 0) +
                 (Settings.showSlider ? 48.0 : 0),
             left: 48.0,
@@ -1151,7 +1155,7 @@ class _ViewerPageState extends State<ViewerPage>
             (!Settings.moveToAppBarToBottom || Settings.showSlider))
           _bottomAppBar(),
         if (!_disableBottom) _appBar(),
-        if (Platform.isIOS && !_disableBottom) _exitButton(),
+        if (Platform.isIOS && !_disableBottom && !_isSearchMode) _exitButton(),
       ],
     );
   }
@@ -2231,6 +2235,7 @@ class _ViewerPageState extends State<ViewerPage>
         const SizedBox(width: 16.0),
         Expanded(
           child: TypeAheadField(
+            suggestionsBoxController: _suggestionsBoxController,
             suggestionsCallback: (pattern) async {
               if (autocompleteTarget == null) {
                 return <Tuple3<String, String, int>>[];
@@ -2266,6 +2271,7 @@ class _ViewerPageState extends State<ViewerPage>
               Future.delayed(const Duration(milliseconds: 100))
                   .then((value) async {
                 _onModifiedText();
+                _suggestionsBoxController.close();
               });
             },
             hideOnEmpty: true,
@@ -2289,6 +2295,7 @@ class _ViewerPageState extends State<ViewerPage>
   }
 
   Future<void> _onModifiedText() async {
+    _suggestionsBoxController.close();
     if (latestSearch == text.text) return;
     latestSearch = text.text;
     messages = <Tuple5<double, int, int, double, List<double>>>[];
