@@ -2,13 +2,16 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart' as ImageSizeGetter;
@@ -19,12 +22,14 @@ import 'package:provider/provider.dart';
 // import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
@@ -136,6 +141,7 @@ class _ViewerPageState extends State<ViewerPage>
 
   /// this is used on provider
   /// caching estimated image height
+  List<double>? _originalImageHeight;
   List<double>? _estimatedImageHeight;
 
   /// this is used on provider
@@ -149,6 +155,15 @@ class _ViewerPageState extends State<ViewerPage>
 
   /// Is enabled thumbnail slider?
   bool _isThumbMode = false;
+
+  /// Is enabled search?
+  List<Tuple5<double, int, int, double, List<double>>> messages =
+      <Tuple5<double, int, int, double, List<double>>>[];
+  bool _isSearchMode = false;
+  TextEditingController text = TextEditingController(text: '은근슬쩍');
+  String latestSearch = '은근슬쩍';
+  List<Tuple3<String, String, int>>? autocompleteTarget;
+  int _messageIndex = 0;
 
   /// Thumbnail slider height including image and page text
   double _thumbHeight = 140.0;
@@ -232,6 +247,22 @@ class _ViewerPageState extends State<ViewerPage>
 
     _startsTime = DateTime.now();
 
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+      const url =
+          'https://raw.githubusercontent.com/project-violet/violet-message-search/master/SORT-COMBINE.json';
+
+      var m = jsonDecode((await http.get(url)).body) as Map<String, dynamic>;
+
+      autocompleteTarget = m.entries
+          .map((e) => Tuple3<String, String, int>(
+              e.key, TagTranslate.disassembly(e.key), e.value as int))
+          .toList();
+
+      autocompleteTarget!.sort((x, y) => y.item3.compareTo(x.item3));
+
+      setState(() {});
+    });
+
     startTimer();
   }
 
@@ -284,6 +315,8 @@ class _ViewerPageState extends State<ViewerPage>
     _thumbImageStartPos = List.filled(imageSizes.length + 1, 0);
     _thumbImageWidth = List.filled(imageSizes.length, 0);
 
+    _originalImageHeight = List.filled(imageSizes.length, 0);
+
     for (var i = 0; i < imageSizes.length; i++) {
       final sz = imageSizes[i];
 
@@ -296,6 +329,8 @@ class _ViewerPageState extends State<ViewerPage>
 
       _thumbImageWidth[i] = _thumbImageStartPos[i + 1];
       _thumbImageStartPos[i + 1] += _thumbImageStartPos[i];
+
+      _originalImageHeight![i] = sz!.height.toDouble();
     }
   }
 
@@ -417,9 +452,6 @@ class _ViewerPageState extends State<ViewerPage>
           if (x.length < 2) return;
           var e = x.elementAt(1);
           if (e.lastPage() == null) return;
-          print(DateTime.parse(e.datetimeStart())
-              .difference(DateTime.now())
-              .inDays);
           if (e.lastPage()! > 1 &&
               DateTime.now()
                       .difference(DateTime.parse(e.datetimeStart()))
@@ -588,11 +620,15 @@ class _ViewerPageState extends State<ViewerPage>
                     children: [
                       _appBarBack(),
                       Expanded(
-                        child: Row(
-                          children: [
-                            _appBarBookmark(),
-                            _appBarInfo(),
-                          ],
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              _appBarBookmark(),
+                              _appBarInfo(),
+                              _appBarSearch(),
+                            ],
+                          ),
                         ),
                       ),
                       Row(
@@ -741,6 +777,18 @@ class _ViewerPageState extends State<ViewerPage>
         ).then((value) {
           _isStaring = true;
           startTimer();
+        });
+      },
+    );
+  }
+
+  _appBarSearch() {
+    return IconButton(
+      icon: const Icon(Icons.search_rounded),
+      color: Colors.white,
+      onPressed: () async {
+        setState(() {
+          _isSearchMode = !_isSearchMode;
         });
       },
     );
@@ -1634,14 +1682,28 @@ class _ViewerPageState extends State<ViewerPage>
       }),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return _FileImage(
-            path: _pageInfo.uris[index],
-            cachedHeight: _height![index] != 0 ? _height![index] : null,
-            heightCallback: _height![index] != 0
-                ? null
-                : (height) async {
-                    _height![index] = height;
-                  },
+          return Stack(
+            children: [
+              _FileImage(
+                path: _pageInfo.uris[index],
+                cachedHeight: _height![index] != 0 ? _height![index] : null,
+                heightCallback: _height![index] != 0
+                    ? null
+                    : (height) async {
+                        _height![index] = height;
+                      },
+              ),
+              if (_isSearchMode &&
+                  _height![index] != 0 &&
+                  messages
+                      .where((element) => element.item3 == index)
+                      .isNotEmpty)
+                ..._messageSearchLayer(
+                    _height![index] / _originalImageHeight![index],
+                    messages
+                        .where((element) => element.item3 == index)
+                        .toList()),
+            ],
           );
         }
 
@@ -1674,6 +1736,7 @@ class _ViewerPageState extends State<ViewerPage>
     }
 
     if (_estimatedImageHeight == null) {
+      _originalImageHeight = List<double>.filled(_pageInfo.uris.length, 0);
       _estimatedImageHeight = List<double>.filled(_pageInfo.uris.length, 0);
       _loadingEstimaed = List<bool>.filled(_pageInfo.uris.length, false);
     }
@@ -1684,8 +1747,10 @@ class _ViewerPageState extends State<ViewerPage>
         if (_isSessionOutdated) return;
         final h =
             await _pageInfo.provider!.getEstimatedImageHeight(index, width);
+        final oh = await _pageInfo.provider!.getOriginalImageHeight(index);
         if (h > 0) {
           setState(() {
+            _originalImageHeight![index] = oh;
             _estimatedImageHeight![index] = h;
           });
         }
@@ -1756,83 +1821,126 @@ class _ViewerPageState extends State<ViewerPage>
                   : _estimatedImageHeight![index] != 0
                       ? BoxConstraints(minHeight: _estimatedImageHeight![index])
                       : null,
-              child: _ProviderImage(
-                imgKey: _keys![index],
-                imgUrl: _urlCache![index]!,
-                imgHeader: _headerCache![index],
-                imageWidgetBuilder: (context, imageProvider, child) {
-                  if (_height![index] == 0 || _height![index] == 300) {
-                    Future.delayed(const Duration(milliseconds: 50))
-                        .then((value) {
-                      try {
-                        final RenderBox renderBoxRed = _keys![index]
-                            .currentContext!
-                            .findRenderObject() as RenderBox;
-                        final sizeRender = renderBoxRed.size;
-                        if (sizeRender.height != 300) {
-                          _height![index] =
-                              (width / sizeRender.aspectRatio - 1.5)
-                                  .floor()
-                                  .toDouble();
-                        }
-                        _isImageLoaded[index] = true;
-                        if (_latestIndex >= index && !_onScroll) {
-                          _patchHeightForDynamicLoadedImage();
-                        }
-                      } catch (_) {}
-                    });
-                  }
-                  return child;
-                },
-                progressIndicatorBuilder: (context, string, progress) {
-                  return SizedBox(
-                    height: _estimatedImageHeight![index] != 0
-                        ? _estimatedImageHeight![index]
-                        : 300,
-                    child: Center(
-                      child: SizedBox(
-                        width: 30,
-                        height: 30,
-                        child:
-                            CircularProgressIndicator(value: progress.progress),
-                      ),
-                    ),
-                  );
-                },
-                loadingErrorWidgetBuilder: (context, url, error) {
-                  Logger.error('[Viewer] E: image load failed\n'
-                      '$error');
-                  Future.delayed(const Duration(milliseconds: 500))
-                      .then((value) => setState(() {
-                            _keys![index] = GlobalKey();
-                          }));
-                  return SizedBox(
-                    height: _estimatedImageHeight![index] != 0
-                        ? _estimatedImageHeight![index]
-                        : 300,
-                    child: Center(
-                      child: SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.refresh,
-                            color: Settings.majorColor,
+              child: Stack(
+                children: [
+                  _ProviderImage(
+                    imgKey: _keys![index],
+                    imgUrl: _urlCache![index]!,
+                    imgHeader: _headerCache![index],
+                    imageWidgetBuilder: (context, imageProvider, child) {
+                      if (_height![index] == 0 || _height![index] == 300) {
+                        Future.delayed(const Duration(milliseconds: 50))
+                            .then((value) {
+                          try {
+                            final RenderBox renderBoxRed = _keys![index]
+                                .currentContext!
+                                .findRenderObject() as RenderBox;
+                            final sizeRender = renderBoxRed.size;
+                            if (sizeRender.height != 300) {
+                              _height![index] =
+                                  (width / sizeRender.aspectRatio - 1.5)
+                                      .floor()
+                                      .toDouble();
+                            }
+                            _isImageLoaded[index] = true;
+                            if (_latestIndex >= index && !_onScroll) {
+                              _patchHeightForDynamicLoadedImage();
+                            }
+                          } catch (_) {}
+                        });
+                      }
+                      return child;
+                    },
+                    progressIndicatorBuilder: (context, string, progress) {
+                      return SizedBox(
+                        height: _estimatedImageHeight![index] != 0
+                            ? _estimatedImageHeight![index]
+                            : 300,
+                        child: Center(
+                          child: SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                                value: progress.progress),
                           ),
-                          onPressed: () => setState(() {
-                            _keys![index] = GlobalKey();
-                          }),
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                    loadingErrorWidgetBuilder: (context, url, error) {
+                      Logger.error('[Viewer] E: image load failed\n'
+                          '$error');
+                      Future.delayed(const Duration(milliseconds: 500))
+                          .then((value) => setState(() {
+                                _keys![index] = GlobalKey();
+                              }));
+                      return SizedBox(
+                        height: _estimatedImageHeight![index] != 0
+                            ? _estimatedImageHeight![index]
+                            : 300,
+                        child: Center(
+                          child: SizedBox(
+                            width: 50,
+                            height: 50,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.refresh,
+                                color: Settings.majorColor,
+                              ),
+                              onPressed: () => setState(() {
+                                _keys![index] = GlobalKey();
+                              }),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  if (_isSearchMode &&
+                      _height![index] != 0 &&
+                      messages
+                          .where((element) => element.item3 == index)
+                          .isNotEmpty)
+                    ..._messageSearchLayer(
+                        _height![index] / _originalImageHeight![index],
+                        messages
+                            .where((element) => element.item3 == index)
+                            .toList()),
+                ],
               ),
             );
           },
         );
       },
     );
+  }
+
+  _messageSearchLayer(double ratio,
+      List<Tuple5<double, int, int, double, List<double>>> messages) {
+    final boxes = messages.map((e) {
+      var brtx = e.item5[0];
+      var brty = e.item5[1];
+      var brbx = e.item5[2];
+      var brby = e.item5[3];
+
+      return Positioned(
+        top: brty * ratio - 4,
+        left: brtx * ratio - 4,
+        child: SizedBox(
+          width: (brbx - brtx) * ratio + 8,
+          height: (brby - brty) * ratio + 8,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 3,
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ),
+      );
+    }).toList();
+
+    return boxes;
   }
 
   /// This function is used for [_patchHeightForDynamicLoadedImage].
@@ -1993,28 +2101,43 @@ class _ViewerPageState extends State<ViewerPage>
           AnimatedPadding(
             duration: const Duration(milliseconds: 300),
             padding: EdgeInsets.only(
-                top: height -
-                    Variables.bottomBarHeight -
-                    (48) -
-                    (Platform.isIOS ? 48 - 24 : 0) -
-                    (_isThumbMode ? _thumbHeight : 0) -
-                    statusBarHeight -
-                    (Settings.moveToAppBarToBottom ? 48 : 0)),
+                top: MediaQuery.of(context).viewInsets.bottom > 1
+                    ? height - MediaQuery.of(context).viewInsets.bottom - 48.0
+                    : (height -
+                        Variables.bottomBarHeight -
+                        (48) -
+                        (Platform.isIOS ? 48 - 24 : 0) -
+                        (_isThumbMode ? _thumbHeight : 0) -
+                        (_isSearchMode ? 48 : 0) -
+                        statusBarHeight -
+                        (Settings.moveToAppBarToBottom ? 48 : 0))),
             curve: Curves.easeInOut,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
               alignment: Alignment.bottomCenter,
-              height: Variables.bottomBarHeight +
-                  (Platform.isIOS ? 48 : 0) +
-                  (_isThumbMode ? _thumbHeight : 0) +
-                  (!Settings.moveToAppBarToBottom ? 48 : 0),
+              height: MediaQuery.of(context).viewInsets.bottom > 1
+                  ? MediaQuery.of(context).viewInsets.bottom + 48
+                  : (48 +
+                      (_isThumbMode ? _thumbHeight : 0) +
+                      (_isSearchMode ? 48 : 0) +
+                      (!Settings.moveToAppBarToBottom ? 48 : 0)),
               curve: Curves.easeInOut,
               child: Material(
                 color: Colors.black.withOpacity(0.8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    AnimatedOpacity(
+                      opacity: _isSearchMode ? 1.0 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        height: _isSearchMode ? 48.0 : 0,
+                        child: _searchArea(),
+                      ),
+                    ),
                     if (_pageInfo.useFileSystem)
                       AnimatedOpacity(
                         opacity: _isThumbMode ? 1.0 : 0,
@@ -2055,6 +2178,159 @@ class _ViewerPageState extends State<ViewerPage>
         ],
       ),
     );
+  }
+
+  _gotoSearchIndex() {
+    final index = messages[_messageIndex - 1].item3;
+
+    if (!Settings.isHorizontal) {
+      _itemScrollController.scrollTo(
+        index: index,
+        duration: const Duration(microseconds: 1),
+        alignment: 0.12,
+      );
+    } else {
+      _pageController.jumpToPage(index);
+    }
+
+    _currentPage = index;
+    _prevPage = index;
+    _vPrevPage.value = index;
+
+    setState(() {});
+  }
+
+  _searchArea() {
+    final width = MediaQuery.of(context).size.width;
+
+    final upIndicator = IconButton(
+      color: Colors.white,
+      icon: const Icon(Icons.keyboard_arrow_up),
+      onPressed: () async {
+        if (messages.isEmpty) return;
+        _messageIndex = max(_messageIndex - 1, 1);
+        _gotoSearchIndex();
+      },
+    );
+
+    final downIndicator = IconButton(
+      padding: EdgeInsets.zero,
+      color: Colors.white,
+      icon: const Icon(Icons.keyboard_arrow_down),
+      onPressed: () async {
+        if (messages.isEmpty) return;
+        _messageIndex = min(_messageIndex + 1, messages.length);
+        _gotoSearchIndex();
+      },
+    );
+
+    return Row(
+      children: [
+        const SizedBox(width: 8.0),
+        const Icon(Icons.search_rounded, color: Colors.white),
+        const SizedBox(width: 8.0),
+        Expanded(
+          child: TypeAheadField(
+            suggestionsCallback: (pattern) async {
+              if (autocompleteTarget == null) {
+                return <Tuple3<String, String, int>>[];
+              }
+
+              var ppattern = TagTranslate.disassembly(pattern);
+
+              return autocompleteTarget!
+                  .where((element) => element.item2.startsWith(ppattern))
+                  .toList()
+                ..addAll(autocompleteTarget!
+                    .where((element) =>
+                        !element.item2.startsWith(ppattern) &&
+                        element.item2.contains(ppattern))
+                    .toList());
+            },
+            itemBuilder: (context, Tuple3<String, String, int> suggestion) {
+              return ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                title: Text(suggestion.item1),
+                trailing: Text(
+                  '${suggestion.item3}회',
+                  style: const TextStyle(color: Colors.grey, fontSize: 10.0),
+                ),
+                dense: true,
+              );
+            },
+            direction: AxisDirection.up,
+            onSuggestionSelected: (Tuple3<String, String, int> suggestion) {
+              text.text = suggestion.item1;
+              setState(() {});
+              Future.delayed(const Duration(milliseconds: 100))
+                  .then((value) async {
+                _onModifiedText();
+              });
+            },
+            hideOnEmpty: true,
+            hideOnLoading: true,
+            textFieldConfiguration: TextFieldConfiguration(
+              style: const TextStyle(color: Colors.white),
+              decoration: const InputDecoration.collapsed(hintText: '대사 입력'),
+              controller: text,
+              // autofocus: true,
+              onEditingComplete: _onModifiedText,
+            ),
+          ),
+        ),
+        upIndicator,
+        Text('$_messageIndex/${messages.length}',
+            style: const TextStyle(color: Colors.white, fontSize: 16.0)),
+        downIndicator,
+        const SizedBox(width: 8.0),
+      ],
+    );
+  }
+
+  Future<void> _onModifiedText() async {
+    if (latestSearch == text.text) return;
+    latestSearch = text.text;
+    messages = <Tuple5<double, int, int, double, List<double>>>[];
+
+    setState(() {});
+    var tmessages =
+        (await VioletServer.searchMessageWord(_pageInfo.id, text.text))
+            as List<dynamic>;
+    messages = tmessages
+        .map((e) => Tuple5<double, int, int, double, List<double>>(
+            double.parse(e['MatchScore'] as String),
+            e['Id'] as int,
+            e['Page'] as int,
+            double.parse(e['Correctness'].toString()),
+            (e['Rect'] as List<dynamic>)
+                .map((e) => double.parse(e.toString()))
+                .toList()))
+        .toList();
+
+    messages = messages.where((e) => e.item1 >= 80.0).toList();
+    messages.sort((a, b) => a.item3.compareTo(b.item3));
+
+    _messageIndex = 1;
+
+    _gotoSearchIndex();
+  }
+
+  Future<Size> _calculateImageDimension(
+      String url, Map<String, String> header) {
+    Completer<Size> completer = Completer();
+    Image image =
+        Image(image: CachedNetworkImageProvider(url, headers: header));
+    image.image.resolve(const ImageConfiguration()).addListener(
+      ImageStreamListener(
+        (ImageInfo image, bool synchronousCall) {
+          var myImage = image.image;
+          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+          completer.complete(size);
+        },
+      ),
+    );
+    return completer.future;
   }
 
   _thumbArea() {
@@ -2428,6 +2704,54 @@ class __FileImageState extends State<_FileImage> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
       child: image,
+    );
+  }
+}
+
+class _MessageSearchLayer extends StatelessWidget {
+  final List<Tuple5<double, int, int, double, List<double>>> messages;
+
+  const _MessageSearchLayer({
+    Key? key,
+    required this.messages,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+
+    final boxes = messages.map((e) {
+      var brtx = e.item5[0];
+      var brty = e.item5[1];
+      var brbx = e.item5[2];
+      var brby = e.item5[3];
+
+      var ratio = width / 100;
+
+      return Positioned(
+        top: brty * ratio - 4,
+        left: brtx * ratio - 4,
+        child: SizedBox(
+          width: (brbx - brtx) * ratio + 8,
+          height: (brby - brty) * ratio + 8,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 3,
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ),
+      );
+    }).toList();
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      // child: Stack(
+      //   children: boxes,
+      // ),
     );
   }
 }

@@ -428,7 +428,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
             double.parse(e['MatchScore'] as String),
             e['Id'] as int,
             e['Page'] as int,
-            e['Correctness'] as double,
+            double.parse(e['Correctness'].toString()),
             (e['Rect'] as List<dynamic>)
                 .map((e) => double.parse(e.toString()))
                 .toList()))

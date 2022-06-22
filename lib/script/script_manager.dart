@@ -45,6 +45,15 @@ class ScriptManager {
     _runtime.evaluate(_scriptCache!);
   }
 
+  static Future<String?> getGalleryInfo(String id) async {
+    var downloadUrl =
+        _runtime.evaluate("create_download_url('$id')").stringResult;
+    var headers = await runHitomiGetHeaderContent(id);
+    var galleryInfo = await http.get(downloadUrl, headers: headers);
+    if (galleryInfo.statusCode != 200) return null;
+    return galleryInfo.body;
+  }
+
   static Future<Tuple3<List<String>, List<String>, List<String>>?>
       runHitomiGetImageList(int id) async {
     if (_scriptCache == null) return null;

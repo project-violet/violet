@@ -456,6 +456,35 @@ class VioletServer {
     }
   }
 
+  static Future<dynamic> searchMessageWord(int articleId, String what) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = wsalt.getValid(vToken.toString());
+
+    var gg = await http.get(
+        '${Settings.searchMessageAPI}/wcontains/$articleId/${Uri.encodeFull(what)}',
+        headers: {
+          'v-token': vToken.toString(),
+          'v-valid': vValid,
+          'Content-Type': 'application/json'
+        });
+
+    if (gg.statusCode != 200) {
+      return gg.statusCode;
+    }
+
+    try {
+      var result = (jsonDecode(gg.body) as List<dynamic>);
+      return result;
+    } catch (e, st) {
+      print(e);
+      print(st);
+      Logger.error('[API-searchMessageWord] E: $e\n'
+          '$st');
+
+      return 900;
+    }
+  }
+
   static Future<dynamic> resotreBookmark(String userAppId) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());
