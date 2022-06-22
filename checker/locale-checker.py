@@ -6,7 +6,7 @@ localepath = '../assets/locale'
 localefiles = [f for f in listdir(localepath) if isfile(join(localepath, f))]
 
 def readjson(fn):
-    with open(fn) as jf:
+    with open(fn, encoding='utf-8') as jf:
         return json.load(jf)
 
 def extractKeys(jdata):

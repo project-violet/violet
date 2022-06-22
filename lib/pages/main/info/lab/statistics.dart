@@ -2,9 +2,14 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:collection';
+import 'dart:io';
+import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -35,6 +40,10 @@ class _StatisticsState extends State<Statistics> {
   int totalRead = 0;
   int pureRead = 0;
 
+  int logSize = 0;
+  int startUpTimes = 0;
+  int totalSeconds = 0;
+
   Future<void> updateRercord(dummy) async {
     try {
       final articles = await User.getInstance()
@@ -58,11 +67,10 @@ class _StatisticsState extends State<Statistics> {
 
       if (query.results!.isEmpty) return;
 
-      /* Statistics -- */
+      /* -- Statistics -- */
 
       lff = <Tuple2<String, int>>[];
       lffOrigin = null;
-      isExpanded = false;
       femaleTags = 0;
       maleTags = 0;
       tags = 0;
@@ -123,15 +131,88 @@ class _StatisticsState extends State<Statistics> {
       lff.sort((x, y) => y.item2.compareTo(x.item2));
 
       lffOrigin = lff;
-      lff = lff.take(5).toList();
+      if (!isExpanded) {
+        lff = lff.take(5).toList();
+      }
 
       if (femaleTags + maleTags + tags == 0) tags = 0;
+
+      await logAnalysis();
 
       setState(() {});
     } catch (e, st) {
       Logger.error('[lab-statistics] E: $e\n'
           '$st');
     }
+  }
+
+  bool _alreadyLogAnalysis = false;
+
+  Future<void> logAnalysis() async {
+    if (_alreadyLogAnalysis) return;
+    _alreadyLogAnalysis = true;
+
+    /* -- Logs -- */
+
+    logSize = await Logger.logFile.length();
+
+    const chunkSize = 64 * 1024 * 1024;
+    final chunkStarts = List.generate(
+        (logSize / chunkSize.toDouble()).ceil(), (i) => i * chunkSize);
+    final raf = await Logger.logFile.open(mode: FileMode.read);
+
+    final dts = <DateTime>[];
+    final stopMark = <int>[];
+
+    var latestStopMarkPos = 0;
+
+    for (var chunkStart in chunkStarts) {
+      await raf.setPosition(chunkStart);
+      final data = await raf.read(chunkSize);
+      final str = String.fromCharCodes(data);
+
+      for (final line in str.split('\n')) {
+        if (line.startsWith('[')) {
+          final dt = DateTime.tryParse(line.split('[')[1].split(']')[0]);
+          if (dt != null) dts.add(dt);
+
+          if (line.contains(
+              'https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt')) {
+            stopMark.add(latestStopMarkPos);
+          } else if (line.contains(
+              'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js')) {
+            latestStopMarkPos = dts.length - 1;
+          }
+        }
+      }
+    }
+
+    final marker = List<int>.generate(dts.length, (index) => index);
+
+    // for (var i = 0, c = 0; i < dts.length; i++) {
+    //   final bs = binarySearch(stopMark, i);
+    //   if (bs >= 0 && stopMark[bs] == i) {
+    //     c++;
+    //   }
+    //   marker[i] = c;
+    // }
+
+    for (var i = 0, c = 0; i < dts.length; i++) {
+      if (c < stopMark.length && stopMark[c] == i) c++;
+      marker[i] = c;
+    }
+
+    totalSeconds = 0;
+    startUpTimes = 0;
+    for (var i = 0; i < stopMark.length - 1; i++) {
+      final s =
+          dts[stopMark[i]].difference(dts[stopMark[i + 1] - 1]).abs().inSeconds;
+      if (s > 60 * 60 * 24) continue;
+      totalSeconds += s;
+      startUpTimes += 1;
+    }
+
+    setState(() {});
   }
 
   // Chart component lists
@@ -163,8 +244,13 @@ class _StatisticsState extends State<Statistics> {
                       }
                       return Column(
                         children: [
-                          Text('Total Read: $totalRead'),
-                          Text('Total Read (no overlap): $pureRead'),
+                          Text('읽은 작품: ${numberWithComma(totalRead)}개'),
+                          Text('읽은 작품 (중복없음): ${numberWithComma(pureRead)}개'),
+                          Text('로그 파일 크기: ${formatBytes(logSize, 2)}'),
+                          Container(height: 12),
+                          Text('앱 시작 횟수: ${numberWithComma(startUpTimes)}번'),
+                          Text(
+                              '앱 사용시간: ${durationToString(Duration(seconds: totalSeconds))}')
                         ],
                       );
                     },
@@ -209,6 +295,32 @@ class _StatisticsState extends State<Statistics> {
     );
   }
 
+  String durationToString(Duration duration) {
+    var result = '';
+    if (duration.inDays > 0) result += '${duration.inDays}일 ';
+    if (duration.inHours > 0) {
+      result += '${duration.inHours.remainder(24)}시간 ';
+    }
+    if (duration.inMinutes > 0) {
+      result += '${duration.inMinutes.remainder(60)}분 ';
+    }
+    if (duration.inSeconds > 0) {
+      result += '${duration.inSeconds.remainder(60)}초';
+    }
+    return result;
+  }
+
+  static String formatBytes(int bytes, int decimals) {
+    if (bytes <= 0) return '0 B';
+    const suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    var i = (log(bytes) / log(1024)).floor();
+    return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
+  }
+
+  String numberWithComma(int param) {
+    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
+  }
+
   _tagChart() {
     final width = MediaQuery.of(context).size.width;
     var axis1 = charts.AxisSpec<String>(
@@ -230,7 +342,7 @@ class _StatisticsState extends State<Statistics> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
-          Text('My Statistics',
+          Text('나의 통계',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
       ),
