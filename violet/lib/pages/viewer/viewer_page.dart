@@ -2226,9 +2226,9 @@ class _ViewerPageState extends State<ViewerPage>
 
     return Row(
       children: [
-        const SizedBox(width: 8.0),
+        const SizedBox(width: 16.0),
         const Icon(Icons.search_rounded, color: Colors.white),
-        const SizedBox(width: 8.0),
+        const SizedBox(width: 16.0),
         Expanded(
           child: TypeAheadField(
             suggestionsCallback: (pattern) async {
