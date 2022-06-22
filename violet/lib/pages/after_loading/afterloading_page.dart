@@ -61,13 +61,14 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
               ))
               .then((value) => _alreadyLocked = false);
         }
-        ActLogger.log(ActLogEvent(type: ActLogType.appSuspense));
+        ActLogger.log(ActLogEvent(type: ActLogType.appResume));
         break;
       case AppLifecycleState.paused:
       case AppLifecycleState.inactive:
-        ActLogger.log(ActLogEvent(type: ActLogType.appResume));
+        ActLogger.log(ActLogEvent(type: ActLogType.appSuspense));
         break;
       case AppLifecycleState.detached:
+        ActLogger.log(ActLogEvent(type: ActLogType.appStop));
         break;
     }
   }

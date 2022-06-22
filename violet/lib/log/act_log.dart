@@ -12,8 +12,10 @@ import 'package:synchronized/synchronized.dart' as sync;
 enum ActLogType {
   none,
   // on/off
+  appStart,
   appSuspense,
   appResume,
+  appStop,
   // // after loading
   // pageSwipe,
   // serviceButton,
@@ -75,6 +77,15 @@ class ActLogEvent {
       'detail': detail,
     });
   }
+
+  static ActLogEvent fromJson(String json) {
+    final obj = jsonDecode(json);
+    return ActLogEvent(
+      type: ActLogType.values.byName((obj['type'] as String).split('.')[1]),
+      dateTime: DateTime.parse(obj['dt']),
+      detail: obj['detail'],
+    );
+  }
 }
 
 // this data is stored only on local storage
@@ -96,6 +107,7 @@ class ActLogger {
       await logFile.create();
     }
     session = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
+    await log(ActLogEvent(type: ActLogType.appStart));
   }
 
   static Future<void> log(ActLogEvent msg) async {
