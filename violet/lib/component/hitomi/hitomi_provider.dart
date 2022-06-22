@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
+
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/image_provider.dart';
@@ -48,6 +50,7 @@ class HitomiImageProvider extends VioletImageProvider {
     return urls.item1.length;
   }
 
+  List<double>? _heightCache;
   List<double>? _estimatedCache;
 
   @override
@@ -85,5 +88,28 @@ class HitomiImageProvider extends VioletImageProvider {
   @override
   Future<void> refresh() async {
     urls = await HitomiManager.getImageList(id);
+  }
+
+  @override
+  Future<double> getOriginalImageHeight(int page) async {
+    if (_heightCache == null) {
+      _heightCache = List<double>.filled(urls.item3!.length, 0);
+    } else if (_heightCache![page] != 0) {
+      return _heightCache![page];
+    }
+
+    final info = await ScriptManager.getGalleryInfo(id);
+    if (info == null) {
+      _heightCache = List<double>.filled(urls.item3!.length, -1);
+      return -1;
+    }
+
+    final json = jsonDecode(info.split('var galleryinfo = ')[1].split(';')[0]);
+
+    for (final file in json['files']) {
+      _heightCache![page] = file['height'].toDouble();
+    }
+
+    return _heightCache![page];
   }
 }
