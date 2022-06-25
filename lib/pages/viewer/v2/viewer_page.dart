@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart' as locale;
 import 'package:violet/other/dialogs.dart';
@@ -13,7 +14,7 @@ import 'package:violet/pages/viewer/others/lifecycle_event_handler.dart';
 import 'package:violet/pages/viewer/v2/horizontal_viewer_page.dart';
 import 'package:violet/pages/viewer/v2/vertical_viewer_page.dart';
 import 'package:violet/pages/viewer/v2/viewer_controller.dart';
-import 'package:violet/pages/viewer/v2/viewer_overlay.dart';
+import 'package:violet/pages/viewer/v2/overlay/viewer_overlay.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
@@ -49,20 +50,53 @@ class _ViewerPageState extends State<ViewerPage> {
   Widget build(BuildContext context) {
     _tidyImageCache();
 
+    final mediaQuery = MediaQuery.of(context);
+
+    final view = Stack(
+      children: [
+        if (c.viewType.value == ViewType.horizontal)
+          const HorizontalViewerPage()
+        else
+          const VerticalViewerPage(),
+        const ViewerOverlay(),
+      ],
+    );
+
+    Widget body;
+
+    if (c.fullscreen.value) {
+      body = AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarColor: Colors.transparent,
+        ),
+        sized: false,
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: false,
+          body: view,
+        ),
+      );
+    } else {
+      body = Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.transparent,
+        resizeToAvoidBottomInset: false,
+        body: Padding(
+          padding: mediaQuery.padding + mediaQuery.viewInsets,
+          child: view,
+        ),
+      );
+    }
+
     return WillPopScope(
       onWillPop: () async {
         c.onSession.value = false;
         await _savePageRead();
         return Future(() => true);
       },
-      child: Stack(
-        children: [
-          Obx(() => c.viewType.value == ViewType.horizontal
-              ? const HorizontalViewerPage()
-              : const VerticalViewerPage()),
-          const ViewerOverlay(),
-        ],
-      ),
+      child: Obx(() => body),
     );
   }
 
@@ -88,10 +122,19 @@ class _ViewerPageState extends State<ViewerPage> {
     _initProvider = CallOnce(_initAfterProvider);
     _startsTime = DateTime.now();
 
-    if (Settings.showRecordJumpMessage) {
-      Future.delayed(const Duration(milliseconds: 100))
-          .then((value) => _checkLatestRead());
+    if (!Settings.disableFullScreen) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     }
+
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+      c.bookmark.value =
+          await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
+
+      if (Settings.showRecordJumpMessage) {
+        Future.delayed(const Duration(milliseconds: 100))
+            .then((value) => _checkLatestRead());
+      }
+    });
 
     _lifecycleEventHandler = LifecycleEventHandler(
       inactiveCallBack: () async {
@@ -145,7 +188,7 @@ class _ViewerPageState extends State<ViewerPage> {
     });
   }
 
-  Future<void> _checkLatestRead([bool moveAnywhere = false]) async {
+  _checkLatestRead([bool moveAnywhere = false]) async {
     final user = await User.getInstance();
     final log = await user.getUserLog();
 
@@ -172,7 +215,7 @@ class _ViewerPageState extends State<ViewerPage> {
     c.jump(e.lastPage()! - 1);
   }
 
-  Future<void> _savePageRead() async {
+  _savePageRead() async {
     await (await User.getInstance())
         .updateUserLog(_pageInfo.id, c.page.value + 1);
     if (!_pageInfo.useFileSystem && Settings.useVioletServer) {
