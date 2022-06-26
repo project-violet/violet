@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,6 +12,8 @@ import 'package:synchronized/synchronized.dart' as sync;
 
 enum ActLogType {
   none,
+  // signal
+  signal,
   // on/off
   appStart,
   appSuspense,
@@ -100,6 +103,8 @@ class ActLogger {
   static late String session;
   static List<ActLogEvent> events = <ActLogEvent>[];
 
+  static Timer? signalTimer;
+
   static Future<void> init() async {
     var dir = await getApplicationDocumentsDirectory();
     logFile = File(join(dir.path, 'act-log.txt'));
@@ -108,6 +113,10 @@ class ActLogger {
     }
     session = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
     await log(ActLogEvent(type: ActLogType.appStart));
+
+    signalTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      log(ActLogEvent(type: ActLogType.signal));
+    });
   }
 
   static Future<void> log(ActLogEvent msg) async {
