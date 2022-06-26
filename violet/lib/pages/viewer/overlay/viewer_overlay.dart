@@ -27,11 +27,11 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
-import 'package:violet/pages/viewer/tab_panel.dart';
+import 'package:violet/pages/viewer/overlay/viewer_tab_panel.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
-import 'package:violet/pages/viewer/view_record_panel.dart';
+import 'package:violet/pages/viewer/overlay/viewer_record_panel.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
-import 'package:violet/pages/viewer/viewer_thumbnails.dart';
+import 'package:violet/pages/viewer/overlay/viewer_thumbnails.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
@@ -78,7 +78,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
 
     c.overlay.listen((p0) {
       if (c.provider.useFileSystem && c.thumb.value) {
-        _thumbAnimateTo(c.page.value);
+        _thumbJumpTo(c.page.value);
       }
     });
 
@@ -386,12 +386,12 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       onPressed: () async {
         c.stopTimer();
         c.isStaring = false;
-        TabPanel? cache;
+        ViewerTabPanel? cache;
         await showModalBottomSheet(
             context: context,
             isScrollControlled: false,
             builder: (context) {
-              cache ??= TabPanel(
+              cache ??= ViewerTabPanel(
                 articleId: c.articleId.value,
                 usableTabList: c.provider.usableTabList,
                 height: height,
@@ -415,12 +415,12 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       onPressed: () async {
         c.stopTimer();
         c.isStaring = false;
-        ViewRecordPanel? cache;
+        ViewerRecordPanel? cache;
         final value = await showModalBottomSheet(
           context: context,
           isScrollControlled: false,
           builder: (context) {
-            cache ??= ViewRecordPanel(articleId: c.articleId.value);
+            cache ??= ViewerRecordPanel(articleId: c.articleId.value);
             return cache!;
           },
         );
@@ -749,6 +749,15 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
         );
       }
     });
+  }
+
+  _thumbJumpTo(page) {
+    final width = MediaQuery.of(context).size.width;
+    final jumpOffset =
+        _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
+
+    c.thumbController =
+        ScrollController(initialScrollOffset: jumpOffset > 0 ? jumpOffset : 0);
   }
 
   _thumbArea() {

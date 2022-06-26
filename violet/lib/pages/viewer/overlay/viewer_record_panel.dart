@@ -8,16 +8,17 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 
-class ViewRecordPanel extends StatefulWidget {
+class ViewerRecordPanel extends StatefulWidget {
   final int articleId;
 
-  const ViewRecordPanel({Key? key, required this.articleId}) : super(key: key);
+  const ViewerRecordPanel({Key? key, required this.articleId})
+      : super(key: key);
 
   @override
-  State<ViewRecordPanel> createState() => _ViewRecordPanelState();
+  State<ViewerRecordPanel> createState() => _ViewerRecordPanelState();
 }
 
-class _ViewRecordPanelState extends State<ViewRecordPanel> {
+class _ViewerRecordPanelState extends State<ViewerRecordPanel> {
   @override
   Widget build(BuildContext context) {
     var records = FutureBuilder(

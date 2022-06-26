@@ -26,12 +26,12 @@ import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/dots_indicator.dart';
 
-class TabPanel extends StatefulWidget {
+class ViewerTabPanel extends StatefulWidget {
   final int articleId;
   final double height;
   final List<QueryResult>? usableTabList;
 
-  const TabPanel({
+  const ViewerTabPanel({
     Key? key,
     required this.articleId,
     this.usableTabList,
@@ -39,10 +39,10 @@ class TabPanel extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<TabPanel> createState() => _TabPanelState();
+  State<ViewerTabPanel> createState() => _ViewerTabPanelState();
 }
 
-class _TabPanelState extends State<TabPanel> {
+class _ViewerTabPanelState extends State<ViewerTabPanel> {
   final PageController _pageController = PageController(initialPage: 0);
 
   // static const _kDuration = const Duration(milliseconds: 300);
