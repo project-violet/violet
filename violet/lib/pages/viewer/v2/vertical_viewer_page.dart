@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/item_positions_listener.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/scrollable_positioned_list.dart';
@@ -60,7 +61,6 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
     super.initState();
 
     c = Get.find(tag: widget.getxId);
-    print(widget.getxId);
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
@@ -136,7 +136,21 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
               padding: c.padding.value
                   ? const EdgeInsets.fromLTRB(4, 0, 4, 4)
                   : EdgeInsets.zero,
-              child: image,
+              child: Stack(
+                children: [
+                  image!,
+                  if (c.search.value &&
+                      c.imgHeight[index] != 0 &&
+                      c.messages
+                          .where((element) => element.item3 == index)
+                          .isNotEmpty)
+                    ..._messageSearchLayer(
+                        c.imgHeight[index] / c.realImgHeight[index],
+                        c.messages
+                            .where((element) => element.item3 == index)
+                            .toList()),
+                ],
+              ),
             ),
           ),
           onStateChanged: (value) {
@@ -314,7 +328,6 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
         final h =
             await c.provider.provider!.getEstimatedImageHeight(index, width);
         final oh = await c.provider.provider!.getOriginalImageHeight(index);
-        print(h);
         if (h > 0) {
           setState(() {
             c.realImgHeight[index] = oh;
@@ -406,5 +419,34 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       });
     }
     return child;
+  }
+
+  _messageSearchLayer(double ratio,
+      List<Tuple5<double, int, int, double, List<double>>> messages) {
+    final boxes = messages.map((e) {
+      var brtx = e.item5[0];
+      var brty = e.item5[1];
+      var brbx = e.item5[2];
+      var brby = e.item5[3];
+
+      return Positioned(
+        top: brty * ratio - 4,
+        left: brtx * ratio - 4,
+        child: SizedBox(
+          width: (brbx - brtx) * ratio + 8,
+          height: (brby - brty) * ratio + 8,
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 3,
+                color: Colors.red,
+              ),
+            ),
+          ),
+        ),
+      );
+    }).toList();
+
+    return boxes;
   }
 }

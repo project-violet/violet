@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/component/hitomi/message_search.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
@@ -44,8 +45,6 @@ class _TestViewerPageState extends State<TestViewerPage> {
   late LifecycleEventHandler _lifecycleEventHandler;
   Timer? _nextPageTimer;
   int _inactivateSeconds = 0;
-
-  UniqueKey _viewerKey = UniqueKey();
 
   _tidyImageCache() {
     ImageCache imageCache = PaintingBinding.instance.imageCache;
@@ -102,7 +101,6 @@ class _TestViewerPageState extends State<TestViewerPage> {
     }
 
     return WillPopScope(
-      key: _viewerKey,
       onWillPop: _close,
       child: body,
     );

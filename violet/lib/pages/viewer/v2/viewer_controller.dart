@@ -4,10 +4,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 
 enum ViewType {
@@ -54,12 +57,19 @@ class ViewerController extends GetxController {
   var overlayButton = (!Settings.disableOverlayButton).obs;
   var opacity = 0.0.obs;
 
-  final ItemScrollController verticalItemScrollController =
-      ItemScrollController();
-  PreloadPageController horizontalPageController = PreloadPageController();
+  final verticalItemScrollController = ItemScrollController();
+  var horizontalPageController = PreloadPageController();
+  final thumbController = ScrollController();
+  final searchText = TextEditingController(text: '');
+  final suggestionsBoxController = SuggestionsBoxController();
 
+  /// Is enabled search?
+  var messages = <Tuple5<double, int, int, double, List<double>>>[];
+  String latestSearch = '';
+  var messageIndex = 0.obs;
+
+  /// image infos
   late RxList<bool> isImageLoaded;
-
   late List<String?> urlCache;
   late List<Map<String, String>?> headerCache;
   late List<double> imgHeight;
@@ -213,5 +223,39 @@ class ViewerController extends GetxController {
 
   rightButton() {
     next();
+  }
+
+  gotoSearchIndex() {
+    final index = messages[messageIndex.value - 1].item3;
+
+    jump(index);
+  }
+
+  onModifiedText() async {
+    suggestionsBoxController.close();
+    if (latestSearch == searchText.text) return;
+    latestSearch == searchText.text;
+    messages = <Tuple5<double, int, int, double, List<double>>>[];
+
+    final tmessages =
+        (await VioletServer.searchMessageWord(articleId.value, searchText.text))
+            as List<dynamic>;
+    messages = tmessages
+        .map((e) => Tuple5<double, int, int, double, List<double>>(
+            double.parse(e['MatchScore'] as String),
+            e['Id'] as int,
+            e['Page'] as int,
+            double.parse(e['Correctness'].toString()),
+            (e['Rect'] as List<dynamic>)
+                .map((e) => double.parse(e.toString()))
+                .toList()))
+        .toList();
+
+    messages = messages.where((e) => e.item1 >= 80.0).toList();
+    messages.sort((a, b) => a.item3.compareTo(b.item3));
+
+    messageIndex.value = 1;
+
+    gotoSearchIndex();
   }
 }

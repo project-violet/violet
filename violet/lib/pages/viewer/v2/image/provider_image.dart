@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/settings/settings.dart';
