@@ -1,7 +1,8 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';

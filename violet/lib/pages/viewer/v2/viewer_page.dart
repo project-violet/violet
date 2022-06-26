@@ -23,14 +23,14 @@ import 'package:violet/util/call_once.dart';
 
 const volumeKeyChannel = EventChannel('xyz.project.violet/volume');
 
-class ViewerPage extends StatefulWidget {
-  const ViewerPage({Key? key}) : super(key: key);
+class TestViewerPage extends StatefulWidget {
+  const TestViewerPage({Key? key}) : super(key: key);
 
   @override
-  State<ViewerPage> createState() => _ViewerPageState();
+  State<TestViewerPage> createState() => _TestViewerPageState();
 }
 
-class _ViewerPageState extends State<ViewerPage> {
+class _TestViewerPageState extends State<TestViewerPage> {
   late final CallOnce _initProvider;
   late ViewerPageProvider _pageInfo;
   late ViewerController c;
@@ -96,7 +96,7 @@ class _ViewerPageState extends State<ViewerPage> {
         await _savePageRead();
         return Future(() => true);
       },
-      child: Obx(() => body),
+      child: body,
     );
   }
 
@@ -168,6 +168,7 @@ class _ViewerPageState extends State<ViewerPage> {
     PaintingBinding.instance.imageCache.clear();
     PaintingBinding.instance.imageCache.clearLiveImages();
     WidgetsBinding.instance.removeObserver(_lifecycleEventHandler);
+    Get.delete<ViewerController>();
   }
 
   _initAfterProvider() {
@@ -196,10 +197,13 @@ class _ViewerPageState extends State<ViewerPage> {
     if (x.length < 2) return;
 
     final e = x.elementAt(1);
+    print(e);
     if (e.lastPage() == null) return;
     if (e.lastPage()! <= 1 ||
-        DateTime.now().difference(DateTime.parse(e.datetimeStart())).inDays <=
-            7) return;
+        DateTime.now().difference(DateTime.parse(e.datetimeStart())).inDays >
+            7) {
+      return;
+    }
 
     if (!moveAnywhere) {
       final isJump = await showYesNoDialog(
@@ -210,9 +214,9 @@ class _ViewerPageState extends State<ViewerPage> {
         locale.Translations.of(context).trans('record'),
       );
       if (!isJump) return;
-    }
 
-    c.jump(e.lastPage()! - 1);
+      c.jump(e.lastPage()! - 1);
+    }
   }
 
   _savePageRead() async {

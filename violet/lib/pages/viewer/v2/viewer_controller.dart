@@ -1,3 +1,6 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,6 +59,10 @@ class ViewerController extends GetxController {
   late List<double> realImgWidth;
   late List<GlobalKey> imgKeys;
 
+  /// this variable used in [vertical_viewer_page]
+  /// this will consume on [_itemPositionsListener]
+  bool onJump = false;
+
   ViewerController(this.provider) {
     articleId = provider.id.obs;
     maxPage = provider.uris.length;
@@ -74,7 +81,7 @@ class ViewerController extends GetxController {
   }
 
   jump(int page) {
-    if (page < 1) return;
+    if (page < 0) return;
     if (page >= maxPage) return;
 
     this.page.value = page;
@@ -91,7 +98,7 @@ class ViewerController extends GetxController {
   }
 
   move(int page) {
-    if (page < 1) return;
+    if (page < 0) return;
     if (page >= maxPage) return;
 
     if (!animation.value) {
