@@ -764,7 +764,11 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
       userlog.forEach((element) {
         final id = int.tryParse(element.articleId());
-        if (id == null) return;
+        if (id == null) {
+          Logger.warning(
+              '[download-_applyFilter] articleId is not int type: ${element.articleId()}');
+          return;
+        }
         if (!articlereadlog.containsKey(id)) {
           final dt = DateTime.tryParse(element.datetimeStart());
           if (dt != null) {
@@ -773,9 +777,6 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
             Logger.warning(
                 '[download-_applyFilter] datetimeStart is not DateTime type: ${element.datetimeStart()}');
           }
-        } else {
-          Logger.warning(
-              '[download-_applyFilter] articleId is not int type: ${element.articleId()}');
         }
       });
 
