@@ -24,6 +24,7 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
+import 'package:violet/pages/viewer/v2/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
@@ -351,7 +352,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                       id: int.tryParse(widget.item.url()) ?? -1,
                       title: widget.item.info()!,
                     ),
-                    child: const ViewerPage());
+                    child: const TestViewerPage());
               },
             ),
           );

@@ -7,8 +7,11 @@ import 'package:get/get.dart';
 import '../viewer_controller.dart';
 
 class PageLabel extends StatelessWidget {
-  PageLabel({Key? key}) : super(key: key);
-  final ViewerController c = Get.find();
+  late final ViewerController c;
+
+  PageLabel({Key? key, required String getxId}) : super(key: key) {
+    c = Get.find(tag: getxId);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -13,12 +13,14 @@ import 'package:violet/settings/settings_wrapper.dart';
 import '../vertical_viewer_page.dart';
 
 class FileImage extends StatefulWidget {
+  final String getxId;
   final String path;
   final double? cachedHeight;
   final DoubleCallback? heightCallback;
 
   const FileImage({
     Key? key,
+    required this.getxId,
     required this.path,
     this.heightCallback,
     this.cachedHeight,
@@ -29,13 +31,15 @@ class FileImage extends StatefulWidget {
 }
 
 class _FileImageState extends State<FileImage> {
-  final ViewerController c = Get.find();
+  late final ViewerController c;
   late double _height;
   bool _loaded = false;
 
   @override
   void initState() {
     super.initState();
+
+    c = Get.find(tag: widget.getxId);
 
     if (widget.cachedHeight != null && widget.cachedHeight! > 0) {
       _height = widget.cachedHeight!;
@@ -68,7 +72,7 @@ class _FileImageState extends State<FileImage> {
       height: _height,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
-      child: Obx(() => image),
+      child: image,
     );
   }
 

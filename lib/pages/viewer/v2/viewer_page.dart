@@ -1,11 +1,15 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart' as locale;
@@ -20,6 +24,7 @@ import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/util/call_once.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 const volumeKeyChannel = EventChannel('xyz.project.violet/volume');
 
@@ -31,12 +36,16 @@ class TestViewerPage extends StatefulWidget {
 }
 
 class _TestViewerPageState extends State<TestViewerPage> {
-  late final CallOnce _initProvider;
+  late CallOnce _initProvider;
   late ViewerPageProvider _pageInfo;
   late ViewerController c;
+  late String getxId;
   late DateTime _startsTime, _inactivateTime;
-  late final LifecycleEventHandler _lifecycleEventHandler;
+  late LifecycleEventHandler _lifecycleEventHandler;
+  Timer? _nextPageTimer;
   int _inactivateSeconds = 0;
+
+  UniqueKey _viewerKey = UniqueKey();
 
   _tidyImageCache() {
     ImageCache imageCache = PaintingBinding.instance.imageCache;
@@ -52,17 +61,19 @@ class _TestViewerPageState extends State<TestViewerPage> {
 
     final mediaQuery = MediaQuery.of(context);
 
-    final view = Stack(
-      children: [
-        if (c.viewType.value == ViewType.horizontal)
-          const HorizontalViewerPage()
-        else
-          const VerticalViewerPage(),
-        const ViewerOverlay(),
-      ],
+    final view = Obx(
+      () => Stack(
+        children: [
+          if (c.viewType.value == ViewType.horizontal)
+            HorizontalViewerPage(getxId: getxId)
+          else
+            VerticalViewerPage(getxId: getxId),
+          ViewerOverlay(getxId: getxId),
+        ],
+      ),
     );
 
-    Widget body;
+    late Widget body;
 
     if (c.fullscreen.value) {
       body = AnnotatedRegion<SystemUiOverlayStyle>(
@@ -91,11 +102,8 @@ class _TestViewerPageState extends State<TestViewerPage> {
     }
 
     return WillPopScope(
-      onWillPop: () async {
-        c.onSession.value = false;
-        await _savePageRead();
-        return Future(() => true);
-      },
+      key: _viewerKey,
+      onWillPop: _close,
       child: body,
     );
   }
@@ -168,13 +176,57 @@ class _TestViewerPageState extends State<TestViewerPage> {
     PaintingBinding.instance.imageCache.clear();
     PaintingBinding.instance.imageCache.clearLiveImages();
     WidgetsBinding.instance.removeObserver(_lifecycleEventHandler);
-    Get.delete<ViewerController>();
+    Get.delete<ViewerController>(tag: getxId);
+  }
+
+  void startTimer() {
+    if (_nextPageTimer != null) {
+      _nextPageTimer!.cancel();
+      _nextPageTimer = null;
+    }
+    if (Settings.enableTimer) {
+      _nextPageTimer = Timer.periodic(
+        Duration(milliseconds: (Settings.timerTick * 1000).toInt()),
+        nextPageTimerCallback,
+      );
+    }
+  }
+
+  void stopTimer() {
+    if (_nextPageTimer != null) {
+      _nextPageTimer!.cancel();
+      _nextPageTimer = null;
+    }
+  }
+
+  Future<void> nextPageTimerCallback(timer) async {
+    if (c.rightToLeft.value) {
+      c.prev();
+    } else {
+      c.next();
+    }
   }
 
   _initAfterProvider() {
     _pageInfo = Provider.of<ViewerPageProvider>(context);
-    c = Get.put(ViewerController(_pageInfo));
+    getxId = const Uuid().v4();
+    c = Get.put(
+      ViewerController(
+        _pageInfo,
+        close: _close,
+        replace: _replace,
+        startTimer: startTimer,
+        stopTimer: stopTimer,
+      ),
+      tag: getxId,
+    );
     _setupVolume();
+  }
+
+  Future<bool> _close() async {
+    c.onSession.value = false;
+    await _savePageRead();
+    return Future(() => true);
   }
 
   _setupVolume() {
@@ -228,5 +280,61 @@ class _TestViewerPageState extends State<TestViewerPage> {
           DateTime.now().difference(_startsTime).inSeconds -
               _inactivateSeconds);
     }
+  }
+
+  _replace(QueryResult article) async {
+    await _savePageRead();
+
+    await (await User.getInstance()).insertUserLog(article.id(), 0);
+
+    var prov = await ProviderManager.get(article.id());
+    var headers = await prov.getHeader(0);
+
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
+        pageBuilder: (context, animation1, animation2) =>
+            Provider<ViewerPageProvider>.value(
+          value: ViewerPageProvider(
+            uris: List<String>.filled(prov.length(), ''),
+            useProvider: true,
+            provider: prov,
+            headers: headers,
+            id: article.id(),
+            title: article.title(),
+            usableTabList: _pageInfo.usableTabList,
+          ),
+          child: const TestViewerPage(),
+        ),
+      ),
+    );
+
+    // Get.delete<ViewerController>(tag: getxId);
+
+    // getxId = const Uuid().v4();
+    // c = Get.put(
+    //   ViewerController(
+    //     _pageInfo,
+    //     close: _close,
+    //     replace: _replace,
+    //     startTimer: startTimer,
+    //     stopTimer: stopTimer,
+    //   ),
+    //   tag: getxId,
+    // );
+
+    // _startsTime = DateTime.now();
+    // _inactivateSeconds = 0;
+
+    // _init();
+
+    // setState(() {
+    //   _viewerKey = UniqueKey();
+    // });
+
+    // Future.delayed(const Duration(milliseconds: 300))
+    //     .then((value) => _checkLatestRead(true));
   }
 }

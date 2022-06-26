@@ -17,6 +17,14 @@ enum ViewType {
 
 class ViewerController extends GetxController {
   final ViewerPageProvider provider;
+  late RxInt articleId;
+  late int maxPage;
+
+  late Function close;
+  late Function replace;
+  late Function stopTimer;
+  late Function startTimer;
+
   var page = 0.obs;
   var viewType =
       Settings.isHorizontal ? ViewType.horizontal.obs : ViewType.vertical.obs;
@@ -38,16 +46,17 @@ class ViewerController extends GetxController {
   var search = false.obs;
   var onSession = true.obs;
   var bookmark = false.obs;
+  var isStaring = true;
   var sliderOnChange = false;
+
+  /// these are used on overlay
   var overlay = false.obs;
-  late RxInt articleId;
+  var overlayButton = (!Settings.disableOverlayButton).obs;
+  var opacity = 0.0.obs;
 
   final ItemScrollController verticalItemScrollController =
       ItemScrollController();
-  final PreloadPageController horizontalPageController =
-      PreloadPageController();
-
-  late int maxPage;
+  PreloadPageController horizontalPageController = PreloadPageController();
 
   late RxList<bool> isImageLoaded;
 
@@ -58,12 +67,19 @@ class ViewerController extends GetxController {
   late List<double> realImgHeight;
   late List<double> realImgWidth;
   late List<GlobalKey> imgKeys;
+  late List<bool> loadingEstimaed;
 
   /// this variable used in [vertical_viewer_page]
   /// this will consume on [_itemPositionsListener]
   bool onJump = false;
 
-  ViewerController(this.provider) {
+  ViewerController(
+    this.provider, {
+    required this.close,
+    required this.replace,
+    required this.stopTimer,
+    required this.startTimer,
+  }) {
     articleId = provider.id.obs;
     maxPage = provider.uris.length;
     thumb = provider.useFileSystem.obs;
@@ -78,6 +94,7 @@ class ViewerController extends GetxController {
     realImgHeight = List<double>.filled(maxPage, 0);
     imgKeys =
         List<GlobalKey>.generate(provider.uris.length, (index) => GlobalKey());
+    loadingEstimaed = List<bool>.filled(maxPage, false);
   }
 
   jump(int page) {
@@ -140,47 +157,17 @@ class ViewerController extends GetxController {
       ? page.value + 1
       : page.value - 1);
 
-  // _preprocessImageInfoForFileImage() {
-  //   _thumbHeight = [140.0, 120.0, 96.0][Settings.thumbSize];
-  //   _isThumbMode = Settings.enableThumbSlider;
-
-  //   var imageSizes = _pageInfo.uris.map((e) {
-  //     final image = File(e);
-  //     if (!image.existsSync()) return null;
-  //     return ImageSizeGetter.ImageSizeGetter.getSize(FileInput(image));
-  //   }).toList();
-
-  //   _thumbImageStartPos = List.filled(imageSizes.length + 1, 0);
-  //   _thumbImageWidth = List.filled(imageSizes.length, 0);
-
-  //   _originalImageHeight = List.filled(imageSizes.length, 0);
-
-  //   for (var i = 0; i < imageSizes.length; i++) {
-  //     final sz = imageSizes[i];
-
-  //     if (sz != null) {
-  //       _thumbImageStartPos[i + 1] =
-  //           (_thumbHeight - 14.0) * sz.width / sz.height;
-  //     } else {
-  //       _thumbImageStartPos[i + 1] = (_thumbHeight - 14.0) / 36 * 25;
-  //     }
-
-  //     _thumbImageWidth[i] = _thumbImageStartPos[i + 1];
-  //     _thumbImageStartPos[i + 1] += _thumbImageStartPos[i];
-
-  //     _originalImageHeight![i] = sz!.height.toDouble();
-  //   }
-  // }
-
   load(int index) async {
-    if (headerCache[index] == null) {
-      var header = await provider.provider!.getHeader(index);
-      headerCache[index] = header;
-    }
+    if (provider.useProvider) {
+      if (headerCache[index] == null) {
+        var header = await provider.provider!.getHeader(index);
+        headerCache[index] = header;
+      }
 
-    if (urlCache[index] == null) {
-      var url = await provider.provider!.getImageUrl(index);
-      urlCache[index] = url;
+      if (urlCache[index] == null) {
+        var url = await provider.provider!.getImageUrl(index);
+        urlCache[index] = url;
+      }
     }
   }
 
@@ -201,8 +188,9 @@ class ViewerController extends GetxController {
   }
 
   middleButton() {
-    overlay.value = !overlay.value;
-    if (overlay.value) {
+    if (!overlay.value) {
+      overlay.value = !overlay.value;
+      opacity.value = 1.0;
       if (!Settings.disableFullScreen) {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
           SystemUiOverlay.top,
@@ -213,6 +201,9 @@ class ViewerController extends GetxController {
       if (!Settings.disableFullScreen) {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
       }
+      opacity.value = 0.0;
+      Future.delayed(const Duration(milliseconds: 300))
+          .then((value) => overlay.value = !overlay.value);
     }
   }
 
