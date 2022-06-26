@@ -2,11 +2,13 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:image_size_getter/file_input.dart';
@@ -14,7 +16,10 @@ import 'package:image_size_getter/image_size_getter.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/component/hitomi/message_search.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart' as locale;
@@ -27,6 +32,7 @@ import 'package:violet/pages/viewer/v2/viewer_controller.dart';
 import 'package:violet/pages/viewer/view_record_panel.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_thumbnails.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
@@ -52,7 +58,6 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
   late final FToast fToast;
 
   /// these are used for thumbnail slider
-  final ScrollController _thumbController = ScrollController();
   late List<double> _thumbImageWidth;
   late List<double> _thumbImageStartPos;
 
@@ -364,6 +369,8 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       icon: const Icon(Icons.search_rounded),
       color: Colors.white,
       onPressed: () async {
+        await MessageSearch.init();
+
         setState(() {
           c.search.value = !c.search.value;
         });
@@ -394,64 +401,6 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
           if (value == null) return;
 
           c.replace(value as QueryResult);
-
-          // await _savePageRead(_pageInfo.useFileSystem);
-
-          // await (await User.getInstance()).insertUserLog(value.id(), 0);
-
-          // _inactivateSeconds = 0;
-          // _startsTime = DateTime.now();
-
-          // if (!Settings.isHorizontal) {
-          //   _itemScrollController.scrollTo(
-          //     index: 0,
-          //     duration: const Duration(microseconds: 1),
-          //     alignment: 0.12,
-          //   );
-          // } else {
-          //   _pageController.jumpToPage(0);
-          // }
-          // _currentPage = 0;
-          // _prevPage = 0;
-          // _vPrevPage.value = 0;
-
-          // var prov = await ProviderManager.get(value.id());
-          // var headers = await prov.getHeader(0);
-
-          // _pageInfo = ViewerPageProvider(
-          //   uris: List<String>.filled(prov.length(), ''),
-          //   useProvider: true,
-          //   provider: prov,
-          //   headers: headers,
-          //   id: value.id(),
-          //   title: value.title(),
-          //   usableTabList: _pageInfo.usableTabList,
-          // );
-
-          // _report = ViewerReport(
-          //   id: _pageInfo.id,
-          //   pages: _pageInfo.uris.length,
-          //   startsTime: DateTime.now(),
-          // );
-          // _decisecondPerPages = List.filled(_pageInfo.uris.length, 0);
-          // _isImageLoaded = List.filled(_pageInfo.uris.length, false);
-
-          // _headerCache =
-          //     List<Map<String, String>?>.filled(_pageInfo.uris.length, null);
-          // _urlCache = List<String?>.filled(_pageInfo.uris.length, null);
-          // _height = List<double>.filled(_pageInfo.uris.length, 0);
-          // _keys = List<GlobalKey>.generate(
-          //     _pageInfo.uris.length, (index) => GlobalKey());
-          // _estimatedImageHeight = List<double>.filled(_pageInfo.uris.length, 0);
-          // _loadingEstimaed = List<bool>.filled(_pageInfo.uris.length, false);
-          // _latestIndex = 0;
-          // _latestAlign = 0;
-          // _onScroll = false;
-
-          // setState(() {});
-
-          // Future.delayed(const Duration(milliseconds: 300))
-          //     .then((value) => _checkLatestRead(true));
         });
         c.startTimer();
         c.isStaring = true;
@@ -545,7 +494,6 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
               cache ??= ViewerSettingPanel(
                 getxId: widget.getxId,
                 viewerStyleChangeEvent: () {
-                  print(c.page.value);
                   if (Settings.isHorizontal) {
                     c.horizontalPageController =
                         PreloadPageController(initialPage: c.page.value);
@@ -710,7 +658,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
                           height: c.search.value ? 48.0 : 0,
-                          // child: _searchArea(),
+                          child: _searchArea(),
                         ),
                       ),
                       if (c.provider.useFileSystem)
@@ -794,7 +742,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
         final width = MediaQuery.of(context).size.width;
         final jumpOffset =
             _thumbImageStartPos[page] - width / 2 + _thumbImageWidth[page] / 2;
-        _thumbController.animateTo(
+        c.thumbController.animateTo(
           jumpOffset > 0 ? jumpOffset : 0,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
@@ -808,7 +756,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
     final width = MediaQuery.of(context).size.width;
 
     return ListView.builder(
-      controller: _thumbController,
+      controller: c.thumbController,
       scrollDirection: Axis.horizontal,
       itemCount: c.maxPage,
       physics: const BouncingScrollPhysics(),
@@ -845,7 +793,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
               final jumpOffset = _thumbImageStartPos[index] -
                   width / 2 +
                   _thumbImageWidth[index] / 2;
-              _thumbController.animateTo(
+              c.thumbController.animateTo(
                 jumpOffset > 0 ? jumpOffset : 0,
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeOut,
@@ -856,6 +804,92 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
           ),
         );
       },
+    );
+  }
+
+  _searchArea() {
+    final upIndicator = IconButton(
+      color: Colors.white,
+      icon: const Icon(Icons.keyboard_arrow_up),
+      onPressed: () async {
+        if (c.messages.isEmpty) return;
+        c.messageIndex.value = max(c.messageIndex.value - 1, 1);
+        c.gotoSearchIndex();
+      },
+    );
+
+    final downIndicator = IconButton(
+      padding: EdgeInsets.zero,
+      color: Colors.white,
+      icon: const Icon(Icons.keyboard_arrow_down),
+      onPressed: () async {
+        if (c.messages.isEmpty) return;
+        c.messageIndex.value = min(c.messageIndex.value + 1, c.messages.length);
+        c.gotoSearchIndex();
+      },
+    );
+
+    return Row(
+      children: [
+        const SizedBox(width: 16.0),
+        const Icon(Icons.search_rounded, color: Colors.white),
+        const SizedBox(width: 16.0),
+        Expanded(
+          child: TypeAheadField(
+            suggestionsBoxController: c.suggestionsBoxController,
+            suggestionsCallback: (pattern) async {
+              var ppattern = TagTranslate.disassembly(pattern);
+
+              return MessageSearch.autocompleteTarget
+                  .where((element) => element.item2.startsWith(ppattern))
+                  .toList()
+                ..addAll(MessageSearch.autocompleteTarget
+                    .where((element) =>
+                        !element.item2.startsWith(ppattern) &&
+                        element.item2.contains(ppattern))
+                    .toList());
+            },
+            itemBuilder: (context, Tuple3<String, String, int> suggestion) {
+              return ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
+                title: Text(suggestion.item1),
+                trailing: Text(
+                  '${suggestion.item3}회',
+                  style: const TextStyle(color: Colors.grey, fontSize: 10.0),
+                ),
+                dense: true,
+              );
+            },
+            direction: AxisDirection.up,
+            onSuggestionSelected: (Tuple3<String, String, int> suggestion) {
+              c.searchText.text = suggestion.item1;
+              setState(() {});
+              Future.delayed(const Duration(milliseconds: 100))
+                  .then((value) async {
+                c.onModifiedText();
+                c.suggestionsBoxController.close();
+              });
+            },
+            hideOnEmpty: true,
+            hideOnLoading: true,
+            textFieldConfiguration: TextFieldConfiguration(
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration.collapsed(
+                  hintText: '대사 입력',
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.5))),
+              controller: c.searchText,
+              // autofocus: true,
+              onEditingComplete: c.onModifiedText,
+            ),
+          ),
+        ),
+        upIndicator,
+        Text('${c.messageIndex}/${c.messages.length}',
+            style: const TextStyle(color: Colors.white, fontSize: 16.0)),
+        downIndicator,
+        const SizedBox(width: 8.0),
+      ],
     );
   }
 }
