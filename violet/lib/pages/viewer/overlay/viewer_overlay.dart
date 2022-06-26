@@ -761,7 +761,6 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
   }
 
   _thumbArea() {
-    final thumbHeight = [140, 120, 96][c.thumbSize.value];
     final width = MediaQuery.of(context).size.width;
 
     return ListView.builder(
@@ -779,14 +778,17 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4.0),
-                    child: Image.file(
-                      File(c.provider.uris[index]),
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      height: double.infinity,
-                      isAntiAlias: true,
-                      cacheHeight: (thumbHeight * 2.0).toInt(),
-                      filterQuality: FilterQuality.high,
+                    child: Obx(
+                      () => Image.file(
+                        File(c.provider.uris[index]),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        isAntiAlias: true,
+                        cacheHeight:
+                            ([140, 120, 96][c.thumbSize.value] * 2.0).toInt(),
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
                   ),
                 ),
