@@ -59,7 +59,7 @@ class ViewerController extends GetxController {
 
   final verticalItemScrollController = ItemScrollController();
   var horizontalPageController = PreloadPageController();
-  final thumbController = ScrollController();
+  var thumbController = ScrollController();
   final searchText = TextEditingController(text: '');
   final suggestionsBoxController = SuggestionsBoxController();
 

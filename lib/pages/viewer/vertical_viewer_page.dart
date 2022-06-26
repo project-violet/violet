@@ -118,7 +118,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       itemCount: c.maxPage,
       itemScrollController: c.verticalItemScrollController,
       itemPositionsListener: _itemPositionsListener,
-      minCacheExtent: c.provider.useFileSystem ? height * 3.0 : height * 1.5,
+      // minCacheExtent: c.provider.useFileSystem ? height * 1.5 : height * 1.5,
       itemBuilder: (context, index) {
         Widget? image;
 
