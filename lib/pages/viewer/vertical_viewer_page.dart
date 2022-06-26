@@ -10,7 +10,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/item_positions_listener.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/scrollable_positioned_list.dart';
-import 'package:violet/pages/viewer/v2/viewer_controller.dart';
+import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 
 import 'image/file_image.dart' as file_image;

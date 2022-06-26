@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/pages/viewer/others/photo_view_gallery.dart';
-import 'package:violet/pages/viewer/v2/viewer_controller.dart';
+import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 

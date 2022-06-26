@@ -28,7 +28,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
 import 'package:violet/pages/viewer/tab_panel.dart';
-import 'package:violet/pages/viewer/v2/viewer_controller.dart';
+import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/pages/viewer/view_record_panel.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/pages/viewer/viewer_thumbnails.dart';

@@ -39,7 +39,7 @@ import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/pages/viewer/v2/viewer_page.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
@@ -334,7 +334,7 @@ class ArticleInfoPage extends StatelessWidget {
                 title: data.queryResult.title(),
                 usableTabList: data.usableTabList,
               ),
-              child: const TestViewerPage());
+              child: const ViewerPage());
         },
       ),
     ).then((value) async {
