@@ -34,6 +34,7 @@ class _FileImageState extends State<FileImage> {
   late final ViewerController c;
   late double _height;
   bool _loaded = false;
+  bool _disposed = false;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _FileImageState extends State<FileImage> {
   @override
   void dispose() {
     clearMemoryImageCache(widget.path);
+    _disposed = true;
     super.dispose();
   }
 
@@ -64,6 +66,8 @@ class _FileImageState extends State<FileImage> {
       cacheWidth: Settings.useLowPerf
           ? (MediaQuery.of(context).size.width * 1.5).toInt()
           : null,
+      enableMemoryCache: false,
+      clearMemoryCacheWhenDispose: true,
       loadStateChanged: _loadStateChanged,
     );
 
@@ -89,6 +93,7 @@ class _FileImageState extends State<FileImage> {
         !_loaded) {
       _loaded = true;
       Future.delayed(const Duration(milliseconds: 100)).then((value) {
+        if (_disposed) return;
         final aspectRatio = imageInfo!.image.width / imageInfo.image.height;
         if (widget.heightCallback != null) {
           widget.heightCallback!(width / aspectRatio);
