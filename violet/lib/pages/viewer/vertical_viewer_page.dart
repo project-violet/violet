@@ -90,11 +90,6 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       _getLatestHeight();
 
       if (selected != null && c.page.value != selected) {
-        /// TODO: this login must implements to [viewer_overlay]
-        // if (_isThumbMode && !_sliderOnChange) {
-        //   _thumbAnimateTo(selected);
-        // }
-
         c.page.value = selected;
       }
     });
@@ -109,7 +104,6 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-
     final scrollablePositionedList = ScrollablePositionedList.builder(
       physics: _scrollListEnable
           ? const AlwaysScrollableScrollPhysics()
@@ -118,7 +112,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       itemCount: c.maxPage,
       itemScrollController: c.verticalItemScrollController,
       itemPositionsListener: _itemPositionsListener,
-      // minCacheExtent: c.provider.useFileSystem ? height * 1.5 : height * 1.5,
+      minCacheExtent: c.provider.useFileSystem ? height : height * 1.5,
       itemBuilder: (context, index) {
         Widget? image;
 
