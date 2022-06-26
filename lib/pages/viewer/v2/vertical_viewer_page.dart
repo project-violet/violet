@@ -1,21 +1,21 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:get/get.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/item_positions_listener.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/scrollable_positioned_list.dart';
 import 'package:violet/pages/viewer/v2/viewer_controller.dart';
-import 'package:violet/pages/viewer/v_cached_network_image.dart';
-import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/settings/settings_wrapper.dart';
+
+import 'image/file_image.dart' as file_image;
+import 'image/provider_image.dart';
+import 'widget/custom_doubletap_gesture_detector.dart';
+import 'widget/double_point_listener.dart';
 
 typedef DoubleCallback = Future Function(double);
 typedef BoolCallback = Function(bool);
@@ -87,13 +87,13 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
 
       _getLatestHeight();
 
-      if (selected != null && c.page.value != selected + 1) {
+      if (selected != null && c.page.value != selected) {
         /// TODO: this login must implements to [viewer_overlay]
         // if (_isThumbMode && !_sliderOnChange) {
         //   _thumbAnimateTo(selected);
         // }
 
-        c.page.value = selected + 1;
+        c.page.value = selected;
       }
     });
   }
@@ -141,7 +141,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
 
         if (image == null) throw Exception('Dead Reaching');
 
-        return _DoublePointListener(
+        return DoublePointListener(
           child: image,
           onStateChanged: (value) {
             setState(() {
@@ -191,7 +191,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       color: null,
       width: width,
       height: height,
-      child: _CustomDoubleTapGestureDectector(
+      child: CustomDoubleTapGestureDectector(
         onTap: _touchEvent,
         onDoubleTap: _doubleTapEvent,
       ),
@@ -282,7 +282,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       }),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return _FileImage(
+          return file_image.FileImage(
             path: c.provider.uris[index],
             cachedHeight: c.imgHeight[index] != 0 ? c.imgHeight[index] : null,
             heightCallback: c.imgHeight[index] != 0
@@ -351,7 +351,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
               return _loadingWidget(index);
             }
 
-            final image = _ProviderImage(
+            final image = ProviderImage(
               imgKey: c.imgKeys[index],
               imgUrl: c.urlCache[index]!,
               imgHeader: c.headerCache[index],
@@ -453,286 +453,5 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
         ),
       ),
     );
-  }
-}
-
-/// GestureDetector uses a delay to distinguish between tap events
-/// and double taps. By default, this delay cannot be modified, so
-/// I created a separate class.
-class _CustomDoubleTapGestureDectector extends StatefulWidget {
-  final GestureTapDownCallback onTap;
-  final GestureTapDownCallback onDoubleTap;
-  final Duration doubleTapMaxDelay;
-
-  const _CustomDoubleTapGestureDectector({
-    required this.onTap,
-    required this.onDoubleTap,
-    // ignore: unused_element
-    this.doubleTapMaxDelay = const Duration(milliseconds: 200),
-  });
-
-  @override
-  State<_CustomDoubleTapGestureDectector> createState() =>
-      __CustomDoubleTapGestureDectectorState();
-}
-
-class __CustomDoubleTapGestureDectectorState
-    extends State<_CustomDoubleTapGestureDectector> {
-  /// these are used for double tap check
-  Timer? _doubleTapCheckTimer;
-  bool _isPressed = false;
-  bool _isDoubleTap = false;
-  bool _isSingleTap = false;
-
-  /// this is used for onTap, onDoubleTap event
-  late TapDownDetails _onTapDetails;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: _handleTap,
-      onTapDown: (TapDownDetails details) {
-        _onTapDetails = details;
-
-        _isPressed = true;
-        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer!.isActive) {
-          _isDoubleTap = true;
-          _doubleTapCheckTimer!.cancel();
-        } else {
-          _doubleTapCheckTimer =
-              Timer(widget.doubleTapMaxDelay, _doubleTapTimerElapsed);
-        }
-      },
-      onTapCancel: () {
-        _isPressed = _isSingleTap = _isDoubleTap = false;
-        if (_doubleTapCheckTimer != null && _doubleTapCheckTimer!.isActive) {
-          _doubleTapCheckTimer!.cancel();
-        }
-      },
-    );
-  }
-
-  void _doubleTapTimerElapsed() {
-    if (_isPressed) {
-      _isSingleTap = true;
-    } else {
-      widget.onTap(_onTapDetails);
-    }
-  }
-
-  void _handleTap() {
-    _isPressed = false;
-    if (_isSingleTap) {
-      _isSingleTap = false;
-      widget.onTap(_onTapDetails);
-    }
-    if (_isDoubleTap) {
-      _isDoubleTap = false;
-      widget.onDoubleTap(_onTapDetails);
-    }
-  }
-}
-
-typedef VImageWidgetBuilder = Widget Function(
-    BuildContext context, ImageProvider imageProvider, Widget child);
-
-typedef VProgressIndicatorBuilder = Widget Function(
-  BuildContext context,
-  String url,
-  DownloadProgress progress,
-);
-
-typedef VLoadingErrorWidgetBuilder = Widget Function(
-  BuildContext context,
-  String url,
-  dynamic error,
-);
-
-class _ProviderImage extends StatefulWidget {
-  final GlobalKey imgKey;
-  final String imgUrl;
-  final Map<String, String>? imgHeader;
-  final VImageWidgetBuilder imageWidgetBuilder;
-  final VProgressIndicatorBuilder progressIndicatorBuilder;
-  final VLoadingErrorWidgetBuilder loadingErrorWidgetBuilder;
-
-  const _ProviderImage({
-    Key? key,
-    required this.imgKey,
-    required this.imgUrl,
-    required this.imgHeader,
-    required this.imageWidgetBuilder,
-    required this.progressIndicatorBuilder,
-    required this.loadingErrorWidgetBuilder,
-  }) : super(key: key);
-
-  @override
-  State<_ProviderImage> createState() => __ProviderImageState();
-}
-
-class __ProviderImageState extends State<_ProviderImage> {
-  @override
-  void dispose() {
-    CachedNetworkImage.evictFromCache(widget.imgUrl);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return VCachedNetworkImage(
-      key: widget.imgKey,
-      imageUrl: widget.imgUrl,
-      httpHeaders: widget.imgHeader,
-      fit: BoxFit.cover,
-      fadeInDuration: const Duration(microseconds: 500),
-      fadeInCurve: Curves.easeIn,
-      filterQuality: SettingsWrapper.imageQuality,
-      imageBuilder: widget.imageWidgetBuilder,
-      progressIndicatorBuilder: widget.progressIndicatorBuilder,
-      errorWidget: widget.loadingErrorWidgetBuilder,
-      memCacheWidth: Settings.useLowPerf
-          ? (MediaQuery.of(context).size.width * 1.5).toInt()
-          : null,
-    );
-  }
-}
-
-/// Raises an event when two or more fingers touch the screen.
-class _DoublePointListener extends StatefulWidget {
-  final Widget child;
-  final BoolCallback onStateChanged;
-
-  const _DoublePointListener({
-    required this.child,
-    required this.onStateChanged,
-  });
-
-  @override
-  State<_DoublePointListener> createState() => __DoublePointListener();
-}
-
-class __DoublePointListener extends State<_DoublePointListener> {
-  /// How many fingers are on the screen?
-  int _mpPoints = 0;
-
-  ///
-  bool _onStateChanged = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: (event) {
-        _mpPoints++;
-        if (_mpPoints >= 2) {
-          if (_onStateChanged) {
-            _onStateChanged = false;
-            widget.onStateChanged(false);
-          }
-        }
-      },
-      onPointerUp: (event) {
-        _mpPoints--;
-        if (_mpPoints < 1) {
-          _onStateChanged = true;
-          widget.onStateChanged(true);
-        }
-      },
-      child: widget.child,
-    );
-  }
-}
-
-class _FileImage extends StatefulWidget {
-  final String path;
-  final double? cachedHeight;
-  final DoubleCallback? heightCallback;
-
-  const _FileImage(
-      {required this.path, this.heightCallback, this.cachedHeight});
-
-  @override
-  State<_FileImage> createState() => __FileImageState();
-}
-
-class __FileImageState extends State<_FileImage> {
-  final ViewerController c = Get.find();
-  late double _height;
-  bool _loaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (widget.cachedHeight != null && widget.cachedHeight! > 0) {
-      _height = widget.cachedHeight!;
-    } else {
-      _height = 300;
-    }
-  }
-
-  @override
-  void dispose() {
-    clearMemoryImageCache(widget.path);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final image = ExtendedImage.file(
-      File(widget.path),
-      fit: BoxFit.contain,
-      imageCacheName: widget.path,
-      filterQuality: SettingsWrapper.getImageQuality(c.imgQuality.value),
-      cacheWidth: Settings.useLowPerf
-          ? (MediaQuery.of(context).size.width * 1.5).toInt()
-          : null,
-      loadStateChanged: _loadStateChanged,
-    );
-
-    return AnimatedContainer(
-      alignment: Alignment.center,
-      height: _height,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-      child: Obx(() => image),
-    );
-  }
-
-  Widget _loadStateChanged(ExtendedImageState state) {
-    final width = MediaQuery.of(context).size.width;
-
-    if (widget.cachedHeight != null && widget.cachedHeight! > 0) {
-      return state.completedWidget;
-    }
-
-    final ImageInfo? imageInfo = state.extendedImageInfo;
-    if ((state.extendedImageLoadState == LoadState.completed ||
-            imageInfo != null) &&
-        !_loaded) {
-      _loaded = true;
-      Future.delayed(const Duration(milliseconds: 100)).then((value) {
-        final aspectRatio = imageInfo!.image.width / imageInfo.image.height;
-        if (widget.heightCallback != null) {
-          widget.heightCallback!(width / aspectRatio);
-        }
-        setState(() {
-          _height = width / aspectRatio;
-        });
-      });
-    } else if (state.extendedImageLoadState == LoadState.loading) {
-      return SizedBox(
-        height: _height,
-        child: const Center(
-          child: SizedBox(
-            width: 30,
-            height: 30,
-            child: CircularProgressIndicator(),
-          ),
-        ),
-      );
-    }
-
-    return state.completedWidget;
   }
 }
