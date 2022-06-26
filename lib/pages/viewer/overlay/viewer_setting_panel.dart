@@ -260,6 +260,9 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
         PopupMenuButton<int>(
           onSelected: (int value) {
             Settings.setThumbSize(value);
+
+            c.thumbSize.value = value;
+
             widget.thumbSizeChangeEvent.call();
             setState(() {});
           },
