@@ -247,8 +247,6 @@ class _StatisticsState extends State<Statistics> {
       events.entries.forEach((element) {
         var accSeconds = 0;
 
-        if (element.value.first.type != ActLogType.appStart) return;
-
         bool stopAcc = false;
         DateTime? base;
         for (final eve in element.value) {
@@ -262,7 +260,8 @@ class _StatisticsState extends State<Statistics> {
             accSeconds = base.difference(eve.dateTime!).abs().inSeconds;
           }
           if (eve.type == ActLogType.appSuspense) stopAcc = true;
-          if (eve.type == ActLogType.appResume) stopAcc = false;
+          if (eve.type == ActLogType.appStart ||
+              eve.type == ActLogType.appResume) stopAcc = false;
 
           base = eve.dateTime;
         }
