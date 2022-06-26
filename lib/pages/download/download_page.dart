@@ -20,6 +20,7 @@ import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/database/user/record.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
@@ -762,9 +763,19 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       final articlereadlog = <int, DateTime>{};
 
       userlog.forEach((element) {
-        if (!articlereadlog.containsKey(int.tryParse(element.articleId()))) {
-          articlereadlog[int.parse(element.articleId())] =
-              DateTime.parse(element.datetimeStart());
+        final id = int.tryParse(element.articleId());
+        if (id == null) return;
+        if (!articlereadlog.containsKey(id)) {
+          final dt = DateTime.tryParse(element.datetimeStart());
+          if (dt != null) {
+            articlereadlog[id] = dt;
+          } else {
+            Logger.warning(
+                '[download-_applyFilter] datetimeStart is not DateTime type: ${element.datetimeStart()}');
+          }
+        } else {
+          Logger.warning(
+              '[download-_applyFilter] articleId is not int type: ${element.articleId()}');
         }
       });
 
