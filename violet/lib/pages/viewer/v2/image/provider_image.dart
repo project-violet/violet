@@ -2,13 +2,18 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/pages/viewer/v_cached_network_image.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
 
+import '../viewer_controller.dart';
+
 typedef VImageWidgetBuilder = Widget Function(
-    BuildContext context, ImageProvider imageProvider, Widget child);
+    BuildContext context, Widget child);
 
 typedef VProgressIndicatorBuilder = Widget Function(
   BuildContext context,
@@ -23,21 +28,21 @@ typedef VLoadingErrorWidgetBuilder = Widget Function(
 );
 
 class ProviderImage extends StatefulWidget {
+  final String getxId;
   final GlobalKey imgKey;
   final String imgUrl;
   final Map<String, String>? imgHeader;
   final VImageWidgetBuilder imageWidgetBuilder;
-  final VProgressIndicatorBuilder progressIndicatorBuilder;
-  final VLoadingErrorWidgetBuilder loadingErrorWidgetBuilder;
+  final int index;
 
   const ProviderImage({
     Key? key,
+    required this.getxId,
     required this.imgKey,
     required this.imgUrl,
     required this.imgHeader,
     required this.imageWidgetBuilder,
-    required this.progressIndicatorBuilder,
-    required this.loadingErrorWidgetBuilder,
+    required this.index,
   }) : super(key: key);
 
   @override
@@ -45,28 +50,95 @@ class ProviderImage extends StatefulWidget {
 }
 
 class _ProviderImageState extends State<ProviderImage> {
+  late final ViewerController c;
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    c = Get.find(tag: widget.getxId);
+  }
+
   @override
   void dispose() {
-    CachedNetworkImage.evictFromCache(widget.imgUrl);
+    clearMemoryImageCache(widget.imgUrl);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return VCachedNetworkImage(
+    return ExtendedImage.network(
+      widget.imgUrl,
       key: widget.imgKey,
-      imageUrl: widget.imgUrl,
-      httpHeaders: widget.imgHeader,
+      headers: widget.imgHeader,
+      retries: 10,
+      timeRetry: const Duration(milliseconds: 300),
       fit: BoxFit.cover,
-      fadeInDuration: const Duration(microseconds: 500),
-      fadeInCurve: Curves.easeIn,
       filterQuality: SettingsWrapper.imageQuality,
-      imageBuilder: widget.imageWidgetBuilder,
-      progressIndicatorBuilder: widget.progressIndicatorBuilder,
-      errorWidget: widget.loadingErrorWidgetBuilder,
-      memCacheWidth: Settings.useLowPerf
+      clearMemoryCacheWhenDispose: true,
+      handleLoadingProgress: true,
+      loadStateChanged: _loadStateChanged,
+      cacheHeight: Settings.useLowPerf
           ? (MediaQuery.of(context).size.width * 1.5).toInt()
           : null,
     );
+  }
+
+  Widget _loadStateChanged(ExtendedImageState state) {
+    if (state.extendedImageLoadState == LoadState.failed) {
+      final iconButton = IconButton(
+        icon: Icon(
+          Icons.refresh,
+          color: Settings.majorColor,
+        ),
+        onPressed: () => setState(() {
+          c.imgKeys[widget.index] = GlobalKey();
+        }),
+      );
+
+      return SizedBox(
+        height: c.estimatedImgHeight[widget.index] != 0
+            ? c.estimatedImgHeight[widget.index]
+            : 300,
+        child: Center(
+          child: SizedBox(
+            width: 50,
+            height: 50,
+            child: iconButton,
+          ),
+        ),
+      );
+    }
+
+    final ImageInfo? imageInfo = state.extendedImageInfo;
+    if ((state.extendedImageLoadState == LoadState.completed ||
+            imageInfo != null) &&
+        !_loaded) {
+      _loaded = true;
+      return widget.imageWidgetBuilder(
+        context,
+        state.completedWidget,
+      );
+    } else if (state.extendedImageLoadState == LoadState.loading) {
+      return SizedBox(
+        height: c.estimatedImgHeight[widget.index] != 0
+            ? c.estimatedImgHeight[widget.index]
+            : 300,
+        child: Center(
+          child: SizedBox(
+            width: 30,
+            height: 30,
+            child: CircularProgressIndicator(
+              value: state.loadingProgress == null
+                  ? null
+                  : state.loadingProgress!.cumulativeBytesLoaded /
+                      state.loadingProgress!.expectedTotalBytes!,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return state.completedWidget;
   }
 }

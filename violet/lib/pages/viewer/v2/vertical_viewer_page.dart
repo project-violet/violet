@@ -22,7 +22,11 @@ typedef BoolCallback = Function(bool);
 typedef StringCallback = Future Function(String);
 
 class VerticalViewerPage extends StatefulWidget {
-  const VerticalViewerPage({Key? key}) : super(key: key);
+  final String getxId;
+  const VerticalViewerPage({
+    Key? key,
+    required this.getxId,
+  }) : super(key: key);
 
   @override
   State<VerticalViewerPage> createState() => _VerticalViewerPageState();
@@ -30,7 +34,7 @@ class VerticalViewerPage extends StatefulWidget {
 
 class _VerticalViewerPageState extends State<VerticalViewerPage>
     with SingleTickerProviderStateMixin {
-  final ViewerController c = Get.find();
+  late final ViewerController c;
 
   /// this is used for interactive viewer widget
   /// double-tap a specific location to zoom in on that location.
@@ -48,10 +52,6 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
   double _latestAlign = 0;
   bool _onScroll = false;
 
-  /// this is used on provider
-  /// determine estimaed height is loaded
-  bool _loadingEstimaed = false;
-
   final ItemPositionsListener _itemPositionsListener =
       ItemPositionsListener.create();
 
@@ -59,6 +59,8 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
   void initState() {
     super.initState();
 
+    c = Get.find(tag: widget.getxId);
+    print(widget.getxId);
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
@@ -119,30 +121,24 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       minCacheExtent: c.provider.useFileSystem ? height * 3.0 : height * 1.5,
       itemBuilder: (context, index) {
         Widget? image;
-        if (!c.padding.value) {
-          if (c.provider.useFileSystem) {
-            image = _storageImageItem(index);
-          } else if (c.provider.useProvider) {
-            image = _providerImageItem(index);
-          }
-        } else {
-          if (c.provider.useFileSystem) {
-            image = Padding(
-              child: _storageImageItem(index),
-              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-            );
-          } else if (c.provider.useProvider) {
-            image = Padding(
-              child: _providerImageItem(index),
-              padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-            );
-          }
+
+        if (c.provider.useFileSystem) {
+          image = _storageImageItem(index);
+        } else if (c.provider.useProvider) {
+          image = _providerImageItem(index);
         }
 
         if (image == null) throw Exception('Dead Reaching');
 
         return DoublePointListener(
-          child: image,
+          child: Obx(
+            () => Padding(
+              padding: c.padding.value
+                  ? const EdgeInsets.fromLTRB(4, 0, 4, 4)
+                  : EdgeInsets.zero,
+              child: image,
+            ),
+          ),
           onStateChanged: (value) {
             setState(() {
               _scrollListEnable = value;
@@ -283,6 +279,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return file_image.FileImage(
+            getxId: widget.getxId,
             path: c.provider.uris[index],
             cachedHeight: c.imgHeight[index] != 0 ? c.imgHeight[index] : null,
             heightCallback: c.imgHeight[index] != 0
@@ -310,13 +307,14 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
   _providerImageItem(int index) {
     final width = MediaQuery.of(context).size.width;
 
-    if (_loadingEstimaed == false) {
-      _loadingEstimaed = true;
+    if (c.loadingEstimaed[index] == false) {
+      c.loadingEstimaed[index] = true;
       Future.delayed(const Duration(milliseconds: 1)).then((value) async {
         if (!c.onSession.value) return;
         final h =
             await c.provider.provider!.getEstimatedImageHeight(index, width);
         final oh = await c.provider.provider!.getOriginalImageHeight(index);
+        print(h);
         if (h > 0) {
           setState(() {
             c.realImgHeight[index] = oh;
@@ -352,17 +350,13 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
             }
 
             final image = ProviderImage(
+              getxId: widget.getxId,
+              index: index,
               imgKey: c.imgKeys[index],
               imgUrl: c.urlCache[index]!,
               imgHeader: c.headerCache[index],
-              imageWidgetBuilder: (context, imageProvider, child) {
+              imageWidgetBuilder: (context, child) {
                 return _imageWidgetBuilder(index, width, child);
-              },
-              progressIndicatorBuilder: (context, string, progress) {
-                return _progresIndicatorBuilder(index, progress);
-              },
-              loadingErrorWidgetBuilder: (context, url, error) {
-                return _loadingErrorWidgetBuilder(error, index);
               },
             );
 
@@ -412,46 +406,5 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       });
     }
     return child;
-  }
-
-  _progresIndicatorBuilder(int index, DownloadProgress progress) {
-    return SizedBox(
-      height:
-          c.estimatedImgHeight[index] != 0 ? c.estimatedImgHeight[index] : 300,
-      child: Center(
-        child: SizedBox(
-          width: 30,
-          height: 30,
-          child: CircularProgressIndicator(value: progress.progress),
-        ),
-      ),
-    );
-  }
-
-  _loadingErrorWidgetBuilder(error, int index) {
-    Logger.error('[Viewer] E: image load failed\n'
-        '$error');
-
-    final iconButton = IconButton(
-      icon: Icon(
-        Icons.refresh,
-        color: Settings.majorColor,
-      ),
-      onPressed: () => setState(() {
-        c.imgKeys[index] = GlobalKey();
-      }),
-    );
-
-    return SizedBox(
-      height:
-          c.estimatedImgHeight[index] != 0 ? c.estimatedImgHeight[index] : 300,
-      child: Center(
-        child: SizedBox(
-          width: 50,
-          height: 50,
-          child: iconButton,
-        ),
-      ),
-    );
   }
 }
