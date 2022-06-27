@@ -197,6 +197,37 @@ class VioletServer {
     }
   }
 
+  static Future<bool> fileUpload(String fn, String data) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+    var userId = await getUserAppId();
+
+    try {
+      var res = await http
+          .post('$api/fupload',
+              headers: {
+                'v-token': vToken.toString(),
+                'v-valid': vValid,
+                'Content-Type': 'application/json'
+              },
+              body: jsonEncode({
+                'user': userId,
+                'fn': fn,
+                'data': data,
+              }))
+          .then((value) {
+        print(value.statusCode);
+        return value;
+      });
+
+      return res.statusCode == 200;
+    } catch (e, st) {
+      Logger.error('[API-fupload] E: $e\n'
+          '$st');
+    }
+    return false;
+  }
+
   static Future<bool> uploadBookmark() async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());

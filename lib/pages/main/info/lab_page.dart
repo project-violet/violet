@@ -9,6 +9,8 @@ import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/act_log.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/bookmark_spy.dart';
@@ -23,6 +25,7 @@ import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/log_page.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/server/wsalt.dart';
 
@@ -356,6 +359,18 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 null,
                 () async {
                   _navigate(const Statistics());
+                },
+              ),
+              _buildItem(
+                const Icon(MdiIcons.chartBar, size: 40, color: Colors.lime),
+                '#018 Upload Test',
+                'Function',
+                null,
+                () async {
+                  final log = await Logger.logFile.readAsString();
+                  await VioletServer.fileUpload('log.txt', log);
+                  final actlog = await ActLogger.logFile.readAsString();
+                  await VioletServer.fileUpload('act-log.txt', actlog);
                 },
               ),
             ],
