@@ -227,11 +227,13 @@ class _StatisticsState extends State<Statistics> {
       final logs = await ActLogger.logFile.readAsLines();
       final events = <String, List<ActLogEvent>>{};
 
-      for (final log in logs) {
+      for (var log in logs) {
+        log = log.trim();
+        if (log == '') continue;
+
         final hash = log.substring(0, log.indexOf(' '));
         final data = log.substring(log.indexOf(' ') + 1);
         final eve = ActLogEvent.fromJson(data);
-
         if (!events.containsKey(hash)) events[hash] = <ActLogEvent>[];
 
         events[hash]!.add(eve);
@@ -257,7 +259,7 @@ class _StatisticsState extends State<Statistics> {
           }
 
           if (!stopAcc) {
-            accSeconds = base.difference(eve.dateTime!).abs().inSeconds;
+            accSeconds += base.difference(eve.dateTime!).abs().inSeconds;
           }
           if (eve.type == ActLogType.appSuspense) stopAcc = true;
           if (eve.type == ActLogType.appStart ||
