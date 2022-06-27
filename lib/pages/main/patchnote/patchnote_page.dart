@@ -23,45 +23,19 @@ class PatchModel {
 final patches = [
   PatchModel(
     dateTime: DateTime(2022, 6, 27),
+    version: '1.26.1 Patch (HotFix)',
+    contents: [
+      'fix viewer overlay not shown error',
+      'fix viewer timer reversing paging error',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2022, 6, 27),
     version: '1.26 Minor Update',
     isMinor: true,
     contents: [
       'refactoring viewer code base',
       'fix statistics act-log',
-    ],
-  ),
-  PatchModel(
-    dateTime: DateTime(2022, 6, 22),
-    version: '1.25 Minor Update',
-    isMinor: true,
-    contents: [
-      'apply flutter null safety',
-      'fix database dead-lock bug',
-      'fix theme switch not applied bug',
-      'fix related character count null ref bug',
-      'fix article item thumbnail area corner ui',
-      'fix exhentai throttling stuck when request fail',
-      'fix search/bookmark page caching error',
-      'add caching image x1.5 when using low performance mode',
-      'add bookmark scroll bar',
-      'add user statistics experimentally',
-    ],
-  ),
-  PatchModel(
-    dateTime: DateTime(2022, 6, 22),
-    version: '1.25 Minor Update',
-    isMinor: true,
-    contents: [
-      'apply flutter null safety',
-      'fix database dead-lock bug',
-      'fix theme switch not applied bug',
-      'fix related character count null ref bug',
-      'fix article item thumbnail area corner ui',
-      'fix exhentai throttling stuck when request fail',
-      'fix search/bookmark page caching error',
-      'add caching image x1.5 when using low performance mode',
-      'add bookmark scroll bar',
-      'add user statistics experimentally',
     ],
   ),
   PatchModel(
