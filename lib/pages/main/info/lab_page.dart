@@ -1,8 +1,11 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/comments.dart';
 import 'package:violet/component/hitomi/ldi.dart';
@@ -362,15 +365,15 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 },
               ),
               _buildItem(
-                const Icon(MdiIcons.chartBar, size: 40, color: Colors.lime),
+                const Icon(MdiIcons.upload, size: 40, color: Colors.teal),
                 '#018 Upload Test',
                 'Function',
                 null,
                 () async {
-                  final log = await Logger.logFile.readAsString();
-                  await VioletServer.fileUpload('log.txt', log);
-                  final actlog = await ActLogger.logFile.readAsString();
-                  await VioletServer.fileUpload('act-log.txt', actlog);
+                  final dir = await getApplicationDocumentsDirectory();
+                  await VioletServer.uploadFile('${dir.path}/user.db');
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  await VioletServer.uploadFile(ActLogger.logFile.path);
                 },
               ),
             ],

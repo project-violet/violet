@@ -2,7 +2,9 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -195,6 +197,47 @@ class VioletServer {
       Logger.error('[API-report] E: $e\n'
           '$st');
     }
+  }
+
+  static Future<bool> fileUploadBytes(String fn, Uint8List data) async {
+    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    var vValid = getValid(vToken.toString());
+    var userId = await getUserAppId();
+
+    try {
+      var res = await http
+          .post('$api/fupload',
+              headers: {
+                'v-token': vToken.toString(),
+                'v-valid': vValid,
+                'Content-Type': 'application/json'
+              },
+              body: jsonEncode({
+                'user': userId,
+                'fn': fn,
+                'data': data,
+              }))
+          .then((value) {
+        print(value.statusCode);
+        return value;
+      });
+
+      return res.statusCode == 200;
+    } catch (e, st) {
+      Logger.error('[API-fupload] E: $e\n'
+          '$st');
+    }
+    return false;
+  }
+
+  static Future<void> uploadFile(String filename) async {
+    final filePath = filename;
+
+    var dio = Dio();
+    var formData =
+        FormData.fromMap({'file': await MultipartFile.fromFile(filePath!)});
+
+    final response = await dio.post('$api/fupload', data: formData);
   }
 
   static Future<bool> fileUpload(String fn, String data) async {
