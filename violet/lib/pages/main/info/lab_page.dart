@@ -364,18 +364,18 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   _navigate(const Statistics());
                 },
               ),
-              _buildItem(
-                const Icon(MdiIcons.upload, size: 40, color: Colors.teal),
-                '#018 Upload Test',
-                'Function',
-                null,
-                () async {
-                  final dir = await getApplicationDocumentsDirectory();
-                  await VioletServer.uploadFile('${dir.path}/user.db');
-                  await Future.delayed(const Duration(milliseconds: 500));
-                  await VioletServer.uploadFile(ActLogger.logFile.path);
-                },
-              ),
+              // _buildItem(
+              //   const Icon(MdiIcons.upload, size: 40, color: Colors.teal),
+              //   '#018 Upload Test',
+              //   'Function',
+              //   null,
+              //   () async {
+              //     final dir = await getApplicationDocumentsDirectory();
+              //     await VioletServer.uploadFile('${dir.path}/user.db');
+              //     await Future.delayed(const Duration(milliseconds: 500));
+              //     await VioletServer.uploadFile(ActLogger.logFile.path);
+              //   },
+              // ),
             ],
           ),
         ),
