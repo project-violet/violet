@@ -11,7 +11,7 @@ description: Open Source Hentai Viewer App
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.25.0+0
+version: 1.26.0+0
 
 publish_to: none
 
@@ -130,8 +130,8 @@ dependencies:
   octo_image: ^1.0.2
   # archive:
   # chunked_stream:
-  # cloud_firestore: ^0.13.0+1 
-  # english_words: 
+  # cloud_firestore: ^0.13.0+1
+  # english_words:
   # extended_image:
   # fading_edge_scrollview:
   # flutter_advanced_networkimage:
@@ -173,13 +173,11 @@ dev_dependencies:
   sqflite_common_ffi:
   flutter_lints: ^2.0.1
 
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -207,7 +205,7 @@ flutter:
     - assets/rank/related.json
 
     - assets/hisoki.json
-    
+
     # - assets/images/loading.gif
 
     # - assets/test/001.jpg
@@ -241,12 +239,11 @@ flutter:
     - assets/lottie/28446-floward-gift-box.json
 
     - assets/icons/pixiv.ico
-    
+
     - assets/p7zip/arm64-v8a/lib7zr.so # @dependent: android
     - assets/p7zip/armeabi-v7a/lib7zr.so # @dependent: android
     - assets/p7zip/x86/lib7zr.so # @dependent: android
     # - assets/p7zip/x86_64/lib7zr.so
-
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -290,4 +287,3 @@ flutter:
     - family: CustomIcons
       fonts:
         - asset: assets/custom_icons.ttf
-   
