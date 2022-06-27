@@ -87,6 +87,10 @@ class _ProviderImageState extends State<ProviderImage> {
 
   Widget _loadStateChanged(ExtendedImageState state) {
     if (state.extendedImageLoadState == LoadState.failed) {
+      Logger.error(
+          '[viewer-provider_image] URL: ${widget.imgUrl}\nE: ${state.lastException}');
+      state.reLoadImage();
+
       final iconButton = IconButton(
         icon: Icon(
           Icons.refresh,
