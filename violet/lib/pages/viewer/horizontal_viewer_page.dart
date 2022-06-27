@@ -63,7 +63,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
               onPageChanged: _onPageChanged,
             ),
           ),
-          if (c.overlayButton.value) ...[
+          if (c.overlayButton.value)
             Align(
               alignment: Alignment.centerRight,
               child: Container(
@@ -76,18 +76,19 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                color: null,
-                width: width / 3,
-                height: height,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: c.middleButton,
-                ),
+          Align(
+            alignment: Alignment.center,
+            child: Container(
+              color: null,
+              width: width / 3,
+              height: height,
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: c.middleButton,
               ),
             ),
+          ),
+          if (c.overlayButton.value)
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
@@ -100,7 +101,6 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                 ),
               ),
             ),
-          ]
         ],
       ),
     );
