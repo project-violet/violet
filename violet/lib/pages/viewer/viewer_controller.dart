@@ -35,7 +35,6 @@ class ViewerController extends GetxController {
       Settings.scrollVertical ? ViewType.vertical.obs : ViewType.horizontal.obs;
   var padding = Settings.padding.obs;
   var animation = Settings.animation.obs;
-  var rightToLeft = Settings.rightToLeft.obs;
   var leftRightButton = (!Settings.disableOverlayButton).obs;
   var appBarToBottom = Settings.moveToAppBarToBottom.obs;
   var showSlider = Settings.showSlider.obs;
@@ -160,12 +159,8 @@ class ViewerController extends GetxController {
     }
   }
 
-  prev() => move(rightToLeft.value ^ (viewType.value == ViewType.vertical)
-      ? page.value - 1
-      : page.value + 1);
-  next() => move(rightToLeft.value ^ (viewType.value == ViewType.vertical)
-      ? page.value + 1
-      : page.value - 1);
+  prev() => move(Settings.rightToLeft ? page.value + 1 : page.value - 1);
+  next() => move(Settings.rightToLeft ? page.value - 1 : page.value + 1);
 
   load(int index) async {
     if (provider.useProvider) {

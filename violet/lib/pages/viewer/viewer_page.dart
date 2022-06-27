@@ -121,6 +121,7 @@ class _ViewerPageState extends State<ViewerPage> {
   @override
   void dispose() {
     _dispose();
+    if (_nextPageTimer != null) _nextPageTimer!.cancel();
     super.dispose();
   }
 
@@ -198,7 +199,7 @@ class _ViewerPageState extends State<ViewerPage> {
   }
 
   Future<void> nextPageTimerCallback(timer) async {
-    if (c.rightToLeft.value) {
+    if (Settings.rightToLeft) {
       c.prev();
     } else {
       c.next();
