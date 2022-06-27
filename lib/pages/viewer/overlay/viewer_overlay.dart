@@ -732,7 +732,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       _thumbImageWidth[i] = _thumbImageStartPos[i + 1];
       _thumbImageStartPos[i + 1] += _thumbImageStartPos[i];
 
-      c.realImgHeight[i] = sz!.height.toDouble();
+      if (sz != null) c.realImgHeight[i] = sz!.height.toDouble();
     }
   }
 
