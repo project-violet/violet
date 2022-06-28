@@ -118,6 +118,8 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
           onChanged: (value) async {
             await Settings.setRightToLeft(!Settings.rightToLeft);
 
+            c.rightToLeft.value = Settings.rightToLeft;
+
             setState(() {});
           },
         ),

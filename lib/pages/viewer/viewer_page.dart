@@ -199,11 +199,7 @@ class _ViewerPageState extends State<ViewerPage> {
   }
 
   Future<void> nextPageTimerCallback(timer) async {
-    if (Settings.rightToLeft) {
-      c.prev();
-    } else {
-      c.next();
-    }
+    c.next();
   }
 
   _initAfterProvider() {
@@ -231,9 +227,9 @@ class _ViewerPageState extends State<ViewerPage> {
   _setupVolume() {
     volumeKeyChannel.receiveBroadcastStream().listen((event) {
       if (event is String) {
-        if (event == 'down') {
+        if (event == 'up') {
           c.prev();
-        } else if (event == 'up') {
+        } else if (event == 'down') {
           c.next();
         }
       }

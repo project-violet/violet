@@ -60,7 +60,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                   ? Axis.vertical
                   : Axis.horizontal,
               pageController: c.horizontalPageController,
-              reverse: Settings.rightToLeft,
+              reverse: c.rightToLeft.value,
               onPageChanged: _onPageChanged,
             ),
           ),
