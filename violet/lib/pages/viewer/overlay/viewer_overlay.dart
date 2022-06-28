@@ -372,9 +372,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
 
         c.suggestionsBoxController ??= SuggestionsBoxController();
 
-        setState(() {
-          c.search.value = !c.search.value;
-        });
+        c.search.value = !c.search.value;
       },
     );
   }
@@ -436,12 +434,11 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
 
   _appBarTimer() {
     return IconButton(
-      icon: Icon(Settings.enableTimer ? MdiIcons.timer : MdiIcons.timerOff),
+      icon: Obx(() => Icon(c.timer.value ? MdiIcons.timer : MdiIcons.timerOff)),
       color: Colors.white,
       onPressed: () async {
-        setState(() {
-          Settings.setEnableTimer(!Settings.enableTimer);
-        });
+        await Settings.setEnableTimer(!Settings.enableTimer);
+        c.timer.value = Settings.enableTimer;
         c.startTimer();
       },
     );
@@ -601,7 +598,6 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       onPressed: () async {
         c.thumb.value = !c.thumb.value;
         await Settings.setEnableThumbSlider(c.thumb.value);
-        setState(() {});
       },
     );
 
