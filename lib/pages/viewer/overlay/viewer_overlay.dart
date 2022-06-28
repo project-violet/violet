@@ -266,7 +266,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       color: Colors.white,
       onPressed: () async {
         c.bookmark.value =
-            await (await Bookmark.getInstance()).isBookmark(c.articleId.value);
+            await (await Bookmark.getInstance()).isBookmark(c.articleId);
 
         if (c.bookmark.value) {
           if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
@@ -289,9 +289,9 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
 
         c.bookmark.value = !c.bookmark.value;
         if (c.bookmark.value) {
-          await (await Bookmark.getInstance()).bookmark(c.articleId.value);
+          await (await Bookmark.getInstance()).bookmark(c.articleId);
         } else {
-          await (await Bookmark.getInstance()).unbookmark(c.articleId.value);
+          await (await Bookmark.getInstance()).unbookmark(c.articleId);
         }
       },
     );
@@ -304,8 +304,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       onPressed: () async {
         final height = MediaQuery.of(context).size.height;
 
-        final search =
-            await HentaiManager.idSearch(c.articleId.value.toString());
+        final search = await HentaiManager.idSearch(c.articleId.toString());
         if (search.item1.length != 1) return;
 
         final qr = search.item1[0];
@@ -316,7 +315,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
           });
         }
 
-        var prov = await ProviderManager.get(c.articleId.value);
+        var prov = await ProviderManager.get(c.articleId);
         var thumbnail = await prov.getThumbnailUrl();
         var headers = await prov.getHeader(0);
         ProviderManager.insert(qr.id(), prov);
@@ -392,7 +391,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
             isScrollControlled: false,
             builder: (context) {
               cache ??= ViewerTabPanel(
-                articleId: c.articleId.value,
+                articleId: c.articleId,
                 usableTabList: c.provider.usableTabList,
                 height: height,
               );
@@ -420,7 +419,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
           context: context,
           isScrollControlled: false,
           builder: (context) {
-            cache ??= ViewerRecordPanel(articleId: c.articleId.value);
+            cache ??= ViewerRecordPanel(articleId: c.articleId);
             return cache!;
           },
         );
@@ -732,7 +731,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       _thumbImageWidth[i] = _thumbImageStartPos[i + 1];
       _thumbImageStartPos[i + 1] += _thumbImageStartPos[i];
 
-      if (sz != null) c.realImgHeight[i] = sz!.height.toDouble();
+      if (sz != null) c.realImgHeight[i] = sz.height.toDouble();
     }
   }
 
