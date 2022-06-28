@@ -19,36 +19,49 @@ enum ViewType {
 }
 
 class ViewerController extends GetxController {
+  /// viewer target options
   final ViewerPageProvider provider;
-  late RxInt articleId;
-  late int maxPage;
+  late final int articleId;
+  late final int maxPage;
 
+  /// viewer callbacks
   late Function close;
   late Function replace;
   late Function stopTimer;
   late Function startTimer;
 
+  /// common viewer options
   var page = 0.obs;
   var viewType =
       Settings.isHorizontal ? ViewType.horizontal.obs : ViewType.vertical.obs;
+  var animation = Settings.animation.obs;
+  var rightToLeft = Settings.rightToLeft.obs;
+  var imgQuality = Settings.imageQuality.obs;
+  var fullscreen = (!Settings.disableFullScreen).obs;
+
+  /// horizontal viewer option
   var viewScrollType =
       Settings.scrollVertical ? ViewType.vertical.obs : ViewType.horizontal.obs;
+
+  /// vertical viewer options
   var padding = Settings.padding.obs;
-  var animation = Settings.animation.obs;
+
+  /// overlay options
   var leftRightButton = (!Settings.disableOverlayButton).obs;
-  var rightToLeft = Settings.rightToLeft.obs;
   var appBarToBottom = Settings.moveToAppBarToBottom.obs;
   var showSlider = Settings.showSlider.obs;
   var indicator = Settings.showPageNumberIndicator.obs;
-  var fullscreen = (!Settings.disableFullScreen).obs;
-  var imgQuality = Settings.imageQuality.obs;
   late RxBool thumb;
   var thumbSize = Settings.thumbSize.obs;
+  var search = false.obs;
+  var bookmark = false.obs;
+
+  /// timer options
   var timer = false.obs;
   var timerTick = Settings.timerTick.obs;
-  var search = false.obs;
+
+  /// internal options
   var onSession = true.obs;
-  var bookmark = false.obs;
   var isStaring = true;
   var sliderOnChange = false;
 
@@ -57,6 +70,9 @@ class ViewerController extends GetxController {
   var overlayButton = (!Settings.disableOverlayButton).obs;
   var opacity = 0.0.obs;
 
+  /// scroll controllers
+  /// instances declared with var can be replaced by the
+  /// corresponding library implementation restrictions.
   final verticalItemScrollController = ItemScrollController();
   var horizontalPageController = PreloadPageController();
   var thumbController = ScrollController();
@@ -80,7 +96,7 @@ class ViewerController extends GetxController {
   late List<bool> loadingEstimaed;
 
   /// this variable used in [vertical_viewer_page]
-  /// this will consume on [_itemPositionsListener]
+  /// this will be consumed on [_itemPositionsListener]
   bool onJump = false;
 
   ViewerController(
@@ -90,7 +106,7 @@ class ViewerController extends GetxController {
     required this.stopTimer,
     required this.startTimer,
   }) {
-    articleId = provider.id.obs;
+    articleId = provider.id;
     maxPage = provider.uris.length;
     thumb = provider.useFileSystem.obs;
     isImageLoaded =
@@ -242,7 +258,7 @@ class ViewerController extends GetxController {
     messages = <Tuple5<double, int, int, double, List<double>>>[];
 
     final tmessages =
-        (await VioletServer.searchMessageWord(articleId.value, searchText.text))
+        (await VioletServer.searchMessageWord(articleId, searchText.text))
             as List<dynamic>;
     messages = tmessages
         .map((e) => Tuple5<double, int, int, double, List<double>>(
