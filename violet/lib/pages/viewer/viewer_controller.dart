@@ -77,7 +77,7 @@ class ViewerController extends GetxController {
   var horizontalPageController = PreloadPageController();
   var thumbController = ScrollController();
   final searchText = TextEditingController(text: '');
-  final suggestionsBoxController = SuggestionsBoxController();
+  SuggestionsBoxController? suggestionsBoxController;
 
   /// Is enabled search?
   var messages = <Tuple5<double, int, int, double, List<double>>>[];
@@ -252,7 +252,7 @@ class ViewerController extends GetxController {
   }
 
   onModifiedText() async {
-    suggestionsBoxController.close();
+    suggestionsBoxController!.close();
     if (latestSearch == searchText.text) return;
     latestSearch == searchText.text;
     messages = <Tuple5<double, int, int, double, List<double>>>[];
