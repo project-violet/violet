@@ -22,6 +22,13 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 6, 28),
+    version: '1.26.2 Patch (HotFix)',
+    contents: [
+      'fix viewer button error',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 6, 27),
     version: '1.26.1 Patch (HotFix)',
     contents: [
