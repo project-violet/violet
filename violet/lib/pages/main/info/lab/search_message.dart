@@ -20,7 +20,7 @@ import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/main/info/lab/search_message_rank.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/pages/viewer/v_cached_network_image.dart';
+import 'package:violet/widgets/v_cached_network_image.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
