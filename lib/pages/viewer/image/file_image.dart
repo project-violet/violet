@@ -81,28 +81,17 @@ class _FileImageState extends State<FileImage> {
   }
 
   Widget _loadStateChanged(ExtendedImageState state) {
-    final width = MediaQuery.of(context).size.width;
-
     if (widget.cachedHeight != null && widget.cachedHeight! > 0) {
       return state.completedWidget;
     }
 
     final ImageInfo? imageInfo = state.extendedImageInfo;
-    if ((state.extendedImageLoadState == LoadState.completed ||
-            imageInfo != null) &&
-        !_loaded) {
+    if (imageInfo != null && !_loaded) {
       _loaded = true;
-      Future.delayed(const Duration(milliseconds: 100)).then((value) {
-        if (_disposed) return;
-        final aspectRatio = imageInfo!.image.width / imageInfo.image.height;
-        if (widget.heightCallback != null) {
-          widget.heightCallback!(width / aspectRatio);
-        }
-        setState(() {
-          _height = width / aspectRatio;
-        });
-      });
-    } else if (state.extendedImageLoadState == LoadState.loading) {
+      _setHeight(imageInfo);
+    }
+
+    if (state.extendedImageLoadState == LoadState.loading) {
       return SizedBox(
         height: _height,
         child: const Center(
@@ -116,5 +105,22 @@ class _FileImageState extends State<FileImage> {
     }
 
     return state.completedWidget;
+  }
+
+  _setHeight(ImageInfo imageInfo) {
+    Future.delayed(const Duration(milliseconds: 100)).then((value) {
+      if (_disposed) return;
+
+      final width = MediaQuery.of(context).size.width;
+
+      final aspectRatio = imageInfo.image.width / imageInfo.image.height;
+      if (widget.heightCallback != null) {
+        widget.heightCallback!(width / aspectRatio);
+      }
+
+      setState(() {
+        _height = width / aspectRatio;
+      });
+    });
   }
 }
