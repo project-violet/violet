@@ -370,6 +370,8 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       onPressed: () async {
         await MessageSearch.init();
 
+        c.suggestionsBoxController ??= SuggestionsBoxController();
+
         setState(() {
           c.search.value = !c.search.value;
         });
@@ -878,7 +880,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
               Future.delayed(const Duration(milliseconds: 100))
                   .then((value) async {
                 c.onModifiedText();
-                c.suggestionsBoxController.close();
+                c.suggestionsBoxController!.close();
               });
             },
             hideOnEmpty: true,
