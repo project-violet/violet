@@ -36,6 +36,7 @@ class ViewerController extends GetxController {
   var padding = Settings.padding.obs;
   var animation = Settings.animation.obs;
   var leftRightButton = (!Settings.disableOverlayButton).obs;
+  var rightToLeft = Settings.rightToLeft.obs;
   var appBarToBottom = Settings.moveToAppBarToBottom.obs;
   var showSlider = Settings.showSlider.obs;
   var indicator = Settings.showPageNumberIndicator.obs;
@@ -159,8 +160,8 @@ class ViewerController extends GetxController {
     }
   }
 
-  prev() => move(Settings.rightToLeft ? page.value + 1 : page.value - 1);
-  next() => move(Settings.rightToLeft ? page.value - 1 : page.value + 1);
+  prev() => move(page.value - 1);
+  next() => move(page.value + 1);
 
   load(int index) async {
     if (provider.useProvider) {
@@ -213,11 +214,19 @@ class ViewerController extends GetxController {
   }
 
   leftButton() {
-    prev();
+    if (rightToLeft.value) {
+      prev();
+    } else {
+      next();
+    }
   }
 
   rightButton() {
-    next();
+    if (rightToLeft.value) {
+      next();
+    } else {
+      prev();
+    }
   }
 
   gotoSearchIndex() {
