@@ -48,7 +48,7 @@ class ArticleReadLog {
   int id() => result['Id'];
   String articleId() => result['Article'];
   String datetimeStart() => result['DateTimeStart'];
-  String datetimeEnd() => result['DateTimeEnd'];
+  String? datetimeEnd() => result['DateTimeEnd'];
   int? lastPage() => result['LastPage'];
   // 0: Read on search, 1: Read on bookmark
   int type() => result['Type'];
