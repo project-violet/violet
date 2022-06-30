@@ -2295,10 +2295,10 @@ class _SettingsPageState extends State<SettingsPage>
                 // Icons.email,
                 Icons.open_in_new),
             onTap: () async {
-              // const url = 'https://www.patreon.com/projectviolet';
-              // if (await canLaunch(url)) {
-              //   await launch(url);
-              // }
+              const url = 'https://www.patreon.com/projectviolet';
+              if (await canLaunch(url)) {
+                await launch(url);
+              }
             },
           ),
           _buildDivider(),
