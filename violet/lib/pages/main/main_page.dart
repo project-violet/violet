@@ -9,6 +9,7 @@ import 'dart:ui';
 import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:fluttertoast/fluttertoast.dart';
@@ -180,6 +181,7 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
   // @dependent: android [
   final ReceivePort _port = ReceivePort();
 
+  @pragma('vm:entry-point')
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
@@ -206,7 +208,10 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
         }
       }
       updateContinued = true;
-      var ext = (await getExternalStorageDirectory())!;
+
+      final ext = await ExtStorage.getExternalStoragePublicDirectory(
+          ExtStorage.directoryDownload);
+
       bool once = false;
       IsolateNameServer.registerPortWithName(
           _port.sendPort, 'downloader_send_port');
@@ -214,25 +219,30 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
         // String id = data[0];
         // DownloadTaskStatus status = data[1];
         int progress = data[2];
+        print(data);
         if (progress == 100 && !once) {
-          OpenFile.open(
-              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
+          print('$ext/${UpdateSyncManager.updateUrl.split('/').last}');
+          OpenFile.open('$ext/${UpdateSyncManager.updateUrl.split('/').last}')
+              .then((value) {
+            print(value.type);
+            print(value.message);
+          });
           once = true;
+          print('successs');
         }
         setState(() {});
       });
 
-      if (await File(
-              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
+      if (await File('$ext/${UpdateSyncManager.updateUrl.split('/').last}')
           .exists()) {
-        await File('${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}')
+        await File('$ext/${UpdateSyncManager.updateUrl.split('/').last}')
             .delete();
       }
 
       FlutterDownloader.registerCallback(downloadCallback);
       await FlutterDownloader.enqueue(
         url: UpdateSyncManager.updateUrl,
-        savedDir: ext.path,
+        savedDir: ext,
         fileName: UpdateSyncManager.updateUrl.split('/').last,
         showNotification:
             true, // show download progress in status bar (for Android)
