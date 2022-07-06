@@ -1,7 +1,7 @@
 {
   "name": "violet",
   "identifier": "xyz.project.violet",
-  "sourceURL": "https://github.com/Gigas002/violet/raw/dev/AltStore.json",
+  "sourceURL": "https://github.com/project-violet/violet/raw/dev/AltStore.json",
   "apps": [
     {
       "name": "violet",
