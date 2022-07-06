@@ -1,11 +1,11 @@
 {
   "name": "violet",
-  "identifier": "app.violet",
+  "identifier": "xyz.project.violet",
   "sourceURL": "https://github.com/Gigas002/violet/raw/dev/AltStore.json",
   "apps": [
     {
       "name": "violet",
-      "bundleIdentifier": "app.violet",
+      "bundleIdentifier": "xyz.project.violet",
       "developerName": "Project Violet",
       "version": "1.26.2",
       "versionDate": "2022-06-30T01:01:01",
@@ -29,7 +29,7 @@
       "identifier": "violet-now-available",
       "caption": "Open Source Hentai Viewer App",
       "tintColor": "289979",
-      "appID": "app.violet",
+      "appID": "xyz.project.violet",
       "date": "2022-07-07",
       "notify": false
     }
