@@ -4,7 +4,6 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:synchronized/synchronized.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:violet/log/log.dart';
 

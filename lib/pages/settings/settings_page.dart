@@ -1370,25 +1370,10 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           _buildDivider(),
           InkWell(
-            // customBorder: RoundedRectangleBorder(
+            // customBorder: const RoundedRectangleBorder(
             //   borderRadius: BorderRadius.all(
             //     Radius.circular(8.0),
-            //   ),
-            child: ListTile(
-              leading:
-                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(Translations.of(context).trans('downloadpath')),
-                  Text(
-                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-              trailing: const Icon(Icons.keyboard_arrow_right),
-            ),
+            //   )),
             onTap: Settings.useInnerStorage
                 ? null
                 : () async {
@@ -1445,6 +1430,21 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setBaseDownloadPath(text.text);
                     }
                   },
+            child: ListTile(
+              leading:
+                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(Translations.of(context).trans('downloadpath')),
+                  Text(
+                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
           ),
           _buildDivider(),
           InkWell(
@@ -1531,15 +1531,15 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            onTap: true
-                ? null
-                : () async {
-                    await Settings.setAutoBackupBookmark(
-                        !Settings.autobackupBookmark);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
+            // onTap: true
+            //     ? null
+            //     : () async {
+            //         await Settings.setAutoBackupBookmark(
+            //             !Settings.autobackupBookmark);
+            //         setState(() {
+            //           _shouldReload = true;
+            //         });
+            //       },
             child: ListTile(
               leading: Icon(
                 MdiIcons.bookArrowUpOutline,
@@ -1548,14 +1548,15 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('autobackupbookmark')),
               trailing: Switch(
                 value: Settings.autobackupBookmark,
-                onChanged: true
-                    ? null
-                    : (newValue) async {
-                        await Settings.setAutoBackupBookmark(newValue);
-                        setState(() {
-                          _shouldReload = true;
-                        });
-                      },
+                // onChanged: true
+                //     ? null
+                //     : (newValue) async {
+                //         await Settings.setAutoBackupBookmark(newValue);
+                //         setState(() {
+                //           _shouldReload = true;
+                //         });
+                //       },
+                onChanged: null,
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),

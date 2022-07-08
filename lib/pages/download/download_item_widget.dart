@@ -25,7 +25,6 @@ import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/download/download_item_menu.dart';
 import 'package:violet/pages/download/download_routine.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
-import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';

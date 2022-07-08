@@ -320,8 +320,7 @@ class EHParser {
         try {
           var dict = <String, List<String>>{};
 
-          var tagarea = gref.querySelector('div > table');
-
+          // var tagarea = gref.querySelector('div > table');
           gref
               .querySelector('div > table')!
               .querySelectorAll('tr')

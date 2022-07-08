@@ -479,7 +479,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                           }
                         }
                       } else {
-                        if (int.parse(text.text) == null) {
+                        if (int.tryParse(text.text) == null) {
                           await showOkDialog(context, '숫자만 입력해야 합니다!');
                           return;
                         }
@@ -542,7 +542,6 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   }
 
   Future<void> _featuresOnTap() async {
-    var rtype = Settings.downloadResultType;
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,

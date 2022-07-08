@@ -15,7 +15,6 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/dots_indicator.dart';
 

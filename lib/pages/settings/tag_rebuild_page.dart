@@ -95,23 +95,24 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
 
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == '') return;
-    for (var tag in (qr as String).split('|')) {
-      if (tag != null && tag != '') {
-        if (!map.containsKey(tag)) map[tag] = 0;
-        map[tag] = map[tag]! + 1;
-      }
+    if (qr is! String) return;
+    if (qr.isEmpty) return;
+
+    for (var tag in (qr).split('|')) {
+      if (tag.isEmpty) continue;
+
+      if (!map.containsKey(tag)) map[tag] = 0;
+      map[tag] = map[tag]! + 1;
     }
   }
 
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
-    if (qr as String == '') return;
-    var str = qr as String;
-    if (str != null && str != '') {
-      if (!map.containsKey(str)) map[str] = 0;
-      map[str] = map[str]! + 1;
-    }
+    if (qr is! String) return;
+    if (qr.isEmpty) return;
+
+    if (!map.containsKey(qr)) map[qr] = 0;
+    map[qr] = map[qr]! + 1;
   }
 
   Future indexing() async {

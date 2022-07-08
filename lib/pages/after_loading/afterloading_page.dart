@@ -20,8 +20,6 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
-import '../viewer/others/lifecycle_event_handler.dart';
-
 class AfterLoadingPage extends StatefulWidget {
   const AfterLoadingPage({Key? key}) : super(key: key);
 
