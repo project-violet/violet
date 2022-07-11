@@ -231,9 +231,9 @@ namespace hsync
                 articles.Add(n);
 
             var x = articles.ToList();
-            x.RemoveAll(x => existsBoth.Contains(x));
-            x.RemoveAll(x => newedDataEH.Contains(x) && existsEH.Contains(x) && !existsHitomi.Contains(x) && !newedDataHitomi.Contains(x));
-            x.RemoveAll(x => newedDataHitomi.Contains(x) && existsHitomi.Contains(x) && !existsEH.Contains(x) && !newedDataEH.Contains(x));
+            //x.RemoveAll(x => existsBoth.Contains(x));
+            //x.RemoveAll(x => newedDataEH.Contains(x) && existsEH.Contains(x) && !existsHitomi.Contains(x) && !newedDataHitomi.Contains(x));
+            //x.RemoveAll(x => newedDataHitomi.Contains(x) && existsHitomi.Contains(x) && !existsEH.Contains(x) && !newedDataEH.Contains(x));
             x.Sort((x, y) => x.CompareTo(y));
 
             var onHitomi = new Dictionary<int, int>();
@@ -281,9 +281,6 @@ namespace hsync
                 onExists.Add(exists[i].Id, i);
             }
 
-            // TODO: This code must be called only one!
-            db.Execute($"DELETE FROM HitomiColumnModel WHERE Id IN ({string.Join(",", x)})");
-
             var datas = x.Select(id =>
             {
                 HitomiColumnModel result = null;
@@ -295,7 +292,7 @@ namespace hsync
                 var ehh = existsHitomi.Contains(id);
                 var eeh = existsEH.Contains(id);
 
-                if (oh)
+                if (oh && !oe)
                 {
                     var md = HitomiLegalize.ArticleToMetadata(hitomiArticles[onHitomi[id]]);
                     result = new HitomiColumnModel
@@ -431,7 +428,7 @@ namespace hsync
                         Tags = (tags.Count > 0 ? "|" + string.Join("|", tags) + "|" : null),
                         Type = ed.Type,
                         Language = lang,
-                        ExistOnHitomi = ehh ? 1 : 0,
+                        ExistOnHitomi = ehh || oh ? 1 : 0,
                         Uploader = ed.Uploader,
                         Published = DateTime.Parse(ed.Published),
                         EHash = ed.URL.Split('/')[5],
@@ -443,7 +440,43 @@ namespace hsync
                 return result;
             });
 
-            return _newedCache = datas;
+            List<HitomiColumnModel> results = new List<HitomiColumnModel>();
+
+            // Remove Overlapped Articles
+            foreach (var article in datas) 
+            {
+                if (onExists.ContainsKey(article.Id))
+                {
+                    var exist = exists[onExists[article.Id]];
+
+                    if (isDiff(article, exist))
+                        results.Add(article);
+                }
+                else
+                {
+                    results.Add(article);
+                }
+            }
+
+            // TODO: This code must be called only one!
+            db.Execute($"DELETE FROM HitomiColumnModel WHERE Id IN ({string.Join(",", results.Select(x => x.Id))})");
+
+            return _newedCache = results;
+        }
+
+        private bool isDiff(HitomiColumnModel a, HitomiColumnModel b)
+        {
+            if (a.Artists != b.Artists || 
+                a.Groups != b.Groups || 
+                a.Uploader != b.Uploader || 
+                a.Tags != b.Tags || 
+                a.Characters != b.Characters || 
+                a.Series != b.Series || 
+                a.Language != b.Language ||
+                a.Type != b.Type
+                )
+                return true;
+            return false;
         }
 
         public void FlushToMainDatabase()
