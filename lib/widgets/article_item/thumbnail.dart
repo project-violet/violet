@@ -115,7 +115,7 @@ class ThumbnailWidget extends StatelessWidget {
   }
 }
 
-class ThumbnailImageWidget extends StatelessWidget {
+class ThumbnailImageWidget extends StatefulWidget {
   final String thumbnailTag;
   final String thumbnail;
   final Map<String, String> headers;
@@ -130,9 +130,39 @@ class ThumbnailImageWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ThumbnailImageWidget> createState() => _ThumbnailImageWidgetState();
+}
+
+class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+      lowerBound: 0.0,
+      upperBound: 1.0,
+    );
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: thumbnailTag,
+      tag: widget.thumbnailTag,
       //   child: CachedNetworkImage(
       //     memCacheWidth: Settings.useLowPerf ? 30 : null,
       //     imageUrl: thumbnail,
@@ -201,8 +231,8 @@ class ThumbnailImageWidget extends StatelessWidget {
       // );
 
       child: ExtendedImage.network(
-        thumbnail,
-        headers: headers,
+        widget.thumbnail,
+        headers: widget.headers,
         retries: 10,
         timeRetry: const Duration(milliseconds: 1000),
         fit: BoxFit.cover,
@@ -216,7 +246,7 @@ class ThumbnailImageWidget extends StatelessWidget {
   Widget _loadStateChanged(ExtendedImageState state) {
     if (state.extendedImageLoadState == LoadState.failed) {
       Logger.error(
-          '[article_item-thumbnail] URL: $thumbnail\nE: ${state.lastException}');
+          '[article_item-thumbnail] URL: ${widget.thumbnail}\nE: ${state.lastException}');
       state.reLoadImage();
     }
 
@@ -241,18 +271,28 @@ class ThumbnailImageWidget extends StatelessWidget {
       }
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(image: state.imageProvider, fit: BoxFit.cover),
+    if (state.wasSynchronouslyLoaded) {
+      return state.completedWidget;
+    }
+
+    _controller.forward();
+
+    return FadeTransition(
+      opacity: _animation,
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(image: state.imageProvider, fit: BoxFit.cover),
+        ),
+        child: widget.isBlurred
+            ? BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                child: Container(
+                  decoration:
+                      BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                ),
+              )
+            : Container(),
       ),
-      child: isBlurred
-          ? BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-              child: Container(
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
-              ),
-            )
-          : Container(),
     );
   }
 }
