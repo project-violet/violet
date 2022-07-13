@@ -233,7 +233,7 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
       child: ExtendedImage.network(
         widget.thumbnail,
         headers: widget.headers,
-        retries: 10,
+        retries: 100,
         timeRetry: const Duration(milliseconds: 1000),
         fit: BoxFit.cover,
         handleLoadingProgress: true,
@@ -272,7 +272,20 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
     }
 
     if (state.wasSynchronouslyLoaded) {
-      return state.completedWidget;
+      return Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(image: state.imageProvider, fit: BoxFit.cover),
+        ),
+        child: widget.isBlurred
+            ? BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                child: Container(
+                  decoration:
+                      BoxDecoration(color: Colors.white.withOpacity(0.0)),
+                ),
+              )
+            : Container(),
+      );
     }
 
     _controller.forward();
