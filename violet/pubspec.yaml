@@ -242,7 +242,7 @@ flutter:
     - assets/p7zip/arm64-v8a/lib7zr.so # @dependent: android
     - assets/p7zip/armeabi-v7a/lib7zr.so # @dependent: android
     - assets/p7zip/x86/lib7zr.so # @dependent: android
-    # - assets/p7zip/x86_64/lib7zr.so
+    - assets/p7zip/x86_64/lib7zr.so # @dependent: android
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
