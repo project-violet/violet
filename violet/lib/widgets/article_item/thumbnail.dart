@@ -4,10 +4,12 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
 
 class ThumbnailWidget extends StatelessWidget {
@@ -131,46 +133,126 @@ class ThumbnailImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: thumbnailTag,
-      child: CachedNetworkImage(
-        memCacheWidth: Settings.useLowPerf ? 30 : null,
-        imageUrl: thumbnail,
+      //   child: CachedNetworkImage(
+      //     memCacheWidth: Settings.useLowPerf ? 30 : null,
+      //     imageUrl: thumbnail,
+      //     fit: BoxFit.cover,
+      //     httpHeaders: headers,
+      //     imageBuilder: (context, imageProvider) => Container(
+      //       decoration: BoxDecoration(
+      //         image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+      //       ),
+      //       child: isBlurred
+      //           ? BackdropFilter(
+      //               filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+      //               child: Container(
+      //                 decoration:
+      //                     BoxDecoration(color: Colors.white.withOpacity(0.0)),
+      //               ),
+      //             )
+      //           : Container(),
+      //     ),
+      //     errorWidget: (context, url, error) {
+      //       print(url);
+      //       print(error);
+      //       return Center(
+      //         child: SizedBox(
+      //           width: 30,
+      //           height: 30,
+      //           child: CircularProgressIndicator(
+      //             color: Settings.majorColor.withAlpha(150),
+      //           ),
+      //         ),
+      //       );
+      //     },
+      //     progressIndicatorBuilder: (context, url, progress) {
+      //       print(url + ' ');
+      //       return Center(
+      //         child: SizedBox(
+      //           width: 30,
+      //           height: 30,
+      //           child: CircularProgressIndicator(
+      //             color: Settings.majorColor.withAlpha(150),
+      //           ),
+      //         ),
+      //       );
+      //     },
+      //     placeholder: (b, c) {
+      //       if (!Settings.simpleItemWidgetLoadingIcon) {
+      //         return const FlareActor(
+      //           'assets/flare/Loading2.flr',
+      //           alignment: Alignment.center,
+      //           fit: BoxFit.fitHeight,
+      //           animation: 'Alarm',
+      //         );
+      //       } else {
+      //         return Center(
+      //           child: SizedBox(
+      //             width: 30,
+      //             height: 30,
+      //             child: CircularProgressIndicator(
+      //               color: Settings.majorColor.withAlpha(150),
+      //             ),
+      //           ),
+      //         );
+      //       }
+      //     },
+      //   ),
+      // );
+
+      child: ExtendedImage.network(
+        thumbnail,
+        headers: headers,
+        retries: 10,
+        timeRetry: const Duration(milliseconds: 1000),
         fit: BoxFit.cover,
-        httpHeaders: headers,
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-          ),
-          child: isBlurred
-              ? BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                  child: Container(
-                    decoration:
-                        BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                  ),
-                )
-              : Container(),
-        ),
-        placeholder: (b, c) {
-          if (!Settings.simpleItemWidgetLoadingIcon) {
-            return const FlareActor(
-              'assets/flare/Loading2.flr',
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: 'Alarm',
-            );
-          } else {
-            return Center(
-              child: SizedBox(
-                width: 30,
-                height: 30,
-                child: CircularProgressIndicator(
-                  color: Settings.majorColor.withAlpha(150),
-                ),
-              ),
-            );
-          }
-        },
+        handleLoadingProgress: true,
+        loadStateChanged: _loadStateChanged,
+        cacheWidth: Settings.useLowPerf ? 30 : null,
       ),
+    );
+  }
+
+  Widget _loadStateChanged(ExtendedImageState state) {
+    if (state.extendedImageLoadState == LoadState.failed) {
+      Logger.error(
+          '[article_item-thumbnail] URL: $thumbnail\nE: ${state.lastException}');
+      state.reLoadImage();
+    }
+
+    if (state.extendedImageLoadState == LoadState.loading) {
+      if (!Settings.simpleItemWidgetLoadingIcon) {
+        return const FlareActor(
+          'assets/flare/Loading2.flr',
+          alignment: Alignment.center,
+          fit: BoxFit.fitHeight,
+          animation: 'Alarm',
+        );
+      } else {
+        return Center(
+          child: SizedBox(
+            width: 30,
+            height: 30,
+            child: CircularProgressIndicator(
+              color: Settings.majorColor.withAlpha(150),
+            ),
+          ),
+        );
+      }
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(image: state.imageProvider, fit: BoxFit.cover),
+      ),
+      child: isBlurred
+          ? BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+              child: Container(
+                decoration: BoxDecoration(color: Colors.white.withOpacity(0.0)),
+              ),
+            )
+          : Container(),
     );
   }
 }
