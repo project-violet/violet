@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/thread/semaphore.dart';
 
@@ -19,7 +20,8 @@ class HttpWrapper {
   static Map<String, http.Response> cacheResponse = <String, http.Response>{};
 }
 
-Future<http.Response> get(String url, {Map<String, String>? headers}) async {
+Future<http.Response> get(String url,
+    {Map<String, String>? headers, Duration? timeout}) async {
   if (url.contains('exhentai.org')) {
     if (HttpWrapper.cacheResponse.containsKey(url)) {
       return HttpWrapper.cacheResponse[url]!;
@@ -110,7 +112,22 @@ Future<http.Response> get(String url, {Map<String, String>? headers}) async {
     if (HttpWrapper.cacheResponse.containsKey(url)) {
       return HttpWrapper.cacheResponse[url]!;
     }
-    var res = await http.get(Uri.parse(url), headers: headers);
+    Response res;
+    if (timeout == null) {
+      res = await http.get(Uri.parse(url), headers: headers);
+    } else {
+      bool isTimeout = false;
+      var retry = 0;
+      do {
+        isTimeout = false;
+        res = await http.get(Uri.parse(url), headers: headers).timeout(timeout,
+            onTimeout: () {
+          isTimeout = true;
+          retry++;
+          return http.Response('', 200);
+        });
+      } while (isTimeout && retry < 10);
+    }
     if (res.statusCode != 200) {
       Logger.warning('[Http Response] CODE: ${res.statusCode}, GET: $url');
     }
