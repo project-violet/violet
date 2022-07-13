@@ -238,7 +238,7 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
         fit: BoxFit.cover,
         handleLoadingProgress: true,
         loadStateChanged: _loadStateChanged,
-        cacheWidth: Settings.useLowPerf ? 30 : null,
+        cacheWidth: Settings.useLowPerf ? 300 : null,
       ),
     );
   }
