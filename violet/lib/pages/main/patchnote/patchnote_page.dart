@@ -22,6 +22,14 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 7, 14),
+    version: '1.26.3 Patch',
+    contents: [
+      'fix bug that thumbnail not shown',
+      'fix app update mechanism for android',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 6, 28),
     version: '1.26.2 Patch (HotFix)',
     contents: [
