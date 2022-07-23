@@ -220,7 +220,7 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
               tagUploader[item.uploader()]![index] = 0;
             }
             tagUploader[item.uploader()]![index] =
-                tagGroup[item.uploader()]![index]! + 1;
+                tagUploader[item.uploader()]![index]! + 1;
           }
         }
 
