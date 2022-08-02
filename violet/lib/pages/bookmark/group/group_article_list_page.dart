@@ -148,6 +148,38 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       _cachedList = list;
     }
 
+    final scrollView = CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: <Widget>[
+        SliverPersistentHeader(
+          floating: true,
+          delegate: AnimatedOpacitySliver(
+            searchBar: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Stack(children: <Widget>[
+                  _filter(),
+                  _title(),
+                ])),
+          ),
+        ),
+        _cachedList!
+      ],
+    );
+
+    // TODO: fix bug that all sub widgets are loaded simultaneously
+    // so, this occured memory leak and app crash
+    final articleList = nowType >= 2
+        ? scrollView
+        : PrimaryScrollController(
+            controller: _scroll,
+            child: CupertinoScrollbar(
+              scrollbarOrientation: Settings.bookmarkScrollbarPositionToLeft
+                  ? ScrollbarOrientation.left
+                  : ScrollbarOrientation.right,
+              child: scrollView,
+            ),
+          );
+
     return CardPanel.build(
       context,
       child: Stack(
@@ -169,33 +201,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                 // floatingActionButton: Container(child: Text('asdf')),
                 body: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: PrimaryScrollController(
-                    controller: _scroll,
-                    child: CupertinoScrollbar(
-                      scrollbarOrientation:
-                          Settings.bookmarkScrollbarPositionToLeft
-                              ? ScrollbarOrientation.left
-                              : ScrollbarOrientation.right,
-                      child: CustomScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        slivers: <Widget>[
-                          SliverPersistentHeader(
-                            floating: true,
-                            delegate: AnimatedOpacitySliver(
-                              searchBar: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: Stack(children: <Widget>[
-                                    _filter(),
-                                    _title(),
-                                  ])),
-                            ),
-                          ),
-                          _cachedList!
-                        ],
-                      ),
-                    ),
-                  ),
+                  child: articleList,
                 ),
               ),
               GroupArtistList(name: widget.name, groupId: widget.groupId),
