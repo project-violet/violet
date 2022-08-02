@@ -19,6 +19,8 @@ import 'package:violet/log/act_log.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:charts_flutter/src/text_element.dart';
+import 'package:charts_flutter/src/text_style.dart' as style;
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -50,6 +52,8 @@ class _StatisticsState extends State<Statistics> {
   int pureStartUpTime = 0;
   int totalPureSeconds = 0;
 
+  Map<DateTime, int> timePerDate = <DateTime, int>{};
+
   Future<void> updateRercord(dummy) async {
     try {
       final articles = await User.getInstance()
@@ -80,6 +84,7 @@ class _StatisticsState extends State<Statistics> {
       femaleTags = 0;
       maleTags = 0;
       tags = 0;
+      timePerDate = <DateTime, int>{};
 
       var ffstat = <String, int>{};
 
@@ -245,6 +250,25 @@ class _StatisticsState extends State<Statistics> {
         }
       }
 
+      final minDate = DateTime.fromMicrosecondsSinceEpoch(events.entries
+          .map((e) => e.value
+              .map((e) => e.dateTime!.microsecondsSinceEpoch)
+              .reduce(min))
+          .reduce(min));
+      final maxDate = DateTime.fromMicrosecondsSinceEpoch(events.entries
+          .map((e) => e.value
+              .map((e) => e.dateTime!.microsecondsSinceEpoch)
+              .reduce(max))
+          .reduce(max));
+
+      for (var i = 0;; i++) {
+        final d = DateTime(minDate.year, minDate.month, minDate.day + i);
+
+        timePerDate[d] = 0;
+
+        if (maxDate.difference(d).isNegative) break;
+      }
+
       totalPureSeconds = 0;
       events.entries.forEach((element) {
         var accSeconds = 0;
@@ -259,7 +283,17 @@ class _StatisticsState extends State<Statistics> {
           }
 
           if (!stopAcc) {
-            accSeconds += base.difference(eve.dateTime!).abs().inSeconds;
+            final diffSec = base.difference(eve.dateTime!).abs().inSeconds;
+
+            if (diffSec < 60) {
+              accSeconds += diffSec;
+
+              final dt = DateTime(base.year, base.month, base.day);
+              if (!timePerDate.containsKey(dt)) {
+                timePerDate[dt] = 0;
+              }
+              timePerDate[dt] = timePerDate[dt]! + diffSec;
+            }
           }
           if (eve.type == ActLogType.appSuspense) stopAcc = true;
           if (eve.type == ActLogType.appStart ||
@@ -293,17 +327,15 @@ class _StatisticsState extends State<Statistics> {
         children: [
           Expanded(
             child: lff.isNotEmpty
-                ? ListView.builder(
-                    padding: const EdgeInsets.all(0),
+                ? ListView(
+                    padding: EdgeInsets.zero,
                     controller: _controller,
                     physics: const BouncingScrollPhysics(),
-                    itemCount: 2,
-                    itemBuilder: (BuildContext ctxt, int index) {
-                      if (index == 0) {
-                        return _tagChart();
-                      }
-                      return _status();
-                    },
+                    children: [
+                      _tagChart(),
+                      _status(),
+                      _statusChart(),
+                    ],
                   )
                 : Column(
                     children: const <Widget>[
@@ -369,35 +401,6 @@ class _StatisticsState extends State<Statistics> {
 
   String numberWithComma(int param) {
     return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
-  }
-
-  _status() {
-    return Column(
-      children: [
-        Text('읽은 작품: ${numberWithComma(totalRead)}개'),
-        Text('읽은 작품 (중복없음): ${numberWithComma(pureRead)}개'),
-        Text('로그 파일 크기: ${formatBytes(logSize, 2)}'),
-        Container(height: 30),
-        Text('앱 시작 횟수: ${numberWithComma(startUpTimes)}번'),
-        Text('앱 실행 시간: ${durationToString(Duration(seconds: totalSeconds))}'),
-        const Text(
-          '* 백그라운드 포함',
-          style: TextStyle(fontSize: 13.0),
-        ),
-        Text(
-          '* 기준: $baseTime 부터',
-          style: const TextStyle(fontSize: 13.0),
-        ),
-        Container(height: 30),
-        Text('앱 전환 횟수: ${numberWithComma(pureStartUpTime)}번'),
-        Text(
-            '순수 앱 사용 시간: ${durationToString(Duration(seconds: totalPureSeconds))}'),
-        Text(
-          '* 기준: $basePureTime 부터',
-          style: const TextStyle(fontSize: 13.0),
-        ),
-      ],
-    );
   }
 
   _tagChart() {
@@ -506,4 +509,167 @@ class _StatisticsState extends State<Statistics> {
       ),
     ]);
   }
+
+  _status() {
+    return Column(
+      children: [
+        Text('읽은 작품: ${numberWithComma(totalRead)}개'),
+        Text('읽은 작품 (중복없음): ${numberWithComma(pureRead)}개'),
+        Text('로그 파일 크기: ${formatBytes(logSize, 2)}'),
+        Container(height: 30),
+        Text('앱 시작 횟수: ${numberWithComma(startUpTimes)}번'),
+        Text('앱 실행 시간: ${durationToString(Duration(seconds: totalSeconds))}'),
+        const Text(
+          '* 백그라운드 포함',
+          style: TextStyle(fontSize: 13.0),
+        ),
+        Text(
+          '* 기준: $baseTime 부터',
+          style: const TextStyle(fontSize: 13.0),
+        ),
+        Container(height: 30),
+        Text('앱 전환 횟수: ${numberWithComma(pureStartUpTime)}번'),
+        Text(
+            '순수 앱 사용 시간: ${durationToString(Duration(seconds: totalPureSeconds))}'),
+        Text(
+          '* 기준: $basePureTime 부터',
+          style: const TextStyle(fontSize: 13.0),
+        ),
+      ],
+    );
+  }
+
+  String yvalue = '';
+
+  _statusChart() {
+    final seriesList = charts.Series<Tuple2<DateTime, int>, DateTime>(
+      id: 'time',
+      colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+      domainFn: (v, _) => v.item1,
+      measureFn: (v, _) => v.item2,
+      data: timePerDate.entries
+          .map((e) => Tuple2<DateTime, int>(e.key, e.value ~/ 60))
+          .toList(),
+    );
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          height: 150,
+          child: charts.TimeSeriesChart(
+            [seriesList],
+            animate: true,
+            defaultRenderer: charts.LineRendererConfig(includePoints: true),
+            dateTimeFactory: const charts.LocalDateTimeFactory(),
+            behaviors: [
+              charts.SelectNearest(
+                  eventTrigger: charts.SelectionTrigger.tapAndDrag),
+              charts.LinePointHighlighter(
+                  symbolRenderer: TextSymbolRenderer(() => yvalue))
+            ],
+            selectionModels: [
+              charts.SelectionModelConfig(
+                  changedListener: (charts.SelectionModel model) {
+                if (model.hasDatumSelection) {
+                  final d = model.selectedSeries[0]
+                      .domainFn(model.selectedDatum[0].index) as DateTime;
+
+                  yvalue = '${d.month}/${d.day}, '
+                      '${model.selectedSeries[0].measureFn(model.selectedDatum[0].index)}분';
+                }
+              })
+            ],
+          ),
+        )
+      ],
+    );
+  }
 }
+
+typedef GetText = String Function();
+
+class TextSymbolRenderer extends charts.CircleSymbolRenderer {
+  TextSymbolRenderer(this.getText,
+      {this.marginBottom = 8, this.padding = const EdgeInsets.all(8)});
+
+  final GetText getText;
+  final double marginBottom;
+  final EdgeInsets padding;
+
+  @override
+  void paint(charts.ChartCanvas canvas, Rectangle<num> bounds,
+      {List<int>? dashPattern,
+      charts.Color? fillColor,
+      charts.FillPatternType? fillPattern,
+      charts.Color? strokeColor,
+      double? strokeWidthPx}) {
+    super.paint(canvas, bounds,
+        dashPattern: dashPattern,
+        fillColor: fillColor,
+        fillPattern: fillPattern,
+        strokeColor: strokeColor,
+        strokeWidthPx: strokeWidthPx);
+
+    style.TextStyle textStyle = style.TextStyle();
+    textStyle.color = charts.Color.black;
+    textStyle.fontSize = 15;
+
+    TextElement textElement = TextElement(getText.call(), style: textStyle);
+    double width = textElement.measurement.horizontalSliceWidth;
+    double height = textElement.measurement.verticalSliceWidth;
+
+    double centerX = bounds.left + bounds.width / 2;
+    double centerY = bounds.top +
+        bounds.height / 2 -
+        marginBottom -
+        (padding.top + padding.bottom);
+
+    canvas.drawRRect(
+      Rectangle(
+        centerX - (width / 2) - padding.left,
+        centerY - (height / 2) - padding.top,
+        width + (padding.left + padding.right),
+        height + (padding.top + padding.bottom),
+      ),
+      fill: charts.Color.white,
+      radius: 16,
+      roundTopLeft: true,
+      roundTopRight: true,
+      roundBottomRight: true,
+      roundBottomLeft: true,
+    );
+    canvas.drawText(
+      textElement,
+      (centerX - (width / 2)).round(),
+      (centerY - (height / 2)).round(),
+    );
+  }
+}
+
+// class CustomCircleSymbolRenderer extends charts.CircleSymbolRenderer {
+//   @override
+//   void paint(
+//     charts.ChartCanvas canvas,
+//     Rectangle<num> bounds, {
+//     List<int>? dashPattern,
+//     charts.Color? fillColor,
+//     charts.FillPatternType? fillPattern,
+//     charts.Color? strokeColor,
+//     double? strokeWidthPx,
+//   }) {
+//     super.paint(canvas, bounds,
+//         dashPattern: dashPattern,
+//         fillColor: fillColor,
+//         strokeColor: strokeColor,
+//         strokeWidthPx: strokeWidthPx);
+//     canvas.drawRect(
+//         Rectangle(bounds.left - 5, bounds.top - 30, bounds.width + 10,
+//             bounds.height + 10),
+//         fill: charts.Color.white);
+//     var textStyle = style.TextStyle();
+//     textStyle.color = charts.Color.black;
+//     textStyle.fontSize = 15;
+//     canvas.drawText(TextElement("1", style: textStyle), (bounds.left).round(),
+//         (bounds.top - 28).round());
+//   }
+// }
