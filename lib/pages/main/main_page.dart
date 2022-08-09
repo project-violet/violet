@@ -41,6 +41,7 @@ import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/splash/splash_page.dart';
+import 'package:violet/script/script_webview.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -165,7 +166,8 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
         name: Translations.of(context).trans('service'),
         content: const _ServiceAreaWidget(),
       ),
-      Container(height: 32)
+      Container(height: 32),
+      const ScriptWebView(),
     ];
 
     return SingleChildScrollView(
