@@ -7,14 +7,14 @@
       "name": "violet",
       "bundleIdentifier": "xyz.project.violet",
       "developerName": "Project Violet",
-      "version": "1.26.2",
-      "versionDate": "2022-06-30T01:01:01",
-      "versionDescription": "version: update version (1.26.2)",
+      "version": "1.26.3",
+      "versionDate": "2022-07-14T02:08:00",
+      "versionDescription": "version: update version (1.26.3)",
       "downloadURL": "https://github.com/project-violet/violet/releases/download/1.26.2/Payload.ipa",
       "localizedDescription": "An unofficial E-Hentai App for iOS.",
       "iconURL": "https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png",
       "tintColor": "289979",
-      "size": 91991598,
+      "size": 92345374,
       "permissions": [
         {
           "type": "network",
