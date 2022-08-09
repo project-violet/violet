@@ -2,7 +2,7 @@
  <img width="150px" src="https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png" align="center" alt="GitHub Readme Stats" />
  <h2 align="center">Project Violet</h2>
   <p align="center">
-    Open Source Hentai Viewer App
+    Open Source Viewer App
   </p>
   <p align="center">
     <b><a href="https://github.com/project-violet/violet/wiki/Screenshots">Screenshots</a></b>
@@ -47,7 +47,6 @@ I can translate it by google translator, but the quality is low.
 Thanks for translation
 
 ```
-Italiano - https://github.com/AlexZorzi
 中文-简化字 - https://github.com/casteryh
 Español - https://github.com/Culombiano
 ```
