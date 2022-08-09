@@ -87,7 +87,7 @@ class _ArticleListItemVerySimpleWidgetState
   bool disableFiltering = false;
   int latestReadPage = 0;
   Map<String, String>? headers;
-  final FlareControls _flareController = FlareControls();
+  FlareControls? _flareController;
   double? thisWidth, thisHeight;
 
   bool isChecked = false;
@@ -123,6 +123,10 @@ class _ArticleListItemVerySimpleWidgetState
   _init() {
     if (_inited) return;
     _inited = true;
+
+    if (!Settings.simpleItemWidgetLoadingIcon) {
+      _flareController = FlareControls();
+    }
 
     data = Provider.of<ArticleListItem>(context);
 
@@ -449,10 +453,12 @@ class _ArticleListItemVerySimpleWidgetState
     }
 
     if (!isBookmarked.value) {
-      _flareController.play('Unlike');
+      if (!Settings.simpleItemWidgetLoadingIcon) {
+        _flareController!.play('Unlike');
+      }
     } else {
       controller.forward(from: 0.0);
-      _flareController.play('Like');
+      if (!Settings.simpleItemWidgetLoadingIcon) _flareController!.play('Like');
     }
 
     await HapticFeedback.lightImpact();
@@ -544,7 +550,7 @@ class BodyWidget extends StatelessWidget {
   final String? thumbnail;
   final int imageCount;
   final ValueNotifier<bool> isBookmarked;
-  final FlareControls flareController;
+  final FlareControls? flareController;
   final double pad;
   final bool isBlurred;
   final Map<String, String>? headers;

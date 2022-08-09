@@ -19,7 +19,7 @@ class ThumbnailWidget extends StatelessWidget {
   final String thumbnailTag;
   final int imageCount;
   final ValueNotifier<bool> isBookmarked;
-  final FlareControls flareController;
+  final FlareControls? flareController;
   final String id;
   final bool isBlurred;
   final bool isLastestRead;
@@ -312,7 +312,7 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
 
 class BookmarkIndicatorWidget extends StatelessWidget {
   final ValueNotifier<bool> isBookmarked;
-  final FlareControls flareController;
+  final FlareControls? flareController;
 
   const BookmarkIndicatorWidget({
     Key? key,
