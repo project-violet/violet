@@ -12,17 +12,24 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 class ScriptManager {
   static const String _scriptUrl =
       'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js';
+  static const String _scriptV4 =
+      'https://github.com/project-violet/scripts/raw/main/hitomi_get_image_list_v4_model.js';
+  static bool enableV4 = false;
+  static String? _v4Cache;
   static String? _scriptCache;
   static late JavascriptRuntime _runtime;
   static late DateTime _latestUpdate;
 
   static Future<void> init() async {
     _scriptCache = (await http.get(_scriptUrl)).body;
+    _v4Cache = (await http.get(_scriptV4)).body;
     _latestUpdate = DateTime.now();
     _initRuntime();
   }
 
   static Future<bool> refresh() async {
+    if (enableV4) return false;
+
     if (DateTime.now().difference(_latestUpdate).inMinutes < 5) {
       return false;
     }
@@ -38,6 +45,23 @@ class ScriptManager {
     }
 
     return false;
+  }
+
+  static Future<void> setV4(String gg_m, String gg_b) async {
+    enableV4 = true;
+
+    _v4Cache ??= (await http.get(_scriptV4)).body;
+
+    var scriptTemp = _v4Cache!;
+    scriptTemp = scriptTemp.replaceAll('%%gg.m%', gg_m);
+    scriptTemp = scriptTemp.replaceAll('%%gg.b%', gg_b);
+
+    if (_scriptCache != scriptTemp) {
+      _scriptCache = scriptTemp;
+      _latestUpdate = DateTime.now();
+      _initRuntime();
+      ProviderManager.refresh();
+    }
   }
 
   static void _initRuntime() {
