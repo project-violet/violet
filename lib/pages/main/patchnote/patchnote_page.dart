@@ -22,6 +22,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 8, 11),
+    version: '1.26.4 Patch',
+    contents: [
+      'fix tag rebuild error',
+      'fix bookmark not shown on detail mode',
+      'change the viewer image cache strategy',
+      'add built-in script reloader',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 7, 14),
     version: '1.26.3 Patch',
     contents: [
