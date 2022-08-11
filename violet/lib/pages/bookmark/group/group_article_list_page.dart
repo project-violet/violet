@@ -570,28 +570,26 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             delegate: SliverChildListDelegate(filterResult.map((x) {
               var keyStr = 'group/${widget.groupId}/$nowType/${x.id()}';
               if (!itemKeys.containsKey(keyStr)) itemKeys[keyStr] = GlobalKey();
-              return DebounceWidget(
-                child: Align(
-                  key: itemKeys[keyStr],
-                  alignment: Alignment.center,
-                  child: Provider<ArticleListItem>.value(
-                    value: ArticleListItem.fromArticleListItem(
-                      queryResult: x,
-                      showDetail: nowType == 3,
-                      addBottomPadding: true,
-                      width: (windowWidth - 4.0),
-                      thumbnailTag: const Uuid().v4(),
-                      bookmarkMode: true,
-                      bookmarkCallback: longpress,
-                      bookmarkCheckCallback: check,
-                      usableTabList: filterResult,
-                      // isCheckMode: checkMode,
-                      // isChecked: checked.contains(x.id()),
-                    ),
-                    child: ArticleListItemVerySimpleWidget(
-                      isCheckMode: checkMode,
-                      isChecked: checked.contains(x.id()),
-                    ),
+              return Align(
+                key: itemKeys[keyStr],
+                alignment: Alignment.center,
+                child: Provider<ArticleListItem>.value(
+                  value: ArticleListItem.fromArticleListItem(
+                    queryResult: x,
+                    showDetail: nowType == 3,
+                    addBottomPadding: true,
+                    width: (windowWidth - 4.0),
+                    thumbnailTag: const Uuid().v4(),
+                    bookmarkMode: true,
+                    bookmarkCallback: longpress,
+                    bookmarkCheckCallback: check,
+                    usableTabList: filterResult,
+                    // isCheckMode: checkMode,
+                    // isChecked: checked.contains(x.id()),
+                  ),
+                  child: ArticleListItemVerySimpleWidget(
+                    isCheckMode: checkMode,
+                    isChecked: checked.contains(x.id()),
                   ),
                 ),
               );
