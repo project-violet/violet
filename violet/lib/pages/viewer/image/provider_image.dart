@@ -78,7 +78,7 @@ class _ProviderImageState extends State<ProviderImage> {
       handleLoadingProgress: true,
       loadStateChanged: _loadStateChanged,
       cacheHeight: Settings.useLowPerf
-          ? (MediaQuery.of(context).size.width * 3.0).toInt()
+          ? (MediaQuery.of(context).size.width * 2.0).toInt()
           : null,
     );
   }
