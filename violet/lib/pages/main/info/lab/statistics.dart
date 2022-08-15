@@ -10,6 +10,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
@@ -53,6 +54,9 @@ class _StatisticsState extends State<Statistics> {
   int totalPureSeconds = 0;
 
   Map<DateTime, int> timePerDate = <DateTime, int>{};
+
+  int cacheCount = 0;
+  int cacheSize = 0;
 
   Future<void> updateRercord(dummy) async {
     try {
@@ -149,6 +153,7 @@ class _StatisticsState extends State<Statistics> {
       if (femaleTags + maleTags + tags == 0) tags = 0;
 
       await logAnalysis();
+      await cacheAnalysis();
 
       setState(() {});
     } catch (e, st) {
@@ -303,6 +308,28 @@ class _StatisticsState extends State<Statistics> {
         }
 
         totalPureSeconds += accSeconds;
+      });
+    }
+
+    setState(() {});
+  }
+
+  bool _alreadyCacheAnalysis = false;
+
+  Future<void> cacheAnalysis() async {
+    if (_alreadyCacheAnalysis) return;
+    _alreadyCacheAnalysis = true;
+
+    final dir = await getTemporaryDirectory();
+
+    if (dir.existsSync()) {
+      dir
+          .listSync(recursive: true, followLinks: false)
+          .forEach((FileSystemEntity entity) {
+        if (entity is File) {
+          cacheCount++;
+          cacheSize += entity.lengthSync();
+        }
       });
     }
 
@@ -516,7 +543,10 @@ class _StatisticsState extends State<Statistics> {
         Text('읽은 작품: ${numberWithComma(totalRead)}개'),
         Text('읽은 작품 (중복없음): ${numberWithComma(pureRead)}개'),
         Text('로그 파일 크기: ${formatBytes(logSize, 2)}'),
-        Container(height: 30),
+        Container(height: 15),
+        Text('캐시 파일 수: ${numberWithComma(cacheCount)}개'),
+        Text('캐시 크기: ${formatBytes(cacheSize, 2)}'),
+        Container(height: 15),
         Text('앱 시작 횟수: ${numberWithComma(startUpTimes)}번'),
         Text('앱 실행 시간: ${durationToString(Duration(seconds: totalSeconds))}'),
         const Text(
