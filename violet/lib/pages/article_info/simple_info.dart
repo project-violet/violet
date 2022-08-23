@@ -68,7 +68,6 @@ class SimpleInfoWidget extends StatelessWidget {
         return FadeTransition(opacity: animation, child: wi);
       },
       pageBuilder: (_, __, ___) => ThumbnailViewPage(
-        size: null,
         thumbnail: data.thumbnail,
         headers: data.headers,
         heroKey: data.heroKey,

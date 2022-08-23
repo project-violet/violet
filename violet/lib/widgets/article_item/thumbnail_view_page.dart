@@ -10,13 +10,11 @@ class ThumbnailViewPage extends StatefulWidget {
   final String? thumbnail;
   final String heroKey;
   final Map<String, String>? headers;
-  final Size? size;
 
   const ThumbnailViewPage({
     Key? key,
     required this.thumbnail,
     required this.headers,
-    this.size,
     required this.heroKey,
   }) : super(key: key);
 
