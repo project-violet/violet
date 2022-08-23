@@ -502,7 +502,6 @@ class _ArticleListItemVerySimpleWidgetState
     onScaling = false;
 
     if (data.doubleTapCallback == null) {
-      var sz = await _calculateImageDimension(thumbnail!);
       Navigator.of(context).push(PageRouteBuilder(
         opaque: false,
         transitionDuration: const Duration(milliseconds: 500),
@@ -511,7 +510,6 @@ class _ArticleListItemVerySimpleWidgetState
           return FadeTransition(opacity: animation, child: wi);
         },
         pageBuilder: (_, __, ___) => ThumbnailViewPage(
-          size: sz,
           thumbnail: thumbnail!,
           headers: headers!,
           heroKey: data.thumbnailTag,
@@ -529,20 +527,20 @@ class _ArticleListItemVerySimpleWidgetState
     });
   }
 
-  Future<Size> _calculateImageDimension(String url) {
-    Completer<Size> completer = Completer();
-    Image image = Image(image: CachedNetworkImageProvider(url));
-    image.image.resolve(const ImageConfiguration()).addListener(
-      ImageStreamListener(
-        (ImageInfo image, bool synchronousCall) {
-          var myImage = image.image;
-          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-          completer.complete(size);
-        },
-      ),
-    );
-    return completer.future;
-  }
+  // Future<Size> _calculateImageDimension(String url) {
+  //   Completer<Size> completer = Completer();
+  //   Image image = Image(image: CachedNetworkImageProvider(url));
+  //   image.image.resolve(const ImageConfiguration()).addListener(
+  //     ImageStreamListener(
+  //       (ImageInfo image, bool synchronousCall) {
+  //         var myImage = image.image;
+  //         Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+  //         completer.complete(size);
+  //       },
+  //     ),
+  //   );
+  //   return completer.future;
+  // }
 }
 
 class BodyWidget extends StatelessWidget {
