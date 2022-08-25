@@ -1,0 +1,8 @@
+*
+!.gitignore
+!api
+!config/config.json
+!*.js
+!*.go
+!package.json
+!package-lock.json
