@@ -1735,7 +1735,9 @@ class _SettingsPageState extends State<SettingsPage>
                 return;
               }
 
-              var db = await getApplicationDocumentsDirectory();
+              var db = Platform.isIOS
+                  ? await getApplicationSupportDirectory()
+                  : (await getExternalStorageDirectory())!;
               var extfile = File(file.path);
               await extfile.copy('${db.path}/user.db');
 
@@ -1778,7 +1780,10 @@ class _SettingsPageState extends State<SettingsPage>
 
               var db = await getApplicationDocumentsDirectory();
               var dbfile = File('${db.path}/user.db');
-              var ext = await getExternalStorageDirectory();
+              var ext = Platform.isIOS
+                  ? await getApplicationSupportDirectory()
+                  : await getExternalStorageDirectory();
+
               var extpath = '${ext!.path}/bookmark.db';
               await dbfile.copy(extpath);
 
