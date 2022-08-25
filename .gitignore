@@ -6,3 +6,6 @@
 !*.go
 !package.json
 !package-lock.json
+!go.mod
+!go.sum
+!app-*
