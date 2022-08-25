@@ -132,7 +132,9 @@ class ActLogger {
   }
 
   static Future<void> exportLog() async {
-    final ext = await getExternalStorageDirectory();
+    final ext = Platform.isIOS
+        ? await getApplicationSupportDirectory()
+        : await getExternalStorageDirectory();
     final extpath = '${ext!.path}/act-log.txt';
     await logFile.copy(extpath);
   }
