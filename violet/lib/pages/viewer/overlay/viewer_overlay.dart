@@ -370,8 +370,6 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
       onPressed: () async {
         await MessageSearch.init();
 
-        c.suggestionsBoxController ??= SuggestionsBoxController();
-
         c.search.value = !c.search.value;
       },
     );
@@ -836,6 +834,8 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
         c.gotoSearchIndex();
       },
     );
+
+    c.suggestionsBoxController ??= SuggestionsBoxController();
 
     return Row(
       children: [
