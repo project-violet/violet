@@ -53,9 +53,41 @@ class _LogPageState extends State<LogPage> {
               child: ListView.separated(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.all(8),
-                // addAutomaticKeepAlives: false,
                 itemBuilder: (c, i) {
-                  var ii = errors[i];
+                  final ii = errors[i];
+
+                  final icon = Icon(ii.isError == false && ii.isWarning == false
+                      ? Icons.check
+                      : ii.isWarning
+                          ? Icons.warning
+                          : Icons.cancel);
+
+                  final title = Text(
+                    ii.title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15),
+                  );
+
+                  final defailButton = Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: SizedBox(
+                        height: 18.0,
+                        width: 18.0,
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(
+                            Icons.keyboard_arrow_right,
+                            size: 24,
+                          ),
+                          onPressed: () async {
+                            await showOkDialog(context, ii.detail!, '상세정보');
+                          },
+                        ),
+                      ),
+                    ),
+                  );
+
                   return Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 24.0, vertical: 12.0),
@@ -63,7 +95,7 @@ class _LogPageState extends State<LogPage> {
                       borderRadius: BorderRadius.circular(10.0),
                       color: ii.isError == false && ii.isWarning == false
                           ? Colors.greenAccent.withOpacity(0.8)
-                          : ii.isWarning != null && ii.isWarning
+                          : ii.isWarning
                               ? Colors.orangeAccent.withOpacity(0.8)
                               : Colors.redAccent.withOpacity(0.8),
                     ),
@@ -73,41 +105,12 @@ class _LogPageState extends State<LogPage> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(ii.isError == false && ii.isWarning == false
-                                ? Icons.check
-                                : ii.isWarning
-                                    ? Icons.warning
-                                    : Icons.cancel),
+                            icon,
                             const SizedBox(
                               width: 12.0,
                             ),
-                            Text(
-                              ii.title,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 15),
-                            ),
-                            ii.detail != null
-                                ? Expanded(
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: SizedBox(
-                                        height: 18.0,
-                                        width: 18.0,
-                                        child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          icon: const Icon(
-                                            Icons.keyboard_arrow_right,
-                                            size: 24,
-                                          ),
-                                          onPressed: () async {
-                                            await showOkDialog(
-                                                context, ii.detail!, '상세정보');
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                : Container(),
+                            title,
+                            if (ii.detail != null) defailButton,
                           ],
                         ),
                         Container(height: 4),
@@ -118,10 +121,6 @@ class _LogPageState extends State<LogPage> {
                 },
                 itemCount: errors.length,
                 separatorBuilder: (context, index) {
-                  // return Divider(
-                  //   height: 2,
-                  // );
-
                   return Container(
                     height: 8,
                   );
