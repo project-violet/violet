@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,6 @@ import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/util/call_once.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
-
-const volumeKeyChannel = EventChannel('xyz.project.violet/volume');
 
 class ViewerPage extends StatefulWidget {
   const ViewerPage({Key? key}) : super(key: key);
@@ -215,7 +214,8 @@ class _ViewerPageState extends State<ViewerPage> {
       ),
       tag: getxId,
     );
-    _setupVolume();
+
+    if (Platform.isAndroid) _setupVolume();
   }
 
   Future<bool> _close() async {
@@ -225,7 +225,9 @@ class _ViewerPageState extends State<ViewerPage> {
   }
 
   _setupVolume() {
-    volumeKeyChannel.receiveBroadcastStream().listen((event) {
+    const EventChannel('xyz.project.violet/volume')
+        .receiveBroadcastStream()
+        .listen((event) {
       if (event is String) {
         if (event == 'up') {
           c.prev();
