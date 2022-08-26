@@ -24,6 +24,18 @@ class CardPanel {
         : Colors.grey.shade100;
     final bottomPadding = (mediaQuery.padding + mediaQuery.viewInsets).bottom;
 
+    final card = Card(
+      elevation: 5,
+      color: color,
+      child: SizedBox(
+        width: width - 16,
+        height: height - 16 - bottomPadding,
+        child: child,
+      ),
+    );
+
+    final hero = heroTag != null ? Hero(tag: heroTag, child: card) : card;
+
     return Container(
       color: enableBackgroundColor || Platform.isIOS ? color : null,
       padding: EdgeInsets.only(
@@ -31,31 +43,7 @@ class CardPanel {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          if (heroTag == null)
-            Card(
-              elevation: 5,
-              color: color,
-              child: SizedBox(
-                width: width - 16,
-                height: height - 16 - bottomPadding,
-                child: child,
-              ),
-            )
-          else
-            Hero(
-              tag: heroTag,
-              child: Card(
-                elevation: 5,
-                color: color,
-                child: SizedBox(
-                  width: width - 16,
-                  height: height - 16 - bottomPadding,
-                  child: child,
-                ),
-              ),
-            )
-        ],
+        children: <Widget>[hero],
       ),
     );
   }
