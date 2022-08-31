@@ -22,6 +22,13 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 9, 0),
+    version: '1.26.5 Patch',
+    contents: [
+      'add search with page count (ex: page>4, page>100 page<200, page>=20, page=40)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 8, 11),
     version: '1.26.4 Patch',
     contents: [
