@@ -4,6 +4,7 @@
 !config/config.json
 !*.js
 !*.go
+!*.py
 !package.json
 !package-lock.json
 !go.mod
