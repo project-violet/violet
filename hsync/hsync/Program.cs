@@ -52,6 +52,7 @@ namespace hsync
             try
             {
                 Command.Start(args);
+                //Command.Start(new string[] {"-ls", "--sync-only"});
             }
             catch (Exception e)
             {

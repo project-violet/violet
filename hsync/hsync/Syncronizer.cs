@@ -31,7 +31,9 @@ namespace hsync
         public List<int> newedDataHitomi;
         public List<int> newedDataEH;
 
-        public Syncronizer(string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page)
+        bool hitomi_sync_ignore_exists = false;
+
+        public Syncronizer(string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, bool hitomi_sync_ignore_exists, string[] exhentai_lookup_page)
         {
             HitomiData.Instance.Load();
             latestId = HitomiData.Instance.metadata_collection.First().ID;
@@ -54,6 +56,8 @@ namespace hsync
 
             newedDataHitomi = new List<int>();
             newedDataEH = new List<int>();
+
+            this.hitomi_sync_ignore_exists = hitomi_sync_ignore_exists;
         }
 
         public void SyncHitomi()
@@ -64,7 +68,7 @@ namespace hsync
 
             var gburls = Enumerable.Range(useManualRange ? starts : latestId - hitomiSyncRange, useManualRange ? ends - starts + 1 : hitomiSyncRange * 2)
             //var gburls = Enumerable.Range(1000, latestId + hitomiSyncRange / 2)
-                .Where(x => !exists.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
+                .Where(x => !exists.Contains(x) || hitomi_sync_ignore_exists).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
             var ecnt = 0;
             Console.Write("Running galleryblock tester... ");

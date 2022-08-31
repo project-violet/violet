@@ -99,15 +99,22 @@ namespace hsync
             Console.WriteLine("Complete");
 
             var gurls = new List<string>(gburls.Count);
+            var gpurls = new List<string>(gburls.Count);
             for (int i = 0; i < gburls.Count; i++)
             {
                 if (htmls[i] == null)
                     continue;
                 var aa = HitomiParser.ParseGalleryBlock(htmls[i]);
                 if (aa.Magic.Contains("-"))
+                {
                     gurls.Add("https://hitomi.la/" + aa.Magic);
+                    gpurls.Add("https://ltn.hitomi.la/galleries/" + aa.Magic.Split("-").Last().Split(".").First() + ".js");
+                }
                 else
+                {
                     gurls.Add("https://hitomi.la/galleries/" + i + ".html");
+                    gpurls.Add("https://ltn.hitomi.la/galleries/" + i + ".js");
+                }
             }
 
             dcnt = 0;
@@ -118,6 +125,25 @@ namespace hsync
                 using (var pb = new ProgressBar())
                 {
                     htmls2 = NetTools.DownloadStrings(gurls, "",
+                    () =>
+                    {
+                        pb.Report(gburls.Count, Interlocked.Increment(ref dcnt), ecnt);
+                    },
+                    () =>
+                    {
+                        pb.Report(gburls.Count, dcnt, Interlocked.Increment(ref ecnt));
+                    }).Result;
+                }
+            Console.WriteLine("Complete");
+
+            dcnt = 0;
+            ecnt = 0;
+            Console.Write("Running galleries pages...");
+            List<string> js = null;
+            if (gpurls.Count != 0)
+                using (var pb = new ProgressBar())
+                {
+                    js = NetTools.DownloadStrings(gpurls, "",
                     () =>
                     {
                         pb.Report(gburls.Count, Interlocked.Increment(ref dcnt), ecnt);
@@ -141,9 +167,27 @@ namespace hsync
                     var title = node.SelectSingleNode("//title");
                     if (!(title != null && title.InnerText == "Redirect"))
                     {
-                        var ab = HitomiParser.ParseGallery(htmls2[j]);
-                        aa.Groups = ab.Groups;
-                        aa.Characters = ab.Characters;
+                        try
+                        {
+                            var ab = HitomiParser.ParseGallery(htmls2[j]);
+                            aa.Groups = ab.Groups;
+                            aa.Characters = ab.Characters;
+                        } catch {
+                            Console.WriteLine("parse-gallery-error: " + gurls[j]);
+                            Console.WriteLine(htmls2[j]);
+                        }
+                    }
+                }
+                if (js[j] != null)
+                {
+                    try
+                    {
+                        var json = js[j].Split("var galleryinfo = ")[1].Split(";")[0];
+                        aa.Files = JObject.Parse(json)["files"].Count().ToString();
+                    } catch
+                    {
+                        Console.WriteLine("parse-galleryinfo: " + gpurls[j]);
+                        Console.WriteLine(js[j]);
                     }
                 }
                 try
@@ -204,8 +248,8 @@ namespace hsync
                 }
                 Thread.Sleep(100);
 
-                if (i % 1000 == 999)
-                    Thread.Sleep(60000);
+                if (i % 100 == 99)
+                    Thread.Sleep(120000);
             }
 
             foreach (var z in eHentaiResultArticles)
@@ -308,6 +352,7 @@ namespace hsync
                         Language = (md.Language != null && md.Language.Length != 0) ? md.Language : "n/a",
                         Published = md.DateTime,
                         ExistOnHitomi = 1,
+                        Files = md.Files
                     };
 
                     if (oe)
@@ -473,7 +518,8 @@ namespace hsync
                 a.Characters != b.Characters || 
                 a.Series != b.Series || 
                 a.Language != b.Language ||
-                a.Type != b.Type
+                a.Type != b.Type || 
+                a.Files != b.Files
                 )
                 return true;
             return false;
