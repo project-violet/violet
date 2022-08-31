@@ -112,6 +112,9 @@ namespace hsync
         [CommandLine("--hitomi-sync-lookup-range", CommandType.ARGUMENTS,
             Info = "Set hitomi id lookup range. (default: 4,000 [-4,000 ~ 4,000])", Help = "use --hitomi-sync-lookup-range <count>")]
         public string[] HitomiSyncLookupRange;
+        [CommandLine("--hitomi-sync-ignore-exists", CommandType.OPTION,
+            Info = "Save exhentai page!", Help = "use --hitomi-sync-ignore-exists")]
+        public bool HitomiSyncIgnoreExists;
 
         [CommandLine("--exhentai-lookup-page", CommandType.ARGUMENTS,
             Info = "Set exhentai lookup page. (default: 200)", Help = "use --exhentai-lookup-page <range>")]
@@ -176,7 +179,7 @@ namespace hsync
             else if (option.Start)
             {
                 ProcessStart(option.IncludeExHetaiData, option.LowPerf, option.SyncOnly, option.UseServer, option.UseElasticSearch,
-                    option.HitomiSyncRange, option.HitomiSyncLookupRange, option.ExHentaiLookupPage, option.SyncOnlyHitomi);
+                    option.HitomiSyncRange, option.HitomiSyncLookupRange, option.HitomiSyncIgnoreExists, option.ExHentaiLookupPage, option.SyncOnlyHitomi);
             }
             else if (option.Compress)
             {
@@ -297,7 +300,7 @@ namespace hsync
         }
 
         static void ProcessStart(bool include_exhentai, bool low_perf, bool sync_only, bool use_server, bool use_elasticsearch,
-            string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, string[] exhentai_lookup_page, bool sync_only_hitomi)
+            string[] hitomi_sync_range, string[] hitomi_sync_lookup_range, bool hitomi_sync_ignore_exists, string[] exhentai_lookup_page, bool sync_only_hitomi)
         {
             Console.Clear();
             Console.Title = "hsync";
@@ -319,7 +322,7 @@ namespace hsync
                 if (!File.Exists("ex-hentai-archive.json"))
                     download_data("https://github.com/project-violet/database/releases/download/rd2020.06.07/ex-hentai-archive.json", "ex-hentai-archive.json");
 
-                var sync = new Syncronizer(hitomi_sync_range, hitomi_sync_lookup_range, exhentai_lookup_page);
+                var sync = new Syncronizer(hitomi_sync_range, hitomi_sync_lookup_range, hitomi_sync_ignore_exists, exhentai_lookup_page);
                 sync.SyncHitomi();
                 if (!sync_only_hitomi)
                     sync.SyncExHentai();

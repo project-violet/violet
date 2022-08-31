@@ -35,6 +35,9 @@ namespace hsync.Component
         public int ID { get; set; }
 
         [JsonIgnore]
+        public int Files { get; set; }
+
+        [JsonIgnore]
         public DateTime? DateTime;
     }
 
@@ -54,6 +57,7 @@ namespace hsync.Component
         public string Thumbnail { get; set; }
         public string Magic { get; set; }
         public string Title { get; set; }
+        public string Files { get; set; }
     }
 
     public abstract class SQLiteColumnModel
@@ -121,6 +125,7 @@ namespace hsync.Component
             if (article.Series != null) metadata.Parodies = article.Series;
             if (article.Tags != null) metadata.Tags = article.Tags.Select(x => LegalizeTag(x)).ToArray();
             metadata.Type = article.Type;
+            if (article.Files != null) metadata.Files = Convert.ToInt32(article.Files);
             if (article.DateTime != null)
             metadata.DateTime = DateTime.Parse(article.DateTime);
             return metadata;
