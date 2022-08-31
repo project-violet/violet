@@ -97,7 +97,8 @@ class _SearchBarPageState extends State<SearchBarPage>
         'type',
         'class',
         'recent',
-        'random'
+        'random',
+        'page',
       ];
 
       prefixList.forEach(

@@ -347,10 +347,7 @@ class HitomiManager {
         result.add(builder.toString());
         builder.clear();
         continue;
-      } else if (tokens[i] == '(' ||
-          tokens[i] == ')' ||
-          tokens[i] == '>' ||
-          tokens[i] == '<') {
+      } else if (tokens[i] == '(' || tokens[i] == ')') {
         result.add(builder.toString());
         builder.clear();
         result.add(tokens[i]);
@@ -448,6 +445,16 @@ class HitomiManager {
       } else if ('=<>()'.contains(split[i])) {
         where += split[i];
         if (split[i] == '(') continue;
+      } else if (split[i].startsWith('page') &&
+          (split[i].contains('>') ||
+              split[i].contains('=') ||
+              split[i].contains('<'))) {
+        final re = RegExp(r'page([\=\<\>]{1,2})(\d+)');
+        print(split[i]);
+        if (re.hasMatch(split[i])) {
+          final matches = re.allMatches(split[i]).elementAt(0);
+          where += 'Files ${matches.group(1)} ${matches.group(2)}';
+        }
       } else {
         if (negative) {
           where += "Title NOT LIKE '%$val%'";
