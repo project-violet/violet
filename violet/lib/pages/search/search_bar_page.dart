@@ -697,25 +697,33 @@ class _SearchBarPageState extends State<SearchBarPage>
     _insertLength = token.length;
     _searchText = target;
     latestToken = token;
-    if (!Settings.searchUseFuzzy) {
-      final result = (await HitomiManager.queryAutoComplete(
-              token, Settings.searchUseTranslated))
-          .take(_searchResultMaximum)
-          .toList();
-      if (result.isEmpty) _nothing = true;
-      setState(() {
-        _searchLists = result;
-      });
-    } else {
-      final result = (await HitomiManager.queryAutoCompleteFuzzy(
-              token, Settings.searchUseTranslated))
-          .take(_searchResultMaximum)
-          .toList();
-      if (result.isEmpty) _nothing = true;
-      setState(() {
-        _searchLists = result;
-      });
+
+    final result = <Tuple2<DisplayedTag, int>>[];
+
+    if (token == 'page') {
+      result.addAll(['>', '<', '>=', '<=', '=', '<>'].map((e) =>
+          Tuple2<DisplayedTag, int>(DisplayedTag(group: 'page', name: e), 0)));
     }
+
+    if (!Settings.searchUseFuzzy) {
+      final searchResult = (await HitomiManager.queryAutoComplete(
+              token, Settings.searchUseTranslated))
+          .take(_searchResultMaximum)
+          .toList();
+      if (searchResult.isEmpty) _nothing = true;
+      result.addAll(searchResult);
+    } else {
+      final searchResult = (await HitomiManager.queryAutoCompleteFuzzy(
+              token, Settings.searchUseTranslated))
+          .take(_searchResultMaximum)
+          .toList();
+      if (searchResult.isEmpty) _nothing = true;
+      result.addAll(searchResult);
+    }
+
+    setState(() {
+      _searchLists = result;
+    });
   }
 
   String latestToken = '';
@@ -793,7 +801,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       color = Colors.cyan;
     } else if (info.item1.group == 'artist' || info.item1.group == 'group') {
       color = Colors.green.withOpacity(0.6);
-    } else if (info.item1.group == 'type') {
+    } else if (info.item1.group == 'type' || info.item1.group == 'page') {
       color = Colors.orange;
     }
 
@@ -942,26 +950,30 @@ class _SearchBarPageState extends State<SearchBarPage>
         } else {
           var offset = _searchController.selection.baseOffset;
           if (offset != -1) {
+            final noColon =
+                info.item1.name == 'random' || info.item1.name == 'page';
             _searchController.text = _searchController.text
                     .substring(0, _searchController.selection.base.offset) +
                 info.item1.name! +
-                (info.item1.name == 'random' || info.item1.name == 'page'
+                (info.item1.name == 'random'
                     ? ' '
-                    : ':') +
+                    : info.item1.name == 'page'
+                        ? ''
+                        : ':') +
                 _searchController.text
                     .substring(_searchController.selection.base.offset);
             _searchController.selection = TextSelection(
-              baseOffset: offset + info.item1.name!.length + 1,
-              extentOffset: offset + info.item1.name!.length + 1,
+              baseOffset: offset + info.item1.name!.length + (noColon ? 0 : 1),
+              extentOffset:
+                  offset + info.item1.name!.length + (noColon ? 0 : 1),
             );
           } else {
-            _searchController.text = info.item1.name! +
-                (info.item1.name == 'random' || info.item1.name == 'page'
-                    ? ''
-                    : ':');
+            final noColon =
+                info.item1.name == 'random' || info.item1.name == 'page';
+            _searchController.text = info.item1.name! + (noColon ? '' : ':');
             _searchController.selection = TextSelection(
-              baseOffset: info.item1.name!.length + 1,
-              extentOffset: info.item1.name!.length + 1,
+              baseOffset: info.item1.name!.length + (noColon ? 0 : 1),
+              extentOffset: info.item1.name!.length + (noColon ? 0 : 1),
             );
           }
           await searchProcess(

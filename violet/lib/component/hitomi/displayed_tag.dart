@@ -4,7 +4,7 @@
 import 'package:violet/component/hitomi/tag_translate.dart';
 
 class DisplayedTag {
-  // artist, group, tag, series, character, uploader, type, class, language, prefix
+  // artist, group, tag, series, character, uploader, type, class, language, prefix, page
   String? group;
   // <tag>, female:<tag>, male:<tag>
   String? name;
@@ -26,6 +26,7 @@ class DisplayedTag {
         'class',
         'language',
         'prefix',
+        'page',
       ].contains(maybeGroup)) {
         group = maybeGroup;
         name = tag.substring(tag.indexOf(':') + 1);
@@ -44,6 +45,7 @@ class DisplayedTag {
   }
 
   String getTag() {
+    if (group == 'page') return '$group$name';
     return '$group:$name';
   }
 
