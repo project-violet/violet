@@ -40,9 +40,9 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
     _controller = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this)
       ..addListener(() => setState(() {}));
+
     _animation = Tween(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.elasticIn));
-    // _controller.forward();
   }
 
   @override
@@ -56,96 +56,106 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final header = Text(
+      Translations.of(context).trans('pinauth'),
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20.0,
+      ),
+    );
+
+    final pinNumber = SizedBox(
+      width: 200.0,
+      height: 30.0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(child: _pinIcon(0), width: 12.0),
+          SizedBox(child: _pinIcon(1), width: 12.0),
+          SizedBox(child: _pinIcon(2), width: 12.0),
+          SizedBox(child: _pinIcon(3), width: 12.0),
+        ],
+      ),
+    );
+
+    final passwordMissing = SizedBox(
+      height: 64.0,
+      child: Center(
+        child: GestureDetector(
+          onTap: _passwordMissing,
+          child: Text.rich(TextSpan(
+              text: Translations.of(context).trans('missingpass'),
+              style: const TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+              ))),
+        ),
+      ),
+    );
+
+    final numPad = SizedBox(
+      height: 300.0,
+      child: Column(
+        children: [
+          _numberRow([
+            _button(1, '1'),
+            _button(2, '2'),
+            _button(3, '3'),
+          ]),
+          _numberRow([
+            _button(4, '4'),
+            _button(5, '5'),
+            _button(6, '6'),
+          ]),
+          _numberRow([
+            _button(7, '7'),
+            _button(8, '8'),
+            _button(9, '9'),
+          ]),
+          _numberRow([
+            _button(-2, ''),
+            _button(0, '0'),
+            _button(-1, ''),
+          ]),
+        ],
+      ),
+    );
+
+    final contents = Column(
+      children: [
+        header,
+        Container(height: 8.0),
+        Text(_message!),
+        Container(height: 36),
+        const Icon(Icons.lock),
+        const Spacer(),
+        pinNumber,
+        const Spacer(),
+        passwordMissing,
+        numPad
+      ],
+    );
+
+    final page = Material(
+      color: Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        width: double.infinity,
+        height: double.infinity,
+        child: SafeArea(
+          child: Transform.translate(
+            offset: Offset(_animation.value * 12.0, 0.0),
+            child: contents,
+          ),
+        ),
+      ),
+    );
+
     return WillPopScope(
       onWillPop: () async {
         return widget.isRegisterMode;
       },
-      child: Material(
-        color: Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          width: double.infinity,
-          height: double.infinity,
-          // color: Colors.white,
-          child: SafeArea(
-            child: Transform.translate(
-              offset: Offset(_animation.value * 12.0, 0.0),
-              child: Column(
-                children: [
-                  Text(
-                    Translations.of(context).trans('pinauth'),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                  Container(height: 8.0),
-                  Text(_message!),
-                  Container(height: 36),
-                  const Icon(Icons.lock),
-                  const Spacer(),
-                  SizedBox(
-                    width: 200.0,
-                    height: 30.0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(child: _pinIcon(0), width: 12.0),
-                        SizedBox(child: _pinIcon(1), width: 12.0),
-                        SizedBox(child: _pinIcon(2), width: 12.0),
-                        SizedBox(child: _pinIcon(3), width: 12.0),
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  SizedBox(
-                      height: 64.0,
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: _passwordMissing,
-                          child: Text.rich(TextSpan(
-                              text:
-                                  Translations.of(context).trans('missingpass'),
-                              style: const TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                              ))),
-                        ),
-                      )),
-                  SizedBox(
-                    height: 300.0,
-                    child: Column(
-                      children: [
-                        _numberRow([
-                          _button(1, '1'),
-                          _button(2, '2'),
-                          _button(3, '3'),
-                        ]),
-                        _numberRow([
-                          _button(4, '4'),
-                          _button(5, '5'),
-                          _button(6, '6'),
-                        ]),
-                        _numberRow([
-                          _button(7, '7'),
-                          _button(8, '8'),
-                          _button(9, '9'),
-                        ]),
-                        _numberRow([
-                          _button(-2, ''),
-                          _button(0, '0'),
-                          _button(-1, ''),
-                        ]),
-                        // Container(height: 64)
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      child: page,
     );
   }
 
@@ -226,22 +236,25 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _passwordMissing() async {
-    Widget yesButton = TextButton(
+    final Widget yesButton = TextButton(
       style: TextButton.styleFrom(primary: Settings.majorColor),
       child: Text(Translations.of(context).trans('ok')),
       onPressed: () {
         Navigator.pop(context, true);
       },
     );
-    Widget noButton = TextButton(
+
+    final Widget noButton = TextButton(
       style: TextButton.styleFrom(primary: Settings.majorColor),
       child: Text(Translations.of(context).trans('cancel')),
       onPressed: () {
         Navigator.pop(context, false);
       },
     );
-    TextEditingController text = TextEditingController();
-    var dialog = await showDialog(
+
+    final TextEditingController text = TextEditingController();
+
+    final dialog = await showDialog<bool>(
       useRootNavigator: false,
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -254,7 +267,8 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
         actions: [yesButton, noButton],
       ),
     );
-    if (dialog == true) {
+
+    if (dialog != null && dialog) {
       if (text.text == 'violet.jjang') {
         await showOkDialog(context, Translations.of(context).trans('resetpin'),
             Translations.of(context).trans('authmanager'));
@@ -287,44 +301,59 @@ class _LockScreenState extends State<LockScreen> with TickerProviderStateMixin {
       return;
     }
 
-    if ((!widget.isRegisterMode && _pin.join() != pinPass) ||
-        (widget.isRegisterMode &&
-            _isFirstPINInserted &&
-            _pin.join() != _firstPIN)) {
-      SystemSound.play(SystemSoundType.alert);
-      HapticFeedback.heavyImpact();
-      _controller.forward();
-      Future.delayed(const Duration(milliseconds: 300)).then((value) {
-        _controller.reverse();
-        _pin = List.filled(4, null);
-        setState(() {
-          _message = Translations.of(context).trans('pinisnotcorrect');
-        });
-      });
+    final passwordIncorrect =
+        (!widget.isRegisterMode && _pin.join() != pinPass) ||
+            (widget.isRegisterMode &&
+                _isFirstPINInserted &&
+                _pin.join() != _firstPIN);
+
+    if (passwordIncorrect) {
+      passwordIncorrectInteraction();
     } else {
       if (_isFirstPINInserted) {
-        await prefs.setString('pinPass', _pin.join());
-        Future.delayed(const Duration(milliseconds: 300)).then((value) {
-          fToast.showToast(
-            child: ToastWrapper(
-              isCheck: true,
-              isWarning: false,
-              msg: Translations.of(context).trans('pinisregistered'),
-            ),
-            gravity: ToastGravity.BOTTOM,
-            toastDuration: const Duration(seconds: 4),
-          );
-          Navigator.pop(context);
-        });
+        await passwordRegisterInteraction(prefs);
       } else {
-        _isFirstPINInserted = true;
-        _firstPIN = _pin.join();
-        _pin = List.filled(4, null);
-        _message = Translations.of(context).trans('retrypin');
-        Future.delayed(const Duration(milliseconds: 300)).then((value) {
-          setState(() {});
-        });
+        passwordAgainInteraction();
       }
     }
+  }
+
+  void passwordIncorrectInteraction() {
+    SystemSound.play(SystemSoundType.alert);
+    HapticFeedback.heavyImpact();
+    _controller.forward();
+    Future.delayed(const Duration(milliseconds: 300)).then((value) {
+      _controller.reverse();
+      _pin = List.filled(4, null);
+      setState(() {
+        _message = Translations.of(context).trans('pinisnotcorrect');
+      });
+    });
+  }
+
+  Future<void> passwordRegisterInteraction(SharedPreferences prefs) async {
+    await prefs.setString('pinPass', _pin.join());
+    Future.delayed(const Duration(milliseconds: 300)).then((value) {
+      fToast.showToast(
+        child: ToastWrapper(
+          isCheck: true,
+          isWarning: false,
+          msg: Translations.of(context).trans('pinisregistered'),
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: const Duration(seconds: 4),
+      );
+      Navigator.pop(context);
+    });
+  }
+
+  void passwordAgainInteraction() {
+    _isFirstPINInserted = true;
+    _firstPIN = _pin.join();
+    _pin = List.filled(4, null);
+    _message = Translations.of(context).trans('retrypin');
+    Future.delayed(const Duration(milliseconds: 300)).then((value) {
+      setState(() {});
+    });
   }
 }
