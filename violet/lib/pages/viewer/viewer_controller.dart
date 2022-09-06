@@ -12,6 +12,7 @@ import 'package:violet/pages/viewer/others/scrollable_positioned_list/scrollable
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 enum ViewType {
   vertical,
@@ -86,7 +87,7 @@ class ViewerController extends GetxController {
 
   /// image infos
   late RxList<bool> isImageLoaded;
-  late List<String?> urlCache;
+  late List<RxString?> urlCache;
   late List<Map<String, String>?> headerCache;
   late List<double> imgHeight;
   late List<double> estimatedImgHeight;
@@ -113,7 +114,7 @@ class ViewerController extends GetxController {
         List.filled(provider.uris.length, provider.useFileSystem).obs;
 
     headerCache = List<Map<String, String>?>.filled(maxPage, null);
-    urlCache = List<String?>.filled(maxPage, null);
+    urlCache = List<RxString?>.filled(maxPage, null);
     imgHeight = List<double>.filled(maxPage, 0);
     estimatedImgHeight = List<double>.filled(maxPage, 0);
     realImgHeight = List<double>.filled(maxPage, 0);
@@ -188,7 +189,7 @@ class ViewerController extends GetxController {
 
       if (urlCache[index] == null) {
         var url = await provider.provider!.getImageUrl(index);
-        urlCache[index] = url;
+        urlCache[index] = RxString(url);
       }
     }
   }
@@ -199,7 +200,7 @@ class ViewerController extends GetxController {
     await load(index);
     await precacheImage(
       CachedNetworkImageProvider(
-        urlCache[index]!,
+        urlCache[index]!.value,
         headers: headerCache[index],
         maxWidth: Settings.useLowPerf
             ? (MediaQuery.of(context).size.width * 1.5).toInt()
@@ -277,5 +278,17 @@ class ViewerController extends GetxController {
     messageIndex.value = 1;
 
     gotoSearchIndex();
+  }
+
+  refreshImgUrlWhenRequired() async {
+    if (ProviderManager.dirty(articleId)) {
+      await ProviderManager.refresh(
+          articleId, isImageLoaded.map((element) => !element).toList());
+      for (var i = 0; i < isImageLoaded.length; i++) {
+        if (!isImageLoaded[i]) {
+          urlCache[i] = RxString(await provider.provider!.getImageUrl(i));
+        }
+      }
+    }
   }
 }

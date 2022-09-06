@@ -40,7 +40,7 @@ class ScriptManager {
       _scriptCache = scriptTemp;
       _latestUpdate = DateTime.now();
       _initRuntime();
-      ProviderManager.refresh();
+      ProviderManager.checkMustRefresh();
       return true;
     }
 
@@ -60,7 +60,7 @@ class ScriptManager {
       _scriptCache = scriptTemp;
       _latestUpdate = DateTime.now();
       _initRuntime();
-      ProviderManager.refresh();
+      ProviderManager.checkMustRefresh();
     }
   }
 

@@ -152,6 +152,7 @@ class _ViewerPageState extends State<ViewerPage> {
         _inactivateSeconds +=
             DateTime.now().difference(_inactivateTime).inSeconds;
         await ScriptManager.refresh();
+        c.refreshImgUrlWhenRequired();
       },
     );
 

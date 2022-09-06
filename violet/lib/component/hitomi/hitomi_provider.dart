@@ -91,6 +91,20 @@ class HitomiImageProvider extends VioletImageProvider {
   }
 
   @override
+  Future<void> refreshPartial(List<bool> target) async {
+    if (urls.item1.length != target.length) {
+      await refresh();
+      return;
+    }
+
+    final turls = await HitomiManager.getImageList(id);
+
+    for (var i = 0; i < turls.item1.length; i++) {
+      if (target[i]) urls.item1[i] = turls.item1[i];
+    }
+  }
+
+  @override
   Future<double> getOriginalImageHeight(int page) async {
     if (_heightCache == null) {
       _heightCache = List<double>.filled(urls.item3!.length, 0);

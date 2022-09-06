@@ -111,11 +111,11 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
     c.page.value = page;
     if (c.provider.useProvider) {
       if (page.toInt() - 2 >= 0 && c.urlCache[page.toInt() - 2] != null) {
-        CachedNetworkImage.evictFromCache(c.urlCache[page.toInt() - 2]!);
+        CachedNetworkImage.evictFromCache(c.urlCache[page.toInt() - 2]!.value);
       }
       if (page.toInt() + 2 < c.maxPage &&
           c.urlCache[page.toInt() + 2] != null) {
-        CachedNetworkImage.evictFromCache(c.urlCache[page.toInt() + 2]!);
+        CachedNetworkImage.evictFromCache(c.urlCache[page.toInt() + 2]!.value);
       }
       await c.precache(context, page.toInt() - 1);
       await c.precache(context, page.toInt() + 1);
@@ -140,7 +140,7 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
               return Obx(
                 () => PhotoView(
                   imageProvider: ExtendedNetworkImageProvider(
-                    c.urlCache[index]!,
+                    c.urlCache[index]!.value,
                     headers: c.headerCache[index],
                     cache: true,
                   ),

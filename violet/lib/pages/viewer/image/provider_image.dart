@@ -142,6 +142,8 @@ class _ProviderImageState extends State<ProviderImage> {
       );
     }
 
+    c.isImageLoaded[widget.index] = true;
+
     return state.completedWidget;
   }
 }
