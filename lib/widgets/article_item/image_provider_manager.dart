@@ -31,13 +31,22 @@ class ProviderManager {
     return _ids[id]!;
   }
 
+  static bool dirty(int id) {
+    return _dirty[id]!;
+  }
+
   static void clear() {
     _ids.clear();
   }
 
-  static void refresh() {
+  static void checkMustRefresh() {
     for (var v in _dirty.entries) {
       if (_ids[v.key]!.isRefreshable()) _dirty[v.key] = true;
     }
+  }
+
+  static Future<void> refresh(int id, List<bool> target) async {
+    await _ids[id]!.refreshPartial(target);
+    _dirty[id] = true;
   }
 }

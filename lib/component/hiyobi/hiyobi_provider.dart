@@ -51,6 +51,9 @@ class HiyobiImageProvider extends VioletImageProvider {
   Future<void> refresh() async {}
 
   @override
+  Future<void> refreshPartial(List<bool> target) async {}
+
+  @override
   Future<double> getOriginalImageHeight(int page) async {
     return -1;
   }

@@ -356,15 +356,17 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
               return _loadingWidget(index);
             }
 
-            final image = ProviderImage(
-              getxId: widget.getxId,
-              index: index,
-              imgKey: c.imgKeys[index],
-              imgUrl: c.urlCache[index]!,
-              imgHeader: c.headerCache[index],
-              imageWidgetBuilder: (context, child) {
-                return _imageWidgetBuilder(index, width, child);
-              },
+            final image = Obx(
+              () => ProviderImage(
+                getxId: widget.getxId,
+                index: index,
+                imgKey: c.imgKeys[index],
+                imgUrl: c.urlCache[index]!.value,
+                imgHeader: c.headerCache[index],
+                imageWidgetBuilder: (context, child) {
+                  return _imageWidgetBuilder(index, width, child);
+                },
+              ),
             );
 
             return Container(

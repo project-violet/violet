@@ -12,4 +12,5 @@ abstract class VioletImageProvider {
   Future<double> getOriginalImageHeight(int page);
   bool isRefreshable();
   Future<void> refresh();
+  Future<void> refreshPartial(List<bool> target);
 }
