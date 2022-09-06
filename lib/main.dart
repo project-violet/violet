@@ -28,6 +28,21 @@ import 'package:wakelock/wakelock.dart';
 
 import 'locale/locale.dart';
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await FlutterDownloader.initialize(); // @dependent: android
+  FlareCache.doesPrune = false;
+  FlutterError.onError = recordFlutterError;
+
+  await initFirebase();
+  await Settings.initFirst();
+  await warmupFlare();
+  await Wakelock.enable();
+
+  runApp(const MyApp());
+}
+
 const _filesToWarmup = [
   'assets/flare/Loading2.flr',
   'assets/flare/likeUtsua.flr'
@@ -41,25 +56,6 @@ Future<void> warmupFlare() async {
   }
 }
 
-/*
-Future<void> _sqlIntegrityTest() async {
-  var sql1 =
-      HitomiManager.translate2query('(lang:english) -group:zenmai_kourogi');
-  var query1 = await (await DataBaseManager.getInstance()).query(sql1);
-  print(sql1);
-  print(query1.length);
-  var sql2 = HitomiManager.translate2query('(lang:english)');
-  var query2 = await (await DataBaseManager.getInstance()).query(sql2);
-  print(sql2);
-  print(query2.length);
-  var sql3 =
-      HitomiManager.translate2query('group:zenmai_kourogi (lang:english)');
-  var query3 = await (await DataBaseManager.getInstance()).query(sql3);
-  print(sql3);
-  print(query3.length);
-}
- */
-
 Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
   Logger.error(
       '[unhandled-error] E: ${flutterErrorDetails.exceptionAsString()}\n'
@@ -68,32 +64,27 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
   await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
 }
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize(); // @dependent: android
-  FlareCache.doesPrune = false;
+Future<void> initFirebase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FlutterError.onError = recordFlutterError;
 
+  // check user-id is set
   final prefs = await SharedPreferences.getInstance();
   var id = prefs.getString('fa_userid');
   if (id == null) {
-    var ii = sha1.convert(utf8.encode(DateTime.now().toString()));
-    id = ii.toString();
+    id = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
     prefs.setString('fa_userid', id);
   }
 
   var analytics = FirebaseAnalytics.instance;
   await analytics.setUserId(id: id);
+}
 
-  await Settings.initFirst();
-  await warmupFlare();
-  Wakelock.enable();
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  print(await getTemporaryDirectory());
-
-  runApp(
-    DynamicTheme(
+  @override
+  Widget build(BuildContext context) {
+    return DynamicTheme(
       defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
         accentColor: Settings.majorColor,
@@ -110,79 +101,88 @@ void main() async {
             : null,
       ),
       themedWidgetBuilder: (context, theme) {
-        return GetMaterialApp(
-          navigatorObservers: [
-            FirebaseAnalyticsObserver(analytics: analytics),
-          ],
-          theme: theme,
-          home:
-              Settings.useLockScreen ? const LockScreen() : const SplashPage(),
-          supportedLocales: const [
-            Locale('en', 'US'),
-            Locale('ko', 'KR'),
-            Locale('ja', 'JP'),
-            Locale('zh', 'CH'),
-            Locale('it', 'IT'),
-            Locale('eo', 'ES'),
-          ],
-          routes: <String, WidgetBuilder>{
-            '/AfterLoading': (context) => const AfterLoadingPage(),
-            '/DatabaseDownload': (context) => const DataBaseDownloadPage(),
-            '/SplashPage': (context) => const SplashPage(),
-          },
-          localizationsDelegates: const [
-            TranslationsDelegate(),
-            GlobalMaterialLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate
-          ],
-          localeResolutionCallback:
-              (Locale? locale, Iterable<Locale> supportedLocales) {
-            print(Settings.language);
-            if (Settings.language != null) {
-              if (Settings.language!.contains('_')) {
-                var ss = Settings.language!.split('_');
-                if (ss.length == 2) {
-                  return Locale.fromSubtags(
-                      languageCode: ss[0], scriptCode: ss[1]);
-                } else {
-                  return Locale.fromSubtags(
-                      languageCode: ss[0],
-                      scriptCode: ss[1],
-                      countryCode: ss[2]);
-                }
-              } else {
-                return Locale(Settings.language!);
-              }
-            }
-
-            if (locale == null) {
-              debugPrint('*language locale is null!!!');
-              if (Settings.language == null) {
-                Settings.setLanguage(supportedLocales.first.languageCode);
-              }
-              return supportedLocales.first;
-            }
-
-            for (Locale supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode == locale.languageCode ||
-                  supportedLocale.countryCode == locale.countryCode) {
-                debugPrint('*language ok $supportedLocale');
-                if (Settings.language == null) {
-                  Settings.setLanguage(supportedLocale.languageCode);
-                }
-                return supportedLocale;
-              }
-            }
-
-            debugPrint('*language to fallback ${supportedLocales.first}');
-            if (Settings.language == null) {
-              Settings.setLanguage(supportedLocales.first.languageCode);
-            }
-            return supportedLocales.first;
-          },
-        );
+        return myApp(theme);
       },
-    ),
-  );
+    );
+  }
+
+  Widget myApp(ThemeData theme) {
+    const supportedLocales = <Locale>[
+      Locale('en', 'US'),
+      Locale('ko', 'KR'),
+      Locale('ja', 'JP'),
+      Locale('zh', 'CH'),
+      Locale('it', 'IT'),
+      Locale('eo', 'ES'),
+    ];
+
+    const localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+      TranslationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate
+    ];
+
+    final routes = <String, WidgetBuilder>{
+      '/AfterLoading': (context) => const AfterLoadingPage(),
+      '/DatabaseDownload': (context) => const DataBaseDownloadPage(),
+      '/SplashPage': (context) => const SplashPage(),
+    };
+
+    final home =
+        Settings.useLockScreen ? const LockScreen() : const SplashPage();
+
+    final navigatorObservers = [
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ];
+
+    return GetMaterialApp(
+      navigatorObservers: navigatorObservers,
+      theme: theme,
+      home: home,
+      supportedLocales: supportedLocales,
+      routes: routes,
+      localizationsDelegates: localizationsDelegates,
+      localeResolutionCallback: localeResolution,
+    );
+  }
+
+  Locale localeResolution(Locale? locale, Iterable<Locale> supportedLocales) {
+    if (Settings.language != null) {
+      if (Settings.language!.contains('_')) {
+        final ss = Settings.language!.split('_');
+        if (ss.length == 2) {
+          return Locale.fromSubtags(languageCode: ss[0], scriptCode: ss[1]);
+        } else {
+          return Locale.fromSubtags(
+              languageCode: ss[0], scriptCode: ss[1], countryCode: ss[2]);
+        }
+      } else {
+        return Locale(Settings.language!);
+      }
+    }
+
+    if (locale == null) {
+      if (Settings.language == null) {
+        Settings.setLanguage(supportedLocales.first.languageCode);
+      }
+      return supportedLocales.first;
+    }
+
+    for (Locale supportedLocale in supportedLocales) {
+      if (supportedLocale.languageCode == locale.languageCode ||
+          supportedLocale.countryCode == locale.countryCode) {
+        if (Settings.language == null) {
+          Settings.setLanguage(supportedLocale.languageCode);
+        }
+        return supportedLocale;
+      }
+    }
+
+    if (Settings.language == null) {
+      Settings.setLanguage(supportedLocales.first.languageCode);
+    }
+
+    return supportedLocales.first;
+  }
 }
