@@ -286,7 +286,11 @@ class ViewerController extends GetxController {
           articleId, isImageLoaded.map((element) => !element).toList());
       for (var i = 0; i < isImageLoaded.length; i++) {
         if (!isImageLoaded[i]) {
-          urlCache[i] = RxString(await provider.provider!.getImageUrl(i));
+          if (urlCache[i] == null) {
+            urlCache[i] = RxString(await provider.provider!.getImageUrl(i));
+          } else {
+            urlCache[i]!.value = await provider.provider!.getImageUrl(i);
+          }
         }
       }
     }
