@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,7 +62,7 @@ namespace hmerger
                 var id = Convert.ToInt32(file.Split('\\').Last().Split('.')[0]);
 
                 var page = 0;
-                //var itable = makePageInvTable(x.Count);
+                var itable = makePageInvTable(x.Count);
 
                 var mergedMessages = new List<MessageInfo>();
                 foreach (var i in x)
@@ -78,8 +78,8 @@ namespace hmerger
                         mergedMessages.Add(new MessageInfo
                         {
                             ArticleId = id,
-                            //Page = itable[page] - 1,
-                            Page = page,
+                            Page = itable[page] - 1,
+                            //Page = page,
                             Message = pp,
                             Score = c[1].Value<double>(),
                             Rectangle = c[2].ToObject<List<double>>(),
