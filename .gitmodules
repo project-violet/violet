@@ -1,0 +1,6 @@
+[submodule "fast-search/3rdparty/RapidFuzz"]
+	path = fast-search/3rdparty/RapidFuzz
+	url = https://github.com/maxbachmann/rapidfuzz-cpp.git
+[submodule "fast-search/libkdtree"]
+	path = fast-search/libkdtree
+	url = https://github.com/nvmd/libkdtree
