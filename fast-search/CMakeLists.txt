@@ -9,6 +9,8 @@ add_subdirectory(3rdparty/RapidFuzz)
 
 add_executable(fscm Main.cpp simdjson.cpp)
 target_link_libraries(fscm rapidfuzz::rapidfuzz)
+add_executable(fscm-eng Main-English.cpp simdjson.cpp)
+target_link_libraries(fscm-eng rapidfuzz::rapidfuzz)
 
 find_package(OpenMP)
 if (OPENMP_FOUND)
