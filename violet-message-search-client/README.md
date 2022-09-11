@@ -63,11 +63,46 @@ curl -XPOST http://localhost:9200/test/_doc/1 -H "Content-Type: application/json
   "query": {
     "query_string": {
       "default_field": "Message",
-      "query": "\fhfl\""
+      "query": "qhwl"
     }
   },
   "sort": {
-    "Id": "desc"
+    "ArticleId": "desc"
+  }
+}
+
+GET /test/_search
+{
+  "query": {
+    "fuzzy": {
+      "Message": {
+        "value": "clsduehdtod",
+        "max_expansions": 150
+      }
+    }
+  }
+}
+
+GET /test/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "duehdtod",
+      "fields": ["Message"],
+      "fuzziness": 1
+    }
+  }
+}
+
+GET /test/_search
+{
+  "query": {
+    "match": {
+      "Message": {
+        "query": "dmsrmstmfWjr",
+        "fuzziness": "AUTO"
+      }
+    }
   }
 }
 ```
