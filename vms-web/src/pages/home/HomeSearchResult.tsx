@@ -104,19 +104,18 @@ function HomeSearchResultImage(dto: { result: SearchMessageResultType }) {
 }
 
 function NavigateButton(dto: {
-  id: number;
-  ehash: string;
   tooltip: string;
   alphabet: string;
   background: string;
   color: string;
+  url: string;
 }) {
   return (
     <OverlayTrigger
       overlay={<Tooltip id="tooltip-disabled">{dto.tooltip}</Tooltip>}
     >
       <a
-        href={`https://exhentai.org/g/${dto.id}/${dto.ehash}`}
+        href={dto.url}
         target="_blank"
         rel="noreferrer"
         style={{ textDecoration: "none" }}
@@ -173,7 +172,7 @@ function BookmarkFill() {
   );
 }
 
-function BookmarkButton(dto: { e: SearchMessageResultType }) {
+function BookmarkButton(dto: { e: SearchMessageResultType, keyword: string }) {
   const [bookmarked, setBookmarked] = useState(false);
   const [readyToBookmarked, setReadyToBookmarked] = useState(false);
 
@@ -188,7 +187,7 @@ function BookmarkButton(dto: { e: SearchMessageResultType }) {
 
   const toggleBookmarked = (e: any) => {
     if (!bookmarked)
-      axios.post("/bookmark", dto.e);
+      axios.post("/bookmark", {data: dto.e, search: dto.keyword});
     else
       axios.post("/unbookmark", dto.e);
     setBookmarked(!bookmarked);
@@ -217,7 +216,7 @@ function BookmarkButton(dto: { e: SearchMessageResultType }) {
   );
 }
 
-function HomeSearchResultCard(dto: { e: SearchMessageResultType }) {
+function HomeSearchResultCard(dto: { e: SearchMessageResultType, keyword: string }) {
   const [artist, setArtist] = useState("");
   const [ehash, setEHash] = useState("");
 
@@ -249,7 +248,7 @@ function HomeSearchResultCard(dto: { e: SearchMessageResultType }) {
                   display: "flex",
                 }}
               >
-                <BookmarkButton e={dto.e} />
+                <BookmarkButton e={dto.e} keyword={dto.keyword}/>
               </div>
             </div>
           </Card.Title>
@@ -274,27 +273,24 @@ function HomeSearchResultCard(dto: { e: SearchMessageResultType }) {
               >
                 <NavigateButton
                   tooltip="익헨 바로가기"
-                  id={dto.e.Id}
-                  ehash={ehash}
                   background="#650612"
                   color="#fd758c"
                   alphabet="E"
+                  url={`https://exhentai.org/g/${dto.e.Id}/${ehash}`}
                 />
                 <NavigateButton
                   tooltip="히요비 바로가기"
-                  id={dto.e.Id}
-                  ehash={ehash}
                   background="pink"
                   color="#fd758c"
                   alphabet="H"
+                  url={`https://hiyobi.me/reader/${dto.e.Id}`}
                 />
                 <NavigateButton
                   tooltip="히토미 바로가기"
-                  id={dto.e.Id}
-                  ehash={ehash}
                   background="#29313e"
                   color="white"
                   alphabet="L"
+                  url={`https://hitomi.la/galleries/${dto.e.Id}.html`}
                 />
               </div>
             </div>
@@ -380,7 +376,7 @@ export default function HomeSearchResult(dto: {
     <Container>
       <Row xs={1} md={2} xl={2} className="g-4">
         {result.map((e) => (
-          <HomeSearchResultCard e={e} />
+          <HomeSearchResultCard e={e} keyword={savedKeyword} />
         ))}
       </Row>
     </Container>
