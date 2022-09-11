@@ -1,6 +1,8 @@
 # Violet Message Search Core
 
-If you want to just using my message search engine, see https://github.com/project-violet/violet-message-search-local.
+Toolkit for Searching Doujinshi Quotes
+
+If you want to just using just message search engine, see https://github.com/project-violet/violet-message-search-local.
 
 ## Support
 
