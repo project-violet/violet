@@ -17,9 +17,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   console.log("request: " + req.originalUrl);
   next();
 });
-app.use("/home", express.static(path.join(__dirname, "../vms-web/build")));
+app.use("/home/static", express.static(path.join(__dirname, "../vms-web/build/static")));
+// app.get('/home/*', function(req, res) {
+//   res.sendFile('index.html', {root: path.join(__dirname, '../../client/build/')});
+// });
+app.get('/home/*', function(req, res) {
+  res.sendFile('index.html', {root: path.join(__dirname, "../vms-web/build/")});
+});
 app.use("/static", express.static(path.join(__dirname, "./")));
-app.use("/search", proxy("localhost:8864"));
+app.use("/search", proxy("http://127.0.0.1:8864/"));
 app.get(
   "/imageurl/:article/:page",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -89,9 +95,9 @@ app.post(
   "/bookmark",
   async (req: Request, res: Response, next: NextFunction) => {
     const db = new sqlite3.Database("./user.db");
-    const body = JSON.stringify(req.body);
+    const body = JSON.stringify(req.body.data);
     const hash = crypto.createHash("md5").update(body).digest("hex");
-    db.run("INSERT INTO BOOK(hash, body) VALUES (?, ?)", hash, body);
+    db.run("INSERT INTO BOOK(hash, body, search) VALUES (?, ?, ?)", hash, body, req.body.search);
     res.status(200).send();
   }
 );
@@ -123,6 +129,6 @@ app.get("/", async (req: Request, res: Response, next: NextFunction) => {
   res.redirect("/home");
 });
 
-app.listen(6974, "localhost", () => {
+app.listen(6974, "0.0.0.0", () => {
   console.log(`server start localhost:6974`);
 });
