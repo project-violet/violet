@@ -166,7 +166,7 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
       tag: widget.thumbnailTag,
       child: CachedNetworkImage(
         key: _thumbnailKey,
-        memCacheWidth: Settings.useLowPerf ? 30 : null,
+        memCacheWidth: Settings.useLowPerf ? 300 : null,
         imageUrl: widget.thumbnail,
         fit: BoxFit.cover,
         httpHeaders: widget.headers,
