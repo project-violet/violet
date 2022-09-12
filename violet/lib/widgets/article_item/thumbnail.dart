@@ -192,17 +192,6 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
             ),
           );
         },
-        progressIndicatorBuilder: (context, url, progress) {
-          return Center(
-            child: SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                color: Settings.majorColor.withAlpha(150),
-              ),
-            ),
-          );
-        },
         placeholder: (b, c) {
           if (!Settings.simpleItemWidgetLoadingIcon) {
             return const FlareActor(
