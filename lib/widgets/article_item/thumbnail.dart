@@ -137,6 +137,7 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late final Animation<double> _animation;
+  UniqueKey _thumbnailKey = UniqueKey();
 
   @override
   void initState() {
@@ -164,6 +165,7 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
     return Hero(
       tag: widget.thumbnailTag,
       child: CachedNetworkImage(
+        key: _thumbnailKey,
         memCacheWidth: Settings.useLowPerf ? 30 : null,
         imageUrl: widget.thumbnail,
         fit: BoxFit.cover,
@@ -175,6 +177,11 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
           child: Container(),
         ),
         errorWidget: (context, url, error) {
+          Future.delayed(const Duration(milliseconds: 300)).then((value) {
+            setState(() {
+              _thumbnailKey = UniqueKey();
+            });
+          });
           return Center(
             child: SizedBox(
               width: 30,
