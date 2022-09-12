@@ -48,74 +48,11 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
       body: FutureBuilder(
         future: Bookmark.getInstance().then((value) => value.getGroup()),
-        builder: (context, AsyncSnapshot<List<BookmarkGroup>> snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(
-              child: Text('Loading ...'),
-            );
-          }
-          void _onReorder(int oldIndex, int newIndex) async {
-            if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
-              fToast.showToast(
-                child: const ToastWrapper(
-                  isCheck: false,
-                  isWarning: false,
-                  msg: 'You cannot move like that!',
-                ),
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 4),
-              );
-            } else {
-              var bookmark = await Bookmark.getInstance();
-              if (oldIndex < newIndex) newIndex -= 1;
-              await bookmark.positionSwap(oldIndex - 1, newIndex - 1);
-              setState(() {
-                // Widget row = _rows.removeAt(oldIndex);
-                // if (newIndex < _rows.length)
-                //   _rows.insert(newIndex, row);
-                // else
-                //   _rows.add(row);
-              });
-            }
-          }
-
-          ScrollController scrollController =
-              PrimaryScrollController.of(context) ?? ScrollController();
-
-          var rows = _buildRowItems(snapshot.data!, reorder);
-
-          return reorder
-              ? Theme(
-                  data: Theme.of(context).copyWith(
-                    // https://github.com/flutter/flutter/issues/45799#issuecomment-770692808
-                    // Fuck you!!
-                    canvasColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                  ),
-                  child: ReorderableListView(
-                    padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
-                    scrollDirection: Axis.vertical,
-                    scrollController: scrollController,
-                    children: rows,
-                    onReorder: _onReorder,
-                  ),
-                )
-              : ListView.builder(
-                  padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
-                  physics: const BouncingScrollPhysics(),
-                  controller: scrollController,
-                  itemCount: snapshot.data!.length + 1,
-                  itemBuilder: (BuildContext ctxt, int index) {
-                    return _buildItem(
-                        index, index == 0 ? null : snapshot.data![index - 1]);
-                  });
-        },
+        builder: _reorderFutureBuilder,
       ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.,
       floatingActionButton: SpeedDial(
         childMargin: const EdgeInsets.only(right: 18, bottom: 20),
         animatedIcon: AnimatedIcons.menu_close,
@@ -125,7 +62,6 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
         curve: Curves.bounceIn,
         overlayColor: Colors.transparent,
         overlayOpacity: 0.2,
-        // tooltip: 'Speed Dial',
         heroTag: 'speed-dial-hero-tag',
         backgroundColor: Settings.themeWhat
             ? Settings.themeBlack
@@ -136,100 +72,106 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
         elevation: 1.0,
         shape: const CircleBorder(),
         children: [
-          // SpeedDialChild(
-          //     child: Icon(MdiIcons.frequentlyAskedQuestions,
-          //         color: Settings.majorColor),
-          //     backgroundColor:
-          //         Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
-          //     label: '주의사항',
-          //     labelStyle: TextStyle(
-          //       fontSize: 14.0,
-          //       color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,
-          //     ),
-          //     labelBackgroundColor:
-          //         Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
-          //     onTap: () async {
-          //       showOkDialog(
-          //           context,
-          //           '1. 모든 작품/작가는 하나의 그룹만 가질 수 있습니다.\n2. 그룹은 또 다른 그룹을 가질 수 없습니다.',
-          //           Translations.of(context).trans('bookmark'));
-          //     }),
-
-          // TODO: 북마크 필터링 순서 바꾸기 구현
-          // SpeedDialChild(
-          //   child: Icon(MdiIcons.filter, color: Settings.majorColor),
-          //   backgroundColor:
-          //       Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
-          //   label: Translations.of(context).trans('filtering'),
-          //   labelStyle: TextStyle(
-          //     fontSize: 14.0,
-          //     color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,
-          //   ),
-          //   labelBackgroundColor:
-          //       Settings.themeWhat ? Colors.grey.shade800 : Colors.white,
-          //   onTap: () => print('SECOND CHILD'),
-          // ),
-          SpeedDialChild(
-              child: Icon(MdiIcons.orderNumericAscending,
-                  color: Settings.majorColor),
-              backgroundColor: Settings.themeWhat
-                  ? Settings.themeBlack
-                      ? const Color(0xFF141414)
-                      : Colors.grey.shade800
-                  : Colors.white,
-              label: Translations.of(context).trans('editorder'),
-              labelStyle: TextStyle(
-                fontSize: 14.0,
-                color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,
-              ),
-              labelBackgroundColor: Settings.themeWhat
-                  ? Settings.themeBlack
-                      ? const Color(0xFF141414)
-                      : Colors.grey.shade800
-                  : Colors.white,
-              onTap: () {
-                setState(() {
-                  reorder = !reorder;
-                });
-              }),
-          SpeedDialChild(
-            child: Icon(MdiIcons.group, color: Settings.majorColor),
-            backgroundColor: Settings.themeWhat
-                ? Settings.themeBlack
-                    ? const Color(0xFF141414)
-                    : Colors.grey.shade800
-                : Colors.white,
-            label: Translations.of(context).trans('newgroup'),
-            labelStyle: TextStyle(
-              fontSize: 14.0,
-              color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,
-            ),
-            labelBackgroundColor: Settings.themeWhat
-                ? Settings.themeBlack
-                    ? const Color(0xFF141414)
-                    : Colors.grey.shade800
-                : Colors.white,
-            onTap: () async {
-              (await Bookmark.getInstance()).createGroup(
-                  Translations.of(context).trans('newgroup'),
-                  Translations.of(context).trans('newgroup'),
-                  Colors.orange);
-              setState(() {});
-            },
-          ),
+          _dialButton(MdiIcons.orderNumericAscending, 'editorder', () async {
+            setState(() {
+              reorder = !reorder;
+            });
+          }),
+          _dialButton(MdiIcons.group, 'newgroup', () async {
+            (await Bookmark.getInstance()).createGroup(
+                Translations.of(context).trans('newgroup'),
+                Translations.of(context).trans('newgroup'),
+                Colors.orange);
+            setState(() {});
+          }),
         ],
       ),
     );
-    // \Visibility(
-    //     visible: true,
-    //     child: FloatingActionButton(
-    //         backgroundColor:
-    //             Settings.themeWhat ? Colors.black : Colors.white,
-    //         child: Icon(
-    //           MdiIcons.pencil,
-    //           color: Settings.majorColor,
-    //         ),
-    //         onPressed: () {})));
+  }
+
+  _dialButton(IconData? icon, String label, Function() onTap) {
+    return SpeedDialChild(
+      child: Icon(icon, color: Settings.majorColor),
+      backgroundColor: Settings.themeWhat
+          ? Settings.themeBlack
+              ? const Color(0xFF141414)
+              : Colors.grey.shade800
+          : Colors.white,
+      label: Translations.of(context).trans(label),
+      labelStyle: TextStyle(
+        fontSize: 14.0,
+        color: Settings.themeWhat ? Colors.white : Colors.grey.shade800,
+      ),
+      labelBackgroundColor: Settings.themeWhat
+          ? Settings.themeBlack
+              ? const Color(0xFF141414)
+              : Colors.grey.shade800
+          : Colors.white,
+      onTap: onTap,
+    );
+  }
+
+  Widget _reorderFutureBuilder(
+      BuildContext context, AsyncSnapshot<List<BookmarkGroup>> snapshot) {
+    if (!snapshot.hasData) {
+      return const Center(
+        child: Text('Loading ...'),
+      );
+    }
+
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+
+    final scrollController =
+        PrimaryScrollController.of(context) ?? ScrollController();
+
+    final rows = _buildRowItems(snapshot.data!, reorder);
+
+    return reorder
+        ? Theme(
+            data: Theme.of(context).copyWith(
+              // https://github.com/flutter/flutter/issues/45799#issuecomment-770692808
+              // Fuck you!!
+              canvasColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+            ),
+            child: ReorderableListView(
+              padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
+              scrollDirection: Axis.vertical,
+              scrollController: scrollController,
+              children: rows,
+              onReorder: _onReorder,
+            ),
+          )
+        : ListView.builder(
+            padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
+            physics: const BouncingScrollPhysics(),
+            controller: scrollController,
+            itemCount: snapshot.data!.length + 1,
+            itemBuilder: (BuildContext ctxt, int index) {
+              return _buildItem(
+                  index, index == 0 ? null : snapshot.data![index - 1]);
+            },
+          );
+  }
+
+  _onReorder(int oldIndex, int newIndex) async {
+    if (oldIndex * newIndex <= 1 || oldIndex == 1 || newIndex == 1) {
+      fToast.showToast(
+        child: const ToastWrapper(
+          isCheck: false,
+          isWarning: false,
+          msg: 'You cannot move like that!',
+        ),
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: const Duration(seconds: 4),
+      );
+      return;
+    }
+
+    var bookmark = await Bookmark.getInstance();
+    if (oldIndex < newIndex) newIndex -= 1;
+    await bookmark.positionSwap(oldIndex - 1, newIndex - 1);
+    setState(() {});
   }
 
   _buildItem(int index, BookmarkGroup? data, [bool reorder = false]) {
@@ -258,7 +200,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
       desc = Translations.of(context).trans('unclassifieddesc');
     }
 
-    var random = Random();
+    final random = Random();
 
     return Container(
       key: Key('bookmark_group_$id'),
@@ -296,14 +238,13 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
                       ? const Color(0xFF141414)
                       : Colors.black38
                   : Colors.white,
-              child: reorder
-                  ? ListTile(
-                      title: Text(name, style: const TextStyle(fontSize: 16.0)),
-                      subtitle: Text(desc),
-                      trailing: Text(date),
-                    )
-                  : ListTile(
-                      onTap: () {
+              child: ListTile(
+                title: Text(name, style: const TextStyle(fontSize: 16.0)),
+                subtitle: Text(desc),
+                trailing: Text(date),
+                onTap: reorder
+                    ? null
+                    : () {
                         PlatformNavigator.navigateSlide(
                           context,
                           id == -1
@@ -312,63 +253,53 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
                           opaque: false,
                         );
                       },
-                      onLongPress: () async {
-                        if (index == -1 ||
-                            (oname == 'violet_default' && index == 0)) {
-                          await showOkDialog(
-                              context,
-                              Translations.of(context)
-                                  .trans('cannotmodifydefaultgroup'),
-                              Translations.of(context).trans('bookmark'));
-                        } else {
-                          var rr = await showDialog(
-                            context: context,
-                            builder: (BuildContext context) => GroupModifyPage(
-                                name: name, desc: data!.description()),
-                          );
-
-                          if (rr == null) return;
-
-                          if (rr[0] == 2) {
-                            await (await Bookmark.getInstance())
-                                .deleteGroup(data!);
-                            setState(() {});
-                          } else if (rr[0] == 1) {
-                            var nname = rr[1] as String;
-                            var ndesc = rr[2] as String;
-
-                            var rrt = Map<String, dynamic>.from(data!.result);
-
-                            rrt['Name'] = nname;
-                            rrt['Description'] = ndesc;
-
-                            await (await Bookmark.getInstance())
-                                .modfiyGroup(BookmarkGroup(result: rrt));
-                            setState(() {});
-                          }
-                        }
-                        // Navigator.of(context).push(PageRouteBuilder(
-                        //     opaque: false,
-                        //     transitionDuration: Duration(milliseconds: 500),
-                        //     transitionsBuilder: (BuildContext context,
-                        //         Animation<double> animation,
-                        //         Animation<double> secondaryAnimation,
-                        //         Widget wi) {
-                        //       // return wi;
-                        //       return FadeTransition(
-                        //           opacity: animation, child: wi);
-                        //     },
-                        //     pageBuilder: (_, __, ___) => GroupModifyPage()));
+                onLongPress: reorder
+                    ? null
+                    : () async {
+                        _onLongPressBookmarkItem(index, oname, name, data);
                       },
-                      title: Text(name, style: const TextStyle(fontSize: 16.0)),
-                      subtitle: Text(desc),
-                      trailing: Text(date),
-                    ),
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  _onLongPressBookmarkItem(
+      int index, String oname, String name, BookmarkGroup? data) async {
+    if (index == -1 || (oname == 'violet_default' && index == 0)) {
+      await showOkDialog(
+          context,
+          Translations.of(context).trans('cannotmodifydefaultgroup'),
+          Translations.of(context).trans('bookmark'));
+      return;
+    }
+
+    final rr = await showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          GroupModifyPage(name: name, desc: data!.description()),
+    );
+
+    if (rr == null) return;
+
+    if (rr[0] == 2) {
+      await (await Bookmark.getInstance()).deleteGroup(data!);
+    } else if (rr[0] == 1) {
+      final nname = rr[1] as String;
+      final ndesc = rr[2] as String;
+
+      final rrt = Map<String, dynamic>.from(data!.result);
+
+      rrt['Name'] = nname;
+      rrt['Description'] = ndesc;
+
+      await (await Bookmark.getInstance())
+          .modfiyGroup(BookmarkGroup(result: rrt));
+    }
+
+    setState(() {});
   }
 
   _buildRowItems(List<BookmarkGroup> data, [bool reorder = false]) {
