@@ -163,83 +163,71 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
   Widget build(BuildContext context) {
     return Hero(
       tag: widget.thumbnailTag,
-      //   child: CachedNetworkImage(
-      //     memCacheWidth: Settings.useLowPerf ? 30 : null,
-      //     imageUrl: thumbnail,
-      //     fit: BoxFit.cover,
-      //     httpHeaders: headers,
-      //     imageBuilder: (context, imageProvider) => Container(
-      //       decoration: BoxDecoration(
-      //         image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-      //       ),
-      //       child: isBlurred
-      //           ? BackdropFilter(
-      //               filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-      //               child: Container(
-      //                 decoration:
-      //                     BoxDecoration(color: Colors.white.withOpacity(0.0)),
-      //               ),
-      //             )
-      //           : Container(),
-      //     ),
-      //     errorWidget: (context, url, error) {
-      //       print(url);
-      //       print(error);
-      //       return Center(
-      //         child: SizedBox(
-      //           width: 30,
-      //           height: 30,
-      //           child: CircularProgressIndicator(
-      //             color: Settings.majorColor.withAlpha(150),
-      //           ),
-      //         ),
-      //       );
-      //     },
-      //     progressIndicatorBuilder: (context, url, progress) {
-      //       print(url + ' ');
-      //       return Center(
-      //         child: SizedBox(
-      //           width: 30,
-      //           height: 30,
-      //           child: CircularProgressIndicator(
-      //             color: Settings.majorColor.withAlpha(150),
-      //           ),
-      //         ),
-      //       );
-      //     },
-      //     placeholder: (b, c) {
-      //       if (!Settings.simpleItemWidgetLoadingIcon) {
-      //         return const FlareActor(
-      //           'assets/flare/Loading2.flr',
-      //           alignment: Alignment.center,
-      //           fit: BoxFit.fitHeight,
-      //           animation: 'Alarm',
-      //         );
-      //       } else {
-      //         return Center(
-      //           child: SizedBox(
-      //             width: 30,
-      //             height: 30,
-      //             child: CircularProgressIndicator(
-      //               color: Settings.majorColor.withAlpha(150),
-      //             ),
-      //           ),
-      //         );
-      //       }
-      //     },
-      //   ),
-      // );
-
-      child: ExtendedImage.network(
-        widget.thumbnail,
-        headers: widget.headers,
-        retries: 100,
-        timeRetry: const Duration(milliseconds: 1000),
+      child: CachedNetworkImage(
+        memCacheWidth: Settings.useLowPerf ? 30 : null,
+        imageUrl: widget.thumbnail,
         fit: BoxFit.cover,
-        handleLoadingProgress: true,
-        loadStateChanged: _loadStateChanged,
-        cacheWidth: Settings.useLowPerf ? 300 : null,
+        httpHeaders: widget.headers,
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+          ),
+          child: Container(),
+        ),
+        errorWidget: (context, url, error) {
+          return Center(
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                color: Settings.majorColor.withAlpha(150),
+              ),
+            ),
+          );
+        },
+        progressIndicatorBuilder: (context, url, progress) {
+          return Center(
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                color: Settings.majorColor.withAlpha(150),
+              ),
+            ),
+          );
+        },
+        placeholder: (b, c) {
+          if (!Settings.simpleItemWidgetLoadingIcon) {
+            return const FlareActor(
+              'assets/flare/Loading2.flr',
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: 'Alarm',
+            );
+          } else {
+            return Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  color: Settings.majorColor.withAlpha(150),
+                ),
+              ),
+            );
+          }
+        },
       ),
+
+      // child: ExtendedImage.network(
+      //   widget.thumbnail,
+      //   headers: widget.headers,
+      //   retries: 100,
+      //   timeRetry: const Duration(milliseconds: 1000),
+      //   fit: BoxFit.cover,
+      //   handleLoadingProgress: true,
+      //   loadStateChanged: _loadStateChanged,
+      //   cacheWidth: Settings.useLowPerf ? 300 : null,
+      // ),
     );
   }
 
