@@ -143,6 +143,8 @@ class _HorizontalViewerPageState extends State<HorizontalViewerPage> {
                     c.urlCache[index]!.value,
                     headers: c.headerCache[index],
                     cache: true,
+                    retries: 10,
+                    timeRetry: const Duration(milliseconds: 300),
                   ),
                   filterQuality:
                       SettingsWrapper.getImageQuality(c.imgQuality.value),
