@@ -149,7 +149,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
           // invisible article is not rendered yet
           // so we can find live elements
           if (key.value.currentContext != null) {
-            final bottomPadding = [8, 8, 0, 0][Settings.searchResultType];
+            final bottomPadding = [8, 8, 0, 0, 0][Settings.searchResultType];
             itemHeight = key.value.currentContext!.size!.height + bottomPadding;
             break;
           }
@@ -158,7 +158,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
       if (_scroll.offset.isNaN) return;
 
-      final itemPerRow = [3, 2, 1, 1][Settings.searchResultType];
+      final itemPerRow = [3, 2, 1, 1, 1][Settings.searchResultType];
       const searchBarHeight = 64 + 16;
       final curI =
           ((_scroll.offset - searchBarHeight) / itemHeight + 1).toInt() *
@@ -808,6 +808,7 @@ class ResultPanelWidget extends StatelessWidget {
 
       case 2:
       case 3:
+      case 4:
         if (Settings.useTabletMode ||
             MediaQuery.of(context).orientation == Orientation.landscape) {
           return SliverPadding(
@@ -864,7 +865,8 @@ class ResultPanelWidget extends StatelessWidget {
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
-                      showDetail: Settings.searchResultType == 3,
+                      showDetail: Settings.searchResultType >= 3,
+                      showUltra: Settings.searchResultType == 4,
                       queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag:

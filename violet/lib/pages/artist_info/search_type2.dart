@@ -51,7 +51,7 @@ class SearchType2 extends StatelessWidget {
               child: SizedBox(
                 child: SizedBox(
                   width: 280,
-                  height: 240,
+                  height: 296,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                     child: Column(
@@ -93,6 +93,19 @@ class SearchType2 extends StatelessWidget {
                           ),
                           onTap: () async {
                             Navigator.pop(context, 3);
+                          },
+                        ),
+                        ListTile(
+                          leading: Transform.scale(
+                              scaleX: -1,
+                              child: Icon(MdiIcons.viewSplitVertical,
+                                  color: getColor(4))),
+                          title: Text(
+                            Translations.of(context).trans('srt4'),
+                            style: TextStyle(color: getColor(3)),
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context, 4);
                           },
                         ),
                         Expanded(

@@ -15,6 +15,7 @@ import 'package:violet/settings/settings.dart';
 class ThumbnailWidget extends StatelessWidget {
   final double pad;
   final bool showDetail;
+  final bool showUltra;
   final String? thumbnail;
   final String thumbnailTag;
   final int imageCount;
@@ -31,6 +32,7 @@ class ThumbnailWidget extends StatelessWidget {
     Key? key,
     required this.pad,
     required this.showDetail,
+    required this.showUltra,
     required this.thumbnail,
     required this.thumbnailTag,
     required this.imageCount,
@@ -67,6 +69,7 @@ class ThumbnailWidget extends StatelessWidget {
                   thumbnail: thumbnail!,
                   thumbnailTag: thumbnailTag,
                   isBlurred: isBlurred,
+                  showUltra: showUltra,
                 ),
                 BookmarkIndicatorWidget(
                   flareController: flareController,
@@ -120,6 +123,7 @@ class ThumbnailImageWidget extends StatefulWidget {
   final String thumbnail;
   final Map<String, String> headers;
   final bool isBlurred;
+  final bool showUltra;
 
   const ThumbnailImageWidget({
     Key? key,
@@ -127,6 +131,7 @@ class ThumbnailImageWidget extends StatefulWidget {
     required this.thumbnailTag,
     required this.headers,
     required this.isBlurred,
+    required this.showUltra,
   }) : super(key: key);
 
   @override
@@ -172,7 +177,9 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
         httpHeaders: widget.headers,
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(
-            image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
+            image: DecorationImage(
+                image: imageProvider,
+                fit: !widget.showUltra ? BoxFit.cover : BoxFit.contain),
           ),
           child: Container(),
         ),

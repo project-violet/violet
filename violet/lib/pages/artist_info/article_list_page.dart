@@ -297,7 +297,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
   int nowType = 0;
 
   final List<ScrollController> _scrollControllers =
-      Iterable.generate(4, (i) => ScrollController()).toList();
+      Iterable.generate(5, (i) => ScrollController()).toList();
 
   Widget buildList() {
     var mm = nowType == 0 ? 3 : 2;
@@ -358,6 +358,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
 
       case 2:
       case 3:
+      case 4:
         return SliverPadding(
           padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: LiveSliverList(
@@ -370,7 +371,8 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
                     addBottomPadding: true,
-                    showDetail: nowType == 3,
+                    showDetail: nowType >= 3,
+                    showUltra: nowType == 4,
                     queryResult: filter()[index],
                     width: windowWidth - 4.0,
                     thumbnailTag: const Uuid().v4(),
