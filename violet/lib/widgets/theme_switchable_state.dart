@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class ThemeSwitchableStateTargetStore {
@@ -15,8 +17,10 @@ class ThemeSwitchableStateTargetStore {
   }
 
   static void doChange() {
-    targets.forEach((element) {
-      element.checkDirty();
+    Timer.run(() {
+      targets.forEach((element) {
+        element.checkDirty();
+      });
     });
   }
 }
