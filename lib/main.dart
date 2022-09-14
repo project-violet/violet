@@ -122,6 +122,7 @@ class MyApp extends StatelessWidget {
       Locale('zh', 'CH'),
       Locale('it', 'IT'),
       Locale('eo', 'ES'),
+      Locale('pt', 'BR'),
     ];
 
     const localizationsDelegates = <LocalizationsDelegate<dynamic>>[

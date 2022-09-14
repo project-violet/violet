@@ -98,6 +98,7 @@ class ExCountry extends Country {
       'RU': 'ru',
       'IT': 'it',
       'ES': 'eo',
+      'BR': 'pt',
     };
 
     if (dict.containsKey(isoCode)) return dict[isoCode]!;
@@ -120,6 +121,7 @@ class ExCountry extends Country {
       'RU': 'Русский',
       'IT': 'Italiano',
       'ES': 'Español',
+      'BR': 'Português'
     };
 
     if (dict.containsKey(isoCode)) return dict[isoCode]!;
@@ -721,6 +723,7 @@ class _SettingsPageState extends State<SettingsPage>
                           ExCountry.create('CN', script: 'Hans'),
                           ExCountry.create('IT'),
                           ExCountry.create('ES'),
+                          ExCountry.create('BR'),
                           // CountryPickerUtils.getCountryByIsoCode('RU'),
                         ],
                         itemBuilder: (Country country) {
