@@ -168,100 +168,70 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        if (widget.showUltra)
-          FutureBuilder(
-            future: Future.delayed(const Duration(milliseconds: 100))
-                .then((value) => null),
-            builder: (context, snapshot) => snapshot.hasData
-                ? Container()
-                : Stack(
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: widget.thumbnail,
-                        httpHeaders: widget.headers,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                        memCacheWidth: Settings.useLowPerf ? 300 : null,
-                      ),
-                      ClipRRect(
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Container(
-                            color: Colors.grey.withOpacity(0.1),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+    return Hero(
+      tag: widget.thumbnailTag,
+      child: CachedNetworkImage(
+        key: _thumbnailKey,
+        memCacheWidth: Settings.useLowPerf ? 300 : null,
+        imageUrl: widget.thumbnail,
+        fit: BoxFit.cover,
+        httpHeaders: widget.headers,
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: imageProvider,
+                fit: !widget.showUltra ? BoxFit.cover : BoxFit.contain),
           ),
-        Hero(
-          tag: widget.thumbnailTag,
-          child: CachedNetworkImage(
-            key: _thumbnailKey,
-            memCacheWidth: Settings.useLowPerf ? 300 : null,
-            imageUrl: widget.thumbnail,
-            fit: BoxFit.cover,
-            httpHeaders: widget.headers,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: imageProvider,
-                    fit: !widget.showUltra ? BoxFit.cover : BoxFit.contain),
-              ),
-              child: Container(),
-            ),
-            errorWidget: (context, url, error) {
-              Future.delayed(const Duration(milliseconds: 300)).then((value) {
-                setState(() {
-                  _thumbnailKey = UniqueKey();
-                });
-              });
-              return Center(
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CircularProgressIndicator(
-                    color: Settings.majorColor.withAlpha(150),
-                  ),
-                ),
-              );
-            },
-            placeholder: (b, c) {
-              if (!Settings.simpleItemWidgetLoadingIcon) {
-                return const FlareActor(
-                  'assets/flare/Loading2.flr',
-                  alignment: Alignment.center,
-                  fit: BoxFit.fitHeight,
-                  animation: 'Alarm',
-                );
-              } else {
-                return Center(
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CircularProgressIndicator(
-                      color: Settings.majorColor.withAlpha(150),
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
-
-          // child: ExtendedImage.network(
-          //   widget.thumbnail,
-          //   headers: widget.headers,
-          //   retries: 100,
-          //   timeRetry: const Duration(milliseconds: 1000),
-          //   fit: BoxFit.cover,
-          //   handleLoadingProgress: true,
-          //   loadStateChanged: _loadStateChanged,
-          //   cacheWidth: Settings.useLowPerf ? 300 : null,
-          // ),
+          child: Container(),
         ),
-      ],
+        errorWidget: (context, url, error) {
+          Future.delayed(const Duration(milliseconds: 300)).then((value) {
+            setState(() {
+              _thumbnailKey = UniqueKey();
+            });
+          });
+          return Center(
+            child: SizedBox(
+              width: 30,
+              height: 30,
+              child: CircularProgressIndicator(
+                color: Settings.majorColor.withAlpha(150),
+              ),
+            ),
+          );
+        },
+        placeholder: (b, c) {
+          if (!Settings.simpleItemWidgetLoadingIcon) {
+            return const FlareActor(
+              'assets/flare/Loading2.flr',
+              alignment: Alignment.center,
+              fit: BoxFit.fitHeight,
+              animation: 'Alarm',
+            );
+          } else {
+            return Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  color: Settings.majorColor.withAlpha(150),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+
+      // child: ExtendedImage.network(
+      //   widget.thumbnail,
+      //   headers: widget.headers,
+      //   retries: 100,
+      //   timeRetry: const Duration(milliseconds: 1000),
+      //   fit: BoxFit.cover,
+      //   handleLoadingProgress: true,
+      //   loadStateChanged: _loadStateChanged,
+      //   cacheWidth: Settings.useLowPerf ? 300 : null,
+      // ),
     );
   }
 
