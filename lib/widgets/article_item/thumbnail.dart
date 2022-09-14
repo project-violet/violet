@@ -142,6 +142,7 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late final Animation<double> _animation;
+
   UniqueKey _thumbnailKey = UniqueKey();
 
   @override
@@ -167,70 +168,85 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Hero(
-      tag: widget.thumbnailTag,
-      child: CachedNetworkImage(
-        key: _thumbnailKey,
-        memCacheWidth: Settings.useLowPerf ? 300 : null,
-        imageUrl: widget.thumbnail,
-        fit: BoxFit.cover,
-        httpHeaders: widget.headers,
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: imageProvider,
-                fit: !widget.showUltra ? BoxFit.cover : BoxFit.contain),
-          ),
-          child: Container(),
-        ),
-        errorWidget: (context, url, error) {
-          Future.delayed(const Duration(milliseconds: 300)).then((value) {
-            setState(() {
-              _thumbnailKey = UniqueKey();
-            });
-          });
-          return Center(
-            child: SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                color: Settings.majorColor.withAlpha(150),
-              ),
+    return Stack(
+      children: [
+        if (widget.showUltra)
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: CachedNetworkImage(
+              imageUrl: widget.thumbnail,
+              httpHeaders: widget.headers,
+              height: double.infinity,
+              fit: BoxFit.cover,
+              memCacheWidth: Settings.useLowPerf ? 300 : null,
             ),
-          );
-        },
-        placeholder: (b, c) {
-          if (!Settings.simpleItemWidgetLoadingIcon) {
-            return const FlareActor(
-              'assets/flare/Loading2.flr',
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: 'Alarm',
-            );
-          } else {
-            return Center(
-              child: SizedBox(
-                width: 30,
-                height: 30,
-                child: CircularProgressIndicator(
-                  color: Settings.majorColor.withAlpha(150),
-                ),
+          ),
+        Hero(
+          tag: widget.thumbnailTag,
+          child: CachedNetworkImage(
+            key: _thumbnailKey,
+            memCacheWidth: Settings.useLowPerf ? 300 : null,
+            imageUrl: widget.thumbnail,
+            fit: BoxFit.cover,
+            httpHeaders: widget.headers,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: imageProvider,
+                    fit: !widget.showUltra ? BoxFit.cover : BoxFit.contain),
               ),
-            );
-          }
-        },
-      ),
+              child: Container(),
+            ),
+            errorWidget: (context, url, error) {
+              Future.delayed(const Duration(milliseconds: 300)).then((value) {
+                setState(() {
+                  _thumbnailKey = UniqueKey();
+                });
+              });
+              return Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    color: Settings.majorColor.withAlpha(150),
+                  ),
+                ),
+              );
+            },
+            placeholder: (b, c) {
+              if (!Settings.simpleItemWidgetLoadingIcon) {
+                return const FlareActor(
+                  'assets/flare/Loading2.flr',
+                  alignment: Alignment.center,
+                  fit: BoxFit.fitHeight,
+                  animation: 'Alarm',
+                );
+              } else {
+                return Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(
+                      color: Settings.majorColor.withAlpha(150),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
 
-      // child: ExtendedImage.network(
-      //   widget.thumbnail,
-      //   headers: widget.headers,
-      //   retries: 100,
-      //   timeRetry: const Duration(milliseconds: 1000),
-      //   fit: BoxFit.cover,
-      //   handleLoadingProgress: true,
-      //   loadStateChanged: _loadStateChanged,
-      //   cacheWidth: Settings.useLowPerf ? 300 : null,
-      // ),
+          // child: ExtendedImage.network(
+          //   widget.thumbnail,
+          //   headers: widget.headers,
+          //   retries: 100,
+          //   timeRetry: const Duration(milliseconds: 1000),
+          //   fit: BoxFit.cover,
+          //   handleLoadingProgress: true,
+          //   loadStateChanged: _loadStateChanged,
+          //   cacheWidth: Settings.useLowPerf ? 300 : null,
+          // ),
+        ),
+      ],
     );
   }
 
