@@ -1019,7 +1019,8 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var tagDisplayed = name;
-    var color = Colors.grey;
+    Color color = Colors.grey;
+    Color avatarBg = Colors.grey.shade600;
 
     if (Settings.translateTags) {
       tagDisplayed =
@@ -1027,9 +1028,9 @@ class _Chip extends StatelessWidget {
     }
 
     if (group == 'female') {
-      color = Colors.pink;
+      avatarBg = color = Colors.pink.shade400;
     } else if (group == 'male') {
-      color = Colors.blue;
+      avatarBg = color = Colors.blue;
     } else if (group == 'prefix') {
       color = Colors.orange;
     } else if (group == 'id') {
@@ -1039,9 +1040,17 @@ class _Chip extends StatelessWidget {
     Widget avatar = Text(group[0].toUpperCase());
 
     if (group == 'female') {
-      avatar = const Icon(MdiIcons.genderFemale, size: 18.0);
+      avatar = const Icon(
+        MdiIcons.genderFemale,
+        size: 18.0,
+        color: Colors.white,
+      );
     } else if (group == 'male') {
-      avatar = const Icon(MdiIcons.genderMale, size: 18.0);
+      avatar = const Icon(
+        MdiIcons.genderMale,
+        size: 18.0,
+        color: Colors.white,
+      );
     } else if (group == 'language') {
       avatar = const Icon(Icons.language, size: 18.0);
     } else if (group == 'artists') {
@@ -1056,7 +1065,7 @@ class _Chip extends StatelessWidget {
         child: RawChip(
           labelPadding: const EdgeInsets.all(0.0),
           avatar: CircleAvatar(
-            backgroundColor: Colors.grey.shade600,
+            backgroundColor: avatarBg,
             child: avatar,
           ),
           label: Text(
