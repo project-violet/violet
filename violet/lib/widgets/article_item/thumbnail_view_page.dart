@@ -10,12 +10,14 @@ class ThumbnailViewPage extends StatefulWidget {
   final String? thumbnail;
   final String heroKey;
   final Map<String, String>? headers;
+  final bool showUltra;
 
   const ThumbnailViewPage({
     Key? key,
     required this.thumbnail,
     required this.headers,
     required this.heroKey,
+    required this.showUltra,
   }) : super(key: key);
 
   @override
@@ -64,7 +66,7 @@ class _ThumbnailViewPageState extends State<ThumbnailViewPage> {
                   tag: widget.heroKey,
                   child: CachedNetworkImage(
                     imageUrl: widget.thumbnail ?? '',
-                    fit: BoxFit.cover,
+                    fit: !widget.showUltra ? BoxFit.cover : BoxFit.contain,
                     httpHeaders: widget.headers,
                     placeholder: (b, c) {
                       if (!Settings.simpleItemWidgetLoadingIcon) {

@@ -71,6 +71,7 @@ class SimpleInfoWidget extends StatelessWidget {
         thumbnail: data.thumbnail,
         headers: data.headers,
         heroKey: data.heroKey,
+        showUltra: false,
       ),
     ));
   }
