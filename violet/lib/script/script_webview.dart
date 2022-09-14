@@ -51,7 +51,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
             });
       },
       onLoadStart: (controller, url) async {
-        await controller.stopLoading();
+        Future.delayed(const Duration(milliseconds: 300))
+            .then((value) => controller.stopLoading());
       },
       onLoadStop: (controller, url) async {
         await controller.evaluateJavascript(source: '''
@@ -60,6 +61,7 @@ class _ScriptWebViewState extends State<ScriptWebView>
             r += gg.m(i).toString();
             r += ",";
           }
+          console.log(gg);
           window.flutter_inappwebview.callHandler('gg', ...[r, gg.b]);
           ''');
 
