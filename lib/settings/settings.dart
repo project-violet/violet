@@ -24,7 +24,7 @@ class Settings {
   static late Color majorColor; // default purple
   static late Color majorAccentColor;
   static late int
-      searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail
+      searchResultType; // 0: 3 Grid, 1: 2 Grid, 2: Big Line, 3: Detail, 4: Ultra
   static late int downloadResultType;
   static late int downloadAlignType;
   static late bool themeFlat;

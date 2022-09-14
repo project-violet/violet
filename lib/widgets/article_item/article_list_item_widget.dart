@@ -13,8 +13,11 @@ import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
+import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
@@ -75,7 +78,7 @@ class _ArticleListItemVerySimpleWidgetState
   FlareControls? _flareController;
   double? thisWidth, thisHeight;
 
-  UniqueKey bodyKey = UniqueKey();
+  GlobalKey bodyKey = GlobalKey();
 
   bool isChecked = false;
 
@@ -121,8 +124,14 @@ class _ArticleListItemVerySimpleWidgetState
 
     if (data.showDetail) {
       thisWidth = data.width - 16;
-      if (data.showUltra) {
+      if (!data.showUltra) {
         thisHeight = 130.0;
+      } else {
+        Future.delayed(const Duration(milliseconds: 500)).then((value) {
+          if (bodyKey.currentContext != null) {
+            thisHeight = bodyKey.currentContext!.size!.height;
+          }
+        });
       }
     } else {
       thisWidth = data.width - (data.addBottomPadding ? 100 : 0);
@@ -542,37 +551,44 @@ class BodyWidget extends StatelessWidget {
               ? Colors.black26
               : Colors.white,
       child: data.showDetail
-          ? Row(
-              children: <Widget>[
-                ThumbnailWidget(
-                  id: data.queryResult.id().toString(),
-                  showDetail: data.showDetail,
-                  thumbnail: thumbnail,
-                  thumbnailTag: data.thumbnailTag,
-                  imageCount: imageCount,
-                  isBookmarked: isBookmarked,
-                  flareController: flareController,
-                  pad: pad,
-                  isBlurred: isBlurred,
-                  headers: headers,
-                  isLastestRead: isLastestRead,
-                  latestReadPage: latestReadPage,
-                  disableFiltering: disableFiltering,
-                ),
-                Expanded(
+          ? IntrinsicHeight(
+              child: Row(
+                children: <Widget>[
+                  ThumbnailWidget(
+                    id: data.queryResult.id().toString(),
+                    showDetail: data.showDetail,
+                    showUltra: data.showUltra,
+                    thumbnail: thumbnail,
+                    thumbnailTag: data.thumbnailTag,
+                    imageCount: imageCount,
+                    isBookmarked: isBookmarked,
+                    flareController: flareController,
+                    pad: pad,
+                    isBlurred: isBlurred,
+                    headers: headers,
+                    isLastestRead: isLastestRead,
+                    latestReadPage: latestReadPage,
+                    disableFiltering: disableFiltering,
+                  ),
+                  Expanded(
                     child: _DetailWidget(
-                  artist: artist,
-                  title: title,
-                  imageCount: imageCount,
-                  dateTime: dateTime,
-                  viewed: data.viewed,
-                  seconds: data.seconds,
-                ))
-              ],
+                      artist: artist,
+                      title: title,
+                      imageCount: imageCount,
+                      dateTime: dateTime,
+                      viewed: data.viewed,
+                      seconds: data.seconds,
+                      showUltra: data.showUltra,
+                      queryResult: data.queryResult,
+                    ),
+                  )
+                ],
+              ),
             )
           : ThumbnailWidget(
               id: data.queryResult.id().toString(),
               showDetail: data.showDetail,
+              showUltra: data.showUltra,
               thumbnail: thumbnail,
               thumbnailTag: data.thumbnailTag,
               imageCount: imageCount,
@@ -597,6 +613,8 @@ class _DetailWidget extends StatelessWidget {
   final String? dateTime;
   final int? viewed;
   final int? seconds;
+  final bool showUltra;
+  final QueryResult queryResult;
 
   const _DetailWidget({
     required this.title,
@@ -605,6 +623,8 @@ class _DetailWidget extends StatelessWidget {
     required this.dateTime,
     required this.viewed,
     required this.seconds,
+    required this.showUltra,
+    required this.queryResult,
   });
 
   @override
@@ -625,7 +645,7 @@ class _DetailWidget extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const Spacer(),
+          if (showUltra) tagArea() else const Spacer(),
           Row(
             children: [
               const Icon(Icons.date_range, size: 18),
@@ -664,6 +684,113 @@ class _DetailWidget extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget tagArea() {
+    if (queryResult.tags() == null) return Container(height: 30);
+
+    final tags = (queryResult.tags() as String)
+        .split('|')
+        .where((element) => element != '')
+        .map((e) => Tuple2<String, String>(
+            e.contains(':') ? e.split(':')[0] : 'tags',
+            e.contains(':') ? e.split(':')[1] : e))
+        .toList();
+
+    return Wrap(
+      spacing: 2.0,
+      runSpacing: -10.0,
+      children:
+          tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
+    );
+  }
+}
+
+class TagChip extends StatelessWidget {
+  final String name;
+  final String group;
+
+  const TagChip({Key? key, required this.name, required this.group})
+      : super(key: key);
+
+  String normalize(String tag) {
+    if (tag == 'groups') return 'group';
+    if (tag == 'artists') return 'artist';
+    return tag;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var tagDisplayed = name;
+    Color color = Colors.grey;
+
+    if (Settings.translateTags) {
+      tagDisplayed =
+          TagTranslate.ofAny(tagDisplayed).split(':').last.split('|').first;
+    }
+
+    if (group == 'female') {
+      color = Colors.pink.shade300;
+    } else if (group == 'male') {
+      color = Colors.blue;
+    }
+
+    Widget avatar = Text(group[0].toUpperCase(),
+        style: const TextStyle(color: Colors.white));
+
+    if (group == 'female') {
+      avatar = const Icon(
+        MdiIcons.genderFemale,
+        size: 18.0,
+        color: Colors.white,
+      );
+    } else if (group == 'male') {
+      avatar = const Icon(
+        MdiIcons.genderMale,
+        size: 18.0,
+        color: Colors.white,
+      );
+    }
+
+    final fc = GestureDetector(
+      child: RawChip(
+        labelPadding: const EdgeInsets.all(0.0),
+        avatar: CircleAvatar(
+          // backgroundColor: Colors.grey.shade600,
+          backgroundColor: color,
+          child: avatar,
+        ),
+        label: Text(
+          ' $tagDisplayed',
+          style: const TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: color,
+        elevation: 6.0,
+        // shadowColor: Colors.grey[60],
+        padding: const EdgeInsets.all(6.0),
+      ),
+      onLongPress: () async {
+        if (!Settings.excludeTags
+            .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
+          final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
+          if (yn) {
+            Settings.excludeTags
+                .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
+            await Settings.setExcludeTags(Settings.excludeTags.join(' '));
+            await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
+          }
+        } else {
+          await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
+        }
+      },
+    );
+
+    return SizedBox(
+      height: 42,
+      child: FittedBox(child: fc),
     );
   }
 }

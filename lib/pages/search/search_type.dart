@@ -42,6 +42,8 @@ class SearchType extends StatelessWidget {
                     _typeItem(context, MdiIcons.gridLarge, 'srt1', 1),
                     _typeItem(context, MdiIcons.viewAgendaOutline, 'srt2', 2),
                     _typeItem(context, MdiIcons.formatListText, 'srt3', 3),
+                    _typeItem(context, MdiIcons.viewSplitVertical, 'srt4', 4,
+                        flip: true),
                   ],
                 ),
               ),
@@ -53,9 +55,11 @@ class SearchType extends StatelessWidget {
   }
 
   Widget _typeItem(
-      BuildContext context, IconData icon, String text, int selection) {
+      BuildContext context, IconData icon, String text, int selection,
+      {bool flip = false}) {
     return ListTile(
-      leading: Icon(icon, color: getColor(selection)),
+      leading: Transform.scale(
+          scaleX: flip ? -1 : 1, child: Icon(icon, color: getColor(selection))),
       title: Text(Translations.of(context).trans(text),
           softWrap: false, style: TextStyle(color: getColor(selection))),
       onTap: () async {
