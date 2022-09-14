@@ -196,6 +196,7 @@ flutter:
     - assets/locale/zh_Hans.json
     - assets/locale/it.json
     - assets/locale/eo.json
+    - assets/locale/pt.json
     - assets/locale/tag/korean.json
     - assets/locale/tag/related-tag-korean.json
 
