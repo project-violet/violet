@@ -7,6 +7,7 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:violet/log/log.dart';
 import 'package:violet/script/script_manager.dart';
 
 class ScriptWebView extends StatefulWidget {
@@ -63,8 +64,12 @@ class _ScriptWebViewState extends State<ScriptWebView>
           ''');
 
         if (gg_m == null || !(gg_m!.startsWith('0') || gg_m!.startsWith('1'))) {
+          Logger.error(
+              '[Script Webview] Update Fail!\ngg_m: $gg_m\ngg_b: $gg_b');
           return;
         }
+
+        Logger.info('[Script Webview] Update Sync!');
 
         await ScriptManager.setV4(gg_m!, gg_b!);
       },
