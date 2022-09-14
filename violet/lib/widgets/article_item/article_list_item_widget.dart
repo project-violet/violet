@@ -133,7 +133,10 @@ class _ArticleListItemVerySimpleWidgetState
       } else {
         Future.delayed(const Duration(milliseconds: 500)).then((value) {
           if (bodyKey.currentContext != null) {
-            thisHeight = bodyKey.currentContext!.size!.height;
+            _shouldReload = true;
+            setState(() {
+              thisHeight = bodyKey.currentContext!.size!.height;
+            });
           }
         });
       }
