@@ -739,7 +739,7 @@ class TagChip extends StatelessWidget {
     }
 
     if (group == 'female') {
-      color = Colors.pink.shade300;
+      color = Colors.pink.shade400;
     } else if (group == 'male') {
       color = Colors.blue;
     }
