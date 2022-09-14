@@ -171,15 +171,30 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
     return Stack(
       children: [
         if (widget.showUltra)
-          ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: CachedNetworkImage(
-              imageUrl: widget.thumbnail,
-              httpHeaders: widget.headers,
-              height: double.infinity,
-              fit: BoxFit.cover,
-              memCacheWidth: Settings.useLowPerf ? 300 : null,
-            ),
+          FutureBuilder(
+            future: Future.delayed(const Duration(milliseconds: 100))
+                .then((value) => null),
+            builder: (context, snapshot) => snapshot.hasData
+                ? Container()
+                : Stack(
+                    children: [
+                      CachedNetworkImage(
+                        imageUrl: widget.thumbnail,
+                        httpHeaders: widget.headers,
+                        height: double.infinity,
+                        fit: BoxFit.cover,
+                        memCacheWidth: Settings.useLowPerf ? 300 : null,
+                      ),
+                      ClipRRect(
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          child: Container(
+                            color: Colors.grey.withOpacity(0.1),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         Hero(
           tag: widget.thumbnailTag,
