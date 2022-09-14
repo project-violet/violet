@@ -13,6 +13,7 @@ class ArticleListItem {
 
   final bool addBottomPadding;
   final bool showDetail;
+  final bool showUltra;
   final QueryResult queryResult;
   final double width;
   final String thumbnailTag;
@@ -26,14 +27,13 @@ class ArticleListItem {
   final bool selectMode;
   final DoubleTapCallback? doubleTapCallback;
   final SelectCallback? selectCallback;
-  // final bool isCheckMode;
-  // bool isChecked;
 
   ArticleListItem({
     this.key,
     required this.queryResult,
     required this.addBottomPadding,
     required this.showDetail,
+    this.showUltra = false,
     required this.width,
     required this.thumbnailTag,
     required this.bookmarkMode,
@@ -46,8 +46,6 @@ class ArticleListItem {
     this.usableTabList,
     this.selectMode = false,
     this.selectCallback,
-    // @required this.isChecked,
-    // @required this.isCheckMode,
   });
 
   factory ArticleListItem.fromArticleListItem({
@@ -67,8 +65,6 @@ class ArticleListItem {
     bool selectMode = false,
     SelectCallback? selectCallback,
     DoubleTapCallback? doubleTapCallback,
-    // bool isCheckMode = false,
-    // bool isChecked = false,
   }) {
     return ArticleListItem(
       key: key,
@@ -87,8 +83,6 @@ class ArticleListItem {
       selectMode: selectMode,
       selectCallback: selectCallback,
       doubleTapCallback: doubleTapCallback,
-      // isCheckMode: isCheckMode,
-      // isChecked: isChecked,
     );
   }
 }
