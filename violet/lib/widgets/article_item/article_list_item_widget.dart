@@ -54,14 +54,11 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
 }
 
 class _ArticleListItemVerySimpleWidgetState
-    extends ThemeSwitchableState<ArticleListItemVerySimpleWidget>
+    extends State<ArticleListItemVerySimpleWidget>
     with
         TickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
   late ArticleListItem data;
-
-  @override
-  VoidCallback? get shouldReloadCallback => () => _shouldReload = true;
 
   @override
   bool get wantKeepAlive => true;
