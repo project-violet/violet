@@ -45,10 +45,10 @@ class _ScriptWebViewState extends State<ScriptWebView>
   Widget build(BuildContext context) {
     super.build(context);
     return Visibility(
-      visible: false,
+      visible: true,
       maintainState: true,
       child: SizedBox(
-        height: 1,
+        height: 300,
         child: InAppWebView(
           initialUrlRequest: URLRequest(
             url: Uri.parse('https://hitomi.la'),
