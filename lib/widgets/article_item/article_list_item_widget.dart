@@ -473,6 +473,7 @@ class _ArticleListItemVerySimpleWidgetState
           thumbnail: thumbnail!,
           headers: headers!,
           heroKey: data.thumbnailTag,
+          showUltra: data.showUltra,
         ),
       ));
     } else {
