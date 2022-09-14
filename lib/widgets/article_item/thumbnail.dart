@@ -60,7 +60,11 @@ class ThumbnailWidget extends StatelessWidget {
               backgroundBlendMode: BlendMode.saturation,
             )
           : null,
-      width: showDetail ? 100 - pad / 6 * 5 : null,
+      width: showDetail
+          ? showUltra
+              ? 120 - pad
+              : 100 - pad / 6 * 5
+          : null,
       child: thumbnail != null
           ? Stack(
               children: <Widget>[
