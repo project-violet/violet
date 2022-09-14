@@ -30,6 +30,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
+import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
 typedef BookmarkCallback = void Function(int article);
@@ -53,11 +54,14 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
 }
 
 class _ArticleListItemVerySimpleWidgetState
-    extends State<ArticleListItemVerySimpleWidget>
+    extends ThemeSwitchableState<ArticleListItemVerySimpleWidget>
     with
         TickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
   late ArticleListItem data;
+
+  @override
+  VoidCallback? get shouldReloadCallback => () => _shouldReload = true;
 
   @override
   bool get wantKeepAlive => true;
