@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
@@ -40,7 +41,14 @@ Future<void> main() async {
   await warmupFlare();
   await Wakelock.enable();
 
-  runApp(const MyApp());
+  runZonedGuarded<Future<void>>(() async {
+    runApp(const MyApp());
+  }, (exception, stack) async {
+    Logger.error('[fatal-error] E: $exception\n$stack');
+
+    await FirebaseCrashlytics.instance
+        .recordError(exception, stack, fatal: true);
+  });
 }
 
 const _filesToWarmup = [
