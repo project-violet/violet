@@ -122,7 +122,7 @@ class ThumbnailWidget extends StatelessWidget {
   }
 }
 
-class ThumbnailImageWidget extends StatefulWidget {
+class ThumbnailImageWidget extends StatelessWidget {
   final String thumbnailTag;
   final String thumbnail;
   final Map<String, String> headers;
@@ -139,36 +139,23 @@ class ThumbnailImageWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ThumbnailImageWidget> createState() => _ThumbnailImageWidgetState();
-}
-
-class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget> {
-  UniqueKey _thumbnailKey = UniqueKey();
-
-  @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: widget.thumbnailTag,
+      tag: thumbnailTag,
       child: CachedNetworkImage(
-        key: _thumbnailKey,
         memCacheWidth: Settings.useLowPerf ? 300 : null,
-        imageUrl: widget.thumbnail,
+        imageUrl: thumbnail,
         fit: BoxFit.cover,
-        httpHeaders: widget.headers,
+        httpHeaders: headers,
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(
             image: DecorationImage(
                 image: imageProvider,
-                fit: !widget.showUltra ? BoxFit.cover : BoxFit.contain),
+                fit: !showUltra ? BoxFit.cover : BoxFit.contain),
           ),
           child: Container(),
         ),
         errorWidget: (context, url, error) {
-          Future.delayed(const Duration(milliseconds: 300)).then((value) {
-            setState(() {
-              _thumbnailKey = UniqueKey();
-            });
-          });
           return Center(
             child: SizedBox(
               width: 30,
