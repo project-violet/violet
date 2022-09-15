@@ -142,33 +142,8 @@ class ThumbnailImageWidget extends StatefulWidget {
   State<ThumbnailImageWidget> createState() => _ThumbnailImageWidgetState();
 }
 
-class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late final Animation<double> _animation;
-
+class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget> {
   UniqueKey _thumbnailKey = UniqueKey();
-
-  @override
-  void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 500),
-      lowerBound: 0.0,
-      upperBound: 1.0,
-    );
-    _animation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -224,83 +199,6 @@ class _ThumbnailImageWidgetState extends State<ThumbnailImageWidget>
             );
           }
         },
-      ),
-
-      // child: ExtendedImage.network(
-      //   widget.thumbnail,
-      //   headers: widget.headers,
-      //   retries: 100,
-      //   timeRetry: const Duration(milliseconds: 1000),
-      //   fit: BoxFit.cover,
-      //   handleLoadingProgress: true,
-      //   loadStateChanged: _loadStateChanged,
-      //   cacheWidth: Settings.useLowPerf ? 300 : null,
-      // ),
-    );
-  }
-
-  Widget _loadStateChanged(ExtendedImageState state) {
-    if (state.extendedImageLoadState == LoadState.failed) {
-      Logger.error(
-          '[article_item-thumbnail] URL: ${widget.thumbnail}\nE: ${state.lastException}');
-      state.reLoadImage();
-    }
-
-    if (state.extendedImageLoadState == LoadState.loading) {
-      if (!Settings.simpleItemWidgetLoadingIcon) {
-        return const FlareActor(
-          'assets/flare/Loading2.flr',
-          alignment: Alignment.center,
-          fit: BoxFit.fitHeight,
-          animation: 'Alarm',
-        );
-      } else {
-        return Center(
-          child: SizedBox(
-            width: 30,
-            height: 30,
-            child: CircularProgressIndicator(
-              color: Settings.majorColor.withAlpha(150),
-            ),
-          ),
-        );
-      }
-    }
-
-    if (state.wasSynchronouslyLoaded) {
-      return Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: state.imageProvider, fit: BoxFit.cover),
-        ),
-        child: widget.isBlurred
-            ? BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                child: Container(
-                  decoration:
-                      BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                ),
-              )
-            : Container(),
-      );
-    }
-
-    _controller.forward();
-
-    return FadeTransition(
-      opacity: _animation,
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: state.imageProvider, fit: BoxFit.cover),
-        ),
-        child: widget.isBlurred
-            ? BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                child: Container(
-                  decoration:
-                      BoxDecoration(color: Colors.white.withOpacity(0.0)),
-                ),
-              )
-            : Container(),
       ),
     );
   }
