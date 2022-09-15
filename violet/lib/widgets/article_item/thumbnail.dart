@@ -9,6 +9,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:uuid/uuid.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -129,7 +130,10 @@ class ThumbnailImageWidget extends StatelessWidget {
   final bool isBlurred;
   final bool showUltra;
 
-  const ThumbnailImageWidget({
+  // https://github.com/Baseflow/flutter_cached_network_image/issues/468
+  final _rebuildValueNotifier = ValueNotifier('');
+
+  ThumbnailImageWidget({
     Key? key,
     required this.thumbnail,
     required this.thumbnailTag,
@@ -142,49 +146,57 @@ class ThumbnailImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Hero(
       tag: thumbnailTag,
-      child: CachedNetworkImage(
-        memCacheWidth: Settings.useLowPerf ? 300 : null,
-        imageUrl: thumbnail,
-        fit: BoxFit.cover,
-        httpHeaders: headers,
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-                image: imageProvider,
-                fit: !showUltra ? BoxFit.cover : BoxFit.contain),
-          ),
-          child: Container(),
-        ),
-        errorWidget: (context, url, error) {
-          return Center(
-            child: SizedBox(
-              width: 30,
-              height: 30,
-              child: CircularProgressIndicator(
-                color: Settings.majorColor.withAlpha(150),
+      child: ValueListenableBuilder<String>(
+        valueListenable: _rebuildValueNotifier,
+        builder: (context, value, child) {
+          return CachedNetworkImage(
+            key: value.isEmpty ? null : ValueKey(value),
+            memCacheWidth: Settings.useLowPerf ? 300 : null,
+            imageUrl: thumbnail,
+            fit: BoxFit.cover,
+            httpHeaders: headers,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: imageProvider,
+                    fit: !showUltra ? BoxFit.cover : BoxFit.contain),
               ),
+              child: Container(),
             ),
-          );
-        },
-        placeholder: (b, c) {
-          if (!Settings.simpleItemWidgetLoadingIcon) {
-            return const FlareActor(
-              'assets/flare/Loading2.flr',
-              alignment: Alignment.center,
-              fit: BoxFit.fitHeight,
-              animation: 'Alarm',
-            );
-          } else {
-            return Center(
-              child: SizedBox(
-                width: 30,
-                height: 30,
-                child: CircularProgressIndicator(
-                  color: Settings.majorColor.withAlpha(150),
+            errorWidget: (context, url, error) {
+              Future.delayed(const Duration(milliseconds: 300)).then(
+                  (value) => _rebuildValueNotifier.value = const Uuid().v1());
+              return Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(
+                    color: Settings.majorColor.withAlpha(150),
+                  ),
                 ),
-              ),
-            );
-          }
+              );
+            },
+            placeholder: (b, c) {
+              if (!Settings.simpleItemWidgetLoadingIcon) {
+                return const FlareActor(
+                  'assets/flare/Loading2.flr',
+                  alignment: Alignment.center,
+                  fit: BoxFit.fitHeight,
+                  animation: 'Alarm',
+                );
+              } else {
+                return Center(
+                  child: SizedBox(
+                    width: 30,
+                    height: 30,
+                    child: CircularProgressIndicator(
+                      color: Settings.majorColor.withAlpha(150),
+                    ),
+                  ),
+                );
+              }
+            },
+          );
         },
       ),
     );
