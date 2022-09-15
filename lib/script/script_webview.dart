@@ -45,14 +45,18 @@ class _ScriptWebViewState extends State<ScriptWebView>
   Widget build(BuildContext context) {
     super.build(context);
     return Visibility(
-      visible: true,
+      visible: false,
       maintainState: true,
       child: SizedBox(
-        height: 300,
+        height: 1,
         child: InAppWebView(
           initialUrlRequest: URLRequest(
             url: Uri.parse('https://hitomi.la'),
           ),
+          initialOptions: InAppWebViewGroupOptions(
+              crossPlatform: InAppWebViewOptions(
+                  userAgent:
+                      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36')),
           onWebViewCreated: (controller) {
             webViewController = controller;
 
@@ -65,20 +69,16 @@ class _ScriptWebViewState extends State<ScriptWebView>
                   return {};
                 });
           },
-          onLoadStart: (controller, url) async {
-            Future.delayed(const Duration(milliseconds: 300))
-                .then((value) => controller.stopLoading());
-          },
           onLoadStop: (controller, url) async {
             await controller.evaluateJavascript(source: '''
-          var r = "";
-          for (var i = 0; i < 4096; i++) {
-            r += gg.m(i).toString();
-            r += ",";
-          }
-          console.log(gg);
-          window.flutter_inappwebview.callHandler('gg', ...[r, gg.b]);
-          ''');
+              var r = "";
+              for (var i = 0; i < 4096; i++) {
+                r += gg.m(i).toString();
+                r += ",";
+              }
+              console.log(gg);
+              window.flutter_inappwebview.callHandler('gg', ...[r, gg.b]);
+              ''');
 
             if (gg_m == null ||
                 !(gg_m!.startsWith('0') || gg_m!.startsWith('1'))) {
