@@ -22,10 +22,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2022, 9, 0),
-    version: '1.26.5 Patch',
+    dateTime: DateTime(2022, 9, 15),
+    version: '1.27 Minor Update',
     contents: [
+      'fix built-in script reloader',
+      'rollback article item thumbnail implementation',
+      'add dynamic lazy loading feature to viewer',
+      'add brazilian portuguese language',
       'add search with page count (ex: page>4, page>100 page<200, page>=20, page=40)',
+      'add ultra detail view',
+      'add support ios file app',
     ],
   ),
   PatchModel(
@@ -348,7 +354,7 @@ final patches = [
   ),
   PatchModel(
     dateTime: DateTime(2021, 8, 11),
-    version: '1.13.2 Patch Update <== Latest',
+    version: '1.13.2 Patch Update',
     contents: [
       'fix hitomi routing error',
     ],
