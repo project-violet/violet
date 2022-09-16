@@ -572,6 +572,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
             imageCount: widget.item.filesWithoutThumbnail().length,
             latestReadPage: latestReadPage,
             isLastestRead: isLastestRead,
+            greyScale: false,
           ),
           PagesOverlayWidget(
             imageCount: widget.item.filesWithoutThumbnail().length,
