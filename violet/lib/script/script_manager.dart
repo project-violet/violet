@@ -61,6 +61,8 @@ class ScriptManager {
       _latestUpdate = DateTime.now();
       _initRuntime();
       ProviderManager.checkMustRefresh();
+
+      Logger.info('[Script Manager] Update Sync!');
     }
   }
 

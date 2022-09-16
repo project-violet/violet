@@ -87,8 +87,6 @@ class _ScriptWebViewState extends State<ScriptWebView>
               return;
             }
 
-            Logger.info('[Script Webview] Update Sync!');
-
             await ScriptManager.setV4(gg_m!, gg_b!);
           },
         ),
