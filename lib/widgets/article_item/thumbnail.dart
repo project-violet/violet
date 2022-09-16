@@ -49,18 +49,12 @@ class ThumbnailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final result = Container(
-      foregroundDecoration: isLastestRead &&
-              imageCount - latestReadPage <= 2 &&
-              !disableFiltering &&
-              Settings.showArticleProgress
-          ? BoxDecoration(
-              color: Settings.themeWhat
-                  ? Colors.grey.shade800
-                  : Colors.grey.shade300,
-              backgroundBlendMode: BlendMode.saturation,
-            )
-          : null,
+    final greyScale = isLastestRead &&
+        imageCount - latestReadPage <= 2 &&
+        !disableFiltering &&
+        Settings.showArticleProgress;
+
+    final result = SizedBox(
       width: showDetail
           ? showUltra
               ? 120 - pad
@@ -75,15 +69,18 @@ class ThumbnailWidget extends StatelessWidget {
                   thumbnailTag: thumbnailTag,
                   isBlurred: isBlurred,
                   showUltra: showUltra,
+                  greyScale: greyScale,
                 ),
                 BookmarkIndicatorWidget(
                   flareController: flareController,
                   isBookmarked: isBookmarked,
+                  greyScale: greyScale,
                 ),
                 ReadProgressOverlayWidget(
                   imageCount: imageCount,
                   latestReadPage: latestReadPage,
                   isLastestRead: isLastestRead,
+                  greyScale: greyScale,
                 ),
                 PagesOverlayWidget(
                   imageCount: imageCount,
@@ -129,6 +126,7 @@ class ThumbnailImageWidget extends StatelessWidget {
   final Map<String, String> headers;
   final bool isBlurred;
   final bool showUltra;
+  final bool greyScale;
 
   // https://github.com/Baseflow/flutter_cached_network_image/issues/468
   final _rebuildValueNotifier = ValueNotifier('');
@@ -140,6 +138,7 @@ class ThumbnailImageWidget extends StatelessWidget {
     required this.headers,
     required this.isBlurred,
     required this.showUltra,
+    required this.greyScale,
   }) : super(key: key);
 
   @override
@@ -158,8 +157,17 @@ class ThumbnailImageWidget extends StatelessWidget {
             imageBuilder: (context, imageProvider) => Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: imageProvider,
-                    fit: !showUltra ? BoxFit.cover : BoxFit.contain),
+                  image: imageProvider,
+                  fit: !showUltra ? BoxFit.cover : BoxFit.contain,
+                  colorFilter: greyScale
+                      ? ColorFilter.mode(
+                          Settings.themeWhat
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade300,
+                          BlendMode.saturation,
+                        )
+                      : null,
+                ),
               ),
               child: Container(),
             ),
@@ -206,11 +214,13 @@ class ThumbnailImageWidget extends StatelessWidget {
 class BookmarkIndicatorWidget extends StatelessWidget {
   final ValueNotifier<bool> isBookmarked;
   final FlareControls? flareController;
+  final bool greyScale;
 
   const BookmarkIndicatorWidget({
     Key? key,
     required this.isBookmarked,
     required this.flareController,
+    required this.greyScale,
   }) : super(key: key);
 
   @override
@@ -234,7 +244,13 @@ class BookmarkIndicatorWidget extends StatelessWidget {
               } else {
                 return Icon(
                   value ? MdiIcons.heart : MdiIcons.heartOutline,
-                  color: value ? const Color(0xFFE2264D) : null,
+                  color: value
+                      ? !greyScale
+                          ? const Color(0xFFE2264D)
+                          : Settings.themeWhat
+                              ? const Color(0xFF626262)
+                              : const Color(0xFF636363)
+                      : null,
                 );
               }
             },
@@ -249,12 +265,14 @@ class ReadProgressOverlayWidget extends StatelessWidget {
   final bool isLastestRead;
   final int latestReadPage;
   final int imageCount;
+  final bool greyScale;
 
   const ReadProgressOverlayWidget({
     Key? key,
     required this.isLastestRead,
     required this.latestReadPage,
     required this.imageCount,
+    required this.greyScale,
   }) : super(key: key);
 
   @override
@@ -272,11 +290,14 @@ class ReadProgressOverlayWidget extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 child: LinearProgressIndicator(
-                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      !greyScale ? Colors.red : const Color(0xFF777777)),
                   value: isLastestRead && imageCount - latestReadPage <= 2
                       ? 1.0
                       : latestReadPage / imageCount,
-                  backgroundColor: Colors.grey.withAlpha(100),
+                  backgroundColor: !greyScale
+                      ? Colors.grey.withAlpha(100)
+                      : const Color(0xFF777777),
                 ),
               ),
             ),
