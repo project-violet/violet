@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/message_search.dart';
+import 'package:violet/context/viewer_context.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
@@ -152,7 +153,6 @@ class _ViewerPageState extends State<ViewerPage> {
         _inactivateSeconds +=
             DateTime.now().difference(_inactivateTime).inSeconds;
         await ScriptManager.refresh();
-        c.refreshImgUrlWhenRequired();
       },
     );
 
@@ -175,6 +175,7 @@ class _ViewerPageState extends State<ViewerPage> {
     PaintingBinding.instance.imageCache.clear();
     PaintingBinding.instance.imageCache.clearLiveImages();
     WidgetsBinding.instance.removeObserver(_lifecycleEventHandler);
+    ViewerContext.pop();
     Get.delete<ViewerController>(tag: getxId);
   }
 
@@ -215,6 +216,7 @@ class _ViewerPageState extends State<ViewerPage> {
       ),
       tag: getxId,
     );
+    ViewerContext.push(c);
 
     if (Platform.isAndroid) _setupVolume();
   }

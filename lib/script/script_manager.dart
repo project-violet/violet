@@ -5,8 +5,10 @@ import 'dart:convert';
 
 import 'package:flutter_js/flutter_js.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/context/viewer_context.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
+import 'package:violet/script/script_webview.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {
@@ -28,7 +30,12 @@ class ScriptManager {
   }
 
   static Future<bool> refresh() async {
-    if (enableV4) return false;
+    if (enableV4) {
+      if (ScriptWebViewProxy.reload != null) {
+        ScriptWebViewProxy.reload!();
+      }
+      return false;
+    }
 
     if (DateTime.now().difference(_latestUpdate).inMinutes < 5) {
       return false;
@@ -61,6 +68,7 @@ class ScriptManager {
       _latestUpdate = DateTime.now();
       _initRuntime();
       ProviderManager.checkMustRefresh();
+      ViewerContext.signal((c) => c.refreshImgUrlWhenRequired());
 
       Logger.info('[Script Manager] Update Sync!');
     }
