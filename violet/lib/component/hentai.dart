@@ -161,7 +161,8 @@ class HentaiManager {
             return Tuple2<List<QueryResult>, int>(
                 result, result.length >= 25 ? offset + 25 : -1);
           case 'ExHentai':
-            var result = await searchEHentai(what, offset.toString(), true);
+            var result =
+                await searchEHentai(what, (offset ~/ 25).toString(), true);
             return Tuple2<List<QueryResult>, int>(
                 result, result.length >= 25 ? offset + 25 : -1);
           case 'Hitomi':
