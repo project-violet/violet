@@ -3,12 +3,14 @@
 
 import 'dart:async';
 
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/script/script_manager.dart';
+
+class ScriptWebViewProxy {
+  static VoidCallback? reload;
+}
 
 class ScriptWebView extends StatefulWidget {
   const ScriptWebView({Key? key}) : super(key: key);
@@ -35,6 +37,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
     super.initState();
 
     timer = Timer.periodic(const Duration(minutes: 1), timerCallback);
+
+    ScriptWebViewProxy.reload = () => webViewController?.reload();
   }
 
   Future<void> timerCallback(timer) async {
