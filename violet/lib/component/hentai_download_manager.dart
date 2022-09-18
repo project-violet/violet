@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:path/path.dart' as path;
 import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hentai.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/settings/settings.dart';
 
 class HentaiDonwloadManager {
@@ -58,6 +59,11 @@ class HentaiDonwloadManager {
 
     var target = query[0];
 
+    return await createTaskFromQueryResult(target, gdp);
+  }
+
+  Future<List<DownloadTask>?> createTaskFromQueryResult(
+      QueryResult target, GeneralDownloadProgress gdp) async {
     gdp.simpleInfoCallback('[${target.id()}] ${target.title()}');
 
     var provider = await HentaiManager.getImageProvider(target);

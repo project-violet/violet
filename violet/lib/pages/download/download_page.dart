@@ -41,6 +41,7 @@ typedef StringCallback = Future Function(String);
 class DownloadPageManager {
   static bool downloadPageLoaded = false;
   static StreamController<String>? taskController;
+  static StreamController<QueryResult>? taskFromQueryResultController;
 }
 
 // This page must remain alive until the app is closed.
@@ -80,11 +81,17 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     DownloadPageManager.taskController!.stream.listen((event) {
       appendTask(event);
     });
+    DownloadPageManager.taskFromQueryResultController =
+        StreamController<QueryResult>();
+    DownloadPageManager.taskFromQueryResultController!.stream.listen((event) {
+      appendTaskFromQueryResult(event);
+    });
   }
 
   @override
   void dispose() {
     DownloadPageManager.taskController!.close();
+    DownloadPageManager.taskFromQueryResultController!.close();
     super.dispose();
   }
 
@@ -894,6 +901,17 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     items.add(item);
     itemsMap[item.id()] = item;
     await _appendQueryResults(url);
+    _applyFilter();
+  }
+
+  Future<void> appendTaskFromQueryResult(QueryResult qr) async {
+    final item =
+        await (await Download.getInstance()).createNew(qr.id().toString());
+    item.download = true;
+    item.queryResult = qr;
+    items.add(item);
+    itemsMap[item.id()] = item;
+    queryResults[qr.id()] = qr;
     _applyFilter();
   }
 

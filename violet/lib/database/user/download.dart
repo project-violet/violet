@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:synchronized/synchronized.dart';
+import 'package:violet/database/query.dart';
 import 'package:violet/database/user/user.dart';
 import 'package:violet/log/log.dart';
 
@@ -37,6 +38,8 @@ class DownloadItemModel {
   String? errorMsg() => result['ErrorMsg'];
   String? thumbnail() => result['Thumbnail']; // file path
   String? thumbnailHeader() => result['ThumbnailHeader'];
+
+  QueryResult? queryResult;
 
   bool download = false;
 
