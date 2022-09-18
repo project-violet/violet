@@ -55,21 +55,31 @@ class DownloadRoutine {
   Future<void> createTasks(
       {required DoubleIntCallback progressCallback}) async {
     try {
-      tasks = await HentaiDonwloadManager.instance().createTask(
-        item.url(),
-        GeneralDownloadProgress(
-          simpleInfoCallback: (info) async {
-            result['Info'] = info;
-            setStateCallback.call();
-          },
-          thumbnailCallback: (url, header) async {
-            result['Thumbnail'] = url;
-            result['ThumbnailHeader'] = header;
-            thumbnailCallback.call();
-          },
-          progressCallback: progressCallback,
-        ),
+      final generalDownloadProgress = GeneralDownloadProgress(
+        simpleInfoCallback: (info) async {
+          result['Info'] = info;
+          setStateCallback.call();
+        },
+        thumbnailCallback: (url, header) async {
+          result['Thumbnail'] = url;
+          result['ThumbnailHeader'] = header;
+          thumbnailCallback.call();
+        },
+        progressCallback: progressCallback,
       );
+
+      if (item.queryResult != null) {
+        tasks =
+            await HentaiDonwloadManager.instance().createTaskFromQueryResult(
+          item.queryResult!,
+          generalDownloadProgress,
+        );
+      } else {
+        tasks = await HentaiDonwloadManager.instance().createTask(
+          item.url(),
+          generalDownloadProgress,
+        );
+      }
     } catch (e) {
       _setState(7);
       return;

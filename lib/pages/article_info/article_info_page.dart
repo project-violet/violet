@@ -288,7 +288,7 @@ class ArticleInfoPage extends StatelessWidget {
 
     await ScriptManager.refresh();
 
-    DownloadPageManager.taskController!.add(data.queryResult.id().toString());
+    DownloadPageManager.taskFromQueryResultController!.add(data.queryResult);
     Navigator.pop(context);
   }
 
