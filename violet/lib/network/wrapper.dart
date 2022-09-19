@@ -131,7 +131,9 @@ Future<http.Response> get(String url,
     if (res.statusCode != 200) {
       Logger.warning('[Http Response] CODE: ${res.statusCode}, GET: $url');
     }
-    if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200) {
+    if (!HttpWrapper.cacheResponse.containsKey(url) &&
+        res.statusCode == 200 &&
+        res.body.trim().isNotEmpty) {
       HttpWrapper.cacheResponse[url] = res;
     }
     return res;
