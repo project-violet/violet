@@ -118,6 +118,7 @@ class _ProviderImageState extends State<ProviderImage> {
             imageInfo != null) &&
         !_loaded) {
       _loaded = true;
+      c.isImageLoaded[widget.index] = true;
       return widget.imageWidgetBuilder(
         context,
         state.completedWidget,
