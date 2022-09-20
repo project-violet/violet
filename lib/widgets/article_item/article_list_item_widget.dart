@@ -26,6 +26,10 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/viewer/viewer_page.dart';
+import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/script/script_manager.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
@@ -325,7 +329,7 @@ class _ArticleListItemVerySimpleWidgetState
     _animateScale(0.95);
   }
 
-  _onTapUp(detail) {
+  _onTapUp(detail) async {
     if (data.selectMode) {
       data.selectCallback!();
       return;
@@ -344,6 +348,14 @@ class _ArticleListItemVerySimpleWidgetState
 
     _animateScale(1.0);
 
+    if (!Settings.lightMode) {
+      _showArticleInfo();
+    } else {
+      _viewArticle();
+    }
+  }
+
+  _showArticleInfo() {
     final height = MediaQuery.of(context).size.height;
 
     // https://github.com/flutter/flutter/issues/67219
@@ -377,6 +389,50 @@ class _ArticleListItemVerySimpleWidgetState
         );
       },
     );
+  }
+
+  _viewArticle() async {
+    if (Settings.useVioletServer) {
+      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+        await VioletServer.view(data.queryResult.id());
+      });
+    }
+    await (await User.getInstance()).insertUserLog(data.queryResult.id(), 0);
+
+    await ScriptManager.refresh();
+
+    if (!ProviderManager.isExists(data.queryResult.id())) {
+      return;
+    }
+
+    var prov = await ProviderManager.get(data.queryResult.id());
+
+    await prov.init();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) {
+          return Provider<ViewerPageProvider>.value(
+            value: ViewerPageProvider(
+              // useWeb: true,
+              uris: List<String>.filled(prov.length(), ''),
+              useProvider: true,
+              provider: prov,
+              headers: headers,
+              id: data.queryResult.id(),
+              title: data.queryResult.title(),
+              usableTabList: data.usableTabList,
+            ),
+            child: const ViewerPage(),
+          );
+        },
+      ),
+    ).then((value) async {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
+    });
   }
 
   Future<void> _onLongPress(controller) async {
@@ -456,6 +512,14 @@ class _ArticleListItemVerySimpleWidgetState
   }
 
   Future<void> _onDoubleTap() async {
+    if (!Settings.lightMode) {
+      _showThumbnailView();
+    } else {
+      _showArticleInfo();
+    }
+  }
+
+  _showThumbnailView() async {
     onScaling = false;
 
     if (data.doubleTapCallback == null) {

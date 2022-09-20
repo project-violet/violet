@@ -37,6 +37,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/bookmark_version_select.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
@@ -469,10 +470,6 @@ class _SettingsPageState extends State<SettingsPage>
         ),
         _buildDivider(),
         InkWell(
-          customBorder: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(8.0),
-                  bottomRight: Radius.circular(8.0))),
           child: ListTile(
             leading: Icon(MdiIcons.cellphoneText, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('userdrawer')),
@@ -496,6 +493,46 @@ class _SettingsPageState extends State<SettingsPage>
           ),
           onTap: () async {
             await Settings.setUseDrawer(!Settings.useDrawer);
+            setState(() {
+              _shouldReload = true;
+            });
+
+            final afterLoadingPageState =
+                context.findAncestorStateOfType<AfterLoadingPageState>();
+            afterLoadingPageState!.setState(() {
+              _shouldReload = true;
+            });
+          },
+        ),
+        _buildDivider(),
+        InkWell(
+          customBorder: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(8.0),
+                  bottomRight: Radius.circular(8.0))),
+          child: ListTile(
+            leading: Icon(MdiIcons.feather, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('lightmode')),
+            trailing: Switch(
+              value: Settings.lightMode,
+              onChanged: (newValue) async {
+                await Settings.setLightMode(newValue);
+                setState(() {
+                  _shouldReload = true;
+                });
+
+                final afterLoadingPageState =
+                    context.findAncestorStateOfType<AfterLoadingPageState>();
+                afterLoadingPageState!.setState(() {
+                  _shouldReload = true;
+                });
+              },
+              activeTrackColor: Settings.majorColor,
+              activeColor: Settings.majorAccentColor,
+            ),
+          ),
+          onTap: () async {
+            await Settings.setLightMode(!Settings.lightMode);
             setState(() {
               _shouldReload = true;
             });
@@ -818,6 +855,15 @@ class _SettingsPageState extends State<SettingsPage>
                   return const VersionViewPage();
                 },
               );
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading: Icon(MdiIcons.fileSign, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('patchnote')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              PlatformNavigator.navigateSlide(context, const PatchNotePage());
             },
           ),
           _buildDivider(),

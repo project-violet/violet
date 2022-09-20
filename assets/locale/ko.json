@@ -280,9 +280,9 @@
   "registerfinbeforeuseapplock": "잠금 설정 전 PIN을 등록해주세요!",
   "showpagenumberindicator": "뷰어 하단에 페이지 번호 표시하기",
   "blackmode": "블랙 모드",
-  "useflattheme": "Flat 테마 사용",
-  "usetabletmode": "Tablet 모드 사용",
-  "userdrawer": "Drawer 사용",
+  "useflattheme": "플랫 테마 사용",
+  "usetabletmode": "테블릿 모드 사용",
+  "userdrawer": "드로어 사용",
   "translatetagtokorean": "태그 번역",
   "lowresmode": "저사양 모드",
   "messagesearchapi": "대사 검색기 API",
@@ -296,5 +296,7 @@
   "alignartist": "작가순으로 정렬",
   "aligngroup": "그룹순으로 정렬",
   "alignpage": "페이지수순으로 정렬",
-  "alignrecentread": "최근 읽은 순으로 정렬"
+  "alignrecentread": "최근 읽은 순으로 정렬",
+  "lightmode": "라이트 모드",
+  "hot": "인기"
 }
