@@ -213,7 +213,7 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                               children: [
                                 _appBarBookmark(),
                                 _appBarInfo(),
-                                _appBarSearch(),
+                                if (!Settings.lightMode) _appBarSearch(),
                               ],
                             ),
                           ),

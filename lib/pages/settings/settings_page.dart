@@ -1615,138 +1615,140 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
           ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(
-              MdiIcons.bookArrowDownOutline,
-              color: Settings.majorColor,
-            ),
-            title: Text(Translations.of(context).trans('restoringbookmark')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              await showOkDialog(
-                  context,
-                  Translations.of(context).trans('restorebookmarkmsg'),
-                  Translations.of(context).trans('warning'));
+          if (!Settings.lightMode) _buildDivider(),
+          if (!Settings.lightMode)
+            ListTile(
+              leading: Icon(
+                MdiIcons.bookArrowDownOutline,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('restoringbookmark')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () async {
+                await showOkDialog(
+                    context,
+                    Translations.of(context).trans('restorebookmarkmsg'),
+                    Translations.of(context).trans('warning'));
 
-              final prefs = await SharedPreferences.getInstance();
-              var myappid = prefs.getString('fa_userid');
+                final prefs = await SharedPreferences.getInstance();
+                var myappid = prefs.getString('fa_userid');
 
-              // 1. 북마크 유저 아이디 선택
-              TextEditingController text = TextEditingController(text: myappid);
-              Widget okButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
-                child: Text(Translations.of(context).trans('ok')),
-                onPressed: () {
-                  Navigator.pop(context, true);
-                },
-              );
-              Widget cancelButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
-                child: Text(Translations.of(context).trans('cancel')),
-                onPressed: () {
-                  Navigator.pop(context, false);
-                },
-              );
-              var dialog = await showDialog(
-                useRootNavigator: false,
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                  title: const Text('Enter User App Id'),
-                  content: TextField(
-                    controller: text,
-                    autofocus: true,
-                    maxLines: 3,
-                  ),
-                  actions: [okButton, cancelButton],
-                ),
-              );
-              if (dialog == null || dialog == false) {
-                // await Settings.setDownloadRule(text.text);
-                return;
-              }
-
-              try {
-                // 2. 유효한 유저 아이디 인지 확인(서버 요청 및 다운로드)
-                var result = await VioletServer.resotreBookmark(text.text);
-                if (result == null) {
-                  await showOkDialog(
-                      context,
-                      "Invalid User-App-Id! If you're still getting this error, contact the developer.",
-                      Translations.of(context).trans('restoringbookmark'));
-                  return;
-                }
-
-                // 3. 북마크 버전 가져오기
-                var versions = await VioletServer.versionsBookmark(text.text);
-                if (versions == null) {
-                  await showOkDialog(
-                      context,
-                      '북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.',
-                      Translations.of(context).trans('restoringbookmark'));
-                  return;
-                }
-
-                // 4. 버전 선택 및 북마크 확인 (이 북마크를 복원할까요?)
-                var version = await PlatformNavigator.navigateSlide(
-                  context,
-                  BookmarkVersionSelectPage(
-                    userAppId: text.text,
-                    versions: versions,
-                  ),
+                // 1. 북마크 유저 아이디 선택
+                TextEditingController text =
+                    TextEditingController(text: myappid);
+                Widget okButton = TextButton(
+                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  child: Text(Translations.of(context).trans('ok')),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
                 );
-
-                if (version == null) {
-                  return;
-                }
-
-                // 5. 열람기록도 같이 복원할까요?
-                var restoreWithRecord =
-                    await showYesNoDialog(context, '열람기록도 같이 복원할까요?');
-
-                // 6. 북마크 다운로드
-                var bookmark = await VioletServer.resotreBookmarkWithVersion(
-                    text.text, version);
-
-                // 7. 덮어쓰기 한다.
-                var rr = await showDialog(
+                Widget cancelButton = TextButton(
+                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  child: Text(Translations.of(context).trans('cancel')),
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                );
+                var dialog = await showDialog(
+                  useRootNavigator: false,
                   context: context,
-                  builder: (BuildContext context) => RestoreBookmarkPage(
-                    source: bookmark,
-                    restoreWithRecord: restoreWithRecord,
+                  builder: (BuildContext context) => AlertDialog(
+                    contentPadding: const EdgeInsets.fromLTRB(12, 0, 12, 0),
+                    title: const Text('Enter User App Id'),
+                    content: TextField(
+                      controller: text,
+                      autofocus: true,
+                      maxLines: 3,
+                    ),
+                    actions: [okButton, cancelButton],
                   ),
                 );
-
-                if (rr != null && rr == false) {
+                if (dialog == null || dialog == false) {
+                  // await Settings.setDownloadRule(text.text);
                   return;
                 }
-              } catch (e, st) {
-                Logger.error('[Restore Bookmark] $e\n'
-                    '$st');
+
+                try {
+                  // 2. 유효한 유저 아이디 인지 확인(서버 요청 및 다운로드)
+                  var result = await VioletServer.resotreBookmark(text.text);
+                  if (result == null) {
+                    await showOkDialog(
+                        context,
+                        "Invalid User-App-Id! If you're still getting this error, contact the developer.",
+                        Translations.of(context).trans('restoringbookmark'));
+                    return;
+                  }
+
+                  // 3. 북마크 버전 가져오기
+                  var versions = await VioletServer.versionsBookmark(text.text);
+                  if (versions == null) {
+                    await showOkDialog(
+                        context,
+                        '북마크 버전 정보를 가져오는데 오류가 발생했습니다. UserAppId와 함께 개발자에게 문의하시기 바랍니다.',
+                        Translations.of(context).trans('restoringbookmark'));
+                    return;
+                  }
+
+                  // 4. 버전 선택 및 북마크 확인 (이 북마크를 복원할까요?)
+                  var version = await PlatformNavigator.navigateSlide(
+                    context,
+                    BookmarkVersionSelectPage(
+                      userAppId: text.text,
+                      versions: versions,
+                    ),
+                  );
+
+                  if (version == null) {
+                    return;
+                  }
+
+                  // 5. 열람기록도 같이 복원할까요?
+                  var restoreWithRecord =
+                      await showYesNoDialog(context, '열람기록도 같이 복원할까요?');
+
+                  // 6. 북마크 다운로드
+                  var bookmark = await VioletServer.resotreBookmarkWithVersion(
+                      text.text, version);
+
+                  // 7. 덮어쓰기 한다.
+                  var rr = await showDialog(
+                    context: context,
+                    builder: (BuildContext context) => RestoreBookmarkPage(
+                      source: bookmark,
+                      restoreWithRecord: restoreWithRecord,
+                    ),
+                  );
+
+                  if (rr != null && rr == false) {
+                    return;
+                  }
+                } catch (e, st) {
+                  Logger.error('[Restore Bookmark] $e\n'
+                      '$st');
+                  flutterToast.showToast(
+                    child: const ToastWrapper(
+                      isCheck: false,
+                      msg: 'Bookmark Restoring Error!',
+                    ),
+                    gravity: ToastGravity.BOTTOM,
+                    toastDuration: const Duration(seconds: 4),
+                  );
+                  return;
+                }
+
+                await Bookmark.getInstance();
+
                 flutterToast.showToast(
-                  child: const ToastWrapper(
-                    isCheck: false,
-                    msg: 'Bookmark Restoring Error!',
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('importbookmark'),
                   ),
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
-                return;
-              }
-
-              await Bookmark.getInstance();
-
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  msg: Translations.of(context).trans('importbookmark'),
-                ),
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 4),
-              );
-            },
-          ),
+              },
+            ),
           _buildDivider(),
           ListTile(
             leading: Icon(MdiIcons.import, color: Settings.majorColor),
