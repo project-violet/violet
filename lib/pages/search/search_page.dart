@@ -32,6 +32,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/thread/semaphore.dart';
+import 'package:violet/update/update_manager.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
@@ -105,6 +106,11 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     (() async {
       await cachedActor(asset);
     })();
+
+    if (Settings.lightMode) {
+      Future.delayed(const Duration(milliseconds: 200))
+          .then((value) => UpdateManager.updateCheck(context));
+    }
 
     Future.delayed(const Duration(milliseconds: 500), () async {
       try {
