@@ -103,8 +103,9 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     fToast.init(context);
 
     if (ExtractorManager.instance.existsExtractor(widget.item.url())) {
-      var extractor = ExtractorManager.instance.getExtractor(widget.item.url());
-      if (extractor != null) fav = extractor.fav();
+      final extractor =
+          ExtractorManager.instance.getExtractor(widget.item.url());
+      fav = extractor.fav();
     }
 
     _styleCallback(widget.initialStyle);
@@ -115,7 +116,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
   _checkLastRead() {
     User.getInstance().then((value) => value.getUserLog().then((value) async {
-          var x = value.where((e) =>
+          final x = value.where((e) =>
               e.articleId() == widget.item.url() &&
               e.lastPage() != null &&
               e.lastPage()! > 1 &&
@@ -151,9 +152,8 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     Future.delayed(const Duration(milliseconds: 500)).then((value) async {
       if (once) return;
       once = true;
-      // var downloader = await BuiltinDownloader.getInstance();
 
-      var routine = DownloadRoutine(
+      final routine = DownloadRoutine(
           widget.item,
           () => setState(() {}),
           () => setState(() {
@@ -185,7 +185,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       await routine.extractFilePath();
 
-      var timer =
+      final timer =
           Timer.periodic(const Duration(milliseconds: 100), (Timer timer) {
         setState(() {
           if (downloadSec / 1024 < 500.0) {

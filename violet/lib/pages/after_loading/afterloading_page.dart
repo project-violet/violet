@@ -11,6 +11,7 @@ import 'package:violet/log/act_log.dart';
 import 'package:violet/other/named_color.dart';
 import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
+import 'package:violet/pages/hot/hot_page.dart';
 import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
@@ -124,8 +125,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           );
         },
         items: <BottomNavigationBarItem>[
-          buildItem(MdiIcons.home, 'main'),
+          if (!Settings.lightMode) buildItem(MdiIcons.home, 'main'),
           buildItem(Icons.search, 'search'),
+          if (Settings.lightMode) buildItem(MdiIcons.fire, 'hot'),
           buildItem(Icons.bookmark, 'bookmark'),
           buildItem(Icons.file_download, 'download'),
           buildItem(Icons.settings, 'settings'),
@@ -231,8 +233,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                 ],
               ),
             ),
-            buildButton(MdiIcons.home, 0, 'main'),
-            buildButton(Icons.search, 1, 'search'),
+            if (!Settings.lightMode) buildButton(MdiIcons.home, 0, 'main'),
+            buildButton(Icons.search, !Settings.lightMode ? 1 : 0, 'search'),
+            if (Settings.lightMode) buildButton(MdiIcons.fire, 1, 'hot'),
             buildButton(MdiIcons.bookmark, 2, 'bookmark'),
             buildButton(MdiIcons.download, 3, 'download'),
             buildButton(Icons.settings, 4, 'settings'),
@@ -295,12 +298,13 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           onPageChanged: (newPage) {
             setState(() {});
           },
-          children: const <Widget>[
-            MainPage(),
-            SearchPage(),
-            BookmarkPage(),
-            DownloadPage(),
-            SettingsPage(),
+          children: <Widget>[
+            if (!Settings.lightMode) const MainPage(),
+            const SearchPage(),
+            if (Settings.lightMode) HotPage(),
+            const BookmarkPage(),
+            const DownloadPage(),
+            const SettingsPage(),
           ],
         ),
       ),

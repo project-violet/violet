@@ -30,6 +30,7 @@ class Settings {
   static late bool themeFlat;
   static late bool themeBlack; // default false
   static late bool useTabletMode;
+  static late bool lightMode;
 
   // Tag Settings
   static late String includeTags;
@@ -106,8 +107,8 @@ class Settings {
   static Future<void> initFirst() async {
     final prefs = await SharedPreferences.getInstance();
 
-    var mc = await _getInt('majorColor', Colors.purple.value);
-    var mac = await _getInt('majorAccentColor', Colors.purpleAccent.value);
+    final mc = await _getInt('majorColor', Colors.purple.value);
+    final mac = await _getInt('majorAccentColor', Colors.purpleAccent.value);
 
     majorColor = Color(mc);
     majorAccentColor = Color(mac);
@@ -116,6 +117,8 @@ class Settings {
     themeColor = !themeWhat ? Colors.white : Colors.black;
     themeFlat = await _getBool('themeFlat');
     themeBlack = await _getBool('themeBlack');
+
+    lightMode = await _getBool('lightMode', true);
 
     language = prefs.getString('language');
 
@@ -139,7 +142,7 @@ class Settings {
   static Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
 
-    searchResultType = await _getInt('searchResultType');
+    searchResultType = await _getInt('searchResultType', 4);
     downloadResultType = await _getInt('downloadResultType', 3);
     downloadAlignType = await _getInt('downloadAlignType', 0);
 
@@ -808,5 +811,12 @@ class Settings {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('useSecureMode', nn);
+  }
+
+  static Future<void> setLightMode(bool nn) async {
+    lightMode = nn;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('lightMode', nn);
   }
 }
