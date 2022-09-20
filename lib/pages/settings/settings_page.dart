@@ -168,12 +168,12 @@ class _SettingsPageState extends State<SettingsPage>
     if (_cachedGroups == null || _shouldReload) {
       _shouldReload = false;
       _cachedGroups = _themeGroup()
-        ..add(const UserStatusCard())
+        ..addAll(!Settings.lightMode ? [const UserStatusCard()] : [])
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
         ..addAll(_securityGroup())
-        ..addAll(_databaseGroup())
-        ..addAll(_networkingGroup())
+        ..addAll(!Settings.lightMode ? _databaseGroup() : [])
+        ..addAll(!Settings.lightMode ? _networkingGroup() : [])
         ..addAll(_downloadGroup())
         ..addAll(_bookmarkGroup())
         ..addAll(_componetGroup())
@@ -420,30 +420,31 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ),
         ),
-        _buildDivider(),
-        InkWell(
-          child: ListTile(
-            leading: Icon(Mdi.buffer, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('useflattheme')),
-            trailing: Switch(
-              value: Settings.themeFlat,
-              onChanged: (newValue) async {
-                await Settings.setThemeFlat(newValue);
-                setState(() {
-                  _shouldReload = true;
-                });
-              },
-              activeTrackColor: Settings.majorColor,
-              activeColor: Settings.majorAccentColor,
+        if (!Settings.lightMode) _buildDivider(),
+        if (!Settings.lightMode)
+          InkWell(
+            child: ListTile(
+              leading: Icon(Mdi.buffer, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('useflattheme')),
+              trailing: Switch(
+                value: Settings.themeFlat,
+                onChanged: (newValue) async {
+                  await Settings.setThemeFlat(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
             ),
+            onTap: () async {
+              await Settings.setThemeFlat(!Settings.themeFlat);
+              setState(() {
+                _shouldReload = true;
+              });
+            },
           ),
-          onTap: () async {
-            await Settings.setThemeFlat(!Settings.themeFlat);
-            setState(() {
-              _shouldReload = true;
-            });
-          },
-        ),
         _buildDivider(),
         InkWell(
           child: ListTile(
@@ -468,42 +469,43 @@ class _SettingsPageState extends State<SettingsPage>
             });
           },
         ),
-        _buildDivider(),
-        InkWell(
-          child: ListTile(
-            leading: Icon(MdiIcons.cellphoneText, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('userdrawer')),
-            trailing: Switch(
-              value: Settings.useDrawer,
-              onChanged: (newValue) async {
-                await Settings.setUseDrawer(newValue);
-                setState(() {
-                  _shouldReload = true;
-                });
+        if (!Settings.lightMode) _buildDivider(),
+        if (!Settings.lightMode)
+          InkWell(
+            child: ListTile(
+              leading: Icon(MdiIcons.cellphoneText, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('userdrawer')),
+              trailing: Switch(
+                value: Settings.useDrawer,
+                onChanged: (newValue) async {
+                  await Settings.setUseDrawer(newValue);
+                  setState(() {
+                    _shouldReload = true;
+                  });
 
-                final afterLoadingPageState =
-                    context.findAncestorStateOfType<AfterLoadingPageState>();
-                afterLoadingPageState!.setState(() {
-                  _shouldReload = true;
-                });
-              },
-              activeTrackColor: Settings.majorColor,
-              activeColor: Settings.majorAccentColor,
+                  final afterLoadingPageState =
+                      context.findAncestorStateOfType<AfterLoadingPageState>();
+                  afterLoadingPageState!.setState(() {
+                    _shouldReload = true;
+                  });
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
             ),
-          ),
-          onTap: () async {
-            await Settings.setUseDrawer(!Settings.useDrawer);
-            setState(() {
-              _shouldReload = true;
-            });
+            onTap: () async {
+              await Settings.setUseDrawer(!Settings.useDrawer);
+              setState(() {
+                _shouldReload = true;
+              });
 
-            final afterLoadingPageState =
-                context.findAncestorStateOfType<AfterLoadingPageState>();
-            afterLoadingPageState!.setState(() {
-              _shouldReload = true;
-            });
-          },
-        ),
+              final afterLoadingPageState =
+                  context.findAncestorStateOfType<AfterLoadingPageState>();
+              afterLoadingPageState!.setState(() {
+                _shouldReload = true;
+              });
+            },
+          ),
         _buildDivider(),
         InkWell(
           customBorder: const RoundedRectangleBorder(
@@ -614,63 +616,65 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(
-              MdiIcons.tooltipEdit,
-              color: Settings.majorColor,
-            ),
-            title: Text(Translations.of(context).trans('tagrebuild')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              if (await showYesNoDialog(
-                  context,
-                  Translations.of(context).trans('tagrebuildmsg'),
-                  Translations.of(context).trans('tagrebuild'))) {
-                await showDialog(
-                  context: context,
-                  builder: (BuildContext context) => const TagRebuildPage(),
-                );
-
-                await HitomiIndexs.init();
-                HitomiManager.reloadIndex();
-
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: true,
-                    msg:
-                        '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
-                  ),
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
-                );
-              }
-            },
-          ),
-          _buildDivider(),
-          InkWell(
-            child: ListTile(
-              leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
-              title: const Text('Pure Search'),
-              trailing: Switch(
-                value: Settings.searchPure,
-                onChanged: (newValue) async {
-                  await Settings.setSearchPure(newValue);
-                  setState(() {
-                    _shouldReload = true;
-                  });
-                },
-                activeTrackColor: Settings.majorColor,
-                activeColor: Settings.majorAccentColor,
+          if (!Settings.lightMode) _buildDivider(),
+          if (!Settings.lightMode)
+            ListTile(
+              leading: Icon(
+                MdiIcons.tooltipEdit,
+                color: Settings.majorColor,
               ),
+              title: Text(Translations.of(context).trans('tagrebuild')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () async {
+                if (await showYesNoDialog(
+                    context,
+                    Translations.of(context).trans('tagrebuildmsg'),
+                    Translations.of(context).trans('tagrebuild'))) {
+                  await showDialog(
+                    context: context,
+                    builder: (BuildContext context) => const TagRebuildPage(),
+                  );
+
+                  await HitomiIndexs.init();
+                  HitomiManager.reloadIndex();
+
+                  flutterToast.showToast(
+                    child: ToastWrapper(
+                      isCheck: true,
+                      msg:
+                          '${Translations.of(context).trans('tagrebuild')} ${Translations.of(context).trans('complete')}',
+                    ),
+                    gravity: ToastGravity.BOTTOM,
+                    toastDuration: const Duration(seconds: 4),
+                  );
+                }
+              },
             ),
-            onTap: () async {
-              await Settings.setSearchPure(!Settings.searchPure);
-              setState(() {
-                _shouldReload = true;
-              });
-            },
-          ),
+          if (!Settings.lightMode) _buildDivider(),
+          if (!Settings.lightMode)
+            InkWell(
+              child: ListTile(
+                leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
+                title: const Text('Pure Search'),
+                trailing: Switch(
+                  value: Settings.searchPure,
+                  onChanged: (newValue) async {
+                    await Settings.setSearchPure(newValue);
+                    setState(() {
+                      _shouldReload = true;
+                    });
+                  },
+                  activeTrackColor: Settings.majorColor,
+                  activeColor: Settings.majorAccentColor,
+                ),
+              ),
+              onTap: () async {
+                await Settings.setSearchPure(!Settings.searchPure);
+                setState(() {
+                  _shouldReload = true;
+                });
+              },
+            ),
           _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
@@ -825,24 +829,25 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('exportlog')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              await Logger.exportLog();
+          if (!Settings.lightMode) _buildDivider(),
+          if (!Settings.lightMode)
+            ListTile(
+              leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('exportlog')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () async {
+                await Logger.exportLog();
 
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  msg: Translations.of(context).trans('complete'),
-                ),
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 4),
-              );
-            },
-          ),
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('complete'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
+              },
+            ),
           _buildDivider(),
           ListTile(
             leading: Icon(Icons.info_outline, color: Settings.majorColor),
