@@ -351,7 +351,7 @@ class _ArticleListItemVerySimpleWidgetState
     if (!Settings.lightMode) {
       _showArticleInfo();
     } else {
-      _viewArticle();
+      _showArticleInfo();
     }
   }
 
@@ -515,7 +515,7 @@ class _ArticleListItemVerySimpleWidgetState
     if (!Settings.lightMode) {
       _showThumbnailView();
     } else {
-      _showArticleInfo();
+      _showThumbnailView();
     }
   }
 
