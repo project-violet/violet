@@ -1,6 +1,6 @@
 # Violet Message Search Local
 
-![](capute.png)
+![](capture.png)
 
 ## How To Use?
 
