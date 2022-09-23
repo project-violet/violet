@@ -44,10 +44,9 @@ Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
     runApp(const MyApp());
   }, (exception, stack) async {
-    Logger.error('[fatal-error] E: $exception\n$stack');
+    Logger.error('[async-error] E: $exception\n$stack');
 
-    await FirebaseCrashlytics.instance
-        .recordError(exception, stack, fatal: true);
+    await FirebaseCrashlytics.instance.recordError(exception, stack);
   });
 }
 
