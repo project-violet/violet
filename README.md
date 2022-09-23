@@ -1,7 +1,6 @@
 # Violet Message Search Local
 
 ![image alt <](capute-eng.png)
-![image alt >](capture.png)
 
 ## How To Use?
 
