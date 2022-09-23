@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'package:async/async.dart';
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -29,43 +30,20 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
+  Future? future;
+
   int index = 0;
+  i2t() => ['daily', 'week', 'month', 'alltime'][index];
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    future ??= _request();
+
     final listView = FutureBuilder(
-      future:
-          VioletServer.top(0, 600, ['daily', 'week', 'month', 'alltime'][index])
-              .then((value) async {
-        if (value is int) return value;
-
-        if (value == null || value.length == 0) return 900;
-
-        var queryRaw =
-            '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
-        queryRaw += '(${value.map((e) => 'Id=${e.item1}').join(' OR ')})';
-        final query = await QueryManager.query(queryRaw);
-
-        if (query.results!.isEmpty) return 901;
-
-        final qr = <String, QueryResult>{};
-        query.results!.forEach((element) {
-          qr[element.id().toString()] = element;
-        });
-
-        final result = <Tuple2<QueryResult, int>>[];
-        value.forEach((element) {
-          if (qr[element.item1.toString()] == null) {
-            // TODO: Handle qurey not found
-            return;
-          }
-          result.add(Tuple2<QueryResult, int>(
-              qr[element.item1.toString()]!, element.item2));
-        });
-
-        return result;
-      }),
+      future: future,
       builder: (context, snapshot) {
         late Widget sliverList;
 
@@ -176,6 +154,40 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
     );
   }
 
+  _request() {
+    return _memoizer.runOnce(() async {
+      final value = await VioletServer.top(0, 600, i2t());
+
+      if (value is int) return value;
+
+      if (value == null || value.length == 0) return 900;
+
+      var queryRaw =
+          '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
+      queryRaw += '(${value.map((e) => 'Id=${e.item1}').join(' OR ')})';
+      final query = await QueryManager.query(queryRaw);
+
+      if (query.results!.isEmpty) return 901;
+
+      final qr = <String, QueryResult>{};
+      query.results!.forEach((element) {
+        qr[element.id().toString()] = element;
+      });
+
+      final result = <Tuple2<QueryResult, int>>[];
+      value.forEach((element) {
+        if (qr[element.item1.toString()] == null) {
+          // TODO: Handle qurey not found
+          return;
+        }
+        result.add(Tuple2<QueryResult, int>(
+            qr[element.item1.toString()]!, element.item2));
+      });
+
+      return result;
+    });
+  }
+
   Widget _filter() {
     return Align(
       alignment: Alignment.centerRight,
@@ -193,9 +205,9 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
           _buildPopupMenuItem('alltime', 3, MdiIcons.heart),
         ],
         onSelected: (index) {
-          setState(() {
-            this.index = index! as int;
-          });
+          this.index = index! as int;
+          future = _request();
+          setState(() {});
         },
       ),
     );
@@ -222,7 +234,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
     return Padding(
       padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(
-        '${Translations.instance!.trans('daily')} ${Translations.instance!.trans('hot')}',
+        '${Translations.instance!.trans(i2t())} ${Translations.instance!.trans('hot')}',
         style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
