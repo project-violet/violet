@@ -26,12 +26,14 @@ class HotPage extends StatefulWidget {
   State<HotPage> createState() => _HotPageState();
 }
 
+typedef RequestType = Tuple2<int, List<Tuple2<QueryResult, int>>?>;
+
 class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
-  final AsyncMemoizer _memoizer = AsyncMemoizer();
-  Future? future;
+  final AsyncMemoizer<RequestType> _memoizer = AsyncMemoizer();
+  Future<RequestType>? future;
 
   int index = 0;
   i2t() => ['daily', 'week', 'month', 'alltime'][index];
@@ -44,7 +46,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
 
     final listView = FutureBuilder(
       future: future,
-      builder: (context, snapshot) {
+      builder: (context, AsyncSnapshot<RequestType> snapshot) {
         late Widget sliverList;
 
         if (!snapshot.hasData) {
@@ -53,7 +55,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
               child: CircularProgressIndicator(),
             ),
           );
-        } else if (snapshot.data is int) {
+        } else if (snapshot.data!.item1 != 200) {
           final errmsg = {
             '400': 'Bad Request',
             '403': 'Forbidden',
@@ -91,7 +93,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                      'Error${errmsg[snapshot.data.toString()] != null ? ': ${errmsg[snapshot.data.toString()]!}' : ' Code: ${snapshot.data}'}')
+                      'Error${errmsg[snapshot.data!.item1] != null ? ': ${errmsg[snapshot.data!.item1]!}' : ' Code: ${snapshot.data!.item1}'}')
                 ],
               ),
             ),
@@ -99,7 +101,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
         } else {
           final windowWidth = MediaQuery.of(context).size.width;
 
-          final results = snapshot.data as List<Tuple2<QueryResult, int>>;
+          final results = snapshot.data!.item2!;
 
           sliverList = SliverList(
             delegate: SliverChildListDelegate(
@@ -154,20 +156,26 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  _request() {
+  Future<RequestType> _request() {
     return _memoizer.runOnce(() async {
       final value = await VioletServer.top(0, 600, i2t());
 
-      if (value is int) return value;
+      if (value is int) {
+        return RequestType(value, null);
+      }
 
-      if (value == null || value.length == 0) return 900;
+      if (value == null || value.length == 0) {
+        return const RequestType(900, null);
+      }
 
       var queryRaw =
           '${HitomiManager.translate2query('${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')} AND ';
       queryRaw += '(${value.map((e) => 'Id=${e.item1}').join(' OR ')})';
       final query = await QueryManager.query(queryRaw);
 
-      if (query.results!.isEmpty) return 901;
+      if (query.results!.isEmpty) {
+        return const Tuple2<int, List<Tuple2<QueryResult, int>>?>(901, null);
+      }
 
       final qr = <String, QueryResult>{};
       query.results!.forEach((element) {
@@ -184,7 +192,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
             qr[element.item1.toString()]!, element.item2));
       });
 
-      return result;
+      return RequestType(200, result);
     });
   }
 
