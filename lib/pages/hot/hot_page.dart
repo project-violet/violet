@@ -37,6 +37,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
 
   int index = 0;
   i2t() => ['daily', 'week', 'month', 'alltime'][index];
+  i2tr() => ['daily', 'weekly', 'monthly', 'alltime'][index];
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +243,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
     return Padding(
       padding: const EdgeInsets.only(top: 24, left: 12),
       child: Text(
-        '${Translations.instance!.trans(i2t())} ${Translations.instance!.trans('hot')}',
+        '${Translations.instance!.trans(i2tr())} ${Translations.instance!.trans('hot')}',
         style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
