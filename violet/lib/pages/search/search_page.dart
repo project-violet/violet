@@ -843,7 +843,8 @@ class ResultPanelWidget extends StatelessWidget {
                   child: Provider<ArticleListItem>.value(
                     value: ArticleListItem.fromArticleListItem(
                       addBottomPadding: true,
-                      showDetail: Settings.searchResultType == 3,
+                      showDetail: Settings.searchResultType >= 3,
+                      showUltra: Settings.searchResultType == 4,
                       queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag:
