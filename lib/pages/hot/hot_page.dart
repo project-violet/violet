@@ -32,7 +32,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
-  final AsyncMemoizer<RequestType> _memoizer = AsyncMemoizer();
+  AsyncMemoizer<RequestType>? _memoizer;
   Future<RequestType>? future;
 
   int index = 0;
@@ -157,8 +157,9 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
     );
   }
 
-  Future<RequestType> _request() {
-    return _memoizer.runOnce(() async {
+  Future<RequestType> _request([bool reload = false]) {
+    _memoizer = AsyncMemoizer();
+    return _memoizer!.runOnce(() async {
       final value = await VioletServer.top(0, 600, i2t());
 
       if (value is int) {
@@ -193,6 +194,8 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
             qr[element.item1.toString()]!, element.item2));
       });
 
+      if (reload) setState(() {});
+
       return RequestType(200, result);
     });
   }
@@ -215,8 +218,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
         ],
         onSelected: (index) {
           this.index = index! as int;
-          future = _request();
-          setState(() {});
+          future = _request(true);
         },
       ),
     );
