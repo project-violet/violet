@@ -14,8 +14,11 @@ This work takes about 3-6 months.
 
 ## Search Method
 
- - `/similar/(.*?)`: Search for quotes similar to the input sentence.
- - `/contains/(.*?)`]: Searches for quotes that contain the input word. Search results cannot be shorter than the search target quote.
+All methods are based on fuzzing searches. 
+Even if only a part of the input word or sentence is included, even if there is a typo in the input word, it produces an appropriate search result.
+
+ - `/similar/(.*?)`: Search for quotes similar to the input word or sentence.
+ - `/contains/(.*?)`: Searches for quotes that contain the input word or sentence. Search results cannot be shorter than the search target quote.
  - `/lcs/(.*?)`: Search for quotes using the longest common substring algorithm.
  - `/wcontains/(<article id>.*?)/(.*?)`: Contains operation for quotes included in a specific article.
 
