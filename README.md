@@ -12,6 +12,13 @@ If you would like to support your language, please contact me.
 
 This work takes about 3-6 months.
 
+## Search Method
+
+ - `/similar/(.*?)`: Search for quotes similar to the input sentence.
+ - `/contains/(.*?)`]: Searches for quotes that contain the input word. Search results cannot be shorter than the search target quote.
+ - `/lcs/(.*?)`: Search for quotes using the longest common substring algorithm.
+ - `/wcontains/(<article id>.*?)/(.*?)`: Contains operation for quotes included in a specific article.
+
 ## How to use it?
 
 ### 1. Collect Source Data
