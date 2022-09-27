@@ -133,7 +133,7 @@ class _ArticleListItemVerySimpleWidgetState
         thisHeight = 130.0;
       } else {
         Future.delayed(const Duration(milliseconds: 500)).then((value) {
-          if (bodyKey.currentContext != null) {
+          if (bodyKey.currentContext != null && !disposed) {
             _shouldReload = true;
             setState(() {
               thisHeight = bodyKey.currentContext!.size!.height;
