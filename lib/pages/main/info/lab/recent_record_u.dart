@@ -151,7 +151,7 @@ class _LabRecentRecordsUState extends State<LabRecentRecordsU> {
                       doubleTapCallback: () => _doubleTapCallback(
                           xrecords[xrecords.length - index - 1].item3),
                     ),
-                    child: const ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemWidget(),
                   ),
                 );
               },

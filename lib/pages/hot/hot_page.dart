@@ -121,7 +121,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
                       viewed: x.item2,
                       usableTabList: results.map((e) => e.item1).toList(),
                     ),
-                    child: const ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemWidget(),
                   ),
                 );
               }).toList(),

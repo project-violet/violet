@@ -251,7 +251,7 @@ class __TabState extends State<_Tab> with AutomaticKeepAliveClientMixin {
                   // isCheckMode: checkMode,
                   // isChecked: checked.contains(x.id()),
                 ),
-                child: const ArticleListItemVerySimpleWidget(),
+                child: const ArticleListItemWidget(),
               ),
             );
           }).toList(),

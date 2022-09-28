@@ -143,7 +143,7 @@ class _LabTopRecentState extends State<LabTopRecent> {
                       thumbnailTag: const Uuid().v4(),
                       viewed: records[index].item2,
                     ),
-                    child: const ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemWidget(),
                   ),
                 );
               },

@@ -339,7 +339,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                     disableFilter: true,
                     usableTabList: qq,
                   ),
-                  child: const ArticleListItemVerySimpleWidget(),
+                  child: const ArticleListItemWidget(),
                 ),
               )
             : Container());

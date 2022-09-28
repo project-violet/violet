@@ -209,7 +209,7 @@ class ArtistListPage extends StatelessWidget {
                 disableFilter: true,
                 usableTabList: queryResults,
               ),
-              child: const ArticleListItemVerySimpleWidget(),
+              child: const ArticleListItemWidget(),
             );
           },
         ),

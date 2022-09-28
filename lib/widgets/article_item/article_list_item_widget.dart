@@ -37,15 +37,12 @@ import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
-typedef BookmarkCallback = void Function(int article);
-typedef BookmarkCheckCallback = void Function(int article, bool check);
-
-class ArticleListItemVerySimpleWidget extends StatefulWidget {
+class ArticleListItemWidget extends StatefulWidget {
   final bool isChecked;
   final bool isCheckMode;
   final ArticleListItem? articleListItem;
 
-  const ArticleListItemVerySimpleWidget({
+  const ArticleListItemWidget({
     Key? key,
     this.isChecked = false,
     this.isCheckMode = false,
@@ -53,15 +50,13 @@ class ArticleListItemVerySimpleWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ArticleListItemVerySimpleWidget> createState() =>
-      _ArticleListItemVerySimpleWidgetState();
+  State<ArticleListItemWidget> createState() => _ArticleListItemWidgetState();
 }
 
-class _ArticleListItemVerySimpleWidgetState
-    extends State<ArticleListItemVerySimpleWidget>
+class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     with
         TickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<ArticleListItemVerySimpleWidget> {
+        AutomaticKeepAliveClientMixin<ArticleListItemWidget> {
   late ArticleListItem data;
 
   @override

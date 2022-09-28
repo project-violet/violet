@@ -548,7 +548,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                           // isCheckMode: checkMode,
                           // isChecked: checked.contains(e.id()),
                         ),
-                        child: ArticleListItemVerySimpleWidget(
+                        child: ArticleListItemWidget(
                           isCheckMode: checkMode,
                           isChecked: checked.contains(e.id()),
                         ),
@@ -589,7 +589,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     // isCheckMode: checkMode,
                     // isChecked: checked.contains(x.id()),
                   ),
-                  child: ArticleListItemVerySimpleWidget(
+                  child: ArticleListItemWidget(
                     isCheckMode: checkMode,
                     isChecked: checked.contains(x.id()),
                   ),
