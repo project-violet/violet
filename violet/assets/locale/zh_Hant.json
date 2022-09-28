@@ -298,5 +298,8 @@
   "alignpage": "Sort by Page Count",
   "alignrecentread": "Sort by Recent Read",
   "lightmode": "Light Mode",
-  "hot": "Hot"
+  "hot": "Hot",
+  "faq": "Frequently Asked Questions",
+  "usermanual": "User Manual",
+  "lab": "Laboratory"
 }

@@ -37,6 +37,10 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/main/faq/faq_page.dart';
+import 'package:violet/pages/main/info/lab/global_comments.dart';
+import 'package:violet/pages/main/info/lab_page.dart';
+import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/bookmark_version_select.dart';
@@ -169,6 +173,7 @@ class _SettingsPageState extends State<SettingsPage>
       _shouldReload = false;
       _cachedGroups = _themeGroup()
         ..addAll(!Settings.lightMode ? [const UserStatusCard()] : [])
+        ..addAll(!Settings.lightMode ? [] : _communityGroup())
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
         ..addAll(_securityGroup())
@@ -550,6 +555,98 @@ class _SettingsPageState extends State<SettingsPage>
     ];
   }
 
+  List<Widget> _communityGroup() {
+    return [
+      _buildGroup(Translations.of(context).trans('community')),
+      _buildItems(
+        [
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: const Icon(
+                MdiIcons.discord,
+                color: Color(0xFF7189da),
+              ),
+              title: Text(Translations.of(context).trans('discord')),
+              trailing: const Icon(Icons.open_in_new),
+            ),
+            onTap: () async {
+              const url = 'https://discord.gg/K8qny6E';
+              if (await canLaunch(url)) {
+                await launch(url);
+              }
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading: const Icon(
+              MdiIcons.gmail,
+              color: Colors.redAccent,
+            ),
+            title: Text(Translations.of(context).trans('contact')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              const url =
+                  'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
+              if (await canLaunch(url)) {
+                await launch(url);
+              }
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading:
+                Icon(MdiIcons.commentTextMultiple, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('comment')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              PlatformNavigator.navigateSlide(
+                  context, const LabGlobalComments());
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading: Icon(MdiIcons.fileSign, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('patchnote')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              PlatformNavigator.navigateSlide(context, const PatchNotePage());
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading:
+                const Icon(MdiIcons.bookOpenPageVariant, color: Colors.brown),
+            title: Text(Translations.of(context).trans('usermanual')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              PlatformNavigator.navigateSlide(context, const UserManualPage());
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: const Icon(MdiIcons.frequentlyAskedQuestions,
+                  color: Colors.orange),
+              title: Text(Translations.of(context).trans('faq')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
+            onTap: () {
+              PlatformNavigator.navigateSlide(context, const FAQPageKorean());
+            },
+          ),
+        ],
+      ),
+    ];
+  }
+
   List<Widget> _searchGroup() {
     return [
       _buildGroup(Translations.of(context).trans('search')),
@@ -862,15 +959,16 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(MdiIcons.fileSign, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('patchnote')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              PlatformNavigator.navigateSlide(context, const PatchNotePage());
-            },
-          ),
+          if (!Settings.lightMode) _buildDivider(),
+          if (!Settings.lightMode)
+            ListTile(
+              leading: Icon(MdiIcons.fileSign, color: Settings.majorColor),
+              title: Text(Translations.of(context).trans('patchnote')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () async {
+                PlatformNavigator.navigateSlide(context, const PatchNotePage());
+              },
+            ),
           _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
@@ -878,22 +976,12 @@ class _SettingsPageState extends State<SettingsPage>
                     bottomLeft: Radius.circular(8.0),
                     bottomRight: Radius.circular(8.0))),
             child: ListTile(
-              leading: const Icon(Icons.developer_mode, color: Colors.orange),
-              title: Text(Translations.of(context).trans('devtool')),
+              leading: const Icon(MdiIcons.flask, color: Color(0xFF73BE1E)),
+              title: Text(Translations.of(context).trans('lab')),
               trailing: const Icon(Icons.keyboard_arrow_right),
             ),
             onTap: () async {
-              if (kDebugMode) {
-                // Navigator.push(
-                //   context,
-                //   CupertinoPageRoute(
-                //     builder: (context) => TestPage(),
-                //   ),
-                // );
-              } else {
-                await showOkDialog(
-                    context, 'Developer tools can only be run in debug mode.');
-              }
+              PlatformNavigator.navigateSlide(context, const LaboratoryPage());
             },
           ),
         ],
@@ -2294,57 +2382,83 @@ class _SettingsPageState extends State<SettingsPage>
       _buildGroup(Translations.of(context).trans('etc')),
       _buildItems(
         [
-          InkWell(
-            customBorder: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8.0),
-                    topRight: Radius.circular(8.0))),
-            child: ListTile(
-              leading: const Icon(
-                MdiIcons.discord,
-                color: Color(0xFF7189da),
+          if (!Settings.lightMode)
+            InkWell(
+              customBorder: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0))),
+              child: ListTile(
+                leading: const Icon(
+                  MdiIcons.discord,
+                  color: Color(0xFF7189da),
+                ),
+                title: Text(Translations.of(context).trans('discord')),
+                trailing: const Icon(Icons.open_in_new),
               ),
-              title: Text(Translations.of(context).trans('discord')),
+              onTap: () async {
+                const url = 'https://discord.gg/K8qny6E';
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
+              },
+            ),
+          if (!Settings.lightMode) _buildDivider(),
+          if (!Settings.lightMode)
+            ListTile(
+              leading: const Icon(
+                MdiIcons.github,
+                color: Colors.black,
+              ),
+              title:
+                  Text('GitHub ${Translations.of(context).trans('project')}'),
               trailing: const Icon(Icons.open_in_new),
+              onTap: () async {
+                const url = 'https://github.com/project-violet/';
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
+              },
+            )
+          else
+            InkWell(
+              customBorder: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0))),
+              child: ListTile(
+                leading: const Icon(
+                  MdiIcons.github,
+                  color: Colors.black,
+                ),
+                title:
+                    Text('GitHub ${Translations.of(context).trans('project')}'),
+                trailing: const Icon(Icons.open_in_new),
+              ),
+              onTap: () async {
+                const url = 'https://github.com/project-violet/';
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
+              },
             ),
-            onTap: () async {
-              const url = 'https://discord.gg/K8qny6E';
-              if (await canLaunch(url)) {
-                await launch(url);
-              }
-            },
-          ),
-          _buildDivider(),
-          ListTile(
-            leading: const Icon(
-              MdiIcons.github,
-              color: Colors.black,
+          if (!Settings.lightMode) _buildDivider(),
+          if (!Settings.lightMode)
+            ListTile(
+              leading: const Icon(
+                MdiIcons.gmail,
+                color: Colors.redAccent,
+              ),
+              title: Text(Translations.of(context).trans('contact')),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () async {
+                const url =
+                    'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
+              },
             ),
-            title: Text('GitHub ${Translations.of(context).trans('project')}'),
-            trailing: const Icon(Icons.open_in_new),
-            onTap: () async {
-              const url = 'https://github.com/project-violet/';
-              if (await canLaunch(url)) {
-                await launch(url);
-              }
-            },
-          ),
-          _buildDivider(),
-          ListTile(
-            leading: const Icon(
-              MdiIcons.gmail,
-              color: Colors.redAccent,
-            ),
-            title: Text(Translations.of(context).trans('contact')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              const url =
-                  'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-              if (await canLaunch(url)) {
-                await launch(url);
-              }
-            },
-          ),
           _buildDivider(),
           ListTile(
             leading: const Icon(
