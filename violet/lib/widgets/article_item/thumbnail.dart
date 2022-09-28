@@ -4,109 +4,85 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/article_item/article_list_item_widget_controller.dart';
 
 class ThumbnailWidget extends StatelessWidget {
-  final double pad;
-  final bool showDetail;
-  final bool showUltra;
-  final String? thumbnail;
-  final String thumbnailTag;
-  final int imageCount;
-  final ValueNotifier<bool> isBookmarked;
-  final FlareControls? flareController;
-  final String id;
-  final bool isBlurred;
-  final bool isLastestRead;
-  final int latestReadPage;
-  final bool disableFiltering;
-  final Map<String, String>? headers;
+  late final ArticleListItemWidgetController c;
+  final String getxId;
 
-  const ThumbnailWidget({
+  ThumbnailWidget({
     Key? key,
-    required this.pad,
-    required this.showDetail,
-    required this.showUltra,
-    required this.thumbnail,
-    required this.thumbnailTag,
-    required this.imageCount,
-    required this.isBookmarked,
-    required this.flareController,
-    required this.id,
-    required this.isBlurred,
-    required this.headers,
-    required this.isLastestRead,
-    required this.latestReadPage,
-    required this.disableFiltering,
-  }) : super(key: key);
+    required this.getxId,
+  }) : super(key: key) {
+    c = Get.find(tag: getxId);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final greyScale = isLastestRead &&
-        imageCount - latestReadPage <= 2 &&
-        !disableFiltering &&
+    final greyScale = c.isLatestRead.value &&
+        c.imageCount - c.latestReadPage.value <= 2 &&
+        !c.articleListItem.disableFilter &&
         Settings.showArticleProgress;
 
-    final result = SizedBox(
-      width: showDetail
-          ? showUltra
-              ? 120 - pad
-              : 100 - pad / 6 * 5
-          : null,
-      child: thumbnail != null
-          ? Stack(
-              children: <Widget>[
-                ThumbnailImageWidget(
-                  headers: headers!,
-                  thumbnail: thumbnail!,
-                  thumbnailTag: thumbnailTag,
-                  isBlurred: isBlurred,
-                  showUltra: showUltra,
-                  greyScale: greyScale,
-                ),
-                BookmarkIndicatorWidget(
-                  flareController: flareController,
-                  isBookmarked: isBookmarked,
-                  greyScale: greyScale,
-                ),
-                ReadProgressOverlayWidget(
-                  imageCount: imageCount,
-                  latestReadPage: latestReadPage,
-                  isLastestRead: isLastestRead,
-                  greyScale: greyScale,
-                ),
-                PagesOverlayWidget(
-                  imageCount: imageCount,
-                  showDetail: showDetail,
-                ),
-              ],
-            )
-          : !Settings.simpleItemWidgetLoadingIcon
-              ? const FlareActor(
-                  'assets/flare/Loading2.flr',
-                  alignment: Alignment.center,
-                  fit: BoxFit.fitHeight,
-                  animation: 'Alarm',
-                )
-              : Center(
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CircularProgressIndicator(
-                      color: Settings.majorColor.withAlpha(150),
+    final result = Obx(
+      () => SizedBox(
+        width: c.articleListItem.showDetail
+            ? c.articleListItem.showUltra
+                ? 120 - c.pad.value
+                : 100 - c.pad.value / 6 * 5
+            : null,
+        child: c.thumbnail.value != ''
+            ? Stack(
+                children: <Widget>[
+                  ThumbnailImageWidget(
+                    headers: c.headers,
+                    thumbnail: c.thumbnail.value,
+                    thumbnailTag: c.articleListItem.thumbnailTag,
+                    showUltra: c.articleListItem.showDetail,
+                    greyScale: greyScale,
+                  ),
+                  BookmarkIndicatorWidget(
+                    getxId: getxId,
+                    greyScale: greyScale,
+                  ),
+                  ReadProgressOverlayWidget(
+                    imageCount: c.imageCount.value,
+                    latestReadPage: c.latestReadPage.value,
+                    isLastestRead: c.isLatestRead.value,
+                    greyScale: greyScale,
+                  ),
+                  PagesOverlayWidget(
+                    imageCount: c.imageCount.value,
+                    showDetail: c.articleListItem.showDetail,
+                  ),
+                ],
+              )
+            : !Settings.simpleItemWidgetLoadingIcon
+                ? const FlareActor(
+                    'assets/flare/Loading2.flr',
+                    alignment: Alignment.center,
+                    fit: BoxFit.fitHeight,
+                    animation: 'Alarm',
+                  )
+                : Center(
+                    child: SizedBox(
+                      width: 30,
+                      height: 30,
+                      child: CircularProgressIndicator(
+                        color: Settings.majorColor.withAlpha(150),
+                      ),
                     ),
                   ),
-                ),
+      ),
     );
 
-    if (showDetail) {
+    if (c.articleListItem.showDetail) {
       return ClipRRect(
         borderRadius: const BorderRadius.horizontal(left: Radius.circular(3.0)),
         child: Material(child: result),
@@ -124,7 +100,6 @@ class ThumbnailImageWidget extends StatelessWidget {
   final String thumbnailTag;
   final String thumbnail;
   final Map<String, String> headers;
-  final bool isBlurred;
   final bool showUltra;
   final bool greyScale;
 
@@ -136,7 +111,6 @@ class ThumbnailImageWidget extends StatelessWidget {
     required this.thumbnail,
     required this.thumbnailTag,
     required this.headers,
-    required this.isBlurred,
     required this.showUltra,
     required this.greyScale,
   }) : super(key: key);
@@ -212,16 +186,16 @@ class ThumbnailImageWidget extends StatelessWidget {
 }
 
 class BookmarkIndicatorWidget extends StatelessWidget {
-  final ValueNotifier<bool> isBookmarked;
-  final FlareControls? flareController;
+  late final ArticleListItemWidgetController c;
   final bool greyScale;
 
-  const BookmarkIndicatorWidget({
+  BookmarkIndicatorWidget({
     Key? key,
-    required this.isBookmarked,
-    required this.flareController,
+    required String getxId,
     required this.greyScale,
-  }) : super(key: key);
+  }) : super(key: key) {
+    c = Get.find(tag: getxId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -232,28 +206,25 @@ class BookmarkIndicatorWidget extends StatelessWidget {
         child: SizedBox(
           width: 35,
           height: 35,
-          child: ValueListenableBuilder(
-            valueListenable: isBookmarked,
-            builder: (BuildContext context, bool value, Widget? child) {
-              if (!Settings.simpleItemWidgetLoadingIcon) {
-                return FlareActor(
-                  'assets/flare/likeUtsua.flr',
-                  animation: value ? 'Like' : 'IdleUnlike',
-                  controller: flareController,
-                );
-              } else {
-                return Icon(
-                  value ? MdiIcons.heart : MdiIcons.heartOutline,
-                  color: value
-                      ? !greyScale
-                          ? const Color(0xFFE2264D)
-                          : Settings.themeWhat
-                              ? const Color(0xFF626262)
-                              : const Color(0xFF636363)
-                      : null,
-                );
-              }
-            },
+          child: Obx(
+            () => !Settings.simpleItemWidgetLoadingIcon
+                ? FlareActor(
+                    'assets/flare/likeUtsua.flr',
+                    animation: c.isBookmarked.value ? 'Like' : 'IdleUnlike',
+                    controller: c.flareController,
+                  )
+                : Icon(
+                    c.isBookmarked.value
+                        ? MdiIcons.heart
+                        : MdiIcons.heartOutline,
+                    color: c.isBookmarked.value
+                        ? !greyScale
+                            ? const Color(0xFFE2264D)
+                            : Settings.themeWhat
+                                ? const Color(0xFF626262)
+                                : const Color(0xFF636363)
+                        : null,
+                  ),
           ),
         ),
       ),
@@ -282,7 +253,6 @@ class ReadProgressOverlayWidget extends StatelessWidget {
         : Align(
             alignment: FractionalOffset.topRight,
             child: Container(
-              // margin: EdgeInsets.symmetric(vertical: 10),
               margin: const EdgeInsets.all(4),
               width: 50,
               height: 5,
