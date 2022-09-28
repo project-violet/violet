@@ -25,61 +25,63 @@ class ThumbnailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final greyScale = c.isLatestRead.value &&
-        c.imageCount - c.latestReadPage.value <= 2 &&
-        !c.articleListItem.disableFilter &&
-        Settings.showArticleProgress;
-
     final result = Obx(
-      () => SizedBox(
-        width: c.articleListItem.showDetail
-            ? c.articleListItem.showUltra
-                ? 120 - c.pad.value
-                : 100 - c.pad.value / 6 * 5
-            : null,
-        child: c.thumbnail.value != ''
-            ? Stack(
-                children: <Widget>[
-                  ThumbnailImageWidget(
-                    headers: c.headers,
-                    thumbnail: c.thumbnail.value,
-                    thumbnailTag: c.articleListItem.thumbnailTag,
-                    showUltra: c.articleListItem.showDetail,
-                    greyScale: greyScale,
-                  ),
-                  BookmarkIndicatorWidget(
-                    getxId: getxId,
-                    greyScale: greyScale,
-                  ),
-                  ReadProgressOverlayWidget(
-                    imageCount: c.imageCount.value,
-                    latestReadPage: c.latestReadPage.value,
-                    isLastestRead: c.isLatestRead.value,
-                    greyScale: greyScale,
-                  ),
-                  PagesOverlayWidget(
-                    imageCount: c.imageCount.value,
-                    showDetail: c.articleListItem.showDetail,
-                  ),
-                ],
-              )
-            : !Settings.simpleItemWidgetLoadingIcon
-                ? const FlareActor(
-                    'assets/flare/Loading2.flr',
-                    alignment: Alignment.center,
-                    fit: BoxFit.fitHeight,
-                    animation: 'Alarm',
-                  )
-                : Center(
-                    child: SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: CircularProgressIndicator(
-                        color: Settings.majorColor.withAlpha(150),
+      () {
+        final greyScale = c.isLatestRead.value &&
+            c.imageCount - c.latestReadPage.value <= 2 &&
+            !c.articleListItem.disableFilter &&
+            Settings.showArticleProgress;
+
+        return SizedBox(
+          width: c.articleListItem.showDetail
+              ? c.articleListItem.showUltra
+                  ? 120 - c.pad.value
+                  : 100 - c.pad.value / 6 * 5
+              : null,
+          child: c.thumbnail.value != ''
+              ? Stack(
+                  children: <Widget>[
+                    ThumbnailImageWidget(
+                      headers: c.headers,
+                      thumbnail: c.thumbnail.value,
+                      thumbnailTag: c.articleListItem.thumbnailTag,
+                      showUltra: c.articleListItem.showDetail,
+                      greyScale: greyScale,
+                    ),
+                    BookmarkIndicatorWidget(
+                      getxId: getxId,
+                      greyScale: greyScale,
+                    ),
+                    ReadProgressOverlayWidget(
+                      imageCount: c.imageCount.value,
+                      latestReadPage: c.latestReadPage.value,
+                      isLastestRead: c.isLatestRead.value,
+                      greyScale: greyScale,
+                    ),
+                    PagesOverlayWidget(
+                      imageCount: c.imageCount.value,
+                      showDetail: c.articleListItem.showDetail,
+                    ),
+                  ],
+                )
+              : !Settings.simpleItemWidgetLoadingIcon
+                  ? const FlareActor(
+                      'assets/flare/Loading2.flr',
+                      alignment: Alignment.center,
+                      fit: BoxFit.fitHeight,
+                      animation: 'Alarm',
+                    )
+                  : Center(
+                      child: SizedBox(
+                        width: 30,
+                        height: 30,
+                        child: CircularProgressIndicator(
+                          color: Settings.majorColor.withAlpha(150),
+                        ),
                       ),
                     ),
-                  ),
-      ),
+        );
+      },
     );
 
     if (c.articleListItem.showDetail) {
