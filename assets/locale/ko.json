@@ -298,5 +298,8 @@
   "alignpage": "페이지수순으로 정렬",
   "alignrecentread": "최근 읽은 순으로 정렬",
   "lightmode": "라이트 모드",
-  "hot": "인기"
+  "hot": "인기",
+  "faq": "자주 묻는 질문",
+  "usermanual": "유저 메뉴얼",
+  "lab": "실험실"
 }
