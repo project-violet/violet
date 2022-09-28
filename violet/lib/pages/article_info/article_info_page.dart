@@ -1216,7 +1216,7 @@ class _RelatedArea extends StatelessWidget {
                       thumbnailTag: const Uuid().v4(),
                       usableTabList: cc,
                     ),
-                    child: const ArticleListItemVerySimpleWidget(),
+                    child: const ArticleListItemWidget(),
                   ),
                 ),
               ),

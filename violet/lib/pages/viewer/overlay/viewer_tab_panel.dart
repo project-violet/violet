@@ -208,7 +208,7 @@ class __UsableTabListState extends State<_UsableTabList>
                             Navigator.pop(context, e);
                           },
                         ),
-                        child: const ArticleListItemVerySimpleWidget(),
+                        child: const ArticleListItemWidget(),
                       ),
                     ),
                   );
@@ -371,7 +371,7 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
                                   }
                                 },
                               ),
-                              child: const ArticleListItemVerySimpleWidget(),
+                              child: const ArticleListItemWidget(),
                             ),
                           ),
                         );

@@ -104,7 +104,7 @@ class _SubItem extends StatelessWidget {
             disableFilter: true,
             usableTabList: articles,
           ),
-          child: const ArticleListItemVerySimpleWidget(),
+          child: const ArticleListItemWidget(),
         ),
       ),
     );
