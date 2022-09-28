@@ -3,24 +3,19 @@
 
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:html_unescape/html_unescape_small.dart';
-import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:violet/component/hentai.dart';
+import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/component/image_provider.dart';
-import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
-import 'package:violet/locale/locale.dart';
+import 'package:violet/locale/locale.dart' as locale;
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
@@ -31,22 +26,21 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/util/call_once.dart';
+import 'package:violet/widgets/article_item/article_list_item_widget_controller.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/article_item/thumbnail_view_page.dart';
-import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
 class ArticleListItemWidget extends StatefulWidget {
   final bool isChecked;
   final bool isCheckMode;
-  final ArticleListItem? articleListItem;
 
   const ArticleListItemWidget({
     Key? key,
     this.isChecked = false,
     this.isCheckMode = false,
-    this.articleListItem,
   }) : super(key: key);
 
   @override
@@ -57,167 +51,54 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     with
         TickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<ArticleListItemWidget> {
+  late CallOnce initProvider;
   late ArticleListItem data;
+  late ArticleListItemWidgetController c;
+  late String getxId;
 
   @override
   bool get wantKeepAlive => true;
 
-  String? thumbnail;
-  int imageCount = 0;
-  double pad = 0.0;
-  double scale = 1.0;
-  bool onScaling = false;
-  bool isBlurred = false;
   bool disposed = false;
-  ValueNotifier<bool> isBookmarked = ValueNotifier<bool>(false);
   bool animating = false;
-  bool isLastestRead = false;
-  bool disableFiltering = false;
-  int latestReadPage = 0;
-  Map<String, String>? headers;
-  FlareControls? _flareController;
-  double? thisWidth, thisHeight;
 
-  GlobalKey bodyKey = GlobalKey();
-
-  bool isChecked = false;
+  RxBool isChecked = false.obs;
 
   late final FToast fToast;
 
   @override
   void initState() {
     super.initState();
-    isChecked = widget.isChecked;
+    initProvider = CallOnce(initAfterProvider);
+
+    isChecked.value = widget.isChecked;
     fToast = FToast();
     fToast.init(context);
   }
 
-  String? artist;
-  String? title;
-  String? dateTime;
+  initAfterProvider() {
+    data = Provider.of<ArticleListItem>(context);
+    getxId = const Uuid().v4();
+    c = Get.put(
+      ArticleListItemWidgetController(data),
+      tag: getxId,
+    );
+  }
 
   @override
   void dispose() {
     disposed = true;
     super.dispose();
+    Get.delete<ArticleListItemWidgetController>(tag: getxId);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _init();
+    initProvider.call();
   }
 
   bool firstChecked = false;
-  bool _inited = false;
-  _init() {
-    if (_inited) return;
-    _inited = true;
-
-    if (!Settings.simpleItemWidgetLoadingIcon) {
-      _flareController = FlareControls();
-    }
-
-    data = Provider.of<ArticleListItem>(context);
-
-    disableFiltering = data.disableFilter;
-
-    if (data.showDetail) {
-      thisWidth = data.width - 16;
-      if (!data.showUltra) {
-        thisHeight = 130.0;
-      } else {
-        Future.delayed(const Duration(milliseconds: 500)).then((value) {
-          if (bodyKey.currentContext != null && !disposed) {
-            _shouldReload = true;
-            setState(() {
-              thisHeight = bodyKey.currentContext!.size!.height;
-            });
-          }
-        });
-      }
-    } else {
-      thisWidth = data.width - (data.addBottomPadding ? 100 : 0);
-      if (data.addBottomPadding) {
-        thisHeight = 500.0;
-      } else {
-        thisHeight = data.width * 4 / 3;
-      }
-    }
-
-    _checkIsBookmarked();
-    _checkLastRead();
-    _initTexts();
-    _setProvider();
-  }
-
-  _checkIsBookmarked() {
-    Bookmark.getInstance().then((value) async {
-      isBookmarked.value = await value.isBookmark(data.queryResult.id());
-    });
-  }
-
-  _checkLastRead() {
-    User.getInstance().then((value) => value.getUserLog().then((value) async {
-          var x = value.where((e) =>
-              e.articleId() == data.queryResult.id().toString() &&
-              e.lastPage() != null &&
-              e.lastPage()! > 1 &&
-              DateTime.parse(e.datetimeStart())
-                      .difference(DateTime.now())
-                      .inDays <
-                  31);
-          if (x.isEmpty) return;
-          _shouldReload = true;
-          setState(() {
-            isLastestRead = true;
-            latestReadPage = x.first.lastPage()!;
-          });
-        }));
-  }
-
-  _initTexts() {
-    artist = (data.queryResult.artists() as String)
-        .split('|')
-        .where((x) => x.isNotEmpty)
-        .join(',');
-
-    if (artist == 'N/A') {
-      var group = data.queryResult.groups() != null
-          ? data.queryResult.groups().split('|')[1]
-          : '';
-      if (group != '') artist = group;
-    }
-
-    title = HtmlUnescape().convert(data.queryResult.title());
-    dateTime = data.queryResult.getDateTime() != null
-        ? DateFormat('yyyy/MM/dd HH:mm').format(data.queryResult.getDateTime()!)
-        : '';
-
-    _shouldReload = true;
-
-    if (data.showDetail) setState(() {});
-  }
-
-  _setProvider() async {
-    VioletImageProvider provider;
-
-    if (!ProviderManager.isExists(data.queryResult.id())) {
-      provider = await HentaiManager.getImageProvider(data.queryResult);
-      ProviderManager.insert(data.queryResult.id(), provider);
-    } else {
-      provider = await ProviderManager.get(data.queryResult.id());
-    }
-
-    thumbnail = await provider.getThumbnailUrl();
-    imageCount = provider.length();
-    headers = await provider.getHeader(0);
-    if (!disposed) {
-      setState(() {
-        _shouldReload = true;
-      });
-    }
-  }
 
   BodyWidget? _body;
   bool _shouldReload = false;
@@ -241,57 +122,48 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
         // https://stackoverflow.com/a/52249579
         final body = BodyWidget(
-          key: bodyKey,
-          data: data,
-          thumbnail: thumbnail,
-          imageCount: imageCount,
-          isBookmarked: isBookmarked,
-          flareController: _flareController,
-          pad: pad,
-          isBlurred: isBlurred,
-          headers: headers,
-          isLastestRead: isLastestRead,
-          latestReadPage: latestReadPage,
-          disableFiltering: disableFiltering,
-          artist: artist,
-          title: title,
-          dateTime: dateTime,
+          key: c.bodyKey,
+          getxId: getxId,
         );
 
         _body = body;
       }
 
-      _cachedBuildWidget = Container(
-        color: isChecked ? Colors.amber : Colors.transparent,
-        child: PimpedButton(
-          particle: Rectangle2DemoParticle(),
-          pimpedWidgetBuilder: (context, controller) {
-            return GestureDetector(
-              onTapDown: _onTapDown,
-              onTapUp: _onTapUp,
-              onLongPress: () async {
-                await _onLongPress(controller);
-              },
-              onLongPressEnd: _onPressEnd,
-              onTapCancel: _onTapCancle,
-              onDoubleTap: _onDoubleTap,
-              child: SizedBox(
-                width: thisWidth,
-                height: thisHeight,
-                child: AnimatedContainer(
-                  curve: Curves.easeInOut,
-                  duration: const Duration(milliseconds: 300),
-                  transform: thisHeight == null
-                      ? null
-                      : (Matrix4.identity()
-                        ..translate(thisWidth! / 2, thisHeight! / 2)
-                        ..scale(scale)
-                        ..translate(-thisWidth! / 2, -thisHeight! / 2)),
-                  child: _body,
+      _cachedBuildWidget = Obx(
+        () => Container(
+          color: isChecked.value ? Colors.amber : Colors.transparent,
+          child: PimpedButton(
+            particle: Rectangle2DemoParticle(),
+            pimpedWidgetBuilder: (context, controller) {
+              return GestureDetector(
+                onTapDown: _onTapDown,
+                onTapUp: _onTapUp,
+                onLongPress: () async {
+                  await _onLongPress(controller);
+                },
+                onLongPressEnd: _onPressEnd,
+                onTapCancel: _onTapCancle,
+                onDoubleTap: _onDoubleTap,
+                child: Obx(
+                  () => SizedBox(
+                    width: c.thisWidth,
+                    height: c.thisHeight.isNaN ? null : c.thisHeight.value,
+                    child: AnimatedContainer(
+                      curve: Curves.easeInOut,
+                      duration: const Duration(milliseconds: 300),
+                      transform: c.thisHeight.value.isNaN
+                          ? null
+                          : (Matrix4.identity()
+                            ..translate(c.thisWidth / 2, c.thisHeight / 2)
+                            ..scale(c.scale.value)
+                            ..translate(-c.thisWidth / 2, -c.thisHeight / 2)),
+                      child: _body,
+                    ),
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       );
     }
@@ -301,26 +173,26 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
   _doBookmarkScaling() {
     if (data.bookmarkMode) {
-      if (!widget.isCheckMode && !onScaling && scale != 1.0) {
+      if (!widget.isCheckMode && !c.onScaling && c.scale.value != 1.0) {
         _animateScale(1.0);
-      } else if (widget.isCheckMode && isChecked && scale != 0.95) {
+      } else if (widget.isCheckMode &&
+          isChecked.value &&
+          c.scale.value != 0.95) {
         _animateScale(0.95);
       }
     }
   }
 
   _animateScale(double scale) {
-    _shouldReloadCachedBuildWidget = true;
-    Future.delayed(const Duration(milliseconds: 500))
-        .then((value) => _shouldReloadCachedBuildWidget = false);
-    setState(() {
-      this.scale = scale;
-    });
+    // _shouldReloadCachedBuildWidget = true;
+    // Future.delayed(const Duration(milliseconds: 500))
+    //     .then((value) => _shouldReloadCachedBuildWidget = false);
+    c.scale.value = scale;
   }
 
   _onTapDown(detail) {
-    if (onScaling) return;
-    onScaling = true;
+    if (c.onScaling) return;
+    c.onScaling = true;
     _animateScale(0.95);
   }
 
@@ -330,12 +202,12 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
       return;
     }
 
-    onScaling = false;
+    c.onScaling = false;
 
     if (widget.isCheckMode) {
-      isChecked = !isChecked;
-      data.bookmarkCheckCallback!(data.queryResult.id(), isChecked);
-      _animateScale(isChecked ? 0.95 : 1.0);
+      isChecked.value = !isChecked.value;
+      data.bookmarkCheckCallback!(data.queryResult.id(), isChecked.value);
+      _animateScale(isChecked.value ? 0.95 : 1.0);
       return;
     }
 
@@ -368,10 +240,10 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
             cache ??= Provider<ArticleInfo>.value(
               value: ArticleInfo.fromArticleInfo(
                 queryResult: data.queryResult,
-                thumbnail: thumbnail,
-                headers: headers,
+                thumbnail: c.thumbnail.value,
+                headers: c.headers,
                 heroKey: data.thumbnailTag,
-                isBookmarked: isBookmarked.value,
+                isBookmarked: c.isBookmarked.value,
                 controller: controller,
                 usableTabList: data.usableTabList,
               ),
@@ -415,7 +287,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
               uris: List<String>.filled(prov.length(), ''),
               useProvider: true,
               provider: prov,
-              headers: headers,
+              headers: c.headers,
               id: data.queryResult.id(),
               title: data.queryResult.title(),
               usableTabList: data.usableTabList,
@@ -431,32 +303,34 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
   }
 
   Future<void> _onLongPress(controller) async {
-    onScaling = false;
+    c.onScaling = false;
+
     if (data.bookmarkMode) {
       if (widget.isCheckMode) {
-        isChecked = !isChecked;
+        isChecked.value = !isChecked.value;
         _animateScale(1.0);
         return;
       }
-      isChecked = true;
+      isChecked.value = true;
       firstChecked = true;
       _animateScale(0.95);
       data.bookmarkCallback!(data.queryResult.id());
       return;
     }
 
-    if (isBookmarked.value) {
+    if (c.isBookmarked.value) {
       if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
     }
+
     try {
       fToast.showToast(
         child: ToastWrapper(
-          icon: isBookmarked.value ? Icons.delete_forever : Icons.check,
-          color: isBookmarked.value
+          icon: c.isBookmarked.value ? Icons.delete_forever : Icons.check,
+          color: c.isBookmarked.value
               ? Colors.redAccent.withOpacity(0.8)
               : Colors.greenAccent.withOpacity(0.8),
           msg:
-              '${data.queryResult.id()}${Translations.of(context).trans(isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
+              '${data.queryResult.id()}${locale.Translations.of(context).trans(c.isBookmarked.value ? 'removetobookmark' : 'addtobookmark')}',
         ),
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
@@ -465,44 +339,47 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
       Logger.error('[ArticleList-LongPress] E: $e\n'
           '$st');
     }
-    isBookmarked.value = !isBookmarked.value;
 
-    if (isBookmarked.value) {
+    c.isBookmarked.value = !c.isBookmarked.value;
+
+    if (c.isBookmarked.value) {
       await (await Bookmark.getInstance()).bookmark(data.queryResult.id());
     } else {
       await (await Bookmark.getInstance()).unbookmark(data.queryResult.id());
     }
 
-    if (!isBookmarked.value) {
+    if (!c.isBookmarked.value) {
       if (!Settings.simpleItemWidgetLoadingIcon) {
-        _flareController!.play('Unlike');
+        c.flareController!.play('Unlike');
       }
     } else {
       controller.forward(from: 0.0);
-      if (!Settings.simpleItemWidgetLoadingIcon) _flareController!.play('Like');
+      if (!Settings.simpleItemWidgetLoadingIcon) {
+        c.flareController!.play('Like');
+      }
     }
 
     await HapticFeedback.lightImpact();
 
-    pad = 0;
+    c.pad.value = 0;
     _animateScale(1.0);
   }
 
   _onPressEnd(detail) {
-    onScaling = false;
+    c.onScaling = false;
     if (firstChecked) {
       firstChecked = false;
       return;
     }
 
-    pad = 0;
+    c.pad.value = 0;
     _animateScale(1.0);
   }
 
   _onTapCancle() {
-    onScaling = false;
+    c.onScaling = false;
 
-    pad = 0;
+    c.pad.value = 0;
     _animateScale(1.0);
   }
 
@@ -515,7 +392,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
   }
 
   _showThumbnailView() async {
-    onScaling = false;
+    c.onScaling = false;
 
     if (data.doubleTapCallback == null) {
       Navigator.of(context).push(PageRouteBuilder(
@@ -526,8 +403,8 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
           return FadeTransition(opacity: animation, child: wi);
         },
         pageBuilder: (_, __, ___) => ThumbnailViewPage(
-          thumbnail: thumbnail!,
-          headers: headers!,
+          thumbnail: c.thumbnail.value,
+          headers: c.headers,
           heroKey: data.thumbnailTag,
           showUltra: data.showUltra,
         ),
@@ -540,56 +417,34 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     Future.delayed(const Duration(milliseconds: 500))
         .then((value) => _shouldReloadCachedBuildWidget = false);
     setState(() {
-      pad = 0;
+      c.pad.value = 0;
     });
   }
 }
 
 class BodyWidget extends StatelessWidget {
-  final ArticleListItem data;
-  final String? thumbnail;
-  final int imageCount;
-  final ValueNotifier<bool> isBookmarked;
-  final FlareControls? flareController;
-  final double pad;
-  final bool isBlurred;
-  final Map<String, String>? headers;
-  final bool isLastestRead;
-  final int latestReadPage;
-  final bool disableFiltering;
-  final String? artist;
-  final String? title;
-  final String? dateTime;
+  late final ArticleListItemWidgetController c;
 
-  const BodyWidget({
+  final String getxId;
+
+  BodyWidget({
     Key? key,
-    required this.data,
-    required this.thumbnail,
-    required this.imageCount,
-    required this.isBookmarked,
-    required this.flareController,
-    required this.pad,
-    required this.isBlurred,
-    required this.headers,
-    required this.isLastestRead,
-    required this.latestReadPage,
-    required this.disableFiltering,
-    required this.artist,
-    required this.title,
-    required this.dateTime,
-  }) : super(key: key);
+    required this.getxId,
+  }) : super(key: key) {
+    c = Get.find(tag: getxId);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: data.addBottomPadding
-          ? data.showDetail
+      margin: c.articleListItem.addBottomPadding
+          ? c.articleListItem.showDetail
               ? const EdgeInsets.only(bottom: 6)
               : const EdgeInsets.only(bottom: 50)
           : EdgeInsets.zero,
       decoration: !Settings.themeFlat
           ? BoxDecoration(
-              color: data.showDetail
+              color: c.articleListItem.showDetail
                   ? Settings.themeWhat
                       ? Settings.themeBlack
                           ? const Color(0xFF141414)
@@ -609,61 +464,28 @@ class BodyWidget extends StatelessWidget {
               ],
             )
           : null,
-      color: !Settings.themeFlat || !data.showDetail
+      color: !Settings.themeFlat || !c.articleListItem.showDetail
           ? null
           : Settings.themeWhat
               ? Colors.black26
               : Colors.white,
-      child: data.showDetail
+      child: c.articleListItem.showDetail
           ? IntrinsicHeight(
               child: Row(
                 children: <Widget>[
                   ThumbnailWidget(
-                    id: data.queryResult.id().toString(),
-                    showDetail: data.showDetail,
-                    showUltra: data.showUltra,
-                    thumbnail: thumbnail,
-                    thumbnailTag: data.thumbnailTag,
-                    imageCount: imageCount,
-                    isBookmarked: isBookmarked,
-                    flareController: flareController,
-                    pad: pad,
-                    isBlurred: isBlurred,
-                    headers: headers,
-                    isLastestRead: isLastestRead,
-                    latestReadPage: latestReadPage,
-                    disableFiltering: disableFiltering,
+                    getxId: getxId,
                   ),
                   Expanded(
                     child: _DetailWidget(
-                      artist: artist,
-                      title: title,
-                      imageCount: imageCount,
-                      dateTime: dateTime,
-                      viewed: data.viewed,
-                      seconds: data.seconds,
-                      showUltra: data.showUltra,
-                      queryResult: data.queryResult,
+                      getxId: getxId,
                     ),
                   )
                 ],
               ),
             )
           : ThumbnailWidget(
-              id: data.queryResult.id().toString(),
-              showDetail: data.showDetail,
-              showUltra: data.showUltra,
-              thumbnail: thumbnail,
-              thumbnailTag: data.thumbnailTag,
-              imageCount: imageCount,
-              isBookmarked: isBookmarked,
-              flareController: flareController,
-              pad: pad,
-              isBlurred: isBlurred,
-              headers: headers,
-              isLastestRead: isLastestRead,
-              latestReadPage: latestReadPage,
-              disableFiltering: disableFiltering,
+              getxId: getxId,
             ),
     );
   }
@@ -671,25 +493,13 @@ class BodyWidget extends StatelessWidget {
 
 // Artist List Item Details
 class _DetailWidget extends StatelessWidget {
-  final String? title;
-  final String? artist;
-  final int imageCount;
-  final String? dateTime;
-  final int? viewed;
-  final int? seconds;
-  final bool showUltra;
-  final QueryResult queryResult;
+  late final ArticleListItemWidgetController c;
 
-  const _DetailWidget({
-    required this.title,
-    required this.artist,
-    required this.imageCount,
-    required this.dateTime,
-    required this.viewed,
-    required this.seconds,
-    required this.showUltra,
-    required this.queryResult,
-  });
+  _DetailWidget({
+    required String getxId,
+  }) {
+    c = Get.find(tag: getxId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -699,22 +509,22 @@ class _DetailWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            title ?? '',
+            c.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
           ),
           Text(
-            artist ?? '',
+            c.artist,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          if (showUltra) tagArea() else const Spacer(),
+          if (c.articleListItem.showUltra) tagArea() else const Spacer(),
           Row(
             children: [
               const Icon(Icons.date_range, size: 18),
               Text(
-                ' $dateTime',
+                ' ${c.dateTime}',
                 style:
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
@@ -725,22 +535,24 @@ class _DetailWidget extends StatelessWidget {
             children: [
               const Icon(Icons.photo, size: 18),
               Text(
-                ' $imageCount Page',
+                ' ${c.imageCount} Page',
                 style:
                     const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
               ),
               const SizedBox(width: 4.0),
-              if (viewed != null) const Icon(MdiIcons.eyeOutline, size: 18),
-              if (viewed != null)
+              if (c.articleListItem.viewed != null)
+                const Icon(MdiIcons.eyeOutline, size: 18),
+              if (c.articleListItem.viewed != null)
                 Text(
-                  ' $viewed Viewed',
+                  ' ${c.articleListItem.viewed} Viewed',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500),
                 ),
-              if (seconds != null) const Icon(MdiIcons.clockOutline, size: 18),
-              if (seconds != null)
+              if (c.articleListItem.seconds != null)
+                const Icon(MdiIcons.clockOutline, size: 18),
+              if (c.articleListItem.seconds != null)
                 Text(
-                  ' $seconds Seconds',
+                  ' ${c.articleListItem.seconds} Seconds',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500),
                 ),
@@ -752,9 +564,11 @@ class _DetailWidget extends StatelessWidget {
   }
 
   Widget tagArea() {
-    if (queryResult.tags() == null) return Container(height: 30);
+    if (c.articleListItem.queryResult.tags() == null) {
+      return Container(height: 30);
+    }
 
-    final tags = (queryResult.tags() as String)
+    final tags = (c.articleListItem.queryResult.tags() as String)
         .split('|')
         .where((element) => element != '')
         .map((e) => Tuple2<String, String>(
