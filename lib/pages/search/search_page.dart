@@ -15,6 +15,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
@@ -24,6 +25,7 @@ import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
@@ -222,6 +224,21 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         });
       }
     });
+  }
+
+  welcomeMessage() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    if (prefs.getBool('lightmode_welcome_message') == null) {
+      prefs.setBool('lightmode_welcome_message', true);
+      showOkDialog(context, '라이트 모드가 활성화되었습니다! 설정에서 라이트 모드를 끌 수 있습니다.');
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    welcomeMessage();
   }
 
   bool scrollInProgress = false;
