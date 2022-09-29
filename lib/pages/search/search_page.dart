@@ -109,7 +109,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       await cachedActor(asset);
     })();
 
-    if (Settings.lightMode) {
+    if (Settings.liteMode) {
       Future.delayed(const Duration(milliseconds: 200))
           .then((value) => UpdateManager.updateCheck(context));
     }
@@ -229,8 +229,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   welcomeMessage() async {
     final prefs = await SharedPreferences.getInstance();
 
-    if (prefs.getBool('lightmode_welcome_message') == null) {
-      prefs.setBool('lightmode_welcome_message', true);
+    if (prefs.getBool('litemode_welcome_message') == null) {
+      prefs.setBool('litemode_welcome_message', true);
       showOkDialog(context, '라이트 모드가 활성화되었습니다! 설정에서 라이트 모드를 끌 수 있습니다.');
     }
   }

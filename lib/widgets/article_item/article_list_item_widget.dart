@@ -214,7 +214,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
     _animateScale(1.0);
 
-    if (!Settings.lightMode) {
+    if (!Settings.liteMode) {
       _showArticleInfo();
     } else {
       _showArticleInfo();
@@ -383,7 +383,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
   }
 
   Future<void> _onDoubleTap() async {
-    if (!Settings.lightMode) {
+    if (!Settings.liteMode) {
       _showThumbnailView();
     } else {
       _showThumbnailView();

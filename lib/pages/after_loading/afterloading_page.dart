@@ -125,9 +125,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           );
         },
         items: <BottomNavigationBarItem>[
-          if (!Settings.lightMode) buildItem(MdiIcons.home, 'main'),
+          if (!Settings.liteMode) buildItem(MdiIcons.home, 'main'),
           buildItem(Icons.search, 'search'),
-          if (Settings.lightMode) buildItem(MdiIcons.fire, 'hot'),
+          if (Settings.liteMode) buildItem(MdiIcons.fire, 'hot'),
           buildItem(Icons.bookmark, 'bookmark'),
           buildItem(Icons.file_download, 'download'),
           buildItem(Icons.settings, 'settings'),
@@ -233,9 +233,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                 ],
               ),
             ),
-            if (!Settings.lightMode) buildButton(MdiIcons.home, 0, 'main'),
-            buildButton(Icons.search, !Settings.lightMode ? 1 : 0, 'search'),
-            if (Settings.lightMode) buildButton(MdiIcons.fire, 1, 'hot'),
+            if (!Settings.liteMode) buildButton(MdiIcons.home, 0, 'main'),
+            buildButton(Icons.search, !Settings.liteMode ? 1 : 0, 'search'),
+            if (Settings.liteMode) buildButton(MdiIcons.fire, 1, 'hot'),
             buildButton(MdiIcons.bookmark, 2, 'bookmark'),
             buildButton(MdiIcons.download, 3, 'download'),
             buildButton(Icons.settings, 4, 'settings'),
@@ -299,9 +299,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             setState(() {});
           },
           children: <Widget>[
-            if (!Settings.lightMode) const MainPage(),
+            if (!Settings.liteMode) const MainPage(),
             const SearchPage(),
-            if (Settings.lightMode) HotPage(),
+            if (Settings.liteMode) HotPage(),
             const BookmarkPage(),
             const DownloadPage(),
             const SettingsPage(),
