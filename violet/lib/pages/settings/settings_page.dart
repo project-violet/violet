@@ -172,13 +172,13 @@ class _SettingsPageState extends State<SettingsPage>
     if (_cachedGroups == null || _shouldReload) {
       _shouldReload = false;
       _cachedGroups = _themeGroup()
-        ..addAll(!Settings.lightMode ? [const UserStatusCard()] : [])
-        ..addAll(!Settings.lightMode ? [] : _communityGroup())
+        ..addAll(!Settings.liteMode ? [const UserStatusCard()] : [])
+        ..addAll(!Settings.liteMode ? [] : _communityGroup())
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
         ..addAll(_securityGroup())
-        ..addAll(!Settings.lightMode ? _databaseGroup() : [])
-        ..addAll(!Settings.lightMode ? _networkingGroup() : [])
+        ..addAll(!Settings.liteMode ? _databaseGroup() : [])
+        ..addAll(!Settings.liteMode ? _networkingGroup() : [])
         ..addAll(_downloadGroup())
         ..addAll(_bookmarkGroup())
         ..addAll(_componetGroup())
@@ -425,8 +425,8 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ),
         ),
-        if (!Settings.lightMode) _buildDivider(),
-        if (!Settings.lightMode)
+        if (!Settings.liteMode) _buildDivider(),
+        if (!Settings.liteMode)
           InkWell(
             child: ListTile(
               leading: Icon(Mdi.buffer, color: Settings.majorColor),
@@ -474,8 +474,8 @@ class _SettingsPageState extends State<SettingsPage>
             });
           },
         ),
-        if (!Settings.lightMode) _buildDivider(),
-        if (!Settings.lightMode)
+        if (!Settings.liteMode) _buildDivider(),
+        if (!Settings.liteMode)
           InkWell(
             child: ListTile(
               leading: Icon(MdiIcons.cellphoneText, color: Settings.majorColor),
@@ -519,9 +519,9 @@ class _SettingsPageState extends State<SettingsPage>
                   bottomRight: Radius.circular(8.0))),
           child: ListTile(
             leading: Icon(MdiIcons.feather, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('lightmode')),
+            title: Text(Translations.of(context).trans('litemode')),
             trailing: Switch(
-              value: Settings.lightMode,
+              value: Settings.liteMode,
               onChanged: (newValue) async {
                 await Settings.setLightMode(newValue);
                 setState(() {
@@ -539,7 +539,7 @@ class _SettingsPageState extends State<SettingsPage>
             ),
           ),
           onTap: () async {
-            await Settings.setLightMode(!Settings.lightMode);
+            await Settings.setLightMode(!Settings.liteMode);
             setState(() {
               _shouldReload = true;
             });
@@ -713,8 +713,8 @@ class _SettingsPageState extends State<SettingsPage>
               }
             },
           ),
-          if (!Settings.lightMode) _buildDivider(),
-          if (!Settings.lightMode)
+          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode)
             ListTile(
               leading: Icon(
                 MdiIcons.tooltipEdit,
@@ -747,8 +747,8 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.lightMode) _buildDivider(),
-          if (!Settings.lightMode)
+          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode)
             InkWell(
               child: ListTile(
                 leading: Icon(Mdi.compassOutline, color: Settings.majorColor),
@@ -926,8 +926,8 @@ class _SettingsPageState extends State<SettingsPage>
               });
             },
           ),
-          if (!Settings.lightMode) _buildDivider(),
-          if (!Settings.lightMode)
+          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode)
             ListTile(
               leading: Icon(Mdi.tableArrowRight, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('exportlog')),
@@ -959,8 +959,8 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          if (!Settings.lightMode) _buildDivider(),
-          if (!Settings.lightMode)
+          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode)
             ListTile(
               leading: Icon(MdiIcons.fileSign, color: Settings.majorColor),
               title: Text(Translations.of(context).trans('patchnote')),
@@ -1703,8 +1703,8 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
           ),
-          if (!Settings.lightMode) _buildDivider(),
-          if (!Settings.lightMode)
+          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode)
             ListTile(
               leading: Icon(
                 MdiIcons.bookArrowDownOutline,
@@ -2382,7 +2382,7 @@ class _SettingsPageState extends State<SettingsPage>
       _buildGroup(Translations.of(context).trans('etc')),
       _buildItems(
         [
-          if (!Settings.lightMode)
+          if (!Settings.liteMode)
             InkWell(
               customBorder: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -2403,8 +2403,8 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.lightMode) _buildDivider(),
-          if (!Settings.lightMode)
+          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode)
             ListTile(
               leading: const Icon(
                 MdiIcons.github,
@@ -2442,8 +2442,8 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               },
             ),
-          if (!Settings.lightMode) _buildDivider(),
-          if (!Settings.lightMode)
+          if (!Settings.liteMode) _buildDivider(),
+          if (!Settings.liteMode)
             ListTile(
               leading: const Icon(
                 MdiIcons.gmail,

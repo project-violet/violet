@@ -30,7 +30,7 @@ class Settings {
   static late bool themeFlat;
   static late bool themeBlack; // default false
   static late bool useTabletMode;
-  static late bool lightMode;
+  static late bool liteMode;
 
   // Tag Settings
   static late String includeTags;
@@ -118,7 +118,7 @@ class Settings {
     themeFlat = await _getBool('themeFlat');
     themeBlack = await _getBool('themeBlack');
 
-    lightMode = await _getBool('lightMode', true);
+    liteMode = await _getBool('liteMode', true);
 
     language = prefs.getString('language');
 
@@ -814,9 +814,9 @@ class Settings {
   }
 
   static Future<void> setLightMode(bool nn) async {
-    lightMode = nn;
+    liteMode = nn;
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('lightMode', nn);
+    await prefs.setBool('liteMode', nn);
   }
 }
