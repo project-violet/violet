@@ -59,7 +59,6 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
   @override
   bool get wantKeepAlive => true;
 
-  bool disposed = false;
   bool animating = false;
 
   RxBool isChecked = false.obs;
@@ -87,7 +86,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
   @override
   void dispose() {
-    disposed = true;
+    c.disposed = true;
     super.dispose();
     Get.delete<ArticleListItemWidgetController>(tag: getxId);
   }
@@ -110,7 +109,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
   Widget build(BuildContext context) {
     super.build(context);
 
-    if (disposed) return Container();
+    if (c.disposed) return Container();
 
     _doBookmarkScaling();
 
