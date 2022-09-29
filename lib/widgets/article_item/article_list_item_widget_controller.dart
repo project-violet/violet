@@ -134,7 +134,7 @@ class ArticleListItemWidgetController extends GetxController {
     }
 
     thumbnail.value = await provider.getThumbnailUrl();
-    imageCount.value = provider.length();
     headers.value = await provider.getHeader(0);
+    imageCount.value = provider.length();
   }
 }
