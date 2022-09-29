@@ -183,6 +183,8 @@ class SimpleInfoWidget extends StatelessWidget {
   }
 
   Widget _simpleInfoPages(ArticleInfo data) {
+    final id = data.queryResult.id();
+
     return Row(
       children: <Widget>[
         const Icon(
@@ -190,7 +192,7 @@ class SimpleInfoWidget extends StatelessWidget {
           size: 20,
         ),
         Text(
-            ' ${data.thumbnail != null ? '${ProviderManager.getIgnoreDirty(data.queryResult.id()).length()} Page' : ''}',
+            ' ${data.thumbnail != null ? '${ProviderManager.isExists(id) ? ProviderManager.getIgnoreDirty(id).length() : '?'} Page' : ''}',
             style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
       ],
     );

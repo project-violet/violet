@@ -11,6 +11,8 @@ class HitomiParser {
 
     var title = doc!.querySelector('h1')!.text.trim();
     var artists = ['N/A'];
+    var language = 'N/A';
+
     try {
       artists = doc
           .querySelector('div.artists-list')!
@@ -19,6 +21,6 @@ class HitomiParser {
           .toList();
     } catch (_) {}
 
-    return {'Title': title, 'Artists': artists};
+    return {'Title': title, 'Artists': artists, 'Language': language};
   }
 }
