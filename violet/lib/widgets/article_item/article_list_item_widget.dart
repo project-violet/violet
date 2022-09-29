@@ -533,10 +533,12 @@ class _DetailWidget extends StatelessWidget {
           Row(
             children: [
               const Icon(Icons.photo, size: 18),
-              Text(
-                ' ${c.imageCount} Page',
-                style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              Obx(
+                () => Text(
+                  ' ${c.imageCount.value} Page',
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w500),
+                ),
               ),
               const SizedBox(width: 4.0),
               if (c.articleListItem.viewed != null)

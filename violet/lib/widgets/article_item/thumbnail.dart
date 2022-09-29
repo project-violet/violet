@@ -52,15 +52,19 @@ class ThumbnailWidget extends StatelessWidget {
                       getxId: getxId,
                       greyScale: greyScale,
                     ),
-                    ReadProgressOverlayWidget(
-                      imageCount: c.imageCount.value,
-                      latestReadPage: c.latestReadPage.value,
-                      isLastestRead: c.isLatestRead.value,
-                      greyScale: greyScale,
+                    Obx(
+                      () => ReadProgressOverlayWidget(
+                        imageCount: c.imageCount.value,
+                        latestReadPage: c.latestReadPage.value,
+                        isLastestRead: c.isLatestRead.value,
+                        greyScale: greyScale,
+                      ),
                     ),
-                    PagesOverlayWidget(
-                      imageCount: c.imageCount.value,
-                      showDetail: c.articleListItem.showDetail,
+                    Obx(
+                      () => PagesOverlayWidget(
+                        imageCount: c.imageCount.value,
+                        showDetail: c.articleListItem.showDetail,
+                      ),
                     ),
                   ],
                 )
