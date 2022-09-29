@@ -2,23 +2,6 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/cupertino.dart';
-import 'package:violet/component/download/hentai.dart';
-import 'package:violet/component/download/hitomi.dart';
-
-enum DownloaderType {
-  // Gelbooru, Danbooru, ...
-  booru,
-
-  // Hitomi.la, ...
-  manga,
-
-  // Tachiyomi Mangas
-  // I have no plans to apply.
-  mangaWithSeries,
-
-  // Pixiv, ...
-  album,
-}
 
 typedef StringCallback = Future Function(String);
 typedef VoidStringCallback = void Function(String);
@@ -271,38 +254,4 @@ class GeneralDownloadProgress {
     required this.thumbnailCallback,
     required this.progressCallback,
   });
-}
-
-abstract class Downloadable {
-  String name();
-  bool loginRequire();
-  Future<bool> tryLogin();
-  bool logined();
-  void setSession(String id, String pwd);
-  bool acceptURL(String url);
-  String fav();
-  String defaultFormat();
-  Future<List<DownloadTask>?> createTask(
-      String url, GeneralDownloadProgress gdp);
-}
-
-class ExtractorManager {
-  static ExtractorManager instance = ExtractorManager();
-
-  late List<Downloadable> _dl;
-
-  ExtractorManager() {
-    _dl = [
-      HitomiDonwloadManager(),
-      HentaiDonwloadManager(),
-    ];
-  }
-
-  bool existsExtractor(String url) {
-    return _dl.any((element) => element.acceptURL(url));
-  }
-
-  Downloadable getExtractor(String url) {
-    return _dl.firstWhere((element) => element.acceptURL(url));
-  }
 }

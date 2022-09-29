@@ -36,14 +36,6 @@ class DownloadRoutine {
     return true;
   }
 
-  Future<bool> checkValidUrl() async {
-    if (!ExtractorManager.instance.existsExtractor(item.url())) {
-      await _setState(8);
-      return false;
-    }
-    return true;
-  }
-
   Future<void> selectExtractor() async {
     await _setState(2);
   }

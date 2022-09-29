@@ -102,12 +102,6 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
     fToast = FToast();
     fToast.init(context);
 
-    if (ExtractorManager.instance.existsExtractor(widget.item.url())) {
-      final extractor =
-          ExtractorManager.instance.getExtractor(widget.item.url());
-      fav = extractor.fav();
-    }
-
     _styleCallback(widget.initialStyle);
 
     _checkLastRead();
@@ -160,7 +154,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                 _shouldReload = true;
               }));
 
-      if (!await routine.checkValidState() || !await routine.checkValidUrl()) {
+      if (!await routine.checkValidState()) {
         return;
       }
       await routine.selectExtractor();
