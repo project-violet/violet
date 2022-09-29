@@ -84,7 +84,8 @@ class HentaiManager {
       var meta = {
         'Id': no,
         'Title': article['Title'],
-        'Artists': article['Artists'].join('|'),
+        'Artists': article['Artists']?.join('|'),
+        'Language': article['Language'],
       };
       return Tuple2<List<QueryResult>, int>([QueryResult(result: meta)], -1);
     } catch (e, st) {
