@@ -9,7 +9,7 @@ import 'package:tuple/tuple.dart';
 class HiyobiManager {
   // [Thumbnail Image], [Image List]
   static Future<Tuple2<String, List<String>>> getImageList(String id) async {
-    var gg = await http.get('https://cdn.hiyobi.me/json/${id}_list.json');
+    var gg = await http.get('https://api.hiyobi.me/gallery/$id');
     var urls = gg.body;
     var files = jsonDecode(urls) as List<dynamic>;
     var result = <String>[];
