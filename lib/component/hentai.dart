@@ -196,8 +196,7 @@ class HentaiManager {
   }
 
   static Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
-    var lang = qr.language() as String;
-    var route = Settings.routingRule;
+    final route = Settings.routingRule;
 
     for (int i = 0; i < route.length; i++) {
       try {
@@ -251,9 +250,14 @@ class HentaiManager {
             }
 
           case 'NHentai':
-            if (lang == 'english' || lang == 'japanese' || lang == 'chinese') {
-              // return HitomiImageProvider(
-              //     await NHentaiManager.getImageList(qr.id().toString()));
+            if (qr.language() == null) {
+              var lang = qr.language() as String;
+              if (lang == 'english' ||
+                  lang == 'japanese' ||
+                  lang == 'chinese') {
+                // return HitomiImageProvider(
+                //     await NHentaiManager.getImageList(qr.id().toString()));
+              }
             }
             break;
         }
