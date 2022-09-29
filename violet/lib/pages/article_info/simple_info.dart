@@ -175,7 +175,7 @@ class SimpleInfoWidget extends StatelessWidget {
         ),
         Text(
             data.queryResult.getDateTime() != null
-                ? _dateFormat.format(data.queryResult.getDateTime()!)
+                ? _dateFormat.format(data.queryResult.getDateTime()!.toLocal())
                 : '',
             style: const TextStyle(fontSize: 15)),
       ],

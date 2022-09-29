@@ -209,9 +209,11 @@ class EHParser {
           .innerHtml
           .replaceAll('<br>', '\r\n'));
       comments.add(Tuple3<DateTime, String, String>(
-          df.parse(date
-              .substring(0, date.indexOf(' by'))
-              .substring('Posted on '.length)),
+          df.parse(
+              date
+                  .substring(0, date.indexOf(' by'))
+                  .substring('Posted on '.length),
+              true),
           author,
           contents));
     });
