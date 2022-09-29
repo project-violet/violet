@@ -167,8 +167,4 @@ class VioletChecker {
       }
     }
   }
-
-  static Future<bool> checkDownloadable() async {
-    return false;
-  }
 }
