@@ -28,7 +28,7 @@ class ThumbnailWidget extends StatelessWidget {
     final result = Obx(
       () {
         final greyScale = c.isLatestRead.value &&
-            c.imageCount - c.latestReadPage.value <= 2 &&
+            c.imageCount.value - c.latestReadPage.value <= 2 &&
             !c.articleListItem.disableFilter &&
             Settings.showArticleProgress;
 
