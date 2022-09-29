@@ -39,13 +39,15 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
   i2t() => ['daily', 'week', 'month', 'alltime'][index];
   i2tr() => ['daily', 'weekly', 'monthly', 'alltime'][index];
 
+  Widget? cachedListView;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
     future ??= _request();
 
-    final listView = FutureBuilder(
+    cachedListView ??= FutureBuilder(
       future: future,
       builder: (context, AsyncSnapshot<RequestType> snapshot) {
         late Widget sliverList;
@@ -152,7 +154,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: listView,
+        child: cachedListView!,
       ),
     );
   }
@@ -218,6 +220,7 @@ class _HotPageState extends State<HotPage> with AutomaticKeepAliveClientMixin {
         ],
         onSelected: (index) {
           this.index = index! as int;
+          cachedListView = null;
           future = _request(true);
         },
       ),
