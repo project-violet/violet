@@ -757,7 +757,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                          DateFormat('yyyy-MM-dd HH:mm').format(e.item1),
+                          DateFormat('yyyy-MM-dd HH:mm')
+                              .format(e.item1.toLocal()),
                           style: const TextStyle(fontSize: 12)),
                     ),
                   ),

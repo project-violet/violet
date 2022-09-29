@@ -118,7 +118,7 @@ class ArticleListItemWidgetController extends GetxController {
     title = HtmlUnescape().convert(articleListItem.queryResult.title());
     dateTime = articleListItem.queryResult.getDateTime() != null
         ? DateFormat('yyyy/MM/dd HH:mm')
-            .format(articleListItem.queryResult.getDateTime()!)
+            .format(articleListItem.queryResult.getDateTime()!.toLocal())
         : '';
   }
 

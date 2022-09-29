@@ -35,7 +35,7 @@ class QueryResult {
     }
 
     if (published() is! int && int.tryParse(published()) == null) {
-      return DateTime.tryParse(published() as String);
+      return DateTime.tryParse('${published() as String}Z');
     }
 
     const epochTicks = 621355968000000000;
@@ -43,7 +43,7 @@ class QueryResult {
 
     var ticksSinceEpoch = (published() as int) - epochTicks;
     var ms = ticksSinceEpoch ~/ ticksPerMillisecond;
-    return DateTime.fromMillisecondsSinceEpoch(ms);
+    return DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
   }
 }
 
