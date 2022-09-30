@@ -27,4 +27,17 @@ class HiyobiManager {
     return Tuple2<String, List<String>>(
         'https://tn.hiyobi.me/tn/$id.jpg', result);
   }
+
+  static Future<List<Tuple3<DateTime, String, String>>> getComments(
+      String id) async {
+    final gg = await http.get('https://api.hiyobi.me/gallery/$id/comments');
+    final comments = jsonDecode(gg.body) as List<dynamic>;
+
+    return comments
+        .map((e) => Tuple3<DateTime, String, String>(
+            DateTime.fromMillisecondsSinceEpoch((e['date'] as int) * 1000),
+            e['name'],
+            e['comment']))
+        .toList();
+  }
 }
