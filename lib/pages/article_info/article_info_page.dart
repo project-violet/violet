@@ -627,23 +627,25 @@ class __CommentAreaState extends State<_CommentArea> {
   @override
   void initState() {
     super.initState();
-    if (widget.queryResult.ehash() != null) {
-      Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-        try {
-          final hiyobiComments = await HiyobiManager.getComments(
-              widget.queryResult.id().toString());
-          comments.addAll(hiyobiComments);
-        } catch (_) {
-          print('asdfasdfasd');
-        }
 
+    Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+      try {
+        final hiyobiComments =
+            await HiyobiManager.getComments(widget.queryResult.id().toString());
+        setState(() {
+          comments.addAll(hiyobiComments);
+          comments.sort((x, y) => x.item1.compareTo(y.item1));
+        });
+      } catch (_) {}
+
+      if (widget.queryResult.ehash() != null) {
         final prefs = await SharedPreferences.getInstance();
         var cookie = prefs.getString('eh_cookies');
         if (cookie != null) {
           try {
-            var html = await EHSession.requestString(
+            final html = await EHSession.requestString(
                 'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l');
-            var article = EHParser.parseArticleData(html);
+            final article = EHParser.parseArticleData(html);
             setState(() {
               comments.addAll(article.comment ?? []);
               comments.sort((x, y) => x.item1.compareTo(y.item1));
@@ -651,19 +653,22 @@ class __CommentAreaState extends State<_CommentArea> {
             return;
           } catch (_) {}
         }
-        var html = (await http.get(
-                'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l'))
-            .body;
-        if (html.contains('This gallery has been removed or is unavailable.')) {
-          return;
-        }
-        var article = EHParser.parseArticleData(html);
-        setState(() {
-          comments.addAll(article.comment ?? []);
-          comments.sort((x, y) => x.item1.compareTo(y.item1));
-        });
-      });
-    }
+        try {
+          final html = (await http.get(
+                  'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l'))
+              .body;
+          if (html
+              .contains('This gallery has been removed or is unavailable.')) {
+            return;
+          }
+          final article = EHParser.parseArticleData(html);
+          setState(() {
+            comments.addAll(article.comment ?? []);
+            comments.sort((x, y) => x.item1.compareTo(y.item1));
+          });
+        } catch (_) {}
+      }
+    });
   }
 
   @override
