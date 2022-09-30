@@ -37,6 +37,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
 import 'package:violet/pages/main/faq/faq_page.dart';
 import 'package:violet/pages/main/info/lab/global_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
@@ -617,6 +618,19 @@ class _SettingsPageState extends State<SettingsPage>
             onTap: () async {
               PlatformNavigator.navigateSlide(
                   context, const LabGlobalComments());
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading: Icon(MdiIcons.star,
+                color: Settings.themeWhat
+                    ? Colors.yellowAccent
+                    : Colors.yellow.shade900),
+            title: Text(Translations.of(context).trans('artistcollection')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              PlatformNavigator.navigateSlide(
+                  context, const ArtistCollectionPage());
             },
           ),
           _buildDivider(),
