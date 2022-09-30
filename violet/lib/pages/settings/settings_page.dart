@@ -39,6 +39,7 @@ import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/main/faq/faq_page.dart';
 import 'package:violet/pages/main/info/lab/global_comments.dart';
+import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/lab_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/main/patchnote/patchnote_page.dart';
@@ -599,21 +600,23 @@ class _SettingsPageState extends State<SettingsPage>
           _buildDivider(),
           ListTile(
             leading:
+                Icon(MdiIcons.accessPointNetwork, color: Settings.majorColor),
+            title: Text(Translations.of(context).trans('realtimeuserrecord')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              PlatformNavigator.navigateSlide(
+                  context, const LabRecentRecordsU());
+            },
+          ),
+          _buildDivider(),
+          ListTile(
+            leading:
                 Icon(MdiIcons.commentTextMultiple, color: Settings.majorColor),
             title: Text(Translations.of(context).trans('comment')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               PlatformNavigator.navigateSlide(
                   context, const LabGlobalComments());
-            },
-          ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(MdiIcons.fileSign, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('patchnote')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              PlatformNavigator.navigateSlide(context, const PatchNotePage());
             },
           ),
           _buildDivider(),
@@ -959,16 +962,15 @@ class _SettingsPageState extends State<SettingsPage>
               );
             },
           ),
-          if (!Settings.liteMode) _buildDivider(),
-          if (!Settings.liteMode)
-            ListTile(
-              leading: Icon(MdiIcons.fileSign, color: Settings.majorColor),
-              title: Text(Translations.of(context).trans('patchnote')),
-              trailing: const Icon(Icons.keyboard_arrow_right),
-              onTap: () async {
-                PlatformNavigator.navigateSlide(context, const PatchNotePage());
-              },
-            ),
+          _buildDivider(),
+          ListTile(
+            leading: const Icon(MdiIcons.fileSign, color: Colors.cyan),
+            title: Text(Translations.of(context).trans('patchnote')),
+            trailing: const Icon(Icons.keyboard_arrow_right),
+            onTap: () async {
+              PlatformNavigator.navigateSlide(context, const PatchNotePage());
+            },
+          ),
           _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
