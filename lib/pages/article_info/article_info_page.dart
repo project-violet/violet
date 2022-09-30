@@ -23,6 +23,8 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/component/hiyobi/hiyobi.dart';
+import 'package:violet/component/hiyobi/hiyobi_provider.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -627,6 +629,14 @@ class __CommentAreaState extends State<_CommentArea> {
     super.initState();
     if (widget.queryResult.ehash() != null) {
       Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+        try {
+          final hiyobiComments = await HiyobiManager.getComments(
+              widget.queryResult.id().toString());
+          comments.addAll(hiyobiComments);
+        } catch (_) {
+          print('asdfasdfasd');
+        }
+
         final prefs = await SharedPreferences.getInstance();
         var cookie = prefs.getString('eh_cookies');
         if (cookie != null) {
@@ -635,7 +645,8 @@ class __CommentAreaState extends State<_CommentArea> {
                 'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l');
             var article = EHParser.parseArticleData(html);
             setState(() {
-              comments = article.comment ?? [];
+              comments.addAll(article.comment ?? []);
+              comments.sort((x, y) => x.item1.compareTo(y.item1));
             });
             return;
           } catch (_) {}
@@ -648,7 +659,8 @@ class __CommentAreaState extends State<_CommentArea> {
         }
         var article = EHParser.parseArticleData(html);
         setState(() {
-          comments = article.comment ?? [];
+          comments.addAll(article.comment ?? []);
+          comments.sort((x, y) => x.item1.compareTo(y.item1));
         });
       });
     }
