@@ -35,7 +35,8 @@ class QueryResult {
     }
 
     if (published() is! int && int.tryParse(published()) == null) {
-      return DateTime.tryParse('${published() as String}Z');
+      return DateTime.tryParse(
+          '${(published() as String).replaceAll('+00:00', '')}Z');
     }
 
     const epochTicks = 621355968000000000;
