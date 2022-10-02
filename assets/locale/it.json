@@ -302,5 +302,7 @@
   "faq": "Frequently Asked Questions",
   "usermanual": "User Manual",
   "lab": "Laboratory",
-  "realtimeuserrecord": "Real Time User Record"
+  "realtimeuserrecord": "Real Time User Record",
+  "manualupdate": "Manual Update",
+  "cannotuseios": "You cannot use update on iOS :("
 }

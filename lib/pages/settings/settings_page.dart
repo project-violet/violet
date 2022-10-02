@@ -2350,9 +2350,10 @@ class _SettingsPageState extends State<SettingsPage>
       _buildItems(
         [
           InkWell(
-            customBorder: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0))),
             child: ListTile(
               // borderRadius: BorderRadius.circular(8.0),
               leading: Icon(
@@ -2385,6 +2386,56 @@ class _SettingsPageState extends State<SettingsPage>
                   gravity: ToastGravity.BOTTOM,
                   toastDuration: const Duration(seconds: 4),
                 );
+              }
+            },
+          ),
+          _buildDivider(),
+          InkWell(
+            customBorder: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(8.0),
+                    bottomRight: Radius.circular(8.0))),
+            child: ListTile(
+              leading: Icon(
+                MdiIcons.cellphoneArrowDown,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('manualupdate')),
+              trailing: const Icon(
+                  // Icons.message,
+                  Icons.keyboard_arrow_right),
+            ),
+            onTap: () async {
+              await UpdateSyncManager.checkUpdateSync();
+
+              if (!UpdateSyncManager.updateRequire) {
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isCheck: true,
+                    msg: Translations.of(context).trans('latestver'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
+                return;
+              }
+
+              if (Platform.isIOS) {
+                flutterToast.showToast(
+                  child: ToastWrapper(
+                    isWarning: true,
+                    msg: Translations.of(context).trans('cannotuseios'),
+                  ),
+                  gravity: ToastGravity.BOTTOM,
+                  toastDuration: const Duration(seconds: 4),
+                );
+                return;
+              }
+
+              const url =
+                  'https://github.com/project-violet/violet/releases/latest';
+              if (await canLaunch(url)) {
+                await launch(url);
               }
             },
           ),
