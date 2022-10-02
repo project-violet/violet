@@ -528,7 +528,7 @@ abstract class CustomViewport extends MultiChildRenderObjectWidget {
   CustomRenderViewport createRenderObject(BuildContext context);
 
   @override
-  _ViewportElement createElement() => _ViewportElement(this);
+  ViewportElement createElement() => ViewportElement(this);
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
@@ -551,9 +551,9 @@ abstract class CustomViewport extends MultiChildRenderObjectWidget {
   }
 }
 
-class _ViewportElement extends MultiChildRenderObjectElement {
+class ViewportElement extends MultiChildRenderObjectElement {
   /// Creates an element that uses the given widget as its configuration.
-  _ViewportElement(CustomViewport widget) : super(widget);
+  ViewportElement(CustomViewport widget) : super(widget);
 
   @override
   CustomViewport get widget => super.widget as CustomViewport;
@@ -719,8 +719,9 @@ abstract class CustomRenderViewport
 
   @override
   void setupParentData(RenderObject child) {
-    if (child.parentData is! CustomSliverPhysicalContainerParentData)
+    if (child.parentData is! CustomSliverPhysicalContainerParentData) {
       child.parentData = CustomSliverPhysicalContainerParentData();
+    }
   }
 
   /// The relative position of the zero scroll offset.
