@@ -22,6 +22,19 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 10, 2),
+    version: '1.28 Minor Update',
+    contents: [
+      'fix article thnumbnail viewer animation bug',
+      'fix retry when thumbnail loading fail',
+      'fix exhentai paging bug',
+      'fix hiyobi component',
+      'fix bug that theme color is not changed',
+      'add lite mode',
+      'add hiyobi comment',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 9, 15),
     version: '1.27 Minor Update',
     contents: [
