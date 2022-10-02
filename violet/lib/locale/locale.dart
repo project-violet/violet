@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:violet/log/log.dart';
 
 class Translations {
   Translations(this.locale);
@@ -16,12 +17,23 @@ class Translations {
   static Translations? instance;
 
   static Translations of(BuildContext context) {
-    var trans = Localizations.of<Translations>(context, Translations);
+    final trans = Localizations.of<Translations>(context, Translations);
+
     if (trans != null) {
-      return Localizations.of<Translations>(context, Translations)!;
+      return trans;
     } else {
       return instance!;
     }
+  }
+
+  bool isSupported() {
+    final lc =
+        ['ko', 'en', 'ja', 'zh', 'it', 'eo'].contains(locale.languageCode);
+    final sc = ['Hans', 'Hant'].contains(locale.scriptCode);
+    if (locale.languageCode == 'zh') {
+      return sc;
+    }
+    return lc;
   }
 
   late Map<String, String> _sentences;
@@ -43,7 +55,13 @@ class Translations {
       dbLanguageCode = code;
     }
 
-    print(code);
+    if (!isSupported()) {
+      if (locale.languageCode == 'zh') {
+        dbLanguageCode = 'zh_Hans';
+      } else {
+        dbLanguageCode = 'en';
+      }
+    }
 
     String data = await rootBundle.loadString('assets/locale/$code.json');
     Map<String, dynamic> result = json.decode(data);
@@ -68,25 +86,13 @@ class TranslationsDelegate extends LocalizationsDelegate<Translations> {
 
   @override
   bool isSupported(Locale locale) {
-    var lc = ['ko', 'en', 'ja', 'zh', 'it', 'eo'].contains(locale.languageCode);
-    var sc = ['Hans', 'Hant'].contains(locale.scriptCode);
-    if (locale.languageCode == 'zh') {
-      return sc;
-    }
-    return lc || sc;
+    return true;
   }
 
   @override
   Future<Translations> load(Locale locale) async {
     Translations localizations = Translations(locale);
     await localizations.load();
-
-    if (Translations.instance == null) {
-      await localizations.load('en');
-    }
-
-    print('Load ${locale.languageCode}');
-
     return localizations;
   }
 
