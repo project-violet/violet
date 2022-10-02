@@ -91,8 +91,8 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
   void insert(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
     if (qr as String == '') return;
-    for (var tag in (qr as String).split('|')) {
-      if (tag != null && tag != '') {
+    for (var tag in qr.split('|')) {
+      if (tag != '') {
         if (!map.containsKey(tag)) map[tag] = 0;
         map[tag] = map[tag]! + 1;
       }
@@ -102,8 +102,8 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
   void insertSingle(Map<String, int> map, dynamic qr) {
     if (qr == null) return;
     if (qr as String == '') return;
-    var str = qr as String;
-    if (str != null && str != '') {
+    var str = qr;
+    if (str != '') {
       if (!map.containsKey(str)) map[str] = 0;
       map[str] = map[str]! + 1;
     }
