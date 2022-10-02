@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-import 'package:violet/component/hitomi/message_search.dart';
 import 'package:violet/context/viewer_context.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';

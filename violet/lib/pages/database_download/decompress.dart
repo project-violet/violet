@@ -4,7 +4,6 @@
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:typed_data';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ffi/ffi.dart';

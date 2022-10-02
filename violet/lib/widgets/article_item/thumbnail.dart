@@ -1,8 +1,6 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
