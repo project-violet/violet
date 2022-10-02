@@ -302,5 +302,7 @@
   "faq": "자주 묻는 질문",
   "usermanual": "유저 메뉴얼",
   "lab": "실험실",
-  "realtimeuserrecord": "실시간 유저 레코드"
+  "realtimeuserrecord": "실시간 유저 레코드",
+  "manualupdate": "수동 업데이트",
+  "cannotuseios": "iOS에선 사용할 수 없어요 :("
 }
