@@ -622,7 +622,7 @@ class _CommentArea extends StatefulWidget {
 }
 
 class __CommentAreaState extends State<_CommentArea> {
-  List<Tuple3<DateTime, String, String>> comments = [];
+  List<Tuple4<DateTime, String, String, String>> comments = [];
 
   @override
   void initState() {
@@ -633,26 +633,34 @@ class __CommentAreaState extends State<_CommentArea> {
         final hiyobiComments =
             await HiyobiManager.getComments(widget.queryResult.id().toString());
         setState(() {
-          comments.addAll(hiyobiComments);
+          comments.addAll(hiyobiComments
+              .map((e) => Tuple4(e.item1, e.item2, e.item3, 'hiyobi'))
+              .toList());
           comments.sort((x, y) => x.item1.compareTo(y.item1));
         });
       } catch (_) {}
 
       if (widget.queryResult.ehash() != null) {
         final prefs = await SharedPreferences.getInstance();
-        var cookie = prefs.getString('eh_cookies');
+        final cookie = prefs.getString('eh_cookies');
+
         if (cookie != null) {
           try {
             final html = await EHSession.requestString(
                 'https://exhentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l');
             final article = EHParser.parseArticleData(html);
             setState(() {
-              comments.addAll(article.comment ?? []);
+              if (article.comment != null) {
+                comments.addAll(article.comment!
+                    .map((e) => Tuple4(e.item1, e.item2, e.item3, 'exhentai'))
+                    .toList());
+              }
               comments.sort((x, y) => x.item1.compareTo(y.item1));
             });
             return;
           } catch (_) {}
         }
+
         try {
           final html = (await http.get(
                   'https://e-hentai.org/g/${widget.queryResult.id()}/${widget.queryResult.ehash()}/?p=0&inline_set=ts_l'))
@@ -663,7 +671,9 @@ class __CommentAreaState extends State<_CommentArea> {
           }
           final article = EHParser.parseArticleData(html);
           setState(() {
-            comments.addAll(article.comment ?? []);
+            comments.addAll(article.comment!
+                .map((e) => Tuple4(e.item1, e.item2, e.item3, 'e-hentai'))
+                .toList());
             comments.sort((x, y) => x.item1.compareTo(y.item1));
           });
         } catch (_) {}
@@ -682,7 +692,7 @@ class __CommentAreaState extends State<_CommentArea> {
 
 class _InfoAreaWidget extends StatefulWidget {
   final QueryResult queryResult;
-  final List<Tuple3<DateTime, String, String>> comments;
+  final List<Tuple4<DateTime, String, String, String>> comments;
 
   const _InfoAreaWidget({
     required this.queryResult,
@@ -745,12 +755,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       var children = List<Widget>.from(widget.comments.map((e) {
         return InkWell(
           onTap: () async {
-            // showOkDialog(context, e.item3, 'Comments');
             AlertDialog alert = AlertDialog(
               content: SelectableText(e.item3),
-              // actions: [
-              //   okButton,
-              // ],
             );
             await showDialog(
               context: context,
@@ -765,21 +771,29 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           },
           splashColor: Colors.white,
           child: ListTile(
-            // dense: true,
             title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text(e.item2),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                          DateFormat('yyyy-MM-dd HH:mm')
-                              .format(e.item1.toLocal()),
-                          style: const TextStyle(fontSize: 12)),
-                    ),
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text(e.item2),
+                Container(
+                  height: 20.0,
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    '  ${e.item4}',
+                    style: const TextStyle(color: Colors.grey, fontSize: 10.0),
                   ),
-                ]),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                        DateFormat('yyyy-MM-dd HH:mm')
+                            .format(e.item1.toLocal()),
+                        style: const TextStyle(fontSize: 12)),
+                  ),
+                ),
+              ],
+            ),
             subtitle: buildTextWithLinks(e.item3),
           ),
         );
