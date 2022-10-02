@@ -54,7 +54,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   bool get wantKeepAlive => true;
 
   @override
-  VoidCallback? get shouldReloadCallback => null;
+  VoidCallback? get shouldReloadCallback => () => _shouldReload = true;
 
   Color color = Colors.green;
   bool into = false;
