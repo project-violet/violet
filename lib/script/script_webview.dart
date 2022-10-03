@@ -29,8 +29,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
 
   Timer? timer;
 
-  String? gg_m;
-  String? gg_b;
+  String? ggM;
+  String? ggB;
 
   @override
   void initState() {
@@ -67,8 +67,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
             controller.addJavaScriptHandler(
                 handlerName: 'gg',
                 callback: (args) {
-                  gg_m = args[0];
-                  gg_b = args[1];
+                  ggM = args[0];
+                  ggB = args[1];
 
                   return {};
                 });
@@ -84,14 +84,14 @@ class _ScriptWebViewState extends State<ScriptWebView>
               window.flutter_inappwebview.callHandler('gg', ...[r, gg.b]);
               ''');
 
-            if (gg_m == null ||
-                !(gg_m!.startsWith('0') || gg_m!.startsWith('1'))) {
+            if (ggM == null ||
+                !(ggM!.startsWith('0') || ggM!.startsWith('1'))) {
               Logger.error(
-                  '[Script Webview] Update Fail!\ngg_m: $gg_m\ngg_b: $gg_b');
+                  '[Script Webview] Update Fail!\ngg_m: $ggM\ngg_b: $ggB');
               return;
             }
 
-            await ScriptManager.setV4(gg_m!, gg_b!);
+            await ScriptManager.setV4(ggM!, ggB!);
           },
         ),
       ),

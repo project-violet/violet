@@ -257,6 +257,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     );
   }
 
+  // ignore: unused_element
   _viewArticle() async {
     if (Settings.useVioletServer) {
       Future.delayed(const Duration(milliseconds: 100)).then((value) async {
