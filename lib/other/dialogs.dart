@@ -81,7 +81,7 @@ Future<bool> showOkCancelDialog({
 
 Future<bool> showYesNoDialog(BuildContext context, String message,
     [String? title]) async {
-  var result = await showDialog<bool>(
+  final result = await showDialog<bool>(
     context: context,
     builder: (context) => AlertDialog(
       title: Text(title ?? defaultTitle),
@@ -105,4 +105,32 @@ Future<bool> showYesNoDialog(BuildContext context, String message,
     ),
   );
   return result ?? false;
+}
+
+Future<bool?> showYesNoCancelDialog(BuildContext context, String message,
+    [String? title]) async {
+  final result = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title ?? defaultTitle),
+      content: Text(message),
+      actions: [
+        TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          onPressed: () {
+            Navigator.pop(context, true);
+          },
+          child: Text(Translations.of(context).trans('yes')),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(primary: Settings.majorColor),
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+          child: Text(Translations.of(context).trans('no')),
+        ),
+      ],
+    ),
+  );
+  return result;
 }
