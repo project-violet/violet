@@ -4,7 +4,6 @@
 import 'dart:async';
 
 import 'package:path_provider/path_provider.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:violet/database/database.dart';
 
 class CommonUserDatabase extends DataBaseManager {
