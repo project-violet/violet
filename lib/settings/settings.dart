@@ -289,6 +289,9 @@ class Settings {
       }
     } else if (Platform.isIOS) {
       tDownloadBasePath = await _getString('downloadbasepath', 'not supported');
+    } else {
+      tDownloadBasePath =
+          join(File(Platform.resolvedExecutable).parent.path, 'download');
     }
     downloadBasePath = tDownloadBasePath!;
 

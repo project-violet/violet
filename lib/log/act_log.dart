@@ -106,8 +106,16 @@ class ActLogger {
   static Timer? signalTimer;
 
   static Future<void> init() async {
-    var dir = await getApplicationDocumentsDirectory();
+    late Directory dir;
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      dir = await getApplicationDocumentsDirectory();
+    } else {
+      dir = File(Platform.resolvedExecutable).parent;
+    }
+
     logFile = File(join(dir.path, 'act-log.txt'));
+
     if (!await logFile.exists()) {
       await logFile.create();
     }

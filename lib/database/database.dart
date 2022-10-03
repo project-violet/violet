@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DataBaseManager {
   String? dbPath;
@@ -27,9 +29,17 @@ class DataBaseManager {
 
   static Future<DataBaseManager> getInstance() async {
     if (_instance == null) {
-      var dbPath = Platform.isAndroid
-          ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-          : '${await getDatabasesPath()}/data.db';
+      String dbPath;
+
+      if (Platform.isAndroid) {
+        dbPath =
+            '${(await getApplicationDocumentsDirectory()).path}/data/data.db';
+      } else if (Platform.isIOS) {
+        dbPath = '${await getDatabasesPath()}/data.db';
+      } else {
+        dbPath = '${File(Platform.resolvedExecutable).parent.path}/data.db';
+      }
+
       _instance = create(dbPath);
       await _instance!.open();
     }
@@ -37,18 +47,36 @@ class DataBaseManager {
   }
 
   static Future<void> reloadInstance() async {
-    var dbPath = Platform.isAndroid
-        ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-        : '${await getDatabasesPath()}/data.db';
+    String dbPath;
+
+    if (Platform.isAndroid) {
+      dbPath =
+          '${(await getApplicationDocumentsDirectory()).path}/data/data.db';
+    } else if (Platform.isIOS) {
+      dbPath = '${await getDatabasesPath()}/data.db';
+    } else {
+      dbPath = '${File(Platform.resolvedExecutable).parent.path}/data.db';
+    }
+
     _instance = create(dbPath);
   }
 
   Future open() async {
-    db ??= await openDatabase(dbPath!);
+    if (Platform.isAndroid || Platform.isIOS) {
+      db ??= await openDatabase(dbPath!);
+    } else {
+      db ??= await databaseFactoryFfi.openDatabase(dbPath!);
+    }
   }
 
   Future checkOpen() async {
-    if (!db!.isOpen) db = await openDatabase(dbPath!);
+    if (!db!.isOpen) {
+      if (Platform.isAndroid || Platform.isIOS) {
+        db = await openDatabase(dbPath!);
+      } else {
+        db = await databaseFactoryFfi.openDatabase(dbPath!);
+      }
+    }
   }
 
   Future<List<Map<String, dynamic>>> query(String str) async {

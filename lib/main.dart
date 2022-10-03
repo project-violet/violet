@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -13,10 +14,10 @@ import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:violet/firebase_options.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
@@ -31,11 +32,16 @@ import 'locale/locale.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FlutterDownloader.initialize(); // @dependent: android
   FlareCache.doesPrune = false;
-  FlutterError.onError = recordFlutterError;
 
-  await initFirebase();
+  if (Platform.isAndroid || Platform.isIOS) {
+    FlutterError.onError = recordFlutterError;
+    await initFirebase();
+  } else {
+    sqfliteFfiInit();
+    await getUserId();
+  }
+
   await Settings.initFirst();
   await warmupFlare();
   await Wakelock.enable();
@@ -45,7 +51,9 @@ Future<void> main() async {
   }, (exception, stack) async {
     Logger.error('[async-error] E: $exception\n$stack');
 
-    await FirebaseCrashlytics.instance.recordError(exception, stack);
+    if (Platform.isAndroid || Platform.isIOS) {
+      await FirebaseCrashlytics.instance.recordError(exception, stack);
+    }
   });
 }
 
@@ -70,19 +78,21 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
   await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
 }
 
-Future<void> initFirebase() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  // check user-id is set
+Future<String> getUserId() async {
   final prefs = await SharedPreferences.getInstance();
   var id = prefs.getString('fa_userid');
   if (id == null) {
     id = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
     prefs.setString('fa_userid', id);
   }
+  return id;
+}
+
+Future<void> initFirebase() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   var analytics = FirebaseAnalytics.instance;
-  await analytics.setUserId(id: id);
+  await analytics.setUserId(id: await getUserId());
 }
 
 class MyApp extends StatelessWidget {
@@ -140,7 +150,8 @@ class MyApp extends StatelessWidget {
         Settings.useLockScreen ? const LockScreen() : const SplashPage();
 
     final navigatorObservers = [
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+      if (Platform.isAndroid || Platform.isIOS)
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
     ];
 
     return GetMaterialApp(

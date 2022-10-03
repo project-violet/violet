@@ -216,8 +216,15 @@ class _SplashPageState extends State<SplashPage> {
 
     // this may be slow down to loading
     _changeMessage('check network...');
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult != ConnectivityResult.none) {
+
+    var loadScript = true;
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      final connectivityResult = await (Connectivity().checkConnectivity());
+      loadScript = connectivityResult != ConnectivityResult.none;
+    }
+
+    if (loadScript) {
       _changeMessage('loading script...');
       await ScriptManager.init();
     }
@@ -239,7 +246,7 @@ class _SplashPageState extends State<SplashPage> {
 
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getInt('db_exists') == 1 && !widget.switching) {
-      if (connectivityResult != ConnectivityResult.none) {
+      if (loadScript) {
         try {
           _changeMessage('check sync...');
           await SyncManager.checkSync();
