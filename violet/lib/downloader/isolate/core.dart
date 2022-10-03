@@ -302,6 +302,7 @@ void _downloadIsolateRoutine(SendPort sendPort) {
           _modifyTaskPoolSize(message.data as int);
           break;
         case SendPortType.test:
+          // ignore: unused_local_variable
           var ttask = message.data as List<String>;
           break;
       }
