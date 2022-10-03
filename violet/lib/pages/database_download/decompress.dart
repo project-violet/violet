@@ -11,25 +11,23 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
-typedef _NativeP7zipShell = Int32 Function(Pointer<Int8>);
+typedef _NativeP7zipShell = NativeFunction<Int32 Function(Pointer<Int8>)>;
 typedef _DartP7zipShell = int Function(Pointer<Int8>);
 
-void _shell(List argv) async {
+void _shell(List argv) {
+  // TODO: Using the LZMA SDK directly may be better.
   final SendPort sendPort = argv[0];
   final String soPath = argv[1];
   final String cmd = argv[2];
   final p7zip = DynamicLibrary.open(soPath);
-  if (p7zip == null) {
-    return null;
+  final p7zipShell = p7zip.lookup<_NativeP7zipShell>('p7zipShell');
+  if (p7zipShell.address == 0) {
+    sendPort.send(-1);
+    return;
   }
-  final _DartP7zipShell p7zipShell = p7zip
-      .lookup<NativeFunction<_NativeP7zipShell>>('p7zipShell')
-      .asFunction();
-  if (p7zipShell == null) {
-    return null;
-  }
+  final _DartP7zipShell p7zipShellFn = p7zipShell.asFunction();
   final cstr = intListToArray(cmd);
-  final result = p7zipShell.call(cstr);
+  final result = p7zipShellFn.call(cstr);
   sendPort.send(result);
   // final DynamicLibrary dlLib = DynamicLibrary.process();
   // final int Function(Pointer<Void>) dlcloseFun = dlLib
@@ -48,16 +46,14 @@ Pointer<Int8> intListToArray(String list) {
 }
 
 class P7zip {
-  Future<String?> decompress(List<String> files, {String? path}) async {
+  Future<String?> decompress(List<String> files, {required String path}) async {
     final soPath = await _checkSharedLibrary();
     print(soPath);
     if (soPath == null) {
       return null;
     }
-    String filesStr = '';
-    files.forEach((element) {
-      filesStr += ' $element';
-    });
+
+    final filesStr = files.join(' ');
 
     final receivePort = ReceivePort();
     await Isolate.spawn(

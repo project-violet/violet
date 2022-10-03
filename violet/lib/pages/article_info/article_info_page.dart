@@ -1098,8 +1098,8 @@ class _Chip extends StatelessWidget {
         onLongPress: () async {
           if (!Settings.excludeTags
               .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
-            var yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
-            if (yn != null && yn) {
+            final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
+            if (yn) {
               Settings.excludeTags
                   .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
               await Settings.setExcludeTags(Settings.excludeTags.join(' '));

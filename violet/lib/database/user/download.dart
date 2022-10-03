@@ -94,10 +94,10 @@ class Download {
   static Future<Download> getInstance() async {
     await lock.synchronized(() async {
       if (_instance == null) {
-        var db = await CommonUserDatabase.getInstance();
-        var ee = await db.query(
+        final db = await CommonUserDatabase.getInstance();
+        final rows = await db.query(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='DownloadItem';");
-        if (ee == null || ee.isEmpty || ee[0].isEmpty) {
+        if (rows.isEmpty || rows[0].isEmpty) {
           try {
             await db.execute('''CREATE TABLE DownloadItem (
               Id integer primary key autoincrement, 
