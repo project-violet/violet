@@ -6,7 +6,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:violet/log/log.dart';
 
 class Translations {
   Translations(this.locale);

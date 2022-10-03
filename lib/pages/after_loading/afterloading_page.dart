@@ -21,8 +21,6 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
-import '../viewer/others/lifecycle_event_handler.dart';
-
 class AfterLoadingPage extends StatefulWidget {
   const AfterLoadingPage({Key? key}) : super(key: key);
 
@@ -301,7 +299,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           children: <Widget>[
             if (!Settings.liteMode) const MainPage(),
             const SearchPage(),
-            if (Settings.liteMode) HotPage(),
+            if (Settings.liteMode) const HotPage(),
             const BookmarkPage(),
             const DownloadPage(),
             const SettingsPage(),

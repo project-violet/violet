@@ -91,10 +91,11 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     PaintingBinding.instance.imageCache.clear();
     imageCache.clearLiveImages();
     imageCache.clear();
-    if (_urls != null)
+    if (_urls != null) {
       _urls!.forEach((element) async {
         await CachedNetworkImageProvider(element).evict();
       });
+    }
     super.dispose();
   }
 

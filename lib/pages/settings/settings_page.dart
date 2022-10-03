@@ -12,7 +12,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -1532,21 +1531,6 @@ class _SettingsPageState extends State<SettingsPage>
             //   borderRadius: BorderRadius.all(
             //     Radius.circular(8.0),
             //   ),
-            child: ListTile(
-              leading:
-                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(Translations.of(context).trans('downloadpath')),
-                  Text(
-                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-              trailing: const Icon(Icons.keyboard_arrow_right),
-            ),
             onTap: Settings.useInnerStorage
                 ? null
                 : () async {
@@ -1603,6 +1587,21 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setBaseDownloadPath(text.text);
                     }
                   },
+            child: ListTile(
+              leading:
+                  Icon(MdiIcons.folderDownload, color: Settings.majorColor),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(Translations.of(context).trans('downloadpath')),
+                  Text(
+                    '${Translations.of(context).trans('curdownloadpath')}: ${Settings.downloadBasePath}',
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+              trailing: const Icon(Icons.keyboard_arrow_right),
+            ),
           ),
           _buildDivider(),
           InkWell(
