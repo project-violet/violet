@@ -237,7 +237,7 @@ class VioletServer {
     var formData =
         FormData.fromMap({'file': await MultipartFile.fromFile(filePath)});
 
-    final response = await dio.post('$api/fupload', data: formData);
+    await dio.post('$api/fupload', data: formData);
   }
 
   static Future<bool> fileUpload(String fn, String data) async {

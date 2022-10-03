@@ -90,7 +90,6 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     index -= 1;
 
     String name;
-    String oname = '';
     String desc;
     String date = '';
     int id;
@@ -101,7 +100,6 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
       id = -1;
     } else {
       name = data!.name();
-      oname = name;
       desc = data.description();
       date = data.datetime().split(' ')[0];
       id = data.id();
