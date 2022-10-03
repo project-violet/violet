@@ -183,7 +183,7 @@ class HitomiIndexs {
     var ll = (relatedTag[tag] as List<dynamic>)
         .map((e) => Tuple2<String, double>(
             (e as Map<String, dynamic>).entries.first.key,
-            (e as Map<String, dynamic>).entries.first.value.toDouble()))
+            e.entries.first.value.toDouble()))
         .toList();
     ll.sort((x, y) => y.item2.compareTo(x.item2));
     return ll;

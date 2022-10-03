@@ -19,7 +19,7 @@ import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 
 class HotPage extends StatefulWidget {
-  const HotPage();
+  const HotPage({Key? key}) : super(key: key);
 
   @override
   State<HotPage> createState() => _HotPageState();
