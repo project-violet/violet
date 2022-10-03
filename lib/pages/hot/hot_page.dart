@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:async/async.dart';
-import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -13,7 +12,6 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
-import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
