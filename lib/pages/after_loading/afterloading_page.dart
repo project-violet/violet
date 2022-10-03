@@ -299,7 +299,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           children: <Widget>[
             if (!Settings.liteMode) const MainPage(),
             const SearchPage(),
-            if (Settings.liteMode) HotPage(),
+            if (Settings.liteMode) const HotPage(),
             const BookmarkPage(),
             const DownloadPage(),
             const SettingsPage(),

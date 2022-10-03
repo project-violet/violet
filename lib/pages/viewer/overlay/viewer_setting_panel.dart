@@ -206,8 +206,10 @@ class _ViewerSettingPanelState extends State<ViewerSettingPanel> {
               c.fullscreen.value = Settings.disableFullScreen;
 
               if (Settings.disableFullScreen) {
-                SystemChrome.setEnabledSystemUIOverlays(
-                    [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+                SystemChrome.setEnabledSystemUIMode(
+                  SystemUiMode.manual,
+                  overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top],
+                );
               }
               setState(() {});
             },
