@@ -816,7 +816,7 @@ class ResultPanelWidget extends StatelessWidget {
                             addBottomPadding: false,
                             width: (windowWidth - 4.0) / mm,
                             thumbnailTag:
-                                'thumbnail${resultList[index].id()}${dateTime}',
+                                'thumbnail${resultList[index].id()}$dateTime',
                             usableTabList: resultList,
                           ),
                           child: const ArticleListItemWidget(),
@@ -865,7 +865,7 @@ class ResultPanelWidget extends StatelessWidget {
                       queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag:
-                          'thumbnail${resultList[index].id()}${dateTime}',
+                          'thumbnail${resultList[index].id()}$dateTime',
                       usableTabList: resultList,
                     ),
                     child: const ArticleListItemWidget(),
@@ -894,7 +894,7 @@ class ResultPanelWidget extends StatelessWidget {
                       queryResult: resultList[index],
                       width: windowWidth - 4.0,
                       thumbnailTag:
-                          'thumbnail${resultList[index].id()}${dateTime}',
+                          'thumbnail${resultList[index].id()}$dateTime',
                       usableTabList: resultList,
                     ),
                     child: const ArticleListItemWidget(),

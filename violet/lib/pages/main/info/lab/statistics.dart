@@ -4,17 +4,14 @@
 import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
-import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/act_log.dart';
 import 'package:violet/log/log.dart';
