@@ -1,15 +1,15 @@
 <p align="center">
- <img width="150px" src="https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png" align="center" alt="GitHub Readme Stats" />
- <h2 align="center">Project Violet</h2>
-  <p align="center">
+    <img width="150px" src="https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png" align="center" alt="Violet Logo" />
+</p>
+<h2 align="center">Project Violet</h2>
+<p align="center">
     <b><a href="https://github.com/project-violet/violet/wiki/Screenshots">Screenshots</a></b>
     •
     <b><a href="https://github.com/project-violet/violet/releases/latest">Download</a></b>
     •
-    <b><a href="/manual">User Manual</a></b>
+    <b><a href="https://github.com/project-violet/violet/tree/dev/manual">User Manual</a></b>
     •
-    <b><a href="/doc">docs</a></b>
-  </p>
+    <b><a href="https://github.com/project-violet/violet/tree/dev/doc">Docs</a></b>
 </p>
 
 [![](https://discordapp.com/api/guilds/713749607472955445/widget.png?style=shield)](https://discord.gg/fqrtRxC)
@@ -19,7 +19,8 @@
 
 ### Community
 
-Leave any questions on the github issue or on the Discord channel below.
+Leave any questions on the [GitHub issues](https://github.com/project-violet/violet/issues)
+or on the Discord channel below.
 
 Discord Channel: https://discord.gg/fqrtRxC
 
@@ -32,9 +33,8 @@ Discord Channel: https://discord.gg/fqrtRxC
 ### Multiple Language Support
 
 If you want to add your language to the app,
-please translate https://github.com/project-violet/violet/blob/dev/assets/locale/en.json.
-I can translate it by google translator, but the quality is low.
+please translate [assets/locale/en.json](https://github.com/project-violet/violet/blob/dev/assets/locale/en.json).
+I can translate it by Google translator, but the quality is low.
 
-If you want to support language in source code, please refer to the following commits.
-
-https://github.com/project-violet/violet/commit/f6babca1850df19e0774dbc8f708643b5038f5fd
+If you want to support language in source code, please refer to the following commit:
+[f6babca](https://github.com/project-violet/violet/commit/f6babca1850df19e0774dbc8f708643b5038f5fd).
