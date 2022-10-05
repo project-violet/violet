@@ -549,7 +549,6 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   }
 
   Future<void> _featuresOnTap() async {
-    var rtype = Settings.downloadResultType;
     Navigator.of(context)
         .push(PageRouteBuilder(
       opaque: false,
