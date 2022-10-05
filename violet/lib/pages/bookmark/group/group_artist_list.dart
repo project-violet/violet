@@ -457,7 +457,7 @@ class _GroupArtistListState extends State<GroupArtistList>
                   actions: <Widget>[
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Settings.majorColor,
+                        backgroundColor: Settings.majorColor,
                       ),
                       child: Text(Translations.of(context).trans('cancel')),
                       onPressed: () {

@@ -367,7 +367,6 @@ class _SettingsPageState extends State<SettingsPage>
                   await Settings.setThemeBlack(!Settings.themeBlack);
                   DynamicTheme.of(context)!.setThemeData(
                     ThemeData(
-                      accentColor: Settings.majorColor,
                       brightness: Theme.of(context).brightness,
                       bottomSheetTheme: BottomSheetThemeData(
                           backgroundColor: Colors.black.withOpacity(0)),
@@ -382,6 +381,8 @@ class _SettingsPageState extends State<SettingsPage>
                       cardColor: Settings.themeBlack && Settings.themeWhat
                           ? const Color(0xFF141414)
                           : null,
+                      colorScheme: ColorScheme.fromSwatch()
+                          .copyWith(secondary: Settings.majorColor),
                     ),
                   );
                   ThemeSwitchableStateTargetStore.doChange();
@@ -400,7 +401,6 @@ class _SettingsPageState extends State<SettingsPage>
                       await Settings.setThemeFlat(newValue);
                       DynamicTheme.of(context)!.setThemeData(
                         ThemeData(
-                          accentColor: Settings.majorColor,
                           brightness: Theme.of(context).brightness,
                           bottomSheetTheme: BottomSheetThemeData(
                               backgroundColor: Colors.black.withOpacity(0)),
@@ -415,6 +415,8 @@ class _SettingsPageState extends State<SettingsPage>
                           cardColor: Settings.themeBlack && Settings.themeWhat
                               ? const Color(0xFF141414)
                               : null,
+                          colorScheme: ColorScheme.fromSwatch()
+                              .copyWith(secondary: Settings.majorColor),
                         ),
                       );
                       setState(() {
@@ -1303,21 +1305,24 @@ class _SettingsPageState extends State<SettingsPage>
               TextEditingController text =
                   TextEditingController(text: Settings.searchMessageAPI);
               Widget okButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               );
               Widget cancelButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('cancel')),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
               );
               Widget defaultButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('default')),
                 onPressed: () {
                   _shouldReload = true;
@@ -1460,7 +1465,8 @@ class _SettingsPageState extends State<SettingsPage>
               TextEditingController text =
                   TextEditingController(text: tc.toString());
               Widget yesButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 onPressed: () async {
                   if (int.tryParse(text.text) == null) {
                     await showOkDialog(
@@ -1484,7 +1490,8 @@ class _SettingsPageState extends State<SettingsPage>
                     style: TextStyle(color: Settings.majorColor)),
               );
               Widget noButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -1538,21 +1545,24 @@ class _SettingsPageState extends State<SettingsPage>
                     TextEditingController text =
                         TextEditingController(text: Settings.downloadBasePath);
                     Widget yesButton = TextButton(
-                      style: TextButton.styleFrom(primary: Settings.majorColor),
+                      style: TextButton.styleFrom(
+                          foregroundColor: Settings.majorColor),
                       child: Text(Translations.of(context).trans('ok')),
                       onPressed: () {
                         Navigator.pop(context, true);
                       },
                     );
                     Widget noButton = TextButton(
-                      style: TextButton.styleFrom(primary: Settings.majorColor),
+                      style: TextButton.styleFrom(
+                          foregroundColor: Settings.majorColor),
                       child: Text(Translations.of(context).trans('cancel')),
                       onPressed: () {
                         Navigator.pop(context, false);
                       },
                     );
                     Widget defaultButton = TextButton(
-                      style: TextButton.styleFrom(primary: Settings.majorColor),
+                      style: TextButton.styleFrom(
+                          foregroundColor: Settings.majorColor),
                       child: Text(Translations.of(context).trans('default')),
                       onPressed: () {
                         _shouldReload = true;
@@ -1633,21 +1643,24 @@ class _SettingsPageState extends State<SettingsPage>
               TextEditingController text =
                   TextEditingController(text: Settings.downloadRule);
               Widget okButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               );
               Widget cancelButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('cancel')),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
               );
               Widget defaultButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: Text(Translations.of(context).trans('default')),
                 onPressed: () {
                   _shouldReload = true;
@@ -1680,8 +1693,7 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   List<Widget> _bookmarkGroup() {
-    const autoBackupBookmarkEnabled = false;
-
+    /*
     Future<void> toggleAutoBackupBookmark() async {
       await Settings.setAutoBackupBookmark(!Settings.autobackupBookmark);
       setState(() {
@@ -1695,6 +1707,7 @@ class _SettingsPageState extends State<SettingsPage>
         _shouldReload = true;
       });
     }
+     */
 
     return [
       _buildGroup(Translations.of(context).trans('bookmark')),
@@ -1705,7 +1718,8 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            onTap: autoBackupBookmarkEnabled ? toggleAutoBackupBookmark : null,
+            // onTap: toggleAutoBackupBookmark,
+            onTap: null,
             child: ListTile(
               leading: Icon(
                 MdiIcons.bookArrowUpOutline,
@@ -1714,8 +1728,8 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('autobackupbookmark')),
               trailing: Switch(
                 value: Settings.autobackupBookmark,
-                onChanged:
-                    autoBackupBookmarkEnabled ? setAutoBackupBookmark : null,
+                // onChanged: setAutoBackupBookmark,
+                onChanged: null,
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
@@ -1743,14 +1757,16 @@ class _SettingsPageState extends State<SettingsPage>
                 TextEditingController text =
                     TextEditingController(text: myappid);
                 Widget okButton = TextButton(
-                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  style: TextButton.styleFrom(
+                      foregroundColor: Settings.majorColor),
                   child: Text(Translations.of(context).trans('ok')),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
                 );
                 Widget cancelButton = TextButton(
-                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  style: TextButton.styleFrom(
+                      foregroundColor: Settings.majorColor),
                   child: Text(Translations.of(context).trans('cancel')),
                   onPressed: () {
                     Navigator.pop(context, false);
@@ -2061,14 +2077,16 @@ class _SettingsPageState extends State<SettingsPage>
               TextEditingController textController = TextEditingController();
 
               Widget importButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: const Text('Import'),
                 onPressed: () async {
                   Navigator.pop(context, textController.text);
                 },
               );
               Widget cancelButton = TextButton(
-                style: TextButton.styleFrom(primary: Settings.majorColor),
+                style:
+                    TextButton.styleFrom(foregroundColor: Settings.majorColor),
                 child: const Text('Cancel'),
                 onPressed: () {
                   Navigator.pop(context, null);
@@ -2185,14 +2203,14 @@ class _SettingsPageState extends State<SettingsPage>
                     children: <Widget>[
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Settings.majorColor,
+                          backgroundColor: Settings.majorColor,
                         ),
                         child: const Text('Login From WebPage'),
                         onPressed: () => Navigator.pop(context, 1),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Settings.majorColor,
+                          backgroundColor: Settings.majorColor,
                         ),
                         child: const Text('Enter Cookie Information'),
                         onPressed: () => Navigator.pop(context, 2),
@@ -2236,14 +2254,16 @@ class _SettingsPageState extends State<SettingsPage>
                         ? parseCookies(cookie)['ipb_pass_hash']
                         : '');
                 Widget okButton = TextButton(
-                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  style: TextButton.styleFrom(
+                      foregroundColor: Settings.majorColor),
                   child: Text(Translations.of(context).trans('ok')),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
                 );
                 Widget cancelButton = TextButton(
-                  style: TextButton.styleFrom(primary: Settings.majorColor),
+                  style: TextButton.styleFrom(
+                      foregroundColor: Settings.majorColor),
                   child: Text(Translations.of(context).trans('cancel')),
                   onPressed: () {
                     Navigator.pop(context, false);

@@ -532,7 +532,7 @@ class _SplashPageState extends State<SplashPage> {
         padding: const EdgeInsets.fromLTRB(0, 0, 16, 0),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: widget.switching
+            backgroundColor: widget.switching
                 ? Settings.majorColor.withAlpha(200)
                 : Colors.purple.shade400,
           ),
