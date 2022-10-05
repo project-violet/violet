@@ -7,6 +7,8 @@ import 'dart:math';
 
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
+import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
+import 'package:flutter_js/extensions/xhr.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
@@ -356,6 +358,7 @@ class _StatisticsState extends State<Statistics> {
                       _tagChart(),
                       _status(),
                       _statusChart(),
+                      _heatMap(),
                     ],
                   )
                 : Column(
@@ -606,6 +609,30 @@ class _StatisticsState extends State<Statistics> {
           ),
         )
       ],
+    );
+  }
+
+  _heatMap() {
+    return Card(
+      margin: const EdgeInsets.all(20),
+      elevation: 20,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: HeatMap(
+          datasets: timePerDate,
+          colorMode: ColorMode.opacity,
+          startDate: timePerDate.entries.map((e) => e.key).reduce(
+              ((value, element) =>
+                  value.compareTo(element) < 0 ? value : element)),
+          showText: false,
+          scrollable: true,
+          onClick: (value) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(value.toString())));
+          },
+          colorsets: {1: Settings.majorColor},
+        ),
+      ),
     );
   }
 }
