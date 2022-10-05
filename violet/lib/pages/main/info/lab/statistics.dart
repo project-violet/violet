@@ -17,8 +17,6 @@ import 'package:violet/log/act_log.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:charts_flutter/src/text_element.dart';
-import 'package:charts_flutter/src/text_style.dart' as style;
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -637,11 +635,13 @@ class TextSymbolRenderer extends charts.CircleSymbolRenderer {
         strokeColor: strokeColor,
         strokeWidthPx: strokeWidthPx);
 
-    style.TextStyle textStyle = style.TextStyle();
-    textStyle.color = charts.Color.black;
-    textStyle.fontSize = 15;
+    final textStyle = canvas.graphicsFactory.createTextPaint()
+      ..color = charts.Color.black
+      ..fontSize = 15;
 
-    TextElement textElement = TextElement(getText.call(), style: textStyle);
+    final textElement = canvas.graphicsFactory.createTextElement(getText.call())
+      ..textStyle = textStyle;
+
     double width = textElement.measurement.horizontalSliceWidth;
     double height = textElement.measurement.verticalSliceWidth;
 
