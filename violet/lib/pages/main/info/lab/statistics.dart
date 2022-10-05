@@ -160,153 +160,152 @@ class _StatisticsState extends State<Statistics> {
   bool _alreadyLogAnalysis = false;
 
   Future<void> logAnalysis() async {
-    {
-      if (_alreadyLogAnalysis) return;
-      _alreadyLogAnalysis = true;
+    if (_alreadyLogAnalysis) return;
+    _alreadyLogAnalysis = true;
 
-      /* -- Logs -- */
-
-      logSize = await Logger.logFile.length();
-
-      const chunkSize = 64 * 1024 * 1024;
-      final chunkStarts = List.generate(
-          (logSize / chunkSize.toDouble()).ceil(), (i) => i * chunkSize);
-      final raf = await Logger.logFile.open(mode: FileMode.read);
-
-      final dts = <DateTime>[];
-      final stopMark = <int>[];
-
-      var latestStopMarkPos = 0;
-
-      for (var chunkStart in chunkStarts) {
-        await raf.setPosition(chunkStart);
-        final data = await raf.read(chunkSize);
-        final str = String.fromCharCodes(data);
-
-        for (final line in str.split('\n')) {
-          if (line.startsWith('[')) {
-            final dt = DateTime.tryParse(line.split('[')[1].split(']')[0]);
-            if (dt != null) dts.add(dt);
-
-            baseTime ??= dt;
-
-            if (line.contains(
-                'https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt')) {
-              stopMark.add(latestStopMarkPos);
-            } else if (line.contains(
-                'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js')) {
-              latestStopMarkPos = dts.length - 1;
-            }
-          }
-        }
-      }
-
-      final marker = List<int>.generate(dts.length, (index) => index);
-
-      // for (var i = 0, c = 0; i < dts.length; i++) {
-      //   final bs = binarySearch(stopMark, i);
-      //   if (bs >= 0 && stopMark[bs] == i) {
-      //     c++;
-      //   }
-      //   marker[i] = c;
-      // }
-
-      for (var i = 0, c = 0; i < dts.length; i++) {
-        if (c < stopMark.length && stopMark[c] == i) c++;
-        marker[i] = c;
-      }
-
-      totalSeconds = 0;
-      startUpTimes = 0;
-      for (var i = 0; i < stopMark.length - 1; i++) {
-        final s = dts[stopMark[i]]
-            .difference(dts[stopMark[i + 1] - 1])
-            .abs()
-            .inSeconds;
-        if (s > 60 * 60 * 24) continue;
-        totalSeconds += s;
-        startUpTimes += 1;
-      }
-    }
-    {
-      final logs = await ActLogger.logFile.readAsLines();
-      final events = <String, List<ActLogEvent>>{};
-
-      for (var log in logs) {
-        log = log.trim();
-        if (log == '') continue;
-
-        final hash = log.substring(0, log.indexOf(' '));
-        final data = log.substring(log.indexOf(' ') + 1);
-        final eve = ActLogEvent.fromJson(data);
-        if (!events.containsKey(hash)) events[hash] = <ActLogEvent>[];
-
-        events[hash]!.add(eve);
-        basePureTime ??= eve.dateTime;
-
-        if (eve.type == ActLogType.appStart ||
-            eve.type == ActLogType.appResume) {
-          pureStartUpTime += 1;
-        }
-      }
-
-      final minDate = DateTime.fromMicrosecondsSinceEpoch(events.entries
-          .map((e) => e.value
-              .map((e) => e.dateTime!.microsecondsSinceEpoch)
-              .reduce(min))
-          .reduce(min));
-      final maxDate = DateTime.fromMicrosecondsSinceEpoch(events.entries
-          .map((e) => e.value
-              .map((e) => e.dateTime!.microsecondsSinceEpoch)
-              .reduce(max))
-          .reduce(max));
-
-      for (var i = 0;; i++) {
-        final d = DateTime(minDate.year, minDate.month, minDate.day + i);
-
-        timePerDate[d] = 0;
-
-        if (maxDate.difference(d).isNegative) break;
-      }
-
-      totalPureSeconds = 0;
-      events.entries.forEach((element) {
-        var accSeconds = 0;
-
-        bool stopAcc = false;
-        DateTime? base;
-        for (final eve in element.value) {
-          if (eve.dateTime == null) continue;
-          if (base == null) {
-            base = eve.dateTime;
-            continue;
-          }
-
-          if (!stopAcc) {
-            final diffSec = base.difference(eve.dateTime!).abs().inSeconds;
-
-            if (diffSec < 60) {
-              accSeconds += diffSec;
-
-              final dt = DateTime(base.year, base.month, base.day);
-              if (!timePerDate.containsKey(dt)) {
-                timePerDate[dt] = 0;
-              }
-              timePerDate[dt] = timePerDate[dt]! + diffSec;
-            }
-          }
-          if (eve.type == ActLogType.appSuspense) stopAcc = true;
-          if (eve.type == ActLogType.appStart ||
-              eve.type == ActLogType.appResume) stopAcc = false;
-
-          base = eve.dateTime;
-        }
-
-        totalPureSeconds += accSeconds;
-      });
-    }
+    await logAnalysisLog();
+    await logAnalysisActLog();
 
     setState(() {});
+  }
+
+  Future<void> logAnalysisLog() async {
+    logSize = await Logger.logFile.length();
+
+    const chunkSize = 64 * 1024 * 1024;
+    final chunkStarts = List.generate(
+        (logSize / chunkSize.toDouble()).ceil(), (i) => i * chunkSize);
+    final raf = await Logger.logFile.open(mode: FileMode.read);
+
+    final dts = <DateTime>[];
+    final stopMark = <int>[];
+
+    var latestStopMarkPos = 0;
+
+    for (var chunkStart in chunkStarts) {
+      await raf.setPosition(chunkStart);
+      final data = await raf.read(chunkSize);
+      final str = String.fromCharCodes(data);
+
+      for (final line in str.split('\n')) {
+        if (line.startsWith('[')) {
+          final dt = DateTime.tryParse(line.split('[')[1].split(']')[0]);
+          if (dt != null) dts.add(dt);
+
+          baseTime ??= dt;
+
+          if (line.contains(
+              'https://raw.githubusercontent.com/violet-dev/sync-data/master/syncversion.txt')) {
+            stopMark.add(latestStopMarkPos);
+          } else if (line.contains(
+              'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js')) {
+            latestStopMarkPos = dts.length - 1;
+          }
+        }
+      }
+    }
+
+    final marker = List<int>.generate(dts.length, (index) => index);
+
+    // for (var i = 0, c = 0; i < dts.length; i++) {
+    //   final bs = binarySearch(stopMark, i);
+    //   if (bs >= 0 && stopMark[bs] == i) {
+    //     c++;
+    //   }
+    //   marker[i] = c;
+    // }
+
+    for (var i = 0, c = 0; i < dts.length; i++) {
+      if (c < stopMark.length && stopMark[c] == i) c++;
+      marker[i] = c;
+    }
+
+    totalSeconds = 0;
+    startUpTimes = 0;
+    for (var i = 0; i < stopMark.length - 1; i++) {
+      final s =
+          dts[stopMark[i]].difference(dts[stopMark[i + 1] - 1]).abs().inSeconds;
+      if (s > 60 * 60 * 24) continue;
+      totalSeconds += s;
+      startUpTimes += 1;
+    }
+  }
+
+  Future<void> logAnalysisActLog() async {
+    final logs = await ActLogger.logFile.readAsLines();
+    final events = <String, List<ActLogEvent>>{};
+
+    for (var log in logs) {
+      log = log.trim();
+      if (log == '') continue;
+
+      final hash = log.substring(0, log.indexOf(' '));
+      final data = log.substring(log.indexOf(' ') + 1);
+      final eve = ActLogEvent.fromJson(data);
+      if (!events.containsKey(hash)) events[hash] = <ActLogEvent>[];
+
+      events[hash]!.add(eve);
+      basePureTime ??= eve.dateTime;
+
+      if (eve.type == ActLogType.appStart || eve.type == ActLogType.appResume) {
+        pureStartUpTime += 1;
+      }
+    }
+
+    final minDate = DateTime.fromMicrosecondsSinceEpoch(events.entries
+        .map((e) =>
+            e.value.map((e) => e.dateTime!.microsecondsSinceEpoch).reduce(min))
+        .reduce(min));
+    final maxDate = DateTime.fromMicrosecondsSinceEpoch(events.entries
+        .map((e) =>
+            e.value.map((e) => e.dateTime!.microsecondsSinceEpoch).reduce(max))
+        .reduce(max));
+
+    for (var i = 0;; i++) {
+      final d = DateTime(minDate.year, minDate.month, minDate.day + i);
+
+      timePerDate[d] = 0;
+
+      if (maxDate.difference(d).isNegative) break;
+    }
+
+    totalPureSeconds = 0;
+    events.entries.forEach((element) {
+      var accSeconds = 0;
+
+      bool stopAcc = false;
+      DateTime? base;
+      for (final eve in element.value) {
+        if (eve.dateTime == null) continue;
+        if (base == null) {
+          base = eve.dateTime;
+          continue;
+        }
+
+        if (!stopAcc) {
+          final diffSec = base.difference(eve.dateTime!).abs().inSeconds;
+
+          if (diffSec < 60) {
+            accSeconds += diffSec;
+
+            final dt = DateTime(base.year, base.month, base.day);
+            if (!timePerDate.containsKey(dt)) {
+              timePerDate[dt] = 0;
+            }
+            timePerDate[dt] = timePerDate[dt]! + diffSec;
+          }
+        }
+        if (eve.type == ActLogType.appSuspense) stopAcc = true;
+        if (eve.type == ActLogType.appStart ||
+            eve.type == ActLogType.appResume) {
+          stopAcc = false;
+        }
+
+        base = eve.dateTime;
+      }
+
+      totalPureSeconds += accSeconds;
+    });
   }
 
   bool _alreadyCacheAnalysis = false;
