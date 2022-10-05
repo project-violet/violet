@@ -268,7 +268,7 @@ class _UserStatusCardState extends State<UserStatusCard>
                       return;
                     }
 
-                    var ync = await showYesNoDialog(
+                    var ync = await showYesNoCancelDialog(
                         context,
                         'You need to log in to use the community feature. '
                             'If you have an existing id, press "YES" to log in. '

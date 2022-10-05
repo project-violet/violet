@@ -368,7 +368,7 @@ class HitomiManager {
       return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
     }
 
-    if (tokens == null || tokens.trim() == '') {
+    if (tokens.isEmpty) {
       return 'SELECT * FROM HitomiColumnModel WHERE ${!Settings.searchPure ? 'ExistOnHitomi=1' : ''}';
     }
 

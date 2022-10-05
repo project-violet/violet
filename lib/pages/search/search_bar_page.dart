@@ -731,7 +731,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     var text = _searchController.text;
     var selection = _searchController.selection;
 
-    if (text == null || text.trim() == '') return;
+    if (text.trim().isEmpty) return;
 
     // Delete one token
     int fpos = selection.base.offset - 1;
