@@ -1679,6 +1679,22 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   List<Widget> _bookmarkGroup() {
+    const autoBackupBookmarkEnabled = false;
+
+    Future<void> toggleAutoBackupBookmark() async {
+      await Settings.setAutoBackupBookmark(!Settings.autobackupBookmark);
+      setState(() {
+        _shouldReload = true;
+      });
+    }
+
+    Future<void> setAutoBackupBookmark(bool newValue) async {
+      await Settings.setAutoBackupBookmark(newValue);
+      setState(() {
+        _shouldReload = true;
+      });
+    }
+
     return [
       _buildGroup(Translations.of(context).trans('bookmark')),
       _buildItems(
@@ -1688,15 +1704,7 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            onTap: true
-                ? null
-                : () async {
-                    await Settings.setAutoBackupBookmark(
-                        !Settings.autobackupBookmark);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
+            onTap: autoBackupBookmarkEnabled ? toggleAutoBackupBookmark : null,
             child: ListTile(
               leading: Icon(
                 MdiIcons.bookArrowUpOutline,
@@ -1705,14 +1713,8 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('autobackupbookmark')),
               trailing: Switch(
                 value: Settings.autobackupBookmark,
-                onChanged: true
-                    ? null
-                    : (newValue) async {
-                        await Settings.setAutoBackupBookmark(newValue);
-                        setState(() {
-                          _shouldReload = true;
-                        });
-                      },
+                onChanged:
+                    autoBackupBookmarkEnabled ? setAutoBackupBookmark : null,
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
