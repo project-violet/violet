@@ -269,7 +269,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       qm.itemsPerPage = 10;
 
       var x = await qm.next();
-      if (x == null || x.isEmpty) {
+      if (x.isEmpty) {
         qrs.add(<QueryResult>[]);
         continue;
       }

@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -1875,15 +1876,12 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               }
 
-              File file;
-              file = File((await FilePicker.platform.pickFiles(
+              final filePickerResult = await FilePicker.platform.pickFiles(
                 type: FileType.any,
-              ))!
-                  .files
-                  .single
-                  .path!);
+              );
+              final pickedFilePath = filePickerResult?.files.singleOrNull?.path;
 
-              if (file == null) {
+              if (pickedFilePath == null) {
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
@@ -1896,11 +1894,13 @@ class _SettingsPageState extends State<SettingsPage>
                 return;
               }
 
-              var db = Platform.isIOS
+              final pickedFile = File(pickedFilePath);
+
+              final db = Platform.isIOS
                   ? await getApplicationSupportDirectory()
                   : (await getExternalStorageDirectory())!;
-              var extfile = File(file.path);
-              await extfile.copy('${db.path}/user.db');
+
+              await pickedFile.copy('${db.path}/user.db');
 
               await Bookmark.getInstance();
 

@@ -159,7 +159,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
 
                 var yn = await showYesNoDialog(
                     context, '이 북마크 그룹을 끌어올까요?', 'Bookmark Spy');
-                if (yn != null && yn) {
+                if (yn) {
                   // 북마크 그룹 생성
                   var groupName =
                       '${widget.userAppId.substring(0, 8)}-${data!.name()}';
