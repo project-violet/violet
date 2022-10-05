@@ -54,14 +54,14 @@ class ScriptManager {
     return false;
   }
 
-  static Future<void> setV4(String gg_m, String gg_b) async {
+  static Future<void> setV4(String ggM, String ggB) async {
     enableV4 = true;
 
     _v4Cache ??= (await http.get(_scriptV4)).body;
 
     var scriptTemp = _v4Cache!;
-    scriptTemp = scriptTemp.replaceAll('%%gg.m%', gg_m);
-    scriptTemp = scriptTemp.replaceAll('%%gg.b%', gg_b);
+    scriptTemp = scriptTemp.replaceAll('%%gg.m%', ggM);
+    scriptTemp = scriptTemp.replaceAll('%%gg.b%', ggB);
 
     if (_scriptCache != scriptTemp) {
       _scriptCache = scriptTemp;
