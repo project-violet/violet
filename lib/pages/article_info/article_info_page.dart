@@ -106,7 +106,7 @@ class ArticleInfoPage extends StatelessWidget {
                   children: <Widget>[
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Settings.majorColor.withAlpha(230),
+                        backgroundColor: Settings.majorColor.withAlpha(230),
                       ),
                       onPressed: () async =>
                           await _downloadButtonEvent(context, data),
@@ -121,7 +121,7 @@ class ArticleInfoPage extends StatelessWidget {
                     const SizedBox(width: 4.0),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Settings.majorColor,
+                        backgroundColor: Settings.majorColor,
                       ),
                       onPressed: data.lockRead
                           ? null
@@ -821,7 +821,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
 
         TextEditingController text = TextEditingController();
         Widget okButton = TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           child: Text(Translations.of(context).trans('ok')),
           onPressed: () async {
             if ((await EHSession.postComment(
@@ -837,7 +837,7 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
           },
         );
         Widget cancelButton = TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           child: Text(Translations.of(context).trans('cancel')),
           onPressed: () {
             Navigator.pop(context, false);

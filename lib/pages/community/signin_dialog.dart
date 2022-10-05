@@ -20,7 +20,7 @@ class _SignInDialogState extends State<SignInDialog> {
   @override
   Widget build(BuildContext context) {
     Widget yesButton = TextButton(
-      style: TextButton.styleFrom(primary: Settings.majorColor),
+      style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
       child: const Text('Log In'),
       onPressed: () async {
         var id = _nameController.text.trim();
@@ -36,7 +36,7 @@ class _SignInDialogState extends State<SignInDialog> {
       },
     );
     Widget noButton = TextButton(
-      style: TextButton.styleFrom(primary: Settings.majorColor),
+      style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
       child: const Text('Cancel'),
       onPressed: () {
         Navigator.pop(context, null);

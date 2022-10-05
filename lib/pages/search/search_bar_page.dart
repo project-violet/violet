@@ -227,7 +227,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       padding: const EdgeInsets.fromLTRB(8, 2, 8, 2),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: Settings.majorColor,
+          backgroundColor: Settings.majorColor,
         ),
         child: Text(Translations.of(context).trans('search')),
         onPressed: () async {
@@ -533,10 +533,10 @@ class _SearchBarPageState extends State<SearchBarPage>
                             Expanded(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: Settings.themeWhat
+                                  foregroundColor: Colors.black,
+                                  backgroundColor: Settings.themeWhat
                                       ? Colors.grey.shade800
                                       : Colors.grey,
-                                  onPrimary: Colors.black,
                                 ),
                                 child: const Icon(MdiIcons.keyboardBackspace),
                                 onPressed: () {
@@ -548,10 +548,10 @@ class _SearchBarPageState extends State<SearchBarPage>
                             Expanded(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  primary: Settings.themeWhat
+                                  foregroundColor: Colors.black,
+                                  backgroundColor: Settings.themeWhat
                                       ? Colors.grey.shade800
                                       : Colors.grey,
-                                  onPrimary: Colors.black,
                                 ),
                                 child: const Icon(MdiIcons.keyboardSpace),
                                 onPressed: () {
