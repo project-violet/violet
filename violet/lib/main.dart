@@ -93,7 +93,6 @@ class MyApp extends StatelessWidget {
     return DynamicTheme(
       defaultBrightness: Brightness.light,
       data: (brightness) => ThemeData(
-        accentColor: Settings.majorColor,
         brightness: brightness,
         bottomSheetTheme:
             BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
@@ -105,6 +104,8 @@ class MyApp extends StatelessWidget {
         cardColor: Settings.themeBlack && Settings.themeWhat
             ? const Color(0xFF141414)
             : null,
+        colorScheme:
+            ColorScheme.fromSwatch().copyWith(secondary: Settings.majorColor),
       ),
       themedWidgetBuilder: (context, theme) {
         return myApp(theme);

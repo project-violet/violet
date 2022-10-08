@@ -125,7 +125,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
       actions: <Widget>[
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Settings.majorColor,
+            backgroundColor: Settings.majorColor,
           ),
           child: Text(Translations.of(context).trans('ok')),
           onPressed: () {
@@ -135,7 +135,7 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            primary: Settings.majorColor,
+            backgroundColor: Settings.majorColor,
           ),
           child: Text(Translations.of(context).trans('cancel')),
           onPressed: () {
