@@ -917,7 +917,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
       onTap: () async {
         TextEditingController text = TextEditingController();
         Widget okButton = TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           child: Text(Translations.of(context).trans('ok')),
           onPressed: () async {
             if (text.text.length < 5 || text.text.length > 500) {
@@ -943,7 +943,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           },
         );
         Widget cancelButton = TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           child: Text(Translations.of(context).trans('cancel')),
           onPressed: () {
             Navigator.pop(context, false);

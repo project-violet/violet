@@ -16,7 +16,7 @@ Future<void> showOkDialog(BuildContext context, String message,
       content: SelectableText(message),
       actions: [
         TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -53,7 +53,7 @@ Future<bool> showOkCancelDialog({
       contentPadding: contentPadding!,
       actions: [
         TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             if (onOkPressed != null) {
               onOkPressed();
@@ -64,7 +64,7 @@ Future<bool> showOkCancelDialog({
           child: Text(okText ?? Translations.of(context).trans('ok')),
         ),
         TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             if (onCancelPressed != null) {
               onCancelPressed();
@@ -88,14 +88,14 @@ Future<bool> showYesNoDialog(BuildContext context, String message,
       content: Text(message),
       actions: [
         TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             Navigator.pop(context, true);
           },
           child: Text(Translations.of(context).trans('yes')),
         ),
         TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             Navigator.pop(context, false);
           },
@@ -116,14 +116,14 @@ Future<bool?> showYesNoCancelDialog(BuildContext context, String message,
       content: Text(message),
       actions: [
         TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             Navigator.pop(context, true);
           },
           child: Text(Translations.of(context).trans('yes')),
         ),
         TextButton(
-          style: TextButton.styleFrom(primary: Settings.majorColor),
+          style: TextButton.styleFrom(foregroundColor: Settings.majorColor),
           onPressed: () {
             Navigator.pop(context, false);
           },

@@ -442,16 +442,16 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                         }
                       }
                       Widget yesButton = TextButton(
-                        style:
-                            TextButton.styleFrom(primary: Settings.majorColor),
+                        style: TextButton.styleFrom(
+                            foregroundColor: Settings.majorColor),
                         child: Text(Translations.of(context).trans('ok')),
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
                       );
                       Widget noButton = TextButton(
-                        style:
-                            TextButton.styleFrom(primary: Settings.majorColor),
+                        style: TextButton.styleFrom(
+                            foregroundColor: Settings.majorColor),
                         child: Text(Translations.of(context).trans('cancel')),
                         onPressed: () {
                           Navigator.pop(context, false);

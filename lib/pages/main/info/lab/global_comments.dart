@@ -145,7 +145,7 @@ class _LabGlobalCommentsState extends State<LabGlobalComments> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        primary: Settings.themeWhat
+                        foregroundColor: Settings.themeWhat
                             ? Colors.grey.shade600
                             : const Color(0xff3a4e66),
                         padding: EdgeInsets.zero,

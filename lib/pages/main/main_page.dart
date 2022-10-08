@@ -243,7 +243,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
           width: 105,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Settings.majorColor.withAlpha(220),
+              backgroundColor: Settings.majorColor.withAlpha(220),
             ),
             onPressed: () {
               PlatformNavigator.navigateSlide(context, const PatchNotePage());
@@ -311,7 +311,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
           children: [
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Settings.majorColor.withAlpha(220),
+                backgroundColor: Settings.majorColor.withAlpha(220),
               ),
               onPressed: Variables.databaseDecompressed
                   ? null
@@ -331,7 +331,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
               // badgeColor: Settings.majorAccentColor,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Settings.majorColor.withAlpha(220),
+                  backgroundColor: Settings.majorColor.withAlpha(220),
                 ),
                 onPressed:
                     Variables.databaseDecompressed ? null : _onSyncPressed,
@@ -494,8 +494,8 @@ class _ServiceAreaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final buttonStyle = ElevatedButton.styleFrom(
-      primary: Settings.majorColor.withAlpha(220),
-      onPrimary: Colors.white,
+      foregroundColor: Colors.white,
+      backgroundColor: Settings.majorColor.withAlpha(220),
       elevation: 3.0,
       minimumSize: const Size(30.0, 30.0),
       shape: const CircleBorder(),
