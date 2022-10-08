@@ -63,7 +63,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
             children: <Widget>[
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.red,
+                  backgroundColor: Colors.red,
                 ),
                 child: Text(Translations.of(context).trans('delete')),
                 onPressed: () async {
@@ -78,7 +78,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
               const Spacer(),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Settings.majorColor,
+                  backgroundColor: Settings.majorColor,
                 ),
                 child: Text(Translations.of(context).trans('ok')),
                 onPressed: () {
@@ -92,7 +92,7 @@ class _GroupModifyPageState extends State<GroupModifyPage> {
               const SizedBox(width: 8),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Settings.majorColor,
+                  backgroundColor: Settings.majorColor,
                 ),
                 child: Text(Translations.of(context).trans('cancel')),
                 onPressed: () {
