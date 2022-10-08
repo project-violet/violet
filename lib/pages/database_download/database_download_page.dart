@@ -134,11 +134,14 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         downloading = false;
       });
 
-      var pp = P7zip();
+      final p7zip = P7zip();
       if (await Directory('${dir.path}/data2').exists()) {
         await Directory('${dir.path}/data2').delete(recursive: true);
       }
-      await pp.decompress(['${dir.path}/db.sql.7z'], path: '${dir.path}/data2');
+      await p7zip.decompress(
+        ['${dir.path}/db.sql.7z'],
+        path: '${dir.path}/data2',
+      );
       Variables.databaseDecompressed = true;
       if (await Directory('${dir.path}/data').exists()) {
         await Directory('${dir.path}/data').delete(recursive: true);

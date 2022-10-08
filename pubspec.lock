@@ -556,6 +556,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.0"
+  flutter_heatmap_calendar:
+    dependency: "direct main"
+    description:
+      name: flutter_heatmap_calendar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
   flutter_image_compress:
     dependency: "direct main"
     description:

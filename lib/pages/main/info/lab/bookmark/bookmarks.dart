@@ -90,7 +90,6 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
     index -= 1;
 
     String name;
-    String oname = '';
     String desc;
     String date = '';
     int id;
@@ -101,7 +100,6 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
       id = -1;
     } else {
       name = data!.name();
-      oname = name;
       desc = data.description();
       date = data.datetime().split(' ')[0];
       id = data.id();
@@ -161,7 +159,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
 
                 var yn = await showYesNoDialog(
                     context, '이 북마크 그룹을 끌어올까요?', 'Bookmark Spy');
-                if (yn != null && yn) {
+                if (yn) {
                   // 북마크 그룹 생성
                   var groupName =
                       '${widget.userAppId.substring(0, 8)}-${data!.name()}';

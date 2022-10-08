@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:collection/collection.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
@@ -1679,6 +1680,22 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   List<Widget> _bookmarkGroup() {
+    const autoBackupBookmarkEnabled = false;
+
+    Future<void> toggleAutoBackupBookmark() async {
+      await Settings.setAutoBackupBookmark(!Settings.autobackupBookmark);
+      setState(() {
+        _shouldReload = true;
+      });
+    }
+
+    Future<void> setAutoBackupBookmark(bool newValue) async {
+      await Settings.setAutoBackupBookmark(newValue);
+      setState(() {
+        _shouldReload = true;
+      });
+    }
+
     return [
       _buildGroup(Translations.of(context).trans('bookmark')),
       _buildItems(
@@ -1688,15 +1705,7 @@ class _SettingsPageState extends State<SettingsPage>
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
-            onTap: true
-                ? null
-                : () async {
-                    await Settings.setAutoBackupBookmark(
-                        !Settings.autobackupBookmark);
-                    setState(() {
-                      _shouldReload = true;
-                    });
-                  },
+            onTap: autoBackupBookmarkEnabled ? toggleAutoBackupBookmark : null,
             child: ListTile(
               leading: Icon(
                 MdiIcons.bookArrowUpOutline,
@@ -1705,14 +1714,8 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('autobackupbookmark')),
               trailing: Switch(
                 value: Settings.autobackupBookmark,
-                onChanged: true
-                    ? null
-                    : (newValue) async {
-                        await Settings.setAutoBackupBookmark(newValue);
-                        setState(() {
-                          _shouldReload = true;
-                        });
-                      },
+                onChanged:
+                    autoBackupBookmarkEnabled ? setAutoBackupBookmark : null,
                 activeTrackColor: Settings.majorColor,
                 activeColor: Settings.majorAccentColor,
               ),
@@ -1873,15 +1876,12 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               }
 
-              File file;
-              file = File((await FilePicker.platform.pickFiles(
+              final filePickerResult = await FilePicker.platform.pickFiles(
                 type: FileType.any,
-              ))!
-                  .files
-                  .single
-                  .path!);
+              );
+              final pickedFilePath = filePickerResult?.files.singleOrNull?.path;
 
-              if (file == null) {
+              if (pickedFilePath == null) {
                 flutterToast.showToast(
                   child: ToastWrapper(
                     isCheck: false,
@@ -1894,11 +1894,13 @@ class _SettingsPageState extends State<SettingsPage>
                 return;
               }
 
-              var db = Platform.isIOS
+              final pickedFile = File(pickedFilePath);
+
+              final db = Platform.isIOS
                   ? await getApplicationSupportDirectory()
                   : (await getExternalStorageDirectory())!;
-              var extfile = File(file.path);
-              await extfile.copy('${db.path}/user.db');
+
+              await pickedFile.copy('${db.path}/user.db');
 
               await Bookmark.getInstance();
 

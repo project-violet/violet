@@ -23,7 +23,7 @@ class DataBaseManager {
   @protected
   @mustCallSuper
   void dispose() async {
-    print("close: " + dbPath!);
+    print('close: ${dbPath!}');
     if (db != null) db!.close();
   }
 

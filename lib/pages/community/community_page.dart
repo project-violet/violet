@@ -213,7 +213,7 @@ class _CommunityPageState extends State<CommunityPage>
                               return;
                             }
 
-                            var ync = await showYesNoDialog(
+                            var ync = await showYesNoCancelDialog(
                                 context,
                                 'You need to log in to use the community feature.'
                                     ' If you have an existing id,'

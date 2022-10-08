@@ -16,7 +16,7 @@ version: 1.28.0+0
 publish_to: none
 
 environment:
-  sdk: ">=2.14.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -73,6 +73,7 @@ dependencies:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^0.6.0
+  flutter_heatmap_calendar: ^1.0.5
   flutter_image_compress: ^1.1.0
   flutter_inappwebview: ^5.4.3+7
   flutter_markdown:
