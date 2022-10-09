@@ -4,26 +4,26 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:violet/component/image_provider.dart';
-import 'package:violet/network/wrapper.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/model/article_info.dart';
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/main/info/lab/search_message_rank.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/widgets/v_cached_network_image.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
+import 'package:violet/widgets/v_cached_network_image.dart';
 
 class LabSearchMessage extends StatefulWidget {
   const LabSearchMessage({Key? key}) : super(key: key);

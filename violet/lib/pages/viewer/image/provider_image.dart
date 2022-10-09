@@ -6,10 +6,9 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
-
-import '../viewer_controller.dart';
 
 typedef VImageWidgetBuilder = Widget Function(
     BuildContext context, Widget child);
