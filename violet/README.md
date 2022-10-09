@@ -24,6 +24,12 @@ or on the Discord channel below.
 
 Discord Channel: https://discord.gg/fqrtRxC
 
+### Desktop Supports
+
+Desktop is not currently supported.
+
+See https://github.com/project-violet/violet/tree/dev-windows for buildable code.
+
 ### Sub Projects
 
 - [Violet Server](https://github.com/project-violet/violet-server) - Real-time statistics provided by collecting user behavior
