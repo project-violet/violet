@@ -9,7 +9,7 @@
 3. Run run.bat, run-server.bat! If you want to use this on macOS or linux, you must build [fast-search](https://github.com/project-violet/violet-message-search-core/tree/master/fast-search) yourself.
 4. Open http://localhost:6974/home/ in browser!
 
-## How does this work?
+## How does it work?
 
 See [violet-message-search-core](https://github.com/project-violet/violet-message-search-core)
 
