@@ -24,18 +24,17 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
 import 'package:violet/pages/viewer/others/preload_page_view.dart';
-import 'package:violet/pages/viewer/overlay/viewer_tab_panel.dart';
-import 'package:violet/pages/viewer/viewer_controller.dart';
+import 'package:violet/pages/viewer/overlay/page_label.dart';
 import 'package:violet/pages/viewer/overlay/viewer_record_panel.dart';
-import 'package:violet/pages/viewer/viewer_page_provider.dart';
+import 'package:violet/pages/viewer/overlay/viewer_setting_panel.dart';
+import 'package:violet/pages/viewer/overlay/viewer_tab_panel.dart';
 import 'package:violet/pages/viewer/overlay/viewer_thumbnails.dart';
+import 'package:violet/pages/viewer/viewer_controller.dart';
+import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/toast.dart';
-
-import 'page_label.dart';
-import 'viewer_setting_panel.dart';
 
 class ViewerOverlay extends StatefulWidget {
   final String getxId;

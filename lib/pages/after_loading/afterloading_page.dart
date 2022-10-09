@@ -16,12 +16,11 @@ import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
+import 'package:violet/script/script_webview.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
-
-import '../../script/script_webview.dart';
 
 class AfterLoadingPage extends StatefulWidget {
   const AfterLoadingPage({Key? key}) : super(key: key);

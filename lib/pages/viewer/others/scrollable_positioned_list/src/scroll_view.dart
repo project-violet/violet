@@ -5,9 +5,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-
-import 'wrapping.dart';
-import 'viewport.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/viewport.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/wrapping.dart';
 
 /// A version of [CustomScrollView] that allows does not constrict the extents
 /// to be within 0 and 1. See [CustomScrollView] for more information.

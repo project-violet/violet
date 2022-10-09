@@ -6,15 +6,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/pages/viewer/image/file_image.dart' as file_image;
+import 'package:violet/pages/viewer/image/provider_image.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/item_positions_listener.dart';
 import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/scrollable_positioned_list.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
+import 'package:violet/pages/viewer/widget/custom_doubletap_gesture_detector.dart';
+import 'package:violet/pages/viewer/widget/double_point_listener.dart';
 import 'package:violet/settings/settings.dart';
-
-import 'image/file_image.dart' as file_image;
-import 'image/provider_image.dart';
-import 'widget/custom_doubletap_gesture_detector.dart';
-import 'widget/double_point_listener.dart';
 
 typedef DoubleCallback = Future Function(double);
 typedef BoolCallback = Function(bool);
