@@ -167,7 +167,6 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
         content: const _ServiceAreaWidget(),
       ),
       Container(height: 32),
-      const ScriptWebView(),
     ];
 
     return SingleChildScrollView(

@@ -21,6 +21,8 @@ import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
 
+import '../../script/script_webview.dart';
+
 class AfterLoadingPage extends StatefulWidget {
   const AfterLoadingPage({Key? key}) : super(key: key);
 
@@ -290,19 +292,25 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             ? _buildBottomNavigationBar(context)
             : null,
         drawer: _usesDrawer ? _buildDrawer(context) : null,
-        body: PageView(
-          controller: _pageController,
-          physics: _usesDrawer ? const NeverScrollableScrollPhysics() : null,
-          onPageChanged: (newPage) {
-            setState(() {});
-          },
-          children: <Widget>[
-            if (!Settings.liteMode) const MainPage(),
-            const SearchPage(),
-            if (Settings.liteMode) const HotPage(),
-            const BookmarkPage(),
-            const DownloadPage(),
-            const SettingsPage(),
+        body: Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              physics:
+                  _usesDrawer ? const NeverScrollableScrollPhysics() : null,
+              onPageChanged: (newPage) {
+                setState(() {});
+              },
+              children: <Widget>[
+                if (!Settings.liteMode) const MainPage(),
+                const SearchPage(),
+                if (Settings.liteMode) const HotPage(),
+                const BookmarkPage(),
+                const DownloadPage(),
+                const SettingsPage(),
+              ],
+            ),
+            const ScriptWebView(),
           ],
         ),
       ),
