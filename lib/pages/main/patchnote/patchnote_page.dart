@@ -22,8 +22,18 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 10, 9),
+    version: '1.28.1 Patch (HotFix)',
+    contents: [
+      'fix bug that built-in script reloader not working on lite mode',
+      'fix bug that download retry logic not wokring',
+      'fix gray screen bug on zh locale',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 10, 2),
     version: '1.28 Minor Update',
+    isMinor: true,
     contents: [
       'fix article thnumbnail viewer animation bug',
       'fix retry when thumbnail loading fail',
@@ -37,6 +47,7 @@ final patches = [
   PatchModel(
     dateTime: DateTime(2022, 9, 15),
     version: '1.27 Minor Update',
+    isMinor: true,
     contents: [
       'fix built-in script reloader',
       'rollback article item thumbnail implementation',
