@@ -849,14 +849,12 @@ class _FileThumbnailWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: showDetail ? 100 : double.infinity,
-      child: thumbnailPath != null
-          ? ClipRRect(
-              borderRadius: showDetail
-                  ? const BorderRadius.horizontal(left: Radius.circular(5.0))
-                  : const BorderRadius.all(Radius.circular(5.0)),
-              child: _thumbnailImage(),
-            )
-          : _getLoadingAnimation(),
+      child: ClipRRect(
+        borderRadius: showDetail
+            ? const BorderRadius.horizontal(left: Radius.circular(5.0))
+            : const BorderRadius.all(Radius.circular(5.0)),
+        child: _thumbnailImage(),
+      ),
     );
   }
 
