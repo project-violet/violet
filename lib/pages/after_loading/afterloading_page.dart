@@ -294,6 +294,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         drawer: _usesDrawer ? _buildDrawer(context) : null,
         body: Stack(
           children: [
+            const ScriptWebView(),
             PageView(
               controller: _pageController,
               physics:
@@ -310,7 +311,6 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                 const SettingsPage(),
               ],
             ),
-            const ScriptWebView(),
           ],
         ),
       ),
