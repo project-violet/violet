@@ -15,6 +15,7 @@ import 'package:violet/pages/main/info/lab/bookmark_spy.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
+import 'package:violet/pages/main/info/lab/search_comment.dart';
 import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/info/lab/setting.dart';
 import 'package:violet/pages/main/info/lab/statistics.dart';
@@ -23,10 +24,8 @@ import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/log_page.dart';
-import 'package:violet/settings/settings.dart';
 import 'package:violet/server/wsalt.dart';
-
-import 'lab/search_comment.dart';
+import 'package:violet/settings/settings.dart';
 
 class LaboratoryPage extends StatefulWidget {
   const LaboratoryPage({Key? key}) : super(key: key);

@@ -6,12 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
-
-import 'element_registry.dart';
-import 'item_positions_listener.dart';
-import 'item_positions_notifier.dart';
-import 'scroll_view.dart';
-import 'wrapping.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/element_registry.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/item_positions_listener.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/item_positions_notifier.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/scroll_view.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/wrapping.dart';
 
 /// A list of widgets similar to [ListView], except scroll control
 /// and position reporting is based on index rather than pixel offset.

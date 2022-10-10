@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-
-import 'item_positions_notifier.dart';
-import 'scrollable_positioned_list.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/item_positions_notifier.dart';
+import 'package:violet/pages/viewer/others/scrollable_positioned_list/src/scrollable_positioned_list.dart';
 
 /// Provides a listenable iterable of [itemPositions] of items that are on
 /// screen and their locations.
