@@ -119,10 +119,13 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                   31);
           if (x.isEmpty) return;
           _shouldReload = true;
-          setState(() {
-            isLastestRead = true;
-            latestReadPage = x.first.lastPage()!;
-          });
+
+          if (disposed) {
+            setState(() {
+              isLastestRead = true;
+              latestReadPage = x.first.lastPage()!;
+            });
+          }
         }));
   }
 
