@@ -322,7 +322,7 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
       if (!await showYesNoDialog(context, '북마크를 삭제할까요?', '북마크')) return;
     }
 
-    try {
+    if (!c.disposed) {
       fToast.showToast(
         child: ToastWrapper(
           icon: c.isBookmarked.value ? Icons.delete_forever : Icons.check,
@@ -335,9 +335,6 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
         gravity: ToastGravity.BOTTOM,
         toastDuration: const Duration(seconds: 4),
       );
-    } catch (e, st) {
-      Logger.error('[ArticleList-LongPress] E: $e\n'
-          '$st');
     }
 
     c.isBookmarked.value = !c.isBookmarked.value;
