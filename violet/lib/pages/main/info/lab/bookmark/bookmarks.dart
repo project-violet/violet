@@ -8,11 +8,10 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/bookmark/bookmarks_article_list.dart';
+import 'package:violet/pages/main/info/lab/bookmark/bookmarks_records.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
-
-import 'bookmarks_records.dart';
 
 class LabBookmarkPage extends StatefulWidget {
   final String userAppId;

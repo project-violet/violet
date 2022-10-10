@@ -6,11 +6,10 @@ import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:violet/pages/viewer/vertical_viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/settings/settings_wrapper.dart';
-
-import '../vertical_viewer_page.dart';
 
 class FileImage extends StatefulWidget {
   final String getxId;

@@ -28,6 +28,11 @@ linter:
 
     sized_box_shrink_expand: true
     prefer_single_quotes: true
+    always_use_package_imports: true
+
+analyzer:
+  errors:
+    always_use_package_imports: error
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

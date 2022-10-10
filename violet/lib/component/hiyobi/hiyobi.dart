@@ -3,8 +3,8 @@
 
 import 'dart:convert';
 
-import 'package:violet/network/wrapper.dart' as http;
 import 'package:tuple/tuple.dart';
+import 'package:violet/network/wrapper.dart' as http;
 
 class HiyobiManager {
   // [Thumbnail Image], [Image List]
