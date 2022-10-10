@@ -24,7 +24,7 @@ class _CommunityPageState extends State<CommunityPage>
   @override
   bool get wantKeepAlive => true;
 
-  late VioletCommunitySession sess;
+  VioletCommunitySession? sess;
   late String _userId;
   late String _userAppId;
   late String _userNickName;
@@ -50,7 +50,7 @@ class _CommunityPageState extends State<CommunityPage>
         });
         sess = VioletCommunitySession.lastSession != null
             ? VioletCommunitySession.lastSession!
-            : (await VioletCommunitySession.signIn(id, pw))!;
+            : (await VioletCommunitySession.signIn(id, pw));
         _userNickName =
             (await VioletCommunitySession.getUserInfo(id))['NickName'];
         setState(() {
@@ -75,7 +75,7 @@ class _CommunityPageState extends State<CommunityPage>
     setState(() {});
 
     if (id != null && pw != null) {
-      sess = (await VioletCommunitySession.signIn(id, pw))!;
+      sess = await VioletCommunitySession.signIn(id, pw);
     }
   }
 
@@ -152,8 +152,7 @@ class _CommunityPageState extends State<CommunityPage>
                               const Text('User App Id: ',
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 16)),
-                              Text(
-                                  ' ${_userAppId != null ? _userAppId.substring(0, 16) : ''}...',
+                              Text(' ${_userAppId.substring(0, 16)}...',
                                   style: const TextStyle(fontSize: 16)),
                             ],
                           )

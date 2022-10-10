@@ -27,7 +27,7 @@ class _UserStatusCardState extends State<UserStatusCard>
   @override
   bool get wantKeepAlive => true;
 
-  late VioletCommunitySession sess;
+  VioletCommunitySession? sess;
   String _userId = 'None';
   late String _userAppId;
   String _userNickName = 'None';
@@ -55,7 +55,7 @@ class _UserStatusCardState extends State<UserStatusCard>
         });
         sess = VioletCommunitySession.lastSession != null
             ? VioletCommunitySession.lastSession!
-            : (await VioletCommunitySession.signIn(id, pw))!;
+            : (await VioletCommunitySession.signIn(id, pw));
         _userNickName =
             (await VioletCommunitySession.getUserInfo(id))['NickName'];
         setState(() {
@@ -80,7 +80,7 @@ class _UserStatusCardState extends State<UserStatusCard>
     setState(() {});
 
     if (id != null && pw != null) {
-      sess = (await VioletCommunitySession.signIn(id, pw))!;
+      sess = await VioletCommunitySession.signIn(id, pw);
     }
   }
 
