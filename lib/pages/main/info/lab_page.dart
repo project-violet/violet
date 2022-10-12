@@ -3,12 +3,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/comments.dart';
 import 'package:violet/component/hitomi/ldi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
+import 'package:violet/log/act_log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/main/info/lab/artist_search/artist_search.dart';
@@ -25,6 +27,7 @@ import 'package:violet/pages/main/info/lab/user_bookmark_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/log_page.dart';
+import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -360,18 +363,23 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                   _navigate(const Statistics());
                 },
               ),
-              // _buildItem(
-              //   const Icon(MdiIcons.upload, size: 40, color: Colors.teal),
-              //   '#018 Upload Test',
-              //   'Function',
-              //   null,
-              //   () async {
-              //     final dir = await getApplicationDocumentsDirectory();
-              //     await VioletServer.uploadFile('${dir.path}/user.db');
-              //     await Future.delayed(const Duration(milliseconds: 500));
-              //     await VioletServer.uploadFile(ActLogger.logFile.path);
-              //   },
-              // ),
+              _buildItem(
+                const Icon(MdiIcons.upload, size: 40, color: Colors.teal),
+                '#018 Upload Test',
+                'Function',
+                null,
+                () async {
+                  if (!await _checkMaterKey()) {
+                    await showOkDialog(context, 'You cannot use this feature!');
+                    return;
+                  }
+
+                  final dir = await getApplicationDocumentsDirectory();
+                  await VioletServer.uploadFile('${dir.path}/user.db');
+                  await Future.delayed(const Duration(milliseconds: 500));
+                  await VioletServer.uploadFile(ActLogger.logFile.path);
+                },
+              ),
               _buildItem(
                 const Icon(MdiIcons.accountSearch,
                     size: 40, color: Colors.amber),
