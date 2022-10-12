@@ -1,9 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get/get.dart';
-import 'package:tuple/tuple.dart';
 
 class TagGroupModifyController extends GetxController {
   late final RxMap<String, int> items;
