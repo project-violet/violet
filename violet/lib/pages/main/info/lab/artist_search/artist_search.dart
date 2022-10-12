@@ -12,8 +12,10 @@ import 'package:violet/component/hitomi/indexs.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
+import 'package:violet/pages/main/info/lab/artist_search/tag_group_modify.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -27,16 +29,13 @@ class ArtistSearch extends StatefulWidget {
 class _ArtistSearchState extends State<ArtistSearch> {
   String selectedType = 'artists';
 
-  static const testTagGroup = {
-    'tag:tankoubon': 16,
-    'female:ffm_threadsome': 10,
-    'female:loli': 4,
-    'male:shota': 3,
-    'male:yaoi': 1,
+  Map<String, int> tagGroup = {
+    'female:sole_female': 10,
+    'male:sole_male': 5,
+    'female:big_breasts': 3,
+    'male:shota': 1,
+    'tag:full_color': 1,
   };
-
-  final testLff =
-      testTagGroup.entries.map((e) => Tuple2(e.key, e.value)).toList();
 
   List<Tuple2<String, double>> similarsAll = [];
 
@@ -53,7 +52,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
       'uploader': HitomiIndexs.tagUploader,
     };
 
-    testTagGroup.entries.forEach((element) {
+    this.tagGroup.entries.forEach((element) {
       var key = element.key;
 
       if (key.startsWith('tag:')) {
@@ -72,20 +71,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
     similarsAll =
         HitomiIndexs.caclulateSimilarsManual(tagSrcs[selectedType]!, tagGroup);
 
-    print(similarsAll);
-
     setState(() {});
-  }
-
-  Future<List<QueryResult>> query(String artist) async {
-    final query = HitomiManager.translate2query(
-        '${getNormalizedType()}${selectedType != 'uploader' ? artist.replaceAll(' ', '_') : artist} '
-        '${Settings.includeTags} '
-        '${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
-
-    QueryManager qm = await QueryManager.query('$query ORDER BY Id DESC');
-
-    return qm.results!;
   }
 
   @override
@@ -111,6 +97,9 @@ class _ArtistSearchState extends State<ArtistSearch> {
             padding: const EdgeInsets.all(2),
           ),
           tagGroupArea(),
+          Container(
+            padding: const EdgeInsets.all(2),
+          ),
           Expanded(
             child: artistListArea(),
           ),
@@ -164,16 +153,17 @@ class _ArtistSearchState extends State<ArtistSearch> {
       ),
     );
 
-    final series = charts.Series<Tuple2<String, int>, String>(
+    final series = charts.Series<MapEntry<String, int>, String>(
       id: 'Sales',
-      data: testLff,
-      domainFn: (Tuple2<String, int> sales, f) =>
-          sales.item1.contains(':') ? sales.item1.split(':')[1] : sales.item1,
-      measureFn: (Tuple2<String, int> sales, _) => sales.item2,
-      colorFn: (Tuple2<String, int> sales, _) {
-        if (sales.item1.startsWith('female:')) {
+      data: tagGroup.entries.toList(),
+      domainFn: (MapEntry<String, int> sales, f) => sales.key.contains(':')
+          ? sales.key.split(':')[1].replaceAll('_', ' ')
+          : sales.key.replaceAll('_', ' '),
+      measureFn: (MapEntry<String, int> sales, _) => sales.value,
+      colorFn: (MapEntry<String, int> sales, _) {
+        if (sales.key.startsWith('female:')) {
           return charts.MaterialPalette.pink.shadeDefault;
-        } else if (sales.item1.startsWith('male:')) {
+        } else if (sales.key.startsWith('male:')) {
           return charts.MaterialPalette.blue.shadeDefault;
         } else {
           return charts.MaterialPalette.gray.shadeDefault;
@@ -183,7 +173,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
 
     return InkWell(
       child: SizedBox(
-        height: testLff.length * 22.0 + 10,
+        height: tagGroup.length * 22.0 + 10,
         child: charts.BarChart(
           [series],
           primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
@@ -193,6 +183,22 @@ class _ArtistSearchState extends State<ArtistSearch> {
         ),
       ),
       onTap: () {},
+      onTapCancel: () async {
+        final tags = await PlatformNavigator.navigateSlide<Map<String, int>>(
+            context, TagGroupModify(tagGroup: tagGroup));
+
+        if (tags != null) {
+          similarsAll = [];
+
+          setState(() {
+            tagGroup = tags;
+          });
+
+          Future.delayed(const Duration(milliseconds: 100)).then((value) {
+            doMatch();
+          });
+        }
+      },
     );
   }
 
@@ -216,7 +222,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
           selectedType = newValue ?? selectedType;
         });
 
-        Future.delayed(Duration(milliseconds: 100)).then((value) {
+        Future.delayed(const Duration(milliseconds: 100)).then((value) {
           doMatch();
         });
       },
