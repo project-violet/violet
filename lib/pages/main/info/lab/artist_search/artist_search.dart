@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -56,7 +58,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
       var key = element.key;
 
       if (key.startsWith('tag:')) {
-        key = key.substring(5);
+        key = key.substring(4);
       }
 
       if (HitomiIndexs.tagIndex.containsKey(key)) {
@@ -155,7 +157,7 @@ class _ArtistSearchState extends State<ArtistSearch> {
 
     final series = charts.Series<MapEntry<String, int>, String>(
       id: 'Sales',
-      data: tagGroup.entries.toList(),
+      data: tagGroup.entries.take(5).toList(),
       domainFn: (MapEntry<String, int> sales, f) => sales.key.contains(':')
           ? sales.key.split(':')[1].replaceAll('_', ' ')
           : sales.key.replaceAll('_', ' '),
@@ -171,9 +173,17 @@ class _ArtistSearchState extends State<ArtistSearch> {
       },
     );
 
+    final heightMap = [
+      60.0, // 1
+      70.0, // 2
+      85.0, // 3
+      100.0, // 4
+      120.0, // 5
+    ];
+
     return InkWell(
       child: SizedBox(
-        height: tagGroup.length * 22.0 + 10,
+        height: heightMap[min(5, tagGroup.length) - 1],
         child: charts.BarChart(
           [series],
           primaryMeasureAxis: Settings.themeWhat ? axis2 : null,
