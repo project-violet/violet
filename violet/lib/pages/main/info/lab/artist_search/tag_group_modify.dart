@@ -41,14 +41,7 @@ class _TagGroupModifyState extends State<TagGroupModify> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        if (c.items.isEmpty) {
-          await showOkDialog(context, 'There must be at least one item.');
-          return false;
-        }
-        Navigator.pop(context, Map.fromEntries(c.items.entries));
-        return false;
-      },
+      onWillPop: () async => false,
       child: CardPanel.build(
         context,
         enableBackgroundColor: true,
@@ -98,8 +91,27 @@ class _TagGroupModifyState extends State<TagGroupModify> {
           ),
         ),
         Container(width: 8),
+        Expanded(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Settings.majorColor,
+            ),
+            child: const Text('Apply'),
+            onPressed: () => apply(context),
+          ),
+        ),
+        Container(width: 8),
       ],
     );
+  }
+
+  apply(BuildContext context) async {
+    if (c.items.isEmpty) {
+      await showOkDialog(context, 'There must be at least one item.');
+      return;
+    }
+
+    Navigator.pop(context, Map.fromEntries(c.items.entries));
   }
 
   showAddTagDialog(BuildContext context) async {
