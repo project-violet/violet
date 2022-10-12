@@ -154,9 +154,12 @@ class _ArtistSearchState extends State<ArtistSearch> {
       ),
     );
 
+    final forSort = tagGroup.entries.toList();
+    forSort.sort((a, b) => b.value.compareTo(a.value));
+
     final series = charts.Series<MapEntry<String, int>, String>(
       id: 'Sales',
-      data: tagGroup.entries.take(5).toList(),
+      data: forSort.take(5).toList(),
       domainFn: (MapEntry<String, int> sales, f) => sales.key.contains(':')
           ? sales.key.split(':')[1].replaceAll('_', ' ')
           : sales.key.replaceAll('_', ' '),
