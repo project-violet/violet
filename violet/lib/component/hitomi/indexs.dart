@@ -100,6 +100,22 @@ class HitomiIndexs {
     return result;
   }
 
+  static List<Tuple2<String, double>> caclulateSimilarsManual(
+      Map<String, dynamic> map, Map<String, dynamic> target) {
+    final result = <Tuple2<String, double>>[];
+
+    map.forEach((key, value) {
+      if (key.toLowerCase() == 'n/a') return;
+
+      final dist = Distance.cosineDistance(target, value);
+      result.add(Tuple2<String, double>(key, dist));
+    });
+
+    result.sort((x, y) => y.item2.compareTo(x.item2));
+
+    return result;
+  }
+
   static List<Tuple2<String, double>> calculateSimilarArtists(String artist) {
     return _calculateSimilars(tagArtist, artist);
   }

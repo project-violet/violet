@@ -11,6 +11,7 @@ import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/article_list_page.dart';
+import 'package:violet/pages/main/info/lab/artist_search/artist_search.dart';
 import 'package:violet/pages/main/info/lab/bookmark_spy.dart';
 import 'package:violet/pages/main/info/lab/recent_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record.dart';
@@ -371,6 +372,16 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
               //     await VioletServer.uploadFile(ActLogger.logFile.path);
               //   },
               // ),
+              _buildItem(
+                const Icon(MdiIcons.accountSearch,
+                    size: 40, color: Colors.amber),
+                '#019 Artist Search',
+                'Custom Tag Group Relation Search',
+                null,
+                () async {
+                  _navigate(const ArtistSearch());
+                },
+              ),
             ],
           ),
         ),
