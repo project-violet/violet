@@ -10,8 +10,10 @@ import 'package:violet/settings/settings.dart';
 
 class TagSelectorDialog extends StatefulWidget {
   final String what;
+  final bool onlyFMT;
 
-  const TagSelectorDialog({Key? key, required this.what}) : super(key: key);
+  const TagSelectorDialog({Key? key, required this.what, this.onlyFMT = false})
+      : super(key: key);
 
   @override
   State<TagSelectorDialog> createState() => _TagSelectorDialogState();
@@ -29,6 +31,8 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
     } else if (widget.what == 'blurred') {
       _searchController =
           TextEditingController(text: Settings.blurredTags.join(' '));
+    } else {
+      _searchController = TextEditingController();
     }
   }
 
@@ -48,22 +52,24 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
           DisplayedTag(group: 'prefix', name: 'male'), 0));
       _searchLists.add(Tuple2<DisplayedTag, int>(
           DisplayedTag(group: 'prefix', name: 'tag'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'lang'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'series'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'artist'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'group'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'uploader'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'character'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'type'), 0));
-      _searchLists.add(Tuple2<DisplayedTag, int>(
-          DisplayedTag(group: 'prefix', name: 'class'), 0));
+      if (!widget.onlyFMT) {
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'lang'), 0));
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'series'), 0));
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'artist'), 0));
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'group'), 0));
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'uploader'), 0));
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'character'), 0));
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'type'), 0));
+        _searchLists.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'prefix', name: 'class'), 0));
+      }
     }
 
     return AlertDialog(
@@ -197,7 +203,14 @@ class _TagSelectorDialogState extends State<TagSelectorDialog> {
         .toList();
     if (result.isEmpty) _nothing = true;
     setState(() {
-      _searchLists = result;
+      if (!widget.onlyFMT) {
+        _searchLists = result;
+      } else {
+        _searchLists = result
+            .where((element) =>
+                ['female', 'male', 'tag'].contains(element.item1.group))
+            .toList();
+      }
     });
   }
 
