@@ -62,12 +62,13 @@ class _ArtistSearchState extends State<ArtistSearch> {
 
       if (HitomiIndexs.tagIndex.containsKey(key)) {
         tagGroup[HitomiIndexs.tagIndex[key].toString()] = element.value;
-      } else if (HitomiIndexs.tagIndex
-          .containsKey(element.key.replaceAll('_', ' '))) {
+      } else if (HitomiIndexs.tagIndex.containsKey(key.replaceAll('_', ' '))) {
         tagGroup[HitomiIndexs.tagIndex[key.replaceAll('_', ' ')].toString()] =
             element.value;
       }
     });
+
+    print(tagGroup);
 
     similarsAll =
         HitomiIndexs.caclulateSimilarsManual(tagSrcs[selectedType]!, tagGroup);
