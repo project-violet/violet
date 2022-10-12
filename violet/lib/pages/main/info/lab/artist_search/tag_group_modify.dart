@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
+import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/main/info/lab/artist_search/tag_group_modify_controller.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
@@ -41,6 +42,10 @@ class _TagGroupModifyState extends State<TagGroupModify> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        if (c.items.isEmpty) {
+          await showOkDialog(context, 'There must be at least one item.');
+          return false;
+        }
         Navigator.pop(context, Map.fromEntries(c.items.entries));
         return false;
       },
