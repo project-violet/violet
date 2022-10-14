@@ -19,6 +19,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:violet/firebase_options.dart';
+import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/after_loading/afterloading_page.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
@@ -26,8 +27,6 @@ import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:wakelock/wakelock.dart';
-
-import 'locale/locale.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

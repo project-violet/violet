@@ -3,8 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../viewer_controller.dart';
+import 'package:violet/pages/viewer/viewer_controller.dart';
 
 class PageLabel extends StatelessWidget {
   late final ViewerController c;

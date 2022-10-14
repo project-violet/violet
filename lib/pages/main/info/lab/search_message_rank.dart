@@ -3,10 +3,10 @@
 
 import 'dart:convert';
 
-import 'package:violet/network/wrapper.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/pages/segment/card_panel.dart';
 
 class SearchMessageRankPageMemory {

@@ -89,6 +89,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
   bool isLastestRead = false;
   int latestReadPage = 0;
   late final FToast fToast;
+  bool disposed = false;
 
   bool downloaded = false;
 
@@ -118,10 +119,13 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
                   31);
           if (x.isEmpty) return;
           _shouldReload = true;
-          setState(() {
-            isLastestRead = true;
-            latestReadPage = x.first.lastPage()!;
-          });
+
+          if (disposed) {
+            setState(() {
+              isLastestRead = true;
+              latestReadPage = x.first.lastPage()!;
+            });
+          }
         }));
   }
 
@@ -255,18 +259,26 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
 
       recoveryMode = false;
 
-      fToast.showToast(
-        child: ToastWrapper(
-          isCheck: true,
-          isWarning: false,
-          icon: Icons.download,
-          msg:
-              '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
-        ),
-        gravity: ToastGravity.BOTTOM,
-        toastDuration: const Duration(seconds: 4),
-      );
+      if (!disposed) {
+        fToast.showToast(
+          child: ToastWrapper(
+            isCheck: true,
+            isWarning: false,
+            icon: Icons.download,
+            msg:
+                '${widget.item.info()!.split('[')[1].split(']').first}${Translations.of(context).trans('download')} ${Translations.of(context).trans('complete')}',
+          ),
+          gravity: ToastGravity.BOTTOM,
+          toastDuration: const Duration(seconds: 4),
+        );
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    disposed = true;
+    super.dispose();
   }
 
   @override
@@ -849,14 +861,12 @@ class _FileThumbnailWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: showDetail ? 100 : double.infinity,
-      child: thumbnailPath != null
-          ? ClipRRect(
-              borderRadius: showDetail
-                  ? const BorderRadius.horizontal(left: Radius.circular(5.0))
-                  : const BorderRadius.all(Radius.circular(5.0)),
-              child: _thumbnailImage(),
-            )
-          : _getLoadingAnimation(),
+      child: ClipRRect(
+        borderRadius: showDetail
+            ? const BorderRadius.horizontal(left: Radius.circular(5.0))
+            : const BorderRadius.all(Radius.circular(5.0)),
+        child: _thumbnailImage(),
+      ),
     );
   }
 

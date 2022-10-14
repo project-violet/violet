@@ -16,6 +16,7 @@ import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
+import 'package:violet/script/script_webview.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
@@ -290,19 +291,25 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             ? _buildBottomNavigationBar(context)
             : null,
         drawer: _usesDrawer ? _buildDrawer(context) : null,
-        body: PageView(
-          controller: _pageController,
-          physics: _usesDrawer ? const NeverScrollableScrollPhysics() : null,
-          onPageChanged: (newPage) {
-            setState(() {});
-          },
-          children: <Widget>[
-            if (!Settings.liteMode) const MainPage(),
-            const SearchPage(),
-            if (Settings.liteMode) const HotPage(),
-            const BookmarkPage(),
-            const DownloadPage(),
-            const SettingsPage(),
+        body: Stack(
+          children: [
+            const ScriptWebView(),
+            PageView(
+              controller: _pageController,
+              physics:
+                  _usesDrawer ? const NeverScrollableScrollPhysics() : null,
+              onPageChanged: (newPage) {
+                setState(() {});
+              },
+              children: <Widget>[
+                if (!Settings.liteMode) const MainPage(),
+                const SearchPage(),
+                if (Settings.liteMode) const HotPage(),
+                const BookmarkPage(),
+                const DownloadPage(),
+                const SettingsPage(),
+              ],
+            ),
           ],
         ),
       ),

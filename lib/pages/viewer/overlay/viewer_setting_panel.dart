@@ -8,10 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:violet/locale/locale.dart' as locale;
+import 'package:violet/pages/viewer/viewer_controller.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
-
-import '../viewer_controller.dart';
 
 class ViewerSettingPanel extends StatefulWidget {
   final String getxId;

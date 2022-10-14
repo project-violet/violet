@@ -2,8 +2,7 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
-
-import '../vertical_viewer_page.dart';
+import 'package:violet/pages/viewer/vertical_viewer_page.dart';
 
 /// Raises an event when two or more fingers touch the screen.
 class DoublePointListener extends StatefulWidget {
