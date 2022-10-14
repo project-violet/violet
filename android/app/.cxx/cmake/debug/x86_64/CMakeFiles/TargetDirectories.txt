@@ -1,0 +1,4 @@
+F:/Dev/violet/android/app/.cxx/cmake/debug/x86_64/CMakeFiles/dpi-bypass.dir
+F:/Dev/violet/android/app/.cxx/cmake/debug/x86_64/CMakeFiles/tun2http.dir
+F:/Dev/violet/android/app/.cxx/cmake/debug/x86_64/CMakeFiles/edit_cache.dir
+F:/Dev/violet/android/app/.cxx/cmake/debug/x86_64/CMakeFiles/rebuild_cache.dir

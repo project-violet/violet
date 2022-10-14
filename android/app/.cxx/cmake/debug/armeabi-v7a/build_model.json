@@ -1,0 +1,70 @@
+{
+  "variant": {
+    "module": {
+      "rootBuildGradleFolder": "F:\\Dev\\violet\\android",
+      "sdkFolder": "F:\\android-sdk",
+      "isNativeCompilerSettingsCacheEnabled": false,
+      "isBuildOnlyTargetAbiEnabled": true,
+      "splitsAbiFilterSet": [],
+      "intermediatesFolder": "F:\\Dev\\violet\\build\\app\\intermediates",
+      "gradleModulePathName": ":app",
+      "moduleRootFolder": "F:\\Dev\\violet\\android\\app",
+      "makeFile": "F:\\Dev\\violet\\android\\app\\src\\main\\cpp\\CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "compilerSettingsCacheFolder": "F:\\Dev\\violet\\android\\.cxx",
+      "cxxFolder": "F:\\Dev\\violet\\android\\app\\.cxx",
+      "ndkFolder": "F:\\android-sdk\\ndk\\21.3.6528147",
+      "ndkVersion": "21.3.6528147",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "cmakeToolchainFile": "."
+    },
+    "buildSystemArgumentList": [],
+    "cFlagList": [],
+    "cppFlagsList": [],
+    "variantName": "debug",
+    "soFolder": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\lib",
+    "objFolder": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj",
+    "jsonFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug",
+    "gradleBuildOutputFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A",
+      "X86",
+      "X86_64"
+    ],
+    "buildTargetSet": []
+  },
+  "abi": "ARMEABI_V7A",
+  "abiPlatformVersion": 21,
+  "cxxBuildFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a",
+  "jsonFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\android_gradle_build.json",
+  "gradleBuildOutputFolder": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a",
+  "objFolder": "F:\\Dev\\violet\\build\\app\\intermediates\\cmake\\debug\\obj\\armeabi-v7a",
+  "buildCommandFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\build_command.txt",
+  "buildOutputFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\build_output.txt",
+  "modelOutputFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\build_model.json",
+  "cmake": {
+    "cmakeListsWrapperFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a\\CMakeLists.txt",
+    "toolchainWrapperFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a\\android_gradle_build.toolchain.cmake",
+    "buildGenerationStateFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a\\build_generation_state.json",
+    "cacheKeyFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a\\compiler_cache_key.json",
+    "compilerCacheUseFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a\\compiler_cache_use.json",
+    "compilerCacheWriteFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a\\compiler_cache_write.json",
+    "toolchainSettingsFromCacheFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cxx\\debug\\armeabi-v7a\\compiler_settings_cache.cmake",
+    "cmakeWrappingBaseFolder": "."
+  },
+  "jsonGenerationLoggingRecordFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\json_generation_record.json",
+  "compileCommandsJsonFile": "F:\\Dev\\violet\\android\\app\\.cxx\\cmake\\debug\\armeabi-v7a\\compile_commands.json"
+}

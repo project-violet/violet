@@ -1,46 +1,46 @@
-# Violet - The Chaos Injustice Violation System
-
 <p align="center">
-  <img src="app/assets/images/logo.png" width=400/>
+    <img width="150px" src="https://raw.githubusercontent.com/project-violet/violet/dev/assets/images/logo.png" align="center" alt="Violet Logo" />
+</p>
+<h2 align="center">Project Violet</h2>
+<p align="center">
+    <b><a href="https://github.com/project-violet/violet/wiki/Screenshots">Screenshots</a></b>
+    •
+    <b><a href="https://github.com/project-violet/violet/releases/latest">Download</a></b>
+    •
+    <b><a href="https://github.com/project-violet/violet/tree/dev/manual">User Manual</a></b>
+    •
+    <b><a href="https://github.com/project-violet/violet/tree/dev/doc">Docs</a></b>
 </p>
 
-Project Violet Source Code
+[![](https://discordapp.com/api/guilds/713749607472955445/widget.png?style=shield)](https://discord.gg/fqrtRxC)
+[![](https://img.shields.io/github/downloads/project-violet/violet/total.svg)](https://gitHub.com/project-violet/violet/releases)
+[![](https://img.shields.io/github/v/release/project-violet/violet)](https://github.com/project-violet/violet/releases/latest)
+![](https://img.shields.io/tokei/lines/github/project-violet/violet)
 
-## Development
+### Community
 
-If you want to contribute to this project, please leave an issue or pull request.
+Leave any questions on the [GitHub issues](https://github.com/project-violet/violet/issues)
+or on the Discord channel below.
 
-### Front-end
+Discord Channel: https://discord.gg/fqrtRxC
 
-#### Script based Service
+### Desktop Supports
 
-`Violet` runs the script on the client. 
-The reason for using the script is to make frequent updates unnecessary and apply changes in real time. 
-Script execution is protected by elliptic curve-based asymmetric encryption.
+Desktop is not currently supported.
 
-### Back-end
+See https://github.com/project-violet/violet/tree/dev-windows for buildable code.
 
-I use lightcell, s3, elastic-cache, rds, cloudflare and docker.
+### Sub Projects
 
-#### Source code of backend
+- [Violet Server](https://github.com/project-violet/violet-server) - Real-time statistics provided by collecting user behavior
+- [Violet Message Search Local](https://github.com/project-violet/violet-message-search-local) - Doujinshi Quotes Searching Program
+- [hsync](https://github.com/project-violet/hsync) - Very fast metadata synchronizer
 
-Source code of violet is not provided in general. 
-Please contact me if you are interested.
+### Multiple Language Support
 
-## Value of this
+If you want to add your language to the app,
+please translate [assets/locale/en.json](https://github.com/project-violet/violet/blob/dev/assets/locale/en.json).
+I can translate it by Google translator, but the quality is low.
 
-It provides a very fast and safe service environment. 
-By constructing a new virtual environment by blocking and reconfiguring all incomplete advertisements, 
-clients can be safe from attacks from adware or other source sites. 
-You can also use the concurrent access proxy tcp to quickly download data and show high response rates.
-
-## Profit model
-
-The violet project does not make money. 
-This is because the data collected from the backend is simply secondary processed and provided, 
-and some acts violate the terms of the Play Store and App Store.
-The project can grow if you contribute to the server fee.
-
-## Contributors
-
-## Donator
+If you want to support language in source code, please refer to the following commit:
+[f6babca](https://github.com/project-violet/violet/commit/f6babca1850df19e0774dbc8f708643b5038f5fd).

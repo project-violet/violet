@@ -1,0 +1,195 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flare_flutter/flare_cache.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:violet/firebase_options.dart';
+import 'package:violet/locale/locale.dart';
+import 'package:violet/log/log.dart';
+import 'package:violet/pages/after_loading/afterloading_page.dart';
+import 'package:violet/pages/database_download/database_download_page.dart';
+import 'package:violet/pages/lock/lock_screen.dart';
+import 'package:violet/pages/splash/splash_page.dart';
+import 'package:violet/settings/settings.dart';
+import 'package:wakelock/wakelock.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await FlutterDownloader.initialize(); // @dependent: android
+  FlareCache.doesPrune = false;
+  FlutterError.onError = recordFlutterError;
+
+  await initFirebase();
+  await Settings.initFirst();
+  await warmupFlare();
+  await Wakelock.enable();
+
+  runZonedGuarded<Future<void>>(() async {
+    runApp(const MyApp());
+  }, (exception, stack) async {
+    Logger.error('[async-error] E: $exception\n$stack');
+
+    await FirebaseCrashlytics.instance.recordError(exception, stack);
+  });
+}
+
+const _filesToWarmup = [
+  'assets/flare/Loading2.flr',
+  'assets/flare/likeUtsua.flr'
+];
+
+Future<void> warmupFlare() async {
+  for (final filename in _filesToWarmup) {
+    await cachedActor(
+      AssetFlare(bundle: rootBundle, name: filename),
+    );
+  }
+}
+
+Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
+  Logger.error(
+      '[unhandled-error] E: ${flutterErrorDetails.exceptionAsString()}\n'
+      '${flutterErrorDetails.stack}');
+
+  await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
+}
+
+Future<void> initFirebase() async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // check user-id is set
+  final prefs = await SharedPreferences.getInstance();
+  var id = prefs.getString('fa_userid');
+  if (id == null) {
+    id = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
+    prefs.setString('fa_userid', id);
+  }
+
+  var analytics = FirebaseAnalytics.instance;
+  await analytics.setUserId(id: id);
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DynamicTheme(
+      defaultBrightness: Brightness.light,
+      data: (brightness) => ThemeData(
+        brightness: brightness,
+        bottomSheetTheme:
+            BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
+        scaffoldBackgroundColor:
+            Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
+        dialogBackgroundColor: Settings.themeBlack && Settings.themeWhat
+            ? const Color(0xFF141414)
+            : null,
+        cardColor: Settings.themeBlack && Settings.themeWhat
+            ? const Color(0xFF141414)
+            : null,
+        colorScheme:
+            ColorScheme.fromSwatch().copyWith(secondary: Settings.majorColor),
+      ),
+      themedWidgetBuilder: (context, theme) {
+        return myApp(theme);
+      },
+    );
+  }
+
+  Widget myApp(ThemeData theme) {
+    const supportedLocales = <Locale>[
+      Locale('en', 'US'),
+      Locale('ko', 'KR'),
+      Locale('ja', 'JP'),
+      Locale('zh', 'CH'),
+      Locale('it', 'IT'),
+      Locale('eo', 'ES'),
+      Locale('pt', 'BR'),
+    ];
+
+    const localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+      TranslationsDelegate(),
+      GlobalMaterialLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate
+    ];
+
+    final routes = <String, WidgetBuilder>{
+      '/AfterLoading': (context) => const AfterLoadingPage(),
+      '/DatabaseDownload': (context) => const DataBaseDownloadPage(),
+      '/SplashPage': (context) => const SplashPage(),
+    };
+
+    final home =
+        Settings.useLockScreen ? const LockScreen() : const SplashPage();
+
+    final navigatorObservers = [
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ];
+
+    return GetMaterialApp(
+      navigatorObservers: navigatorObservers,
+      theme: theme,
+      home: home,
+      supportedLocales: supportedLocales,
+      routes: routes,
+      localizationsDelegates: localizationsDelegates,
+      localeResolutionCallback: localeResolution,
+    );
+  }
+
+  Locale localeResolution(Locale? locale, Iterable<Locale> supportedLocales) {
+    if (Settings.language != null) {
+      if (Settings.language!.contains('_')) {
+        final ss = Settings.language!.split('_');
+        if (ss.length == 2) {
+          return Locale.fromSubtags(languageCode: ss[0], scriptCode: ss[1]);
+        } else {
+          return Locale.fromSubtags(
+              languageCode: ss[0], scriptCode: ss[1], countryCode: ss[2]);
+        }
+      } else {
+        return Locale(Settings.language!);
+      }
+    }
+
+    if (locale == null) {
+      if (Settings.language == null) {
+        Settings.setLanguage(supportedLocales.first.languageCode);
+      }
+      return supportedLocales.first;
+    }
+
+    for (Locale supportedLocale in supportedLocales) {
+      if (supportedLocale.languageCode == locale.languageCode ||
+          supportedLocale.countryCode == locale.countryCode) {
+        if (Settings.language == null) {
+          Settings.setLanguage(supportedLocale.languageCode);
+        }
+        return supportedLocale;
+      }
+    }
+
+    if (Settings.language == null) {
+      Settings.setLanguage(supportedLocales.first.languageCode);
+    }
+
+    return supportedLocales.first;
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "774645671791",
+    "firebase_url": "https://real-violet-app.firebaseio.com",
+    "project_id": "real-violet-app",
+    "storage_bucket": "real-violet-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774645671791:android:303c295f5a687ceb772a9a",
+        "android_client_info": {
+          "package_name": "xyz.project.violet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "774645671791-qjneh8h2944m7qlshhr623vl98v2j4hv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOMT1mm45jAC8L7uTkmsH1cTcyK77q_5k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "774645671791-qjneh8h2944m7qlshhr623vl98v2j4hv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "774645671791-ahtg3f5oe5snlnaqgm1qscikfdtpfap4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "xyz.project.violet1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
