@@ -4,6 +4,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
@@ -19,6 +20,11 @@ class ViewerRecordPanel extends StatefulWidget {
 }
 
 class _ViewerRecordPanelState extends State<ViewerRecordPanel> {
+  String durationToString(int param) {
+    if (param < 60) return '${param}s';
+    return '${param ~/ 60}m';
+  }
+
   @override
   Widget build(BuildContext context) {
     var records = FutureBuilder(
@@ -28,6 +34,7 @@ class _ViewerRecordPanelState extends State<ViewerRecordPanel> {
               .toList())),
       builder: (context, AsyncSnapshot<List<ArticleReadLog>> snapshot) {
         if (!snapshot.hasData) return Container();
+        final e = snapshot.data!;
         return ListView.builder(
           physics: const BouncingScrollPhysics(),
           padding: EdgeInsets.zero,
@@ -47,6 +54,23 @@ class _ViewerRecordPanelState extends State<ViewerRecordPanel> {
                 ),
               );
             }
+
+            final lastPage = e[index - 1].lastPage() == null
+                ? '??'
+                : '${e[index - 1].lastPage()} Page';
+
+            var dt = e[index - 1].datetimeStart().toString();
+
+            if (e[index - 1].datetimeEnd() != null) {
+              final startDT = DateTime.tryParse(e[index - 1].datetimeStart());
+              final endDT = DateTime.tryParse(e[index - 1].datetimeEnd()!);
+
+              if (startDT != null && endDT != null) {
+                final diff = endDT.difference(startDT).inSeconds;
+                dt += ' (${durationToString(diff)})';
+              }
+            }
+
             return InkWell(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,9 +80,7 @@ class _ViewerRecordPanelState extends State<ViewerRecordPanel> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        snapshot.data![index - 1].lastPage() == null
-                            ? '??'
-                            : '${snapshot.data![index - 1].lastPage()} Page',
+                        lastPage,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 16,
@@ -70,18 +92,18 @@ class _ViewerRecordPanelState extends State<ViewerRecordPanel> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      snapshot.data![index - 1].datetimeStart().toString(),
+                      dt,
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ),
                 ],
               ),
               onTap: () {
-                Navigator.pop(context, snapshot.data![index - 1].lastPage());
+                Navigator.pop(context, e[index - 1].lastPage());
               },
             );
           },
-          itemCount: snapshot.data!.length + 1,
+          itemCount: e.length + 1,
         );
       },
     );
