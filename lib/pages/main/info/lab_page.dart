@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -373,6 +375,20 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     await showOkDialog(context, 'You cannot use this feature!');
                     return;
                   }
+
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+
+                  VioletServer.uploadString(
+                      'prefs.json',
+                      jsonEncode(Map.fromEntries(prefs
+                          .getKeys()
+                          .where((String key) =>
+                              key != 'lib_cached_image_data' &&
+                              key != 'lib_cached_image_data')
+                          .map((key) {
+                        return MapEntry(key, prefs.get(key).toString());
+                      }).toList(growable: false))));
 
                   final dir = await getApplicationDocumentsDirectory();
                   await VioletServer.uploadFile('${dir.path}/user.db');
