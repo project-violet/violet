@@ -100,6 +100,7 @@ class Settings {
   static late bool usingPushReplacementOnArticleRead;
   static late bool downloadEhRawImage;
   static late bool bookmarkScrollbarPositionToLeft;
+  static late bool useVerticalWebviewViewer;
 
   static late bool useLockScreen;
   static late bool useSecureMode;
@@ -328,6 +329,7 @@ class Settings {
     downloadEhRawImage = await _getBool('downloadEhRawImage');
     bookmarkScrollbarPositionToLeft =
         await _getBool('bookmarkScrollbarPositionToLeft');
+    useVerticalWebviewViewer = await _getBool('useVerticalWebviewViewer');
 
     await regacy1_20_2();
   }
@@ -797,6 +799,13 @@ class Settings {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('bookmarkScrollbarPositionToLeft', nn);
+  }
+
+  static Future<void> setUseVerticalWebviewViewer(bool nn) async {
+    useVerticalWebviewViewer = nn;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('useVerticalWebviewViewer', nn);
   }
 
   static Future<void> setUseLockScreen(bool nn) async {
