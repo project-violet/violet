@@ -7,7 +7,6 @@ import 'dart:isolate';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ffi/ffi.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -64,28 +63,36 @@ class P7zip {
     return result == 0 ? path : null;
   }
 
+  static const libraryAbis = [
+    'arm64-v8a',
+    'armeabi-v7a',
+    'x86',
+    'x86_64',
+  ];
+
   Future<String?> _checkSharedLibrary() async {
-    final dir = await getTemporaryDirectory();
-    final libFile = File('${dir.path}/lib7zr.so');
-    if (Platform.isAndroid) {
-      final devicePlugin = DeviceInfoPlugin();
-      final deviceInfo = await devicePlugin.androidInfo;
-      String soResource = 'assets/p7zip/armeabi-v7a/lib7zr.so';
-      if (kDebugMode) soResource = 'assets/p7zip/x86/lib7zr.so';
-      final support64 = deviceInfo.supported64BitAbis;
-      if (support64.isNotEmpty) {
-        if (kDebugMode) {
-          soResource = 'assets/p7zip/x86_64/lib7zr.so';
-        } else {
-          soResource = 'assets/p7zip/arm64-v8a/lib7zr.so';
-        }
-      }
-      final data = await rootBundle.load(soResource);
-      final createFile = await libFile.create();
-      final writeFile = await createFile.open(mode: FileMode.write);
-      await writeFile.writeFrom(Uint8List.view(data.buffer));
-      return libFile.path;
+    if (!Platform.isAndroid) {
+      return null;
     }
-    return null;
+
+    final devicePlugin = DeviceInfoPlugin();
+    final deviceInfo = await devicePlugin.androidInfo;
+
+    final supportedAbis =
+        deviceInfo.supportedAbis.where((abi) => abi != null).cast<String>();
+    final targetAbi =
+        supportedAbis.firstWhere((abi) => libraryAbis.contains(abi));
+    final sharedLibraryPath = 'assets/p7zip/$targetAbi/lib7zr.so';
+    final sharedLibraryContent = await rootBundle.load(sharedLibraryPath);
+
+    final tempDir = await getTemporaryDirectory();
+    final libraryFile = File('${tempDir.path}/lib7zr.so');
+    final createdFile = await libraryFile.create();
+    final openFile = await createdFile.open(mode: FileMode.write);
+    final writtenFile =
+        await openFile.writeFrom(Uint8List.view(sharedLibraryContent.buffer));
+    await writtenFile.close();
+
+    return libraryFile.path;
   }
 }
