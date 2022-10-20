@@ -650,17 +650,17 @@ class TagChip extends StatelessWidget {
         padding: const EdgeInsets.all(6.0),
       ),
       onLongPress: () async {
-        if (!Settings.excludeTags
-            .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
-          final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
+        final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
+        if (!Settings.excludeTags.contains(targetTag)) {
+          final yn =
+              await showYesNoDialog(context, '$targetTag 태그를 제외태그에 추가할까요?');
           if (yn) {
-            Settings.excludeTags
-                .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
+            Settings.excludeTags.add(targetTag);
             await Settings.setExcludeTags(Settings.excludeTags.join(' '));
             await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
           }
         } else {
-          await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
+          await showOkDialog(context, '$targetTag 태그는 이미 제외태그에 추가된 항목입니다!');
         }
       },
     );
