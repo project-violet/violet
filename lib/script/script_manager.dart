@@ -13,7 +13,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {
   static const String _scriptUrl =
-      'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js';
+      'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js1';
   static const String _scriptV4 =
       'https://github.com/project-violet/scripts/raw/main/hitomi_get_image_list_v4_model.js';
   static bool enableV4 = false;
@@ -23,8 +23,12 @@ class ScriptManager {
   static late DateTime _latestUpdate;
 
   static Future<void> init() async {
-    _scriptCache = (await http.get(_scriptUrl)).body;
-    _v4Cache = (await http.get(_scriptV4)).body;
+    try {
+      _scriptCache = (await http.get(_scriptUrl)).body;
+    } catch (e) {}
+    try {
+      _v4Cache = (await http.get(_scriptV4)).body;
+    } catch (e) {}
     _latestUpdate = DateTime.now();
     _initRuntime();
   }

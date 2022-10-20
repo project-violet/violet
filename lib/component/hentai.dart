@@ -199,74 +199,80 @@ class HentaiManager {
   static Future<VioletImageProvider> getImageProvider(QueryResult qr) async {
     final route = Settings.routingRule;
 
-    for (int i = 0; i < route.length; i++) {
-      try {
-        switch (route[i]) {
-          case 'EHentai':
-            if (qr.ehash() != null) {
-              var html = await EHSession.requestString(
-                  'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_l');
-              var article = EHParser.parseArticleData(html);
-              print(article.title);
-              return EHentaiImageProvider(
-                count: article.length,
-                thumbnail: article.thumbnail,
-                pagesUrl: EHParser.getPagesUrl(html),
-                isEHentai: true,
-              );
-            }
-            break;
-          case 'ExHentai':
-            if (qr.ehash() != null) {
-              var html = await EHSession.requestString(
-                  'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_l');
-              var article = EHParser.parseArticleData(html);
-              return EHentaiImageProvider(
-                count: article.length,
-                thumbnail: article.thumbnail,
-                pagesUrl: EHParser.getPagesUrl(html),
-                isEHentai: false,
-              );
-            }
-            break;
-          case 'Hitomi':
-            {
-              var urls = await HitomiManager.getImageList(qr.id().toString());
-              if (urls.item1.isEmpty || urls.item2.isEmpty) break;
-              return HitomiImageProvider(urls, qr.id().toString());
-            }
-
-          case 'Hiyobi':
-            {
-              var urls = await HiyobiManager.getImageList(qr.id().toString());
-              if (urls.item2.isEmpty) break;
-              return HiyobiImageProvider(urls);
-            }
-
-          case 'Hisoki':
-            {
-              var urls = await HisokiGetter.getImages(qr.id());
-              if (urls == null || urls.isEmpty) break;
-              return HisokiImageProvider(infos: urls, id: qr.id());
-            }
-
-          case 'NHentai':
-            if (qr.language() == null) {
-              var lang = qr.language() as String;
-              if (lang == 'english' ||
-                  lang == 'japanese' ||
-                  lang == 'chinese') {
-                // return HitomiImageProvider(
-                //     await NHentaiManager.getImageList(qr.id().toString()));
+    do {
+      for (int i = 0; i < route.length; i++) {
+        try {
+          switch (route[i]) {
+            case 'EHentai':
+              if (qr.ehash() != null) {
+                var html = await EHSession.requestString(
+                    'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_l');
+                var article = EHParser.parseArticleData(html);
+                print(article.title);
+                return EHentaiImageProvider(
+                  count: article.length,
+                  thumbnail: article.thumbnail,
+                  pagesUrl: EHParser.getPagesUrl(html),
+                  isEHentai: true,
+                );
               }
-            }
-            break;
+              break;
+            case 'ExHentai':
+              if (qr.ehash() != null) {
+                var html = await EHSession.requestString(
+                    'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=0&inline_set=ts_l');
+                var article = EHParser.parseArticleData(html);
+                return EHentaiImageProvider(
+                  count: article.length,
+                  thumbnail: article.thumbnail,
+                  pagesUrl: EHParser.getPagesUrl(html),
+                  isEHentai: false,
+                );
+              }
+              break;
+            case 'Hitomi':
+              {
+                var urls = await HitomiManager.getImageList(qr.id().toString());
+                if (urls.item1.isEmpty || urls.item2.isEmpty) break;
+                return HitomiImageProvider(urls, qr.id().toString());
+              }
+
+            case 'Hiyobi':
+              {
+                var urls = await HiyobiManager.getImageList(qr.id().toString());
+                if (urls.item2.isEmpty) break;
+                return HiyobiImageProvider(urls);
+              }
+
+            case 'Hisoki':
+              {
+                var urls = await HisokiGetter.getImages(qr.id());
+                if (urls == null || urls.isEmpty) break;
+                return HisokiImageProvider(infos: urls, id: qr.id());
+              }
+
+            case 'NHentai':
+              if (qr.language() == null) {
+                var lang = qr.language() as String;
+                if (lang == 'english' ||
+                    lang == 'japanese' ||
+                    lang == 'chinese') {
+                  // return HitomiImageProvider(
+                  //     await NHentaiManager.getImageList(qr.id().toString()));
+                }
+              }
+              break;
+          }
+        } catch (e, st) {
+          Logger.error('[hentai-getImageProvider] E: $e\n'
+              '$st');
         }
-      } catch (e, st) {
-        Logger.error('[hentai-getImageProvider] E: $e\n'
-            '$st');
       }
-    }
+
+      if (ScriptManager.enableV4) break;
+
+      await Future.delayed(const Duration(milliseconds: 500));
+    } while (true);
 
     throw Exception('gallery not found');
   }
