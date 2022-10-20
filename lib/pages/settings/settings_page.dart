@@ -179,8 +179,8 @@ class _SettingsPageState extends State<SettingsPage>
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
         ..addAll(_securityGroup())
-        ..addAll(!Settings.liteMode ? _databaseGroup() : [])
-        ..addAll(!Settings.liteMode ? _networkingGroup() : [])
+        ..addAll(_databaseGroup())
+        ..addAll(_networkingGroup())
         ..addAll(_downloadGroup())
         ..addAll(_bookmarkGroup())
         ..addAll(_componetGroup())
@@ -1250,26 +1250,38 @@ class _SettingsPageState extends State<SettingsPage>
       _buildGroup(Translations.of(context).trans('network')),
       _buildItems(
         [
+          // InkWell(
+          //   customBorder: const RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.only(
+          //           topLeft: Radius.circular(8.0),
+          //           topRight: Radius.circular(8.0))),
+          //   child: ListTile(
+          //     leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
+          //     title: const Text('VPN'),
+          //     trailing: const Icon(Icons.keyboard_arrow_right),
+          //   ),
+          //   onTap: () {},
+          // ),
+          // _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
-              leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
-              title: const Text('VPN'),
+              leading: Icon(
+                Icons.router,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('routing_rule')),
               trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () async {
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) => const RouteDialog(),
+                );
+              },
             ),
-            onTap: () {},
-          ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(
-              Icons.router,
-              color: Settings.majorColor,
-            ),
-            title: Text(Translations.of(context).trans('routing_rule')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
