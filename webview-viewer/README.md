@@ -7,3 +7,7 @@
 ```ts
 my_fucking_method().build();
 ```
+
+```sh
+gallery-dl -D ./test-article  -f '{num}.{extension}' https://hitomi.la/galleries/1426111.html
+```
