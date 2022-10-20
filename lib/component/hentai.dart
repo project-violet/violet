@@ -200,6 +200,8 @@ class HentaiManager {
     final route = Settings.routingRule;
 
     do {
+      final v4 = ScriptManager.enableV4;
+
       for (int i = 0; i < route.length; i++) {
         try {
           switch (route[i]) {
@@ -269,7 +271,7 @@ class HentaiManager {
         }
       }
 
-      if (ScriptManager.enableV4) break;
+      if (v4) break;
 
       await Future.delayed(const Duration(milliseconds: 500));
     } while (true);
