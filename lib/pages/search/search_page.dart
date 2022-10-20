@@ -781,8 +781,8 @@ class ResultPanelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var mm = Settings.searchResultType == 0 ? 3 : 2;
-    var windowWidth = MediaQuery.of(context).size.width;
+    final mm = Settings.searchResultType == 0 ? 3 : 2;
+    final windowWidth = MediaQuery.of(context).size.width;
 
     switch (Settings.searchResultType) {
       case 0:
@@ -799,30 +799,12 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  var keyStr = 'search/${resultList[index].id()}/$index';
-                  if (!itemKeys.containsKey(keyStr)) {
-                    itemKeys[keyStr] = GlobalKey();
-                  }
-                  return Padding(
-                    key: itemKeys[keyStr],
-                    padding: EdgeInsets.zero,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        child: Provider<ArticleListItem>.value(
-                          value: ArticleListItem.fromArticleListItem(
-                            queryResult: resultList[index],
-                            showDetail: false,
-                            addBottomPadding: false,
-                            width: (windowWidth - 4.0) / mm,
-                            thumbnailTag:
-                                'thumbnail${resultList[index].id()}$dateTime',
-                            usableTabList: resultList,
-                          ),
-                          child: const ArticleListItemWidget(),
-                        ),
-                      ),
-                    ),
+                  return articleItem(
+                    index,
+                    mm,
+                    windowWidth,
+                    (windowWidth - 4.0) / mm,
+                    alignment: Alignment.bottomCenter,
                   );
                 },
                 childCount: resultList.length,
@@ -850,26 +832,14 @@ class ResultPanelWidget extends StatelessWidget {
                 childAspectRatio: (windowWidth / 2) / 130,
               ),
               itemBuilder: (context, index, animation) {
-                var keyStr = 'search/${resultList[index].id()}/$index';
-                if (!itemKeys.containsKey(keyStr)) {
-                  itemKeys[keyStr] = GlobalKey();
-                }
-                return Align(
-                  key: itemKeys[keyStr],
-                  alignment: Alignment.center,
-                  child: Provider<ArticleListItem>.value(
-                    value: ArticleListItem.fromArticleListItem(
-                      addBottomPadding: true,
-                      showDetail: Settings.searchResultType >= 3,
-                      showUltra: Settings.searchResultType == 4,
-                      queryResult: resultList[index],
-                      width: windowWidth - 4.0,
-                      thumbnailTag:
-                          'thumbnail${resultList[index].id()}$dateTime',
-                      usableTabList: resultList,
-                    ),
-                    child: const ArticleListItemWidget(),
-                  ),
+                return articleItem(
+                  index,
+                  mm,
+                  windowWidth,
+                  windowWidth - 4.0,
+                  showDetail: Settings.searchResultType >= 3,
+                  showUltra: Settings.searchResultType == 4,
+                  addBottomPadding: true,
                 );
               },
             ),
@@ -879,26 +849,14 @@ class ResultPanelWidget extends StatelessWidget {
             key: key,
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                var keyStr = 'search/${resultList[index].id()}/$index';
-                if (!itemKeys.containsKey(keyStr)) {
-                  itemKeys[keyStr] = GlobalKey();
-                }
-                return Align(
-                  key: itemKeys[keyStr],
-                  alignment: Alignment.center,
-                  child: Provider<ArticleListItem>.value(
-                    value: ArticleListItem.fromArticleListItem(
-                      addBottomPadding: true,
-                      showDetail: Settings.searchResultType >= 3,
-                      showUltra: Settings.searchResultType == 4,
-                      queryResult: resultList[index],
-                      width: windowWidth - 4.0,
-                      thumbnailTag:
-                          'thumbnail${resultList[index].id()}$dateTime',
-                      usableTabList: resultList,
-                    ),
-                    child: const ArticleListItemWidget(),
-                  ),
+                return articleItem(
+                  index,
+                  mm,
+                  windowWidth,
+                  windowWidth - 4.0,
+                  showDetail: Settings.searchResultType >= 3,
+                  showUltra: Settings.searchResultType == 4,
+                  addBottomPadding: true,
                 );
               },
               childCount: resultList.length,
@@ -910,5 +868,46 @@ class ResultPanelWidget extends StatelessWidget {
           child: Text('Error :('),
         );
     }
+  }
+
+  articleItem(
+    int index,
+    int mm,
+    double windowWidth,
+    double width, {
+    bool showDetail = false,
+    bool showUltra = false,
+    bool addBottomPadding = false,
+    Alignment alignment = Alignment.center,
+  }) {
+    final keyStr = 'search/${resultList[index].id()}/$index';
+
+    if (!itemKeys.containsKey(keyStr)) {
+      itemKeys[keyStr] = GlobalKey();
+    }
+
+    final article = Provider<ArticleListItem>.value(
+      value: ArticleListItem.fromArticleListItem(
+        queryResult: resultList[index],
+        showDetail: showDetail,
+        showUltra: showUltra,
+        addBottomPadding: addBottomPadding,
+        width: width,
+        thumbnailTag: 'thumbnail${resultList[index].id()}$dateTime',
+        usableTabList: resultList,
+      ),
+      child: const ArticleListItemWidget(),
+    );
+
+    return Padding(
+      key: itemKeys[keyStr],
+      padding: EdgeInsets.zero,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+          child: article,
+        ),
+      ),
+    );
   }
 }
