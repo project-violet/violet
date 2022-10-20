@@ -1,25 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import styled from "styled-components";
+
+const MyImage = styled.img`
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  display: block;
+  min-width: 300px;
+`;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div>
+        <MyImage src="/test-article/1.webp" />
+        <MyImage src="/test-article/2.webp" />
+        <MyImage src="/test-article/3.webp" />
+        <MyImage src="/test-article/4.webp" />
+        <MyImage src="/test-article/5.webp" />
+        <MyImage src="/test-article/6.webp" />
+      </div>
+    </>
   );
 }
 
