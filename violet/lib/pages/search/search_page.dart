@@ -14,6 +14,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
@@ -42,7 +43,9 @@ import 'package:violet/widgets/theme_switchable_state.dart';
 bool blurred = false;
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  final String? searchKeyWord;
+
+  const SearchPage({Key? key, this.searchKeyWord}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -51,7 +54,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends ThemeSwitchableState<SearchPage>
     with AutomaticKeepAliveClientMixin<SearchPage> {
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => widget.searchKeyWord == null;
 
   @override
   VoidCallback? get shouldReloadCallback => () => _shouldReload = true;
@@ -111,8 +114,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
     Future.delayed(const Duration(milliseconds: 500), () async {
       try {
-        final result =
-            await HentaiManager.search('').timeout(const Duration(seconds: 5));
+        final result = await HentaiManager.search(widget.searchKeyWord ?? '')
+            .timeout(const Duration(seconds: 5));
 
         latestQuery =
             Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
@@ -265,27 +268,48 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       _cachedPannel = panel;
     }
 
+    final slivers = [
+      SliverPersistentHeader(
+        floating: true,
+        delegate: AnimatedOpacitySliver(
+          searchBar: Stack(
+            children: <Widget>[
+              _searchBar(),
+              _align(),
+            ],
+          ),
+        ),
+      ),
+      _cachedPannel!,
+    ];
+
+    late Widget scrollView;
+
+    if (widget.searchKeyWord == null) {
+      scrollView = CustomScrollView(
+        controller: _scroll,
+        physics: const BouncingScrollPhysics(),
+        slivers: slivers,
+      );
+    } else {
+      scrollView = NestedScrollView(
+        controller: _scroll,
+        physics: const ScrollPhysics(parent: PageScrollPhysics()),
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [];
+        },
+        body: CustomScrollView(
+          controller: ModalScrollController.of(context),
+          physics: const BouncingScrollPhysics(),
+          slivers: slivers,
+        ),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          controller: _scroll,
-          physics: const BouncingScrollPhysics(),
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                searchBar: Stack(
-                  children: <Widget>[
-                    _searchBar(),
-                    _align(),
-                  ],
-                ),
-              ),
-            ),
-            _cachedPannel!,
-          ],
-        ),
+        child: scrollView,
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Settings.majorColor,
@@ -397,7 +421,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
                               hintText: latestQuery != null &&
                                       latestQuery!.item2.trim() != ''
                                   ? latestQuery!.item2
-                                  : Translations.of(context).trans('search')),
+                                  : widget.searchKeyWord ??
+                                      Translations.of(context).trans('search')),
                         ),
                         leading: SizedBox(
                           width: 25,
@@ -415,31 +440,30 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
                   bottom: 0.0,
                   right: 0.0,
                   child: Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      onTap: _showSearchBar,
-                      onDoubleTap: () async {
-                        // latestQuery = value;
-                        latestQuery =
-                            Tuple2<Tuple2<List<QueryResult>, int>?, String>(
-                                null, 'random:${Random().nextDouble() + 1}');
-                        queryResult = [];
-                        _filterController = FilterController();
-                        queryEnd = false;
-                        isFilterUsed = false;
-                        _shouldReload = true;
-                        searchTotalResultCount = 0;
-                        searchPageNum.value = 0;
-                        baseCount = 0;
-                        await loadNextQuery();
-                        setState(() {
-                          _cachedPannel = null;
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        onTap: _showSearchBar,
+                        onDoubleTap: () async {
+                          if (widget.searchKeyWord != null) return;
+                          latestQuery =
+                              Tuple2<Tuple2<List<QueryResult>, int>?, String>(
+                                  null, 'random:${Random().nextDouble() + 1}');
+                          queryResult = [];
+                          _filterController = FilterController();
+                          queryEnd = false;
+                          isFilterUsed = false;
                           _shouldReload = true;
-                          key = ObjectKey(const Uuid().v4());
-                        });
-                      },
-                    ),
-                  ),
+                          searchTotalResultCount = 0;
+                          searchPageNum.value = 0;
+                          baseCount = 0;
+                          await loadNextQuery();
+                          setState(() {
+                            _cachedPannel = null;
+                            _shouldReload = true;
+                            key = ObjectKey(const Uuid().v4());
+                          });
+                        },
+                      )),
                 ),
               ],
             ),
@@ -450,6 +474,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   }
 
   Future<void> _showSearchBar() async {
+    if (widget.searchKeyWord != null) return;
     await Future.delayed(const Duration(milliseconds: 200));
     heroFlareControls.play('search2close');
     final query = await Navigator.push<String>(
