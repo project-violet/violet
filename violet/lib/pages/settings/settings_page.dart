@@ -381,8 +381,10 @@ class _SettingsPageState extends State<SettingsPage>
                       cardColor: Settings.themeBlack && Settings.themeWhat
                           ? const Color(0xFF141414)
                           : null,
-                      colorScheme: ColorScheme.fromSwatch()
-                          .copyWith(secondary: Settings.majorColor),
+                      colorScheme: ColorScheme.fromSwatch().copyWith(
+                        secondary: Settings.majorColor,
+                        brightness: Theme.of(context).brightness,
+                      ),
                     ),
                   );
                   ThemeSwitchableStateTargetStore.doChange();
