@@ -13,7 +13,7 @@ import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {
   static const String _scriptUrl =
-      'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js1';
+      'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js';
   static const String _scriptV4 =
       'https://github.com/project-violet/scripts/raw/main/hitomi_get_image_list_v4_model.js';
   static bool enableV4 = false;
