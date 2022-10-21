@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart' as locale;
@@ -655,11 +656,22 @@ class TagChip extends StatelessWidget {
       ),
       onTap: () async {
         final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
-        await CupertinoScaffold.showCupertinoModalBottomSheet(
-          context: context,
-          builder: (context) =>
-              CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag)),
-        );
+
+        if (ModalBottomSheetContext.up() == 0) {
+          await CupertinoScaffold.showCupertinoModalBottomSheet(
+            context: context,
+            builder: (context) =>
+                CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag)),
+          );
+        } else {
+          await showCupertinoModalBottomSheet(
+            context: context,
+            builder: (context) =>
+                CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag)),
+          );
+        }
+
+        ModalBottomSheetContext.down();
       },
       onLongPress: () async {
         final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
@@ -681,5 +693,43 @@ class TagChip extends StatelessWidget {
       height: 42,
       child: FittedBox(child: fc),
     );
+  }
+}
+
+class ModalInsideModal extends StatelessWidget {
+  final bool reverse;
+
+  const ModalInsideModal({Key? key, this.reverse = false}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Material(
+            child: Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          reverse: reverse,
+          shrinkWrap: true,
+          controller: ModalScrollController.of(context),
+          physics: ClampingScrollPhysics(),
+          children: ListTile.divideTiles(
+              context: context,
+              tiles: List.generate(
+                100,
+                (index) => ListTile(
+                    title: Text('Item $index'),
+                    onTap: () => showCupertinoModalBottomSheet(
+                          expand: true,
+                          isDismissible: false,
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) =>
+                              ModalInsideModal(reverse: reverse),
+                        )),
+              )).toList(),
+        ),
+      ),
+    )));
   }
 }
