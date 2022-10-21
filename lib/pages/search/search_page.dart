@@ -311,74 +311,77 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         bottom: false,
         child: scrollView,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Settings.majorColor,
-        label: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeIn,
-          switchOutCurve: Curves.easeOut,
-          transitionBuilder: (Widget child, Animation<double> animation) =>
-              FadeTransition(
-            opacity: animation,
-            child: SizeTransition(
-              sizeFactor: animation,
-              axis: Axis.horizontal,
-              child: child,
-            ),
+      floatingActionButton: _floatingActionButton(),
+    );
+  }
+
+  Widget _floatingActionButton() {
+    return FloatingActionButton.extended(
+      backgroundColor: Settings.majorColor,
+      label: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        switchInCurve: Curves.easeIn,
+        switchOutCurve: Curves.easeOut,
+        transitionBuilder: (Widget child, Animation<double> animation) =>
+            FadeTransition(
+          opacity: animation,
+          child: SizeTransition(
+            sizeFactor: animation,
+            axis: Axis.horizontal,
+            child: child,
           ),
-          child: !isExtended
-              ? const Icon(MdiIcons.bookOpenPageVariantOutline)
-              : Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 4.0),
-                      child: Icon(MdiIcons.bookOpenPageVariantOutline),
-                    ),
-                    ValueListenableBuilder(
-                      valueListenable: searchPageNum,
-                      builder:
-                          (BuildContext context, int value, Widget? child) {
-                        return Text(
-                            '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
-                      },
-                    ),
-                  ],
-                ),
         ),
-        onPressed: () async {
-          var rr = await showDialog(
-            context: context,
-            builder: (BuildContext context) => SearchPageModifyPage(
-              curPage: searchPageNum.value + baseCount,
-              maxPage: searchTotalResultCount,
-            ),
-          );
-          if (rr == null) return;
-
-          if (rr[0] == 1) {
-            var setPage = rr[1] as int;
-
-            baseCount = setPage;
-
-            latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-                Tuple2<List<QueryResult>, int>(<QueryResult>[], baseCount),
-                latestQuery!.item2);
-            queryEnd = false;
-            queryResult = [];
-            _filterController = FilterController();
-            isFilterUsed = false;
-            _shouldReload = true;
-            searchTotalResultCount = 0;
-            searchPageNum.value = 0;
-            await loadNextQuery();
-            setState(() {
-              _cachedPannel = null;
-              _shouldReload = true;
-              key = ObjectKey(const Uuid().v4());
-            });
-          }
-        },
+        child: !isExtended
+            ? const Icon(MdiIcons.bookOpenPageVariantOutline)
+            : Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(right: 4.0),
+                    child: Icon(MdiIcons.bookOpenPageVariantOutline),
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: searchPageNum,
+                    builder: (BuildContext context, int value, Widget? child) {
+                      return Text(
+                          '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
+                    },
+                  ),
+                ],
+              ),
       ),
+      onPressed: () async {
+        var rr = await showDialog(
+          context: context,
+          builder: (BuildContext context) => SearchPageModifyPage(
+            curPage: searchPageNum.value + baseCount,
+            maxPage: searchTotalResultCount,
+          ),
+        );
+        if (rr == null) return;
+
+        if (rr[0] == 1) {
+          var setPage = rr[1] as int;
+
+          baseCount = setPage;
+
+          latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
+              Tuple2<List<QueryResult>, int>(<QueryResult>[], baseCount),
+              latestQuery!.item2);
+          queryEnd = false;
+          queryResult = [];
+          _filterController = FilterController();
+          isFilterUsed = false;
+          _shouldReload = true;
+          searchTotalResultCount = 0;
+          searchPageNum.value = 0;
+          await loadNextQuery();
+          setState(() {
+            _cachedPannel = null;
+            _shouldReload = true;
+            key = ObjectKey(const Uuid().v4());
+          });
+        }
+      },
     );
   }
 
