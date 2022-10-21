@@ -11,7 +11,7 @@ class HiyobiManager {
   static Future<Tuple2<String, List<String>>> getImageList(String id) async {
     var gg = await http.get('https://api.hiyobi.me/gallery/$id');
     var urls = gg.body;
-    var files = jsonDecode(urls) as List<dynamic>;
+    var files = (jsonDecode(urls) as Map<String, dynamic>)['files'];
     var result = <String>[];
 
     files.forEach((value) {
