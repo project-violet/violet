@@ -556,6 +556,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.0"
+  flutter_downloader:
+    dependency: "direct main"
+    description:
+      name: flutter_downloader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.8.4"
   flutter_heatmap_calendar:
     dependency: "direct main"
     description:
@@ -932,6 +939,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1+1"
+  modal_bottom_sheet:
+    dependency: "direct main"
+    description:
+      name: modal_bottom_sheet
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.2"
   moor:
     dependency: transitive
     description:
@@ -1285,7 +1299,7 @@ packages:
     source: hosted
     version: "2.3.0"
   sqflite_common_ffi:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: sqflite_common_ffi
       url: "https://pub.dartlang.org"
