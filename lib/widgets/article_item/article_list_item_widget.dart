@@ -3,11 +3,13 @@
 
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
@@ -21,6 +23,7 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
@@ -594,6 +597,7 @@ class TagChip extends StatelessWidget {
   String normalize(String tag) {
     if (tag == 'groups') return 'group';
     if (tag == 'artists') return 'artist';
+    if (tag == 'tags') return 'tag';
     return tag;
   }
 
@@ -649,6 +653,14 @@ class TagChip extends StatelessWidget {
         // shadowColor: Colors.grey[60],
         padding: const EdgeInsets.all(6.0),
       ),
+      onTap: () async {
+        final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
+        await CupertinoScaffold.showCupertinoModalBottomSheet(
+          context: context,
+          builder: (context) =>
+              CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag)),
+        );
+      },
       onLongPress: () async {
         final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
         if (!Settings.excludeTags.contains(targetTag)) {

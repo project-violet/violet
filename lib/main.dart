@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/firebase_options.dart';
 import 'package:violet/locale/locale.dart';
@@ -103,8 +104,8 @@ class MyApp extends StatelessWidget {
         cardColor: Settings.themeBlack && Settings.themeWhat
             ? const Color(0xFF141414)
             : null,
-        colorScheme:
-            ColorScheme.fromSwatch().copyWith(secondary: Settings.majorColor),
+        colorScheme: ColorScheme.fromSwatch()
+            .copyWith(secondary: Settings.majorColor, brightness: brightness),
       ),
       themedWidgetBuilder: (context, theme) {
         return myApp(theme);
@@ -131,7 +132,8 @@ class MyApp extends StatelessWidget {
     ];
 
     final routes = <String, WidgetBuilder>{
-      '/AfterLoading': (context) => const AfterLoadingPage(),
+      '/AfterLoading': (context) =>
+          const CupertinoScaffold(body: AfterLoadingPage()),
       '/DatabaseDownload': (context) => const DataBaseDownloadPage(),
       '/SplashPage': (context) => const SplashPage(),
     };
@@ -151,6 +153,10 @@ class MyApp extends StatelessWidget {
       routes: routes,
       localizationsDelegates: localizationsDelegates,
       localeResolutionCallback: localeResolution,
+      // onGenerateRoute: (settings) {
+      //   return MaterialWithModalsPageRoute(
+      //       settings: settings, builder: (context) => Container());
+      // },
     );
   }
 
