@@ -109,11 +109,6 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       await cachedActor(asset);
     })();
 
-    if (Settings.liteMode) {
-      Future.delayed(const Duration(milliseconds: 200))
-          .then((value) => UpdateManager.updateCheck(context));
-    }
-
     Future.delayed(const Duration(milliseconds: 500), () async {
       try {
         final result =
