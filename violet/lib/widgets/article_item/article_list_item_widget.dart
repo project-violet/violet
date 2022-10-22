@@ -657,17 +657,24 @@ class TagChip extends StatelessWidget {
       onTap: () async {
         final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
 
+        CupertinoScaffold? cached;
         if (ModalBottomSheetContext.up() == 0) {
           await CupertinoScaffold.showCupertinoModalBottomSheet(
             context: context,
-            builder: (context) =>
-                CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag)),
+            builder: (context) {
+              cached ??=
+                  CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag));
+              return cached!;
+            },
           );
         } else {
           await showCupertinoModalBottomSheet(
             context: context,
-            builder: (context) =>
-                CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag)),
+            builder: (context) {
+              cached ??=
+                  CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag));
+              return cached!;
+            },
           );
         }
 
