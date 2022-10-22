@@ -385,6 +385,16 @@ class _SettingsPageState extends State<SettingsPage>
                         secondary: Settings.majorColor,
                         brightness: Theme.of(context).brightness,
                       ),
+                      cupertinoOverrideTheme: CupertinoThemeData(
+                        brightness: Theme.of(context).brightness,
+                        primaryColor: Settings.majorColor,
+                        textTheme: const CupertinoTextThemeData(),
+                        barBackgroundColor: Settings.themeWhat
+                            ? Settings.themeBlack
+                                ? const Color(0xFF181818)
+                                : Colors.grey.shade800
+                            : null,
+                      ),
                     ),
                   );
                   ThemeSwitchableStateTargetStore.doChange();
@@ -419,6 +429,16 @@ class _SettingsPageState extends State<SettingsPage>
                               : null,
                           colorScheme: ColorScheme.fromSwatch()
                               .copyWith(secondary: Settings.majorColor),
+                          cupertinoOverrideTheme: CupertinoThemeData(
+                            brightness: Theme.of(context).brightness,
+                            primaryColor: Settings.majorColor,
+                            textTheme: const CupertinoTextThemeData(),
+                            barBackgroundColor: Settings.themeWhat
+                                ? Settings.themeBlack
+                                    ? const Color(0xFF181818)
+                                    : Colors.grey.shade800
+                                : null,
+                          ),
                         ),
                       );
                       setState(() {

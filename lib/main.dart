@@ -113,7 +113,7 @@ class MyApp extends StatelessWidget {
           textTheme: const CupertinoTextThemeData(),
           barBackgroundColor: Settings.themeWhat
               ? Settings.themeBlack
-                  ? Colors.black
+                  ? const Color(0xFF181818)
                   : Colors.grey.shade800
               : null,
         ),

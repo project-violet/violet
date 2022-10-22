@@ -292,6 +292,7 @@
   "checkalreadydownloaded": "이미 다운로드된 작품입니다. 그래도 다운로드할까요?",
   "securemode": "앱 목록에서 앱 가리기",
   "copied": "복사되었습니다!",
+  "align": "정렬",
   "alignnone": "일반 정렬",
   "alignartist": "작가순으로 정렬",
   "aligngroup": "그룹순으로 정렬",
