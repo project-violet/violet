@@ -1180,7 +1180,7 @@ class _Chip extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 42,
+      height: 44,
       child: FittedBox(child: fc),
     );
   }
