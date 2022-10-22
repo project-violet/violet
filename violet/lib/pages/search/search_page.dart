@@ -303,8 +303,25 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     } else {
       scrollView = CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
-          leading: const SizedBox.shrink(),
+          leading: CupertinoButton(
+            padding: const EdgeInsets.all(10),
+            onPressed: _alignOnTap,
+            child: const Icon(
+              MdiIcons.formatListText,
+              size: 21.0,
+              color: Colors.grey,
+            ),
+          ),
           middle: Text(widget.searchKeyWord!),
+          trailing: CupertinoButton(
+            padding: const EdgeInsets.all(10),
+            onPressed: _alignLongPress,
+            child: const Icon(
+              MdiIcons.filter,
+              size: 21.0,
+              color: Colors.grey,
+            ),
+          ),
         ),
         child: SafeArea(
           bottom: false,
@@ -609,7 +626,10 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   }
 
   Future<void> _alignLongPress() async {
-    PlatformNavigator.navigateFade(
+    final navigator = widget.searchKeyWord == null
+        ? PlatformNavigator.navigateFade
+        : PlatformNavigator.navigateSlide;
+    navigator(
       context,
       Provider<FilterController>.value(
         value: _filterController,
