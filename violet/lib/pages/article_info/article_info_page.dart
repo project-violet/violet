@@ -1108,7 +1108,7 @@ class _Chip extends StatelessWidget {
               child: avatar,
             ),
             Text(
-              ' $tagDisplayed',
+              ' $tagDisplayed ',
               style: const TextStyle(
                 color: Colors.white,
               ),
