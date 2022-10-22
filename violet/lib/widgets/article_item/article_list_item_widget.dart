@@ -618,16 +618,19 @@ class TagChip extends StatelessWidget {
       color = Colors.blue;
     }
 
+    var mustHasMorePad = true;
     Widget avatar = Text(group[0].toUpperCase(),
         style: const TextStyle(color: Colors.white));
 
     if (group == 'female') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderFemale,
         size: 18.0,
         color: Colors.white,
       );
     } else if (group == 'male') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderMale,
         size: 18.0,
@@ -638,16 +641,20 @@ class TagChip extends StatelessWidget {
     final fc = GestureDetector(
       child: RawChip(
         labelPadding: const EdgeInsets.all(0.0),
-        avatar: CircleAvatar(
-          // backgroundColor: Colors.grey.shade600,
-          backgroundColor: color,
-          child: avatar,
-        ),
-        label: Text(
-          ' $tagDisplayed',
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+        label: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal: 2.0 + (mustHasMorePad ? 4.0 : 0)),
+              child: avatar,
+            ),
+            Text(
+              ' $tagDisplayed',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         backgroundColor: color,
         elevation: 6.0,
