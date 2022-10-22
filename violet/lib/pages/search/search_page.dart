@@ -303,6 +303,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     } else {
       scrollView = CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar(
+          border: const Border(bottom: BorderSide(color: Colors.transparent)),
           leading: CupertinoButton(
             padding: const EdgeInsets.all(10),
             onPressed: _alignOnTap,
