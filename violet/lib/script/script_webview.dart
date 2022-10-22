@@ -90,6 +90,13 @@ class _ScriptWebViewState extends State<ScriptWebView>
                   return {};
                 });
           },
+          onLoadError: ((controller, url, code, message) {
+            Logger.error('[Script Webview] Error $code\n$message');
+          }),
+          onLoadHttpError: (controller, url, statusCode, description) {
+            Logger.error(
+                '[Script Webview] Http Error $statusCode\n$description');
+          },
           onLoadStop: (controller, url) async {
             await controller.evaluateJavascript(source: '''
               var r = "";
