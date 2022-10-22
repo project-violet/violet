@@ -516,8 +516,8 @@ class MultiChipWidget extends StatelessWidget {
         ),
         Expanded(
           child: Wrap(
-            spacing: 1.0,
-            runSpacing: -12.0,
+            spacing: 2.0,
+            runSpacing: -9.0,
             children: groupName
                 .map((x) => _Chip(group: x.item1, name: x.item2))
                 .toList(),
@@ -1056,97 +1056,132 @@ class _Chip extends StatelessWidget {
       color = Colors.orange;
     }
 
-    Widget avatar = Text(group[0].toUpperCase());
+    var mustHasMorePad = true;
+    Widget avatar = Text(group[0].toUpperCase(),
+        style: const TextStyle(color: Colors.white));
 
     if (group == 'female') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderFemale,
         size: 18.0,
         color: Colors.white,
       );
     } else if (group == 'male') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderMale,
         size: 18.0,
         color: Colors.white,
       );
     } else if (group == 'language') {
-      avatar = const Icon(Icons.language, size: 18.0);
+      mustHasMorePad = false;
+      avatar = const Icon(
+        Icons.language,
+        size: 18.0,
+        color: Colors.white,
+      );
     } else if (group == 'artists') {
-      avatar = const Icon(MdiIcons.account, size: 18.0);
+      mustHasMorePad = false;
+      avatar = const Icon(
+        MdiIcons.account,
+        size: 18.0,
+        color: Colors.white,
+      );
     } else if (group == 'groups') {
-      avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
+      mustHasMorePad = false;
+      avatar = const Icon(
+        MdiIcons.accountGroup,
+        size: 15.0,
+      );
     }
 
-    var fc = Transform.scale(
-      scale: 0.95,
-      child: GestureDetector(
-        child: RawChip(
-          labelPadding: const EdgeInsets.all(0.0),
-          avatar: CircleAvatar(
-            backgroundColor: avatarBg,
-            child: avatar,
-          ),
-          label: Text(
-            ' $tagDisplayed',
-            style: const TextStyle(
-              color: Colors.white,
+    final fc = GestureDetector(
+      child: RawChip(
+        labelPadding: const EdgeInsets.all(0.0),
+        label: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  left: 2.0 + (mustHasMorePad ? 4.0 : 0),
+                  right: (mustHasMorePad ? 4.0 : 0)),
+              child: avatar,
             ),
-          ),
-          backgroundColor: color,
-          elevation: 6.0,
-          // shadowColor: Colors.grey[60],
-          padding: const EdgeInsets.all(6.0),
+            Text(
+              ' $tagDisplayed',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
-        onLongPress: () async {
-          if (!Settings.excludeTags
-              .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
-            final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
-            if (yn) {
-              Settings.excludeTags
-                  .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
-              await Settings.setExcludeTags(Settings.excludeTags.join(' '));
-              await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
-            }
-          } else {
-            await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
-          }
-        },
-        onTap: () async {
-          if ((group == 'groups' ||
-                  group == 'artists' ||
-                  group == 'uploader' ||
-                  group == 'series' ||
-                  group == 'character') &&
-              name.toLowerCase() != 'n/a') {
-            PlatformNavigator.navigateSlide(
-              context,
-              ArtistInfoPage(
-                isGroup: group == 'groups',
-                isUploader: group == 'uploader',
-                isCharacter: group == 'character',
-                isSeries: group == 'series',
-                artist: name,
-              ),
-            );
-          } else if (group == 'id') {
-            Clipboard.setData(ClipboardData(text: name));
-            FToast fToast = FToast();
-            fToast.init(context);
-            fToast.showToast(
-              child: ToastWrapper(
-                isCheck: true,
-                isWarning: false,
-                msg: Translations.of(context).trans('copied'),
-              ),
-              gravity: ToastGravity.BOTTOM,
-              toastDuration: const Duration(seconds: 4),
-            );
-          }
-        },
+        // avatar: CircleAvatar(
+        //   backgroundColor: avatarBg,
+        //   child: avatar,
+        // ),
+        // label: Text(
+        //   ' $tagDisplayed',
+        //   style: const TextStyle(
+        //     color: Colors.white,
+        //   ),
+        // ),
+        backgroundColor: color,
+        elevation: 6.0,
+        // shadowColor: Colors.grey[60],
+        padding: const EdgeInsets.all(6.0),
       ),
+      onLongPress: () async {
+        if (!Settings.excludeTags
+            .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
+          final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
+          if (yn) {
+            Settings.excludeTags
+                .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
+            await Settings.setExcludeTags(Settings.excludeTags.join(' '));
+            await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
+          }
+        } else {
+          await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
+        }
+      },
+      onTap: () async {
+        if ((group == 'groups' ||
+                group == 'artists' ||
+                group == 'uploader' ||
+                group == 'series' ||
+                group == 'character') &&
+            name.toLowerCase() != 'n/a') {
+          PlatformNavigator.navigateSlide(
+            context,
+            ArtistInfoPage(
+              isGroup: group == 'groups',
+              isUploader: group == 'uploader',
+              isCharacter: group == 'character',
+              isSeries: group == 'series',
+              artist: name,
+            ),
+          );
+        } else if (group == 'id') {
+          Clipboard.setData(ClipboardData(text: name));
+          FToast fToast = FToast();
+          fToast.init(context);
+          fToast.showToast(
+            child: ToastWrapper(
+              isCheck: true,
+              isWarning: false,
+              msg: Translations.of(context).trans('copied'),
+            ),
+            gravity: ToastGravity.BOTTOM,
+            toastDuration: const Duration(seconds: 4),
+          );
+        }
+      },
     );
-    return fc;
+
+    return SizedBox(
+      height: 42,
+      child: FittedBox(child: fc),
+    );
   }
 }
 

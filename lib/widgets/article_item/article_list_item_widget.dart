@@ -644,8 +644,9 @@ class TagChip extends StatelessWidget {
         label: Row(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: 2.0 + (mustHasMorePad ? 4.0 : 0)),
+              padding: EdgeInsets.only(
+                  left: 2.0 + (mustHasMorePad ? 4.0 : 0),
+                  right: (mustHasMorePad ? 4.0 : 0)),
               child: avatar,
             ),
             Text(
