@@ -72,7 +72,7 @@ class _ScriptWebViewState extends State<ScriptWebView>
         height: 1,
         child: InAppWebView(
           initialUrlRequest: URLRequest(
-            url: Uri.parse('https://hitomi.la/reader/1331143.html#6'),
+            url: Uri.parse('https://hitomi.la'),
           ),
           initialOptions: InAppWebViewGroupOptions(
               crossPlatform: InAppWebViewOptions(
