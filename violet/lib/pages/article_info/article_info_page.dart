@@ -1093,6 +1093,7 @@ class _Chip extends StatelessWidget {
       avatar = const Icon(
         MdiIcons.accountGroup,
         size: 15.0,
+        color: Colors.white,
       );
     }
 
