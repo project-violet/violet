@@ -11,6 +11,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -106,6 +107,16 @@ class MyApp extends StatelessWidget {
             : null,
         colorScheme: ColorScheme.fromSwatch()
             .copyWith(secondary: Settings.majorColor, brightness: brightness),
+        cupertinoOverrideTheme: CupertinoThemeData(
+          brightness: brightness,
+          primaryColor: Settings.majorColor,
+          textTheme: const CupertinoTextThemeData(),
+          barBackgroundColor: Settings.themeWhat
+              ? Settings.themeBlack
+                  ? Colors.black
+                  : Colors.grey.shade800
+              : null,
+        ),
       ),
       themedWidgetBuilder: (context, theme) {
         return myApp(theme);
@@ -153,10 +164,6 @@ class MyApp extends StatelessWidget {
       routes: routes,
       localizationsDelegates: localizationsDelegates,
       localeResolutionCallback: localeResolution,
-      // onGenerateRoute: (settings) {
-      //   return MaterialWithModalsPageRoute(
-      //       settings: settings, builder: (context) => Container());
-      // },
     );
   }
 

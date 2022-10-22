@@ -9,6 +9,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,7 @@ import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/population.dart';
+import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
@@ -269,17 +271,24 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     }
 
     final slivers = [
-      SliverPersistentHeader(
-        floating: true,
-        delegate: AnimatedOpacitySliver(
-          searchBar: Stack(
-            children: <Widget>[
-              _searchBar(),
-              _align(),
-            ],
+      if (widget.searchKeyWord == null)
+        SliverPersistentHeader(
+          floating: true,
+          delegate: AnimatedOpacitySliver(
+            searchBar: Stack(
+              children: <Widget>[
+                _searchBar(),
+                _align(),
+              ],
+            ),
+          ),
+        )
+      else
+        SliverToBoxAdapter(
+          child: Container(
+            height: 16,
           ),
         ),
-      ),
       _cachedPannel!,
     ];
 
@@ -292,16 +301,26 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         slivers: slivers,
       );
     } else {
-      scrollView = NestedScrollView(
-        controller: _scroll,
-        physics: const ScrollPhysics(parent: PageScrollPhysics()),
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [];
-        },
-        body: CustomScrollView(
-          controller: ModalScrollController.of(context),
-          physics: const BouncingScrollPhysics(),
-          slivers: slivers,
+      scrollView = CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          leading: const SizedBox.shrink(),
+          middle: Text(widget.searchKeyWord!),
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: NestedScrollView(
+            controller: _scroll,
+            physics: const ScrollPhysics(parent: PageScrollPhysics()),
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return [];
+            },
+            body: CustomScrollView(
+              controller: ModalScrollController.of(context),
+              physics: const BouncingScrollPhysics(),
+              slivers: slivers,
+            ),
+          ),
         ),
       );
     }
@@ -391,7 +410,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: 'searchbar',
+          tag: 'searchbar${ModalBottomSheetContext.getCount()}',
           child: Card(
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -530,7 +549,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: 'searchtype',
+          tag: 'searchtype${ModalBottomSheetContext.getCount()}',
           child: Card(
             color: Settings.themeWhat
                 ? Settings.themeBlack

@@ -13,6 +13,7 @@ import 'package:violet/algorithm/distance.dart';
 import 'package:violet/component/hitomi/displayed_tag.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/indexs.dart';
+import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
@@ -121,7 +122,7 @@ class _SearchBarPageState extends State<SearchBarPage>
       child: Stack(
         children: <Widget>[
           Hero(
-            tag: 'searchbar',
+            tag: 'searchbar${ModalBottomSheetContext.getCount()}',
             child: Card(
               elevation: 100,
               shape: RoundedRectangleBorder(
