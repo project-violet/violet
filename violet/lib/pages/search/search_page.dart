@@ -119,8 +119,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         final result = await HentaiManager.search(widget.searchKeyWord ?? '')
             .timeout(const Duration(seconds: 5));
 
-        latestQuery =
-            Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
+        latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
+            result, widget.searchKeyWord ?? '');
         queryResult = latestQuery!.item1!.item1;
         if (_filterController.isPopulationSort) {
           Population.sortByPopulation(queryResult);
@@ -130,7 +130,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
         if (searchTotalResultCount == 0) {
           Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-            searchTotalResultCount = await HentaiManager.countSearch('');
+            searchTotalResultCount =
+                await HentaiManager.countSearch(widget.searchKeyWord ?? '');
             setState(() {});
           });
         }
