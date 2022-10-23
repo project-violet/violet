@@ -34,6 +34,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
   String? ggM;
   String? ggB;
 
+  bool isCurrentReload = false;
+
   @override
   void initState() {
     super.initState();
@@ -72,10 +74,11 @@ class _ScriptWebViewState extends State<ScriptWebView>
         height: 1,
         child: InAppWebView(
           initialUrlRequest: URLRequest(
-            url: Uri.parse('https://hitomi.la'),
+            url: Uri.parse('https://hitomi.la/reader/1331143.html#1'),
           ),
           initialOptions: InAppWebViewGroupOptions(
               crossPlatform: InAppWebViewOptions(
+                  useOnLoadResource: true,
                   userAgent:
                       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36')),
           onWebViewCreated: (controller) {
@@ -90,14 +93,40 @@ class _ScriptWebViewState extends State<ScriptWebView>
                   return {};
                 });
           },
+          onLoadResource: (controller, resource) {
+            if (resource.url == null) return;
+            if (resource.url!.toString().contains('ltn.hitomi.la/gg.js')) {
+              controller.stopLoading();
+            }
+          },
           onLoadError: ((controller, url, code, message) {
+            // net::ERR_CONNECTION_RESET
+            if (code == -6) {
+              isCurrentReload = true;
+              controller.reload();
+              Logger.warning('[Script Viewer] Connection Reset');
+              return;
+            }
+
             Logger.error('[Script Webview] Error $code\n$message');
           }),
           onLoadHttpError: (controller, url, statusCode, description) {
+            if (statusCode >= 500) {
+              isCurrentReload = true;
+              controller.reload();
+              Logger.warning('[Script Viewer] Retry ($statusCode)');
+              return;
+            }
+
             Logger.error(
                 '[Script Webview] Http Error $statusCode\n$description');
           },
           onLoadStop: (controller, url) async {
+            if (isCurrentReload) {
+              isCurrentReload = false;
+              return;
+            }
+
             await controller.evaluateJavascript(source: '''
               var r = "";
               for (var i = 0; i < 4096; i++) {
