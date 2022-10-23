@@ -103,7 +103,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
           onLoadError: ((controller, url, code, message) {
             // net::ERR_CONNECTION_RESET
             // NSURLErrorDomain -999 (Connection Reset)
-            if (code == -6 || code == -999) {
+            // An SSL error has occurred and a secure connection to the server cannot be made.
+            if (code == -6 || code == -999 || code == -1200) {
               isCurrentReload = true;
               if (retryCount > 10) {
                 Logger.error('[Script Viewer] Many Retry');
