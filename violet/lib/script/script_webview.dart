@@ -35,6 +35,7 @@ class _ScriptWebViewState extends State<ScriptWebView>
   String? ggB;
 
   bool isCurrentReload = false;
+  int retryCount = 0;
 
   @override
   void initState() {
@@ -74,7 +75,7 @@ class _ScriptWebViewState extends State<ScriptWebView>
         height: 1,
         child: InAppWebView(
           initialUrlRequest: URLRequest(
-            url: Uri.parse('https://hitomi.la/reader/1331143.html#1'),
+            url: Uri.parse('https://hitomi.la/'),
           ),
           initialOptions: InAppWebViewGroupOptions(
               crossPlatform: InAppWebViewOptions(
@@ -102,9 +103,14 @@ class _ScriptWebViewState extends State<ScriptWebView>
           onLoadError: ((controller, url, code, message) {
             // net::ERR_CONNECTION_RESET
             // NSURLErrorDomain -999 (Connection Reset)
-            if (code == -6 || code == -999)  {
+            if (code == -6 || code == -999) {
               isCurrentReload = true;
+              if (retryCount > 10) {
+                Logger.error('[Script Viewer] Many Retry');
+                return;
+              }
               controller.reload();
+              retryCount++;
               Logger.warning('[Script Viewer] Connection Reset');
               return;
             }
@@ -114,7 +120,12 @@ class _ScriptWebViewState extends State<ScriptWebView>
           onLoadHttpError: (controller, url, statusCode, description) {
             if (statusCode >= 500) {
               isCurrentReload = true;
+              if (retryCount > 10) {
+                Logger.error('[Script Viewer] Many Retry');
+                return;
+              }
               controller.reload();
+              retryCount++;
               Logger.warning('[Script Viewer] Retry ($statusCode)');
               return;
             }
@@ -127,6 +138,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
               isCurrentReload = false;
               return;
             }
+
+            retryCount = 0;
 
             await controller.evaluateJavascript(source: '''
               var r = "";
