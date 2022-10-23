@@ -101,7 +101,8 @@ class _ScriptWebViewState extends State<ScriptWebView>
           },
           onLoadError: ((controller, url, code, message) {
             // net::ERR_CONNECTION_RESET
-            if (code == -6) {
+            // NSURLErrorDomain -999 (Connection Reset)
+            if (code == -6 || code == -999)  {
               isCurrentReload = true;
               controller.reload();
               Logger.warning('[Script Viewer] Connection Reset');
