@@ -12,10 +12,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:violet/firebase_options.dart';
@@ -113,8 +115,18 @@ class MyApp extends StatelessWidget {
         cardColor: Settings.themeBlack && Settings.themeWhat
             ? const Color(0xFF141414)
             : null,
-        colorScheme:
-            ColorScheme.fromSwatch().copyWith(secondary: Settings.majorColor),
+        colorScheme: ColorScheme.fromSwatch()
+            .copyWith(secondary: Settings.majorColor, brightness: brightness),
+        cupertinoOverrideTheme: CupertinoThemeData(
+          brightness: brightness,
+          primaryColor: Settings.majorColor,
+          textTheme: const CupertinoTextThemeData(),
+          barBackgroundColor: Settings.themeWhat
+              ? Settings.themeBlack
+                  ? const Color(0xFF181818)
+                  : Colors.grey.shade800
+              : null,
+        ),
       ),
       themedWidgetBuilder: (context, theme) {
         return myApp(theme);
@@ -141,7 +153,8 @@ class MyApp extends StatelessWidget {
     ];
 
     final routes = <String, WidgetBuilder>{
-      '/AfterLoading': (context) => const AfterLoadingPage(),
+      '/AfterLoading': (context) =>
+          const CupertinoScaffold(body: AfterLoadingPage()),
       '/DatabaseDownload': (context) => const DataBaseDownloadPage(),
       '/SplashPage': (context) => const SplashPage(),
     };

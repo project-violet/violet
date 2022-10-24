@@ -240,6 +240,14 @@ class VioletServer {
     await dio.post('$api/fupload', data: formData);
   }
 
+  static Future<void> uploadString(String filename, String data) async {
+    var dio = Dio();
+    var formData = FormData.fromMap(
+        {'file': MultipartFile.fromString(data, filename: filename)});
+
+    await dio.post('$api/fupload', data: formData);
+  }
+
   static Future<bool> fileUpload(String fn, String data) async {
     var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
     var vValid = getValid(vToken.toString());

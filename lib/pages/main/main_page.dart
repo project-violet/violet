@@ -69,25 +69,27 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(milliseconds: 200)).then((value) async {
-      // final prefs = await SharedPreferences.getInstance();
-      // var latestDB = SyncManager.getLatestDB().getDateTime();
-      // var lastDB = prefs.getString('databasesync');
-      // if (lastDB != null &&
-      //     latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
-      //   return;
-      // }
+    // Future.delayed(const Duration(milliseconds: 200)).then((value) async {
+    //   // final prefs = await SharedPreferences.getInstance();
+    //   // var latestDB = SyncManager.getLatestDB().getDateTime();
+    //   // var lastDB = prefs.getString('databasesync');
+    //   // if (lastDB != null &&
+    //   //     latestDB.difference(DateTime.parse(lastDB)).inHours < 1) {
+    //   //   return;
+    //   // }
 
-      var connectivityResult = await (Connectivity().checkConnectivity());
-      if (connectivityResult == ConnectivityResult.none) return;
+    //   var connectivityResult = await (Connectivity().checkConnectivity());
+    //   if (connectivityResult == ConnectivityResult.none) return;
 
-      await UpdateSyncManager.checkUpdateSync();
+    //   await UpdateSyncManager.checkUpdateSync();
 
-      setState(() {});
+    //   setState(() {});
 
-      // Update is not available for iOS.
-      if (!Platform.isIOS) {}
-    });
+    //   // Update is not available for iOS.
+    //   if (!Platform.isIOS) {
+    //     updateCheckAndDownload(); // @dependent: android
+    //   }
+    // });
   }
 
   @override

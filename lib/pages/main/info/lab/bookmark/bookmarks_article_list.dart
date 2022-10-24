@@ -405,7 +405,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
     return filterResult;
   }
 
-  int nowType = 3;
+  int nowType = 4;
 
   Widget buildList() {
     var mm = nowType == 0 ? 3 : 2;
@@ -452,6 +452,7 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
 
       case 2:
       case 3:
+      case 4:
         return SliverPadding(
           padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
           sliver: SliverList(
@@ -463,7 +464,8 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
                 child: Provider<ArticleListItem>.value(
                   value: ArticleListItem.fromArticleListItem(
                     queryResult: x,
-                    showDetail: nowType == 3,
+                    showDetail: nowType >= 3,
+                    showUltra: nowType == 4,
                     addBottomPadding: true,
                     width: (windowWidth - 4.0),
                     thumbnailTag: const Uuid().v4(),

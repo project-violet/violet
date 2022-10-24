@@ -292,6 +292,7 @@
   "checkalreadydownloaded": "This article have already been downloaded. Continue?",
   "securemode": "Hide app from the app list",
   "copied": "Copied!",
+  "align": "Align",
   "alignnone": "Align None",
   "alignartist": "Sort by Artist Name",
   "aligngroup": "Sort by Group",

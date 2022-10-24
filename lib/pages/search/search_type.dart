@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
 
@@ -23,7 +24,7 @@ class SearchType extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Hero(
-        tag: 'searchtype',
+        tag: 'searchtype${ModalBottomSheetContext.getCount()}',
         child: Card(
           color: Settings.themeWhat
               ? Settings.themeBlack
