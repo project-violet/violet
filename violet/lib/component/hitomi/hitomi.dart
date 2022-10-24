@@ -17,7 +17,7 @@ class HitomiManager {
   // [Image List], [Big Thumbnail List (Perhaps only two are valid.)], [Small Thubmnail List]
   static Future<Tuple3<List<String>, List<String>, List<String>>> getImageList(
       String id) async {
-    var result = await ScriptManager.runHitomiGetImageList(int.parse(id));
+    final result = await ScriptManager.runHitomiGetImageList(int.parse(id));
     if (result != null) return result;
     return const Tuple3<List<String>, List<String>, List<String>>(
         <String>[], <String>[], <String>[]);
@@ -43,13 +43,40 @@ class HitomiManager {
     tagmap = jsonDecode(text);
   }
 
-  static Map<String, dynamic>? tagmap;
-  static Future<List<Tuple2<DisplayedTag, int>>> queryAutoComplete(
-      String prefix,
-      [bool useTranslated = false]) async {
+  static String normalizeTagPrefix(String pp) {
+    switch (pp) {
+      case 'female':
+      case 'male':
+      case 'tags':
+        return 'tag';
+
+      case 'language':
+      case 'languages':
+        return 'lang';
+
+      case 'artists':
+        return 'artist';
+
+      case 'groups':
+        return 'group';
+
+      case 'types':
+        return 'type';
+
+      case 'characters':
+        return 'character';
+
+      case 'classes':
+        return 'class';
+    }
+
+    return pp;
+  }
+
+  static Future<void> loadIndexIfRequired() async {
     if (tagmap == null) {
       if (Platform.environment.containsKey('FLUTTER_TEST')) {
-        var file = File('/home/ubuntu/violet/index.json');
+        final file = File('/home/ubuntu/violet/index.json');
         tagmap = jsonDecode(await file.readAsString());
       } else {
         final subdir = Platform.isAndroid ? '/data' : '';
@@ -59,32 +86,21 @@ class HitomiManager {
         tagmap = jsonDecode(text);
       }
     }
+  }
+
+  static Map<String, dynamic>? tagmap;
+  static Future<List<Tuple2<DisplayedTag, int>>> queryAutoComplete(
+      String prefix,
+      [bool useTranslated = false]) async {
+    await loadIndexIfRequired();
 
     prefix = prefix.toLowerCase().replaceAll('_', ' ');
 
     if (prefix.contains(':') && prefix.split(':')[0] != 'random') {
       final opp = prefix.split(':')[0];
-      var pp = opp;
+      final pp = normalizeTagPrefix(opp);
 
-      if (pp == 'female' || pp == 'male' || pp == 'tags') {
-        pp = 'tag';
-      } else if (pp == 'language' || pp == 'languages') {
-        pp = 'lang';
-      } else if (pp == 'artists') {
-        pp = 'aritst';
-      } else if (pp == 'groups') {
-        pp = 'group';
-      } else if (pp == 'uploaders') {
-        pp = 'uploader';
-      } else if (pp == 'types') {
-        pp = 'type';
-      } else if (pp == 'characters') {
-        pp = 'character';
-      } else if (pp == 'classes') {
-        pp = 'class';
-      }
-
-      var results = <Tuple2<DisplayedTag, int>>[];
+      final results = <Tuple2<DisplayedTag, int>>[];
       if (!tagmap!.containsKey(pp)) return results;
 
       final ch = tagmap![pp];
@@ -98,7 +114,7 @@ class HitomiManager {
             }
           });
         } else if (opp == 'tag') {
-          var po = prefix.split(':')[1];
+          final po = prefix.split(':')[1];
           ch.forEach((key, value) {
             if (!key.toLowerCase().startsWith('female:') &&
                 !key.toLowerCase().startsWith('male:') &&
@@ -108,7 +124,7 @@ class HitomiManager {
             }
           });
         } else {
-          var po = prefix.split(':')[1];
+          final po = prefix.split(':')[1];
           ch.forEach((key, value) {
             if (key.toLowerCase().contains(po)) {
               results.add(Tuple2<DisplayedTag, int>(
@@ -119,8 +135,8 @@ class HitomiManager {
         results.sort((a, b) => b.item2.compareTo(a.item2));
         return results;
       } else {
-        var po = prefix.split(':').last;
-        var results = TagTranslate.containsTotal(po)
+        final po = prefix.split(':').last;
+        final results = TagTranslate.containsTotal(po)
             .where((e) =>
                 (opp != 'female' && opp != 'male'
                     ? e.group == opp
@@ -137,7 +153,7 @@ class HitomiManager {
       }
     } else {
       if (!useTranslated) {
-        var results = <Tuple2<DisplayedTag, int>>[];
+        final results = <Tuple2<DisplayedTag, int>>[];
         tagmap!.forEach((key1, value) {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
@@ -148,14 +164,8 @@ class HitomiManager {
                       value2));
                 }
               } else if (key2.contains(prefix)) {
-                if (key2.contains(':')) {
-                  results.add(Tuple2<DisplayedTag, int>(
-                      DisplayedTag(group: key2.split(':')[0], name: key2),
-                      value2));
-                } else {
-                  results.add(Tuple2<DisplayedTag, int>(
-                      DisplayedTag(group: 'tag', name: key2), value2));
-                }
+                results.add(Tuple2<DisplayedTag, int>(
+                    DisplayedTag(group: 'tag', name: key2), value2));
               }
             });
           } else {
@@ -170,7 +180,7 @@ class HitomiManager {
         results.sort((a, b) => b.item2.compareTo(a.item2));
         return results;
       } else {
-        var results = TagTranslate.containsTotal(prefix)
+        final results = TagTranslate.containsTotal(prefix)
             .where((e) => tagmap![e.group].containsKey(e.name))
             .map((e) => Tuple2<DisplayedTag, int>(e, tagmap![e.group][e.name]))
             .toList();
@@ -183,44 +193,15 @@ class HitomiManager {
   static Future<List<Tuple2<DisplayedTag, int>>> queryAutoCompleteFuzzy(
       String prefix,
       [bool useTranslated = false]) async {
-    if (tagmap == null) {
-      if (Platform.environment.containsKey('FLUTTER_TEST')) {
-        var file = File('/home/ubuntu/violet/index.json');
-        tagmap = jsonDecode(await file.readAsString());
-      } else {
-        final subdir = Platform.isAndroid ? '/data' : '';
-        final directory = await getApplicationDocumentsDirectory();
-        final path = File('${directory.path}$subdir/index.json');
-        final text = path.readAsStringSync();
-        tagmap = jsonDecode(text);
-      }
-    }
+    await loadIndexIfRequired();
 
     prefix = prefix.toLowerCase().replaceAll('_', ' ');
 
     if (prefix.contains(':')) {
       final opp = prefix.split(':')[0];
-      var pp = opp;
+      final pp = normalizeTagPrefix(opp);
 
-      if (pp == 'female' || pp == 'male' || pp == 'tags') {
-        pp = 'tag';
-      } else if (pp == 'language' || pp == 'languages') {
-        pp = 'lang';
-      } else if (pp == 'artists') {
-        pp = 'aritst';
-      } else if (pp == 'groups') {
-        pp = 'group';
-      } else if (pp == 'uploaders') {
-        pp = 'uploader';
-      } else if (pp == 'types') {
-        pp = 'type';
-      } else if (pp == 'characters') {
-        pp = 'character';
-      } else if (pp == 'classes') {
-        pp = 'class';
-      }
-
-      var results = <Tuple3<DisplayedTag, int, int>>[];
+      final results = <Tuple3<DisplayedTag, int, int>>[];
       if (!tagmap!.containsKey(pp)) return <Tuple2<DisplayedTag, int>>[];
 
       final ch = tagmap![pp];
@@ -236,7 +217,7 @@ class HitomiManager {
             }
           });
         } else if (opp == 'tag') {
-          var po = prefix.split(':')[1];
+          final po = prefix.split(':')[1];
           ch.forEach((key, value) {
             if (!key.toLowerCase().startsWith('female:') &&
                 !key.toLowerCase().startsWith('male:')) {
@@ -248,7 +229,7 @@ class HitomiManager {
             }
           });
         } else {
-          var po = prefix.split(':')[1];
+          final po = prefix.split(':')[1];
 
           ch.forEach((key, value) {
             results.add(Tuple3<DisplayedTag, int, int>(
@@ -263,8 +244,8 @@ class HitomiManager {
             .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item3))
             .toList();
       } else {
-        var po = prefix.split(':').last;
-        var results = TagTranslate.containsFuzzingTotal(po)
+        final po = prefix.split(':').last;
+        final results = TagTranslate.containsFuzzingTotal(po)
             .where((e) =>
                 (opp != 'female' && opp != 'male'
                     ? e.item1.group == opp
@@ -285,7 +266,7 @@ class HitomiManager {
       }
     } else {
       if (!useTranslated) {
-        var results = <Tuple3<DisplayedTag, int, int>>[];
+        final results = <Tuple3<DisplayedTag, int, int>>[];
         tagmap!.forEach((key1, value) {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
@@ -296,19 +277,11 @@ class HitomiManager {
                         prefix.runes.toList(), key2.runes.toList()),
                     value2));
               } else {
-                if (key2.contains(':')) {
-                  results.add(Tuple3<DisplayedTag, int, int>(
-                      DisplayedTag(group: key2.split(':')[0], name: key2),
-                      Distance.levenshteinDistance(
-                          prefix.runes.toList(), key2.runes.toList()),
-                      value2));
-                } else {
-                  results.add(Tuple3<DisplayedTag, int, int>(
-                      DisplayedTag(group: 'tag', name: key2),
-                      Distance.levenshteinDistance(
-                          prefix.runes.toList(), key2.runes.toList()),
-                      value2));
-                }
+                results.add(Tuple3<DisplayedTag, int, int>(
+                    DisplayedTag(group: 'tag', name: key2),
+                    Distance.levenshteinDistance(
+                        prefix.runes.toList(), key2.runes.toList()),
+                    value2));
               }
             });
           } else {
@@ -326,7 +299,7 @@ class HitomiManager {
             .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item3))
             .toList();
       } else {
-        var results = TagTranslate.containsFuzzingTotal(prefix)
+        final results = TagTranslate.containsFuzzingTotal(prefix)
             .where((e) => tagmap![e.item1.group].containsKey(e.item1.name))
             .map((e) => Tuple3<DisplayedTag, int, int>(
                 e.item1, tagmap![e.item1.group][e.item1.name], e.item2))
@@ -340,8 +313,8 @@ class HitomiManager {
   }
 
   static List<String> splitTokens(String tokens) {
-    var result = <String>[];
-    var builder = StringBuffer();
+    final result = <String>[];
+    final builder = StringBuffer();
     for (int i = 0; i < tokens.length; i++) {
       if (tokens[i] == ' ') {
         result.add(builder.toString());
@@ -385,7 +358,7 @@ class HitomiManager {
       }
       if (split[i].contains(':')) {
         var prefix = '';
-        var ss = val.split(':');
+        final ss = val.split(':');
         var postfix = '';
 
         switch (ss[0]) {
