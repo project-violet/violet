@@ -14,7 +14,6 @@ import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -32,9 +31,8 @@ import 'package:wakelock/wakelock.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await FlutterDownloader.initialize(); // @dependent: android
   FlareCache.doesPrune = false;
-  FlutterError.onError = recordFlutterError;
+  // FlutterError.onError = recordFlutterError;
 
   await initFirebase();
   await Settings.initFirst();
@@ -46,7 +44,7 @@ Future<void> main() async {
   }, (exception, stack) async {
     Logger.error('[async-error] E: $exception\n$stack');
 
-    await FirebaseCrashlytics.instance.recordError(exception, stack);
+    // await FirebaseCrashlytics.instance.recordError(exception, stack);
   });
 }
 
@@ -68,11 +66,11 @@ Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) async {
       '[unhandled-error] E: ${flutterErrorDetails.exceptionAsString()}\n'
       '${flutterErrorDetails.stack}');
 
-  await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
+  // await FirebaseCrashlytics.instance.recordFlutterError(flutterErrorDetails);
 }
 
 Future<void> initFirebase() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // check user-id is set
   final prefs = await SharedPreferences.getInstance();
@@ -82,8 +80,8 @@ Future<void> initFirebase() async {
     prefs.setString('fa_userid', id);
   }
 
-  var analytics = FirebaseAnalytics.instance;
-  await analytics.setUserId(id: id);
+  // var analytics = FirebaseAnalytics.instance;
+  // await analytics.setUserId(id: id);
 }
 
 class MyApp extends StatelessWidget {
@@ -152,12 +150,12 @@ class MyApp extends StatelessWidget {
     final home =
         Settings.useLockScreen ? const LockScreen() : const SplashPage();
 
-    final navigatorObservers = [
-      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-    ];
+    // final navigatorObservers = [
+    //   FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    // ];
 
     return GetMaterialApp(
-      navigatorObservers: navigatorObservers,
+      // navigatorObservers: navigatorObservers,
       theme: theme,
       home: home,
       supportedLocales: supportedLocales,
