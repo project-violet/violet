@@ -101,6 +101,9 @@ class _ScriptWebViewState extends State<ScriptWebView>
             }
           },
           onLoadError: ((controller, url, code, message) {
+            if (!(url.toString() == 'https://hitomi.la' ||
+                url.toString() == 'https://hitomi.la/')) return;
+
             // net::ERR_CONNECTION_RESET
             // NSURLErrorDomain -999 (Connection Reset)
             // An SSL error has occurred and a secure connection to the server cannot be made.
@@ -119,6 +122,9 @@ class _ScriptWebViewState extends State<ScriptWebView>
             Logger.error('[Script Webview] Error $code\n$message');
           }),
           onLoadHttpError: (controller, url, statusCode, description) {
+            if (!(url.toString() == 'https://hitomi.la' ||
+                url.toString() == 'https://hitomi.la/')) return;
+
             if (statusCode >= 500) {
               isCurrentReload = true;
               if (retryCount > 10) {
