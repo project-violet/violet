@@ -580,7 +580,7 @@ class _DetailWidget extends StatelessWidget {
         .toList();
 
     return Wrap(
-      spacing: 2.0,
+      spacing: 4.0,
       runSpacing: -10.0,
       children:
           tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
