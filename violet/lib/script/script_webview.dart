@@ -94,27 +94,18 @@ class _ScriptWebViewState extends State<ScriptWebView>
                   return {};
                 });
           },
-          onLoadResource: (controller, resource) {
+          onLoadResource: (controller, resource) async {
             if (resource.url == null) return;
             if (resource.url!.toString().contains('ltn.hitomi.la/gg.js')) {
               controller.stopLoading();
+              doUpdateSync(controller);
             }
           },
           onLoadError: ((controller, url, code, message) {
-            if (!(url.toString() == 'https://hitomi.la' ||
-                url.toString() == 'https://hitomi.la/')) return;
-
             // net::ERR_CONNECTION_RESET
             // NSURLErrorDomain -999 (Connection Reset)
             // An SSL error has occurred and a secure connection to the server cannot be made.
             if (code == -6 || code == -999 || code == -1200) {
-              isCurrentReload = true;
-              if (retryCount > 10) {
-                Logger.error('[Script Viewer] Many Retry');
-                return;
-              }
-              controller.reload();
-              retryCount++;
               Logger.warning('[Script Viewer] Connection Reset');
               return;
             }
@@ -148,7 +139,15 @@ class _ScriptWebViewState extends State<ScriptWebView>
 
             retryCount = 0;
 
-            await controller.evaluateJavascript(source: '''
+            doUpdateSync(controller);
+          },
+        ),
+      ),
+    );
+  }
+
+  doUpdateSync(InAppWebViewController controller) async {
+    await controller.evaluateJavascript(source: '''
               var r = "";
               for (var i = 0; i < 4096; i++) {
                 r += gg.m(i).toString();
@@ -158,19 +157,13 @@ class _ScriptWebViewState extends State<ScriptWebView>
               window.flutter_inappwebview.callHandler('gg', ...[r, gg.b]);
               ''');
 
-            if (ggM == null ||
-                !(ggM!.startsWith('0') || ggM!.startsWith('1'))) {
-              Logger.error(
-                  '[Script Webview] Update Fail!\ngg_m: $ggM\ngg_b: $ggB');
-              return;
-            }
+    if (ggM == null || !(ggM!.startsWith('0') || ggM!.startsWith('1'))) {
+      Logger.error('[Script Webview] Update Fail!\ngg_m: $ggM\ngg_b: $ggB');
+      return;
+    }
 
-            print(ggB);
+    print(ggB);
 
-            await ScriptManager.setV4(ggM!, ggB!);
-          },
-        ),
-      ),
-    );
+    await ScriptManager.setV4(ggM!, ggB!);
   }
 }
