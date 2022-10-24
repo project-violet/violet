@@ -40,7 +40,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
       body: FutureBuilder(
         // future: Bookmark.getInstance().then((value) => value.getGroup()),
         future: widget.version == null
-            ? VioletServer.resotreBookmark(widget.userAppId)
+            ? VioletServer.restoreBookmark(widget.userAppId)
             : VioletServer.resotreBookmarkWithVersion(
                 widget.userAppId,
                 widget.version!,
