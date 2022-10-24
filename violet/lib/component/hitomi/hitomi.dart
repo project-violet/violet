@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
@@ -97,97 +98,106 @@ class HitomiManager {
     prefix = prefix.toLowerCase().replaceAll('_', ' ');
 
     if (prefix.contains(':') && prefix.split(':')[0] != 'random') {
-      final opp = prefix.split(':')[0];
-      final pp = normalizeTagPrefix(opp);
+      return _queryAutoCompleteWithTagmap(prefix, useTranslated);
+    }
 
-      final results = <Tuple2<DisplayedTag, int>>[];
-      if (!tagmap!.containsKey(pp)) return results;
+    return _queryAutoCompleteFullSearch(prefix, useTranslated);
+  }
 
-      final ch = tagmap![pp];
-      if (!useTranslated) {
-        if (opp == 'female' || opp == 'male') {
-          ch.forEach((key, value) {
-            if (key.toLowerCase().startsWith('$opp:') &&
-                key.toLowerCase().contains(prefix)) {
-              results.add(Tuple2<DisplayedTag, int>(
-                  DisplayedTag(group: opp, name: key), value));
-            }
-          });
-        } else if (opp == 'tag') {
-          final po = prefix.split(':')[1];
-          ch.forEach((key, value) {
-            if (!key.toLowerCase().startsWith('female:') &&
+  static List<Tuple2<DisplayedTag, int>> _queryAutoCompleteWithTagmap(
+      String prefix, bool useTranslated) {
+    final opp = prefix.split(':')[0];
+    final pp = normalizeTagPrefix(opp);
+
+    final results = <Tuple2<DisplayedTag, int>>[];
+    if (!tagmap!.containsKey(pp)) return results;
+
+    final ch = tagmap![pp] as Map<dynamic, dynamic>;
+    if (!useTranslated) {
+      final tagContains = () {
+        switch (opp) {
+          case 'female':
+          case 'male':
+            return (key) =>
+                key.toLowerCase().startsWith('$opp:') &&
+                key.toLowerCase().contains(prefix);
+
+          case 'tag':
+            final po = prefix.split(':')[1];
+            return (key) =>
+                !key.toLowerCase().startsWith('female:') &&
                 !key.toLowerCase().startsWith('male:') &&
-                key.toLowerCase().contains(po)) {
-              results.add(Tuple2<DisplayedTag, int>(
-                  DisplayedTag(group: opp, name: key), value));
-            }
-          });
-        } else {
-          final po = prefix.split(':')[1];
-          ch.forEach((key, value) {
-            if (key.toLowerCase().contains(po)) {
-              results.add(Tuple2<DisplayedTag, int>(
-                  DisplayedTag(group: pp, name: key), value));
-            }
-          });
+                key.toLowerCase().contains(po);
+
+          default:
+            final po = prefix.split(':')[1];
+            return (key) => key.toLowerCase().contains(po) as bool;
         }
-        results.sort((a, b) => b.item2.compareTo(a.item2));
-        return results;
-      } else {
-        final po = prefix.split(':').last;
-        final results = TagTranslate.containsTotal(po)
-            .where((e) =>
-                (opp != 'female' && opp != 'male'
-                    ? e.group == opp
-                    : e.group == 'tag' && e.name!.startsWith(opp)) &&
-                ch.containsKey(e.name))
-            .map((e) => Tuple2<DisplayedTag, int>(e, ch[e.name]))
-            .where((e) => opp == 'tag'
-                ? !(e.item1.name!.startsWith('female:') ||
-                    e.item1.name!.startsWith('male:'))
-                : true)
-            .toList();
-        results.sort((a, b) => b.item2.compareTo(a.item2));
-        return results;
-      }
+      }();
+
+      ch.entries
+          .where((element) => tagContains(element.key))
+          .forEach((element) {
+        results.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: pp, name: element.key), element.value));
+      });
     } else {
-      if (!useTranslated) {
-        final results = <Tuple2<DisplayedTag, int>>[];
-        tagmap!.forEach((key1, value) {
-          if (key1 == 'tag') {
-            value.forEach((key2, value2) {
-              if (key2.contains(':')) {
-                if (key2.split(':')[1].contains(prefix)) {
-                  results.add(Tuple2<DisplayedTag, int>(
-                      DisplayedTag(group: key2.split(':')[0], name: key2),
-                      value2));
-                }
-              } else if (key2.contains(prefix)) {
-                results.add(Tuple2<DisplayedTag, int>(
-                    DisplayedTag(group: 'tag', name: key2), value2));
-              }
-            });
-          } else {
-            value.forEach((key2, value2) {
-              if (key2.toLowerCase().contains(prefix)) {
-                results.add(Tuple2<DisplayedTag, int>(
-                    DisplayedTag(group: key1, name: key2), value2));
-              }
-            });
+      final po = prefix.split(':').last;
+      results.addAll(TagTranslate.containsTotal(po)
+          .where((e) =>
+              (pp != 'female' && pp != 'male'
+                  ? e.group == pp
+                  : e.group == 'tag' && e.name!.startsWith(pp)) &&
+              ch.containsKey(e.name))
+          .map((e) => Tuple2<DisplayedTag, int>(e, ch[e.name]))
+          .where((e) => pp == 'tag'
+              ? !(e.item1.name!.startsWith('female:') ||
+                  e.item1.name!.startsWith('male:'))
+              : true));
+    }
+    results.sort((a, b) => b.item2.compareTo(a.item2));
+    return results;
+  }
+
+  static List<Tuple2<DisplayedTag, int>> _queryAutoCompleteFullSearch(
+      String prefix, bool useTranslated) {
+    if (useTranslated) {
+      final results = TagTranslate.containsTotal(prefix)
+          .where((e) => tagmap![e.group].containsKey(e.name))
+          .map((e) => Tuple2<DisplayedTag, int>(e, tagmap![e.group][e.name]))
+          .toList();
+      results.sort((a, b) => b.item2.compareTo(a.item2));
+      return results;
+    }
+
+    final results = <Tuple2<DisplayedTag, int>>[];
+
+    tagmap!['tag'].forEach((key2, value2) {
+      if (key2.contains(':')) {
+        final split = key2.split(':');
+        if (split[1].contains(prefix)) {
+          results.add(Tuple2<DisplayedTag, int>(
+              DisplayedTag(group: split[0], name: key2), value2));
+        }
+      } else if (key2.contains(prefix)) {
+        results.add(Tuple2<DisplayedTag, int>(
+            DisplayedTag(group: 'tag', name: key2), value2));
+      }
+    });
+
+    tagmap!.forEach((key1, value) {
+      if (key1 != 'tag') {
+        value.forEach((key2, value2) {
+          if (key2.toLowerCase().contains(prefix)) {
+            results.add(Tuple2<DisplayedTag, int>(
+                DisplayedTag(group: key1, name: key2), value2));
           }
         });
-        results.sort((a, b) => b.item2.compareTo(a.item2));
-        return results;
-      } else {
-        final results = TagTranslate.containsTotal(prefix)
-            .where((e) => tagmap![e.group].containsKey(e.name))
-            .map((e) => Tuple2<DisplayedTag, int>(e, tagmap![e.group][e.name]))
-            .toList();
-        results.sort((a, b) => b.item2.compareTo(a.item2));
-        return results;
       }
-    }
+    });
+
+    results.sort((a, b) => b.item2.compareTo(a.item2));
+    return results;
   }
 
   static Future<List<Tuple2<DisplayedTag, int>>> queryAutoCompleteFuzzy(
@@ -239,13 +249,9 @@ class HitomiManager {
                 value));
           });
         }
-        results.sort((a, b) => a.item2.compareTo(b.item2));
-        return results
-            .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item3))
-            .toList();
       } else {
         final po = prefix.split(':').last;
-        final results = TagTranslate.containsFuzzingTotal(po)
+        results.addAll(TagTranslate.containsFuzzingTotal(po)
             .where((e) =>
                 (opp != 'female' && opp != 'male'
                     ? e.item1.group == opp
@@ -257,13 +263,12 @@ class HitomiManager {
             .where((e) => opp == 'tag'
                 ? !(e.item1.name!.startsWith('female:') ||
                     e.item1.name!.startsWith('male:'))
-                : true)
-            .toList();
-        results.sort((a, b) => a.item3.compareTo(b.item3));
-        return results
-            .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item2))
-            .toList();
+                : true));
       }
+      results.sort((a, b) => a.item3.compareTo(b.item3));
+      return results
+          .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item2))
+          .toList();
     } else {
       if (!useTranslated) {
         final results = <Tuple3<DisplayedTag, int, int>>[];
