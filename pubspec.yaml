@@ -73,7 +73,6 @@ dependencies:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^0.6.0
-  flutter_downloader: ^1.8.0 # @dependent: android
   flutter_heatmap_calendar: ^1.0.5
   flutter_image_compress: ^1.1.0
   flutter_inappwebview: ^5.4.3+7
@@ -121,6 +120,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.2
   shared_preferences: ^2.0.15
   sqflite: ^2.0.2
+  sqflite_common_ffi: ^2.1.1+1
   synchronized:
   timeago:
   tuple:
@@ -172,7 +172,7 @@ dev_dependencies:
   json_serializable: ^4.1.4
   freezed: ^0.14.1+1
   moor_flutter: ^4.0.0
-  sqflite_common_ffi:
+
   flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
@@ -242,11 +242,6 @@ flutter:
     - assets/lottie/28446-floward-gift-box.json
 
     - assets/icons/pixiv.ico
-
-    - assets/p7zip/arm64-v8a/lib7zr.so # @dependent: android
-    - assets/p7zip/armeabi-v7a/lib7zr.so # @dependent: android
-    - assets/p7zip/x86/lib7zr.so # @dependent: android
-    - assets/p7zip/x86_64/lib7zr.so # @dependent: android
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
