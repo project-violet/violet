@@ -67,16 +67,12 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
   RxBool isChecked = false.obs;
 
-  late final FToast fToast;
-
   @override
   void initState() {
     super.initState();
     initProvider = CallOnce(initAfterProvider);
 
     isChecked.value = widget.isChecked;
-    fToast = FToast();
-    fToast.init(context);
   }
 
   initAfterProvider() {
@@ -327,6 +323,8 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     }
 
     if (!c.disposed) {
+      final fToast = FToast();
+      fToast.init(context);
       fToast.showToast(
         child: ToastWrapper(
           icon: c.isBookmarked.value ? Icons.delete_forever : Icons.check,
