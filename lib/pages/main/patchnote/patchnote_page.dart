@@ -22,6 +22,17 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2022, 10, 24),
+    version: '1.28.2 Patch',
+    contents: [
+      'fix hiyobi router',
+      'fix bug that built-in script reloader is not work properly',
+      'fix bug that ultra detail view uses a lot of raster resource',
+      'add tag viewer',
+      'add artists search experimentally (currently only supports cosine distance)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 10, 9),
     version: '1.28.1 Patch (HotFix)',
     contents: [

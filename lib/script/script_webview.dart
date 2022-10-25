@@ -106,7 +106,6 @@ class _ScriptWebViewState extends State<ScriptWebView>
             // NSURLErrorDomain -999 (Connection Reset)
             // An SSL error has occurred and a secure connection to the server cannot be made.
             if (code == -6 || code == -999 || code == -1200) {
-              Logger.warning('[Script Viewer] Connection Reset');
               return;
             }
 

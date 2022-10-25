@@ -22,21 +22,20 @@ class VioletServer {
   static const api = '$protocol://$host';
 
   static Future<dynamic> top(int offset, int count, String type) async {
-    var gg = await http.get('$api/top?offset=$offset&count=$count&type=$type');
+    final gg =
+        await http.get('$api/top?offset=$offset&count=$count&type=$type');
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+      final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) =>
               Tuple2<int, int>((e as List<dynamic>)[0] as int, (e)[1] as int))
           .toList();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-top] E: $e\n'
           '$st');
 
@@ -45,21 +44,19 @@ class VioletServer {
   }
 
   static Future<dynamic> topRecent(int s) async {
-    var gg = await http.get('$api/top_recent?s=$s');
+    final gg = await http.get('$api/top_recent?s=$s');
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+      final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) =>
               Tuple2<int, int>((e as List<dynamic>)[0] as int, (e)[1] as int))
           .toList();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-top-recent] E: $e\n'
           '$st');
 
@@ -68,19 +65,17 @@ class VioletServer {
   }
 
   static Future<dynamic> topTs(int s) async {
-    var gg = await http.get('$api/top_ts?s=$s');
+    final gg = await http.get('$api/top_ts?s=$s');
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result =
+      final result =
           DateTime.parse(jsonDecode(gg.body)['result'] as String).toLocal();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-top-ts] E: $e\n'
           '$st');
 
@@ -89,19 +84,17 @@ class VioletServer {
   }
 
   static Future<dynamic> curTs() async {
-    var gg = await http.get('$api/cur_ts');
+    final gg = await http.get('$api/cur_ts');
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result =
+      final result =
           DateTime.parse(jsonDecode(gg.body)['result'] as String).toLocal();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-cur-ts] E: $e\n'
           '$st');
 
@@ -110,24 +103,17 @@ class VioletServer {
   }
 
   static Future<void> view(int articleid) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-    var userId = await getUserAppId();
-
-    print(articleid);
+    final userId = await _getUserAppId();
 
     try {
-      await http
-          .post('$api/view',
-              headers: {
-                'v-token': vToken.toString(),
-                'v-valid': vValid,
-                'Content-Type': 'application/json'
-              },
-              body: jsonEncode({'no': articleid.toString(), 'user': userId}))
-          .then((value) {
-        print(value.statusCode);
-      });
+      await http.post(
+        '$api/view',
+        headers: _vHeader(),
+        body: jsonEncode({
+          'no': articleid.toString(),
+          'user': userId,
+        }),
+      );
     } catch (e, st) {
       Logger.error('[API-view] E: $e\n'
           '$st');
@@ -135,28 +121,18 @@ class VioletServer {
   }
 
   static Future<void> viewClose(int articleid, int readTime) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-    var userId = await getUserAppId();
-
-    print(articleid);
+    final userId = await _getUserAppId();
 
     try {
-      await http
-          .post('$api/view_close',
-              headers: {
-                'v-token': vToken.toString(),
-                'v-valid': vValid,
-                'Content-Type': 'application/json'
-              },
-              body: jsonEncode({
-                'no': articleid.toString(),
-                'user': userId,
-                'time': readTime
-              }))
-          .then((value) {
-        print(value.statusCode);
-      });
+      await http.post(
+        '$api/view_close',
+        headers: _vHeader(),
+        body: jsonEncode({
+          'no': articleid.toString(),
+          'user': userId,
+          'time': readTime,
+        }),
+      );
     } catch (e, st) {
       Logger.error('[API-close] E: $e\n'
           '$st');
@@ -164,11 +140,9 @@ class VioletServer {
   }
 
   static Future<void> viewReport(ViewerReport report) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-    var userId = await getUserAppId();
-    var submission = report.submission();
-    var body = {
+    final userId = await _getUserAppId();
+    final submission = report.submission();
+    final body = {
       'user': userId,
       'id': submission['id'],
       'pages': submission['pages'],
@@ -180,19 +154,11 @@ class VioletServer {
     };
 
     try {
-      await http
-          .post(
+      await http.post(
         '$api/view_report',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        },
+        headers: _vHeader(),
         body: jsonEncode(body),
-      )
-          .then((value) {
-        print(value.statusCode);
-      });
+      );
     } catch (e, st) {
       Logger.error('[API-report] E: $e\n'
           '$st');
@@ -200,27 +166,18 @@ class VioletServer {
   }
 
   static Future<bool> fileUploadBytes(String fn, Uint8List data) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-    var userId = await getUserAppId();
+    final userId = await _getUserAppId();
 
     try {
-      var res = await http
-          .post('$api/fupload',
-              headers: {
-                'v-token': vToken.toString(),
-                'v-valid': vValid,
-                'Content-Type': 'application/json'
-              },
-              body: jsonEncode({
-                'user': userId,
-                'fn': fn,
-                'data': data,
-              }))
-          .then((value) {
-        print(value.statusCode);
-        return value;
-      });
+      final res = await http.post(
+        '$api/fupload',
+        headers: _vHeader(),
+        body: jsonEncode({
+          'user': userId,
+          'fn': fn,
+          'data': data,
+        }),
+      );
 
       return res.statusCode == 200;
     } catch (e, st) {
@@ -233,43 +190,34 @@ class VioletServer {
   static Future<void> uploadFile(String filename) async {
     final filePath = filename;
 
-    var dio = Dio();
-    var formData =
+    final dio = Dio();
+    final formData =
         FormData.fromMap({'file': await MultipartFile.fromFile(filePath)});
 
     await dio.post('$api/fupload', data: formData);
   }
 
   static Future<void> uploadString(String filename, String data) async {
-    var dio = Dio();
-    var formData = FormData.fromMap(
+    final dio = Dio();
+    final formData = FormData.fromMap(
         {'file': MultipartFile.fromString(data, filename: filename)});
 
     await dio.post('$api/fupload', data: formData);
   }
 
   static Future<bool> fileUpload(String fn, String data) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-    var userId = await getUserAppId();
+    final userId = await _getUserAppId();
 
     try {
-      var res = await http
-          .post('$api/fupload',
-              headers: {
-                'v-token': vToken.toString(),
-                'v-valid': vValid,
-                'Content-Type': 'application/json'
-              },
-              body: jsonEncode({
-                'user': userId,
-                'fn': fn,
-                'data': data,
-              }))
-          .then((value) {
-        print(value.statusCode);
-        return value;
-      });
+      final res = await http.post(
+        '$api/fupload',
+        headers: _vHeader(),
+        body: jsonEncode({
+          'user': userId,
+          'fn': fn,
+          'data': data,
+        }),
+      );
 
       return res.statusCode == 200;
     } catch (e, st) {
@@ -280,11 +228,9 @@ class VioletServer {
   }
 
   static Future<bool> uploadBookmark() async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-    var userId = await getUserAppId();
+    final userId = await _getUserAppId();
     // final prefs = await SharedPreferences.getInstance();
-    // var upload = prefs.getBool('upload_bookmark_179_test');
+    // final upload = prefs.getBool('upload_bookmark_179_test');
     // if (upload != null && upload != false) return false;
 
     /*
@@ -294,15 +240,15 @@ class VioletServer {
       BookmarkGroup
     */
 
-    var user = await User.getInstance();
-    var db = await Bookmark.getInstance();
+    final user = await User.getInstance();
+    final db = await Bookmark.getInstance();
 
-    var record = await user.getUserLog();
-    var article = await db.getArticle();
-    var artist = await db.getArtist();
-    var group = await db.getGroup();
+    final record = await user.getUserLog();
+    final article = await db.getArticle();
+    final artist = await db.getArtist();
+    final group = await db.getGroup();
 
-    var uploadData = jsonEncode({
+    final uploadData = jsonEncode({
       'record': record.map((e) => e.result).toList(),
       'article': article.map((e) => e.result).toList(),
       'artist': artist.map((e) => e.result).toList(),
@@ -310,21 +256,14 @@ class VioletServer {
     });
 
     try {
-      var res = await http
-          .post('$api/bookmarks/v2/upload',
-              headers: {
-                'v-token': vToken.toString(),
-                'v-valid': vValid,
-                'Content-Type': 'application/json'
-              },
-              body: jsonEncode({
-                'user': userId,
-                'data': uploadData,
-              }))
-          .then((value) {
-        print(value.statusCode);
-        return value;
-      });
+      final res = await http.post(
+        '$api/bookmarks/v2/upload',
+        headers: _vHeader(),
+        body: jsonEncode({
+          'user': userId,
+          'data': uploadData,
+        }),
+      );
 
       // final prefs = await SharedPreferences.getInstance();
       // await prefs.setBool('upload_bookmark_179', true);
@@ -338,7 +277,7 @@ class VioletServer {
   }
 
   static String? _userId;
-  static Future<String> getUserAppId() async {
+  static Future<String> _getUserAppId() async {
     if (_userId == null) {
       final prefs = await SharedPreferences.getInstance();
       _userId = prefs.getString('fa_userid');
@@ -349,7 +288,7 @@ class VioletServer {
   // https://koromo.xyz/api/record/recent?count=10&limit=180
   static Future<dynamic> record(
       [int offset = 0, int count = 10, int limit = 0]) async {
-    var gg = await http
+    final gg = await http
         .get('$api/record/recent?offset=$offset&count=$count&limit=$limit');
 
     if (gg.statusCode != 200) {
@@ -357,14 +296,12 @@ class VioletServer {
     }
 
     try {
-      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+      final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple3<int, int, int>(
               (e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
           .toList();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-record] E: $e\n'
           '$st');
 
@@ -374,23 +311,17 @@ class VioletServer {
 
   static Future<dynamic> recordU(
       [int offset = 0, int count = 10, int limit = 0]) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = wsalt.getValid(vToken.toString());
-
-    var gg = await http.get(
-        '$api/record/recent_u?offset=$offset&count=$count&limit=$limit',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        });
+    final gg = await http.get(
+      '$api/record/recent_u?offset=$offset&count=$count&limit=$limit',
+      headers: _vwHeader(),
+    );
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+      final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple4<int, int, int, String>(
               (e as List<dynamic>)[0] as int,
               (e)[1] as int,
@@ -399,8 +330,6 @@ class VioletServer {
           .toList();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-record] E: $e\n'
           '$st');
 
@@ -410,30 +339,22 @@ class VioletServer {
 
   static Future<dynamic> userRecent(String userAppId,
       [int count = 10, int limit = 0]) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = wsalt.getValid(vToken.toString());
-
-    var gg = await http.get(
-        '$api/record/user_recent?userid=$userAppId&count=$count&limit=$limit',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        });
+    final gg = await http.get(
+      '$api/record/user_recent?userid=$userAppId&count=$count&limit=$limit',
+      headers: _vwHeader(),
+    );
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+      final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple3<int, int, int>(
               (e as List<dynamic>)[0] as int, (e)[1] as int, (e)[2] as int))
           .toList();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-record] E: $e\n'
           '$st');
 
@@ -442,22 +363,17 @@ class VioletServer {
   }
 
   static Future<dynamic> searchComment(String param) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = wsalt.getValid(vToken.toString());
-
-    var gg = await http
-        .get('$api/excomment/find?q=${Uri.encodeFull(param)}', headers: {
-      'v-token': vToken.toString(),
-      'v-valid': vValid,
-      'Content-Type': 'application/json'
-    });
+    final gg = await http.get(
+      '$api/excomment/find?q=${Uri.encodeFull(param)}',
+      headers: _vwHeader(),
+    );
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+      final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple4<int, DateTime, String, String>(
               int.parse((e as Map<String, dynamic>)['id'] as String),
               DateTime.parse((e)['time'] as String),
@@ -466,8 +382,6 @@ class VioletServer {
           .toList();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-searchComment] E: $e\n'
           '$st');
 
@@ -476,22 +390,17 @@ class VioletServer {
   }
 
   static Future<dynamic> searchCommentAuthor(String author) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = wsalt.getValid(vToken.toString());
-
-    var gg = await http
-        .get('$api/excomment/author?q=${Uri.encodeFull(author)}', headers: {
-      'v-token': vToken.toString(),
-      'v-valid': vValid,
-      'Content-Type': 'application/json'
-    });
+    final gg = await http.get(
+      '$api/excomment/author?q=${Uri.encodeFull(author)}',
+      headers: _vwHeader(),
+    );
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body)['result'] as List<dynamic>)
+      final result = (jsonDecode(gg.body)['result'] as List<dynamic>)
           .map((e) => Tuple4<int, DateTime, String, String>(
               int.parse((e as Map<String, dynamic>)['id'] as String),
               DateTime.parse((e)['time'] as String),
@@ -500,8 +409,6 @@ class VioletServer {
           .toList();
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-searchComment] E: $e\n'
           '$st');
 
@@ -510,27 +417,19 @@ class VioletServer {
   }
 
   static Future<dynamic> searchMessage(String type, String what) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = wsalt.getValid(vToken.toString());
-
-    var gg = await http.get(
-        '${Settings.searchMessageAPI}/$type/${Uri.encodeFull(what)}',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        });
+    final gg = await http.get(
+      '${Settings.searchMessageAPI}/$type/${Uri.encodeFull(what)}',
+      headers: _vwHeader(),
+    );
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body) as List<dynamic>);
+      final result = (jsonDecode(gg.body) as List<dynamic>);
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-searchMessage] E: $e\n'
           '$st');
 
@@ -539,27 +438,19 @@ class VioletServer {
   }
 
   static Future<dynamic> searchMessageWord(int articleId, String what) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = wsalt.getValid(vToken.toString());
-
-    var gg = await http.get(
-        '${Settings.searchMessageAPI}/wcontains/$articleId/${Uri.encodeFull(what)}',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        });
+    final gg = await http.get(
+      '${Settings.searchMessageAPI}/wcontains/$articleId/${Uri.encodeFull(what)}',
+      headers: _vwHeader(),
+    );
 
     if (gg.statusCode != 200) {
       return gg.statusCode;
     }
 
     try {
-      var result = (jsonDecode(gg.body) as List<dynamic>);
+      final result = (jsonDecode(gg.body) as List<dynamic>);
       return result;
     } catch (e, st) {
-      print(e);
-      print(st);
       Logger.error('[API-searchMessageWord] E: $e\n'
           '$st');
 
@@ -567,22 +458,12 @@ class VioletServer {
     }
   }
 
-  static Future<dynamic> resotreBookmark(String userAppId) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-
+  static Future<dynamic> restoreBookmark(String userAppId) async {
     try {
-      var res = await http.get(
+      final res = await http.get(
         '$api/bookmarks/v2/restore?user=$userAppId',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        },
-      ).then((value) {
-        print(value.statusCode);
-        return value;
-      });
+        headers: _vHeader(),
+      );
 
       if (res.statusCode != 200) {
         return null;
@@ -597,21 +478,11 @@ class VioletServer {
   }
 
   static Future<List<dynamic>?> bookmarkLists() async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-
     try {
-      var res = await http.get(
+      final res = await http.get(
         '$api/bookmarks/v2/bookmarks',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        },
-      ).then((value) {
-        print(value.statusCode);
-        return value;
-      });
+        headers: _vHeader(),
+      );
 
       if (res.statusCode != 200) {
         return null;
@@ -626,21 +497,11 @@ class VioletServer {
   }
 
   static Future<List<dynamic>?> versionsBookmark(String userAppId) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-
     try {
-      var res = await http.get(
+      final res = await http.get(
         '$api/bookmarks/v2/versions?user=$userAppId',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        },
-      ).then((value) {
-        print(value.statusCode);
-        return value;
-      });
+        headers: _vHeader(),
+      );
 
       if (res.statusCode != 200) {
         return null;
@@ -656,21 +517,11 @@ class VioletServer {
 
   static Future<dynamic> resotreBookmarkWithVersion(
       String userAppId, String vid) async {
-    var vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
-    var vValid = getValid(vToken.toString());
-
     try {
-      var res = await http.get(
+      final res = await http.get(
         '$api/bookmarks/v2/restore_v?user=$userAppId&vid=$vid',
-        headers: {
-          'v-token': vToken.toString(),
-          'v-valid': vValid,
-          'Content-Type': 'application/json'
-        },
-      ).then((value) {
-        print(value.statusCode);
-        return value;
-      });
+        headers: _vHeader(),
+      );
 
       if (res.statusCode != 200) {
         return null;
@@ -682,5 +533,27 @@ class VioletServer {
           '$st');
     }
     return false;
+  }
+
+  static Map<String, String> _vHeader() {
+    final vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    final vValid = getValid(vToken.toString());
+
+    return {
+      'v-token': vToken.toString(),
+      'v-valid': vValid,
+      'Content-Type': 'application/json'
+    };
+  }
+
+  static Map<String, String> _vwHeader() {
+    final vToken = DateTime.now().toUtc().millisecondsSinceEpoch;
+    final vValid = wsalt.getValid(vToken.toString());
+
+    return {
+      'v-token': vToken.toString(),
+      'v-valid': vValid,
+      'Content-Type': 'application/json'
+    };
   }
 }

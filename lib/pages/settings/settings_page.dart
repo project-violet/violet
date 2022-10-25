@@ -1827,7 +1827,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                 try {
                   // 2. 유효한 유저 아이디 인지 확인(서버 요청 및 다운로드)
-                  var result = await VioletServer.resotreBookmark(text.text);
+                  var result = await VioletServer.restoreBookmark(text.text);
                   if (result == null) {
                     await showOkDialog(
                         context,
