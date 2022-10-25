@@ -114,7 +114,7 @@ class IsolateDownloaderErrorUnit {
 
 int _taskCurrentCount = 0;
 int _maxTaskCount = 0;
-const int _maxRetryCount = 10;
+const int _maxRetryCount = 100;
 late SendPort _sendPort;
 late Queue<IsolateDownloaderTask> _dqueue;
 late Map<int, IsolateDownloaderTask> _workingMap;
