@@ -67,16 +67,12 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
   RxBool isChecked = false.obs;
 
-  late final FToast fToast;
-
   @override
   void initState() {
     super.initState();
     initProvider = CallOnce(initAfterProvider);
 
     isChecked.value = widget.isChecked;
-    fToast = FToast();
-    fToast.init(context);
   }
 
   initAfterProvider() {
@@ -327,6 +323,8 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     }
 
     if (!c.disposed) {
+      final fToast = FToast();
+      fToast.init(context);
       fToast.showToast(
         child: ToastWrapper(
           icon: c.isBookmarked.value ? Icons.delete_forever : Icons.check,
@@ -580,7 +578,7 @@ class _DetailWidget extends StatelessWidget {
         .toList();
 
     return Wrap(
-      spacing: 2.0,
+      spacing: 4.0,
       runSpacing: -10.0,
       children:
           tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
