@@ -516,7 +516,7 @@ class MultiChipWidget extends StatelessWidget {
         ),
         Expanded(
           child: Wrap(
-            spacing: 4.0,
+            spacing: 3.0,
             runSpacing: -9.0,
             children: groupName
                 .map((x) => _Chip(group: x.item1, name: x.item2))
