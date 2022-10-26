@@ -542,23 +542,6 @@ class PreviewAreaWidget extends StatelessWidget {
           VioletImageProvider prov =
               await ProviderManager.get(queryResult.id());
 
-          // if (!ProviderManager.isExists(queryResult.id() * 1000000)) {
-          //   if (ProviderManager.get(queryResult.id()) is HitomiImageProvider) {
-          //     prov = await ProviderManager.get(queryResult.id());
-          //     ProviderManager.insert(queryResult.id() * 1000000, prov);
-          //   } else {
-          //     try {
-          //       var urls = await HitomiManager.getImageList(
-          //           queryResult.id().toString());
-          //       if (urls.item1.length != 0 && urls.item2.length != 0) {
-          //         prov = HitomiImageProvider(urls, queryResult.id().toString());
-          //         ProviderManager.insert(queryResult.id() * 1000000, prov);
-          //       }
-          //     } catch (e) {}
-          //   }
-          // } else
-          //   prov = await ProviderManager.get(queryResult.id() * 1000000);
-
           return Tuple2(
               await prov.getSmallImagesUrl(), await prov.getHeader(0));
         }),
