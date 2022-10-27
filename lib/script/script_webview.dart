@@ -69,6 +69,7 @@ class _ScriptWebViewState extends State<ScriptWebView>
   Future<void> reloadIfScriptNotLoaded() async {
     if (ScriptManager.enableV4) return;
 
+    isCurrentReload = true;
     await webViewController?.reload();
     reloadWaitAlreadyPending = false;
   }
