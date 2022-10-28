@@ -110,9 +110,9 @@ class _LabSearchCommentsAuthorState extends State<LabSearchCommentsAuthor> {
     final height = MediaQuery.of(context).size.height;
 
     final search = await HentaiManager.idSearch(id.toString());
-    if (search.item1.length != 1) return;
+    if (search.results.length != 1) return;
 
-    final qr = search.item1[0];
+    final qr = search.results.first;
 
     HentaiManager.getImageProvider(qr).then((value) async {
       var thumbnail = await value.getThumbnailUrl();

@@ -250,10 +250,10 @@ class __ArtistsArticleTabListState extends State<_ArtistsArticleTabList>
     super.initState();
 
     Future.value(1).then((value) async {
-      var mqrr = await HentaiManager.idSearch(widget.articleId.toString());
-      if (mqrr.item1.isEmpty) return;
+      final mqrr = await HentaiManager.idSearch(widget.articleId.toString());
+      if (mqrr.results.isEmpty) return;
 
-      var mqr = mqrr.item1.first;
+      final mqr = mqrr.results.first;
 
       var what = '';
       if (mqr.artists() != null) {

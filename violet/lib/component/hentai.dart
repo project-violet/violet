@@ -21,6 +21,13 @@ import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 
+class SearchResult {
+  final List<QueryResult> results;
+  final int offset;
+
+  const SearchResult({required this.results, required this.offset});
+}
+
 //
 // Hentai Component
 // Search and Image Download Method
@@ -41,8 +48,7 @@ class HentaiManager {
   // <Query Results, next offset>
   // if next offset == 0, then search start
   // if next offset == -1, then search end
-  static Future<Tuple2<List<QueryResult>, int>> search(String what,
-      [int offset = 0]) async {
+  static Future<SearchResult> search(String what, [int offset = 0]) async {
     int? no = int.tryParse(what);
     // is Id Search?
     if (no != null) {
@@ -63,7 +69,7 @@ class HentaiManager {
     }
   }
 
-  static Future<Tuple2<List<QueryResult>, int>> idSearch(String what) async {
+  static Future<SearchResult> idSearch(String what) async {
     final queryString = HitomiManager.translate2query(what);
     var queryResult = (await (await DataBaseManager.getInstance())
             .query('$queryString ORDER BY Id DESC LIMIT 1 OFFSET 0'))
@@ -72,7 +78,7 @@ class HentaiManager {
     int no = int.parse(what);
 
     if (queryResult.isNotEmpty) {
-      return Tuple2<List<QueryResult>, int>(queryResult, -1);
+      return SearchResult(results: queryResult, offset: -1);
     }
 
     try {
@@ -87,17 +93,17 @@ class HentaiManager {
         'Artists': article['Artists']?.join('|'),
         'Language': article['Language'],
       };
-      return Tuple2<List<QueryResult>, int>([QueryResult(result: meta)], -1);
+      return SearchResult(results: [QueryResult(result: meta)], offset: -1);
     } catch (e, st) {
       Logger.error('[hentai-idSearch] E: $e\n'
           '$st');
     }
 
-    return const Tuple2<List<QueryResult>, int>([], -1);
+    return const SearchResult(results: [], offset: -1);
   }
 
   // static double _latestSeed = 0;
-  static Future<Tuple2<List<QueryResult>, int>> _randomSearch(String what,
+  static Future<SearchResult> _randomSearch(String what,
       [int offset = 0]) async {
     var wwhat = what.split(' ').where((x) => x != 'random').join(' ');
     double? seed = -1.0;
@@ -115,7 +121,7 @@ class HentaiManager {
       if (seed == null) {
         Logger.error('[hentai-randomSearch] E: Seed must be double type!');
 
-        return const Tuple2<List<QueryResult>, int>([], -1);
+        return const SearchResult(results: [], offset: -1);
       }
     }
     final queryString = HitomiManager.translate2query(
@@ -125,33 +131,38 @@ class HentaiManager {
     await Logger.info('[Database Query]\nSQL: $queryString');
 
     const int itemsPerPage = 500;
-    var queryResult = (await (await DataBaseManager.getInstance())
+    final queryResult = (await (await DataBaseManager.getInstance())
             .query('$queryString ORDER BY '
                 'Id * $seed - ROUND(Id * $seed - 0.5, 0) DESC'
                 ' LIMIT $itemsPerPage OFFSET $offset'))
         .map((e) => QueryResult(result: e))
         .toList();
-    return Tuple2<List<QueryResult>, int>(queryResult,
-        queryResult.length >= itemsPerPage ? offset + itemsPerPage : -1);
+
+    return SearchResult(
+      results: queryResult,
+      offset: queryResult.length >= itemsPerPage ? offset + itemsPerPage : -1,
+    );
   }
 
-  static Future<Tuple2<List<QueryResult>, int>> _dbSearch(String what,
-      [int offset = 0]) async {
+  static Future<SearchResult> _dbSearch(String what, [int offset = 0]) async {
     final queryString = HitomiManager.translate2query(
         '$what ${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ').trim()}');
 
     await Logger.info('[Database Query]\nSQL: $queryString');
 
     const int itemsPerPage = 500;
-    var queryResult = (await (await DataBaseManager.getInstance()).query(
+    final queryResult = (await (await DataBaseManager.getInstance()).query(
             '$queryString ORDER BY Id DESC LIMIT $itemsPerPage OFFSET $offset'))
         .map((e) => QueryResult(result: e))
         .toList();
-    return Tuple2<List<QueryResult>, int>(queryResult,
-        queryResult.length >= itemsPerPage ? offset + itemsPerPage : -1);
+
+    return SearchResult(
+      results: queryResult,
+      offset: queryResult.length >= itemsPerPage ? offset + itemsPerPage : -1,
+    );
   }
 
-  static Future<Tuple2<List<QueryResult>, int>> _networkSearch(String what,
+  static Future<SearchResult> _networkSearch(String what,
       [int offset = 0]) async {
     var route = Settings.searchRule;
     for (int i = 0; i < route.length; i++) {
@@ -159,13 +170,17 @@ class HentaiManager {
         switch (route[i]) {
           case 'EHentai':
             var result = await searchEHentai(what, (offset ~/ 25).toString());
-            return Tuple2<List<QueryResult>, int>(
-                result, result.length >= 25 ? offset + 25 : -1);
+            return SearchResult(
+              results: result,
+              offset: result.length >= 25 ? offset + 25 : -1,
+            );
           case 'ExHentai':
             var result =
                 await searchEHentai(what, (offset ~/ 25).toString(), true);
-            return Tuple2<List<QueryResult>, int>(
-                result, result.length >= 25 ? offset + 25 : -1);
+            return SearchResult(
+              results: result,
+              offset: result.length >= 25 ? offset + 25 : -1,
+            );
           case 'Hitomi':
             // https://hiyobi.me/search/loli|sex
             break;
