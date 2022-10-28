@@ -350,39 +350,37 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   }
 
   Widget _floatingActionButton() {
-    final pageNumber = Obx(
-      () => !isExtended.value
-          ? const Icon(MdiIcons.bookOpenPageVariantOutline)
-          : Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 4.0),
-                  child: Icon(MdiIcons.bookOpenPageVariantOutline),
-                ),
-                Obx(
-                  () => Text(
-                      '${searchPageNum.value + baseCount}/${queryResult.length}/$searchTotalResultCount'),
-                ),
-              ],
-            ),
-    );
-
     return FloatingActionButton.extended(
       backgroundColor: Settings.majorColor,
-      label: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        switchInCurve: Curves.easeIn,
-        switchOutCurve: Curves.easeOut,
-        transitionBuilder: (Widget child, Animation<double> animation) =>
-            FadeTransition(
-          opacity: animation,
-          child: SizeTransition(
-            sizeFactor: animation,
-            axis: Axis.horizontal,
-            child: child,
+      label: Obx(
+        () => AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeIn,
+          switchOutCurve: Curves.easeOut,
+          transitionBuilder: (Widget child, Animation<double> animation) =>
+              FadeTransition(
+            opacity: animation,
+            child: SizeTransition(
+              sizeFactor: animation,
+              axis: Axis.horizontal,
+              child: child,
+            ),
           ),
+          child: !isExtended.value
+              ? const Icon(MdiIcons.bookOpenPageVariantOutline)
+              : Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 4.0),
+                      child: Icon(MdiIcons.bookOpenPageVariantOutline),
+                    ),
+                    Obx(
+                      () => Text(
+                          '${searchPageNum.value + baseCount}/${queryResult.length}/$searchTotalResultCount'),
+                    ),
+                  ],
+                ),
         ),
-        child: pageNumber,
       ),
       onPressed: () async {
         var rr = await showDialog(
