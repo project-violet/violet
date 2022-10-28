@@ -516,7 +516,7 @@ class MultiChipWidget extends StatelessWidget {
         ),
         Expanded(
           child: Wrap(
-            spacing: 4.0,
+            spacing: 3.0,
             runSpacing: -9.0,
             children: groupName
                 .map((x) => _Chip(group: x.item1, name: x.item2))
@@ -541,23 +541,6 @@ class PreviewAreaWidget extends StatelessWidget {
         future: Future.value(1).then((value) async {
           VioletImageProvider prov =
               await ProviderManager.get(queryResult.id());
-
-          // if (!ProviderManager.isExists(queryResult.id() * 1000000)) {
-          //   if (ProviderManager.get(queryResult.id()) is HitomiImageProvider) {
-          //     prov = await ProviderManager.get(queryResult.id());
-          //     ProviderManager.insert(queryResult.id() * 1000000, prov);
-          //   } else {
-          //     try {
-          //       var urls = await HitomiManager.getImageList(
-          //           queryResult.id().toString());
-          //       if (urls.item1.length != 0 && urls.item2.length != 0) {
-          //         prov = HitomiImageProvider(urls, queryResult.id().toString());
-          //         ProviderManager.insert(queryResult.id() * 1000000, prov);
-          //       }
-          //     } catch (e) {}
-          //   }
-          // } else
-          //   prov = await ProviderManager.get(queryResult.id() * 1000000);
 
           return Tuple2(
               await prov.getSmallImagesUrl(), await prov.getHeader(0));
@@ -900,9 +883,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
     final height = MediaQuery.of(context).size.height;
 
     final search = await HentaiManager.idSearch(id.toString());
-    if (search.item1.length != 1) return;
+    if (search.results.length != 1) return;
 
-    final qr = search.item1[0];
+    final qr = search.results.first;
 
     HentaiManager.getImageProvider(qr).then((value) async {
       var thumbnail = await value.getThumbnailUrl();
