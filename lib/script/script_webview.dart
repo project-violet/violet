@@ -65,6 +65,15 @@ class _ScriptWebViewState extends State<ScriptWebView>
         'VPN이나 DPI Bypass Tool을 사용해주시고, 그래도 이 메시지가 계속 표시된다면 개발자에게 알려주세요.');
   }
 
+  bool reloadWaitAlreadyPending = false;
+  Future<void> reloadIfScriptNotLoaded() async {
+    if (ScriptManager.enableV4) return;
+
+    isCurrentReload = true;
+    await webViewController?.reload();
+    reloadWaitAlreadyPending = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -106,6 +115,12 @@ class _ScriptWebViewState extends State<ScriptWebView>
             // NSURLErrorDomain -999 (Connection Reset)
             // An SSL error has occurred and a secure connection to the server cannot be made.
             if (code == -6 || code == -999 || code == -1200) {
+              if (!ScriptManager.enableV4 && !reloadWaitAlreadyPending) {
+                reloadWaitAlreadyPending = true;
+                Future.delayed(const Duration(seconds: 1))
+                    .then((value) => reloadIfScriptNotLoaded());
+              }
+
               return;
             }
 

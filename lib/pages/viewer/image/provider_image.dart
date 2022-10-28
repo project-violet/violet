@@ -69,7 +69,7 @@ class _ProviderImageState extends State<ProviderImage> {
       widget.imgUrl,
       key: widget.imgKey,
       headers: widget.imgHeader,
-      retries: 10,
+      retries: 100,
       timeRetry: const Duration(milliseconds: 300),
       fit: BoxFit.cover,
       filterQuality: SettingsWrapper.imageQuality,

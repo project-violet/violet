@@ -18,6 +18,8 @@ import 'package:violet/log/log.dart';
 import 'package:violet/settings/device_type.dart';
 
 class Settings {
+  static late final SharedPreferences prefs;
+
   // Color Settings
   static late Color themeColor; // default light
   static late bool themeWhat; // default false == light
@@ -106,7 +108,7 @@ class Settings {
   static late bool useSecureMode;
 
   static Future<void> initFirst() async {
-    final prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
 
     final mc = await _getInt('majorColor', Colors.purple.value);
     final mac = await _getInt('majorAccentColor', Colors.purpleAccent.value);
@@ -141,8 +143,6 @@ class Settings {
   }
 
   static Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-
     searchResultType = await _getInt('searchResultType', 4);
     downloadResultType = await _getInt('downloadResultType', 3);
     downloadAlignType = await _getInt('downloadAlignType', 0);
@@ -349,7 +349,6 @@ class Settings {
   }
 
   static Future<bool> _checkLegacyExists(String name) async {
-    final prefs = await SharedPreferences.getInstance();
     var nn = prefs.getBool(name);
     if (nn == null) {
       await prefs.setBool(name, true);
@@ -359,7 +358,6 @@ class Settings {
   }
 
   static Future<bool> _getBool(String key, [bool defaultValue = false]) async {
-    final prefs = await SharedPreferences.getInstance();
     var nn = prefs.getBool(key);
     if (nn == null) {
       nn = defaultValue;
@@ -369,7 +367,6 @@ class Settings {
   }
 
   static Future<int> _getInt(String key, [int defaultValue = 0]) async {
-    final prefs = await SharedPreferences.getInstance();
     var nn = prefs.getInt(key);
     if (nn == null) {
       nn = defaultValue;
@@ -380,7 +377,6 @@ class Settings {
 
   static Future<String> _getString(String key,
       [String defaultValue = '']) async {
-    final prefs = await SharedPreferences.getInstance();
     var nn = prefs.getString(key);
     if (nn == null) {
       nn = defaultValue;
@@ -391,7 +387,6 @@ class Settings {
 
   static Future<double> _getDouble(String key,
       [double defaultValue = 0.0]) async {
-    final prefs = await SharedPreferences.getInstance();
     var nn = prefs.getDouble(key);
     if (nn == null) {
       nn = defaultValue;
@@ -425,28 +420,24 @@ class Settings {
       themeColor = Colors.black;
     }
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('themeColor', themeWhat);
   }
 
   static Future<void> setThemeBlack(bool wh) async {
     themeBlack = wh;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('themeBlack', themeBlack);
   }
 
   static Future<void> setThemeFlat(bool nn) async {
     themeFlat = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('themeFlat', nn);
   }
 
   static Future<void> setMajorColor(Color color) async {
     if (majorColor == color) return;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('majorColor', color.value);
     majorColor = color;
 
@@ -477,294 +468,252 @@ class Settings {
   static Future<void> setSearchResultType(int wh) async {
     searchResultType = wh;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('searchResultType', searchResultType);
   }
 
   static Future<void> setDownloadResultType(int wh) async {
     downloadResultType = wh;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('downloadResultType', downloadResultType);
   }
 
   static Future<void> setDownloadAlignType(int wh) async {
     downloadAlignType = wh;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('downloadAlignType', downloadAlignType);
   }
 
   static Future<void> setLanguage(String lang) async {
     language = lang;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language', lang);
   }
 
   static Future<void> setIncludeTags(String nn) async {
     includeTags = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('includetags', includeTags);
   }
 
   static Future<void> setExcludeTags(String nn) async {
     excludeTags = nn.split(' ').toList();
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('excludetags', excludeTags.join('|'));
   }
 
   static Future<void> setBlurredTags(String nn) async {
     blurredTags = nn.split(' ').toList();
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('blurredtags', blurredTags.join('|'));
   }
 
   static Future<void> setTranslateTags(bool nn) async {
     translateTags = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('translatetags', translateTags);
   }
 
   static Future<void> setRightToLeft(bool nn) async {
     rightToLeft = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('right2left', rightToLeft);
   }
 
   static Future<void> setIsHorizontal(bool nn) async {
     isHorizontal = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('ishorizontal', isHorizontal);
   }
 
   static Future<void> setScrollVertical(bool nn) async {
     scrollVertical = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('scrollvertical', scrollVertical);
   }
 
   static Future<void> setAnimation(bool nn) async {
     animation = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('animation', animation);
   }
 
   static Future<void> setPadding(bool nn) async {
     padding = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('padding', padding);
   }
 
   static Future<void> setDisableOverlayButton(bool nn) async {
     disableOverlayButton = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('disableoverlaybutton', disableOverlayButton);
   }
 
   static Future<void> setDisableFullScreen(bool nn) async {
     disableFullScreen = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('disablefullscreen', disableFullScreen);
   }
 
   static Future<void> setEnableTimer(bool nn) async {
     enableTimer = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('enabletimer', enableTimer);
   }
 
   static Future<void> setTimerTick(double nn) async {
     timerTick = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('timertick', timerTick);
   }
 
   static Future<void> setMoveToAppBarToBottom(bool nn) async {
     moveToAppBarToBottom = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('movetoappbartobottom', nn);
   }
 
   static Future<void> setImageQuality(int nn) async {
     imageQuality = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('imagequality', imageQuality);
   }
 
   static Future<void> setThumbSize(int nn) async {
     thumbSize = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('thumbSize', thumbSize);
   }
 
   static Future<void> setEnableThumbSlider(bool nn) async {
     enableThumbSlider = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('enableThumbSlider', enableThumbSlider);
   }
 
   static Future<void> setShowPageNumberIndicator(bool nn) async {
     showPageNumberIndicator = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showPageNumberIndicator', showPageNumberIndicator);
   }
 
   static Future<void> setShowRecordJumpMessage(bool nn) async {
     showRecordJumpMessage = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showRecordJumpMessage', showRecordJumpMessage);
   }
 
   static Future<void> setShowSlider(bool nn) async {
     showSlider = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showslider', nn);
   }
 
   static Future<void> setSearchOnWeb(bool nn) async {
     searchNetwork = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('searchnetwork', nn);
   }
 
   static Future<void> setSearchPure(bool nn) async {
     searchPure = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('searchPure', nn);
   }
 
   static Future<void> setUseVioletServer(bool nn) async {
     useVioletServer = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('usevioletserver', nn);
   }
 
   static Future<void> setUseDrawer(bool nn) async {
     useDrawer = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('usedrawer', nn);
   }
 
   static Future<void> setBaseDownloadPath(String nn) async {
     downloadBasePath = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('downloadbasepath', nn);
   }
 
   static Future<void> setDownloadRule(String nn) async {
     downloadRule = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('downloadrule', nn);
   }
 
   static Future<void> setSearchMessageAPI(String nn) async {
     searchMessageAPI = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setString('searchmessageapi', nn);
   }
 
   static Future<void> setUserInnerStorage(bool nn) async {
     useInnerStorage = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('useinnerstorage', nn);
   }
 
   static Future<void> setShowArticleProgress(bool nn) async {
     showArticleProgress = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showarticleprogress', nn);
   }
 
   static Future<void> setUseOptimizeDatabase(bool nn) async {
     useOptimizeDatabase = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('useoptimizedatabase', nn);
   }
 
   static Future<void> setUseLowPerf(bool nn) async {
     useLowPerf = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('uselowperf', nn);
   }
 
   static Future<void> setSearchUseFuzzy(bool nn) async {
     searchUseFuzzy = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('searchusefuzzy', nn);
   }
 
   static Future<void> setSearchTagTranslation(bool nn) async {
     searchTagTranslation = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('searchtagtranslation', nn);
   }
 
   static Future<void> setSearchUseTranslated(bool nn) async {
     searchUseTranslated = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('searchusetranslated', nn);
   }
 
   static Future<void> setSearchShowCount(bool nn) async {
     searchShowCount = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('searchshowcount', nn);
   }
 
   static Future<void> setAutoBackupBookmark(bool nn) async {
     autobackupBookmark = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('autobackupbookmark', nn);
   }
 
   static Future<void> setUseTabletMode(bool nn) async {
     useTabletMode = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('usetabletmode', nn);
   }
 
   static Future<void> setSimpleItemWidgetLoadingIcon(bool nn) async {
     simpleItemWidgetLoadingIcon = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('simpleItemWidgetLoadingIcon', nn);
   }
 
@@ -772,63 +721,54 @@ class Settings {
       bool nn) async {
     showNewViewerWhenArtistArticleListItemTap = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('showNewViewerWhenArtistArticleListItemTap', nn);
   }
 
   static Future<void> setEnableViewerFunctionBackdropFilter(bool nn) async {
     enableViewerFunctionBackdropFilter = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('enableViewerFunctionBackdropFilter', nn);
   }
 
   static Future<void> setUsingPushReplacementOnArticleRead(bool nn) async {
     usingPushReplacementOnArticleRead = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('usingPushReplacementOnArticleRead', nn);
   }
 
   static Future<void> setDownloadEhRawImage(bool nn) async {
     downloadEhRawImage = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('downloadEhRawImage', nn);
   }
 
   static Future<void> setBookmarkScrollbarPositionToLeft(bool nn) async {
     bookmarkScrollbarPositionToLeft = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('bookmarkScrollbarPositionToLeft', nn);
   }
 
   static Future<void> setUseVerticalWebviewViewer(bool nn) async {
     useVerticalWebviewViewer = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('useVerticalWebviewViewer', nn);
   }
 
   static Future<void> setUseLockScreen(bool nn) async {
     useLockScreen = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('useLockScreen', nn);
   }
 
   static Future<void> setUseSecureMode(bool nn) async {
     useSecureMode = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('useSecureMode', nn);
   }
 
   static Future<void> setLightMode(bool nn) async {
     liteMode = nn;
 
-    final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('liteMode', nn);
   }
 }
