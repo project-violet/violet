@@ -10,19 +10,8 @@ import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart' as trans;
 import 'package:violet/pages/segment/card_panel.dart';
+import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/settings/settings.dart';
-
-class FilterController {
-  var isOr = false;
-  var isSearch = false;
-  var isPopulationSort = false;
-  String heroKey;
-
-  var tagStates = <String, bool>{};
-  var groupStates = <String, bool>{};
-
-  FilterController({this.heroKey = 'searchtype'});
-}
 
 class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
