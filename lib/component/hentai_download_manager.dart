@@ -51,15 +51,13 @@ class HentaiDonwloadManager {
 
   Future<List<DownloadTask>?> createTask(
       String url, GeneralDownloadProgress gdp) async {
-    var query = (await HentaiManager.idSearch(url)).item1;
+    final query = (await HentaiManager.idSearch(url)).results;
 
     if (query.isEmpty) {
       return null;
     }
 
-    var target = query[0];
-
-    return await createTaskFromQueryResult(target, gdp);
+    return await createTaskFromQueryResult(query.first, gdp);
   }
 
   Future<List<DownloadTask>?> createTaskFromQueryResult(

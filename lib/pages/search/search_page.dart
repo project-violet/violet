@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,7 @@ import 'package:violet/component/hitomi/population.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/search.dart';
-import 'package:violet/locale/locale.dart';
+import 'package:violet/locale/locale.dart' as trans;
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
@@ -72,9 +73,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   bool searchbarVisible = true;
   double upperPixel = 0;
   double latestOffset = 0.0;
-  int eventCalled = 0;
   bool whenTopScroll = false;
-  bool isExtended = false;
+  RxBool isExtended = false.obs;
 
   DateTime datetime = DateTime.now();
 
@@ -119,9 +119,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         final result = await HentaiManager.search(widget.searchKeyWord ?? '')
             .timeout(const Duration(seconds: 5));
 
-        latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-            result, widget.searchKeyWord ?? '');
-        queryResult = latestQuery!.item1!.item1;
+        latestQuery = Tuple2(result, widget.searchKeyWord ?? '');
+        queryResult = latestQuery!.item1!.results;
         if (_filterController.isPopulationSort) {
           Population.sortByPopulation(queryResult);
         }
@@ -173,7 +172,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
           ((_scroll.offset - searchBarHeight) / itemHeight + 1).toInt() *
               itemPerRow;
 
-      if (curI != searchPageNum.value && isExtended) {
+      if (curI != searchPageNum.value && isExtended.value) {
         searchPageNum.value = curI;
       }
 
@@ -195,12 +194,10 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
       var p = scrollQueue.reduce((value, element) => value + element);
 
-      if (p <= -32 && !isExtended) {
-        isExtended = true;
-        setState(() {});
-      } else if (p >= 32 && isExtended) {
-        isExtended = false;
-        setState(() {});
+      if (p <= -32 && !isExtended.value) {
+        isExtended.value = true;
+      } else if (p >= 32 && isExtended.value) {
+        isExtended.value = false;
       }
 
       //
@@ -244,7 +241,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
   bool scrollInProgress = false;
 
-  Tuple2<Tuple2<List<QueryResult>, int>?, String>? latestQuery;
+  Tuple2<SearchResult?, String>? latestQuery;
 
   final ScrollController _scroll = ScrollController();
 
@@ -369,23 +366,26 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
             child: child,
           ),
         ),
-        child: !isExtended
-            ? const Icon(MdiIcons.bookOpenPageVariantOutline)
-            : Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 4.0),
-                    child: Icon(MdiIcons.bookOpenPageVariantOutline),
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: searchPageNum,
-                    builder: (BuildContext context, int value, Widget? child) {
-                      return Text(
-                          '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
-                    },
-                  ),
-                ],
-              ),
+        child: Obx(
+          () => !isExtended.value
+              ? const Icon(MdiIcons.bookOpenPageVariantOutline)
+              : Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 4.0),
+                      child: Icon(MdiIcons.bookOpenPageVariantOutline),
+                    ),
+                    ValueListenableBuilder(
+                      valueListenable: searchPageNum,
+                      builder:
+                          (BuildContext context, int value, Widget? child) {
+                        return Text(
+                            '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
+                      },
+                    ),
+                  ],
+                ),
+        ),
       ),
       onPressed: () async {
         var rr = await showDialog(
@@ -402,9 +402,10 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
           baseCount = setPage;
 
-          latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-              Tuple2<List<QueryResult>, int>(<QueryResult>[], baseCount),
-              latestQuery!.item2);
+          latestQuery = Tuple2(
+            SearchResult(results: [], offset: baseCount),
+            latestQuery!.item2,
+          );
           queryEnd = false;
           queryResult = [];
           _filterController = FilterController();
@@ -463,7 +464,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
                                       latestQuery!.item2.trim() != ''
                                   ? latestQuery!.item2
                                   : widget.searchKeyWord ??
-                                      Translations.of(context).trans('search')),
+                                      trans.Translations.of(context)
+                                          .trans('search')),
                         ),
                         leading: SizedBox(
                           width: 25,
@@ -486,9 +488,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
                         onTap: _showSearchBar,
                         onDoubleTap: () async {
                           if (widget.searchKeyWord != null) return;
-                          latestQuery =
-                              Tuple2<Tuple2<List<QueryResult>, int>?, String>(
-                                  null, 'random:${Random().nextDouble() + 1}');
+                          latestQuery = Tuple2(
+                              null, 'random:${Random().nextDouble() + 1}');
                           queryResult = [];
                           _filterController = FilterController();
                           queryEnd = false;
@@ -539,8 +540,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       });
       if (query == null) return;
 
-      latestQuery =
-          Tuple2<Tuple2<List<QueryResult>, int>?, String>(null, query);
+      latestQuery = Tuple2(null, query);
       queryResult = [];
       _filterController = FilterController();
       queryEnd = false;
@@ -722,22 +722,21 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
     try {
       if (queryEnd ||
-          (latestQuery!.item1 != null && latestQuery!.item1!.item2 == -1)) {
+          (latestQuery!.item1 != null && latestQuery!.item1!.offset == -1)) {
         return;
       }
 
       var next = await HentaiManager.search(latestQuery!.item2,
-              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.item2)
+              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.offset)
           .timeout(const Duration(seconds: 10), onTimeout: () {
         Logger.error('[Search_loadNextQuery] Search Timeout');
 
         throw TimeoutException('Failed to search the query');
       });
 
-      latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-          next, latestQuery!.item2);
+      latestQuery = Tuple2(next, latestQuery!.item2);
 
-      if (next.item1.isEmpty) {
+      if (next.results.isEmpty) {
         setState(() {
           _cachedPannel = null;
           queryEnd = true;
@@ -747,7 +746,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         return;
       }
 
-      queryResult.addAll(next.item1);
+      queryResult.addAll(next.results);
 
       if (_filterController.isPopulationSort) {
         Population.sortByPopulation(queryResult);
