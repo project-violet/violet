@@ -80,8 +80,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
 
   Map<String, GlobalKey> itemKeys = <String, GlobalKey>{};
   double itemHeight = 0.0;
-  ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
-  int searchTotalResultCount = 0;
+  RxInt searchPageNum = 0.obs;
+  RxInt searchTotalResultCount = 0.obs;
   int baseCount = 0; // using for user custom page index
   List<int> scrollQueue = <int>[];
 
@@ -127,11 +127,10 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         _shouldReload = true;
         setState(() {});
 
-        if (searchTotalResultCount == 0) {
+        if (searchTotalResultCount.value == 0) {
           Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-            searchTotalResultCount =
+            searchTotalResultCount.value =
                 await HentaiManager.countSearch(widget.searchKeyWord ?? '');
-            setState(() {});
           });
         }
       } catch (e, st) {
@@ -351,6 +350,23 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   }
 
   Widget _floatingActionButton() {
+    final pageNumber = Obx(
+      () => !isExtended.value
+          ? const Icon(MdiIcons.bookOpenPageVariantOutline)
+          : Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(right: 4.0),
+                  child: Icon(MdiIcons.bookOpenPageVariantOutline),
+                ),
+                Obx(
+                  () => Text(
+                      '${searchPageNum.value + baseCount}/${queryResult.length}/$searchTotalResultCount'),
+                ),
+              ],
+            ),
+    );
+
     return FloatingActionButton.extended(
       backgroundColor: Settings.majorColor,
       label: AnimatedSwitcher(
@@ -366,62 +382,47 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
             child: child,
           ),
         ),
-        child: Obx(
-          () => !isExtended.value
-              ? const Icon(MdiIcons.bookOpenPageVariantOutline)
-              : Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 4.0),
-                      child: Icon(MdiIcons.bookOpenPageVariantOutline),
-                    ),
-                    ValueListenableBuilder(
-                      valueListenable: searchPageNum,
-                      builder:
-                          (BuildContext context, int value, Widget? child) {
-                        return Text(
-                            '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
-                      },
-                    ),
-                  ],
-                ),
-        ),
+        child: pageNumber,
       ),
       onPressed: () async {
         var rr = await showDialog(
           context: context,
           builder: (BuildContext context) => SearchPageModifyPage(
             curPage: searchPageNum.value + baseCount,
-            maxPage: searchTotalResultCount,
+            maxPage: searchTotalResultCount.value,
           ),
         );
         if (rr == null) return;
 
         if (rr[0] == 1) {
-          var setPage = rr[1] as int;
-
-          baseCount = setPage;
+          final setPage = rr[1] as int;
 
           latestQuery = Tuple2(
-            SearchResult(results: [], offset: baseCount),
+            SearchResult(results: [], offset: setPage),
             latestQuery!.item2,
           );
-          queryEnd = false;
-          queryResult = [];
-          _filterController = FilterController();
-          isFilterUsed = false;
-          _shouldReload = true;
-          searchTotalResultCount = 0;
-          searchPageNum.value = 0;
-          await loadNextQuery();
-          setState(() {
-            _cachedPannel = null;
-            _shouldReload = true;
-            key = ObjectKey(const Uuid().v4());
-          });
+
+          doSearch(setPage);
         }
       },
     );
+  }
+
+  doSearch([int baseCount = 0]) async {
+    this.baseCount = baseCount;
+    queryEnd = false;
+    queryResult = [];
+    _filterController = FilterController();
+    isFilterUsed = false;
+    _shouldReload = true;
+    searchTotalResultCount.value = 0;
+    searchPageNum.value = 0;
+    await loadNextQuery();
+    setState(() {
+      _cachedPannel = null;
+      _shouldReload = true;
+      key = ObjectKey(const Uuid().v4());
+    });
   }
 
   Widget _searchBar() {
@@ -490,20 +491,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
                           if (widget.searchKeyWord != null) return;
                           latestQuery = Tuple2(
                               null, 'random:${Random().nextDouble() + 1}');
-                          queryResult = [];
-                          _filterController = FilterController();
-                          queryEnd = false;
-                          isFilterUsed = false;
-                          _shouldReload = true;
-                          searchTotalResultCount = 0;
-                          searchPageNum.value = 0;
-                          baseCount = 0;
-                          await loadNextQuery();
-                          setState(() {
-                            _cachedPannel = null;
-                            _shouldReload = true;
-                            key = ObjectKey(const Uuid().v4());
-                          });
+                          doSearch();
                         },
                       )),
                 ),
@@ -541,20 +529,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       if (query == null) return;
 
       latestQuery = Tuple2(null, query);
-      queryResult = [];
-      _filterController = FilterController();
-      queryEnd = false;
-      isFilterUsed = false;
-      searchPageNum.value = 0;
-      searchTotalResultCount = 0;
-      baseCount = 0;
-      await loadNextQuery().then((value) {
-        setState(() {
-          _cachedPannel = null;
-          _shouldReload = true;
-          key = ObjectKey(const Uuid().v4());
-        });
-      });
+      doSearch();
     } catch (e, st) {
       await Logger.error(
           '[showSearchBar] E: ${e.toString()}\n${st.toString()}');
@@ -752,12 +727,11 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         Population.sortByPopulation(queryResult);
       }
 
-      if (searchTotalResultCount == 0 &&
+      if (searchTotalResultCount.value == 0 &&
           !latestQuery!.item2.contains('random:')) {
         Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-          searchTotalResultCount =
+          searchTotalResultCount.value =
               await HentaiManager.countSearch(latestQuery!.item2);
-          setState(() {});
         });
       }
 
