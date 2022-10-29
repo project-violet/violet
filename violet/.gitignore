@@ -60,3 +60,5 @@ mySdCardFile.img.qcow2
 rsaPair.txt
 emulator.bat
 img/*
+test/db
+test/*.7z
