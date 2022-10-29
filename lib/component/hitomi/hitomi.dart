@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/algorithm/distance.dart';
@@ -77,7 +78,7 @@ class HitomiManager {
   static Future<void> loadIndexIfRequired() async {
     if (tagmap == null) {
       if (Platform.environment.containsKey('FLUTTER_TEST')) {
-        final file = File('/home/ubuntu/violet/index.json');
+        final file = File(join(Directory.current.path, 'test/db/index.json'));
         tagmap = jsonDecode(await file.readAsString());
       } else {
         final subdir = Platform.isAndroid ? '/data' : '';
