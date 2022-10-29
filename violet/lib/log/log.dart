@@ -45,8 +45,13 @@ class Logger {
   static List<LogEvent> events = <LogEvent>[];
 
   static Future<void> init() async {
-    var dir = await getApplicationDocumentsDirectory();
-    logFile = File(join(dir.path, 'log.txt'));
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      logFile = File('log.txt');
+    } else {
+      final dir = await getApplicationDocumentsDirectory();
+      logFile = File(join(dir.path, 'log.txt'));
+    }
+
     if (!await logFile.exists()) {
       await logFile.create();
     }
