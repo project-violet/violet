@@ -155,6 +155,7 @@ flutter:
   #  - images/a_dot_ham.jpeg
   assets:
     - assets/locale/
+    - assets/locale/tag/
     - assets/rank/
 
     - assets/hisoki.json
