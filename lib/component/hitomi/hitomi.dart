@@ -266,9 +266,9 @@ class HitomiManager {
                     e.item1.name!.startsWith('male:'))
                 : true));
       }
-      results.sort((a, b) => a.item3.compareTo(b.item3));
+      results.sort((a, b) => a.item2.compareTo(b.item2));
       return results
-          .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item2))
+          .map((e) => Tuple2<DisplayedTag, int>(e.item1, e.item3))
           .toList();
     } else {
       if (!useTranslated) {
@@ -277,10 +277,11 @@ class HitomiManager {
           if (key1 == 'tag') {
             value.forEach((key2, value2) {
               if (key2.contains(':')) {
+                final split = key2.split(':');
                 results.add(Tuple3<DisplayedTag, int, int>(
-                    DisplayedTag(group: key2.split(':')[0], name: key2),
+                    DisplayedTag(group: split[0], name: key2),
                     Distance.levenshteinDistance(
-                        prefix.runes.toList(), key2.runes.toList()),
+                        prefix.runes.toList(), split[1].runes.toList()),
                     value2));
               } else {
                 results.add(Tuple3<DisplayedTag, int, int>(
