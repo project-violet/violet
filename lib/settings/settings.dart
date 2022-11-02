@@ -747,7 +747,7 @@ class Settings {
 
   static Future<void> setUseVerticalWebviewViewer(bool nn) async {
     useVerticalWebviewViewer = nn;
-
+    
     await prefs.setBool('useVerticalWebviewViewer', nn);
   }
 
