@@ -9,18 +9,19 @@ import 'package:violet/network/wrapper.dart' as http;
 class HiyobiManager {
   // [Thumbnail Image], [Image List]
   static Future<Tuple2<String, List<String>>> getImageList(String id) async {
-    var gg = await http.get('https://api.hiyobi.me/gallery/$id');
-    var urls = gg.body;
-    var files = jsonDecode(urls) as List<dynamic>;
-    var result = <String>[];
+    final gg = await http.get('https://api.hiyobi.me/gallery/$id');
+    final urls = gg.body;
+    final json = jsonDecode(urls) as Map<String, dynamic>;
+    final files = json['files'];
+    final result = <String>[];
+    final isWebp = json['iswebp'] as bool;
 
     files.forEach((value) {
-      var item = value as Map<String, dynamic>;
-      if (item['haswebp'] == 1 && item.containsKey('hash')) {
+      final item = value as Map<String, dynamic>;
+      if (isWebp && item['haswebp'] == 1 && item.containsKey('hash')) {
         result.add('https://cdn.hiyobi.me/data/$id/${item['hash']}.webp');
       } else {
         result.add('https://cdn.hiyobi.me/data/$id/${item['name']}');
-        // result.add('https://rcdn.hiyobi.me/data_r/$id/${value['name']}');
       }
     });
 

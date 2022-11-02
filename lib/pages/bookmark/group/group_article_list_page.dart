@@ -20,6 +20,7 @@ import 'package:violet/pages/bookmark/group/group_artist_article_list.dart';
 import 'package:violet/pages/bookmark/group/group_artist_list.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/filter_page.dart';
+import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
@@ -406,97 +407,8 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
   List<QueryResult> filterResult = <QueryResult>[];
 
   void _applyFilter() {
-    var result = <QueryResult>[];
-    var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
-      // key := <group>:<name>
-      var succ = !_filterController.isOr;
-      _filterController.tagStates.forEach((key, value) {
-        if (!value) return;
-
-        // Check match just only one
-        if (succ == isOr) return;
-
-        // Get db column name from group
-        var split = key.split('|');
-        var dbColumn = prefix2Tag(split[0]);
-
-        // There is no matched db column name
-        if (element.result[dbColumn] == null && !isOr) {
-          succ = false;
-          return;
-        }
-
-        // If Single Tag
-        if (!isSingleTag(split[0])) {
-          var tag = split[1];
-          if (['female', 'male'].contains(split[0])) {
-            tag = '${split[0]}:${split[1]}';
-          }
-          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr) {
-            succ = isOr;
-          }
-        }
-
-        // If Multitag
-        else if ((element.result[dbColumn] as String == split[1]) == isOr) {
-          succ = isOr;
-        }
-      });
-      if (succ) result.add(element);
-    });
-
-    filterResult = result;
+    filterResult = _filterController.applyFilter(queryResult);
     isFilterUsed = true;
-
-    if (_filterController.isPopulationSort) {
-      Population.sortByPopulation(filterResult);
-    }
-  }
-
-  static String prefix2Tag(String prefix) {
-    switch (prefix) {
-      case 'artist':
-        return 'Artists';
-      case 'group':
-        return 'Groups';
-      case 'language':
-        return 'Language';
-      case 'character':
-        return 'Characters';
-      case 'series':
-        return 'Series';
-      case 'class':
-        return 'Class';
-      case 'type':
-        return 'Type';
-      case 'uploader':
-        return 'Uploader';
-      case 'tag':
-      case 'female':
-      case 'male':
-        return 'Tags';
-    }
-    return '';
-  }
-
-  static bool isSingleTag(String prefix) {
-    switch (prefix) {
-      case 'language':
-      case 'class':
-      case 'type':
-      case 'uploader':
-        return true;
-      case 'artist':
-      case 'group':
-      case 'character':
-      case 'tag':
-      case 'female':
-      case 'male':
-      case 'series':
-      default:
-        return false;
-    }
   }
 
   List<QueryResult> filter() {

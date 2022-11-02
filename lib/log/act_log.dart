@@ -106,11 +106,17 @@ class ActLogger {
   static Timer? signalTimer;
 
   static Future<void> init() async {
-    var dir = await getApplicationDocumentsDirectory();
-    logFile = File(join(dir.path, 'act-log.txt'));
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      logFile = File('act-log.txt');
+    } else {
+      final dir = await getApplicationDocumentsDirectory();
+      logFile = File(join(dir.path, 'act-log.txt'));
+    }
+
     if (!await logFile.exists()) {
       await logFile.create();
     }
+
     session = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
     await log(ActLogEvent(type: ActLogType.appStart));
 

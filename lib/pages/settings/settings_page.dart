@@ -179,8 +179,8 @@ class _SettingsPageState extends State<SettingsPage>
         ..addAll(_searchGroup())
         ..addAll(_systemGroup())
         ..addAll(_securityGroup())
-        ..addAll(!Settings.liteMode ? _databaseGroup() : [])
-        ..addAll(!Settings.liteMode ? _networkingGroup() : [])
+        ..addAll(_databaseGroup())
+        ..addAll(_networkingGroup())
         ..addAll(_downloadGroup())
         ..addAll(_bookmarkGroup())
         ..addAll(_componetGroup())
@@ -381,8 +381,20 @@ class _SettingsPageState extends State<SettingsPage>
                       cardColor: Settings.themeBlack && Settings.themeWhat
                           ? const Color(0xFF141414)
                           : null,
-                      colorScheme: ColorScheme.fromSwatch()
-                          .copyWith(secondary: Settings.majorColor),
+                      colorScheme: ColorScheme.fromSwatch().copyWith(
+                        secondary: Settings.majorColor,
+                        brightness: Theme.of(context).brightness,
+                      ),
+                      cupertinoOverrideTheme: CupertinoThemeData(
+                        brightness: Theme.of(context).brightness,
+                        primaryColor: Settings.majorColor,
+                        textTheme: const CupertinoTextThemeData(),
+                        barBackgroundColor: Settings.themeWhat
+                            ? Settings.themeBlack
+                                ? const Color(0xFF181818)
+                                : Colors.grey.shade800
+                            : null,
+                      ),
                     ),
                   );
                   ThemeSwitchableStateTargetStore.doChange();
@@ -417,6 +429,16 @@ class _SettingsPageState extends State<SettingsPage>
                               : null,
                           colorScheme: ColorScheme.fromSwatch()
                               .copyWith(secondary: Settings.majorColor),
+                          cupertinoOverrideTheme: CupertinoThemeData(
+                            brightness: Theme.of(context).brightness,
+                            primaryColor: Settings.majorColor,
+                            textTheme: const CupertinoTextThemeData(),
+                            barBackgroundColor: Settings.themeWhat
+                                ? Settings.themeBlack
+                                    ? const Color(0xFF181818)
+                                    : Colors.grey.shade800
+                                : null,
+                          ),
                         ),
                       );
                       setState(() {
@@ -1250,26 +1272,38 @@ class _SettingsPageState extends State<SettingsPage>
       _buildGroup(Translations.of(context).trans('network')),
       _buildItems(
         [
+          // InkWell(
+          //   customBorder: const RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.only(
+          //           topLeft: Radius.circular(8.0),
+          //           topRight: Radius.circular(8.0))),
+          //   child: ListTile(
+          //     leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
+          //     title: const Text('VPN'),
+          //     trailing: const Icon(Icons.keyboard_arrow_right),
+          //   ),
+          //   onTap: () {},
+          // ),
+          // _buildDivider(),
           InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8.0),
                     topRight: Radius.circular(8.0))),
             child: ListTile(
-              leading: Icon(MdiIcons.vpn, color: Settings.majorColor),
-              title: const Text('VPN'),
+              leading: Icon(
+                Icons.router,
+                color: Settings.majorColor,
+              ),
+              title: Text(Translations.of(context).trans('routing_rule')),
               trailing: const Icon(Icons.keyboard_arrow_right),
+              onTap: () async {
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) => const RouteDialog(),
+                );
+              },
             ),
-            onTap: () {},
-          ),
-          _buildDivider(),
-          ListTile(
-            leading: Icon(
-              Icons.router,
-              color: Settings.majorColor,
-            ),
-            title: Text(Translations.of(context).trans('routing_rule')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
               await showDialog(
                 context: context,
@@ -1793,7 +1827,7 @@ class _SettingsPageState extends State<SettingsPage>
 
                 try {
                   // 2. 유효한 유저 아이디 인지 확인(서버 요청 및 다운로드)
-                  var result = await VioletServer.resotreBookmark(text.text);
+                  var result = await VioletServer.restoreBookmark(text.text);
                   if (result == null) {
                     await showOkDialog(
                         context,

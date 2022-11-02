@@ -88,7 +88,7 @@ class EHParser {
   // ex: https://exhentai.org/s/df24b19548/1212549-2
   static String getOriginalImageAddress(String html) {
     final RegExp regex =
-        RegExp(r'\<a href="(https://exhentai.org/fullimg\.php.*?)"\>');
+        RegExp(r'\<a href="(https://e[-x]hentai.org/fullimg\.php.*?)"\>');
     return regex.allMatches(html).first.group(1)!;
   }
 

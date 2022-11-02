@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
+import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/settings/settings.dart';
 
 class SearchResultSelector extends StatelessWidget {
@@ -33,7 +34,7 @@ class SearchResultSelector extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Hero(
-              tag: 'searchbar',
+              tag: 'searchbar${ModalBottomSheetContext.getCount()}',
               child: Card(
                 color: Settings.themeWhat
                     ? const Color(0xFF353535)

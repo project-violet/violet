@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +40,7 @@ import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
+import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
@@ -514,8 +516,8 @@ class MultiChipWidget extends StatelessWidget {
         ),
         Expanded(
           child: Wrap(
-            spacing: 1.0,
-            runSpacing: -12.0,
+            spacing: 3.0,
+            runSpacing: -9.0,
             children: groupName
                 .map((x) => _Chip(group: x.item1, name: x.item2))
                 .toList(),
@@ -539,23 +541,6 @@ class PreviewAreaWidget extends StatelessWidget {
         future: Future.value(1).then((value) async {
           VioletImageProvider prov =
               await ProviderManager.get(queryResult.id());
-
-          // if (!ProviderManager.isExists(queryResult.id() * 1000000)) {
-          //   if (ProviderManager.get(queryResult.id()) is HitomiImageProvider) {
-          //     prov = await ProviderManager.get(queryResult.id());
-          //     ProviderManager.insert(queryResult.id() * 1000000, prov);
-          //   } else {
-          //     try {
-          //       var urls = await HitomiManager.getImageList(
-          //           queryResult.id().toString());
-          //       if (urls.item1.length != 0 && urls.item2.length != 0) {
-          //         prov = HitomiImageProvider(urls, queryResult.id().toString());
-          //         ProviderManager.insert(queryResult.id() * 1000000, prov);
-          //       }
-          //     } catch (e) {}
-          //   }
-          // } else
-          //   prov = await ProviderManager.get(queryResult.id() * 1000000);
 
           return Tuple2(
               await prov.getSmallImagesUrl(), await prov.getHeader(0));
@@ -898,9 +883,9 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
     final height = MediaQuery.of(context).size.height;
 
     final search = await HentaiManager.idSearch(id.toString());
-    if (search.item1.length != 1) return;
+    if (search.results.length != 1) return;
 
-    final qr = search.item1[0];
+    final qr = search.results.first;
 
     HentaiManager.getImageProvider(qr).then((value) async {
       var thumbnail = await value.getThumbnailUrl();
@@ -1029,6 +1014,7 @@ class _Chip extends StatelessWidget {
   String normalize(String tag) {
     if (tag == 'groups') return 'group';
     if (tag == 'artists') return 'artist';
+    if (tag == 'tags') return 'tag';
     return tag;
   }
 
@@ -1053,97 +1039,133 @@ class _Chip extends StatelessWidget {
       color = Colors.orange;
     }
 
-    Widget avatar = Text(group[0].toUpperCase());
+    var mustHasMorePad = true;
+    Widget avatar = Text(group[0].toUpperCase(),
+        style: const TextStyle(color: Colors.white));
 
     if (group == 'female') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderFemale,
         size: 18.0,
         color: Colors.white,
       );
     } else if (group == 'male') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderMale,
         size: 18.0,
         color: Colors.white,
       );
     } else if (group == 'language') {
-      avatar = const Icon(Icons.language, size: 18.0);
+      mustHasMorePad = false;
+      avatar = const Icon(
+        Icons.language,
+        size: 18.0,
+        color: Colors.white,
+      );
     } else if (group == 'artists') {
-      avatar = const Icon(MdiIcons.account, size: 18.0);
+      mustHasMorePad = false;
+      avatar = const Icon(
+        MdiIcons.account,
+        size: 18.0,
+        color: Colors.white,
+      );
     } else if (group == 'groups') {
-      avatar = const Icon(MdiIcons.accountGroup, size: 15.0);
+      mustHasMorePad = false;
+      avatar = const Icon(
+        MdiIcons.accountGroup,
+        size: 15.0,
+        color: Colors.white,
+      );
     }
 
-    var fc = Transform.scale(
-      scale: 0.95,
-      child: GestureDetector(
-        child: RawChip(
-          labelPadding: const EdgeInsets.all(0.0),
-          avatar: CircleAvatar(
-            backgroundColor: avatarBg,
-            child: avatar,
-          ),
-          label: Text(
-            ' $tagDisplayed',
-            style: const TextStyle(
-              color: Colors.white,
+    final fc = GestureDetector(
+      child: RawChip(
+        labelPadding: const EdgeInsets.all(0.0),
+        label: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  left: 2.0 + (mustHasMorePad ? 4.0 : 0),
+                  right: (mustHasMorePad ? 4.0 : 0)),
+              child: avatar,
             ),
-          ),
-          backgroundColor: color,
-          elevation: 6.0,
-          // shadowColor: Colors.grey[60],
-          padding: const EdgeInsets.all(6.0),
+            Text(
+              ' $tagDisplayed ',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
-        onLongPress: () async {
-          if (!Settings.excludeTags
-              .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
-            final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
-            if (yn) {
-              Settings.excludeTags
-                  .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
-              await Settings.setExcludeTags(Settings.excludeTags.join(' '));
-              await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
-            }
-          } else {
-            await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
-          }
-        },
-        onTap: () async {
-          if ((group == 'groups' ||
-                  group == 'artists' ||
-                  group == 'uploader' ||
-                  group == 'series' ||
-                  group == 'character') &&
-              name.toLowerCase() != 'n/a') {
-            PlatformNavigator.navigateSlide(
-              context,
-              ArtistInfoPage(
-                isGroup: group == 'groups',
-                isUploader: group == 'uploader',
-                isCharacter: group == 'character',
-                isSeries: group == 'series',
-                artist: name,
-              ),
-            );
-          } else if (group == 'id') {
-            Clipboard.setData(ClipboardData(text: name));
-            FToast fToast = FToast();
-            fToast.init(context);
-            fToast.showToast(
-              child: ToastWrapper(
-                isCheck: true,
-                isWarning: false,
-                msg: Translations.of(context).trans('copied'),
-              ),
-              gravity: ToastGravity.BOTTOM,
-              toastDuration: const Duration(seconds: 4),
-            );
-          }
-        },
+        // avatar: CircleAvatar(
+        //   backgroundColor: avatarBg,
+        //   child: avatar,
+        // ),
+        // label: Text(
+        //   ' $tagDisplayed',
+        //   style: const TextStyle(
+        //     color: Colors.white,
+        //   ),
+        // ),
+        backgroundColor: color,
+        elevation: 6.0,
+        // shadowColor: Colors.grey[60],
+        padding: const EdgeInsets.all(6.0),
       ),
+      onLongPress: () async {
+        if (!Settings.excludeTags
+            .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
+          final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
+          if (yn) {
+            Settings.excludeTags
+                .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
+            await Settings.setExcludeTags(Settings.excludeTags.join(' '));
+            await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
+          }
+        } else {
+          await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
+        }
+      },
+      onTap: () async {
+        if ((group == 'groups' ||
+                group == 'artists' ||
+                group == 'uploader' ||
+                group == 'series' ||
+                group == 'character') &&
+            name.toLowerCase() != 'n/a') {
+          PlatformNavigator.navigateSlide(
+            context,
+            ArtistInfoPage(
+              isGroup: group == 'groups',
+              isUploader: group == 'uploader',
+              isCharacter: group == 'character',
+              isSeries: group == 'series',
+              artist: name,
+            ),
+          );
+        } else if (group == 'id') {
+          Clipboard.setData(ClipboardData(text: name));
+          FToast fToast = FToast();
+          fToast.init(context);
+          fToast.showToast(
+            child: ToastWrapper(
+              isCheck: true,
+              isWarning: false,
+              msg: Translations.of(context).trans('copied'),
+            ),
+            gravity: ToastGravity.BOTTOM,
+            toastDuration: const Duration(seconds: 4),
+          );
+        }
+      },
     );
-    return fc;
+
+    return SizedBox(
+      height: 44,
+      child: FittedBox(child: fc),
+    );
   }
 }
 

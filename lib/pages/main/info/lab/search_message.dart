@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';
@@ -136,9 +137,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                     if (ProviderManager.isExists(e.item2)) {
                       provider = await ProviderManager.get(e.item2);
                     } else {
-                      var query =
+                      final query =
                           (await HentaiManager.idSearch(e.item2.toString()))
-                              .item1;
+                              .results;
                       provider = await HentaiManager.getImageProvider(query[0]);
                       await provider.init();
                       ProviderManager.insert(query[0].id(), provider);
@@ -469,9 +470,9 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
     final height = MediaQuery.of(context).size.height;
 
     final search = await HentaiManager.idSearch(id.toString());
-    if (search.item1.length != 1) return;
+    if (search.results.length != 1) return;
 
-    final qr = search.item1[0];
+    final qr = search.results.first;
 
     HentaiManager.getImageProvider(qr).then((value) async {
       var thumbnail = await value.getThumbnailUrl();

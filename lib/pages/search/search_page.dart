@@ -6,35 +6,33 @@ import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:flare_flutter/flare_cache.dart';
-import 'package:flare_flutter/flare_controls.dart';
-import 'package:flare_flutter/provider/asset_flare.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/population.dart';
+import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/search.dart';
-import 'package:violet/locale/locale.dart';
+import 'package:violet/locale/locale.dart' as trans;
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
+import 'package:violet/pages/search/search_page_controller.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
 import 'package:violet/pages/segment/filter_page.dart';
+import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/thread/semaphore.dart';
-import 'package:violet/update/update_manager.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
@@ -42,7 +40,9 @@ import 'package:violet/widgets/theme_switchable_state.dart';
 bool blurred = false;
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  final String? searchKeyWord;
+
+  const SearchPage({Key? key, this.searchKeyWord}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -51,179 +51,56 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends ThemeSwitchableState<SearchPage>
     with AutomaticKeepAliveClientMixin<SearchPage> {
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => widget.searchKeyWord == null;
 
   @override
   VoidCallback? get shouldReloadCallback => () => _shouldReload = true;
 
-  Color color = Colors.green;
-  bool into = false;
+  late final String getxId;
+  late final SearchPageController c;
 
-  final FlareControls heroFlareControls = FlareControls();
-  // FlutterActorArtboard? artboard;
-  late AssetFlare asset;
-
-  bool isFilterUsed = false;
-  bool searchbarVisible = true;
-  double upperPixel = 0;
-  double latestOffset = 0.0;
-  int eventCalled = 0;
-  bool whenTopScroll = false;
-  bool isExtended = false;
-
-  DateTime datetime = DateTime.now();
-
-  Map<String, GlobalKey> itemKeys = <String, GlobalKey>{};
-  double itemHeight = 0.0;
-  ValueNotifier<int> searchPageNum = ValueNotifier<int>(0);
-  int searchTotalResultCount = 0;
-  int baseCount = 0; // using for user custom page index
-  List<int> scrollQueue = <int>[];
-
-  late final FToast fToast;
-
-  void _showErrorToast(String message) {
-    fToast.showToast(
-      toastDuration: const Duration(seconds: 10),
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(),
-          borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-        ),
-        child: Text(message),
-      ),
-    );
-  }
+  final DateTime datetime = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    fToast = FToast();
-    fToast.init(context);
 
-    asset =
-        AssetFlare(bundle: rootBundle, name: 'assets/flare/search_close.flr');
-    (() async {
-      await cachedActor(asset);
-    })();
+    getxId = const Uuid().v4();
+    c = Get.put(
+      SearchPageController(reloadForce: reloadForce),
+      tag: getxId,
+    );
 
-    if (Settings.liteMode) {
-      Future.delayed(const Duration(milliseconds: 200))
-          .then((value) => UpdateManager.updateCheck(context));
-    }
+    c.init(context);
 
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      try {
-        final result =
-            await HentaiManager.search('').timeout(const Duration(seconds: 5));
-
-        latestQuery =
-            Tuple2<Tuple2<List<QueryResult>, int>, String>(result, '');
-        queryResult = latestQuery!.item1!.item1;
-        if (_filterController.isPopulationSort) {
-          Population.sortByPopulation(queryResult);
-        }
-        _shouldReload = true;
-        setState(() {});
-
-        if (searchTotalResultCount == 0) {
-          Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-            searchTotalResultCount = await HentaiManager.countSearch('');
-            setState(() {});
-          });
-        }
-      } catch (e, st) {
-        Logger.error('[Initial-Search] E: $e\n'
-            '$st');
-        print('Initial search failed: $e');
-        _showErrorToast('Failed to search all: $e');
-      }
-    }).catchError((e, st) {
-      // It happened!
-      Logger.error('[Initial-SearchI] E: $e'
-          '\n$st');
-      print('Initial search interrupted: $e');
-      _showErrorToast('Initial search interrupted: $e');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      doInitialSearch();
     });
+  }
 
-    _scroll.addListener(() {
-      //
-      // scroll position
-      //
-      if (itemKeys.isNotEmpty && itemHeight <= 0.1) {
-        for (var key in itemKeys.entries) {
-          // invisible article is not rendered yet
-          // so we can find live elements
-          if (key.value.currentContext != null) {
-            final bottomPadding = [8, 8, 0, 0, 0][Settings.searchResultType];
-            itemHeight = key.value.currentContext!.size!.height + bottomPadding;
-            break;
-          }
-        }
+  doInitialSearch() async {
+    try {
+      final result = await HentaiManager.search(widget.searchKeyWord ?? '')
+          .timeout(const Duration(seconds: 5));
+
+      c.latestQuery = Tuple2(result, widget.searchKeyWord ?? '');
+      c.queryResult = c.latestQuery!.item1!.results;
+      if (c.filterController.isPopulationSort) {
+        Population.sortByPopulation(c.queryResult);
       }
+      reloadForce();
 
-      if (_scroll.offset.isNaN) return;
-
-      final itemPerRow = [3, 2, 1, 1, 1][Settings.searchResultType];
-      const searchBarHeight = 64 + 16;
-      final curI =
-          ((_scroll.offset - searchBarHeight) / itemHeight + 1).toInt() *
-              itemPerRow;
-
-      if (curI != searchPageNum.value && isExtended) {
-        searchPageNum.value = curI;
-      }
-
-      //
-      // scroll direction
-      //
-      var upScrolling =
-          _scroll.position.userScrollDirection == ScrollDirection.forward;
-
-      if (upScrolling) {
-        scrollQueue.add(-1);
-      } else {
-        scrollQueue.add(1);
-      }
-
-      if (scrollQueue.length > 64) {
-        scrollQueue.removeRange(0, scrollQueue.length - 65);
-      }
-
-      var p = scrollQueue.reduce((value, element) => value + element);
-
-      if (p <= -32 && !isExtended) {
-        isExtended = true;
-        setState(() {});
-      } else if (p >= 32 && isExtended) {
-        isExtended = false;
-        setState(() {});
-      }
-
-      //
-      //  scroll lazy next query loading
-      //
-      if (scrollInProgress || queryEnd) return;
-      if (_scroll.offset > _scroll.position.maxScrollExtent * 3 / 4) {
-        scrollInProgress = true;
-        Future.delayed(const Duration(milliseconds: 100), () async {
-          try {
-            await loadNextQuery();
-          } catch (e) {
-            print('loadNextQuery failed: $e');
-          } finally {
-            scrollInProgress = false;
-          }
-        }).catchError((e) {
-          // It happened!
-          print('Scrolling interrupted: $e');
-          _showErrorToast('Scrolling interrupted: $e');
-          scrollInProgress = false;
+      if (c.searchTotalResultCount.value == 0) {
+        Future.delayed(const Duration(milliseconds: 100)).then((value) async {
+          c.searchTotalResultCount.value =
+              await HentaiManager.countSearch(widget.searchKeyWord ?? '');
         });
       }
-    });
+    } catch (e, st) {
+      Logger.error('[Initial-Search] E: $e\n'
+          '$st');
+      c.showErrorToast('Failed to search all: $e');
+    }
   }
 
   welcomeMessage() async {
@@ -241,60 +118,127 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     welcomeMessage();
   }
 
-  bool scrollInProgress = false;
-
-  Tuple2<Tuple2<List<QueryResult>, int>?, String>? latestQuery;
-
-  final ScrollController _scroll = ScrollController();
-
   bool _shouldReload = false;
   ResultPanelWidget? _cachedPannel;
+  ObjectKey key = ObjectKey(const Uuid().v4());
+
+  reloadForce() {
+    setState(() {
+      _cachedPannel = null;
+      _shouldReload = true;
+      key = ObjectKey(const Uuid().v4());
+    });
+  }
 
   // https://stackoverflow.com/questions/60643355/is-it-possible-to-have-both-expand-and-contract-effects-with-the-slivers-in
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
+    print('build!');
+
     if (_cachedPannel == null || _shouldReload) {
       _shouldReload = false;
 
-      itemKeys.clear();
+      c.itemKeys.clear();
 
       final panel = ResultPanelWidget(
         dateTime: datetime,
-        resultList: filter(),
-        itemKeys: itemKeys,
+        resultList: c.getSearchList(),
+        itemKeys: c.itemKeys,
         sliverKey: key,
       );
 
       _cachedPannel = panel;
     }
 
+    final slivers = [
+      if (widget.searchKeyWord == null)
+        SliverPersistentHeader(
+          floating: true,
+          delegate: AnimatedOpacitySliver(
+            searchBar: Stack(
+              children: <Widget>[
+                searchBar(),
+                align(),
+              ],
+            ),
+          ),
+        )
+      else
+        SliverToBoxAdapter(
+          child: Container(
+            height: 16,
+          ),
+        ),
+      _cachedPannel!,
+    ];
+
+    late Widget scrollView;
+
+    if (widget.searchKeyWord == null) {
+      scrollView = CustomScrollView(
+        controller: c.scrollController,
+        physics: const BouncingScrollPhysics(),
+        slivers: slivers,
+      );
+    } else {
+      scrollView = CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar(
+          border: const Border(bottom: BorderSide(color: Colors.transparent)),
+          leading: CupertinoButton(
+            padding: const EdgeInsets.all(10),
+            onPressed: alignOnTap,
+            child: const Icon(
+              MdiIcons.formatListText,
+              size: 21.0,
+              color: Colors.grey,
+            ),
+          ),
+          middle: Text(widget.searchKeyWord!),
+          trailing: CupertinoButton(
+            padding: const EdgeInsets.all(10),
+            onPressed: alignLongPress,
+            child: const Icon(
+              MdiIcons.filter,
+              size: 21.0,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: NestedScrollView(
+            controller: c.scrollController,
+            physics: const ScrollPhysics(parent: PageScrollPhysics()),
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return [];
+            },
+            body: CustomScrollView(
+              controller: ModalScrollController.of(context),
+              physics: const BouncingScrollPhysics(),
+              slivers: slivers,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         bottom: false,
-        child: CustomScrollView(
-          controller: _scroll,
-          physics: const BouncingScrollPhysics(),
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              floating: true,
-              delegate: AnimatedOpacitySliver(
-                searchBar: Stack(
-                  children: <Widget>[
-                    _searchBar(),
-                    _align(),
-                  ],
-                ),
-              ),
-            ),
-            _cachedPannel!,
-          ],
-        ),
+        child: scrollView,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Settings.majorColor,
-        label: AnimatedSwitcher(
+      floatingActionButton: _floatingActionButton(),
+    );
+  }
+
+  Widget _floatingActionButton() {
+    return FloatingActionButton.extended(
+      backgroundColor: Settings.majorColor,
+      label: Obx(
+        () => AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           switchInCurve: Curves.easeIn,
           switchOutCurve: Curves.easeOut,
@@ -307,7 +251,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
               child: child,
             ),
           ),
-          child: !isExtended
+          child: !c.isExtended.value
               ? const Icon(MdiIcons.bookOpenPageVariantOutline)
               : Row(
                   children: [
@@ -315,61 +259,110 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
                       padding: EdgeInsets.only(right: 4.0),
                       child: Icon(MdiIcons.bookOpenPageVariantOutline),
                     ),
-                    ValueListenableBuilder(
-                      valueListenable: searchPageNum,
-                      builder:
-                          (BuildContext context, int value, Widget? child) {
-                        return Text(
-                            '${value + baseCount}/${queryResult.length}/$searchTotalResultCount');
-                      },
+                    Obx(
+                      () => Text(
+                          '${c.searchPageNum.value + c.baseCount}/${c.queryResult.length}/${c.searchTotalResultCount}'),
                     ),
                   ],
                 ),
         ),
-        onPressed: () async {
-          var rr = await showDialog(
-            context: context,
-            builder: (BuildContext context) => SearchPageModifyPage(
-              curPage: searchPageNum.value + baseCount,
-              maxPage: searchTotalResultCount,
-            ),
-          );
-          if (rr == null) return;
-
-          if (rr[0] == 1) {
-            var setPage = rr[1] as int;
-
-            baseCount = setPage;
-
-            latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-                Tuple2<List<QueryResult>, int>(<QueryResult>[], baseCount),
-                latestQuery!.item2);
-            queryEnd = false;
-            queryResult = [];
-            _filterController = FilterController();
-            isFilterUsed = false;
-            _shouldReload = true;
-            searchTotalResultCount = 0;
-            searchPageNum.value = 0;
-            await loadNextQuery();
-            setState(() {
-              _cachedPannel = null;
-              _shouldReload = true;
-              key = ObjectKey(const Uuid().v4());
-            });
-          }
-        },
       ),
+      onPressed: () async {
+        var rr = await showDialog(
+          context: context,
+          builder: (BuildContext context) => SearchPageModifyPage(
+            curPage: c.searchPageNum.value + c.baseCount,
+            maxPage: c.searchTotalResultCount.value,
+          ),
+        );
+        if (rr == null) return;
+
+        if (rr[0] == 1) {
+          final setPage = rr[1] as int;
+
+          c.latestQuery = Tuple2(
+            SearchResult(results: [], offset: setPage),
+            c.latestQuery!.item2,
+          );
+
+          c.doSearch(setPage);
+        }
+      },
     );
   }
 
-  Widget _searchBar() {
+  searchBar() {
+    final searchHintText =
+        c.latestQuery != null && c.latestQuery!.item2.trim() != ''
+            ? c.latestQuery!.item2
+            : widget.searchKeyWord ??
+                trans.Translations.of(context).trans('search');
+
+    final textFormField = TextFormField(
+      cursorColor: Colors.black,
+      decoration: InputDecoration(
+        border: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        contentPadding: const EdgeInsets.only(
+          left: 15,
+          bottom: 11,
+          top: 11,
+          right: 15,
+        ),
+        hintText: searchHintText,
+      ),
+    );
+
+    final searchBar = Column(
+      children: <Widget>[
+        Material(
+          color: Settings.themeWhat
+              ? Settings.themeBlack
+                  ? const Color(0xFF141414)
+                  : Colors.grey.shade900.withOpacity(0.4)
+              : Colors.grey.shade200.withOpacity(0.4),
+          child: ListTile(
+            title: textFormField,
+            leading: SizedBox(
+              width: 25,
+              height: 25,
+              child: FlareActor.asset(
+                c.asset,
+                controller: c.heroFlareControls,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+
+    final searchBarOverlay = Positioned(
+      left: 0.0,
+      top: 0.0,
+      bottom: 0.0,
+      right: 0.0,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: showSearchBar,
+          onDoubleTap: () async {
+            if (widget.searchKeyWord != null) return;
+            c.latestQuery = Tuple2(null, 'random:${Random().nextDouble() + 1}');
+            c.doSearch();
+          },
+        ),
+      ),
+    );
+
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 8, 72, 0),
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: 'searchbar',
+          tag: 'searchbar${ModalBottomSheetContext.getCount()}',
           child: Card(
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
@@ -380,72 +373,8 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: Stack(
               children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Material(
-                      color: Settings.themeWhat
-                          ? Settings.themeBlack
-                              ? const Color(0xFF141414)
-                              : Colors.grey.shade900.withOpacity(0.4)
-                          : Colors.grey.shade200.withOpacity(0.4),
-                      child: ListTile(
-                        title: TextFormField(
-                          cursorColor: Colors.black,
-                          decoration: InputDecoration(
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              contentPadding: const EdgeInsets.only(
-                                  left: 15, bottom: 11, top: 11, right: 15),
-                              hintText: latestQuery != null &&
-                                      latestQuery!.item2.trim() != ''
-                                  ? latestQuery!.item2
-                                  : Translations.of(context).trans('search')),
-                        ),
-                        leading: SizedBox(
-                          width: 25,
-                          height: 25,
-                          child: FlareActor.asset(asset,
-                              controller: heroFlareControls),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                Positioned(
-                  left: 0.0,
-                  top: 0.0,
-                  bottom: 0.0,
-                  right: 0.0,
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      onTap: _showSearchBar,
-                      onDoubleTap: () async {
-                        // latestQuery = value;
-                        latestQuery =
-                            Tuple2<Tuple2<List<QueryResult>, int>?, String>(
-                                null, 'random:${Random().nextDouble() + 1}');
-                        queryResult = [];
-                        _filterController = FilterController();
-                        queryEnd = false;
-                        isFilterUsed = false;
-                        _shouldReload = true;
-                        searchTotalResultCount = 0;
-                        searchPageNum.value = 0;
-                        baseCount = 0;
-                        await loadNextQuery();
-                        setState(() {
-                          _cachedPannel = null;
-                          _shouldReload = true;
-                          key = ObjectKey(const Uuid().v4());
-                        });
-                      },
-                    ),
-                  ),
-                ),
+                searchBar,
+                searchBarOverlay,
               ],
             ),
           ),
@@ -454,99 +383,93 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     );
   }
 
-  Future<void> _showSearchBar() async {
+  showSearchBar() async {
+    if (widget.searchKeyWord != null) return;
+
     await Future.delayed(const Duration(milliseconds: 200));
-    heroFlareControls.play('search2close');
+
+    c.heroFlareControls.play('search2close');
+
     final query = await Navigator.push<String>(
       context,
       MaterialPageRoute(
         builder: (context) {
           return SearchBarPage(
-            assetProvider: asset,
-            initText: latestQuery != null ? latestQuery!.item2 : '',
-            heroController: heroFlareControls,
+            assetProvider: c.asset,
+            initText: c.latestQuery != null ? c.latestQuery!.item2 : '',
+            heroController: c.heroFlareControls,
           );
         },
         fullscreenDialog: true,
       ),
     );
+
     try {
       final db = await SearchLogDatabase.getInstance();
       await db.insertSearchLog(query);
       setState(() {
-        heroFlareControls.play('close2search');
+        c.heroFlareControls.play('close2search');
       });
       if (query == null) return;
 
-      latestQuery =
-          Tuple2<Tuple2<List<QueryResult>, int>?, String>(null, query);
-      queryResult = [];
-      _filterController = FilterController();
-      queryEnd = false;
-      isFilterUsed = false;
-      searchPageNum.value = 0;
-      searchTotalResultCount = 0;
-      baseCount = 0;
-      await loadNextQuery().then((value) {
-        setState(() {
-          _cachedPannel = null;
-          _shouldReload = true;
-          key = ObjectKey(const Uuid().v4());
-        });
-      });
+      c.latestQuery = Tuple2(null, query);
+      c.doSearch();
     } catch (e, st) {
       await Logger.error(
           '[showSearchBar] E: ${e.toString()}\n${st.toString()}');
     }
   }
 
-  Widget _align() {
-    double width = MediaQuery.of(context).size.width;
+  align() {
+    final width = MediaQuery.of(context).size.width;
+
+    final alignOverlay = InkWell(
+      onTap: alignOnTap,
+      onLongPress: alignLongPress,
+      child: SizedBox(
+        height: 64,
+        width: 64,
+        child: Stack(
+          alignment: Alignment.center,
+          children: const <Widget>[
+            Icon(
+              MdiIcons.formatListText,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final alignBody = Card(
+      color: Settings.themeWhat
+          ? Settings.themeBlack
+              ? const Color(0xFF141414)
+              : const Color(0xFF353535)
+          : Colors.grey.shade100,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4.0))),
+      elevation: !Settings.themeFlat ? 100 : 0,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: alignOverlay,
+    );
+
     return Container(
       padding: EdgeInsets.fromLTRB(width - 8 - 64, 8, 8, 0),
       child: SizedBox(
         height: 64,
         child: Hero(
-          tag: 'searchtype',
-          child: Card(
-            color: Settings.themeWhat
-                ? Settings.themeBlack
-                    ? const Color(0xFF141414)
-                    : const Color(0xFF353535)
-                : Colors.grey.shade100,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(4.0),
-              ),
-            ),
-            elevation: !Settings.themeFlat ? 100 : 0,
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            child: InkWell(
-              onTap: _alignOnTap,
-              onLongPress: _alignLongPress,
-              child: SizedBox(
-                height: 64,
-                width: 64,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: const <Widget>[
-                    Icon(
-                      MdiIcons.formatListText,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          tag: 'searchtype${ModalBottomSheetContext.getCount()}',
+          child: alignBody,
         ),
       ),
     );
   }
 
-  Future<void> _alignOnTap() async {
-    Navigator.of(context)
-        .push(PageRouteBuilder(
+  alignOnTap() async {
+    final previousAlignType = Settings.searchResultType;
+
+    await Navigator.of(context).push(PageRouteBuilder(
       opaque: false,
       transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (BuildContext context, Animation<double> animation,
@@ -556,212 +479,35 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       pageBuilder: (_, __, ___) => const SearchType(),
       barrierColor: Colors.black12,
       barrierDismissible: true,
-    ))
-        .then((value) async {
-      await Future.delayed(const Duration(milliseconds: 50), () {
-        _shouldReload = true;
-        itemHeight = 0.0;
-        setState(() {});
-      });
+    ));
+
+    if (previousAlignType == Settings.searchResultType) return;
+
+    await Future.delayed(const Duration(milliseconds: 50), () {
+      _shouldReload = true;
+      c.resetItemHeight();
+      setState(() {});
     });
   }
 
-  Future<void> _alignLongPress() async {
-    PlatformNavigator.navigateFade(
+  alignLongPress() async {
+    final navigator = widget.searchKeyWord == null
+        ? PlatformNavigator.navigateFade
+        : PlatformNavigator.navigateSlide;
+    navigator(
       context,
       Provider<FilterController>.value(
-        value: _filterController,
+        value: c.filterController,
         child: FilterPage(
-          queryResult: queryResult,
+          queryResult: c.queryResult,
         ),
       ),
     ).then((value) {
-      _applyFilter();
+      c.applyFilter();
       _shouldReload = true;
-      searchPageNum.value = 0;
-      setState(() {
-        _cachedPannel = null;
-        _shouldReload = true;
-        key = ObjectKey(const Uuid().v4());
-      });
+      c.searchPageNum.value = 0;
+      reloadForce();
     });
-  }
-
-  void _applyFilter() {
-    var result = <QueryResult>[];
-    var isOr = _filterController.isOr;
-    queryResult.forEach((element) {
-      // key := <group>:<name>
-      var succ = !_filterController.isOr;
-      _filterController.tagStates.forEach((key, value) {
-        if (!value) return;
-
-        // Check match just only one
-        if (succ == isOr) return;
-
-        // Get db column name from group
-        var split = key.split('|');
-        var dbColumn = prefix2Tag(split[0]);
-
-        // There is no matched db column name
-        if (element.result[dbColumn] == null && !isOr) {
-          succ = false;
-          return;
-        }
-
-        // If Single Tag
-        if (!isSingleTag(split[0])) {
-          var tag = split[1];
-          if (['female', 'male'].contains(split[0])) {
-            tag = '${split[0]}:${split[1]}';
-          }
-          if ((element.result[dbColumn] as String).contains('|$tag|') == isOr) {
-            succ = isOr;
-          }
-        }
-
-        // If Multitag
-        else if ((element.result[dbColumn] as String == split[1]) == isOr) {
-          succ = isOr;
-        }
-      });
-      if (succ) result.add(element);
-    });
-
-    filterResult = result;
-    isFilterUsed = true;
-
-    if (_filterController.isPopulationSort) {
-      Population.sortByPopulation(filterResult);
-    }
-  }
-
-  FilterController _filterController = FilterController();
-
-  List<QueryResult> queryResult = [];
-  List<QueryResult> filterResult = [];
-
-  ObjectKey key = ObjectKey(const Uuid().v4());
-
-  bool queryEnd = false;
-  final Semaphore _querySem = Semaphore(maxCount: 1);
-
-  Future<void> loadNextQuery() async {
-    await _querySem.acquire().timeout(
-      const Duration(seconds: 5),
-      onTimeout: () {
-        _showErrorToast('Semaphore acquisition failed');
-
-        throw TimeoutException('Failed to acquire the query semaphore');
-      },
-    );
-
-    try {
-      if (queryEnd ||
-          (latestQuery!.item1 != null && latestQuery!.item1!.item2 == -1)) {
-        return;
-      }
-
-      var next = await HentaiManager.search(latestQuery!.item2,
-              latestQuery!.item1 == null ? 0 : latestQuery!.item1!.item2)
-          .timeout(const Duration(seconds: 10), onTimeout: () {
-        Logger.error('[Search_loadNextQuery] Search Timeout');
-
-        throw TimeoutException('Failed to search the query');
-      });
-
-      latestQuery = Tuple2<Tuple2<List<QueryResult>, int>, String>(
-          next, latestQuery!.item2);
-
-      if (next.item1.isEmpty) {
-        setState(() {
-          _cachedPannel = null;
-          queryEnd = true;
-          _shouldReload = true;
-          key = ObjectKey(const Uuid().v4());
-        });
-        return;
-      }
-
-      queryResult.addAll(next.item1);
-
-      if (_filterController.isPopulationSort) {
-        Population.sortByPopulation(queryResult);
-      }
-
-      if (searchTotalResultCount == 0 &&
-          !latestQuery!.item2.contains('random:')) {
-        Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-          searchTotalResultCount =
-              await HentaiManager.countSearch(latestQuery!.item2);
-          setState(() {});
-        });
-      }
-
-      setState(() {
-        _cachedPannel = null;
-        _shouldReload = true;
-        key = ObjectKey(const Uuid().v4());
-      });
-
-      ScriptManager.refresh();
-    } catch (e, st) {
-      Logger.error('[search-error] E: $e\n'
-          '$st');
-      rethrow;
-    } finally {
-      _querySem.release();
-    }
-  }
-
-  static String prefix2Tag(String prefix) {
-    switch (prefix) {
-      case 'artist':
-        return 'Artists';
-      case 'group':
-        return 'Groups';
-      case 'language':
-        return 'Language';
-      case 'character':
-        return 'Characters';
-      case 'series':
-        return 'Series';
-      case 'class':
-        return 'Class';
-      case 'type':
-        return 'Type';
-      case 'uploader':
-        return 'Uploader';
-      case 'tag':
-      case 'female':
-      case 'male':
-        return 'Tags';
-    }
-    return '';
-  }
-
-  static bool isSingleTag(String prefix) {
-    switch (prefix) {
-      case 'language':
-      case 'class':
-      case 'type':
-      case 'uploader':
-        return true;
-      case 'artist':
-      case 'group':
-      case 'character':
-      case 'tag':
-      case 'female':
-      case 'male':
-      case 'series':
-      default:
-        return false;
-    }
-  }
-
-  List<QueryResult> filter() {
-    if (!isFilterUsed) return queryResult;
-    return filterResult;
   }
 }
 
@@ -781,8 +527,8 @@ class ResultPanelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var mm = Settings.searchResultType == 0 ? 3 : 2;
-    var windowWidth = MediaQuery.of(context).size.width;
+    final mm = Settings.searchResultType == 0 ? 3 : 2;
+    final windowWidth = MediaQuery.of(context).size.width;
 
     switch (Settings.searchResultType) {
       case 0:
@@ -799,30 +545,12 @@ class ResultPanelWidget extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  var keyStr = 'search/${resultList[index].id()}/$index';
-                  if (!itemKeys.containsKey(keyStr)) {
-                    itemKeys[keyStr] = GlobalKey();
-                  }
-                  return Padding(
-                    key: itemKeys[keyStr],
-                    padding: EdgeInsets.zero,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        child: Provider<ArticleListItem>.value(
-                          value: ArticleListItem.fromArticleListItem(
-                            queryResult: resultList[index],
-                            showDetail: false,
-                            addBottomPadding: false,
-                            width: (windowWidth - 4.0) / mm,
-                            thumbnailTag:
-                                'thumbnail${resultList[index].id()}$dateTime',
-                            usableTabList: resultList,
-                          ),
-                          child: const ArticleListItemWidget(),
-                        ),
-                      ),
-                    ),
+                  return articleItem(
+                    index,
+                    mm,
+                    windowWidth,
+                    (windowWidth - 4.0) / mm,
+                    alignment: Alignment.bottomCenter,
                   );
                 },
                 childCount: resultList.length,
@@ -850,26 +578,14 @@ class ResultPanelWidget extends StatelessWidget {
                 childAspectRatio: (windowWidth / 2) / 130,
               ),
               itemBuilder: (context, index, animation) {
-                var keyStr = 'search/${resultList[index].id()}/$index';
-                if (!itemKeys.containsKey(keyStr)) {
-                  itemKeys[keyStr] = GlobalKey();
-                }
-                return Align(
-                  key: itemKeys[keyStr],
-                  alignment: Alignment.center,
-                  child: Provider<ArticleListItem>.value(
-                    value: ArticleListItem.fromArticleListItem(
-                      addBottomPadding: true,
-                      showDetail: Settings.searchResultType >= 3,
-                      showUltra: Settings.searchResultType == 4,
-                      queryResult: resultList[index],
-                      width: windowWidth - 4.0,
-                      thumbnailTag:
-                          'thumbnail${resultList[index].id()}$dateTime',
-                      usableTabList: resultList,
-                    ),
-                    child: const ArticleListItemWidget(),
-                  ),
+                return articleItem(
+                  index,
+                  mm,
+                  windowWidth,
+                  windowWidth - 4.0,
+                  showDetail: Settings.searchResultType >= 3,
+                  showUltra: Settings.searchResultType == 4,
+                  addBottomPadding: true,
                 );
               },
             ),
@@ -879,26 +595,14 @@ class ResultPanelWidget extends StatelessWidget {
             key: key,
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                var keyStr = 'search/${resultList[index].id()}/$index';
-                if (!itemKeys.containsKey(keyStr)) {
-                  itemKeys[keyStr] = GlobalKey();
-                }
-                return Align(
-                  key: itemKeys[keyStr],
-                  alignment: Alignment.center,
-                  child: Provider<ArticleListItem>.value(
-                    value: ArticleListItem.fromArticleListItem(
-                      addBottomPadding: true,
-                      showDetail: Settings.searchResultType >= 3,
-                      showUltra: Settings.searchResultType == 4,
-                      queryResult: resultList[index],
-                      width: windowWidth - 4.0,
-                      thumbnailTag:
-                          'thumbnail${resultList[index].id()}$dateTime',
-                      usableTabList: resultList,
-                    ),
-                    child: const ArticleListItemWidget(),
-                  ),
+                return articleItem(
+                  index,
+                  mm,
+                  windowWidth,
+                  windowWidth - 4.0,
+                  showDetail: Settings.searchResultType >= 3,
+                  showUltra: Settings.searchResultType == 4,
+                  addBottomPadding: true,
                 );
               },
               childCount: resultList.length,
@@ -910,5 +614,46 @@ class ResultPanelWidget extends StatelessWidget {
           child: Text('Error :('),
         );
     }
+  }
+
+  articleItem(
+    int index,
+    int mm,
+    double windowWidth,
+    double width, {
+    bool showDetail = false,
+    bool showUltra = false,
+    bool addBottomPadding = false,
+    Alignment alignment = Alignment.center,
+  }) {
+    final keyStr = 'search/${resultList[index].id()}/$index';
+
+    if (!itemKeys.containsKey(keyStr)) {
+      itemKeys[keyStr] = GlobalKey();
+    }
+
+    final article = Provider<ArticleListItem>.value(
+      value: ArticleListItem.fromArticleListItem(
+        queryResult: resultList[index],
+        showDetail: showDetail,
+        showUltra: showUltra,
+        addBottomPadding: addBottomPadding,
+        width: width,
+        thumbnailTag: 'thumbnail${resultList[index].id()}$dateTime',
+        usableTabList: resultList,
+      ),
+      child: const ArticleListItemWidget(),
+    );
+
+    return Padding(
+      key: itemKeys[keyStr],
+      padding: EdgeInsets.zero,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+          child: article,
+        ),
+      ),
+    );
   }
 }

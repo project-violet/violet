@@ -3,16 +3,19 @@
 
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pimp_my_button/pimp_my_button.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
+import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart' as locale;
@@ -21,6 +24,7 @@ import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/article_info/article_info_page.dart';
+import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
@@ -63,16 +67,12 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
 
   RxBool isChecked = false.obs;
 
-  late final FToast fToast;
-
   @override
   void initState() {
     super.initState();
     initProvider = CallOnce(initAfterProvider);
 
     isChecked.value = widget.isChecked;
-    fToast = FToast();
-    fToast.init(context);
   }
 
   initAfterProvider() {
@@ -323,6 +323,8 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
     }
 
     if (!c.disposed) {
+      final fToast = FToast();
+      fToast.init(context);
       fToast.showToast(
         child: ToastWrapper(
           icon: c.isBookmarked.value ? Icons.delete_forever : Icons.check,
@@ -337,13 +339,13 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
       );
     }
 
-    c.isBookmarked.value = !c.isBookmarked.value;
-
-    if (c.isBookmarked.value) {
+    if (!c.isBookmarked.value) {
       await (await Bookmark.getInstance()).bookmark(data.queryResult.id());
     } else {
       await (await Bookmark.getInstance()).unbookmark(data.queryResult.id());
     }
+
+    c.isBookmarked.value = !c.isBookmarked.value;
 
     if (!c.isBookmarked.value) {
       if (!Settings.simpleItemWidgetLoadingIcon) {
@@ -576,7 +578,7 @@ class _DetailWidget extends StatelessWidget {
         .toList();
 
     return Wrap(
-      spacing: 2.0,
+      spacing: 3.0,
       runSpacing: -10.0,
       children:
           tags.map((x) => TagChip(group: x.item1, name: x.item2)).toList(),
@@ -594,6 +596,7 @@ class TagChip extends StatelessWidget {
   String normalize(String tag) {
     if (tag == 'groups') return 'group';
     if (tag == 'artists') return 'artist';
+    if (tag == 'tags') return 'tag';
     return tag;
   }
 
@@ -613,16 +616,19 @@ class TagChip extends StatelessWidget {
       color = Colors.blue;
     }
 
+    var mustHasMorePad = true;
     Widget avatar = Text(group[0].toUpperCase(),
         style: const TextStyle(color: Colors.white));
 
     if (group == 'female') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderFemale,
         size: 18.0,
         color: Colors.white,
       );
     } else if (group == 'male') {
+      mustHasMorePad = false;
       avatar = const Icon(
         MdiIcons.genderMale,
         size: 18.0,
@@ -633,34 +639,65 @@ class TagChip extends StatelessWidget {
     final fc = GestureDetector(
       child: RawChip(
         labelPadding: const EdgeInsets.all(0.0),
-        avatar: CircleAvatar(
-          // backgroundColor: Colors.grey.shade600,
-          backgroundColor: color,
-          child: avatar,
-        ),
-        label: Text(
-          ' $tagDisplayed',
-          style: const TextStyle(
-            color: Colors.white,
-          ),
+        label: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  left: 2.0 + (mustHasMorePad ? 4.0 : 0),
+                  right: (mustHasMorePad ? 4.0 : 0)),
+              child: avatar,
+            ),
+            Text(
+              ' $tagDisplayed ',
+              style: const TextStyle(
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         backgroundColor: color,
         elevation: 6.0,
         // shadowColor: Colors.grey[60],
         padding: const EdgeInsets.all(6.0),
       ),
+      onTap: () async {
+        final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
+
+        CupertinoScaffold? cached;
+        if (ModalBottomSheetContext.up() == 0) {
+          await CupertinoScaffold.showCupertinoModalBottomSheet(
+            context: context,
+            builder: (context) {
+              cached ??=
+                  CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag));
+              return cached!;
+            },
+          );
+        } else {
+          await showCupertinoModalBottomSheet(
+            context: context,
+            builder: (context) {
+              cached ??=
+                  CupertinoScaffold(body: SearchPage(searchKeyWord: targetTag));
+              return cached!;
+            },
+          );
+        }
+
+        ModalBottomSheetContext.down();
+      },
       onLongPress: () async {
-        if (!Settings.excludeTags
-            .contains('${normalize(group)}:${name.replaceAll(' ', '_')}')) {
-          final yn = await showYesNoDialog(context, '이 태그를 제외태그에 추가할까요?');
+        final targetTag = '${normalize(group)}:${name.replaceAll(' ', '_')}';
+        if (!Settings.excludeTags.contains(targetTag)) {
+          final yn =
+              await showYesNoDialog(context, '$targetTag 태그를 제외태그에 추가할까요?');
           if (yn) {
-            Settings.excludeTags
-                .add('${normalize(group)}:${name.replaceAll(' ', '_')}');
+            Settings.excludeTags.add(targetTag);
             await Settings.setExcludeTags(Settings.excludeTags.join(' '));
             await showOkDialog(context, '제외태그에 성공적으로 추가했습니다!');
           }
         } else {
-          await showOkDialog(context, '이미 제외태그에 추가된 항목입니다!');
+          await showOkDialog(context, '$targetTag 태그는 이미 제외태그에 추가된 항목입니다!');
         }
       },
     );
@@ -669,5 +706,43 @@ class TagChip extends StatelessWidget {
       height: 42,
       child: FittedBox(child: fc),
     );
+  }
+}
+
+class ModalInsideModal extends StatelessWidget {
+  final bool reverse;
+
+  const ModalInsideModal({Key? key, this.reverse = false}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Material(
+            child: Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: ListView(
+          reverse: reverse,
+          shrinkWrap: true,
+          controller: ModalScrollController.of(context),
+          physics: ClampingScrollPhysics(),
+          children: ListTile.divideTiles(
+              context: context,
+              tiles: List.generate(
+                100,
+                (index) => ListTile(
+                    title: Text('Item $index'),
+                    onTap: () => showCupertinoModalBottomSheet(
+                          expand: true,
+                          isDismissible: false,
+                          context: context,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) =>
+                              ModalInsideModal(reverse: reverse),
+                        )),
+              )).toList(),
+        ),
+      ),
+    )));
   }
 }

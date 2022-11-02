@@ -18,6 +18,7 @@ import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/script/script_webview.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/update/update_manager.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/toast.dart';
@@ -40,6 +41,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
     WidgetsBinding.instance.addObserver(this);
     fToast = FToast();
     fToast.init(context);
+
+    Future.delayed(const Duration(milliseconds: 200))
+        .then((value) => UpdateManager.updateCheck(context));
   }
 
   bool _alreadyLocked = false;

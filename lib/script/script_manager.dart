@@ -23,8 +23,12 @@ class ScriptManager {
   static late DateTime _latestUpdate;
 
   static Future<void> init() async {
-    _scriptCache = (await http.get(_scriptUrl)).body;
-    _v4Cache = (await http.get(_scriptV4)).body;
+    try {
+      _scriptCache = (await http.get(_scriptUrl)).body;
+    } catch (e) {}
+    try {
+      _v4Cache = (await http.get(_scriptV4)).body;
+    } catch (e) {}
     _latestUpdate = DateTime.now();
     _initRuntime();
   }

@@ -300,9 +300,9 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
         final height = MediaQuery.of(context).size.height;
 
         final search = await HentaiManager.idSearch(c.articleId.toString());
-        if (search.item1.length != 1) return;
+        if (search.results.length != 1) return;
 
-        final qr = search.item1[0];
+        final qr = search.results.first;
 
         if (!ProviderManager.isExists(qr.id())) {
           await HentaiManager.getImageProvider(qr).then((value) async {
