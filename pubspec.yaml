@@ -65,7 +65,7 @@ dependencies:
     git: https://github.com/violet-dev/ext_storage
   extended_image: ^6.2.0
   ffi: ^1.1.2
-  file_picker: ^4.3.1
+  # file_picker: ^4.3.1
   firebase_core: ^1.17.0
   firebase_analytics: ^9.1.8
   firebase_crashlytics: ^2.8.0
@@ -73,10 +73,9 @@ dependencies:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^0.6.0
-  flutter_downloader: ^1.8.0 # @dependent: android
   flutter_heatmap_calendar: ^1.0.5
   flutter_image_compress: ^1.1.0
-  flutter_inappwebview: ^5.4.3+7
+  flutter_inappwebview: ^5.7.0
   flutter_markdown:
   flutter_mobx:
   flutter_reorderable_list:
@@ -181,10 +180,6 @@ flutter:
 
     - assets/icons/pixiv.ico
 
-    - assets/p7zip/arm64-v8a/lib7zr.so # @dependent: android
-    - assets/p7zip/armeabi-v7a/lib7zr.so # @dependent: android
-    - assets/p7zip/x86/lib7zr.so # @dependent: android
-    - assets/p7zip/x86_64/lib7zr.so # @dependent: android
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

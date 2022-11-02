@@ -9,7 +9,7 @@ import 'package:collection/collection.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';
 import 'package:flutter/cupertino.dart';
@@ -1906,64 +1906,6 @@ class _SettingsPageState extends State<SettingsPage>
               },
             ),
           _buildDivider(),
-          ListTile(
-            leading: Icon(MdiIcons.import, color: Settings.majorColor),
-            title: Text(Translations.of(context).trans('importingbookmark')),
-            trailing: const Icon(Icons.keyboard_arrow_right),
-            onTap: () async {
-              if (!await Permission.storage.isGranted) {
-                if (await Permission.storage.request() ==
-                    PermissionStatus.denied) {
-                  flutterToast.showToast(
-                    child: ToastWrapper(
-                      isCheck: false,
-                      msg: Translations.of(context).trans('noauth'),
-                    ),
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: const Duration(seconds: 4),
-                  );
-                  return;
-                }
-              }
-
-              final filePickerResult = await FilePicker.platform.pickFiles(
-                type: FileType.any,
-              );
-              final pickedFilePath = filePickerResult?.files.singleOrNull?.path;
-
-              if (pickedFilePath == null) {
-                flutterToast.showToast(
-                  child: ToastWrapper(
-                    isCheck: false,
-                    msg: Translations.of(context).trans('noselectedb'),
-                  ),
-                  gravity: ToastGravity.BOTTOM,
-                  toastDuration: const Duration(seconds: 4),
-                );
-
-                return;
-              }
-
-              final pickedFile = File(pickedFilePath);
-
-              final db = Platform.isIOS
-                  ? await getApplicationSupportDirectory()
-                  : (await getExternalStorageDirectory())!;
-
-              await pickedFile.copy('${db.path}/user.db');
-
-              await Bookmark.getInstance();
-
-              flutterToast.showToast(
-                child: ToastWrapper(
-                  isCheck: true,
-                  msg: Translations.of(context).trans('importbookmark'),
-                ),
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: const Duration(seconds: 4),
-              );
-            },
-          ),
           _buildDivider(),
           ListTile(
             leading: Icon(

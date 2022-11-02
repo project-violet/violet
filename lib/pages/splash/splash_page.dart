@@ -8,7 +8,7 @@ import 'package:android_intent_plus/android_intent.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -258,7 +258,7 @@ class _SplashPageState extends State<SplashPage> {
           }
         } catch (e, st) {
           // If an error occurs, stops synchronization immediately.
-          FirebaseCrashlytics.instance.recordError(e, st);
+          // FirebaseCrashlytics.instance.recordError(e, st);
           Logger.error('[Splash-Navigation] E: $e\n'
               '$st');
         }
@@ -698,22 +698,24 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<String> getFile() async {
-    var filename = (await FilePicker.platform.pickFiles(
-      type: FileType.any,
-    ))!
-        .files
-        .single
-        .path;
+    // var filename = (await FilePicker.platform.pickFiles(
+    //   type: FileType.any,
+    // ))!
+    //     .files
+    //     .single
+    //     .path;
 
-    if (filename == null) {
-      await showOkDialog(
-          context, Translations.of(context).trans('dbalreadyerr'));
-      return '';
-    }
+    // if (filename == null) {
+    //   await showOkDialog(
+    //       context, Translations.of(context).trans('dbalreadyerr'));
+    //   return '';
+    // }
 
-    File file;
-    file = File(filename);
+    // File file;
+    // file = File(filename);
 
-    return file.path;
+    return '';
+
+    // return file.path;
   }
 }

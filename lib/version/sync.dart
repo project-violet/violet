@@ -232,7 +232,7 @@ class SyncManager {
       // If an error occurs, stops synchronization immediately.
       Logger.error('[Sync-chunk] E: $e\n'
           '$st');
-      FirebaseCrashlytics.instance.recordError(e, st);
+      // FirebaseCrashlytics.instance.recordError(e, st);
     }
   }
 
