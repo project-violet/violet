@@ -31,23 +31,18 @@ import 'package:violet/settings/settings.dart';
 import 'package:wakelock/wakelock.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
 
-  FlareCache.doesPrune = false;
+    FlareCache.doesPrune = false;
 
-  if (Platform.isAndroid || Platform.isIOS) {
-    FlutterError.onError = recordFlutterError;
-    await initFirebase();
-  } else {
     sqfliteFfiInit();
     await getUserId();
-  }
 
-  await Settings.initFirst();
-  await warmupFlare();
-  await Wakelock.enable();
+    await Settings.initFirst();
+    await warmupFlare();
+    await Wakelock.enable();
 
-  runZonedGuarded<Future<void>>(() async {
     runApp(const MyApp());
   }, (exception, stack) async {
     Logger.error('[async-error] E: $exception\n$stack');

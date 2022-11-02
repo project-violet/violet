@@ -107,8 +107,10 @@ class ActLogger {
 
   static Future<void> init() async {
     late Directory dir;
-
-    if (Platform.isAndroid || Platform.isIOS) {
+    
+    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+      dir = File('act-log.txt').parent;
+    } else if (Platform.isAndroid || Platform.isIOS) {
       dir = await getApplicationDocumentsDirectory();
     } else {
       dir = File(Platform.resolvedExecutable).parent;
@@ -119,6 +121,7 @@ class ActLogger {
     if (!await logFile.exists()) {
       await logFile.create();
     }
+
     session = sha1.convert(utf8.encode(DateTime.now().toString())).toString();
     await log(ActLogEvent(type: ActLogType.appStart));
 

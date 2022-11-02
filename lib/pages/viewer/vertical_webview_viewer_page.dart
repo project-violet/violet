@@ -30,7 +30,16 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
   }
 
   loadBody() async {
-    var body = 'Hi';
+    var body = '''
+    <style> 
+      img {
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        display: block;
+      }
+    </style>
+    ''';
     for (var i = 0; i < c.provider.uris.length; i++) {
       body += '<img src="${await c.provider.provider!.getImageUrl(i)}"/>\n';
     }

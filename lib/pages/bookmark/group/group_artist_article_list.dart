@@ -40,7 +40,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
     return FutureBuilder(
       future:
           Future.delayed(const Duration(milliseconds: 1)).then((value) async {
-        var artists = (await (await Bookmark.getInstance()).getArtist())
+        final artists = (await (await Bookmark.getInstance()).getArtist())
             .where((element) => element.group() == widget.groupId)
             .toList()
             .reversed
@@ -48,7 +48,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
 
         if (artists.isEmpty) return <QueryResult>[];
 
-        var queryString = HitomiManager.translate2query(artists
+        final queryString = HitomiManager.translate2query(artists
             .map((e) => '${[
                   'artist',
                   'group',
@@ -57,7 +57,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
                   'character'
                 ][e.type()]}:${e.artist().toLowerCase().replaceAll(' ', '_')} ${Settings.includeTags}')
             .join(' or '));
-        print(queryString);
+
         final qm = QueryManager.queryPagination(queryString);
         qm.itemsPerPage = 100;
         return await qm.next();
@@ -139,86 +139,7 @@ class _GroupArtistArticleListState extends State<GroupArtistArticleList>
             ),
           ),
         );
-        //       ListView.builder(
-        // itemCount: .length,
-        // itemBuilder: (context, index) {
-        //   var xx = snapshot.data[index];
-        //   return SizedBox(
-        //     height: 159,
-        //     child: Padding(
-        //       padding: EdgeInsets.fromLTRB(12, 8, 12, 0),
-        //       child: FutureBuilder(
-        //         // future: QueryManager.query(
-        //         //     "SELECT * FROM HitomiColumnModel WHERE Id=${snapshot.data[index].articleId()}"),
-        //         future:
-        //             HentaiManager.idSearch(snapshot.data[index].articleId()),
-        //         builder: (context,
-        //             AsyncSnapshot<Tuple2<List<QueryResult>, int>> snapshot) {
-        //           return Column(
-        //             crossAxisAlignment: CrossAxisAlignment.stretch,
-        //             children: <Widget>[
-        //               snapshot.hasData
-        //                   ? Provider<ArticleListItem>.value(
-        //                       value: ArticleListItem.fromArticleListItem(
-        //                         queryResult: snapshot.data.item1[0],
-        //                         addBottomPadding: false,
-        //                         width: (width - 16),
-        //                         thumbnailTag: Uuid().v4(),
-        //                       ),
-        //                       child: ArticleListItemVerySimpleWidget(),
-        //                     )
-        //                   : Container();
-        // return Column(
-        //   crossAxisAlignment: CrossAxisAlignment.stretch,
-        //   children: <Widget>[
-        //     snapshot.hasData
-        //         ? Provider<ArticleListItem>.value(
-        //             value: ArticleListItem.fromArticleListItem(
-        //               queryResult: snapshot.data.item1[0],
-        //               showDetail: true,
-        //               addBottomPadding: false,
-        //               width: (width - 16),
-        //               thumbnailTag: Uuid().v4(),
-        //             ),
-        //             child: ArticleListItemVerySimpleWidget(),
-        //           )
-        //         : Container(),
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //       // crossAxisAlignment: CrossAxisAlignment,
-        //       children: <Widget>[
-        //         // Flexible(
-        //         //     child: Text(
-        //         //         ' ' +
-        //         //             unescape.convert(snapshot.hasData
-        //         //                 ? snapshot.data.results[0].title()
-        //         //                 : ''),
-        //         //         style: TextStyle(fontSize: 17),
-        //         //         overflow: TextOverflow.ellipsis)),
-        //         Flexible(
-        //           // child: Text(xx.datetimeStart().split(' ')[0]),
-        //           child: Text(''),
-        //         ),
-        //         Text(
-        //             xx.lastPage().toString() +
-        //                 ' ${Translations.of(context).trans('readpage')} ',
-        //             style: TextStyle(
-        //               color: Settings.themeWhat
-        //                   ? Colors.grey.shade300
-        //                   : Colors.grey.shade700,
-        //             )),
-        //       ],
-        //     ),
-        //   ],
-        // );
-        //       },
-        //     ),
-        //   ),
-        // );
-        // return ListTile() Text(snapshot.data[index].articleId().toString());
       },
-      //   );
-      // },
     );
   }
 
