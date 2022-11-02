@@ -21,8 +21,14 @@ void main() {
 
     test('Hitomi Query Auto Complete Fuzzy', () async {
       final result0 = await HitomiManager.queryAutoCompleteFuzzy('michoking');
+      final result1 =
+          await HitomiManager.queryAutoCompleteFuzzy('artist:michoking');
+      final result2 =
+          await HitomiManager.queryAutoCompleteFuzzy('female:bigbreakfast');
 
       expect(result0[0].item1.toString(), 'artist:michiking');
+      expect(result1[0].item1.toString(), 'artist:michiking');
+      expect(result2[0].item1.toString(), 'tag:female:big breasts');
     });
 
     test('Hitomi Query To Sql', () {
