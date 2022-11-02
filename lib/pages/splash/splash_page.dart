@@ -191,6 +191,10 @@ class _SplashPageState extends State<SplashPage> {
       showMessage = true;
     });
 
+    _changeMessage('init logger...');
+    await Logger.init();
+    _changeMessage('init act-logger...');
+    await ActLogger.init();
     _changeMessage('init settings...');
     await Settings.init();
     _changeMessage('loading bookmark...');
@@ -200,10 +204,6 @@ class _SplashPageState extends State<SplashPage> {
     await Variables.init();
     _changeMessage('loading index...');
     await HitomiIndexs.init();
-    _changeMessage('init logger...');
-    await Logger.init();
-    _changeMessage('init act-logger...');
-    await ActLogger.init();
     _changeMessage('loading translate...');
     await TagTranslate.init();
     _changeMessage('init population...');

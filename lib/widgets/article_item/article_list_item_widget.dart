@@ -339,13 +339,13 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
       );
     }
 
-    c.isBookmarked.value = !c.isBookmarked.value;
-
-    if (c.isBookmarked.value) {
+    if (!c.isBookmarked.value) {
       await (await Bookmark.getInstance()).bookmark(data.queryResult.id());
     } else {
       await (await Bookmark.getInstance()).unbookmark(data.queryResult.id());
     }
+
+    c.isBookmarked.value = !c.isBookmarked.value;
 
     if (!c.isBookmarked.value) {
       if (!Settings.simpleItemWidgetLoadingIcon) {

@@ -11,6 +11,6 @@ void main() {
   });
 
   test('Test Bookmark', () async {
-    print(await VioletServer.resotreBookmark(''));
+    print(await VioletServer.restoreBookmark(''));
   });
 }
