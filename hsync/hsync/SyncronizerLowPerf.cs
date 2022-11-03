@@ -79,7 +79,7 @@ namespace hsync
         public void SyncHitomi()
         {
             var gburls = Enumerable.Range(useManualRange ? starts : latestId - hitomiSyncRange, useManualRange ? ends - starts + 1 : hitomiSyncRange * 2)
-                .Where(x => !existsHitomi.Contains(x)).Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
+                .Select(x => $"https://ltn.hitomi.la/galleryblock/{x}.html").ToList();
             var dcnt = 0;
             var ecnt = 0;
             Console.Write("Running galleryblock tester... ");
