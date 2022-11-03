@@ -414,6 +414,7 @@ namespace hsync
                     var misc = ed.Descripts != null ? ed.Descripts.ContainsKey("misc") ? ed.Descripts["misc"] : null : null;
                     var language = ed.Descripts != null ? ed.Descripts.ContainsKey("language") ? ed.Descripts["language"] : null : null;
                     var group = ed.Descripts != null ? ed.Descripts.ContainsKey("group") ? ed.Descripts["group"] : null : null;
+                    var other = ed.Descripts != null ? ed.Descripts.ContainsKey("other") ? ed.Descripts["other"] : null : null;
 
                     var lang = "n/a";
                     if (language != null && language.Count != 0)
@@ -452,6 +453,18 @@ namespace hsync
                     if (misc != null)
                     {
                         foreach (var tag in misc)
+                        {
+                            var tt = tag;
+                            if (tt == "lolicon")
+                                tt = "loli";
+                            else if (tt == "shotacon")
+                                tt = "shota";
+                            tags.Add(tt);
+                        }
+                    }
+                    if (other != null)
+                    {
+                        foreach (var tag in other)
                         {
                             var tt = tag;
                             if (tt == "lolicon")
