@@ -183,9 +183,6 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
   }
 
   _animateScale(double scale) {
-    // _shouldReloadCachedBuildWidget = true;
-    // Future.delayed(const Duration(milliseconds: 500))
-    //     .then((value) => _shouldReloadCachedBuildWidget = false);
     c.scale.value = scale;
   }
 

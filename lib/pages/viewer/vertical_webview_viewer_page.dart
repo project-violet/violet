@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
@@ -26,7 +27,7 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
     super.initState();
     c = Get.find(tag: widget.getxId);
 
-    loadBody();
+    // loadBody();
   }
 
   loadBody() async {
@@ -59,11 +60,19 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
               useShouldOverrideUrlLoading: true,
             ),
           ),
+          initialFile: 'assets/webview/index.html',
           onWebViewCreated: (controller) {
             webViewController = controller;
 
-            webViewController.loadData(
-                data: body, baseUrl: Uri.parse('https://hitomi.la/'));
+            // webViewController.loadData(
+            //     data: body, baseUrl: Uri.parse('https://hitomi.la/'));
+
+            // webViewController.loadFile(
+            //     assetFilePath: 'assets/webview/index.html');
+
+            // webViewController.loadUrl(
+            //     urlRequest: URLRequest(
+            //         url: Uri(scheme: 'file', path: rootBundle.load(key))));
           },
           onLoadError: (controller, url, code, message) {
             print(message);
