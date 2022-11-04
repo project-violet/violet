@@ -5,4 +5,6 @@
 
 rmdir ..\assets\webview /S /Q
 mkdir ..\assets\webview
-xcopy build ..\assets\webview /E/H
+powershell ./replace.ps1
+move build\index1.html build\index.html
+xcopy build ..\assets\webview /E
