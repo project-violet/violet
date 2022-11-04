@@ -38,8 +38,14 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
   initBeforeScript() {
     var uris = <String>[];
 
-    for (var i = 0; i < c.provider.uris.length; i++) {
-      uris.add('"${c.provider.provider!.getImageUrlSync(i)!}"');
+    if (c.provider.useProvider) {
+      for (var i = 0; i < c.provider.uris.length; i++) {
+        uris.add('"${c.provider.provider!.getImageUrlSync(i)!}"');
+      }
+    } else if (c.provider.useFileSystem) {
+      for (var i = 0; i < c.provider.uris.length; i++) {
+        uris.add('"file:///${c.provider.uris[i]}"');
+      }
     }
 
     beforeScript = '''Object.defineProperty(window, "imageset", {
