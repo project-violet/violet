@@ -46,6 +46,12 @@ class HitomiImageProvider extends VioletImageProvider {
   }
 
   @override
+  bool canGetImageUrlSync() => true;
+
+  @override
+  String getImageUrlSync(int page) => urls.item2[page];
+
+  @override
   int length() {
     return urls.item1.length;
   }

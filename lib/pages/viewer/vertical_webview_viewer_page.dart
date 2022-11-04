@@ -22,32 +22,28 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
   late final ViewerController c;
 
   late InAppWebViewController webViewController;
-  late String body;
+  late String beforeScript;
 
   @override
   void initState() {
     super.initState();
     c = Get.find(tag: widget.getxId);
-
-    // loadBody();
+    initBeforeScript();
   }
 
-  loadBody() async {
-    var body = '''
-    <style> 
-      img {
-        width: 100%;
-        padding: 0;
-        margin: 0;
-        display: block;
-      }
-    </style>
-    ''';
+  initBeforeScript() {
+    var uris = <String>[];
+
     for (var i = 0; i < c.provider.uris.length; i++) {
-      body += '<img src="${await c.provider.provider!.getImageUrl(i)}"/>\n';
+      uris.add('"${c.provider.provider!.getImageUrlSync(i)!}"');
     }
-    print(body);
-    this.body = body;
+
+    beforeScript = '''Object.defineProperty(window, "imageset", {
+                  value: [${uris.join(',')}],
+                  writable: false,
+                });''';
+
+    print(beforeScript);
   }
 
   @override
@@ -64,12 +60,7 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
           ),
           initialUserScripts: UnmodifiableListView([
             UserScript(
-              source: '''
-                Object.defineProperty(window, "imageset", {
-                  value: ["sex"],
-                  writable: false,
-                });
-                ''',
+              source: beforeScript,
               injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
             )
           ]),
@@ -89,16 +80,6 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
           },
           onConsoleMessage: (controller, consoleMessage) {
             print(consoleMessage);
-          },
-          onLoadStart: (controller, url) async {
-//             var x = await controller.evaluateJavascript(source: '''
-// Object.defineProperty(window, "imageset", {
-//   value: ["sex"],
-//   writable: false,
-// });
-// ''');
-            await controller.evaluateJavascript(
-                source: 'console.log(document.querySelector("*"))');
           },
           onLoadError: (controller, url, code, message) {
             print(message);
