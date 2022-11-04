@@ -62,3 +62,4 @@ emulator.bat
 img/*
 test/db
 test/*.7z
+test/rawdata-korean

@@ -34,6 +34,12 @@ class HisokiImageProvider extends VioletImageProvider {
   }
 
   @override
+  bool canGetImageUrlSync() => true;
+
+  @override
+  String? getImageUrlSync(int page) => infos[page].item1;
+
+  @override
   int length() {
     return infos.length;
   }

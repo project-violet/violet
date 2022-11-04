@@ -7,6 +7,8 @@ abstract class VioletImageProvider {
   Future<String> getThumbnailUrl();
   Future<List<String>> getSmallImagesUrl();
   Future<String> getImageUrl(int page);
+  bool canGetImageUrlSync();
+  String? getImageUrlSync(int page);
   Future<Map<String, String>> getHeader(int page);
   Future<double> getEstimatedImageHeight(int page, double baseWidth);
   Future<double> getOriginalImageHeight(int page);
