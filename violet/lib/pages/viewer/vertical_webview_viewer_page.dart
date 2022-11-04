@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -60,6 +62,17 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
               useShouldOverrideUrlLoading: true,
             ),
           ),
+          initialUserScripts: UnmodifiableListView([
+            UserScript(
+              source: '''
+                Object.defineProperty(window, "imageset", {
+                  value: ["sex"],
+                  writable: false,
+                });
+                ''',
+              injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+            )
+          ]),
           initialFile: 'assets/webview/index.html',
           onWebViewCreated: (controller) {
             webViewController = controller;
@@ -73,6 +86,19 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
             // webViewController.loadUrl(
             //     urlRequest: URLRequest(
             //         url: Uri(scheme: 'file', path: rootBundle.load(key))));
+          },
+          onConsoleMessage: (controller, consoleMessage) {
+            print(consoleMessage);
+          },
+          onLoadStart: (controller, url) async {
+//             var x = await controller.evaluateJavascript(source: '''
+// Object.defineProperty(window, "imageset", {
+//   value: ["sex"],
+//   writable: false,
+// });
+// ''');
+            await controller.evaluateJavascript(
+                source: 'console.log(document.querySelector("*"))');
           },
           onLoadError: (controller, url, code, message) {
             print(message);
