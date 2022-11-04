@@ -1,9 +1,11 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
+import 'package:violet/main.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 
 class VerticalWebviewViewerPage extends StatefulWidget {
@@ -64,19 +66,23 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
               injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
             )
           ]),
-          initialFile: 'assets/webview/index.html',
-          onWebViewCreated: (controller) {
+          onWebViewCreated: (controller) async {
             webViewController = controller;
 
-            // webViewController.loadData(
-            //     data: body, baseUrl: Uri.parse('https://hitomi.la/'));
+            webViewController.loadData(
+                data: await rootBundle.loadString('assets/webview/index.html'),
+                baseUrl: Uri.parse('https://hitomi.la/'));
+          },
+          onLoadStop: (controller, url) async {
+            final manifest = jsonDecode(await rootBundle
+                .loadString('assets/webview/asset-manifest.json', cache: true));
+            final css = manifest['files']['main.css'];
+            final js = manifest['files']['main.js'];
 
-            // webViewController.loadFile(
-            //     assetFilePath: 'assets/webview/index.html');
-
-            // webViewController.loadUrl(
-            //     urlRequest: URLRequest(
-            //         url: Uri(scheme: 'file', path: rootBundle.load(key))));
+            controller.injectCSSFileFromAsset(
+                assetFilePath: 'assets/webview$css');
+            controller.injectJavascriptFileFromAsset(
+                assetFilePath: 'assets/webview$js');
           },
           onConsoleMessage: (controller, consoleMessage) {
             print(consoleMessage);
