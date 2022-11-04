@@ -1,3 +1,6 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+
 import 'dart:collection';
 import 'dart:convert';
 
@@ -5,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
-import 'package:violet/main.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
 
 class VerticalWebviewViewerPage extends StatefulWidget {
