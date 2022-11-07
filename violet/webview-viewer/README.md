@@ -2,6 +2,21 @@
 
 ![image alt <](img/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.jpg)
 
+## How to install
+
+### GNU/Linux
+
+```sh
+npm install
+snap install powershell --classic
+```
+
+### Windows
+
+```sh
+npm install
+```
+
 ## How to use
 
 ```ts
