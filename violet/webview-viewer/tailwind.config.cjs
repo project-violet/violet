@@ -2,6 +2,7 @@
 module.exports = {
   jit: true,
   content: [
+    "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
