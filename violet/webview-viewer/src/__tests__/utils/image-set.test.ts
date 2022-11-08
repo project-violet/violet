@@ -1,3 +1,4 @@
+import { test, expect } from 'vitest';
 import { IImageSet } from '../../interfaces/image-set';
 import { getImageSet, hasImageSet } from '../../utils/image-set';
 
