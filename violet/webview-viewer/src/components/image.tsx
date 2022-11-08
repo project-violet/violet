@@ -1,16 +1,18 @@
-import { useRef, useState } from 'react';
-import { IImageProps } from '../interfaces/image';
-import { MyImage } from '../styles';
+import { IImageProps, IOnImageError } from '../interfaces/image';
 
 export function Image({ src }: IImageProps) {
-    const [minHeight, setMinHeight] = useState(0);
-    const imgRef = useRef<HTMLImageElement>(null);
-
     return (
-        <MyImage
-            ref={imgRef}
+        <img
+            className="h-[15rem]"
+            alt="Violet Sample Image"
             src={src}
-            style={{ minHeight: `${minHeight}px` }}
+            onError={({ currentTarget }: IOnImageError) => {
+                // https://stackoverflow.com/a/48222599/11853111
+
+                currentTarget.onerror = null;
+                currentTarget.src =
+                    '../../img/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.jpg';
+            }}
         />
     );
 }
