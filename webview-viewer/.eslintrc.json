@@ -84,22 +84,5 @@
         "react/jsx-uses-react": "off",
         "react/react-in-jsx-scope": "off",
         "jsx-a11y/img-redundant-alt": "off"
-    },
-    "overrides": [
-        {
-            "files": [
-                "**/*.test.js",
-                "**/*.test.ts"
-            ],
-            "env": {
-                "jest/globals": true
-            },
-            "plugins": [
-                "jest"
-            ],
-            "extends": [
-                "plugin:jest/recommended"
-            ]
-        }
-    ]
+    }
 }
