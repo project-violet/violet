@@ -34,3 +34,4 @@ public/test-article
 !.yarn/versions
 
 .eslintcache
+.editorconfig
