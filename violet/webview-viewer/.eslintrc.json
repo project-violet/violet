@@ -82,7 +82,8 @@
         "import/no-mutable-exports": "off",
         "vars-on-top": "off",
         "react/jsx-uses-react": "off",
-        "react/react-in-jsx-scope": "off"
+        "react/react-in-jsx-scope": "off",
+        "jsx-a11y/img-redundant-alt": "off"
     },
     "overrides": [
         {
