@@ -68,6 +68,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier", "npm:2.7.1"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:18.2.0"],\
+            ["react-is", "npm:18.2.0"],\
             ["react-router-dom", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:6.4.3"],\
             ["styled-components", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:5.3.6"],\
             ["tailwindcss", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:3.2.2"],\
@@ -6945,7 +6946,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["hoist-non-react-statics", "npm:3.3.2"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:18.2.0"],\
-            ["react-is", null],\
+            ["react-is", "npm:18.2.0"],\
             ["shallowequal", "npm:1.1.0"],\
             ["supports-color", "npm:5.5.0"]\
           ],\
@@ -7477,6 +7478,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["prettier", "npm:2.7.1"],\
             ["react", "npm:18.2.0"],\
             ["react-dom", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:18.2.0"],\
+            ["react-is", "npm:18.2.0"],\
             ["react-router-dom", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:6.4.3"],\
             ["styled-components", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:5.3.6"],\
             ["tailwindcss", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:3.2.2"],\
