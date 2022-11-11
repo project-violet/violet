@@ -1,12 +1,6 @@
 import { IImageProps, IOnImageError } from '../interfaces/image';
 import styled from 'styled-components';
-
-const MyImage = styled.img`
-    width: 100%;
-    padding: 0;
-    margin: 0;
-    display: block;
-`;
+import { MyImage } from '../styles';
 
 export function Image({ src }: IImageProps) {
     return (
