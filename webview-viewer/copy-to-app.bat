@@ -3,9 +3,7 @@
 
 :: copy build webview to assets subdirectory
 
-rmdir build/test-article /S /Q
 rmdir ..\assets\webview /S /Q
 mkdir ..\assets\webview
-powershell ./replace.ps1
-move build\index1.html build\index.html
+
 xcopy build ..\assets\webview /E
