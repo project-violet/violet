@@ -220,7 +220,7 @@ namespace hsync
             {
                 try
                 {
-                    var url = $"https://exhentai.org/?next={next}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&&f_cats=0&f_sname=on&f_stags=on&f_sh=on&advsearch=1&f_srdd=2&f_sname=on&f_stags=on&f_sdesc=on";
+                    var url = $"https://exhentai.org/?next={next}&f_doujinshi=on&f_manga=on&f_artistcg=on&f_gamecg=on&&f_cats=0&f_sname=on&f_stags=on&advsearch=1&f_srdd=2&f_sname=on&f_stags=on&f_sdesc=on";
                     var wc = new WebClient();
                     wc.Encoding = Encoding.UTF8;
                     wc.Headers.Add(HttpRequestHeader.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
