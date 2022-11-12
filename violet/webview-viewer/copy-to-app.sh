@@ -4,10 +4,7 @@
 
 ## copy build webview to assets subdirectory
 
-rm -rf build/test-article
 rm -rf ../assets/webview
 mkdir ../assets/webview
 
-mv build/index1.html build/index.html
-
-cp -r build ../assets/webview
+cp -r build/* ../assets/webview
