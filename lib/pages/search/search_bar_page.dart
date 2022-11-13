@@ -238,12 +238,6 @@ class _SearchBarPageState extends State<SearchBarPage>
             search += ' random:${Random().nextDouble() + 1}';
           }
           Navigator.pop(context, search);
-          final scrollController = PrimaryScrollController.of(context);
-          scrollController?.animateTo(
-            0.0,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
         },
       ),
     );
