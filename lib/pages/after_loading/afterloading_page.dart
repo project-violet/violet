@@ -126,8 +126,10 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
           );
-          var controller = PrimaryScrollController.of(context);
-          controller?.jumpTo(0);
+          final scrollController = PrimaryScrollController.of(context);
+          scrollController?.animateTo(0.0,
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut);
         },
         items: <BottomNavigationBarItem>[
           if (!Settings.liteMode) buildItem(MdiIcons.home, 'main'),
