@@ -21,6 +21,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/update/update_manager.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/update_sync.dart';
+import 'package:violet/widgets/has_scroll.dart';
 import 'package:violet/widgets/toast.dart';
 
 class AfterLoadingPage extends StatefulWidget {
@@ -136,7 +137,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             curve: Curves.easeInOut,
           );
 
-          widgets[index].animateScrollOnTop();
+          (widgets[index] as HasScroll).animateScrollOnTop();
         },
         items: <BottomNavigationBarItem>[
           if (!Settings.liteMode) buildItem(MdiIcons.home, 'main'),
