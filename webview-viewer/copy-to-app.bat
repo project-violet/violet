@@ -5,4 +5,5 @@
 
 rmdir ..\assets\webview /S /Q
 mkdir ..\assets\webview
-xcopy build ..\assets\webview /E/H
+
+xcopy build ..\assets\webview /E

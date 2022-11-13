@@ -1,0 +1,22 @@
+{
+  "index.html": {
+    "file": "assets/index.22889ac3.js",
+    "src": "index.html",
+    "isEntry": true,
+    "dynamicImports": [
+      ".yarn/cache/web-vitals-npm-2.1.4-68bdd9ecb2-03d3f47dbf.zip/node_modules/web-vitals/dist/web-vitals.js"
+    ],
+    "css": [
+      "assets/index.6f3c7dc6.css"
+    ]
+  },
+  ".yarn/cache/web-vitals-npm-2.1.4-68bdd9ecb2-03d3f47dbf.zip/node_modules/web-vitals/dist/web-vitals.js": {
+    "file": "assets/web-vitals.aaf17167.js",
+    "src": ".yarn/cache/web-vitals-npm-2.1.4-68bdd9ecb2-03d3f47dbf.zip/node_modules/web-vitals/dist/web-vitals.js",
+    "isDynamicEntry": true
+  },
+  "index.css": {
+    "file": "assets/index.6f3c7dc6.css",
+    "src": "index.css"
+  }
+}

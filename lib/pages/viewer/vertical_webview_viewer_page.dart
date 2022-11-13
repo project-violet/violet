@@ -1,4 +1,11 @@
+// This source code is a part of Project Violet.
+// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+
+import 'dart:collection';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
@@ -19,32 +26,39 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
   late final ViewerController c;
 
   late InAppWebViewController webViewController;
-  late String body;
+  late String beforeScript;
 
   @override
   void initState() {
     super.initState();
     c = Get.find(tag: widget.getxId);
-
-    loadBody();
+    initBeforeScript();
   }
 
-  loadBody() async {
-    var body = '''
-    <style> 
-      img {
-        width: 100%;
-        padding: 0;
-        margin: 0;
-        display: block;
+  initBeforeScript() {
+    var uris = <String>[];
+
+    if (c.provider.useProvider) {
+      for (var i = 0; i < c.provider.uris.length; i++) {
+        uris.add('"${c.provider.provider!.getImageUrlSync(i)!}"');
       }
-    </style>
-    ''';
-    for (var i = 0; i < c.provider.uris.length; i++) {
-      body += '<img src="${await c.provider.provider!.getImageUrl(i)}"/>\n';
+    } else if (c.provider.useFileSystem) {
+      for (var i = 0; i < c.provider.uris.length; i++) {
+        print(c.provider.uris[i]);
+        if (c.provider.uris[i].startsWith('/')) {
+          uris.add('"file://${c.provider.uris[i]}"');
+        } else {
+          uris.add('"file:///${c.provider.uris[i]}"');
+        }
+      }
     }
-    print(body);
-    this.body = body;
+
+    beforeScript = '''Object.defineProperty(window, "imageset", {
+                  value: [${uris.join(',')}],
+                  writable: false,
+                });''';
+
+    print(beforeScript);
   }
 
   @override
@@ -59,11 +73,34 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
               useShouldOverrideUrlLoading: true,
             ),
           ),
-          onWebViewCreated: (controller) {
+          initialUserScripts: UnmodifiableListView([
+            UserScript(
+              source: beforeScript,
+              injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+            )
+          ]),
+          onWebViewCreated: (controller) async {
             webViewController = controller;
 
             webViewController.loadData(
-                data: body, baseUrl: Uri.parse('https://hitomi.la/'));
+                data: await rootBundle.loadString('assets/webview/index.html'),
+                baseUrl: Uri.parse('https://hitomi.la/'));
+          },
+          onLoadStop: (controller, url) async {
+            final manifest = jsonDecode(await rootBundle
+                .loadString('assets/webview/asset-manifest.json', cache: true));
+            final css =
+                '/${manifest['index.css']['file'].toString().split('/')[1]}';
+            final js =
+                '/${manifest['index.html']['file'].toString().split('/')[1]}';
+
+            controller.injectCSSFileFromAsset(
+                assetFilePath: 'assets/webview$css');
+            controller.injectJavascriptFileFromAsset(
+                assetFilePath: 'assets/webview$js');
+          },
+          onConsoleMessage: (controller, consoleMessage) {
+            print(consoleMessage);
           },
           onLoadError: (controller, url, code, message) {
             print(message);
