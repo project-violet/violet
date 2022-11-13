@@ -136,8 +136,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
           );
-
           (widgets[index] as HasScroll).animateScrollOnTop();
+
         },
         items: <BottomNavigationBarItem>[
           if (!Settings.liteMode) buildItem(MdiIcons.home, 'main'),
