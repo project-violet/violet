@@ -127,9 +127,11 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             curve: Curves.easeInOut,
           );
           final scrollController = PrimaryScrollController.of(context);
-          scrollController?.animateTo(0.0,
-              duration: const Duration(milliseconds: 200),
-              curve: Curves.easeOut);
+          scrollController?.animateTo(
+            0.0,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+          );
         },
         items: <BottomNavigationBarItem>[
           if (!Settings.liteMode) buildItem(MdiIcons.home, 'main'),
