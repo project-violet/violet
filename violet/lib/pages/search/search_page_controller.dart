@@ -31,7 +31,7 @@ class SearchPageController extends GetxController {
   FilterController filterController = FilterController(
       heroKey: 'searchtype${ModalBottomSheetContext.getCount()}');
 
-  final ScrollController scrollController = ScrollController();
+  late final ScrollController scrollController;
   Map<String, GlobalKey> itemKeys = <String, GlobalKey>{};
 
   final List<int> _scrollQueue = <int>[];
@@ -55,6 +55,8 @@ class SearchPageController extends GetxController {
   SearchPageController({required this.reloadForce});
 
   init(BuildContext context) {
+    scrollController =
+        PrimaryScrollController.of(context) ?? ScrollController();
     scrollController.addListener(scrollPositionListener);
 
     fToast.init(context);

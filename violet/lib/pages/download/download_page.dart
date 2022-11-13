@@ -61,7 +61,6 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   @override
   VoidCallback? get shouldReloadCallback => null;
 
-  final ScrollController _scroll = ScrollController();
   List<DownloadItemModel> items = [];
   Map<int, DownloadItemModel> itemsMap = <int, DownloadItemModel>{};
   List<DownloadItemModel> filterResult = [];
@@ -213,7 +212,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         child: CustomScrollView(
           // key: key,
           // cacheExtent: height * 100,
-          controller: _scroll,
+          controller: PrimaryScrollController.of(context) ?? ScrollController(),
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPersistentHeader(
