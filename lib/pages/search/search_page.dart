@@ -128,6 +128,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       _cachedPannel = null;
       _shouldReload = true;
       key = ObjectKey(const Uuid().v4());
+      widget.animateScrollOnTop();
     });
   }
 
