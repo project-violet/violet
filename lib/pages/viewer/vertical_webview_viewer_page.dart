@@ -44,7 +44,12 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
       }
     } else if (c.provider.useFileSystem) {
       for (var i = 0; i < c.provider.uris.length; i++) {
-        uris.add('"file:///${c.provider.uris[i]}"');
+        print(c.provider.uris[i]);
+        if (c.provider.uris[i].startsWith('/')) {
+          uris.add('"file://${c.provider.uris[i]}"');
+        } else {
+          uris.add('"file:///${c.provider.uris[i]}"');
+        }
       }
     }
 
