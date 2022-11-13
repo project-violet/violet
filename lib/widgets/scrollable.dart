@@ -1,9 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-abstract class ScrollableStatefulWidget extends StatefulWidget {
+mixin Scrollable {
   ScrollController scrollController = ScrollController();
-
-  ScrollableStatefulWidget({Key? key}) : super(key: key);
 
   void animateScrollOnTop() {
     scrollController.animateTo(
