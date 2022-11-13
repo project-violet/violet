@@ -44,11 +44,11 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
-import 'package:violet/widgets/scrollable_stateful_widget.dart';
+import 'package:violet/widgets/has_scroll.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
-class MainPage extends ScrollableStatefulWidget {
+class MainPage extends StatefulWidget with HasScroll {
   MainPage({Key? key}) : super(key: key);
 
   @override

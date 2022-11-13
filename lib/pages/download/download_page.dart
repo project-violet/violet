@@ -37,7 +37,7 @@ import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
-import 'package:violet/widgets/scrollable_stateful_widget.dart';
+import 'package:violet/widgets/has_scroll.dart';
 
 typedef StringCallback = Future Function(String);
 
@@ -48,7 +48,7 @@ class DownloadPageManager {
 }
 
 // This page must remain alive until the app is closed.
-class DownloadPage extends ScrollableStatefulWidget {
+class DownloadPage extends StatefulWidget with HasScroll {
   DownloadPage({Key? key}) : super(key: key);
 
   @override
@@ -76,6 +76,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
   @override
   void initState() {
     super.initState();
+    widget.scrollController = _scroll;
     fToast = FToast();
     fToast.init(context);
     refresh();

@@ -15,11 +15,11 @@ import 'package:violet/model/article_list_item.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
-import 'package:violet/widgets/scrollable_stateful_widget.dart';
+import 'package:violet/widgets/has_scroll.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 
-class HotPage extends ScrollableStatefulWidget {
+class HotPage extends StatefulWidget with HasScroll {
   HotPage({Key? key}) : super(key: key);
 
   @override

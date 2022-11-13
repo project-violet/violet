@@ -33,13 +33,13 @@ import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
-import 'package:violet/widgets/scrollable_stateful_widget.dart';
+import 'package:violet/widgets/has_scroll.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 
 bool blurred = false;
 
-class SearchPage extends ScrollableStatefulWidget {
+class SearchPage extends StatefulWidget with HasScroll {
   final String? searchKeyWord;
 
   SearchPage({Key? key, this.searchKeyWord}) : super(key: key);
@@ -72,6 +72,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     );
 
     c.init(context);
+    widget.scrollController = c.scrollController;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       doInitialSearch();

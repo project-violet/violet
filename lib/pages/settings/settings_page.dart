@@ -66,7 +66,7 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
-import 'package:violet/widgets/scrollable_stateful_widget.dart';
+import 'package:violet/widgets/has_scroll.dart';
 
 class ExCountry extends Country {
   String? language;
@@ -144,7 +144,7 @@ class ExCountry extends Country {
   }
 }
 
-class SettingsPage extends ScrollableStatefulWidget {
+class SettingsPage extends StatefulWidget with HasScroll {
   SettingsPage({Key? key}) : super(key: key);
 
   @override
@@ -193,6 +193,7 @@ class _SettingsPageState extends State<SettingsPage>
     }
 
     return SingleChildScrollView(
+      controller: widget.scrollController,
       padding: EdgeInsets.only(top: statusBarHeight),
       physics: const BouncingScrollPhysics(),
       child: Column(

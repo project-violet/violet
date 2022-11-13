@@ -16,11 +16,11 @@ import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
-import 'package:violet/widgets/scrollable_stateful_widget.dart';
+import 'package:violet/widgets/has_scroll.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
-class BookmarkPage extends ScrollableStatefulWidget {
+class BookmarkPage extends StatefulWidget with HasScroll {
   BookmarkPage({Key? key}) : super(key: key);
 
   @override
@@ -124,6 +124,8 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
 
     final scrollController =
         PrimaryScrollController.of(context) ?? ScrollController();
+
+    widget.scrollController = scrollController;
 
     final rows = _buildRowItems(snapshot.data!, reorder);
 
