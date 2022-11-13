@@ -91,6 +91,12 @@ class EHentaiImageProvider extends VioletImageProvider {
   }
 
   @override
+  bool canGetImageUrlSync() => false;
+
+  @override
+  String? getImageUrlSync(int page) => null;
+
+  @override
   int length() {
     return count;
   }

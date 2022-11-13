@@ -1,27 +1,15 @@
-import "./App.css";
-import styled from "styled-components";
+import './App.css';
+import { Image } from './components/image';
+import { getImageSet } from './utils/image-set';
 
-const MyImage = styled.img`
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  display: block;
-  min-width: 300px;
-`;
+export default function App() {
+    const images = getImageSet();
 
-function App() {
-  return (
-    <>
-      <div>
-        <MyImage src="/test-article/1.webp" />
-        <MyImage src="/test-article/2.webp" />
-        <MyImage src="/test-article/3.webp" />
-        <MyImage src="/test-article/4.webp" />
-        <MyImage src="/test-article/5.webp" />
-        <MyImage src="/test-article/6.webp" />
-      </div>
-    </>
-  );
+    return (
+        <div>
+            {images.map((e) => (
+                <Image key={e} src={e} />
+            ))}
+        </div>
+    );
 }
-
-export default App;

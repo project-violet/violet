@@ -1,3 +1,14 @@
+/* This source code is a part of Project Violet. */
+/* Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License. */
+
+/* init tailwind css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* component styles */
+
 .App {
   text-align: center;
 }
@@ -32,6 +43,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
