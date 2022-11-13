@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-mixin Scrollable {
+mixin HasScroll {
   ScrollController scrollController = ScrollController();
 
   void animateScrollOnTop() {
