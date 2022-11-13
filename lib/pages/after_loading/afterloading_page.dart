@@ -90,6 +90,15 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
 
   DateTime? _lastPopAt;
 
+  final widgets = [
+    if (!Settings.liteMode) MainPage(),
+    SearchPage(),
+    if (Settings.liteMode) HotPage(),
+    BookmarkPage(),
+    DownloadPage(),
+    SettingsPage(),
+  ];
+
   Widget _buildBottomNavigationBar(BuildContext context) {
     final translations = Translations.of(context);
 
@@ -120,18 +129,14 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             ? const Color(0xFF060606)
             : null,
         currentIndex: _currentPage,
-        onTap: (index) {
-          _pageController.animateToPage(
+        onTap: (index) async {
+          await _pageController.animateToPage(
             index,
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
           );
-          final scrollController = PrimaryScrollController.of(context);
-          scrollController?.animateTo(
-            0.0,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          );
+
+          widgets[index].animateScrollOnTop();
         },
         items: <BottomNavigationBarItem>[
           if (!Settings.liteMode) buildItem(MdiIcons.home, 'main'),
@@ -311,14 +316,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
               onPageChanged: (newPage) {
                 setState(() {});
               },
-              children: <Widget>[
-                if (!Settings.liteMode) const MainPage(),
-                const SearchPage(),
-                if (Settings.liteMode) const HotPage(),
-                const BookmarkPage(),
-                const DownloadPage(),
-                const SettingsPage(),
-              ],
+              children: widgets,
             ),
           ],
         ),

@@ -16,11 +16,12 @@ import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/widgets/scrollable_stateful_widget.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
-class BookmarkPage extends StatefulWidget {
-  const BookmarkPage({Key? key}) : super(key: key);
+class BookmarkPage extends ScrollableStatefulWidget {
+  BookmarkPage({Key? key}) : super(key: key);
 
   @override
   State<BookmarkPage> createState() => _BookmarkPageState();

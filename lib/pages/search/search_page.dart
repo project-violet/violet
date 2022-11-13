@@ -8,7 +8,6 @@ import 'package:auto_animated/auto_animated.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -34,15 +33,16 @@ import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
+import 'package:violet/widgets/scrollable_stateful_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 
 bool blurred = false;
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ScrollableStatefulWidget {
   final String? searchKeyWord;
 
-  const SearchPage({Key? key, this.searchKeyWord}) : super(key: key);
+  SearchPage({Key? key, this.searchKeyWord}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();

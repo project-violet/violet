@@ -8,7 +8,6 @@ import 'dart:ui';
 
 import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -45,11 +44,12 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
+import 'package:violet/widgets/scrollable_stateful_widget.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+class MainPage extends ScrollableStatefulWidget {
+  MainPage({Key? key}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -169,6 +169,7 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
     ];
 
     return SingleChildScrollView(
+      controller: widget.scrollController,
       padding: EdgeInsets.only(top: statusBarHeight),
       physics: const BouncingScrollPhysics(),
       child: Column(

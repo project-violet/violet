@@ -66,6 +66,8 @@ import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
+import 'package:violet/widgets/scrollable_stateful_widget.dart';
+
 class ExCountry extends Country {
   String? language;
   String? script;
@@ -142,8 +144,8 @@ class ExCountry extends Country {
   }
 }
 
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+class SettingsPage extends ScrollableStatefulWidget {
+  SettingsPage({Key? key}) : super(key: key);
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
