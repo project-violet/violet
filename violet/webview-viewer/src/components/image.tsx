@@ -1,7 +1,8 @@
+import React from 'react';
 import { IImageProps, IOnImageError } from '../interfaces/image';
 import { MyImage } from '../styles';
 
-export function Image({ src }: IImageProps) {
+export const Image = React.memo(({ src }: IImageProps) => {
     return (
         <MyImage
             alt="Violet Sample Image"
@@ -15,4 +16,4 @@ export function Image({ src }: IImageProps) {
             }}
         />
     );
-}
+});
