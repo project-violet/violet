@@ -1056,7 +1056,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/scheduler@npm:*":
+"@types/scheduler@npm:*, @types/scheduler@npm:^0.16.2":
   version: 0.16.2
   resolution: "@types/scheduler@npm:0.16.2"
   checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
@@ -5509,8 +5509,10 @@ __metadata:
     "@types/eslint": ^7.28.1
     "@types/jest": ^27.5.2
     "@types/node": ^16.11.68
+    "@types/prop-types": ^15.7.5
     "@types/react": ^18.0.21
     "@types/react-dom": ^18.0.6
+    "@types/scheduler": ^0.16.2
     "@types/styled-components": ^5.1.26
     "@typescript-eslint/eslint-plugin": latest
     "@typescript-eslint/parser": latest

@@ -38,8 +38,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eslint", "npm:7.29.0"],\
             ["@types/jest", "npm:27.5.2"],\
             ["@types/node", "npm:16.11.68"],\
+            ["@types/prop-types", "npm:15.7.5"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", "npm:18.0.6"],\
+            ["@types/scheduler", "npm:0.16.2"],\
             ["@types/styled-components", "npm:5.1.26"],\
             ["@typescript-eslint/eslint-plugin", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:5.40.1"],\
             ["@typescript-eslint/parser", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:5.40.1"],\
@@ -7035,8 +7037,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eslint", "npm:7.29.0"],\
             ["@types/jest", "npm:27.5.2"],\
             ["@types/node", "npm:16.11.68"],\
+            ["@types/prop-types", "npm:15.7.5"],\
             ["@types/react", "npm:18.0.21"],\
             ["@types/react-dom", "npm:18.0.6"],\
+            ["@types/scheduler", "npm:0.16.2"],\
             ["@types/styled-components", "npm:5.1.26"],\
             ["@typescript-eslint/eslint-plugin", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:5.40.1"],\
             ["@typescript-eslint/parser", "virtual:bff4c39c48d759fcd99fa2c25537c26aa327d9e0b51fab4903533ff1d51b7a2675242bf18d015423ee1a5dae23a943085c613bed557094bb3befc234da800968#npm:5.40.1"],\
