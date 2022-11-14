@@ -1,5 +1,4 @@
 import { IImageProps, IOnImageError } from '../interfaces/image';
-import styled from 'styled-components';
 import { MyImage } from '../styles';
 
 export function Image({ src }: IImageProps) {
