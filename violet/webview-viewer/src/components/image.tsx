@@ -1,5 +1,6 @@
 import { IImageProps, IOnImageError } from '../interfaces/image';
 import { MyImage } from '../styles';
+import fallbackImageUrl from '../../img/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.jpg';
 
 export function Image({ src }: IImageProps) {
     return (
@@ -10,8 +11,7 @@ export function Image({ src }: IImageProps) {
                 // https://stackoverflow.com/a/48222599/11853111
 
                 currentTarget.onerror = null;
-                currentTarget.src =
-                    '../../img/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.jpg';
+                currentTarget.src = fallbackImageUrl;
             }}
         />
     );
