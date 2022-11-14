@@ -193,7 +193,6 @@ class _SettingsPageState extends State<SettingsPage>
     return SingleChildScrollView(
       padding: EdgeInsets.only(top: statusBarHeight),
       physics: const BouncingScrollPhysics(),
-      controller: PrimaryScrollController.of(context) ?? ScrollController(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: _cachedGroups!,
