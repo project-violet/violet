@@ -11,8 +11,7 @@ export const Image = React.memo(({ src }: IImageProps) => {
                 // https://stackoverflow.com/a/48222599/11853111
 
                 currentTarget.onerror = null;
-                currentTarget.src =
-                    'https://raw.githubusercontent.com/project-violet/violet/dev/webview-viewer/img/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.jpg';
+                currentTarget.src = src;
             }}
         />
     );
