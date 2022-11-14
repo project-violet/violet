@@ -148,6 +148,8 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
 
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
+            controller:
+                PrimaryScrollController.of(context) ?? ScrollController(),
             slivers: <Widget>[
               SliverPersistentHeader(
                 floating: true,
