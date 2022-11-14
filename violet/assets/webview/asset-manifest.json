@@ -1,6 +1,10 @@
 {
+  "img/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.jpg": {
+    "file": "assets/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.8bdadbf6.jpg",
+    "src": "img/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.jpg"
+  },
   "index.html": {
-    "file": "assets/index.22889ac3.js",
+    "file": "assets/index.35596ae4.js",
     "src": "index.html",
     "isEntry": true,
     "dynamicImports": [
@@ -8,6 +12,9 @@
     ],
     "css": [
       "assets/index.6f3c7dc6.css"
+    ],
+    "assets": [
+      "assets/roxy-migurdia-mushoku-tensei-anime-4K-wallpaper-pc-preview.8bdadbf6.jpg"
     ]
   },
   ".yarn/cache/web-vitals-npm-2.1.4-68bdd9ecb2-03d3f47dbf.zip/node_modules/web-vitals/dist/web-vitals.js": {
