@@ -34,7 +34,6 @@ public/test-article
 !.yarn/versions
 
 package-lock.json
-yarn.lock
 .pnp.cjs
 .pnp.loader.mjs
 
