@@ -7,7 +7,7 @@
       ".yarn/cache/web-vitals-npm-2.1.4-68bdd9ecb2-03d3f47dbf.zip/node_modules/web-vitals/dist/web-vitals.js"
     ],
     "css": [
-      "assets/index.6c8cd633.css"
+      "assets/index.c5cd4364.css"
     ]
   },
   ".yarn/cache/web-vitals-npm-2.1.4-68bdd9ecb2-03d3f47dbf.zip/node_modules/web-vitals/dist/web-vitals.js": {
@@ -16,7 +16,7 @@
     "isDynamicEntry": true
   },
   "index.css": {
-    "file": "assets/index.6c8cd633.css",
+    "file": "assets/index.c5cd4364.css",
     "src": "index.css"
   }
 }
