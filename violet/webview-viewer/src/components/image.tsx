@@ -34,7 +34,7 @@ export const ImageWrapper = React.memo(({ src }: IImageProps) => {
             <MyImage
                 ref={ref}
                 src={src}
-                style={{ display: isHidden ? 'none' : 'block' }}
+                style={{ display: loading || isHidden ? 'none' : 'block' }}
                 onError={({ currentTarget }: IOnImageError) => {
                     if (isHidden) {
                         currentTarget.onerror = null;
