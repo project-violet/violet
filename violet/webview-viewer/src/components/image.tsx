@@ -7,6 +7,9 @@ export const maxRetryCount = 10;
 export const ImageWrapper = React.memo(({ src }: IImageProps) => {
     const [retryCount, setRetryCount] = useState(0);
     const [loading, setLoading] = useState(true);
+
+    const isHidden = retryCount >= maxRetryCount;
+
     const ref = useRef<HTMLImageElement>(null);
 
     useEffect(() => {
@@ -24,8 +27,6 @@ export const ImageWrapper = React.memo(({ src }: IImageProps) => {
             ref?.current?.removeEventListener('load', onLoad);
         };
     }, [ref]);
-
-    const isHidden = retryCount >= maxRetryCount;
 
     return (
         <>
