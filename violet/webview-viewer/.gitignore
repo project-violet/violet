@@ -35,6 +35,8 @@ public/test-article
 
 package-lock.json
 yarn.lock
+.pnp.cjs
+.pnp.loader.mjs
 
 .eslintcache
 .editorconfig
