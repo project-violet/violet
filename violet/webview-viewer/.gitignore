@@ -24,9 +24,9 @@ yarn-error.log*
 
 public/test-article
 
-# yarn pnp
+# Yarn PnP (without zero install)
+.pnp.*
 .yarn/*
-!.yarn/cache
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
