@@ -27,13 +27,11 @@
     "axios": "^0.27.2",
     "fp-ts": "^2.12.3",
     "jotai": "^1.7.5",
-    "postcss": "^8.4.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
     "react-router-dom": "6",
     "styled-components": "^5.3.6",
-    "tailwindcss": "^3.1.6",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
