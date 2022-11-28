@@ -83,6 +83,7 @@
         "vars-on-top": "off",
         "react/jsx-uses-react": "off",
         "react/react-in-jsx-scope": "off",
-        "jsx-a11y/img-redundant-alt": "off"
+        "jsx-a11y/img-redundant-alt": "off",
+        "react/display-name": "off"
     }
 }

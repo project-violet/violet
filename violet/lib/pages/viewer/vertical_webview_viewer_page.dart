@@ -89,10 +89,8 @@ class _VerticalWebviewViewerPageState extends State<VerticalWebviewViewerPage> {
           onLoadStop: (controller, url) async {
             final manifest = jsonDecode(await rootBundle
                 .loadString('assets/webview/asset-manifest.json', cache: true));
-            final css =
-                '/${manifest['index.css']['file'].toString().split('/')[1]}';
-            final js =
-                '/${manifest['index.html']['file'].toString().split('/')[1]}';
+            final css = '/${manifest['index.css']['file'].toString()}';
+            final js = '/${manifest['index.html']['file'].toString()}';
 
             controller.injectCSSFileFromAsset(
                 assetFilePath: 'assets/webview$css');
