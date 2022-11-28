@@ -583,7 +583,7 @@ packages:
       name: flutter_inappwebview
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.4.3+7"
+    version: "5.7.2"
   flutter_js:
     dependency: "direct main"
     description:
