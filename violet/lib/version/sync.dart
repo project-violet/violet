@@ -223,7 +223,8 @@ class SyncManager {
 
       if (Settings.useOptimizeDatabase && filteredIter.isNotEmpty) {
         var sql = HitomiManager.translate2query(
-            '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
+                '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')
+            .replaceAll('ExistOnHitomi=1', '');
 
         await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
             'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);
