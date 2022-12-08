@@ -80,7 +80,7 @@ class QueryManager {
         .toList();
   }
 
-  static Future<List<QueryResult>> queryIds(List<int> ids) async {
+  static Future<List<QueryResult>> queryIds<T>(List<T> ids) async {
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
     queryRaw += 'Id IN (${ids.join(',')})';
     var qm = await QueryManager.query(
