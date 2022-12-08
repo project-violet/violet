@@ -59,10 +59,10 @@ class _ScriptWebViewState extends State<ScriptWebView>
     if (Settings.routingRule.first != 'Hitomi' &&
         Settings.routingRule.first != 'Hiyobi') return;
 
-    showOkDialog(
-        context,
-        '내부 스크립트 동기화 로직을 실행할 수 없습니다. https://hitomi.la 에서 정상적인 응답을 받을 수 없었습니다. '
-        'VPN이나 DPI Bypass Tool을 사용해주시고, 그래도 이 메시지가 계속 표시된다면 개발자에게 알려주세요.');
+    // showOkDialog(
+    //     context,
+    //     '내부 스크립트 동기화 로직을 실행할 수 없습니다. https://hitomi.la 에서 정상적인 응답을 받을 수 없었습니다. '
+    //     'VPN이나 DPI Bypass Tool을 사용해주시고, 그래도 이 메시지가 계속 표시된다면 개발자에게 알려주세요.');
   }
 
   bool reloadWaitAlreadyPending = false;
