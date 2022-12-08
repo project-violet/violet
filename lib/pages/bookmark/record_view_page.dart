@@ -33,26 +33,15 @@ class RecordViewPage extends StatelessWidget {
           .then((value) => value.getUserLog().then((value) async {
                 var overap = HashSet<String>();
                 var rr = <ArticleReadLog>[];
+
                 value.forEach((element) {
                   if (overap.contains(element.articleId())) return;
                   rr.add(element);
                   overap.add(element.articleId());
                 });
 
-                var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                queryRaw += 'Id IN (${rr.map((e) => e.articleId()).join(',')})';
-                var qm = await QueryManager.query(queryRaw +
-                    (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
-
-                var qr = <String, QueryResult>{};
-                qm.results!.forEach((element) {
-                  qr[element.id().toString()] = element;
-                });
-
-                return rr
-                    .where((e) => qr.containsKey(e.articleId()))
-                    .map((e) => qr[e.articleId()]!)
-                    .toList();
+                return await QueryManager.queryIds(
+                    rr.map((e) => e.articleId()).toList());
               })),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData) return Container();

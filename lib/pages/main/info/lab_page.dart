@@ -63,21 +63,8 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   if (LDI.ldi == null) await LDI.init();
 
-                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw +=
-                      'Id IN (${LDI.ldi!.map((e) => e.item1).take(1500).join(',')})';
-                  var qm = await QueryManager.query(queryRaw +
-                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
-
-                  var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
-                    qr[element.id().toString()] = element;
-                  });
-
-                  var rr = LDI.ldi!
-                      .where((e) => qr.containsKey(e.item1.toString()))
-                      .map((e) => qr[e.item1.toString()]!)
-                      .toList();
+                  final rr = await QueryManager.queryIds(
+                      LDI.ldi!.map((e) => e.item1).take(1500).toList());
 
                   _navigate(ArticleListPage(name: 'LDI DESC', cc: rr));
                 },
@@ -90,21 +77,10 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   if (LDI.ldi == null) await LDI.init();
 
-                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw +=
-                      'Id IN (${LDI.ldi!.reversed.map((e) => e.item1).take(1500).join(',')})';
-                  var qm = await QueryManager.query(queryRaw +
-                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
-
-                  var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
-                    qr[element.id().toString()] = element;
-                  });
-
-                  var rr = LDI.ldi!.reversed
-                      .where((e) => qr.containsKey(e.item1.toString()))
-                      .map((e) => qr[e.item1.toString()]!)
-                      .toList();
+                  final rr = await QueryManager.queryIds(LDI.ldi!.reversed
+                      .map((e) => e.item1)
+                      .take(1500)
+                      .toList());
 
                   _navigate(ArticleListPage(name: 'LDI ASC', cc: rr));
                 },
@@ -115,9 +91,10 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'User Read Count DESC',
                 null,
                 () async {
-                  var userLog = await User.getInstance()
+                  final userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = <String, int>{};
+                  final articleCount = <String, int>{};
+
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
@@ -125,24 +102,12 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                     articleCount[element.articleId()] =
                         articleCount[element.articleId()]! + 1;
                   });
-                  var ll = articleCount.entries.toList();
+
+                  final ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));
 
-                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw +=
-                      'Id IN (${ll.map((e) => e.key).take(1500).join(',')})';
-                  var qm = await QueryManager.query(queryRaw +
-                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
-
-                  var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
-                    qr[element.id().toString()] = element;
-                  });
-
-                  var rr = ll
-                      .where((e) => qr.containsKey(e.key))
-                      .map((e) => qr[e.key]!)
-                      .toList();
+                  final rr = await QueryManager.queryIds(
+                      ll.map((e) => e.key).take(1500).toList());
 
                   _navigate(
                       ArticleListPage(name: 'User Read Count DESC', cc: rr));
@@ -154,25 +119,24 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 'User Reverse Read Record',
                 null,
                 () async {
-                  var userLog = await User.getInstance()
+                  final userLog = await User.getInstance()
                       .then((value) => value.getUserLog());
-                  var articleCount = <String, int>{};
+                  final articleCount = <String, int>{};
+
                   userLog.forEach((element) {
                     if (!articleCount.containsKey(element.articleId())) {
                       articleCount[element.articleId()] = 0;
                     }
                   });
-                  var ll = articleCount.entries.toList();
+
+                  final ll = articleCount.entries.toList();
                   ll.sort((x, y) => y.value.compareTo(x.value));
 
-                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw +=
-                      'Id IN (${ll.map((e) => e.key).take(1500).join(',')})';
-                  var qm = await QueryManager.query(queryRaw +
-                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
+                  final qm = await QueryManager.queryIds(
+                      ll.map((e) => e.key).take(1500).toList());
 
-                  _navigate(ArticleListPage(
-                      name: 'User Read Count DESC', cc: qm.results!));
+                  _navigate(
+                      ArticleListPage(name: 'User Read Count DESC', cc: qm));
                 },
               ),
               _buildItem(
@@ -296,21 +260,10 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
                 () async {
                   if (CommentsCount.counts == null) await CommentsCount.init();
 
-                  var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-                  queryRaw +=
-                      'Id IN (${CommentsCount.counts!.map((e) => e.item1).take(1500).join(',')})';
-                  var qm = await QueryManager.query(queryRaw +
-                      (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
-
-                  var qr = <String, QueryResult>{};
-                  qm.results!.forEach((element) {
-                    qr[element.id().toString()] = element;
-                  });
-
-                  var rr = CommentsCount.counts!
-                      .where((e) => qr.containsKey(e.item1.toString()))
-                      .map((e) => qr[e.item1.toString()]!)
-                      .toList();
+                  final rr = await QueryManager.queryIds(CommentsCount.counts!
+                      .map((e) => e.item1)
+                      .take(1500)
+                      .toList());
 
                   _navigate(ArticleListPage(name: 'Comment Counts', cc: rr));
                 },
