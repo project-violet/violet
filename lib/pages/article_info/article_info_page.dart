@@ -47,6 +47,7 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
@@ -68,19 +69,11 @@ class ArticleInfoPage extends StatelessWidget {
         height - 36 - (mediaQuery.padding + mediaQuery.viewInsets).bottom);
 
     return Container(
-      color: Settings.themeWhat
-          ? Settings.themeBlack
-              ? const Color(0xFF141414)
-              : const Color(0xFF353535)
-          : Colors.grey.shade200,
+      color: Palette.themeColorLightShallow,
       padding: EdgeInsets.only(top: 0, bottom: Variables.bottomBarHeight),
       child: Card(
         elevation: 5,
-        color: Settings.themeWhat
-            ? Settings.themeBlack
-                ? const Color(0xFF141414)
-                : const Color(0xFF353535)
-            : Colors.grey.shade200,
+        color: Palette.themeColorLightShallow,
         child: SizedBox(
           width: width - 16,
           height: Variables.articleInfoHeight,

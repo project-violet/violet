@@ -24,6 +24,7 @@ import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/dots_indicator.dart';
@@ -304,11 +305,7 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       child: Hero(
         tag: 'searchtype2',
         child: Card(
-          color: Settings.themeWhat
-              ? Settings.themeBlack
-                  ? const Color(0xFF141414)
-                  : const Color(0xFF353535)
-              : Colors.grey.shade100,
+          color: Palette.themeColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),

@@ -30,6 +30,7 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/util/call_once.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget_controller.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
@@ -443,7 +444,7 @@ class BodyWidget extends StatelessWidget {
               color: c.articleListItem.showDetail
                   ? Settings.themeWhat
                       ? Settings.themeBlack
-                          ? const Color(0xFF141414)
+                          ? Palette.blackThemeBackground
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),

@@ -12,6 +12,7 @@ import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 
 class ArtistListPage extends StatelessWidget {
@@ -64,11 +65,7 @@ class ArtistListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final color = Settings.themeWhat
-        ? Settings.themeBlack
-            ? Colors.black
-            : const Color(0xFF353535)
-        : Colors.grey.shade100;
+    final color = Palette.themeColor;
 
     return Container(
       color: color,
@@ -80,11 +77,7 @@ class ArtistListPage extends StatelessWidget {
         padding: const EdgeInsets.all(4.0),
         child: Card(
           elevation: 5,
-          color: Settings.themeWhat
-              ? Settings.themeBlack
-                  ? const Color(0xFF141414)
-                  : const Color(0xFF353535)
-              : Colors.grey.shade100,
+          color: Palette.themeColor,
           child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
             physics: const ClampingScrollPhysics(),

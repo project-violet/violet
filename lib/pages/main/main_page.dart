@@ -42,6 +42,7 @@ import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
@@ -748,7 +749,7 @@ class _BuildGroupWidget extends StatelessWidget {
               ? null
               : Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF141414)
+                      ? Palette.blackThemeBackground
                       : Colors.black26
                   : Colors.white,
           child: !Settings.themeFlat
@@ -757,7 +758,7 @@ class _BuildGroupWidget extends StatelessWidget {
                   child: Material(
                       color: Settings.themeWhat
                           ? Settings.themeBlack
-                              ? const Color(0xFF141414)
+                              ? Palette.blackThemeBackground
                               : Colors.black38
                           : Colors.white,
                       child: Padding(

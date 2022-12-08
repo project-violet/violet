@@ -12,6 +12,7 @@ import 'package:violet/pages/main/info/lab/bookmark/bookmarks_records.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class LabBookmarkPage extends StatefulWidget {
   final String userAppId;
@@ -137,7 +138,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
           child: Material(
             color: Settings.themeWhat
                 ? Settings.themeBlack
-                    ? const Color(0xFF141414)
+                    ? Palette.blackThemeBackground
                     : Colors.black38
                 : Colors.white,
             child: ListTile(

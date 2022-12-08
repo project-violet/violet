@@ -31,6 +31,7 @@ import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/segment/three_article_panel.dart';
 import 'package:violet/server/community/anon.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -333,11 +334,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
     return Container(
-      color: Settings.themeWhat
-          ? Settings.themeBlack
-              ? const Color(0xFF141414)
-              : const Color(0xFF353535)
-          : Colors.grey.shade100,
+      color: Palette.themeColor,
       child: Padding(
         // padding: EdgeInsets.all(0),
         padding: EdgeInsets.only(
@@ -349,11 +346,7 @@ class _ArtistInfoPageState extends State<ArtistInfoPage> {
           children: <Widget>[
             Card(
               elevation: 5,
-              color: Settings.themeWhat
-                  ? Settings.themeBlack
-                      ? const Color(0xFF141414)
-                      : const Color(0xFF353535)
-                  : Colors.grey.shade100,
+              color: Palette.themeColor,
               child: SizedBox(
                 width: width - 16,
                 height: height -

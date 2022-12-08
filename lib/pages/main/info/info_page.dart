@@ -11,6 +11,7 @@ import 'package:violet/pages/main/info/violet_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({Key? key}) : super(key: key);
@@ -207,7 +208,7 @@ class _InfoPageState extends State<InfoPage> {
         child: Material(
           color: Settings.themeWhat
               ? Settings.themeBlack
-                  ? const Color(0xFF141414)
+                  ? Palette.blackThemeBackground
                   : Colors.black38
               : Colors.white,
           child: ListTile(
