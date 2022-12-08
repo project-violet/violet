@@ -16,6 +16,7 @@ import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
 
@@ -65,7 +66,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
         heroTag: 'speed-dial-hero-tag',
         backgroundColor: Settings.themeWhat
             ? Settings.themeBlack
-                ? const Color(0xFF141414)
+                ? Palette.blackThemeBackground
                 : Colors.grey.shade800
             : Colors.white,
         foregroundColor: Settings.majorColor,
@@ -94,7 +95,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
       child: Icon(icon, color: Settings.majorColor),
       backgroundColor: Settings.themeWhat
           ? Settings.themeBlack
-              ? const Color(0xFF141414)
+              ? Palette.blackThemeBackground
               : Colors.grey.shade800
           : Colors.white,
       label: Translations.of(context).trans(label),
@@ -104,7 +105,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
       ),
       labelBackgroundColor: Settings.themeWhat
           ? Settings.themeBlack
-              ? const Color(0xFF141414)
+              ? Palette.blackThemeBackground
               : Colors.grey.shade800
           : Colors.white,
       onTap: onTap,
@@ -235,7 +236,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
             child: Material(
               color: Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF141414)
+                      ? Palette.blackThemeBackground
                       : Colors.black38
                   : Colors.white,
               child: ListTile(

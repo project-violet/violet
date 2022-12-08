@@ -33,6 +33,7 @@ import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
@@ -396,7 +397,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                   Material(
                     color: Settings.themeWhat
                         ? Settings.themeBlack
-                            ? const Color(0xFF141414)
+                            ? Palette.blackThemeBackground
                             : Colors.grey.shade900.withOpacity(0.4)
                         : Colors.grey.shade200.withOpacity(0.4),
                     child: ListTile(
@@ -514,11 +515,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         child: Hero(
           tag: 'features',
           child: Card(
-            color: Settings.themeWhat
-                ? Settings.themeBlack
-                    ? const Color(0xFF141414)
-                    : const Color(0xFF353535)
-                : Colors.grey.shade100,
+            color: Palette.themeColor,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),
@@ -595,11 +592,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         child: Hero(
           tag: 'downloadtype',
           child: Card(
-            color: Settings.themeWhat
-                ? Settings.themeBlack
-                    ? const Color(0xFF141414)
-                    : const Color(0xFF353535)
-                : Colors.grey.shade100,
+            color: Palette.themeColor,
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(4.0),

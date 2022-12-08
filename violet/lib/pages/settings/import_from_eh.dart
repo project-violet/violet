@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:violet/component/eh/eh_bookmark.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class ImportFromEHPage extends StatefulWidget {
   const ImportFromEHPage({Key? key}) : super(key: key);
@@ -50,8 +51,8 @@ class _ImportFromEHPageState extends State<ImportFromEHPage> {
           children: <Widget>[
             Card(
               color: Settings.themeWhat
-                  ? const Color(0xFF353535)
-                  : Colors.grey.shade100,
+                  ? Palette.darkThemeBackground
+                  : Palette.lightThemeBackground,
               elevation: 100,
               child: SizedBox(
                 child: SizedBox(

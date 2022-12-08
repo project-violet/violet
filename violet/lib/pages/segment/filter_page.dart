@@ -148,7 +148,7 @@ class _FilterPageState extends State<FilterPage> {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     return Container(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+      color: Settings.themeWhat ? Color(0xFF353535) : Palette.lightThemeBackground,
       padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top,
           bottom: (mediaQuery.padding + mediaQuery.viewInsets).bottom),
@@ -169,7 +169,7 @@ class _FilterPageState extends State<FilterPage> {
         MediaQuery.of(context).padding.top -
         (mediaQuery.padding + mediaQuery.viewInsets).bottom;
     return Card(
-      color: Settings.themeWhat ? Color(0xFF353535) : Colors.grey.shade100,
+      color: Settings.themeWhat ? Color(0xFF353535) : Palette.lightThemeBackground,
       child: SizedBox(
         child: SizedBox(
           width: width - 16,

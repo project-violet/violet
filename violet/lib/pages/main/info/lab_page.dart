@@ -32,6 +32,7 @@ import 'package:violet/pages/settings/log_page.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/server/wsalt.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class LaboratoryPage extends StatefulWidget {
   const LaboratoryPage({Key? key}) : super(key: key);
@@ -427,7 +428,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
         child: Material(
           color: Settings.themeWhat
               ? Settings.themeBlack
-                  ? const Color(0xFF141414)
+                  ? Palette.blackThemeBackground
                   : Colors.black38
               : Colors.white,
           child: ListTile(

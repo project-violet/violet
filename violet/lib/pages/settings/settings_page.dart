@@ -60,6 +60,7 @@ import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
@@ -265,7 +266,7 @@ class _SettingsPageState extends State<SettingsPage>
               child: Material(
                 color: Settings.themeWhat
                     ? Settings.themeBlack
-                        ? const Color(0xFF141414)
+                        ? Palette.blackThemeBackground
                         : Colors.black38
                     : Colors.white,
                 child: Column(children: items),
@@ -377,10 +378,10 @@ class _SettingsPageState extends State<SettingsPage>
                               : null,
                       dialogBackgroundColor:
                           Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF141414)
+                              ? Palette.blackThemeBackground
                               : null,
                       cardColor: Settings.themeBlack && Settings.themeWhat
-                          ? const Color(0xFF141414)
+                          ? Palette.blackThemeBackground
                           : null,
                       colorScheme: ColorScheme.fromSwatch().copyWith(
                         secondary: Settings.majorColor,
@@ -423,10 +424,10 @@ class _SettingsPageState extends State<SettingsPage>
                                   : null,
                           dialogBackgroundColor:
                               Settings.themeBlack && Settings.themeWhat
-                                  ? const Color(0xFF141414)
+                                  ? Palette.blackThemeBackground
                                   : null,
                           cardColor: Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF141414)
+                              ? Palette.blackThemeBackground
                               : null,
                           colorScheme: ColorScheme.fromSwatch()
                               .copyWith(secondary: Settings.majorColor),

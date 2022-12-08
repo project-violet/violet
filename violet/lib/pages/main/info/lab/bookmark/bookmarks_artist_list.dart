@@ -14,6 +14,7 @@ import 'package:violet/model/article_list_item.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 
@@ -152,11 +153,7 @@ class _GroupArtistListState extends State<LabGroupArtistList>
       child: Hero(
         tag: 'searchtype3',
         child: Card(
-          color: Settings.themeWhat
-              ? Settings.themeBlack
-                  ? const Color(0xFF141414)
-                  : const Color(0xFF353535)
-              : Colors.grey.shade100,
+          color: Palette.themeColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),

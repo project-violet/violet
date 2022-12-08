@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class SearchType2 extends StatelessWidget {
   Color getColor(int i) {
@@ -43,11 +44,7 @@ class SearchType2 extends StatelessWidget {
           Hero(
             tag: 'searchtype2',
             child: Card(
-              color: Settings.themeWhat
-                  ? Settings.themeBlack
-                      ? const Color(0xFF141414)
-                      : const Color(0xFF353535)
-                  : Colors.grey.shade100,
+              color: Palette.themeColor,
               child: SizedBox(
                 child: SizedBox(
                   width: 280,

@@ -8,6 +8,7 @@ import 'package:violet/pages/main/info/lab/recent_user_record.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class LabUserBookmarkPage extends StatefulWidget {
   const LabUserBookmarkPage({Key? key}) : super(key: key);
@@ -72,7 +73,7 @@ class _LabUserBookmarkPageState extends State<LabUserBookmarkPage> {
         child: Material(
           color: Settings.themeWhat
               ? Settings.themeBlack
-                  ? const Color(0xFF141414)
+                  ? Palette.blackThemeBackground
                   : Colors.black38
               : Colors.white,
           child: ListTile(

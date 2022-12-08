@@ -11,6 +11,7 @@ import 'package:tuple/tuple.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/search_bar.dart';
 
 class ViewerGallery extends StatefulWidget {
@@ -65,11 +66,7 @@ class _ViewerGalleryState extends State<ViewerGallery> {
                   borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(10.0),
                       bottomRight: Radius.circular(10.0)),
-                  color: Settings.themeWhat
-                      ? Settings.themeBlack
-                          ? const Color(0xFF141414)
-                          : const Color(0xFF353535)
-                      : Colors.grey.shade100,
+                  color: Palette.themeColor,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),

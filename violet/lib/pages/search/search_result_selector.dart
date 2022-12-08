@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class SearchResultSelector extends StatelessWidget {
   const SearchResultSelector({Key? key}) : super(key: key);
@@ -37,8 +38,8 @@ class SearchResultSelector extends StatelessWidget {
               tag: 'searchbar${ModalBottomSheetContext.getCount()}',
               child: Card(
                 color: Settings.themeWhat
-                    ? const Color(0xFF353535)
-                    : Colors.grey.shade100,
+                    ? Palette.darkThemeBackground
+                    : Palette.lightThemeBackground,
                 child: SizedBox(
                   child: SizedBox(
                     width: width - 32,

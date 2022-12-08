@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class DownloadFeaturesMenu extends StatelessWidget {
   const DownloadFeaturesMenu({Key? key}) : super(key: key);
@@ -14,11 +15,7 @@ class DownloadFeaturesMenu extends StatelessWidget {
       child: Hero(
         tag: 'features',
         child: Card(
-          color: Settings.themeWhat
-              ? Settings.themeBlack
-                  ? const Color(0xFF141414)
-                  : const Color(0xFF353535)
-              : Colors.grey.shade100,
+          color: Palette.themeColor,
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             width: 280,
