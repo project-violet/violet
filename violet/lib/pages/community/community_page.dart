@@ -1,7 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -194,7 +194,7 @@ class _CommunityPageState extends State<CommunityPage>
                           ),
                           child: Align(
                             alignment: Alignment.center,
-                            child: Badge(
+                            child: badges.Badge(
                               showBadge: false,
                               badgeContent: const Text('N',
                                   style: TextStyle(
