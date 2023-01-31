@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:ext_storage/ext_storage.dart';
@@ -422,7 +422,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
               child: Text(
                   '    ${Translations.of(context).trans('switching')}    '),
             ),
-            Badge(
+            badges.Badge(
               showBadge: syncAvailable,
               badgeContent: const Text('N',
                   style: TextStyle(color: Colors.white, fontSize: 12.0)),
@@ -653,7 +653,7 @@ class _ServiceAreaWidget extends StatelessWidget {
                 child: const Icon(MdiIcons.accessPointNetwork),
               ),
             ),
-            Badge(
+            badges.Badge(
               showBadge: true,
               badgeContent: const Text('N',
                   style: TextStyle(color: Colors.white, fontSize: 12.0)),
@@ -669,7 +669,7 @@ class _ServiceAreaWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Badge(
+            badges.Badge(
               showBadge: true,
               badgeContent: const Text('N',
                   style: TextStyle(color: Colors.white, fontSize: 12.0)),
