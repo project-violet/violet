@@ -22,6 +22,15 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2023, 2, 12),
+    version: '1.28.3 Patch',
+    contents: [
+      'fix hitomi script cdn cache update too long (use direct)',
+      'and so many changes that cannot be traced',
+      '* some features may not work normally',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2022, 10, 24),
     version: '1.28.2 Patch',
     contents: [
