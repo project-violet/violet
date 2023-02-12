@@ -145,6 +145,10 @@ class _ViewerPageState extends State<ViewerPage> {
       }
     });
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      c.startTimer();
+    });
+
     _lifecycleEventHandler = LifecycleEventHandler(
       inactiveCallBack: () async {
         _inactivateTime = DateTime.now();
