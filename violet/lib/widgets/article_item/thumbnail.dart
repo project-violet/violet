@@ -227,7 +227,9 @@ class BookmarkIndicatorWidget extends StatelessWidget {
                             : Settings.themeWhat
                                 ? const Color(0xFF626262)
                                 : const Color(0xFF636363)
-                        : null,
+                        : !Settings.themeWhat
+                            ? Colors.black
+                            : Colors.white,
                   ),
           ),
         ),
