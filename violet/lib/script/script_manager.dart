@@ -28,8 +28,7 @@ class ScriptManager {
   static Future<void> init() async {
     try {
       final scriptHtml = (await http.get(_scriptNoCDNUrl)).body;
-      var x = parse(scriptHtml).querySelector('table')!.text;
-      _scriptCache = x;
+      _scriptCache = parse(scriptHtml).querySelector('table')!.text;
     } catch (e) {}
     try {
       _v4Cache = (await http.get(_scriptV4)).body;
