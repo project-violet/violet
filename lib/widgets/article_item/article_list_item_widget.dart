@@ -502,62 +502,67 @@ class _DetailWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(8, 4, 4, 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            c.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            c.artist,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (c.articleListItem.showUltra) tagArea() else const Spacer(),
-          Row(
-            children: [
-              const Icon(Icons.date_range, size: 18),
-              Text(
-                ' ${c.dateTime}',
-                style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          const SizedBox(height: 2.0),
-          Row(
-            children: [
-              const Icon(Icons.photo, size: 18),
-              Obx(
-                () => Text(
-                  ' ${c.imageCount.value} Page',
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w500),
-                ),
-              ),
-              const SizedBox(width: 4.0),
-              if (c.articleListItem.viewed != null)
-                const Icon(MdiIcons.eyeOutline, size: 18),
-              if (c.articleListItem.viewed != null)
+      child: Theme(
+        data: ThemeData(
+            iconTheme: IconThemeData(
+                color: !Settings.themeWhat ? Colors.black : Colors.white)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              c.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              c.artist,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (c.articleListItem.showUltra) tagArea() else const Spacer(),
+            Row(
+              children: [
+                const Icon(Icons.date_range, size: 18),
                 Text(
-                  ' ${c.articleListItem.viewed} Viewed',
+                  ' ${c.dateTime}',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500),
                 ),
-              if (c.articleListItem.seconds != null)
-                const Icon(MdiIcons.clockOutline, size: 18),
-              if (c.articleListItem.seconds != null)
-                Text(
-                  ' ${c.articleListItem.seconds} Seconds',
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w500),
+              ],
+            ),
+            const SizedBox(height: 2.0),
+            Row(
+              children: [
+                const Icon(Icons.photo, size: 18),
+                Obx(
+                  () => Text(
+                    ' ${c.imageCount.value} Page',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
                 ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 4.0),
+                if (c.articleListItem.viewed != null)
+                  const Icon(MdiIcons.eyeOutline, size: 18),
+                if (c.articleListItem.viewed != null)
+                  Text(
+                    ' ${c.articleListItem.viewed} Viewed',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                if (c.articleListItem.seconds != null)
+                  const Icon(MdiIcons.clockOutline, size: 18),
+                if (c.articleListItem.seconds != null)
+                  Text(
+                    ' ${c.articleListItem.seconds} Seconds',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
