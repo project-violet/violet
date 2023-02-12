@@ -122,8 +122,7 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
 
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    final scrollController =
-        PrimaryScrollController.of(context) ?? ScrollController();
+    final scrollController = PrimaryScrollController.of(context);
 
     final rows = _buildRowItems(snapshot.data!, reorder);
 

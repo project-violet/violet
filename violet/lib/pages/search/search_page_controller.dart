@@ -66,7 +66,7 @@ class SearchPageController extends GetxController {
 
   initScroll(BuildContext context) {
     if (scrollController == null) {
-      scrollController = PrimaryScrollController.of(context)!;
+      scrollController = PrimaryScrollController.of(context);
       scrollController!.addListener(scrollPositionListener);
     }
   }

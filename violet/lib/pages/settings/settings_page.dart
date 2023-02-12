@@ -194,7 +194,7 @@ class _SettingsPageState extends State<SettingsPage>
     return SingleChildScrollView(
       padding: EdgeInsets.only(top: statusBarHeight),
       physics: const BouncingScrollPhysics(),
-      controller: PrimaryScrollController.of(context) ?? ScrollController(),
+      controller: PrimaryScrollController.of(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: _cachedGroups!,
@@ -2522,8 +2522,8 @@ class _SettingsPageState extends State<SettingsPage>
               ),
               onTap: () async {
                 const url = 'https://discord.gg/K8qny6E';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                if (await canLaunchUrl(Uri.parse(url))) {
+                  await launchUrl(Uri.parse(url));
                 }
               },
             ),
