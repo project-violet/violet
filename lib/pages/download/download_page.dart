@@ -213,7 +213,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         child: CustomScrollView(
           // key: key,
           // cacheExtent: height * 100,
-          controller: PrimaryScrollController.of(context) ?? ScrollController(),
+          controller: PrimaryScrollController.of(context),
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPersistentHeader(

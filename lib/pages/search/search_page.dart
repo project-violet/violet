@@ -564,7 +564,7 @@ class ResultPanelWidget extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
             sliver: LiveSliverGrid(
               key: sliverKey,
-              controller: PrimaryScrollController.of(context)!,
+              controller: PrimaryScrollController.of(context),
               showItemInterval: const Duration(milliseconds: 50),
               showItemDuration: const Duration(milliseconds: 150),
               visibleFraction: 0.001,
