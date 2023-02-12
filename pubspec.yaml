@@ -66,9 +66,9 @@ dependencies:
   extended_image: ^6.2.0
   ffi: ^1.1.2
   file_picker: ^4.3.1
-  firebase_core: ^1.17.0
-  firebase_analytics: ^9.1.8
-  firebase_crashlytics: ^2.8.0
+  firebase_core: ^2.5.0
+  firebase_analytics: ^10.1.1
+  firebase_crashlytics: ^3.0.12
   # flare_dart:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
