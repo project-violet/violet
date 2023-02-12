@@ -70,8 +70,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
               .toList();
           records = snapshot.data['record'] as List<dynamic>;
 
-          ScrollController scrollController =
-              PrimaryScrollController.of(context);
+          ScrollController scrollController = ScrollController();
 
           return ListView.builder(
               padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
