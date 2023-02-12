@@ -1,12 +1,12 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:ext_storage/ext_storage.dart';
@@ -42,6 +42,7 @@ import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
@@ -421,7 +422,7 @@ class _VersionAreaWidgetState extends State<_VersionAreaWidget> {
               child: Text(
                   '    ${Translations.of(context).trans('switching')}    '),
             ),
-            Badge(
+            badges.Badge(
               showBadge: syncAvailable,
               badgeContent: const Text('N',
                   style: TextStyle(color: Colors.white, fontSize: 12.0)),
@@ -652,7 +653,7 @@ class _ServiceAreaWidget extends StatelessWidget {
                 child: const Icon(MdiIcons.accessPointNetwork),
               ),
             ),
-            Badge(
+            badges.Badge(
               showBadge: true,
               badgeContent: const Text('N',
                   style: TextStyle(color: Colors.white, fontSize: 12.0)),
@@ -668,7 +669,7 @@ class _ServiceAreaWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Badge(
+            badges.Badge(
               showBadge: true,
               badgeContent: const Text('N',
                   style: TextStyle(color: Colors.white, fontSize: 12.0)),
@@ -748,7 +749,7 @@ class _BuildGroupWidget extends StatelessWidget {
               ? null
               : Settings.themeWhat
                   ? Settings.themeBlack
-                      ? const Color(0xFF141414)
+                      ? Palette.blackThemeBackground
                       : Colors.black26
                   : Colors.white,
           child: !Settings.themeFlat
@@ -757,7 +758,7 @@ class _BuildGroupWidget extends StatelessWidget {
                   child: Material(
                       color: Settings.themeWhat
                           ? Settings.themeBlack
-                              ? const Color(0xFF141414)
+                              ? Palette.blackThemeBackground
                               : Colors.black38
                           : Colors.white,
                       child: Padding(

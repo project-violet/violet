@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 import 'dart:math';
@@ -33,6 +33,7 @@ import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
@@ -116,6 +117,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     welcomeMessage();
+    c.initScroll(context);
   }
 
   bool _shouldReload = false;
@@ -321,7 +323,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
         Material(
           color: Settings.themeWhat
               ? Settings.themeBlack
-                  ? const Color(0xFF141414)
+                  ? Palette.blackThemeBackground
                   : Colors.grey.shade900.withOpacity(0.4)
               : Colors.grey.shade200.withOpacity(0.4),
           child: ListTile(
@@ -442,11 +444,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     );
 
     final alignBody = Card(
-      color: Settings.themeWhat
-          ? Settings.themeBlack
-              ? const Color(0xFF141414)
-              : const Color(0xFF353535)
-          : Colors.grey.shade100,
+      color: Palette.themeColor,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4.0))),
       elevation: !Settings.themeFlat ? 100 : 0,

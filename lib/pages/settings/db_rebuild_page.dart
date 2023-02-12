@@ -1,10 +1,11 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class DBRebuildPage extends StatefulWidget {
   const DBRebuildPage({Key? key}) : super(key: key);
@@ -53,8 +54,8 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
           children: <Widget>[
             Card(
               color: Settings.themeWhat
-                  ? const Color(0xFF353535)
-                  : Colors.grey.shade100,
+                  ? Palette.darkThemeBackground
+                  : Palette.lightThemeBackground,
               elevation: 100,
               child: SizedBox(
                 child: SizedBox(

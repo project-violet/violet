@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -9,6 +9,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/toast.dart';
 
 class RestoreBookmarkPage extends StatefulWidget {
@@ -160,8 +161,8 @@ class _RestoreBookmarkPageState extends State<RestoreBookmarkPage> {
           children: <Widget>[
             Card(
               color: Settings.themeWhat
-                  ? const Color(0xFF353535)
-                  : Colors.grey.shade100,
+                  ? Palette.darkThemeBackground
+                  : Palette.lightThemeBackground,
               elevation: 100,
               child: SizedBox(
                 child: SizedBox(

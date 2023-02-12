@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +17,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/debounce_widget.dart';
 import 'package:violet/widgets/floating_button.dart';
@@ -169,11 +170,7 @@ class _GroupArtistListState extends State<GroupArtistList>
       child: Hero(
         tag: 'searchtype3',
         child: Card(
-          color: Settings.themeWhat
-              ? Settings.themeBlack
-                  ? const Color(0xFF141414)
-                  : const Color(0xFF353535)
-              : Colors.grey.shade100,
+          color: Palette.themeColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),

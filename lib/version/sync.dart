@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
 import 'dart:math';
@@ -223,7 +223,8 @@ class SyncManager {
 
       if (Settings.useOptimizeDatabase && filteredIter.isNotEmpty) {
         var sql = HitomiManager.translate2query(
-            '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}');
+                '${Settings.includeTags} ${Settings.excludeTags.where((e) => e.trim() != '').map((e) => '-$e').join(' ')}')
+            .replaceAll('ExistOnHitomi=1', '');
 
         await (await DataBaseManager.getInstance()).delete('HitomiColumnModel',
             'NOT (${sql.substring(sql.indexOf('WHERE') + 6)})', []);

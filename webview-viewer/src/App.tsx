@@ -1,27 +1,22 @@
-import "./App.css";
-import styled from "styled-components";
+import React, { useMemo } from 'react';
+import './App.css';
+import { ImageWrapper } from './components/image';
+import { IImageSet } from './interfaces/image-set';
+import { getImageSet } from './utils/image-set';
 
-const MyImage = styled.img`
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  display: block;
-  min-width: 300px;
-`;
+export default function App() {
+    const images = useMemo(
+        () => getImageSet(),
+        [(globalThis as unknown as IImageSet)?.imageset]
+    );
 
-function App() {
-  return (
-    <>
-      <div>
-        <MyImage src="/test-article/1.webp" />
-        <MyImage src="/test-article/2.webp" />
-        <MyImage src="/test-article/3.webp" />
-        <MyImage src="/test-article/4.webp" />
-        <MyImage src="/test-article/5.webp" />
-        <MyImage src="/test-article/6.webp" />
-      </div>
-    </>
-  );
+    return (
+        <div>
+            {images.map((e) => (
+                <React.Suspense key={e}>
+                    <ImageWrapper src={e} />
+                </React.Suspense>
+            ))}
+        </div>
+    );
 }
-
-export default App;

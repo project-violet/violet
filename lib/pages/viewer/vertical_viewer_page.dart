@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 
@@ -110,47 +110,7 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       itemScrollController: c.verticalItemScrollController,
       itemPositionsListener: _itemPositionsListener,
       minCacheExtent: c.provider.useFileSystem ? height : height * 1.5,
-      itemBuilder: (context, index) {
-        Widget? image;
-
-        if (c.provider.useFileSystem) {
-          image = _storageImageItem(index);
-        } else if (c.provider.useProvider) {
-          image = _providerImageItem(index);
-        }
-
-        if (image == null) throw Exception('Dead Reaching');
-
-        return DoublePointListener(
-          child: Obx(
-            () => Padding(
-              padding: c.padding.value
-                  ? const EdgeInsets.fromLTRB(4, 0, 4, 4)
-                  : EdgeInsets.zero,
-              child: Stack(
-                children: [
-                  image!,
-                  if (c.search.value &&
-                      c.imgHeight[index] != 0 &&
-                      c.messages
-                          .where((element) => element.item3 == index)
-                          .isNotEmpty)
-                    ..._messageSearchLayer(
-                        c.imgHeight[index] / c.realImgHeight[index],
-                        c.messages
-                            .where((element) => element.item3 == index)
-                            .toList()),
-                ],
-              ),
-            ),
-          ),
-          onStateChanged: (value) {
-            setState(() {
-              _scrollListEnable = value;
-            });
-          },
-        );
-      },
+      itemBuilder: _itemBuild,
     );
 
     final notificationListener = NotificationListener(
@@ -182,6 +142,40 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
         ),
         _touchArea(),
       ],
+    );
+  }
+
+  Widget _itemBuild(BuildContext context, int index) {
+    Widget? image;
+
+    if (c.provider.useFileSystem) {
+      image = _storageImageItem(index);
+    } else if (c.provider.useProvider) {
+      image = _providerImageItem(index);
+    }
+
+    if (image == null) throw Exception('Dead Reaching');
+
+    return DoublePointListener(
+      child: Obx(
+        () => Padding(
+          padding: c.padding.value
+              ? const EdgeInsets.fromLTRB(4, 0, 4, 4)
+              : EdgeInsets.zero,
+          child: Stack(
+            children: [
+              image!,
+              if (_isExistsMessageSearchLayer(index))
+                ..._messageSearchLayer(index),
+            ],
+          ),
+        ),
+      ),
+      onStateChanged: (value) {
+        setState(() {
+          _scrollListEnable = value;
+        });
+      },
     );
   }
 
@@ -414,8 +408,17 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
     return child;
   }
 
-  _messageSearchLayer(double ratio,
-      List<Tuple5<double, int, int, double, List<double>>> messages) {
+  _isExistsMessageSearchLayer(int index) {
+    return c.search.value &&
+        c.imgHeight[index] != 0 &&
+        c.messages.where((element) => element.item3 == index).isNotEmpty;
+  }
+
+  _messageSearchLayer(int index) {
+    final ratio = c.imgHeight[index] / c.realImgHeight[index];
+    final messages =
+        c.messages.where((element) => element.item3 == index).toList();
+
     final boxes = messages.map((e) {
       var brtx = e.item5[0];
       var brty = e.item5[1];

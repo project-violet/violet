@@ -1,9 +1,10 @@
 // https://github.com/jhontona/animated-floatbuttons/
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class TransformFloatButton extends StatelessWidget {
   final Widget floatButton;
@@ -98,8 +99,9 @@ class _AnimatedFloatingActionButtonState
 
   Widget toggle() {
     return FloatingActionButton(
-      backgroundColor:
-          Settings.themeWhat ? Colors.grey.shade800 : Colors.grey.shade100,
+      backgroundColor: Settings.themeWhat
+          ? Colors.grey.shade800
+          : Palette.lightThemeBackground,
       onPressed: animate,
       elevation: 2,
       foregroundColor: Settings.majorColor,

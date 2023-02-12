@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:auto_animated/auto_animated.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,7 @@ import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';
 
@@ -38,11 +39,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
     final height =
         MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top;
     final mediaQuery = MediaQuery.of(context);
-    final color = Settings.themeWhat
-        ? Settings.themeBlack
-            ? Colors.black
-            : const Color(0xFF353535)
-        : Colors.grey.shade100;
+    final color = Palette.themeColor;
 
     if (_cachedList == null || _shouldReload) {
       final list = buildList();
@@ -64,11 +61,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
           children: <Widget>[
             Card(
               elevation: 5,
-              color: Settings.themeWhat
-                  ? Settings.themeBlack
-                      ? const Color(0xFF141414)
-                      : const Color(0xFF353535)
-                  : Colors.grey.shade100,
+              color: Palette.themeColor,
               child: SizedBox(
                 width: width - 16,
                 height: height -
@@ -112,11 +105,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
       child: Hero(
         tag: 'searchtype2',
         child: Card(
-          color: Settings.themeWhat
-              ? Settings.themeBlack
-                  ? const Color(0xFF141414)
-                  : const Color(0xFF353535)
-              : Colors.grey.shade100,
+          color: Palette.themeColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(8.0),

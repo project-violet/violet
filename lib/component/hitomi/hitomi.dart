@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
 import 'dart:io';
@@ -359,7 +359,10 @@ class HitomiManager {
     for (int i = 0; i < split.length; i++) {
       var negative = false;
       var val = split[i];
-      if (split[i].startsWith('-')) {
+      if (split[i] == '-') {
+        negative = true;
+        val = split[++i];
+      } else if (split[i].startsWith('-')) {
         negative = true;
         val = split[i].substring(1);
       }
@@ -423,6 +426,7 @@ class HitomiManager {
 
         if (prefix == 'Uploader') where += ' COLLATE NOCASE';
       } else if ('=<>()'.contains(split[i])) {
+        if (split[i] == '(' && negative) where += 'NOT ';
         where += split[i];
         if (split[i] == '(') continue;
       } else if (split[i].startsWith('page') &&

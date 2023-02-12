@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
@@ -35,9 +35,13 @@ void main() {
       Settings.searchPure = false;
       final result0 = HitomiManager.translate2query(
           'female:sole_female (lang:korean or lang:n/a)');
+      final result1 = HitomiManager.translate2query(
+          'female:sole_female -(female:mother female:milf)');
 
       expect(result0,
           'SELECT * FROM HitomiColumnModel WHERE Tags LIKE \'%|female:sole female|%\' AND (Language LIKE \'%korean%\' OR Language LIKE \'%n/a%\')  AND ExistOnHitomi=1');
+      expect(result1,
+          'SELECT * FROM HitomiColumnModel WHERE Tags LIKE \'%|female:sole female|%\' AND NOT (Tags LIKE \'%|female:mother|%\' AND Tags LIKE \'%|female:milf|%\')  AND ExistOnHitomi=1');
     });
   });
 }

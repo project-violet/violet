@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
 import 'dart:io';
@@ -10,6 +10,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class TagRebuildPage extends StatefulWidget {
   const TagRebuildPage({Key? key}) : super(key: key);
@@ -58,8 +59,8 @@ class _TagRebuildPageState extends State<TagRebuildPage> {
           children: <Widget>[
             Card(
               color: Settings.themeWhat
-                  ? const Color(0xFF353535)
-                  : Colors.grey.shade100,
+                  ? Palette.darkThemeBackground
+                  : Palette.lightThemeBackground,
               elevation: 100,
               child: SizedBox(
                 child: SizedBox(

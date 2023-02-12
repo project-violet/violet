@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:violet/database/database.dart';
 import 'package:violet/settings/settings.dart';
@@ -80,7 +80,7 @@ class QueryManager {
         .toList();
   }
 
-  static Future<List<QueryResult>> queryIds(List<int> ids) async {
+  static Future<List<QueryResult>> queryIds<T>(List<T> ids) async {
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
     queryRaw += 'Id IN (${ids.join(',')})';
     var qm = await QueryManager.query(

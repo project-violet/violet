@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 import 'dart:convert';
@@ -27,6 +27,7 @@ import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:wakelock/wakelock.dart';
 
 Future<void> main() async {
@@ -100,10 +101,10 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor:
             Settings.themeBlack && Settings.themeWhat ? Colors.black : null,
         dialogBackgroundColor: Settings.themeBlack && Settings.themeWhat
-            ? const Color(0xFF141414)
+            ? Palette.blackThemeBackground
             : null,
         cardColor: Settings.themeBlack && Settings.themeWhat
-            ? const Color(0xFF141414)
+            ? Palette.blackThemeBackground
             : null,
         colorScheme: ColorScheme.fromSwatch()
             .copyWith(secondary: Settings.majorColor, brightness: brightness),

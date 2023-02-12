@@ -23,3 +23,19 @@ yarn-debug.log*
 yarn-error.log*
 
 public/test-article
+
+# Yarn PnP (without zero install)
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+package-lock.json
+.pnp.cjs
+.pnp.loader.mjs
+
+.eslintcache
+.editorconfig

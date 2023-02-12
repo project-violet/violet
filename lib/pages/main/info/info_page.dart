@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -11,6 +11,7 @@ import 'package:violet/pages/main/info/violet_page.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class InfoPage extends StatefulWidget {
   const InfoPage({Key? key}) : super(key: key);
@@ -207,7 +208,7 @@ class _InfoPageState extends State<InfoPage> {
         child: Material(
           color: Settings.themeWhat
               ? Settings.themeBlack
-                  ? const Color(0xFF141414)
+                  ? Palette.blackThemeBackground
                   : Colors.black38
               : Colors.white,
           child: ListTile(

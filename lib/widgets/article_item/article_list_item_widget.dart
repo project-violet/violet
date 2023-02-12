@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 
@@ -30,6 +30,7 @@ import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/util/call_once.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget_controller.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
@@ -183,9 +184,6 @@ class _ArticleListItemWidgetState extends State<ArticleListItemWidget>
   }
 
   _animateScale(double scale) {
-    // _shouldReloadCachedBuildWidget = true;
-    // Future.delayed(const Duration(milliseconds: 500))
-    //     .then((value) => _shouldReloadCachedBuildWidget = false);
     c.scale.value = scale;
   }
 
@@ -446,7 +444,7 @@ class BodyWidget extends StatelessWidget {
               color: c.articleListItem.showDetail
                   ? Settings.themeWhat
                       ? Settings.themeBlack
-                          ? const Color(0xFF141414)
+                          ? Palette.blackThemeBackground
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),
@@ -504,62 +502,67 @@ class _DetailWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(8, 4, 4, 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Text(
-            c.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            c.artist,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (c.articleListItem.showUltra) tagArea() else const Spacer(),
-          Row(
-            children: [
-              const Icon(Icons.date_range, size: 18),
-              Text(
-                ' ${c.dateTime}',
-                style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          const SizedBox(height: 2.0),
-          Row(
-            children: [
-              const Icon(Icons.photo, size: 18),
-              Obx(
-                () => Text(
-                  ' ${c.imageCount.value} Page',
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w500),
-                ),
-              ),
-              const SizedBox(width: 4.0),
-              if (c.articleListItem.viewed != null)
-                const Icon(MdiIcons.eyeOutline, size: 18),
-              if (c.articleListItem.viewed != null)
+      child: Theme(
+        data: ThemeData(
+            iconTheme: IconThemeData(
+                color: !Settings.themeWhat ? Colors.black : Colors.white)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              c.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              c.artist,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (c.articleListItem.showUltra) tagArea() else const Spacer(),
+            Row(
+              children: [
+                const Icon(Icons.date_range, size: 18),
                 Text(
-                  ' ${c.articleListItem.viewed} Viewed',
+                  ' ${c.dateTime}',
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.w500),
                 ),
-              if (c.articleListItem.seconds != null)
-                const Icon(MdiIcons.clockOutline, size: 18),
-              if (c.articleListItem.seconds != null)
-                Text(
-                  ' ${c.articleListItem.seconds} Seconds',
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w500),
+              ],
+            ),
+            const SizedBox(height: 2.0),
+            Row(
+              children: [
+                const Icon(Icons.photo, size: 18),
+                Obx(
+                  () => Text(
+                    ' ${c.imageCount.value} Page',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
                 ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 4.0),
+                if (c.articleListItem.viewed != null)
+                  const Icon(MdiIcons.eyeOutline, size: 18),
+                if (c.articleListItem.viewed != null)
+                  Text(
+                    ' ${c.articleListItem.viewed} Viewed',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                if (c.articleListItem.seconds != null)
+                  const Icon(MdiIcons.clockOutline, size: 18),
+                if (c.articleListItem.seconds != null)
+                  Text(
+                    ' ${c.articleListItem.seconds} Seconds',
+                    style: const TextStyle(
+                        fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

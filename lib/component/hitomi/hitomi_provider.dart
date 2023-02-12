@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
 
@@ -44,6 +44,12 @@ class HitomiImageProvider extends VioletImageProvider {
   Future<String> getImageUrl(int page) async {
     return urls.item1[page];
   }
+
+  @override
+  bool canGetImageUrlSync() => true;
+
+  @override
+  String getImageUrlSync(int page) => urls.item1[page];
 
   @override
   int length() {

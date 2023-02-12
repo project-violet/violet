@@ -1,11 +1,12 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class SearchType extends StatelessWidget {
   const SearchType({Key? key}) : super(key: key);
@@ -26,11 +27,7 @@ class SearchType extends StatelessWidget {
       child: Hero(
         tag: 'searchtype${ModalBottomSheetContext.getCount()}',
         child: Card(
-          color: Settings.themeWhat
-              ? Settings.themeBlack
-                  ? const Color(0xFF141414)
-                  : const Color(0xFF353535)
-              : Colors.grey.shade100,
+          color: Palette.themeColor,
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             width: 280,

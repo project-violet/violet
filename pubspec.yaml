@@ -66,9 +66,9 @@ dependencies:
   extended_image: ^6.2.0
   ffi: ^1.1.2
   file_picker: ^4.3.1
-  firebase_core: ^1.17.0
-  firebase_analytics: ^9.1.8
-  firebase_crashlytics: ^2.8.0
+  firebase_core: ^2.5.0
+  firebase_analytics: ^10.1.1
+  firebase_crashlytics: ^3.0.12
   # flare_dart:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
@@ -76,7 +76,7 @@ dependencies:
   flutter_downloader: ^1.8.0 # @dependent: android
   flutter_heatmap_calendar: ^1.0.5
   flutter_image_compress: ^1.1.0
-  flutter_inappwebview: ^5.4.3+7
+  flutter_inappwebview: ^5.7.2
   flutter_markdown:
   flutter_mobx:
   flutter_reorderable_list:
@@ -103,7 +103,7 @@ dependencies:
   lottie:
   material_design_icons_flutter: ^5.0.6595
   mdi: ^5.0.0-nullsafety.0
-  modal_bottom_sheet: ^2.1.2
+  modal_bottom_sheet: ^3.0.0-pre
   open_file:
     git: https://github.com/violet-dev/open_file
   optimized_cached_image: ^3.0.0
@@ -185,6 +185,8 @@ flutter:
     - assets/p7zip/armeabi-v7a/lib7zr.so # @dependent: android
     - assets/p7zip/x86/lib7zr.so # @dependent: android
     - assets/p7zip/x86_64/lib7zr.so # @dependent: android
+
+    - assets/webview/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

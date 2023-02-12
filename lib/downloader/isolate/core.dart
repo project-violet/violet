@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 part of '../isolate_downloader.dart';
 
@@ -144,75 +144,83 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
     var tooManyRetry = true;
 
     do {
-      var res = await dio.download(
-        task.url,
-        task.fullpath,
-        cancelToken: task.cancelToken,
-        deleteOnError: true,
-        onReceiveProgress: (count, total) {
-          _sendPort.send(
-            ReceivePortData(
-              type: ReceivePortType.progresss,
-              data: IsolateDownloaderProgressProtocolUnit(
-                id: task.id,
-                countSize: count,
-                totalSize: total,
+      try {
+        var res = await dio.download(
+          task.url,
+          task.fullpath,
+          cancelToken: task.cancelToken,
+          deleteOnError: true,
+          onReceiveProgress: (count, total) {
+            _sendPort.send(
+              ReceivePortData(
+                type: ReceivePortType.progresss,
+                data: IsolateDownloaderProgressProtocolUnit(
+                  id: task.id,
+                  countSize: count,
+                  totalSize: total,
+                ),
               ),
-            ),
-          );
-        },
-      );
+            );
+          },
+        );
 
-      // check download not available
-      if (res.statusCode != 503) {
-        // check 404 or anythings
-        if (res.statusCode != 200) {
-          tooManyRetry = false;
-          _sendPort.send(
-            ReceivePortData(
-              type: ReceivePortType.error,
-              data: IsolateDownloaderErrorUnit(
-                id: task.id,
-                error: 'Code ${res.statusCode}',
-                stackTrace: '',
-              ),
-            ),
-          );
-          break;
-        }
-
-        // check download file is not empty
-        var file = File(task.fullpath);
-        if (await file.exists()) {
-          if (await file.length() != 0) {
+        // check download not available
+        if (res.statusCode != 503) {
+          // check 404 or anythings
+          if (res.statusCode != 200) {
             tooManyRetry = false;
             _sendPort.send(
               ReceivePortData(
-                type: ReceivePortType.complete,
-                data: task.id,
+                type: ReceivePortType.error,
+                data: IsolateDownloaderErrorUnit(
+                  id: task.id,
+                  error: 'Code ${res.statusCode}',
+                  stackTrace: '',
+                ),
               ),
             );
             break;
           }
-          await file.delete();
+
+          // check download file is not empty
+          var file = File(task.fullpath);
+          if (await file.exists()) {
+            if (await file.length() != 0) {
+              tooManyRetry = false;
+              _sendPort.send(
+                ReceivePortData(
+                  type: ReceivePortType.complete,
+                  data: task.id,
+                ),
+              );
+              break;
+            }
+            await file.delete();
+          }
+        }
+
+        _sendPort.send(
+          ReceivePortData(
+            type: ReceivePortType.retry,
+            data: {
+              'id': task.id,
+              'url': task.url,
+              'count': retryCount,
+              'code': res.statusCode,
+            },
+          ),
+        );
+
+        retryCount++;
+
+        await Future.delayed(const Duration(milliseconds: 100));
+      } catch (e) {
+        if (!(e is DioError &&
+            e.type == DioErrorType.other &&
+            e.message.contains('Connection reset by peer'))) {
+          rethrow;
         }
       }
-
-      _sendPort.send(
-        ReceivePortData(
-          type: ReceivePortType.retry,
-          data: {
-            'id': task.id,
-            'url': task.url,
-            'count': retryCount,
-            'code': res.statusCode,
-          },
-        ),
-      );
-
-      retryCount++;
-
-      await Future.delayed(const Duration(milliseconds: 100));
     } while (retryCount < _maxRetryCount);
 
     if (tooManyRetry) {

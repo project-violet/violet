@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 import 'dart:convert';
@@ -27,6 +27,7 @@ import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 import 'package:violet/widgets/article_item/thumbnail.dart';
 import 'package:violet/widgets/toast.dart';
@@ -487,7 +488,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
               color: style.showDetail
                   ? Settings.themeWhat
                       ? Settings.themeBlack
-                          ? const Color(0xFF141414)
+                          ? Palette.blackThemeBackground
                           : Colors.grey.shade800
                       : Colors.white70
                   : Colors.grey.withOpacity(0.3),

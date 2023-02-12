@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
@@ -148,6 +148,7 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
 
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
+            controller: ScrollController(),
             slivers: <Widget>[
               SliverPersistentHeader(
                 floating: true,

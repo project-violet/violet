@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 
@@ -31,7 +31,7 @@ class SearchPageController extends GetxController {
   FilterController filterController = FilterController(
       heroKey: 'searchtype${ModalBottomSheetContext.getCount()}');
 
-  final ScrollController scrollController = ScrollController();
+  ScrollController? scrollController;
   Map<String, GlobalKey> itemKeys = <String, GlobalKey>{};
 
   final List<int> _scrollQueue = <int>[];
@@ -55,8 +55,6 @@ class SearchPageController extends GetxController {
   SearchPageController({required this.reloadForce});
 
   init(BuildContext context) {
-    scrollController.addListener(scrollPositionListener);
-
     fToast.init(context);
 
     asset = AssetFlare(
@@ -64,6 +62,13 @@ class SearchPageController extends GetxController {
       name: 'assets/flare/search_close.flr',
     );
     cachedActor(asset);
+  }
+
+  initScroll(BuildContext context) {
+    if (scrollController == null) {
+      scrollController = ScrollController();
+      scrollController!.addListener(scrollPositionListener);
+    }
   }
 
   scrollPositionListener() {
@@ -82,13 +87,14 @@ class SearchPageController extends GetxController {
       }
     }
 
-    if (scrollController.offset.isNaN) return;
+    if (scrollController!.offset.isNaN) return;
 
     final itemPerRow = [3, 2, 1, 1, 1][Settings.searchResultType];
     const searchBarHeight = 64 + 16;
-    final curI = ((scrollController.offset - searchBarHeight) / _itemHeight + 1)
-            .toInt() *
-        itemPerRow;
+    final curI =
+        ((scrollController!.offset - searchBarHeight) / _itemHeight + 1)
+                .toInt() *
+            itemPerRow;
 
     if (curI != searchPageNum.value && isExtended.value) {
       searchPageNum.value = curI;
@@ -97,7 +103,7 @@ class SearchPageController extends GetxController {
     //
     // scroll direction
     //
-    var upScrolling = scrollController.position.userScrollDirection ==
+    var upScrolling = scrollController!.position.userScrollDirection ==
         ScrollDirection.forward;
 
     if (upScrolling) {
@@ -122,8 +128,8 @@ class SearchPageController extends GetxController {
     //  scroll lazy next query loading
     //
     if (_scrollInProgress || _queryEnd) return;
-    if (scrollController.offset >
-        scrollController.position.maxScrollExtent * 3 / 4) {
+    if (scrollController!.offset >
+        scrollController!.position.maxScrollExtent * 3 / 4) {
       _scrollInProgress = true;
       Future.delayed(const Duration(milliseconds: 100), () async {
         try {

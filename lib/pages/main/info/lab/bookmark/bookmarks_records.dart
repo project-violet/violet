@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:collection';
 
@@ -42,20 +42,8 @@ class LabRecordViewPage extends StatelessWidget {
           overap.add(element.articleId());
         });
 
-        var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
-        queryRaw += 'Id IN (${rr.map((e) => e.articleId()).join(',')})';
-        var qm = await QueryManager.query(
-            queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
-
-        var qr = <String, QueryResult>{};
-        qm.results!.forEach((element) {
-          qr[element.id().toString()] = element;
-        });
-
-        return rr
-            .where((e) => qr.containsKey(e.articleId()))
-            .map((e) => qr[e.articleId()]!)
-            .toList();
+        return await QueryManager.queryIds(
+            rr.map((e) => e.articleId()).toList());
       }),
       builder: (context, AsyncSnapshot<List<QueryResult>> snapshot) {
         if (!snapshot.hasData) return Container();

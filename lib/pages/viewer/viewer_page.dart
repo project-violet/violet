@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
 import 'dart:io';
@@ -140,9 +140,11 @@ class _ViewerPageState extends State<ViewerPage> {
           await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
 
       if (Settings.showRecordJumpMessage) {
-        Future.delayed(const Duration(milliseconds: 100))
+        await Future.delayed(const Duration(milliseconds: 100))
             .then((value) => _checkLatestRead());
       }
+
+      c.startTimer();
     });
 
     _lifecycleEventHandler = LifecycleEventHandler(

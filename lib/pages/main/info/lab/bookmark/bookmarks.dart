@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,6 +12,7 @@ import 'package:violet/pages/main/info/lab/bookmark/bookmarks_records.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 
 class LabBookmarkPage extends StatefulWidget {
   final String userAppId;
@@ -69,8 +70,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
               .toList();
           records = snapshot.data['record'] as List<dynamic>;
 
-          ScrollController scrollController =
-              PrimaryScrollController.of(context) ?? ScrollController();
+          ScrollController scrollController = ScrollController();
 
           return ListView.builder(
               padding: EdgeInsets.fromLTRB(4, statusBarHeight + 16, 4, 8),
@@ -137,7 +137,7 @@ class _BookmarkPageState extends State<LabBookmarkPage> {
           child: Material(
             color: Settings.themeWhat
                 ? Settings.themeBlack
-                    ? const Color(0xFF141414)
+                    ? Palette.blackThemeBackground
                     : Colors.black38
                 : Colors.white,
             child: ListTile(

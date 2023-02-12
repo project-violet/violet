@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
 import 'dart:io';
@@ -60,6 +60,7 @@ import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
@@ -193,6 +194,7 @@ class _SettingsPageState extends State<SettingsPage>
     return SingleChildScrollView(
       padding: EdgeInsets.only(top: statusBarHeight),
       physics: const BouncingScrollPhysics(),
+      controller: ScrollController(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: _cachedGroups!,
@@ -264,7 +266,7 @@ class _SettingsPageState extends State<SettingsPage>
               child: Material(
                 color: Settings.themeWhat
                     ? Settings.themeBlack
-                        ? const Color(0xFF141414)
+                        ? Palette.blackThemeBackground
                         : Colors.black38
                     : Colors.white,
                 child: Column(children: items),
@@ -376,10 +378,10 @@ class _SettingsPageState extends State<SettingsPage>
                               : null,
                       dialogBackgroundColor:
                           Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF141414)
+                              ? Palette.blackThemeBackground
                               : null,
                       cardColor: Settings.themeBlack && Settings.themeWhat
-                          ? const Color(0xFF141414)
+                          ? Palette.blackThemeBackground
                           : null,
                       colorScheme: ColorScheme.fromSwatch().copyWith(
                         secondary: Settings.majorColor,
@@ -422,10 +424,10 @@ class _SettingsPageState extends State<SettingsPage>
                                   : null,
                           dialogBackgroundColor:
                               Settings.themeBlack && Settings.themeWhat
-                                  ? const Color(0xFF141414)
+                                  ? Palette.blackThemeBackground
                                   : null,
                           cardColor: Settings.themeBlack && Settings.themeWhat
-                              ? const Color(0xFF141414)
+                              ? Palette.blackThemeBackground
                               : null,
                           colorScheme: ColorScheme.fromSwatch()
                               .copyWith(secondary: Settings.majorColor),
@@ -2520,8 +2522,8 @@ class _SettingsPageState extends State<SettingsPage>
               ),
               onTap: () async {
                 const url = 'https://discord.gg/K8qny6E';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                if (await canLaunchUrl(Uri.parse(url))) {
+                  await launchUrl(Uri.parse(url));
                 }
               },
             ),

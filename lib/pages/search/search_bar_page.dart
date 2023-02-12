@@ -1,5 +1,5 @@
 // This source code is a part of Project Violet.
-// Copyright (C) 2020-2022. violet-team. Licensed under the Apache-2.0 License.
+// Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:math';
 
@@ -17,6 +17,7 @@ import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/user/search.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/settings/settings.dart';
+import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/dots_indicator.dart';
 
 class SearchBarPage extends StatefulWidget {
@@ -114,7 +115,7 @@ class _SearchBarPageState extends State<SearchBarPage>
     return Container(
       color: Settings.themeWhat
           ? Settings.themeBlack
-              ? const Color(0xFF141414)
+              ? Palette.blackThemeBackground
               : Colors.grey.shade900
           : Colors.white,
       padding:
@@ -128,11 +129,11 @@ class _SearchBarPageState extends State<SearchBarPage>
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4)),
               color: Settings.themeWhat && Settings.themeBlack
-                  ? const Color(0xFF141414)
+                  ? Palette.blackThemeBackground
                   : null,
               child: Material(
                 color: Settings.themeWhat && Settings.themeBlack
-                    ? const Color(0xFF141414)
+                    ? Palette.blackThemeBackground
                     : null,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,7 +172,7 @@ class _SearchBarPageState extends State<SearchBarPage>
   _searchBar() {
     return Material(
       color: Settings.themeWhat && Settings.themeBlack
-          ? const Color(0xFF141414)
+          ? Palette.blackThemeBackground
           : null,
       child: ListTile(
         title: TextFormField(
