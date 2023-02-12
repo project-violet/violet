@@ -74,11 +74,15 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
   while (true) {
     var timeout = false;
 
-    final res = await http.get(Uri.parse(url), headers: headers).timeout(
+    final client = http.Client();
+    final request = http.Request('GET', Uri.parse(url))..followRedirects = true;
+    if (headers != null) request.headers.addAll(headers);
+
+    final response = await client.send(request).timeout(
       Duration(seconds: retry > 3 ? 1000000 : 3),
       onTimeout: () {
         timeout = true;
-        return http.Response('', 200);
+        return StreamedResponse(const Stream.empty(), 200);
       },
     ).catchError((e, st) {
       Logger.error('[Http Request] GET: $url\n'
@@ -87,6 +91,8 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
       throttler.release();
       throw e;
     });
+
+    final res = await http.Response.fromStream(response);
 
     retry++;
 
