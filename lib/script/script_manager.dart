@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:flutter_js/flutter_js.dart';
+import 'package:html/parser.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/context/viewer_context.dart';
 import 'package:violet/log/log.dart';
@@ -12,6 +13,8 @@ import 'package:violet/script/script_webview.dart';
 import 'package:violet/widgets/article_item/image_provider_manager.dart';
 
 class ScriptManager {
+  static const String _scriptNoCDNUrl =
+      'https://github.com/project-violet/scripts/blob/main/hitomi_get_image_list_v3.js';
   static const String _scriptUrl =
       'https://raw.githubusercontent.com/project-violet/scripts/main/hitomi_get_image_list_v3.js';
   static const String _scriptV4 =
@@ -24,7 +27,9 @@ class ScriptManager {
 
   static Future<void> init() async {
     try {
-      _scriptCache = (await http.get(_scriptUrl)).body;
+      final scriptHtml = (await http.get(_scriptNoCDNUrl)).body;
+      var x = parse(scriptHtml).querySelector('table')!.text;
+      _scriptCache = x;
     } catch (e) {}
     try {
       _v4Cache = (await http.get(_scriptV4)).body;
