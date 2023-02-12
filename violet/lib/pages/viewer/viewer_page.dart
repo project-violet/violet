@@ -140,12 +140,10 @@ class _ViewerPageState extends State<ViewerPage> {
           await (await Bookmark.getInstance()).isBookmark(_pageInfo.id);
 
       if (Settings.showRecordJumpMessage) {
-        Future.delayed(const Duration(milliseconds: 100))
+        await Future.delayed(const Duration(milliseconds: 100))
             .then((value) => _checkLatestRead());
       }
-    });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
       c.startTimer();
     });
 
