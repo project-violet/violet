@@ -1,7 +1,5 @@
 # Violet Message Search Local
 
-![image alt <](capute-eng.png)
-
 ## How To Use?
 
 1. Install node.js & gallery-dl
