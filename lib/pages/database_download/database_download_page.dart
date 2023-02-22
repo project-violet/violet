@@ -172,7 +172,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     setState(() {
       downloading = false;
-      baseString = Translations.instance!.trans('dbretry');
+      baseString = Translations.instance!.trans('dbdretry');
     });
   }
 
@@ -248,7 +248,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     setState(() {
       downloading = false;
-      baseString = Translations.instance!.trans('dbretry');
+      baseString = Translations.instance!.trans('dbdretry');
     });
   }
 
