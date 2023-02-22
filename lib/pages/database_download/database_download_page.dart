@@ -489,7 +489,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
               characterCharacter[character] = <String, int>{};
             }
             for (var character2 in item.characters().split('|')) {
-              if (character2 == '' || series == character2) continue;
+              if (character2 == '' || character == character2) continue;
               if (!characterCharacter[character]!.containsKey(character2)) {
                 characterCharacter[character]![character2] = 0;
               }
