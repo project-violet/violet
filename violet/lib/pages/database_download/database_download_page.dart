@@ -22,6 +22,8 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
 
+typedef TagIndexingCallback = dynamic Function(QueryResult);
+
 class DataBaseDownloadPage extends StatefulWidget {
   final String? dbType;
   final bool isSync;
@@ -281,6 +283,32 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     }
   }
 
+  void tagIndexing(QueryResult item, Map<String, int> tagIndex,
+      Map<String, Map<String, int>> tagMap, TagIndexingCallback callback) {
+    if (callback(item) == null) return;
+
+    for (var target in callback(item).split('|')) {
+      if (target == '') continue;
+      if (tagMap.containsKey(target)) continue;
+
+      tagMap[target] = <String, int>{};
+    }
+
+    for (var tag in item.tags().split('|')) {
+      if (tag == null || tag == '') continue;
+      if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
+
+      var index = tagIndex[tag].toString();
+      for (var target in callback(item).split('|')) {
+        if (target == '') continue;
+        if (!tagMap[target]!.containsKey(index)) {
+          tagMap[target]![index] = 0;
+        }
+        tagMap[target]![index] = tagMap[target]![index]! + 1;
+      }
+    }
+  }
+
   Future indexing() async {
     QueryManager qm;
     qm = QueryManager.queryPagination('SELECT * FROM HitomiColumnModel');
@@ -329,49 +357,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
         if (item.tags() == null) continue;
 
-        if (item.artists() != null) {
-          for (var artist in item.artists().split('|')) {
-            if (artist != '') {
-              if (!tagArtist.containsKey(artist)) {
-                tagArtist[artist] = <String, int>{};
-              }
-            }
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.artists().split('|')) {
-              if (artist == '') continue;
-              if (!tagArtist[artist]!.containsKey(index)) {
-                tagArtist[artist]![index] = 0;
-              }
-              tagArtist[artist]![index] = tagArtist[artist]![index]! + 1;
-            }
-          }
-        }
-
-        if (item.groups() != null) {
-          for (var artist in item.groups().split('|')) {
-            if (artist != '') {
-              if (!tagGroup.containsKey(artist)) {
-                tagGroup[artist] = <String, int>{};
-              }
-            }
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.groups().split('|')) {
-              if (artist == '') continue;
-              if (!tagGroup[artist]!.containsKey(index)) {
-                tagGroup[artist]![index] = 0;
-              }
-              tagGroup[artist]![index] = tagGroup[artist]![index]! + 1;
-            }
-          }
-        }
+        tagIndexing(item, tagIndex, tagArtist, (qr) => qr.artists());
+        tagIndexing(item, tagIndex, tagGroup, (qr) => qr.groups());
+        tagIndexing(item, tagIndex, tagSeries, (qr) => qr.series());
+        tagIndexing(item, tagIndex, tagCharacter, (qr) => qr.characters());
 
         if (item.uploader() != null) {
           if (!tagUploader.containsKey(item.uploader())) {
@@ -386,50 +375,6 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
             }
             tagUploader[item.uploader()]![index] =
                 tagUploader[item.uploader()]![index]! + 1;
-          }
-        }
-
-        if (item.series() != null) {
-          for (var artist in item.series().split('|')) {
-            if (artist != '') {
-              if (!tagSeries.containsKey(artist)) {
-                tagSeries[artist] = <String, int>{};
-              }
-            }
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.series().split('|')) {
-              if (artist == '') continue;
-              if (!tagSeries[artist]!.containsKey(index)) {
-                tagSeries[artist]![index] = 0;
-              }
-              tagSeries[artist]![index] = tagSeries[artist]![index]! + 1;
-            }
-          }
-        }
-
-        if (item.characters() != null) {
-          for (var artist in item.characters().split('|')) {
-            if (artist != '') {
-              if (!tagCharacter.containsKey(artist)) {
-                tagCharacter[artist] = <String, int>{};
-              }
-            }
-          }
-          for (var tag in item.tags().split('|')) {
-            if (tag == null || tag == '') continue;
-            if (!tagIndex.containsKey(tag)) tagIndex[tag] = tagIndex.length;
-            var index = tagIndex[tag].toString();
-            for (var artist in item.characters().split('|')) {
-              if (artist == '') continue;
-              if (!tagCharacter[artist]!.containsKey(index)) {
-                tagCharacter[artist]![index] = 0;
-              }
-              tagCharacter[artist]![index] = tagCharacter[artist]![index]! + 1;
-            }
           }
         }
 
