@@ -76,7 +76,7 @@ class Translations {
   }
 
   String trans(String key) {
-    return _sentences[key]!;
+    return _sentences[key] ?? key;
   }
 }
 
