@@ -140,13 +140,18 @@ class SimpleInfoWidget extends StatelessWidget {
       _simpleInfoTextArtist(data),
       Padding(
         padding: const EdgeInsets.fromLTRB(0, 4 * 50.0 - 50, 0, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _simpleInfoDateTime(data),
-            _simpleInfoPages(data),
-          ],
+        child: Theme(
+          data: ThemeData(
+              iconTheme: IconThemeData(
+                  color: !Settings.themeWhat ? Colors.black : Colors.white)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _simpleInfoDateTime(data),
+              _simpleInfoPages(data),
+            ],
+          ),
         ),
       ),
     ]);
