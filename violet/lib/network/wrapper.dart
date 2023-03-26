@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -82,7 +83,7 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
       Duration(seconds: retry > 3 ? 1000000 : 3),
       onTimeout: () {
         timeout = true;
-        return StreamedResponse(const Stream.empty(), 200);
+        throw TimeoutException('Timeout error');
       },
     ).catchError((e, st) {
       Logger.error('[Http Request] GET: $url\n'
