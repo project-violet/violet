@@ -11,8 +11,6 @@ import 'package:violet/component/hisoki/hisoki_provider.dart';
 import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/component/hitomi/hitomi_parser.dart';
 import 'package:violet/component/hitomi/hitomi_provider.dart';
-import 'package:violet/component/hiyobi/hiyobi.dart';
-import 'package:violet/component/hiyobi/hiyobi_provider.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/database.dart';
 import 'package:violet/database/query.dart';
@@ -252,13 +250,6 @@ class HentaiManager {
                 var urls = await HitomiManager.getImageList(qr.id().toString());
                 if (urls.item1.isEmpty || urls.item2.isEmpty) break;
                 return HitomiImageProvider(urls, qr.id().toString());
-              }
-
-            case 'Hiyobi':
-              {
-                var urls = await HiyobiManager.getImageList(qr.id().toString());
-                if (urls.item2.isEmpty) break;
-                return HiyobiImageProvider(urls);
               }
 
             case 'Hisoki':

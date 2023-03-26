@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,7 +23,6 @@ import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/related.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
-import 'package:violet/component/hiyobi/hiyobi.dart';
 import 'package:violet/component/image_provider.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/database/user/bookmark.dart';
@@ -605,15 +603,6 @@ class __CommentAreaState extends State<_CommentArea> {
     super.initState();
 
     Future.delayed(const Duration(milliseconds: 100)).then((value) async {
-      try {
-        final hiyobiComments =
-            await HiyobiManager.getComments(widget.queryResult.id().toString());
-        setState(() {
-          comments.addAll(hiyobiComments);
-          comments.sort((x, y) => x.item1.compareTo(y.item1));
-        });
-      } catch (_) {}
-
       if (widget.queryResult.ehash() != null) {
         final prefs = await SharedPreferences.getInstance();
         var cookie = prefs.getString('eh_cookies');
