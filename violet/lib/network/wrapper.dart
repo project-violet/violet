@@ -80,7 +80,7 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
     if (headers != null) request.headers.addAll(headers);
 
     final response = await client.send(request).timeout(
-      Duration(seconds: retry > 3 ? 1000000 : 3),
+      Duration(seconds: 3),
       onTimeout: () {
         timeout = true;
         throw TimeoutException('Timeout error');
