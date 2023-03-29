@@ -90,8 +90,11 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
           'E:$e\n'
           '$st');
       throttler.release();
-      if (!e.toString().contains('Timeout error')) throw e;
-      return StreamedResponse(const Stream.empty(), 200);
+      if (e.toString().contains('Timeout error') ||
+          e.toString().contains('Connection reset by peer')) {
+        return StreamedResponse(const Stream.empty(), 200);
+      }
+      throw e;
     });
 
     final res = await http.Response.fromStream(response);
