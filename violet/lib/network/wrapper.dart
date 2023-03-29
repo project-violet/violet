@@ -79,23 +79,27 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
     final request = http.Request('GET', Uri.parse(url))..followRedirects = true;
     if (headers != null) request.headers.addAll(headers);
 
-    final response = await client.send(request).timeout(
-      const Duration(seconds: 3),
-      onTimeout: () {
-        timeout = true;
-        throw TimeoutException('Timeout error');
-      },
-    ).catchError((e, st) {
+    StreamedResponse response;
+
+    try {
+      response = await client.send(request).timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          timeout = true;
+          throw TimeoutException('Timeout error');
+        },
+      );
+    } catch (e, st) {
       Logger.error('[Http Request] GET: $url\n'
           'E:$e\n'
           '$st');
       throttler.release();
-      if (e.toString().contains('Timeout error') ||
-          e.toString().contains('Connection reset by peer')) {
-        return StreamedResponse(const Stream.empty(), 200);
+      if (!(e.toString().contains('Timeout error') ||
+          e.toString().contains('Connection reset by peer'))) {
+        rethrow;
       }
-      throw e;
-    });
+      response = StreamedResponse(const Stream.empty(), 200);
+    }
 
     final res = await http.Response.fromStream(response);
 
