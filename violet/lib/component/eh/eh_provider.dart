@@ -69,8 +69,8 @@ class EHentaiImageProvider extends VioletImageProvider {
     if (urls[page] == null) {
       // 20item per page
       var ppage = page ~/ (isEHentai ? 40 : 20);
-      var phtml =
-          await EHSession.requestString('${pagesUrl[ppage]}&inline_set=ts_l');
+      var phtml = await EHSession.requestString(
+          '${pagesUrl[ppage]}&inline_set=ts_${isEHentai ? 'm' : 'l'}');
       var pages = EHParser.getImagesUrl(phtml);
 
       for (int i = 0; i < pages.length; i++) {
