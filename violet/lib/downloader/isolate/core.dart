@@ -216,8 +216,8 @@ Future<void> _processTask(IsolateDownloaderTask task) async {
         await Future.delayed(const Duration(milliseconds: 100));
       } catch (e) {
         if (!(e is DioError &&
-            e.type == DioErrorType.other &&
-            e.message.contains('Connection reset by peer'))) {
+            e.type == DioErrorType.connectionError &&
+            e.message!.contains('Connection reset by peer'))) {
           rethrow;
         }
       }
