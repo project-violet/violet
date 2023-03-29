@@ -80,7 +80,7 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
     if (headers != null) request.headers.addAll(headers);
 
     final response = await client.send(request).timeout(
-      Duration(seconds: 3),
+      const Duration(seconds: 3),
       onTimeout: () {
         timeout = true;
         throw TimeoutException('Timeout error');
@@ -90,7 +90,8 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
           'E:$e\n'
           '$st');
       throttler.release();
-      throw e;
+      if (!e.toString().contains('Timeout error')) throw e;
+      return StreamedResponse(const Stream.empty(), 200);
     });
 
     final res = await http.Response.fromStream(response);
