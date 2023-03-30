@@ -87,15 +87,19 @@ class DownloadRoutine {
   }
 
   Future<void> extractFilePath() async {
-    var inner = (await getApplicationDocumentsDirectory()).path;
-    var files = tasks!
+    final inner = (await getApplicationDocumentsDirectory()).path;
+    final files = tasks!
         .map((e) => join(
             Settings.useInnerStorage ? inner : Settings.downloadBasePath,
             e.format!
                 .formatting(HentaiDonwloadManager.instance().defaultFormat())))
         .toList();
     result['Files'] = jsonEncode(files);
-    // Extract Super Path
+    result['Path'] = _extractSuperPath(files);
+    await _updateItem();
+  }
+
+  String _extractSuperPath(List<String> files) {
     var cp = dirname(files[0]).split('/');
     var vp = cp.length;
     for (int i = 1; i < files.length; i++) {
@@ -107,9 +111,7 @@ class DownloadRoutine {
         }
       }
     }
-    var pp = cp.take(vp).join('/');
-    result['Path'] = pp;
-    await _updateItem();
+    return cp.take(vp).join('/');
   }
 
   Future<void> appendDownloadTasks({
@@ -117,11 +119,13 @@ class DownloadRoutine {
     required DoubleCallback downloadCallback,
     required VoidStringCallback errorCallback,
   }) async {
-    var downloader = await IsolateDownloader.getInstance();
+    final downloader = await IsolateDownloader.getInstance();
     var basepath = Settings.downloadBasePath;
+
     if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
     }
+
     downloader.appendTasks(tasks!.map((e) {
       e.downloadPath = join(
           basepath,
@@ -138,6 +142,7 @@ class DownloadRoutine {
 
       return e;
     }).toList());
+
     await _setState(3);
   }
 
@@ -148,14 +153,14 @@ class DownloadRoutine {
       basepath = (await getApplicationDocumentsDirectory()).path;
     }
 
-    var filenames = tasks!
+    final filenames = tasks!
         .map((e) => join(
             basepath,
             e.format!
                 .formatting(HentaiDonwloadManager.instance().defaultFormat())))
         .toList();
 
-    var invalidIndex = <int>[];
+    final invalidIndex = <int>[];
 
     for (var i = 0; i < filenames.length; i++) {
       var file = File(filenames[i]);
@@ -181,11 +186,13 @@ class DownloadRoutine {
     required DoubleCallback downloadCallback,
     required VoidStringCallback errorCallback,
   }) async {
-    var downloader = await IsolateDownloader.getInstance();
+    final downloader = await IsolateDownloader.getInstance();
     var basepath = Settings.downloadBasePath;
+
     if (Settings.useInnerStorage) {
       basepath = (await getApplicationDocumentsDirectory()).path;
     }
+
     downloader.appendTasks(invalidIndex.map((e) => tasks![e]).map((e) {
       e.downloadPath = join(
           basepath,
@@ -202,6 +209,7 @@ class DownloadRoutine {
 
       return e;
     }).toList());
+
     await _setState(3);
   }
 
