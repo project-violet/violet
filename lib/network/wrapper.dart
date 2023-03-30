@@ -21,17 +21,24 @@ class HttpWrapper {
   static Map<String, http.Response> cacheResponse = <String, http.Response>{};
 }
 
+bool _isScriptUrl(String url) {
+  const hosts = [
+    'ltn.hitomi.la',
+    'raw.githubusercontent.com/project-violet/violet-message-search'
+  ];
+
+  return hosts.any((element) => url.contains(element));
+}
+
 Future<http.Response> get(String url,
     {Map<String, String>? headers, Duration? timeout}) async {
-  if (url.contains('exhentai.org')) {
-    return await _ehentaiGet(url, HttpWrapper.throttlerExHentai,
-        headers: headers, timeout: timeout);
-  } else if (url.contains('e-hentai.org')) {
-    return await _ehentaiGet(url, HttpWrapper.throttlerEHentai,
-        headers: headers, timeout: timeout);
-  } else if (url.contains('ltn.hitomi.la') ||
-      url.contains(
-          'raw.githubusercontent.com/project-violet/violet-message-search')) {
+  if (url.contains('exhentai.org') || url.contains('e-hentai.org')) {
+    return await _ehentaiGet(
+      url,
+      headers: headers,
+      timeout: timeout,
+    );
+  } else if (_isScriptUrl(url)) {
     return await _scriptGet(url, headers: headers, timeout: timeout);
   }
 
@@ -57,11 +64,15 @@ Future<http.Response> post(String url,
   return res;
 }
 
-Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
+Future<http.Response> _ehentaiGet(String url,
     {Map<String, String>? headers, Duration? timeout}) async {
   if (HttpWrapper.cacheResponse.containsKey(url)) {
     return HttpWrapper.cacheResponse[url]!;
   }
+
+  var throttler = url.contains('exhentai.org')
+      ? HttpWrapper.throttlerExHentai
+      : HttpWrapper.throttlerEHentai;
 
   await throttler.acquire();
 
@@ -72,11 +83,13 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
 
   Logger.info('[Http Request] GET: $url');
   var retry = 0;
+
   while (true) {
     var timeout = false;
 
     final client = http.Client();
     final request = http.Request('GET', Uri.parse(url))..followRedirects = true;
+
     if (headers != null) request.headers.addAll(headers);
 
     StreamedResponse response;
@@ -116,6 +129,7 @@ Future<http.Response> _ehentaiGet(String url, Semaphore throttler,
     }
 
     Logger.info('[Http Request] GETS: $url');
+
     if (!HttpWrapper.cacheResponse.containsKey(url) && res.statusCode == 200) {
       HttpWrapper.cacheResponse[url] = res;
     }
