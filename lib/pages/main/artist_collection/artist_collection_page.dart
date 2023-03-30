@@ -29,7 +29,7 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
             .where((element) => element.value.length > 0)
             .length,
         itemBuilder: (context, index) {
-          var item = Artists.collection.entries
+          final item = Artists.collection.entries
               .where((element) => element.value.length > 0)
               .elementAt(index);
           var name = item.key['default'];
@@ -40,11 +40,11 @@ class _ArtistCollectionPageState extends State<ArtistCollectionPage> {
                 item.key[Translations.of(context).dbLanguageCode.split('_')[0]];
           }
 
-          var artists =
+          final artists =
               (item.value as List<String>).map((e) => e.trim()).join(', ');
 
           // https://imgur.com/a/dA2j0Za
-          var images = [
+          const images = [
             'https://i.imgur.com/38RAOYs.png', // 쾌락천
             'https://i.imgur.com/bXmRk4l.png', // 제로스
             'https://i.imgur.com/wk91Vmh.png', // 순애
