@@ -227,9 +227,9 @@ class HentaiManager {
                   count: article.length,
                   thumbnail: article.thumbnail,
                   pagesUrl: List<String>.generate(
-                      article.length ~/ 40,
+                      (article.length / 40).ceil(),
                       (index) =>
-                          'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=${index + 1}'),
+                          'https://e-hentai.org/g/${qr.id()}/${qr.ehash()}/?p=$index'),
                   isEHentai: true,
                 );
               }
@@ -243,9 +243,9 @@ class HentaiManager {
                   count: article.length,
                   thumbnail: article.thumbnail,
                   pagesUrl: List<String>.generate(
-                      article.length ~/ 40,
+                      (article.length / 40).ceil(),
                       (index) =>
-                          'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=${index + 1}'),
+                          'https://exhentai.org/g/${qr.id()}/${qr.ehash()}/?p=$index'),
                   isEHentai: false,
                 );
               }
