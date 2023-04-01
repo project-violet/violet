@@ -121,7 +121,7 @@ class DownloadItemWidgetState extends State<DownloadItemWidget>
           if (x.isEmpty) return;
           _shouldReload = true;
 
-          if (disposed) {
+          if (!disposed) {
             setState(() {
               isLastestRead = true;
               latestReadPage = x.first.lastPage()!;
