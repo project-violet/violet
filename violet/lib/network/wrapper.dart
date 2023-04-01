@@ -107,8 +107,8 @@ Future<http.Response> _ehentaiGet(String url,
           'E:$e\n'
           '$st');
       throttler.release();
-      if (!(e.toString().contains('Timeout error') ||
-          e.toString().contains('Connection reset by peer'))) {
+      if (!(timeout || e.toString().contains('Connection reset by peer')) ||
+          (timeout && retry > 10)) {
         rethrow;
       }
       response = StreamedResponse(const Stream.empty(), 200);
