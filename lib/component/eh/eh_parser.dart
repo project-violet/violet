@@ -92,47 +92,6 @@ class EHParser {
     return regex.allMatches(html).first.group(1)!;
   }
 
-  // ex: https://exhentai.org/g/1212168/421ef300a8/
-  // ex: https://exhentai.org/g/1212396/71a853083e/ //  5 pages
-  // ex: https://exhentai.org/g/1201400/48f9b8e20a/ // 43 pages
-  static List<String> getPagesUrl(String html) {
-    var doc = parse(html).querySelector('div.gtb');
-
-    var url = <String>[];
-    try {
-      var rr = doc!.querySelectorAll("table tbody tr td[onclick*='document']");
-      if (rr.isNotEmpty) {
-        doc
-            .querySelectorAll("table tbody tr td[onclick*='document']")
-            .forEach((element) {
-          var a = element.querySelector('a');
-          url.add(a!.attributes['href']!);
-        });
-      } else {
-        url.add(
-            '${doc.querySelector('table tbody tr td.ptds')!.querySelector('a')!.attributes['href']!}?p=0');
-      }
-    } catch (e) {
-      url.add(
-          '${doc!.querySelector('table tbody tr td.ptds')!.querySelector('a')!.attributes['href']!}?p=0');
-    }
-
-    int max = 0;
-    url.forEach((element) {
-      int value = int.parse(element.split('?p=')[1]);
-      if (max < value) max = value;
-    });
-
-    if (url.isEmpty) return url;
-
-    var result = <String>[];
-    var prefix = url[0].split('?p=')[0];
-    for (int i = 0; i <= max; i++) {
-      result.add('$prefix?p=$i');
-    }
-    return result;
-  }
-
   static EHArticle parseArticleData(String html) {
     var article = EHArticle();
     var h = parse(html);
