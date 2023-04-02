@@ -2,7 +2,6 @@
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tuple/tuple.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
 import 'package:violet/component/eh/eh_provider.dart';

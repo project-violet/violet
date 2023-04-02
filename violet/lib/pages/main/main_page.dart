@@ -8,7 +8,6 @@ import 'dart:ui';
 
 import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
@@ -67,6 +66,7 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
   @override
   VoidCallback? get shouldReloadCallback => null;
 
+  /*
   @override
   void initState() {
     super.initState();
@@ -93,6 +93,7 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
     //   }
     // });
   }
+   */
 
   @override
   Widget build(BuildContext context) {

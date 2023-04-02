@@ -32,8 +32,15 @@ class _UserManualPageState extends State<UserManualPage> {
               physics: const BouncingScrollPhysics(),
               selectable: true,
               onTapLink: (text, href, title) async {
-                if (await canLaunch(href!)) {
-                  await launch(href);
+                if (href == null) {
+                  return;
+                }
+                final url = Uri.tryParse(href);
+                if (url == null) {
+                  return;
+                }
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
                 }
               },
               data: (snapshot.data as String).replaceAll('![](',

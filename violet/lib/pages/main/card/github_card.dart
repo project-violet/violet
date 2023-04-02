@@ -30,9 +30,9 @@ class _GithubCardState extends State<GithubCard> {
             setState(() => pressed = isTapped);
           })
           ..onTapUp((detail) async {
-            const url = 'https://github.com/project-violet/';
-            if (await canLaunch(url)) {
-              await launch(url);
+            final url = Uri.parse('https://github.com/project-violet/');
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url);
             }
           }),
         child: Container(
