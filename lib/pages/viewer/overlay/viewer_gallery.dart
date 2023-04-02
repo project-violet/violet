@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
 import 'package:violet/pages/segment/card_panel.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
-import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/search_bar.dart';
 

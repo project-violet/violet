@@ -13,7 +13,6 @@ import 'package:violet/pages/artist_info/search_type2.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
-import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
 import 'package:violet/widgets/search_bar.dart';

@@ -30,10 +30,15 @@ class _ContactCardState extends State<ContactCard> {
             setState(() => pressed = isTapped);
           })
           ..onTapUp((detail) async {
-            const url =
-                'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-            if (await canLaunch(url)) {
-              await launch(url);
+            final url = Uri(
+              scheme: 'mailto',
+              path: 'violet.dev.master@gmail.com',
+              queryParameters: {
+                'subject': '[App Issue] ',
+              },
+            );
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url);
             }
           }),
         child: Container(
