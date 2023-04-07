@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:violet/log/log.dart';
-import 'package:violet/other/dialogs.dart';
 import 'package:violet/script/script_manager.dart';
 import 'package:violet/settings/settings.dart';
 

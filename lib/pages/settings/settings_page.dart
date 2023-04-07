@@ -602,9 +602,9 @@ class _SettingsPageState extends State<SettingsPage>
               trailing: const Icon(Icons.open_in_new),
             ),
             onTap: () async {
-              const url = 'https://discord.gg/K8qny6E';
-              if (await canLaunch(url)) {
-                await launch(url);
+              final url = Uri.parse('https://discord.gg/K8qny6E');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
               }
             },
           ),
@@ -617,10 +617,15 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.of(context).trans('contact')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              const url =
-                  'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-              if (await canLaunch(url)) {
-                await launch(url);
+              final url = Uri(
+                scheme: 'mailto',
+                path: 'violet.dev.master@gmail.com',
+                queryParameters: {
+                  'subject': '[App Issue] ',
+                },
+              );
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
               }
             },
           ),
@@ -2489,10 +2494,9 @@ class _SettingsPageState extends State<SettingsPage>
                 return;
               }
 
-              const url =
-                  'https://github.com/project-violet/violet/releases/latest';
-              if (await canLaunch(url)) {
-                await launch(url);
+              final url = Uri.parse('https://github.com/project-violet/violet/releases/latest');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
               }
             },
           ),
@@ -2521,9 +2525,9 @@ class _SettingsPageState extends State<SettingsPage>
                 trailing: const Icon(Icons.open_in_new),
               ),
               onTap: () async {
-                const url = 'https://discord.gg/K8qny6E';
-                if (await canLaunchUrl(Uri.parse(url))) {
-                  await launchUrl(Uri.parse(url));
+                final url = Uri.parse('https://discord.gg/K8qny6E');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
                 }
               },
             ),
@@ -2538,9 +2542,9 @@ class _SettingsPageState extends State<SettingsPage>
                   Text('GitHub ${Translations.of(context).trans('project')}'),
               trailing: const Icon(Icons.open_in_new),
               onTap: () async {
-                const url = 'https://github.com/project-violet/';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final url = Uri.parse('https://github.com/project-violet/');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
                 }
               },
             )
@@ -2560,9 +2564,9 @@ class _SettingsPageState extends State<SettingsPage>
                 trailing: const Icon(Icons.open_in_new),
               ),
               onTap: () async {
-                const url = 'https://github.com/project-violet/';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final url = Uri.parse('https://github.com/project-violet/');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
                 }
               },
             ),
@@ -2576,10 +2580,15 @@ class _SettingsPageState extends State<SettingsPage>
               title: Text(Translations.of(context).trans('contact')),
               trailing: const Icon(Icons.keyboard_arrow_right),
               onTap: () async {
-                const url =
-                    'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-                if (await canLaunch(url)) {
-                  await launch(url);
+                final url = Uri(
+                  scheme: 'mailto',
+                  path: 'violet.dev.master@gmail.com',
+                  queryParameters: {
+                    'subject': '[App Issue] ',
+                  },
+                );
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
                 }
               },
             ),
@@ -2594,9 +2603,9 @@ class _SettingsPageState extends State<SettingsPage>
                 // Icons.email,
                 Icons.open_in_new),
             onTap: () async {
-              const url = 'https://www.patreon.com/projectviolet';
-              if (await canLaunch(url)) {
-                await launch(url);
+              final url = Uri.parse('https://www.patreon.com/projectviolet');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
               }
             },
           ),
@@ -2611,9 +2620,9 @@ class _SettingsPageState extends State<SettingsPage>
                 // Icons.email,
                 Icons.keyboard_arrow_right),
             onTap: () async {
-              // const url = 'https://www.patreon.com/projectviolet';
-              // if (await canLaunch(url)) {
-              //   await launch(url);
+              // final url = Uri.parse('https://www.patreon.com/projectviolet');
+              // if (await canLaunchUrl(url)) {
+              //   await launchUrl(url);
               // }
             },
           ),
