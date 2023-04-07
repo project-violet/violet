@@ -78,10 +78,10 @@ class _InfoPageState extends State<InfoPage> {
                 '향후 동향과 역사를 살펴보세요!',
                 null,
                 () async {
-                  const url =
-                      'https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45';
-                  if (await canLaunch(url)) {
-                    await launch(url);
+                  final url =
+                      Uri.parse('https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
                   }
                 },
               ),
@@ -98,10 +98,15 @@ class _InfoPageState extends State<InfoPage> {
                 '개발자에게 연락해보세요!',
                 null,
                 () async {
-                  const url =
-                      'mailto:violet.dev.master@gmail.com?subject=[App Issue] &body=';
-                  if (await canLaunch(url)) {
-                    await launch(url);
+                  final url = Uri(
+                    scheme: 'mailto',
+                    path: 'violet.dev.master@gmail.com',
+                    queryParameters: {
+                      'subject': '[App Issue] ',
+                    },
+                  );
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
                   }
                 },
               ),
@@ -114,9 +119,9 @@ class _InfoPageState extends State<InfoPage> {
                 '개발자와 소통해보세요!',
                 null,
                 () async {
-                  const url = 'https://discord.gg/K8qny6E';
-                  if (await canLaunch(url)) {
-                    await launch(url);
+                  final url = Uri.parse('https://discord.gg/K8qny6E');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
                   }
                 },
               ),
@@ -128,9 +133,9 @@ class _InfoPageState extends State<InfoPage> {
                 '프로젝트에 기여해보세요!',
                 null,
                 () async {
-                  const url = 'https://github.com/project-violet/violet';
-                  if (await canLaunch(url)) {
-                    await launch(url);
+                  final url = Uri.parse('https://github.com/project-violet/violet');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url);
                   }
                 },
               ),

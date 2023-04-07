@@ -16,7 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:uuid/uuid.dart';
 import 'package:violet/component/eh/eh_headers.dart';
 import 'package:violet/component/eh/eh_parser.dart';
@@ -38,7 +38,6 @@ import 'package:violet/pages/artist_info/article_list_page.dart';
 import 'package:violet/pages/artist_info/artist_info_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/main/info/lab/search_comment_author.dart';
-import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/viewer/viewer_page.dart';
 import 'package:violet/pages/viewer/viewer_page_provider.dart';
@@ -856,8 +855,8 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       var match = ehPattern.allMatches(url);
       var id = match.first.namedGroup('id')!.trim();
       _showArticleInfo(int.parse(id));
-    } else if (await canLaunch(url)) {
-      await launch(url);
+    } else if (await canLaunchUrlString(url)) {
+      await launchUrlString(url);
     }
   }
 
@@ -1004,7 +1003,7 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) {
     var tagDisplayed = name;
     Color color = Colors.grey;
-    Color avatarBg = Colors.grey.shade600;
+    // Color avatarBg = Colors.grey.shade600;
 
     if (Settings.translateTags) {
       tagDisplayed =
@@ -1012,9 +1011,9 @@ class _Chip extends StatelessWidget {
     }
 
     if (group == 'female') {
-      avatarBg = color = Colors.pink.shade400;
+      // avatarBg = color = Colors.pink.shade400;
     } else if (group == 'male') {
-      avatarBg = color = Colors.blue;
+      // avatarBg = color = Colors.blue;
     } else if (group == 'prefix') {
       color = Colors.orange;
     } else if (group == 'id') {
