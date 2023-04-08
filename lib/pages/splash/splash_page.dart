@@ -267,8 +267,11 @@ class _SplashPageState extends State<SplashPage> {
       // We must show main page to user anyway
       Navigator.of(context).pushReplacementNamed('/AfterLoading');
     } else {
+      setState(() {
+        showMessage = false;
+      });
       if (!widget.switching) {
-        await Future.delayed(const Duration(milliseconds: 1400));
+        await Future.delayed(const Duration(milliseconds: 1000));
       }
       setState(() {
         showFirst = true;

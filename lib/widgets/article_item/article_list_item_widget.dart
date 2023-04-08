@@ -3,7 +3,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -19,7 +18,6 @@ import 'package:violet/context/modal_bottom_sheet_context.dart';
 import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/database/user/record.dart';
 import 'package:violet/locale/locale.dart' as locale;
-import 'package:violet/log/log.dart';
 import 'package:violet/model/article_info.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
@@ -728,7 +726,7 @@ class ModalInsideModal extends StatelessWidget {
           reverse: reverse,
           shrinkWrap: true,
           controller: ModalScrollController.of(context),
-          physics: ClampingScrollPhysics(),
+          physics: const ClampingScrollPhysics(),
           children: ListTile.divideTiles(
               context: context,
               tiles: List.generate(

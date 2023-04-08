@@ -30,9 +30,9 @@ class _DiscordCardState extends State<DiscordCard> {
             setState(() => pressed = isTapped);
           })
           ..onTapUp((detail) async {
-            const url = 'https://discord.gg/K8qny6E';
-            if (await canLaunch(url)) {
-              await launch(url);
+            final url = Uri.parse('https://discord.gg/K8qny6E');
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url);
             }
           }),
         child: Container(
