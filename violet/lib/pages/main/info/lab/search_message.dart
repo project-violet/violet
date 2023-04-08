@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
-import 'package:violet/component/downloadable.dart';
 import 'package:violet/component/hentai.dart';
 import 'package:violet/component/hitomi/tag_translate.dart';
 import 'package:violet/component/image_provider.dart';

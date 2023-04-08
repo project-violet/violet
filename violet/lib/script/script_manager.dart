@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_js/flutter_js.dart';
 import 'package:html/parser.dart';
 import 'package:tuple/tuple.dart';
@@ -29,10 +30,14 @@ class ScriptManager {
     try {
       final scriptHtml = (await http.get(_scriptNoCDNUrl)).body;
       _scriptCache = parse(scriptHtml).querySelector('table')!.text;
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
     try {
       _v4Cache = (await http.get(_scriptV4)).body;
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
     _latestUpdate = DateTime.now();
     _initRuntime();
   }

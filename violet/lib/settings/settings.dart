@@ -401,10 +401,12 @@ class Settings {
       downloadBasePath = ext!.path;
     }
 
+    /*
     if (downloadBasePath == null) {
       final String path = await ExtStorage.getExternalStorageDirectory();
       downloadBasePath = join(path, '.violet');
     }
+     */
 
     return downloadBasePath;
   }
