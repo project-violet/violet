@@ -22,6 +22,13 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2023, 4, 8),
+    version: '1.28.4 Patch',
+    contents: [
+      'fix e-hentai request bug (comment, 40> 140> 240> page load is not worked)',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2023, 2, 12),
     version: '1.28.3 Patch',
     contents: [
