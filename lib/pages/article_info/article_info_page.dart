@@ -1003,7 +1003,6 @@ class _Chip extends StatelessWidget {
   Widget build(BuildContext context) {
     var tagDisplayed = name;
     Color color = Colors.grey;
-    // Color avatarBg = Colors.grey.shade600;
 
     if (Settings.translateTags) {
       tagDisplayed =
@@ -1011,9 +1010,9 @@ class _Chip extends StatelessWidget {
     }
 
     if (group == 'female') {
-      // avatarBg = color = Colors.pink.shade400;
+      color = Colors.pink.shade400;
     } else if (group == 'male') {
-      // avatarBg = color = Colors.blue;
+      color = Colors.blue;
     } else if (group == 'prefix') {
       color = Colors.orange;
     } else if (group == 'id') {
