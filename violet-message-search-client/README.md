@@ -5,7 +5,7 @@
 ## How To Use?
 
 1. Install node.js & gallery-dl
-2. Extract [korean-build](https://github.com/project-violet/violet-message-search-local/releases/download/0.1/dist-kor.zip)(release) or [english-build](https://github.com/project-violet/violet-message-search-local/releases/download/0.1/dist-eng.zip)(beta)
+2. Extract [korean-build](https://github.com/project-violet/violet-message-search-local/releases/download/0.2/dist-kor.zip)(release ~2023.03) or [english-build](https://github.com/project-violet/violet-message-search-local/releases/download/0.1/dist-eng.zip)(beta)
 3. Run run.bat, run-server.bat! If you want to use this on macOS or linux, you must build [fast-search](https://github.com/project-violet/violet-message-search-core/tree/master/fast-search) yourself.
 4. Open http://localhost:8088/home/ in browser!
 
