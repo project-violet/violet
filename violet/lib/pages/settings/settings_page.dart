@@ -2494,7 +2494,8 @@ class _SettingsPageState extends State<SettingsPage>
                 return;
               }
 
-              final url = Uri.parse('https://github.com/project-violet/violet/releases/latest');
+              final url = Uri.parse(
+                  'https://github.com/project-violet/violet/releases/latest');
               if (await canLaunchUrl(url)) {
                 await launchUrl(url);
               }
@@ -2688,7 +2689,7 @@ class _SettingsPageState extends State<SettingsPage>
               ),
             ),
             Text(
-              'Copyright (C) 2020-2022 by project-violet',
+              'Copyright (C) 2020-2023 by project-violet',
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
