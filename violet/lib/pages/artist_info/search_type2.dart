@@ -99,7 +99,7 @@ class SearchType2 extends StatelessWidget {
                                   color: getColor(4))),
                           title: Text(
                             Translations.of(context).trans('srt4'),
-                            style: TextStyle(color: getColor(3)),
+                            style: TextStyle(color: getColor(4)),
                           ),
                           onTap: () async {
                             Navigator.pop(context, 4);
