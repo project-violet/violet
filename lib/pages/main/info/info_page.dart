@@ -78,8 +78,8 @@ class _InfoPageState extends State<InfoPage> {
                 '향후 동향과 역사를 살펴보세요!',
                 null,
                 () async {
-                  final url =
-                      Uri.parse('https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45');
+                  final url = Uri.parse(
+                      'https://www.notion.so/Violet-WalkRoad-1bd9b8bf4bbf48dd81525f2acd19da45');
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url);
                   }
@@ -133,7 +133,8 @@ class _InfoPageState extends State<InfoPage> {
                 '프로젝트에 기여해보세요!',
                 null,
                 () async {
-                  final url = Uri.parse('https://github.com/project-violet/violet');
+                  final url =
+                      Uri.parse('https://github.com/project-violet/violet');
                   if (await canLaunchUrl(url)) {
                     await launchUrl(url);
                   }
@@ -172,7 +173,7 @@ class _InfoPageState extends State<InfoPage> {
               ),
             ),
             Text(
-              'Copyright (C) 2020-2022 by project-violet',
+              'Copyright (C) 2020-2023 by project-violet',
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,

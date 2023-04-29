@@ -244,7 +244,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             buildButton(Icons.settings, 4, 'settings'),
             const Spacer(),
             Text(
-              'Copyright (C) 2020-2022\nby project-violet',
+              'Copyright (C) 2020-2023\nby project-violet',
               style: TextStyle(
                 color: Settings.themeWhat ? Colors.white : Colors.black87,
                 fontSize: 12.0,
