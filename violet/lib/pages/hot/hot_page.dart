@@ -228,7 +228,12 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
                 ? const Color(0xFF060606)
                 : Colors.grey.shade900.withOpacity(0.90)
             : Colors.grey.shade50,
-        icon: const Icon(MdiIcons.finance),
+        icon: Theme(
+          data: ThemeData(
+              iconTheme: IconThemeData(
+                  color: !Settings.themeWhat ? Colors.black : Colors.white)),
+          child: const Icon(MdiIcons.finance),
+        ),
         itemBuilder: (ctx) => [
           _buildPopupMenuItem('daily', 0, Icons.star),
           _buildPopupMenuItem('weekly', 1, MdiIcons.calendarWeek),
@@ -251,8 +256,13 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            iconData,
+          Theme(
+            data: ThemeData(
+                iconTheme: IconThemeData(
+                    color: !Settings.themeWhat ? Colors.black : Colors.white)),
+            child: Icon(
+              iconData,
+            ),
           ),
           const SizedBox(width: 8),
           Text(Translations.instance!.trans(title)),
