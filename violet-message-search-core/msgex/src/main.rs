@@ -5,6 +5,7 @@ use std::{
 
 use aho_corasick::AhoCorasick;
 use indicatif::ProgressBar;
+use itertools::{izip, Itertools};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_reader, Value};
 
@@ -14,6 +15,13 @@ struct SingleMessage {
     page: i64,
     score: f64,
     msg: String,
+}
+
+struct SingleMessageSOA {
+    article_id: Vec<i64>,
+    page: Vec<i64>,
+    score: Vec<f64>,
+    msg: Vec<String>,
 }
 
 fn merge_caches() {
@@ -145,4 +153,201 @@ fn extract_token_search_usage() {
     fs::write("result", result).unwrap();
 }
 
-fn main() {}
+fn extract_token_connector_by_sentence() {
+    let wordcand_map = load_wordcand();
+    let wordcand = map_sort_by_key(&wordcand_map);
+
+    let filtered_word: Vec<_> = wordcand
+        .iter()
+        .filter(|x| !x.0.contains(' '))
+        .map(|x| &x.0[..])
+        .collect();
+
+    let ac = AhoCorasick::builder()
+        .match_kind(aho_corasick::MatchKind::LeftmostFirst)
+        .build(&filtered_word)
+        .unwrap();
+    let mut conn: HashMap<&str, HashMap<&str, i64>> = HashMap::new();
+
+    let messages = load_messages();
+
+    let bar = ProgressBar::new(messages.len() as u64);
+    for msg in messages {
+        for mat1 in ac.find_iter(&msg.msg) {
+            for mat2 in ac.find_iter(&msg.msg) {
+                *conn
+                    .entry(filtered_word[mat1.pattern().as_usize()])
+                    .or_default()
+                    .entry(filtered_word[mat2.pattern().as_usize()])
+                    .or_default() += 1
+            }
+        }
+        bar.inc(1);
+    }
+    bar.finish();
+
+    fs::write(
+        "word-conn-sen.json",
+        simd_json::to_string_pretty(&conn).unwrap(),
+    )
+    .unwrap();
+}
+
+fn load_conn_sen() -> HashMap<String, HashMap<String, i64>> {
+    let file = File::open("./word-conn-sen.json").unwrap();
+    simd_json::serde::from_reader(file).unwrap()
+}
+
+fn extract_token_connector_by_page() {
+    let wordcand_map = load_wordcand();
+    let wordcand = map_sort_by_key(&wordcand_map);
+
+    let filtered_word: Vec<_> = wordcand
+        .iter()
+        // .filter(|x| !x.0.contains(' '))
+        .filter(|x| {
+            !x.0.contains(" ") && x.0.chars().count() < 8 && x.0.chars().count() > 1 && *x.1 > 100
+        })
+        .map(|x| &x.0[..])
+        .collect();
+
+    let ac = AhoCorasick::builder()
+        .match_kind(aho_corasick::MatchKind::LeftmostFirst)
+        .build(&filtered_word)
+        .unwrap();
+    let mut conn: HashMap<&str, HashMap<&str, i64>> = HashMap::new();
+
+    let messages = load_messages();
+
+    let bar = ProgressBar::new(
+        messages
+            .iter()
+            .group_by(|msg| (msg.article_id, msg.page))
+            .into_iter()
+            .count() as u64,
+    );
+
+    for msg in messages
+        .iter()
+        .group_by(|msg| (msg.article_id, msg.page))
+        .into_iter()
+    {
+        let msg_con = msg.1.map(|x| &x.msg).join(" ");
+        for mat1 in ac.find_iter(&msg_con) {
+            for mat2 in ac.find_iter(&msg_con) {
+                if mat1.pattern() == mat2.pattern() {
+                    continue;
+                }
+
+                *conn
+                    .entry(filtered_word[mat1.pattern().as_usize()])
+                    .or_default()
+                    .entry(filtered_word[mat2.pattern().as_usize()])
+                    .or_default() += 1
+            }
+        }
+        bar.inc(1);
+    }
+    bar.finish();
+
+    // let mut result: Vec<(&str, Vec<(&&str, &i64)>)> = Vec::new();
+
+    // conn.iter()
+    //     .for_each(|x| result.push((x.0, map_sort_by_key(x.1))));
+
+    fs::write(
+        "word-conn-page3.json",
+        simd_json::to_string_pretty(&conn).unwrap(),
+    )
+    .unwrap();
+}
+
+fn load_conn_page() -> HashMap<String, HashMap<String, i64>> {
+    let file = File::open("./word-conn-page.json").unwrap();
+    simd_json::serde::from_reader(file).unwrap()
+}
+
+fn extract_token_connector_by_article() {
+    let wordcand_map = load_wordcand();
+    let wordcand = map_sort_by_key(&wordcand_map);
+
+    let filtered_word: Vec<_> = wordcand
+        .iter()
+        // .filter(|x| !x.0.contains(' '))
+        .filter(|x| {
+            !x.0.contains(" ") && x.0.chars().count() < 8 && x.0.chars().count() > 1 && *x.1 > 100
+        })
+        .map(|x| &x.0[..])
+        .collect();
+
+    let ac = AhoCorasick::builder()
+        .match_kind(aho_corasick::MatchKind::LeftmostFirst)
+        .build(&filtered_word)
+        .unwrap();
+    let mut conn: HashMap<&str, HashMap<&str, i64>> = HashMap::new();
+
+    let messages = load_messages();
+
+    let bar = ProgressBar::new(
+        messages
+            .iter()
+            .group_by(|msg| msg.article_id)
+            .into_iter()
+            .count() as u64,
+    );
+
+    for msg in messages.iter().group_by(|msg| msg.article_id).into_iter() {
+        let msg_con = msg.1.map(|x| &x.msg).join(" ");
+        for mat1 in ac.find_iter(&msg_con) {
+            for mat2 in ac.find_iter(&msg_con) {
+                if mat1.pattern() == mat2.pattern() {
+                    continue;
+                }
+
+                *conn
+                    .entry(filtered_word[mat1.pattern().as_usize()])
+                    .or_default()
+                    .entry(filtered_word[mat2.pattern().as_usize()])
+                    .or_default() += 1
+            }
+        }
+        bar.inc(1);
+    }
+    bar.finish();
+
+    // let mut result: Vec<(&str, Vec<(&&str, &i64)>)> = Vec::new();
+
+    // conn.iter()
+    //     .for_each(|x| result.push((x.0, map_sort_by_key(x.1))));
+
+    fs::write(
+        "word-conn-article.json",
+        simd_json::to_string_pretty(&conn).unwrap(),
+    )
+    .unwrap();
+}
+
+fn load_conn_article() -> HashMap<String, HashMap<String, i64>> {
+    let file = File::open("./word-conn-article.json").unwrap();
+    simd_json::serde::from_reader(file).unwrap()
+}
+
+fn main() {
+    let conn = load_conn_article();
+
+    let ex = map_sort_by_key(&conn["임신"]);
+
+    for e in ex.iter().filter(|x| x.0.chars().count() > 1).take(100) {
+        println!("{:?}", e);
+    }
+
+    // let wordcand_map = load_wordcand();
+    // let wordcand = map_sort_by_key(&wordcand_map);
+
+    // for w in wordcand.iter().filter(|x| {
+    //     !x.0.contains(" ") && x.0.chars().count() < 8 && x.0.chars().count() > 1 && *x.1 > 30
+    // }) {
+    //     println!("{:?}", w);
+    // }
+    // extract_token_connector_by_article();
+}
