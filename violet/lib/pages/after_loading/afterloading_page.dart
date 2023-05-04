@@ -3,6 +3,7 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -297,7 +298,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
         drawer: _usesDrawer ? _buildDrawer(context) : null,
         body: Stack(
           children: [
-            const ScriptWebView(),
+            if (kReleaseMode) const ScriptWebView(),
             PageView(
               controller: _pageController,
               physics:
