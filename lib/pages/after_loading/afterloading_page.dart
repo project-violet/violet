@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -16,6 +17,7 @@ import 'package:violet/pages/hot/hot_page.dart';
 import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
+import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/settings/settings_page.dart';
 import 'package:violet/script/script_webview.dart';
 import 'package:violet/settings/settings.dart';
@@ -91,6 +93,11 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
 
   DateTime? _lastPopAt;
 
+  bool _isDoubleTap = false;
+
+  late final List<GlobalKey<State>> _widgetKeys =
+      List.generate(7, (index) => GlobalKey());
+
   Widget _buildBottomNavigationBar(BuildContext context) {
     final translations = Translations.of(context);
 
@@ -122,11 +129,27 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             : null,
         currentIndex: _currentPage,
         onTap: (index) {
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-          );
+          if (_pageController.page != index) {
+            _pageController.animateToPage(
+              index,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+            );
+          } else {
+            if (_isDoubleTap) {
+              // something to do for double tap
+              if (index >= 2 || Settings.liteMode) index += 1;
+              (_widgetKeys[index].currentState as DoubleTapToTopMixin)
+                  .animateToTop();
+
+              _isDoubleTap = false;
+              return;
+            }
+
+            _isDoubleTap = true;
+            Timer(
+                const Duration(milliseconds: 200), () => _isDoubleTap = false);
+          }
         },
         items: <BottomNavigationBarItem>[
           if (!Settings.liteMode) buildItem(MdiIcons.home, 'main'),
@@ -307,12 +330,12 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                 setState(() {});
               },
               children: <Widget>[
-                if (!Settings.liteMode) const MainPage(),
-                const SearchPage(),
-                if (Settings.liteMode) const HotPage(),
-                const BookmarkPage(),
-                const DownloadPage(),
-                const SettingsPage(),
+                if (!Settings.liteMode) MainPage(key: _widgetKeys[0]),
+                SearchPage(key: _widgetKeys[1]),
+                if (Settings.liteMode) HotPage(key: _widgetKeys[2]),
+                BookmarkPage(key: _widgetKeys[3]),
+                DownloadPage(key: _widgetKeys[4]),
+                SettingsPage(key: _widgetKeys[5]),
               ],
             ),
           ],
