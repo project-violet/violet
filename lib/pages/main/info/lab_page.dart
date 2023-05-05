@@ -313,7 +313,7 @@ class _LaboratoryPageState extends State<LaboratoryPage> {
               _buildItem(
                 const Icon(MdiIcons.chartBar, size: 40, color: Colors.lime),
                 '#017 Statistics',
-                'Lab Settings',
+                'Statistics',
                 null,
                 () async {
                   _navigate(const Statistics());
