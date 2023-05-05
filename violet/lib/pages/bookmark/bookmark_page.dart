@@ -14,6 +14,7 @@ import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/bookmark/group/group_article_list_page.dart';
 import 'package:violet/pages/bookmark/group_modify.dart';
 import 'package:violet/pages/bookmark/record_view_page.dart';
+import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
@@ -28,7 +29,7 @@ class BookmarkPage extends StatefulWidget {
 }
 
 class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
-    with AutomaticKeepAliveClientMixin<BookmarkPage> {
+    with AutomaticKeepAliveClientMixin<BookmarkPage>, DoubleTapToTopMixin {
   @override
   bool get wantKeepAlive => true;
   // List<Widget> _rows;
@@ -122,7 +123,8 @@ class _BookmarkPageState extends ThemeSwitchableState<BookmarkPage>
 
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    final scrollController = PrimaryScrollController.of(context);
+    final scrollController =
+        doubleTapToTopScrollController = PrimaryScrollController.of(context);
 
     final rows = _buildRowItems(snapshot.data!, reorder);
 

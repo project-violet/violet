@@ -38,6 +38,7 @@ import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/patchnote/patchnote_page.dart';
 import 'package:violet/pages/main/views/views_page.dart';
+import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
@@ -56,7 +57,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends ThemeSwitchableState<MainPage>
-    with AutomaticKeepAliveClientMixin<MainPage> {
+    with AutomaticKeepAliveClientMixin<MainPage>, DoubleTapToTopMixin {
   @override
   bool get wantKeepAlive => true;
   // int count = 0;

@@ -28,6 +28,7 @@ import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_controller.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
 import 'package:violet/pages/search/search_type.dart';
+import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
@@ -49,7 +50,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends ThemeSwitchableState<SearchPage>
-    with AutomaticKeepAliveClientMixin<SearchPage> {
+    with AutomaticKeepAliveClientMixin<SearchPage>, DoubleTapToTopMixin {
   @override
   bool get wantKeepAlive => widget.searchKeyWord == null;
 
@@ -117,6 +118,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     super.didChangeDependencies();
     welcomeMessage();
     c.initScroll(context);
+    doubleTapToTopScrollController = c.scrollController;
   }
 
   bool _shouldReload = false;

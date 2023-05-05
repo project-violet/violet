@@ -12,6 +12,7 @@ import 'package:violet/component/hitomi/hitomi.dart';
 import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/model/article_list_item.dart';
+import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/article_item/article_list_item_widget.dart';
@@ -28,7 +29,7 @@ class HotPage extends StatefulWidget {
 typedef RequestType = Tuple2<int, List<Tuple2<QueryResult, int>>?>;
 
 class _HotPageState extends ThemeSwitchableState<HotPage>
-    with AutomaticKeepAliveClientMixin<HotPage> {
+    with AutomaticKeepAliveClientMixin<HotPage>, DoubleTapToTopMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -148,7 +149,7 @@ class _HotPageState extends ThemeSwitchableState<HotPage>
 
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            controller: ScrollController(),
+            controller: doubleTapToTopScrollController = ScrollController(),
             slivers: <Widget>[
               SliverPersistentHeader(
                 floating: true,

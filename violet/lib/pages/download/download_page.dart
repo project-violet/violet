@@ -28,6 +28,7 @@ import 'package:violet/pages/download/download_align_type.dart';
 import 'package:violet/pages/download/download_features_menu.dart';
 import 'package:violet/pages/download/download_item_widget.dart';
 import 'package:violet/pages/download/download_view_type.dart';
+import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/filter_page.dart';
 import 'package:violet/pages/segment/filter_page_controller.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
@@ -55,7 +56,7 @@ class DownloadPage extends StatefulWidget {
 }
 
 class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
-    with AutomaticKeepAliveClientMixin<DownloadPage> {
+    with AutomaticKeepAliveClientMixin<DownloadPage>, DoubleTapToTopMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -213,7 +214,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         child: CustomScrollView(
           // key: key,
           // cacheExtent: height * 100,
-          controller: ScrollController(),
+          controller: doubleTapToTopScrollController = ScrollController(),
           physics: const BouncingScrollPhysics(),
           slivers: <Widget>[
             SliverPersistentHeader(

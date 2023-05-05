@@ -44,6 +44,7 @@ import 'package:violet/pages/main/info/lab/recent_record_u.dart';
 import 'package:violet/pages/main/info/lab_page.dart';
 import 'package:violet/pages/main/info/user_manual_page.dart';
 import 'package:violet/pages/main/patchnote/patchnote_page.dart';
+import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/settings/bookmark_version_select.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
@@ -151,7 +152,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage>
-    with AutomaticKeepAliveClientMixin<SettingsPage> {
+    with AutomaticKeepAliveClientMixin<SettingsPage>, DoubleTapToTopMixin {
   final FlareControls _flareController = FlareControls();
   bool _themeSwitch = false;
   late final FToast flutterToast;
@@ -194,7 +195,7 @@ class _SettingsPageState extends State<SettingsPage>
     return SingleChildScrollView(
       padding: EdgeInsets.only(top: statusBarHeight),
       physics: const BouncingScrollPhysics(),
-      controller: ScrollController(),
+      controller: doubleTapToTopScrollController = ScrollController(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: _cachedGroups!,
