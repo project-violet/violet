@@ -53,7 +53,7 @@ dependencies:
   country_pickers: ^2.0.0
   crypto:
   # device_info: ^2.0.0
-  device_info_plus: ^3.2.1
+  device_info_plus: ^9.0.2
   dio: ^5.0.0
   dio_cache_interceptor: ^3.3.1
   division: ^0.9.0
@@ -65,9 +65,9 @@ dependencies:
   expandable: ^5.0.1
   ext_storage:
     git: https://github.com/violet-dev/ext_storage
-  extended_image: ^6.2.0
-  ffi: ^1.1.2
-  file_picker: ^4.3.1
+  extended_image: ^8.0.2
+  ffi: ^2.0.2
+  file_picker: ^5.2.11
   firebase_core: ^2.5.0
   firebase_analytics: ^10.1.1
   firebase_crashlytics: ^3.0.12
@@ -88,8 +88,7 @@ dependencies:
     git: https://github.com/mfrischbutter/flutter_staggered_animations
   flutter_svg: ^0.21.0+1
   flutter_typeahead: ^4.0.0
-  flutter_js:
-    git: https://github.com/violet-dev/flutter_js
+  flutter_js: ^0.7.0
   flutter_windowmanager: ^0.2.0
   fluttertoast: ^8.0.9
   freezed_annotation:
@@ -106,13 +105,12 @@ dependencies:
   material_design_icons_flutter: ^5.0.6595
   mdi: ^5.0.0-nullsafety.0
   modal_bottom_sheet: ^3.0.0-pre
-  open_file:
-    git: https://github.com/violet-dev/open_file
+  open_file: ^3.3.1
   optimized_cached_image: ^3.0.0
   path:
-  path_provider: ^2.0.8
+  path_provider: ^2.0.15
   permission_handler: ^8.3.0
-  photo_view: ^0.13.0
+  photo_view: ^0.14.0
   platform: ^3.1.0
   pimp_my_button:
     git: https://github.com/MichaelMarner/pimp_my_button
@@ -126,7 +124,7 @@ dependencies:
   tuple:
   url_launcher: ^6.1.10
   uuid:
-  wakelock: ^0.6.1+2
+  # wakelock: ^0.6.2
   webview_flutter: ^3.0.0
   collection: ^1.16.0
   octo_image: ^1.0.2

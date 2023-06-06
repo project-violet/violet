@@ -28,7 +28,6 @@ import 'package:violet/pages/lock/lock_screen.dart';
 import 'package:violet/pages/splash/splash_page.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
-import 'package:wakelock/wakelock.dart';
 
 Future<void> main() async {
   runZonedGuarded<Future<void>>(() async {
@@ -41,7 +40,6 @@ Future<void> main() async {
     await initFirebase();
     await Settings.initFirst();
     await warmupFlare();
-    await Wakelock.enable();
 
     runApp(const MyApp());
   }, (exception, stack) async {
