@@ -4,7 +4,8 @@
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts;
 import 'package:expandable/expandable.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controls.dart';

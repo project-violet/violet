@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DoubleTapToTopMixin {
+mixin DoubleTapToTopMixin {
   ScrollController? doubleTapToTopScrollController;
 
   void animateToTop() {
