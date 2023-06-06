@@ -16,7 +16,8 @@ version: 1.28.4+0
 publish_to: none
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.18.6 <3.0.0"
+  flutter: "3.3.10"
 
 dependencies:
   flutter:
@@ -98,7 +99,7 @@ dependencies:
   html_unescape: ^2.0.0
   http: ^0.13.5
   image_size_getter: ^1.0.0
-  intl: ^0.17.0-nullsafety.2
+  intl: ^0.18.0
   kdtree: ^0.2.0
   local_auth: ^2.1.6
   lottie:
