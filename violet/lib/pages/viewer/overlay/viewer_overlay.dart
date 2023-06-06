@@ -790,8 +790,30 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                         ],
                         builder: (context, animation) {
                           precacheImage(
-                              Image.file(File(c.provider.uris[index])).image,
-                              context);
+                            Image.file(File(c.provider.uris[index])).image,
+                            context,
+                          );
+
+                          if (animation.value >=
+                              CupertinoContextMenu.animationOpensAt) {
+                            return Container(
+                              padding: const EdgeInsets.only(
+                                left: 16.0,
+                                right: 16.0,
+                                bottom: 16.0,
+                                top: 64.0,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(4.0),
+                                child: Image.file(
+                                  File(c.provider.uris[index]),
+                                  fit: BoxFit.cover,
+                                  isAntiAlias: true,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                              ),
+                            );
+                          }
 
                           return Image.file(
                             File(c.provider.uris[index]),
