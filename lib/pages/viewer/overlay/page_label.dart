@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:violet/pages/viewer/viewer_controller.dart';
@@ -25,7 +27,7 @@ class PageLabel extends StatelessWidget {
               style: TextStyle(
                 foreground: Paint()
                   ..style = PaintingStyle.stroke
-                  ..strokeWidth = 2
+                  ..strokeWidth = Platform.isIOS ? 2.3 : 2.0
                   ..color = Colors.black,
               ),
             ),
