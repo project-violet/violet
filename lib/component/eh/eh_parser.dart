@@ -57,7 +57,7 @@ class EHResultArticle {
 // You can use both of the previous.
 class EHParser {
   static final RegExp _thumbnailPattern =
-      RegExp(r'https://(exhentai|ehgt).org/.*?(?=\))');
+      RegExp(r'https://(s\.)?(exhentai|ehgt).org/.*?(?=\))');
 
   // ex: https://exhentai.org/g/1212168/421ef300a8/
   static List<String> getImagesUrl(String html) {
@@ -97,10 +97,14 @@ class EHParser {
     var h = parse(html);
     var doc = h.querySelector('div.gm');
 
-    article.thumbnail = _thumbnailPattern
-        .stringMatch(
-            doc!.querySelector('div[id=gleft] div div')!.attributes['style']!)
-        .toString();
+    try {
+      article.thumbnail = _thumbnailPattern
+          .stringMatch(
+              doc!.querySelector('div[id=gleft] div div')!.attributes['style']!)
+          .toString();
+    } catch (e) {
+      rethrow;
+    }
 
     article.title = doc.querySelector("div[id='gd2'] h1[id='gn']")!.text;
     article.subTitle = doc.querySelector("div[id='gd2'] h1[id='gj']")!.text;
