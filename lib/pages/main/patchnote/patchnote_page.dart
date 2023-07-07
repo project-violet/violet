@@ -22,6 +22,14 @@ class PatchModel {
 
 final patches = [
   PatchModel(
+    dateTime: DateTime(2023, 7, 7),
+    version: '1.29 Minor',
+    contents: [
+      'fix script load error',
+      'upgrade flutter-sdk',
+    ],
+  ),
+  PatchModel(
     dateTime: DateTime(2023, 4, 8),
     version: '1.28.4 Patch',
     contents: [
