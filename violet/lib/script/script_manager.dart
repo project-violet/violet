@@ -29,9 +29,18 @@ class ScriptManager {
   static Future<void> init() async {
     try {
       final scriptHtml = (await http.get(_scriptNoCDNUrl)).body;
-      _scriptCache = parse(scriptHtml).querySelector('table')!.text;
+      _scriptCache = json.decode(parse(scriptHtml)
+          .querySelector("script[data-target='react-app.embeddedData']")!
+          .text)['payload']['blob']['rawBlob'];
     } catch (e) {
       debugPrint(e.toString());
+    }
+    if (_scriptCache == null) {
+      try {
+        _scriptCache = (await http.get(_scriptUrl)).body;
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
     try {
       _v4Cache = (await http.get(_scriptV4)).body;
@@ -39,7 +48,11 @@ class ScriptManager {
       debugPrint(e.toString());
     }
     _latestUpdate = DateTime.now();
-    _initRuntime();
+    try {
+      _initRuntime();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   static Future<bool> refresh() async {
