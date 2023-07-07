@@ -768,66 +768,18 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4.0),
-                    child: SizedBox.expand(child: Obx(() {
-                      final thumbSize = c.thumbSize.value;
-
-                      return CupertinoContextMenu.builder(
-                        actions: <Widget>[
-                          CupertinoContextMenuAction(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            trailingIcon: CupertinoIcons.doc_on_clipboard_fill,
-                            child: const Text('Copy'),
-                          ),
-                          CupertinoContextMenuAction(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            trailingIcon: Icons.save,
-                            child: const Text('Save'),
-                          ),
-                        ],
-                        builder: (context, animation) {
-                          precacheImage(
-                            Image.file(File(c.provider.uris[index])).image,
-                            context,
-                          );
-
-                          if (animation.value >=
-                              CupertinoContextMenu.animationOpensAt) {
-                            return Container(
-                              padding: const EdgeInsets.only(
-                                left: 16.0,
-                                right: 16.0,
-                                bottom: 16.0,
-                                top: 64.0,
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(4.0),
-                                child: Image.file(
-                                  File(c.provider.uris[index]),
-                                  fit: BoxFit.cover,
-                                  isAntiAlias: true,
-                                  filterQuality: FilterQuality.high,
-                                ),
-                              ),
-                            );
-                          }
-
-                          return Image.file(
-                            File(c.provider.uris[index]),
-                            fit: BoxFit.cover,
-                            isAntiAlias: true,
-                            cacheHeight: animation.value <
-                                    CupertinoContextMenu.animationOpensAt
-                                ? ([140, 120, 96][thumbSize] * 2.0).toInt()
-                                : null,
-                            filterQuality: FilterQuality.high,
-                          );
-                        },
-                      );
-                    })),
+                    child: Obx(
+                      () => Image.file(
+                        File(c.provider.uris[index]),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        isAntiAlias: true,
+                        cacheHeight:
+                            ([140, 120, 96][c.thumbSize.value] * 2.0).toInt(),
+                        filterQuality: FilterQuality.high,
+                      ),
+                    ),
                   ),
                 ),
                 Container(height: 2.0),
