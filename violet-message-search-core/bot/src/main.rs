@@ -1,8 +1,5 @@
 use std::env;
-use std::path::Path;
 
-use itertools::Itertools;
-use serde_json::Value;
 use serenity::async_trait;
 use serenity::framework::standard::macros::{command, group};
 use serenity::framework::standard::{CommandResult, StandardFramework};
@@ -10,7 +7,9 @@ use serenity::model::channel::Message;
 use serenity::model::prelude::AttachmentType;
 use serenity::prelude::*;
 
-pub(crate) mod auth;
+use crate::violet::request_rank;
+
+pub(crate) mod violet;
 
 #[group]
 #[commands(rank, thumbnail)]
@@ -19,10 +18,19 @@ struct Commands;
 struct Handler;
 
 #[async_trait]
-impl EventHandler for Handler {}
+impl EventHandler for Handler {
+    async fn message(&self, _ctx: Context, msg: Message) {
+        let name = msg.author.name;
+        let id = msg.author.id;
+        let content = msg.content;
+        tracing::info!("[Command] {name}({id}): {content:?}");
+    }
+}
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
+
     let framework = StandardFramework::new()
         .configure(|c| c.prefix("~")) // set the bot's prefix to "~"
         .group(&COMMANDS_GROUP);
@@ -44,28 +52,10 @@ async fn main() {
 
 #[command]
 async fn rank(ctx: &Context, msg: &Message) -> CommandResult {
-    let response = reqwest::get("https://koromo.xyz/api/top?offset=0&count=10&type=daily").await?;
-
-    if !response.status().is_success() {
+    let Ok(result) = request_rank().await else {
         msg.reply(ctx, "Internal Server Error 😢").await?;
         return Ok(());
-    }
-
-    let body = response.text().await?;
-    let result: Value = serde_json::from_str(&body[..])?;
-    let result = result["result"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .map(|e| {
-            let id = e.as_array().unwrap()[0].as_i64().unwrap();
-            let cnt = e.as_array().unwrap()[1].as_i64().unwrap();
-
-            format!("{id}({cnt})")
-        })
-        .enumerate()
-        .map(|(index, e)| format!("{}. {e}", index + 1))
-        .join("\n");
+    };
 
     msg.reply(ctx, &result[..]).await?;
 
