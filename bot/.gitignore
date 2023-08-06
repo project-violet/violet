@@ -1,3 +1,4 @@
 run-with-token.sh
 
 target/
+config.json
