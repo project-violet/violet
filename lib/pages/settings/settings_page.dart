@@ -22,6 +22,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:mdi/mdi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:saf/saf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1934,9 +1935,22 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               }
 
-              final filePickerResult = await FilePicker.platform.pickFiles(
-                type: FileType.any,
-              );
+              if (Platform.isAndroid) {
+                final ext = await getExternalStorageDirectory();
+
+                final saf = Saf(ext!.path);
+                bool? isGranted =
+                    await saf.getDirectoryPermission(isDynamic: false);
+
+                if (isGranted != null && isGranted) {
+                  // Perform some file operations
+                } else {
+                  // failed to get the permission
+                }
+              }
+
+              await FilePicker.platform.clearTemporaryFiles();
+              final filePickerResult = await FilePicker.platform.pickFiles();
               final pickedFilePath = filePickerResult?.files.singleOrNull?.path;
 
               if (pickedFilePath == null) {
@@ -1953,10 +1967,9 @@ class _SettingsPageState extends State<SettingsPage>
               }
 
               final pickedFile = File(pickedFilePath);
-
               final db = Platform.isIOS
                   ? await getApplicationSupportDirectory()
-                  : (await getExternalStorageDirectory())!;
+                  : (await getApplicationDocumentsDirectory());
 
               await pickedFile.copy('${db.path}/user.db');
 
@@ -1997,13 +2010,19 @@ class _SettingsPageState extends State<SettingsPage>
                 }
               }
 
-              var db = await getApplicationDocumentsDirectory();
-              var dbfile = File('${db.path}/user.db');
-              var ext = Platform.isIOS
-                  ? await getApplicationSupportDirectory()
-                  : await getExternalStorageDirectory();
+              final selectedPath = await FilePicker.platform.getDirectoryPath();
 
-              var extpath = '${ext!.path}/bookmark.db';
+              if (selectedPath == null) {
+                return;
+              }
+
+              final db = Platform.isIOS
+                  ? await getApplicationSupportDirectory()
+                  : (await getApplicationDocumentsDirectory());
+              final dbfile = File('${db.path}/user.db');
+
+              final extpath = '$selectedPath/bookmark.db';
+
               await dbfile.copy(extpath);
 
               flutterToast.showToast(
