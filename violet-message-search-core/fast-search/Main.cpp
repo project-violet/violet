@@ -105,18 +105,7 @@ const std::string currentDateTime() {
   return buf;
 }
 
-// std::string kor2Eng(const char* target) {
-//    //
-//    //  HangulConverter가 wchar_t 기반으로 구현되어 있어서
-//    //  utf-8 => unicode 해줘야함
-//    //
-//    wchar_t unicode[1024];
-//    std::mbstowcs(unicode, target, 1024);
-//    char kor2engtypo[1024 * 3];
-//    Utility::HangulConverter::total_disassembly(unicode, kor2engtypo);
-//    return std::string(kor2engtypo);
-//}
-
+#if _WIN32
 std::wstring s2ws(const std::string &str) {
   int size_needed =
       MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
@@ -132,6 +121,20 @@ std::string kor2Eng(const char *target) {
   Utility::HangulConverter::total_disassembly(search.c_str(), kor2engtypo);
   return std::string(kor2engtypo);
 }
+
+#else
+std::string kor2Eng(const char* target) {
+    //
+    //  HangulConverter가 wchar_t 기반으로 구현되어 있어서
+    //  utf-8 => unicode 해줘야함
+    //
+    wchar_t unicode[1024];
+    std::mbstowcs(unicode, target, 1024);
+    char kor2engtypo[1024 * 3];
+    Utility::HangulConverter::total_disassembly(unicode, kor2engtypo);
+    return std::string(kor2engtypo);
+}
+#endif
 
 std::string
 result2Json(const std::vector<std::pair<MergedInfo *, double>> &result,
