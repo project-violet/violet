@@ -9,6 +9,9 @@
 3. Run run.bat, run-server.bat! If you want to use this on macOS or linux, you must build [fast-search](https://github.com/project-violet/violet-message-search-core/tree/master/fast-search) yourself.
 4. Open http://localhost:8088/home/ in browser!
 
+You can see the latest database list here.
+https://drive.google.com/drive/folders/1oWBiohoq5pntVhj34r-RwBsknPU7aeSE
+
 ## How does it work?
 
 See [violet-message-search-core](https://github.com/project-violet/violet-message-search-core)
