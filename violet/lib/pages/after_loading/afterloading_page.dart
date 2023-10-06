@@ -77,6 +77,9 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
       case AppLifecycleState.detached:
         ActLogger.log(ActLogEvent(type: ActLogType.appStop));
         break;
+      default:
+        // TODO: Implement properly
+        break;
     }
   }
 
