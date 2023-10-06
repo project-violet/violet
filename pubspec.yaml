@@ -65,7 +65,7 @@ dependencies:
   expandable: ^5.0.1
   ext_storage:
     git: https://github.com/violet-dev/ext_storage
-  extended_image: ^8.0.2
+  extended_image: ^8.1.1
   ffi: ^2.0.2
   file_picker: ^5.2.11
   firebase_core: ^2.5.0
@@ -88,7 +88,7 @@ dependencies:
     git: https://github.com/mfrischbutter/flutter_staggered_animations
   flutter_svg: ^0.21.0+1
   flutter_typeahead: ^4.0.0
-  flutter_js: ^0.7.0
+  flutter_js: ^0.8.0
   flutter_windowmanager: ^0.2.0
   fluttertoast: ^8.0.9
   freezed_annotation:
@@ -96,7 +96,7 @@ dependencies:
   gradient_widgets: ^0.6.0
   html: ^0.15.0
   html_unescape: ^2.0.0
-  http: ^0.13.5
+  http: ^1.1.0
   image_size_getter: ^1.0.0
   intl: ^0.18.0
   kdtree: ^0.2.0
@@ -106,7 +106,6 @@ dependencies:
   mdi: ^5.0.0-nullsafety.0
   modal_bottom_sheet: ^3.0.0-pre
   open_file: ^3.3.1
-  optimized_cached_image: ^3.0.0
   path:
   path_provider: ^2.0.15
   permission_handler: ^10.4.3
