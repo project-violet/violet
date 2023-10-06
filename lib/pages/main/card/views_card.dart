@@ -1,6 +1,8 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+/*
+
 import 'package:division/division.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_widgets/gradient_widgets.dart';
@@ -131,3 +133,5 @@ class _ViewsCardState extends State<ViewsCard> with TickerProviderStateMixin {
     ..bold()
     ..fontSize(12);
 }
+
+ */
