@@ -78,10 +78,9 @@ class P7zip {
     final devicePlugin = DeviceInfoPlugin();
     final deviceInfo = await devicePlugin.androidInfo;
 
-    final supportedAbis =
-        deviceInfo.supportedAbis.where((abi) => abi != null).cast<String>();
-    final targetAbi =
-        supportedAbis.firstWhere((abi) => libraryAbis.contains(abi));
+    final targetAbi = deviceInfo.supportedAbis.firstWhere(
+      (abi) => libraryAbis.contains(abi),
+    );
     final sharedLibraryPath = 'assets/p7zip/$targetAbi/lib7zr.so';
     final sharedLibraryContent = await rootBundle.load(sharedLibraryPath);
 
