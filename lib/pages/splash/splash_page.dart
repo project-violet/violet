@@ -629,13 +629,13 @@ class _SplashPageState extends State<SplashPage> {
           child: InkWell(
             customBorder: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(8.0))),
-            child: SizedBox(
+            child: const SizedBox(
               width: 150,
               height: 50,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
+                children: <Widget>[
                   Icon(
                     Icons.language,
                     size: 35,

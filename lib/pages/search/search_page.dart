@@ -429,12 +429,12 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     final alignOverlay = InkWell(
       onTap: alignOnTap,
       onLongPress: alignLongPress,
-      child: SizedBox(
+      child: const SizedBox(
         height: 64,
         width: 64,
         child: Stack(
           alignment: Alignment.center,
-          children: const <Widget>[
+          children: <Widget>[
             Icon(
               MdiIcons.formatListText,
               color: Colors.grey,

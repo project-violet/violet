@@ -166,8 +166,8 @@ class _LabUserRecentRecordsState extends State<LabUserRecentRecords> {
                       );
                     },
                   )
-                : Column(
-                    children: const <Widget>[
+                : const Column(
+                    children: <Widget>[
                       Expanded(
                         child: Align(
                           alignment: Alignment.center,
