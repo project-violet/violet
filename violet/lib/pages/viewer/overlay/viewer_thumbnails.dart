@@ -189,10 +189,10 @@ class _ViewerThumbnailState extends State<ViewerThumbnail> {
         },
       );
     }
-    return Row(
+    return const Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
+      children: [
         SizedBox(
           width: 100,
           height: 100,

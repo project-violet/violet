@@ -221,12 +221,12 @@ class _GroupArticleListPageState extends State<LabGroupArticleListPage> {
           elevation: !Settings.themeFlat ? 100 : 0,
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: InkWell(
-            child: SizedBox(
+            child: const SizedBox(
               height: 48,
               width: 48,
               child: Stack(
                 alignment: Alignment.center,
-                children: const <Widget>[
+                children: <Widget>[
                   Icon(
                     MdiIcons.formatListText,
                     color: Colors.grey,

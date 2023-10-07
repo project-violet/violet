@@ -40,8 +40,8 @@ class VioletPage extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                   width: 250,
                   height: 190,
-                  child: Column(
-                    children: const <Widget>[
+                  child: const Column(
+                    children: <Widget>[
                       Text(''),
                       Text(
                         'Violet',
