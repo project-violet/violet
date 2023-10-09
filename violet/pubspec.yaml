@@ -66,7 +66,7 @@ dependencies:
     git: https://github.com/violet-dev/ext_storage
   extended_image: ^8.1.1
   ffi: ^2.0.2
-  file_picker: ^5.2.11
+  file_picker: ^5.5.0
   firebase_core: ^2.5.0
   firebase_analytics: ^10.1.1
   firebase_crashlytics: ^3.0.12
@@ -74,10 +74,10 @@ dependencies:
   flare_flutter: ^3.0.2
   flutter_cache_manager: ^3.3.0
   flutter_colorpicker: ^0.6.0
-  flutter_downloader: ^1.8.0 # @dependent: android
+  flutter_downloader: ^1.11.3
   flutter_heatmap_calendar: ^1.0.5
   flutter_image_compress: ^1.1.0
-  flutter_inappwebview: ^5.7.2
+  flutter_inappwebview: ^5.8.0
   flutter_markdown:
   flutter_mobx:
   flutter_reorderable_list:
