@@ -65,7 +65,7 @@ class SyncManager {
         syncRequire = firstSync = true;
         latest = 0;
       } else if (lastDB != null &&
-          DateTime.parse(lastDB).difference(DateTime.now()).inDays > 7) {
+          DateTime.now().difference(DateTime.parse(lastDB)).inDays > 7) {
         syncRequire = true;
       }
 
