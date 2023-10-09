@@ -29,9 +29,7 @@ import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/pages/database_download/database_download_page.dart';
 import 'package:violet/pages/main/artist_collection/artist_collection_page.dart';
-import 'package:violet/pages/main/card/contact_card.dart';
-import 'package:violet/pages/main/card/discord_card.dart';
-import 'package:violet/pages/main/card/github_card.dart';
+import 'package:violet/pages/main/buttons/carousel_button.dart';
 import 'package:violet/pages/main/info/info_page.dart';
 import 'package:violet/pages/main/info/lab/global_comments.dart';
 import 'package:violet/pages/main/info/lab/recent_record_u.dart';
@@ -48,6 +46,16 @@ import 'package:violet/version/sync.dart';
 import 'package:violet/version/update_sync.dart';
 import 'package:violet/widgets/theme_switchable_state.dart';
 import 'package:violet/widgets/toast.dart';
+
+final _discordUri = Uri.tryParse('https://discord.gg/K8qny6E');
+final _contactUri = Uri(
+  scheme: 'mailto',
+  path: 'violet.dev.master@gmail.com',
+  queryParameters: {
+    'subject': '[App Issue] ',
+  },
+);
+final _gitHubUri = Uri.tryParse('https://github.com/project-violet/');
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -99,12 +107,28 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    final cardList = [
-      const DiscordCard(),
-      const ContactCard(),
-      const GithubCard(),
+    final buttons = [
+      CarouselButton(
+        uri: _discordUri,
+        backgroundColor: const Color(0xFF7189da),
+        icon: const Icon(MdiIcons.discord),
+        label: Text(Translations.of(context).trans('maindiscord')),
+      ),
+      CarouselButton(
+        uri: _contactUri,
+        backgroundColor: Colors.redAccent,
+        icon: const Icon(MdiIcons.gmail),
+        label: Text(Translations.of(context).trans('maincontact')),
+      ),
+      CarouselButton(
+        uri: _gitHubUri,
+        backgroundColor: const Color(0xFF24292E),
+        icon: const Icon(MdiIcons.github),
+        label: Text(Translations.of(context).trans('maingithub')),
+      ),
     ];
 
     final groups = <Widget>[
@@ -133,11 +157,16 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
             });
           },
         ),
-        items: cardList.map((card) {
-          return Builder(
-            builder: (BuildContext context) => card,
-          );
-        }).toList(),
+        items: [
+          for (final button in buttons)
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 6.5,
+                horizontal: 32.0,
+              ),
+              child: button,
+            ),
+        ],
       ),
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
