@@ -2,6 +2,7 @@ package xyz.project.violet
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
@@ -9,11 +10,22 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity : FlutterFragmentActivity() {
     private val VOLUME_CHANNEL = "xyz.project.violet/volume"
     private val NATIVELIBDIR_CHANNEL = "xyz.project.violet/nativelibdir"
+    private val EXTERNAL_STORAGE_DIRECTORY_CHANNEL = "xyz.project.violet/externalStorageDirectory"
+
+    private val EXTERNAL_STORAGE_DIRECTORY_METHODS = mapOf(
+            "getExternalStorageDirectory" to MethodCallHandler { call, result ->
+                result.success(Environment.getExternalStorageDirectory().path)
+            },
+            "getExternalStorageDownloadsDirectory" to MethodCallHandler { call, result ->
+                result.success(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path)
+            },
+    )
 
     private var sink: EventChannel.EventSink? = null
 
@@ -51,6 +63,15 @@ class MainActivity : FlutterFragmentActivity() {
             // Note: this method is invoked on the main thread.
             if (call.method == "getNativeDir") {
                 result.success(applicationContext.applicationInfo.nativeLibraryDir)
+            } else {
+                result.notImplemented()
+            }
+        }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, EXTERNAL_STORAGE_DIRECTORY_CHANNEL).setMethodCallHandler { call, result ->
+            val method = EXTERNAL_STORAGE_DIRECTORY_METHODS[call.method]
+            if (method != null) {
+                method.onMethodCall(call, result)
             } else {
                 result.notImplemented()
             }
