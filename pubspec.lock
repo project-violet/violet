@@ -434,15 +434,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.1"
-  ext_storage:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "4347ff9e9505f2f7d2c1ce0a24c92efa120db334"
-      url: "https://github.com/violet-dev/ext_storage"
-    source: git
-    version: "2.0.0"
   extended_image:
     dependency: "direct main"
     description:

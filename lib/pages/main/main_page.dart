@@ -8,7 +8,6 @@ import 'dart:ui';
 
 import 'package:badges/badges.dart' as badges;
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:fluttertoast/fluttertoast.dart';
@@ -39,6 +38,7 @@ import 'package:violet/pages/main/views/views_page.dart';
 import 'package:violet/pages/segment/double_tap_to_top.dart';
 import 'package:violet/pages/segment/platform_navigator.dart';
 import 'package:violet/pages/splash/splash_page.dart';
+import 'package:violet/platform/android_external_storage_directory.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 import 'package:violet/variables.dart';
@@ -240,8 +240,8 @@ class _MainPageState extends ThemeSwitchableState<MainPage>
       }
       updateContinued = true;
 
-      final ext = await ExtStorage.getExternalStoragePublicDirectory(
-          ExtStorage.directoryDownload);
+      final ext = await AndroidExternalStorageDirectory.instance
+          .getExternalStorageDownloadsDirectory();
 
       bool once = false;
       IsolateNameServer.registerPortWithName(

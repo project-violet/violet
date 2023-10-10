@@ -62,8 +62,6 @@ dependencies:
     git: https://github.com/Norbert515/dynamic_theme
   encrypt: ^5.0.0
   expandable: ^5.0.1
-  ext_storage:
-    git: https://github.com/violet-dev/ext_storage
   extended_image: ^8.1.1
   ffi: ^2.0.2
   file_picker: ^5.5.0
