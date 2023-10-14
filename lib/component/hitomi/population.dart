@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 import 'package:violet/database/query.dart';
@@ -15,18 +16,35 @@ class Population {
     String data;
 
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      var file = File('/home/ubuntu/violet/assets/rank/population.json');
+      final file = File('/home/ubuntu/violet/assets/rank/population.json');
       data = await file.readAsString();
     } else {
       data = await rootBundle.loadString('assets/rank/population.json');
     }
 
-    List<dynamic> dataPopulation = json.decode(data);
-    population = <int, int>{};
+    Future<Map<int, int>> decodeJsonData() async {
+      final population = <int, int>{};
 
-    for (int i = 0; i < dataPopulation.length; i++) {
-      population[dataPopulation[i] as int] = i;
+      json.decode(
+        data,
+        reviver: (keyObject, valueObject) {
+          if (keyObject == null) {
+            return null;
+          }
+
+          int key = keyObject as int;
+          int value = (valueObject as num).toInt();
+
+          population[value] = key;
+
+          return null;
+        },
+      );
+
+      return population;
     }
+
+    population = await Isolate.run(decodeJsonData);
   }
 
   static void sortByPopulation(List<QueryResult> qr) {
