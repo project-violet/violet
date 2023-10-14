@@ -35,10 +35,10 @@ class DataBaseDownloadPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DataBaseDownloadPage> createState() => DataBaseDownloadPagepState();
+  State<DataBaseDownloadPage> createState() => DataBaseDownloadPageState();
 }
 
-class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
+class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
   bool downloading = false;
   var baseString = '';
   var progressString = '';
