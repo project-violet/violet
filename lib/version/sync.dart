@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -14,6 +15,8 @@ import 'package:violet/database/query.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/settings/settings.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 typedef DoubleIntCallback = Future Function(int, int);
 
@@ -206,7 +209,12 @@ class SyncManager {
 
         // Last, append datas
         var db = await DataBaseManager.getInstance();
-        var dbraw = await openDatabase(db.dbPath!);
+        Database dbraw;
+        if (Platform.isAndroid || Platform.isIOS) {
+          dbraw = await openDatabase(db.dbPath!);
+        } else {
+          dbraw = await databaseFactoryFfi.openDatabase(db.dbPath!);
+        }
         await dbraw.transaction((txn) async {
           final batch = txn.batch();
           for (var query in quries) {

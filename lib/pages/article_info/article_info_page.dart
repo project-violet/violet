@@ -1,6 +1,7 @@
 // This source code is a part of Project Violet.
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
+import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
@@ -233,8 +234,15 @@ class ArticleInfoPage extends StatelessWidget {
     );
   }*/
 
+  _requireCheckGranted() {
+    final isDesktop =
+        Platform.isLinux || Platform.isMacOS || Platform.isWindows;
+    return !isDesktop;
+  }
+
   _downloadButtonEvent(context, data) async {
-    if (!Settings.useInnerStorage && !await Permission.storage.isGranted) {
+    if (!Settings.useInnerStorage &&
+        (_requireCheckGranted() && !await Permission.storage.isGranted)) {
       if (await Permission.storage.request() == PermissionStatus.denied) {
         await showOkDialog(context,
             'If you do not allow file permissions, you cannot continue :(');

@@ -21,6 +21,8 @@ import 'package:violet/pages/database_download/decompress.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 typedef TagIndexingCallback = dynamic Function(QueryResult);
 
@@ -56,9 +58,17 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       if (prefs.getInt('db_exists') == 1) {
-        var dbPath = Platform.isAndroid
-            ? '${(await getApplicationDocumentsDirectory()).path}/data/data.db'
-            : '${await getDatabasesPath()}/data.db';
+        String dbPath;
+
+        if (Platform.isAndroid) {
+          dbPath =
+              '${(await getApplicationDocumentsDirectory()).path}/data/data.db';
+        } else if (Platform.isIOS) {
+          dbPath = '${await getDatabasesPath()}/data.db';
+        } else {
+          dbPath = '${File(Platform.resolvedExecutable).parent.path}/data.db';
+        }
+
         if (await File(dbPath).exists()) await File(dbPath).delete();
         var dir = await getApplicationDocumentsDirectory();
         if (await Directory('${dir.path}/data').exists()) {
@@ -72,7 +82,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
     if (Platform.isAndroid) {
       downloadFileAndroid();
-    } else if (Platform.isIOS) {
+    } else if (Platform.isIOS || Platform.isWindows) {
       // p7zip is not supported on IOS.
       // So, download raw database.
       downloadFileIOS();
@@ -187,7 +197,12 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     int tnu = 0;
 
     try {
-      var dir = await getDatabasesPath();
+      late String dir;
+      if (Platform.isIOS) {
+        dir = await getDatabasesPath();
+      } else {
+        dir = File(Platform.resolvedExecutable).parent.path;
+      }
       if (await File('$dir/data.db').exists()) {
         await File('$dir/data.db').delete();
       }

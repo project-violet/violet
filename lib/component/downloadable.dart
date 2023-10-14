@@ -208,12 +208,12 @@ class FileNameFormat {
           if (pptk != '') {
             builder.write(literal
                 .substring(0, int.parse(pptk))
-                .replaceAll('|', 'ã…£')
+                .replaceAll('|', '¤Ó')
                 .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
           } else {
             builder.write(literal
                 .toString()
-                .replaceAll('|', 'ã…£')
+                .replaceAll('|', '¤Ó')
                 .replaceAll(RegExp(r'[/\\?%*:|"<>]'), ''));
           }
         }

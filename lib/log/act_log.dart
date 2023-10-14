@@ -106,12 +106,17 @@ class ActLogger {
   static Timer? signalTimer;
 
   static Future<void> init() async {
+    late Directory dir;
+    
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      logFile = File('act-log.txt');
+      dir = File('act-log.txt').parent;
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      dir = await getApplicationDocumentsDirectory();
     } else {
-      final dir = await getApplicationDocumentsDirectory();
-      logFile = File(join(dir.path, 'act-log.txt'));
+      dir = File(Platform.resolvedExecutable).parent;
     }
+
+    logFile = File(join(dir.path, 'act-log.txt'));
 
     if (!await logFile.exists()) {
       await logFile.create();

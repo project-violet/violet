@@ -8,14 +8,15 @@ import re
 
 target = 'ios'
 
+
 def process_dart(path):
-    f = open(path, 'r')
+    f = open(path, 'r', encoding='utf-8')
     w = []
     nl = False
     op = False
     for line in f.readlines():
         if '//' in line:
-            annote = re.split(r': |, | ',line.split('//')[-1].strip())
+            annote = re.split(r': |, | ', line.split('//')[-1].strip())
 
             if not annote[0].startswith('@dependent'):
                 if nl or op:
@@ -48,12 +49,13 @@ def process_dart(path):
             else:
                 w.append(line)
     f.close()
-    f = open(path, 'w+')
+    f = open(path, 'w+', encoding='utf-8')
     f.writelines(w)
     f.close()
 
+
 def process_yaml(path):
-    f = open(path, 'r')
+    f = open(path, 'r', encoding='utf-8')
     w = []
     nl = False
     op = False
@@ -92,21 +94,23 @@ def process_yaml(path):
             else:
                 w.append(line)
     f.close()
-    f = open(path, 'w+')
+    f = open(path, 'w+', encoding='utf-8')
     f.writelines(w)
     f.close()
 
+
 def create_dummy_valid(path):
-    f = open(path, 'w')
+    f = open(path, 'w', encoding='utf-8')
     f.writelines(['String getValid(foo) {return foo;}'])
     f.close()
 
+
 for root, subdirs, files in os.walk('./'):
     for filename in files:
-        if filename.endswith(".dart"): 
+        if filename.endswith(".dart"):
             process_dart(root + '/' + filename)
         elif filename.endswith(".yaml"):
-            process_yaml(root + '/' +  filename)
+            process_yaml(root + '/' + filename)
 
 # create_dummy_valid('./lib/server/salt.dart')
 # create_dummy_valid('./lib/server/wsalt.dart')

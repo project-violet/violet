@@ -2,6 +2,7 @@
 // Copyright (C) 2020-2023. violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -124,21 +125,27 @@ class _VerticalViewerPageState extends State<VerticalViewerPage>
       },
     );
 
+    final isDesktop =
+        Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+
+    final viewer = InteractiveViewer(
+      transformationController: _transformationController,
+      minScale: 1.0,
+      scaleEnabled: !isDesktop,
+      child: AbsorbPointer(
+        absorbing: !_scrollListEnable,
+        child: ColoredBox(
+          color: Settings.themeWhat && Settings.themeBlack
+              ? Colors.black
+              : const Color(0xff444444),
+          child: notificationListener,
+        ),
+      ),
+    );
+
     return Stack(
       children: [
-        InteractiveViewer(
-          transformationController: _transformationController,
-          minScale: 1.0,
-          child: AbsorbPointer(
-            absorbing: !_scrollListEnable,
-            child: ColoredBox(
-              color: Settings.themeWhat && Settings.themeBlack
-                  ? Colors.black
-                  : const Color(0xff444444),
-              child: notificationListener,
-            ),
-          ),
-        ),
+        viewer,
         _touchArea(),
       ],
     );

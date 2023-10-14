@@ -600,14 +600,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
-  flutter_downloader:
-    dependency: "direct main"
-    description:
-      name: flutter_downloader
-      sha256: bc13eb52ce81822a94f107b2ea0541b0e28be350f0c064dfbb5c66e95d7791f4
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.11.3"
   flutter_heatmap_calendar:
     dependency: "direct main"
     description:
@@ -1471,7 +1463,7 @@ packages:
     source: hosted
     version: "2.4.2+2"
   sqflite_common_ffi:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: sqflite_common_ffi
       sha256: e435a9dcd0ca79ba6aea677468e6f7cb8859891294a8f34226685f2cf2002ea2
