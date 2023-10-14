@@ -103,6 +103,7 @@ class Settings {
   static late bool downloadEhRawImage;
   static late bool bookmarkScrollbarPositionToLeft;
   static late bool useVerticalWebviewViewer;
+  static late bool inViewerMessageSearch;
 
   static late bool useLockScreen;
   static late bool useSecureMode;
@@ -330,6 +331,7 @@ class Settings {
     bookmarkScrollbarPositionToLeft =
         await _getBool('bookmarkScrollbarPositionToLeft');
     useVerticalWebviewViewer = await _getBool('useVerticalWebviewViewer');
+    inViewerMessageSearch = await _getBool('inViewerMessageSearch');
 
     await regacy1_20_2();
   }
@@ -751,6 +753,12 @@ class Settings {
     useVerticalWebviewViewer = nn;
 
     await prefs.setBool('useVerticalWebviewViewer', nn);
+  }
+
+  static Future<void> setInViewerMessageSearch(bool nn) async {
+    inViewerMessageSearch = nn;
+
+    await prefs.setBool('inViewerMessageSearch', nn);
   }
 
   static Future<void> setUseLockScreen(bool nn) async {
