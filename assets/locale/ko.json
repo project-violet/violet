@@ -305,5 +305,6 @@
   "lab": "실험실",
   "realtimeuserrecord": "실시간 유저 레코드",
   "manualupdate": "수동 업데이트",
-  "cannotuseios": "iOS에선 사용할 수 없어요 :("
+  "cannotuseios": "iOS에선 사용할 수 없어요 :(",
+  "exitTheApp": "앱 종료하기"
 }
