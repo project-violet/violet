@@ -15,6 +15,7 @@ import 'package:violet/pages/bookmark/bookmark_page.dart';
 import 'package:violet/pages/download/download_page.dart';
 import 'package:violet/pages/hot/hot_page.dart';
 import 'package:violet/pages/lock/lock_screen.dart';
+import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/main/main_page.dart';
 import 'package:violet/pages/search/search_page.dart';
 import 'package:violet/pages/segment/double_tap_to_top.dart';
@@ -99,7 +100,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
   bool _isDoubleTap = false;
 
   late final List<GlobalKey<State>> _widgetKeys =
-      List.generate(7, (index) => GlobalKey());
+      List.generate(8, (index) => GlobalKey());
 
   Widget _buildBottomNavigationBar(BuildContext context) {
     final translations = Translations.of(context);
@@ -160,6 +161,7 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
           if (Settings.liteMode) buildItem(MdiIcons.fire, 'hot'),
           buildItem(Icons.bookmark, 'bookmark'),
           buildItem(Icons.file_download, 'download'),
+          buildItem(MdiIcons.commentSearch, 'msgsearch'),
           buildItem(Icons.settings, 'settings'),
         ],
       ),
@@ -268,7 +270,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
             if (Settings.liteMode) buildButton(MdiIcons.fire, 1, 'hot'),
             buildButton(MdiIcons.bookmark, 2, 'bookmark'),
             buildButton(MdiIcons.download, 3, 'download'),
-            buildButton(Icons.settings, 4, 'settings'),
+            buildButton(MdiIcons.commentSearch, 4, 'msgsearch'),
+            buildButton(Icons.settings, 5, 'settings'),
             const Spacer(),
             Text(
               'Copyright (C) 2020-2023\nby project-violet',
@@ -338,7 +341,8 @@ class AfterLoadingPageState extends State<AfterLoadingPage>
                 if (Settings.liteMode) HotPage(key: _widgetKeys[2]),
                 BookmarkPage(key: _widgetKeys[3]),
                 DownloadPage(key: _widgetKeys[4]),
-                SettingsPage(key: _widgetKeys[5]),
+                LabSearchMessage(key: _widgetKeys[5]),
+                SettingsPage(key: _widgetKeys[6]),
               ],
             ),
           ],
