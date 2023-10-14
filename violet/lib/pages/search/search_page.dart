@@ -24,6 +24,7 @@ import 'package:violet/locale/locale.dart' as trans;
 import 'package:violet/log/log.dart';
 import 'package:violet/model/article_list_item.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/pages/main/info/lab/search_message.dart';
 import 'package:violet/pages/search/search_bar_page.dart';
 import 'package:violet/pages/search/search_page_controller.dart';
 import 'package:violet/pages/search/search_page_modify.dart';
@@ -163,6 +164,7 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
             searchBar: Stack(
               children: <Widget>[
                 searchBar(),
+                msgsearch(),
                 align(),
               ],
             ),
@@ -361,25 +363,22 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
     );
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(8, 8, 72, 0),
+      padding: const EdgeInsets.fromLTRB(8, 8, 72 * 2, 0),
       child: SizedBox(
         height: 64,
-        child: Hero(
-          tag: 'searchbar${ModalBottomSheetContext.getCount()}',
-          child: Card(
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-                Radius.circular(4.0),
-              ),
+        child: Card(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(4.0),
             ),
-            elevation: !Settings.themeFlat ? 100 : 0,
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            child: Stack(
-              children: <Widget>[
-                searchBar,
-                searchBarOverlay,
-              ],
-            ),
+          ),
+          elevation: !Settings.themeFlat ? 100 : 0,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: Stack(
+            children: <Widget>[
+              searchBar,
+              searchBarOverlay,
+            ],
           ),
         ),
       ),
@@ -421,6 +420,49 @@ class _SearchPageState extends ThemeSwitchableState<SearchPage>
       await Logger.error(
           '[showSearchBar] E: ${e.toString()}\n${st.toString()}');
     }
+  }
+
+  msgsearch() {
+    final width = MediaQuery.of(context).size.width;
+
+    final msgsearchOverlay = InkWell(
+      onTap: () {
+        PlatformNavigator.navigateSlide(context, const LabSearchMessage());
+      },
+      child: const SizedBox(
+        height: 64,
+        width: 64,
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Icon(
+              MdiIcons.commentSearch,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final msgsearchBody = Card(
+      color: Palette.themeColor,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(4.0))),
+      elevation: !Settings.themeFlat ? 100 : 0,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: msgsearchOverlay,
+    );
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(width - 8 - 64 - 8 - 64, 8, 8, 0),
+      child: SizedBox(
+        height: 64,
+        child: Hero(
+          tag: 'msgsearch${ModalBottomSheetContext.getCount()}',
+          child: msgsearchBody,
+        ),
+      ),
+    );
   }
 
   align() {
