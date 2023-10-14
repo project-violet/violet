@@ -181,6 +181,29 @@ class _LabSettingState extends State<LabSetting> {
               setState(() {});
             },
           ),
+          _buildDivider(),
+          InkWell(
+            child: ListTile(
+              leading: Icon(MdiIcons.flask, color: Settings.majorColor),
+              title: const Text('In Viewer Message Search'),
+              subtitle: const Text(
+                  'Support message search on viewer mode.'),
+              trailing: Switch(
+                value: Settings.inViewerMessageSearch,
+                onChanged: (newValue) async {
+                  await Settings.setInViewerMessageSearch(newValue);
+                  setState(() {});
+                },
+                activeTrackColor: Settings.majorColor,
+                activeColor: Settings.majorAccentColor,
+              ),
+            ),
+            onTap: () async {
+              await Settings.setInViewerMessageSearch(
+                  !Settings.inViewerMessageSearch);
+              setState(() {});
+            },
+          ),
         ],
       ),
     );
