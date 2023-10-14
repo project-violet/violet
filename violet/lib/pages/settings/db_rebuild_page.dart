@@ -61,10 +61,10 @@ class _DBRebuildPagePageState extends State<DBRebuildPage> {
                 child: SizedBox(
                   width: 280,
                   height: (56 * 4 + 16).toDouble(),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                  child: const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
                     child: Stack(
-                      children: const [
+                      children: [
                         Center(
                           child: CircularProgressIndicator(),
                         ),

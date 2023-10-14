@@ -526,12 +526,12 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
             clipBehavior: Clip.antiAliasWithSaveLayer,
             child: InkWell(
               onTap: _featuresOnTap,
-              child: SizedBox(
+              child: const SizedBox(
                 height: 64,
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: const <Widget>[
+                  children: <Widget>[
                     Icon(
                       MdiIcons.hammerWrench,
                       color: Colors.grey,
@@ -605,12 +605,12 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
               onTap: _alignOnTap,
               onDoubleTap: _alignDoubleTap,
               onLongPress: _alignLongPress,
-              child: SizedBox(
+              child: const SizedBox(
                 height: 64,
                 width: 64,
                 child: Stack(
                   alignment: Alignment.center,
-                  children: const <Widget>[
+                  children: <Widget>[
                     Icon(
                       MdiIcons.formatListText,
                       color: Colors.grey,

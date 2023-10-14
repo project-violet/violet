@@ -77,7 +77,7 @@ class HitomiTitleCluster {
     });
 
     // Group By Same Lists
-    var gg = groupBy(groups, (x) => (x as List<int>).join(','));
+    var gg = groupBy(groups, (group) => group.join(','));
     var ds = DisjointSet(titles.length);
 
     // Join groups
