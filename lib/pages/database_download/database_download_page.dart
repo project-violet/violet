@@ -95,7 +95,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = '${tlatest / 1024} KB/S';
+                final speed = tlatest / 1024;
+                speedString = '${_formatNumberWithComma(speed)} KB/s';
                 tlatest = tnu;
                 tnu = 0;
               }));
@@ -113,8 +114,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         setState(
           () {
             downloading = true;
-            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
-            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
+            final progressPercent = (rec / total) * 100;
+            progressString = '${_formatNumberWithComma(progressPercent)}%';
+            downString =
+                '[${_formatNumberWithComma(rec)}/${_formatNumberWithComma(total)}]';
           },
         );
       });
@@ -194,7 +197,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = '${tlatest / 1024} KB/S';
+                final speed = tlatest / 1024;
+                speedString = '${_formatNumberWithComma(speed)} KB/s';
                 tlatest = tnu;
                 tnu = 0;
               }));
@@ -212,8 +216,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
         setState(
           () {
             downloading = true;
-            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
-            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
+            final progressPercent = (rec / total) * 100;
+            progressString = '${_formatNumberWithComma(progressPercent)}%';
+            downString =
+                '[${_formatNumberWithComma(rec)}/${_formatNumberWithComma(total)}]';
           },
         );
       });
@@ -493,8 +499,10 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
     }
   }
 
-  String numberWithComma(int param) {
-    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
+  static final _commaFormatter = NumberFormat('#,###.#');
+
+  String _formatNumberWithComma(num param) {
+    return _commaFormatter.format(param).replaceAll(' ', '');
   }
 
   @override
