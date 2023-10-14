@@ -201,31 +201,34 @@ class _UserStatusCardState extends ThemeSwitchableState<UserStatusCard>
                   height: 48,
                   width: 48,
                   child: Stack(
-                      alignment: Alignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                            height: 30,
-                            width: 30,
-                            child: CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.grey),
-                            ))
-                      ]))
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        height: 30,
+                        width: 30,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(Colors.grey),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               : InkWell(
                   customBorder: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                         topRight: Radius.circular(10.0),
                         bottomRight: Radius.circular(10.0)),
                   ),
-                  child: Align(
+                  child: const Align(
                     alignment: Alignment.center,
                     child: badges.Badge(
                       showBadge: false,
-                      badgeContent: const Text('N',
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 12.0)),
+                      badgeContent: Text(
+                        'N',
+                        style: TextStyle(color: Colors.white, fontSize: 12.0),
+                      ),
                       // badgeColor: Settings.majorAccentColor,
-                      child: const Icon(MdiIcons.cloudUpload, size: 30),
+                      child: Icon(MdiIcons.cloudUpload, size: 30),
                     ),
                   ),
                   onTap: () async {
