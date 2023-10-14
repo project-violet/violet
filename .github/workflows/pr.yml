@@ -1,6 +1,6 @@
-name: Build android/ios
+name: Ci Pull Request
 on:
-  push:
+  pull_request:
     branches: [ dev ]
   workflow_dispatch:
   merge_group:
@@ -24,6 +24,8 @@ jobs:
           cd lib/server
           wget -q ${{ secrets.SECRET_SALT }}
           wget -q ${{ secrets.SECRET_WSALT }}
+          echo 'String getValid(String vToken) { return vToken; }' >> salt.dart
+          cp salt.dart wsalt.dart
           cd ../..
           python3 preprocess-ios.py
       - name: Podfile
@@ -67,8 +69,8 @@ jobs:
       - name: Preprocess
         run: | 
           cd lib/server
-          wget -q ${{ secrets.SECRET_SALT }}
-          wget -q ${{ secrets.SECRET_WSALT }}
+          echo 'String getValid(String vToken) { return vToken; }' >> salt.dart
+          cp salt.dart wsalt.dart
           cd ../..
           python3 preprocess-android.py
       - name: Build
