@@ -6,7 +6,6 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_downloader/flutter_downloader.dart'; // @dependent: android
 import 'package:open_file/open_file.dart';
@@ -14,6 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/other/dialogs.dart';
+import 'package:violet/platform/android_external_storage_directory.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/version/update_sync.dart';
 
@@ -24,8 +24,8 @@ class UpdateManager {
 
     await UpdateSyncManager.checkUpdateSync();
 
-    // Update is not available for iOS.
-    if (!Platform.isIOS) {
+    // Update is only available for Android.
+    if (Platform.isAndroid) {
       updateCheckAndDownload(context); // @dependent: android
     }
   }
@@ -60,8 +60,8 @@ class UpdateManager {
       }
       updateContinued = true;
 
-      final ext = await ExtStorage.getExternalStoragePublicDirectory(
-          ExtStorage.directoryDownload);
+      final ext = await AndroidExternalStorageDirectory.instance
+          .getExternalStorageDownloadsDirectory();
 
       bool once = false;
       IsolateNameServer.registerPortWithName(
