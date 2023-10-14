@@ -305,5 +305,6 @@
   "lab": "Laboratory",
   "realtimeuserrecord": "Real Time User Record",
   "manualupdate": "Manual Update",
-  "cannotuseios": "You cannot use update on iOS :("
+  "cannotuseios": "You cannot use update on iOS :(",
+  "exitTheApp": "Exit the app"
 }
