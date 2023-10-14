@@ -22,8 +22,6 @@ jobs:
       - name: Preprocess
         run: | 
           cd lib/server
-          wget -q ${{ secrets.SECRET_SALT }}
-          wget -q ${{ secrets.SECRET_WSALT }}
           echo 'String getValid(String vToken) { return vToken; }' >> salt.dart
           cp salt.dart wsalt.dart
           cd ../..
