@@ -4,7 +4,6 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
@@ -15,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:violet/component/hitomi/shielder.dart';
 import 'package:violet/database/user/download.dart';
 import 'package:violet/log/log.dart';
+import 'package:violet/platform/android_external_storage_directory.dart';
 import 'package:violet/settings/device_type.dart';
 
 class Settings {
@@ -235,7 +235,8 @@ class Settings {
     String? tDownloadBasePath;
     if (Platform.isAndroid) {
       tDownloadBasePath = prefs.getString('downloadbasepath');
-      final String path = await ExtStorage.getExternalStorageDirectory();
+      final String path = await AndroidExternalStorageDirectory.instance
+          .getExternalStorageDirectory();
 
       var androidInfo = await DeviceInfoPlugin().androidInfo;
       var sdkInt = androidInfo.version.sdkInt;
