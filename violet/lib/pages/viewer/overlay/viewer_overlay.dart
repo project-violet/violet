@@ -208,7 +208,8 @@ class _ViewerOverlayState extends State<ViewerOverlay> {
                               children: [
                                 _appBarBookmark(),
                                 _appBarInfo(),
-                                if (!Settings.inViewerMessageSearch) _appBarSearch(),
+                                if (Settings.inViewerMessageSearch)
+                                  _appBarSearch(),
                               ],
                             ),
                           ),
