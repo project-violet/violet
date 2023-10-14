@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: dev
-      - uses: subosito/flutter-action@v26
+      - uses: subosito/flutter-action@v2
         with:
           # flutter-version: '2.5.2'
           channel: 'stable'
@@ -22,8 +22,6 @@ jobs:
       - name: Preprocess
         run: | 
           cd lib/server
-          wget -q ${{ secrets.SECRET_SALT }}
-          wget -q ${{ secrets.SECRET_WSALT }}
           echo 'String getValid(String vToken) { return vToken; }' >> salt.dart
           cp salt.dart wsalt.dart
           cd ../..
