@@ -361,8 +361,8 @@ class _StatisticsState extends State<Statistics> {
                       _heatMap(),
                     ],
                   )
-                : Column(
-                    children: const <Widget>[
+                : const Column(
+                    children: <Widget>[
                       Expanded(
                         child: Align(
                           alignment: Alignment.center,
@@ -445,9 +445,9 @@ class _StatisticsState extends State<Statistics> {
       Container(
         height: 16,
       ),
-      Row(
+      const Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
+        children: [
           Text('나의 통계',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],

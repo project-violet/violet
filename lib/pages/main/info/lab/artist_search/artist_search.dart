@@ -112,9 +112,9 @@ class _ArtistSearchState extends State<ArtistSearch> {
   }
 
   titleArea() {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
+      children: [
         Text('Artist Search',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
       ],

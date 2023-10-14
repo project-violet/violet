@@ -559,10 +559,10 @@ class PreviewAreaWidget extends StatelessWidget {
         },
       );
     }
-    return Row(
+    return const Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
+      children: [
         SizedBox(
           width: 100,
           height: 100,
@@ -686,10 +686,10 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: const [
+            children: [
               SizedBox(
                 width: 100,
                 height: 100,
@@ -824,13 +824,13 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         );
       },
       splashColor: Colors.white,
-      child: ListTile(
+      child: const ListTile(
         // dense: true,
         // contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 16.0),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [Text('Write Comment')],
+          children: [Text('Write Comment')],
         ),
       ),
     );
@@ -966,10 +966,10 @@ class __InfoAreaWidgetState extends State<_InfoAreaWidget> {
         },
       );
     }
-    return Row(
+    return const Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: const [
+        children: [
           SizedBox(
             width: 100,
             height: 100,

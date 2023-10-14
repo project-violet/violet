@@ -197,12 +197,12 @@ class _UserStatusCardState extends State<UserStatusCard>
           height: double.infinity,
           width: 88,
           child: _logining
-              ? SizedBox(
+              ? const SizedBox(
                   height: 48,
                   width: 48,
                   child: Stack(
                       alignment: Alignment.center,
-                      children: const <Widget>[
+                      children: <Widget>[
                         SizedBox(
                             height: 30,
                             width: 30,

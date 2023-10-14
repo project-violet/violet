@@ -224,7 +224,7 @@ class Settings {
       if (Platform.isAndroid) {
         var deviceInfoPlugin = DeviceInfoPlugin();
         final androidInfo = await deviceInfoPlugin.androidInfo;
-        if (androidInfo.version.sdkInt! >= 30) tUseInnerStorage = true;
+        if (androidInfo.version.sdkInt >= 30) tUseInnerStorage = true;
       }
 
       await prefs.setBool('userinnerstorage', tUseInnerStorage);
@@ -237,7 +237,7 @@ class Settings {
       final String path = await ExtStorage.getExternalStorageDirectory();
 
       var androidInfo = await DeviceInfoPlugin().androidInfo;
-      var sdkInt = androidInfo.version.sdkInt!;
+      var sdkInt = androidInfo.version.sdkInt;
 
       if (sdkInt >= 30 && prefs.getBool('android30downpath') == null) {
         await prefs.setBool('android30downpath', true);
@@ -394,7 +394,7 @@ class Settings {
 
   static Future<String> getDefaultDownloadPath() async {
     var androidInfo = await DeviceInfoPlugin().androidInfo;
-    var sdkInt = androidInfo.version.sdkInt!;
+    var sdkInt = androidInfo.version.sdkInt;
 
     if (sdkInt >= 30) {
       var ext = await getExternalStorageDirectory();
