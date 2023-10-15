@@ -4,10 +4,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +20,7 @@ import 'package:violet/database/query.dart';
 import 'package:violet/locale/locale.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/pages/database_download/decompress.dart';
+import 'package:violet/platform/misc.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/variables.dart';
 import 'package:violet/version/sync.dart';
@@ -35,15 +38,17 @@ class DataBaseDownloadPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<DataBaseDownloadPage> createState() => DataBaseDownloadPagepState();
+  State<DataBaseDownloadPage> createState() => DataBaseDownloadPageState();
 }
 
-class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
+class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
   bool downloading = false;
   var baseString = '';
   var progressString = '';
   var downString = '';
   var speedString = '';
+
+  var _showCloseAppButton = false;
 
   @override
   void initState() {
@@ -95,7 +100,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = '${tlatest / 1024} KB/S';
+                final speed = tlatest / 1024;
+                speedString = '${_formatNumberWithComma(speed)} KB/s';
                 tlatest = tnu;
                 tnu = 0;
               }));
@@ -113,8 +119,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         setState(
           () {
             downloading = true;
-            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
-            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
+            final progressPercent = (rec / total) * 100;
+            progressString = '${_formatNumberWithComma(progressPercent)}%';
+            downString =
+                '[${_formatNumberWithComma(rec)}/${_formatNumberWithComma(total)}]';
           },
         );
       });
@@ -163,6 +171,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       } else {
         setState(() {
           baseString = Translations.instance!.trans('dbdcomplete');
+          _showCloseAppButton = true;
         });
       }
 
@@ -194,7 +203,8 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       Timer timer = Timer.periodic(
           const Duration(seconds: 1),
           (Timer timer) => setState(() {
-                speedString = '${tlatest / 1024} KB/S';
+                final speed = tlatest / 1024;
+                speedString = '${_formatNumberWithComma(speed)} KB/s';
                 tlatest = tnu;
                 tnu = 0;
               }));
@@ -212,8 +222,10 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
         setState(
           () {
             downloading = true;
-            progressString = '${((rec / total) * 100).toStringAsFixed(0)}%';
-            downString = '[${numberWithComma(rec)}/${numberWithComma(total)}]';
+            final progressPercent = (rec / total) * 100;
+            progressString = '${_formatNumberWithComma(progressPercent)}%';
+            downString =
+                '[${_formatNumberWithComma(rec)}/${_formatNumberWithComma(total)}]';
           },
         );
       });
@@ -239,6 +251,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
       } else {
         setState(() {
           baseString = Translations.instance!.trans('dbdcomplete');
+          _showCloseAppButton = true;
         });
       }
 
@@ -486,6 +499,7 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
 
         setState(() {
           baseString = Translations.instance!.trans('dbdcomplete');
+          _showCloseAppButton = true;
         });
         break;
       }
@@ -493,8 +507,20 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
     }
   }
 
-  String numberWithComma(int param) {
-    return NumberFormat('###,###,###,###').format(param).replaceAll(' ', '');
+  static final _commaFormatter = NumberFormat('#,###.#');
+
+  String _formatNumberWithComma(num param) {
+    return _commaFormatter.format(param).replaceAll(' ', '');
+  }
+
+  Future<void> _exitApplication() async {
+    if (Platform.isAndroid) {
+      await PlatformMiscMethods.instance.finishMainActivity();
+    } else if (Platform.isIOS) {
+      exit(0);
+    } else {
+      ServicesBinding.instance.exitApplication(AppExitType.required);
+    }
   }
 
   @override
@@ -543,7 +569,19 @@ class DataBaseDownloadPagepState extends State<DataBaseDownloadPage> {
                   ),
                 ),
               )
-            : Text(baseString),
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(baseString),
+                  if (_showCloseAppButton) ...[
+                    const SizedBox(height: 32.0),
+                    ElevatedButton(
+                      onPressed: _exitApplication,
+                      child: Text(Translations.of(context).trans('exitTheApp')),
+                    ),
+                  ],
+                ],
+              ),
       ),
     );
   }

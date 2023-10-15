@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
@@ -21,25 +22,51 @@ class TagTranslate {
     String data;
 
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      var file = File('/home/ubuntu/violet/assets/locale/tag/korean.json');
+      final file = File('/home/ubuntu/violet/assets/locale/tag/korean.json');
       data = await file.readAsString();
     } else {
       data = await rootBundle
           .loadString('assets/locale/tag/$defaultLanguage.json');
     }
-    Map<String, dynamic> result = json.decode(data);
 
-    _translateMap = <String, String>{};
-    _reverseAndroMap = <String, String>{};
+    Future<(Map<String, String>, Map<String, String>)> decodeJsonData() async {
+      final translateMap = <String, String>{};
+      final reverseAndroMap = <String, String>{};
 
-    result.entries.forEach((element) {
-      if (element.value.toString().trim() == '') return;
-      if (_translateMap.containsKey(element.key)) return;
-      _translateMap[element.key] = element.value as String;
-      _reverseAndroMap[disassembly((element.value as String)
-          .replaceAll('female:', '')
-          .replaceAll('male:', ''))] = element.key;
-    });
+      json.decode(
+        data,
+        reviver: (keyObject, valueObject) {
+          if (keyObject == null) {
+            return null;
+          }
+
+          final key = keyObject.toString();
+          final value = valueObject.toString();
+
+          if (value.trim().isEmpty) {
+            return null;
+          }
+
+          if (!translateMap.containsKey(key)) {
+            return null;
+          }
+
+          translateMap[key] = value;
+          reverseAndroMap[disassembly(value)
+              .replaceAll('female:', '')
+              .replaceAll('male:', '')] = key;
+
+          return null;
+        },
+      );
+
+      return (translateMap, reverseAndroMap);
+    }
+
+    final (translateMap, reverseAndroMap) = await Isolate.run(decodeJsonData);
+
+    _translateMap = translateMap;
+    _reverseAndroMap = reverseAndroMap;
   }
 
   static String of(String classification, String key) {
