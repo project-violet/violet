@@ -60,6 +60,7 @@ import 'package:violet/pages/settings/tag_rebuild_page.dart';
 import 'package:violet/pages/settings/tag_selector.dart';
 import 'package:violet/pages/settings/version_page.dart';
 import 'package:violet/pages/splash/splash_page.dart';
+import 'package:violet/platform/misc.dart';
 import 'package:violet/server/violet.dart';
 import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
@@ -1994,36 +1995,45 @@ class _SettingsPageState extends State<SettingsPage>
             title: Text(Translations.of(context).trans('exportingbookmark')),
             trailing: const Icon(Icons.keyboard_arrow_right),
             onTap: () async {
-              if (!await Permission.storage.isGranted) {
-                if (await Permission.storage.request() ==
-                    PermissionStatus.denied) {
-                  flutterToast.showToast(
-                    child: ToastWrapper(
-                      isCheck: false,
-                      msg: Translations.of(context).trans('noauth'),
-                    ),
-                    gravity: ToastGravity.BOTTOM,
-                    toastDuration: const Duration(seconds: 4),
-                  );
-
-                  return;
-                }
-              }
-
-              final selectedPath = await FilePicker.platform.getDirectoryPath();
-
-              if (selectedPath == null) {
-                return;
-              }
-
-              final db = Platform.isIOS
+              final dir = Platform.isIOS
                   ? await getApplicationSupportDirectory()
                   : (await getApplicationDocumentsDirectory());
-              final dbfile = File('${db.path}/user.db');
+              final bookmarkDatabaseFile = File('${dir.path}/user.db');
 
-              final extpath = '$selectedPath/bookmark.db';
+              if (Platform.isAndroid) {
+                await PlatformMiscMethods.instance.exportFile(
+                  bookmarkDatabaseFile.path,
+                  mimeType: 'application/vnd.sqlite3',
+                  fileNameToSaveAs: 'violet-bookmarks.db',
+                );
+              } else {
+                if (!await Permission.storage.isGranted) {
+                  if (await Permission.storage.request() ==
+                      PermissionStatus.denied) {
+                    flutterToast.showToast(
+                      child: ToastWrapper(
+                        isCheck: false,
+                        msg: Translations.of(context).trans('noauth'),
+                      ),
+                      gravity: ToastGravity.BOTTOM,
+                      toastDuration: const Duration(seconds: 4),
+                    );
 
-              await dbfile.copy(extpath);
+                    return;
+                  }
+                }
+
+                final selectedPath =
+                    await FilePicker.platform.getDirectoryPath();
+
+                if (selectedPath == null) {
+                  return;
+                }
+
+                final extpath = '$selectedPath/bookmark.db';
+
+                await bookmarkDatabaseFile.copy(extpath);
+              }
 
               flutterToast.showToast(
                 child: ToastWrapper(
