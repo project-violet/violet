@@ -9,6 +9,7 @@ import android.view.WindowManager
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugins.GeneratedPluginRegistrant
@@ -17,6 +18,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val VOLUME_CHANNEL = "xyz.project.violet/volume"
     private val NATIVELIBDIR_CHANNEL = "xyz.project.violet/nativelibdir"
     private val EXTERNAL_STORAGE_DIRECTORY_CHANNEL = "xyz.project.violet/externalStorageDirectory"
+    private val MISC_CHANNEL = "xyz.project.violet/misc"
 
     private val EXTERNAL_STORAGE_DIRECTORY_METHODS = mapOf(
             "getExternalStorageDirectory" to MethodCallHandler { call, result ->
@@ -76,6 +78,13 @@ class MainActivity : FlutterFragmentActivity() {
                 result.notImplemented()
             }
         }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, MISC_CHANNEL).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "finishMainActivity" -> finishMainActivity(call, result)
+                else -> result.notImplemented()
+            }
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
@@ -85,5 +94,10 @@ class MainActivity : FlutterFragmentActivity() {
         }
 
         return super.onKeyDown(keyCode, event)
+    }
+
+    private fun finishMainActivity(call: MethodCall, result: MethodChannel.Result) {
+        finish()
+        result.success(null)
     }
 }

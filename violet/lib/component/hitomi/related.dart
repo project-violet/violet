@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/services.dart';
 
@@ -13,20 +14,35 @@ class Related {
     String data;
 
     if (Platform.environment.containsKey('FLUTTER_TEST')) {
-      var file = File('/home/ubuntu/violet/assets/rank/related.json');
+      final file = File('/home/ubuntu/violet/assets/rank/related.json');
       data = await file.readAsString();
     } else {
       data = await rootBundle.loadString('assets/rank/related.json');
     }
 
-    Map<String, dynamic> dataMap = json.decode(data);
+    Future<Map<int, List<int>>> decodeJsonData() async {
+      final related = <int, List<int>>{};
 
-    related = <int, List<int>>{};
+      json.decode(
+        data,
+        reviver: (key, value) {
+          if (key == null) {
+            return value;
+          }
 
-    dataMap.entries.forEach((element) {
-      related[int.parse(element.key)] =
-          (element.value as List<dynamic>).map((e) => e as int).toList();
-    });
+          if (key is String) {
+            related[int.parse(key)] = (value as List<dynamic>).cast();
+            return null;
+          } else {
+            return value;
+          }
+        },
+      );
+
+      return related;
+    }
+
+    related = await Isolate.run(decodeJsonData);
   }
 
   static bool existsRelated(int articleId) {
