@@ -288,7 +288,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
               Container(width: 8),
               DropdownButtonHideUnderline(
                 child: DropdownButton(
-                  items: ['Contains', 'Similar']
+                  items: ['Contains', 'Similar', 'LCS']
                       .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                       .toList(),
                   value: selected,
@@ -404,7 +404,7 @@ class _LabSearchMessageState extends State<LabSearchMessage> {
                 onPressed: () async {
                   await showOkDialog(
                       context,
-                      '대사를 검색해 작품을 찾아보세요! 현재 2021.12.31까지 업로드된 작품들을 지원됩니다.',
+                      '대사를 검색해 작품을 찾아보세요! 현재 2023.09.30까지 업로드된 작품들을 지원됩니다.',
                       '대사 검색기');
                 },
               ),
