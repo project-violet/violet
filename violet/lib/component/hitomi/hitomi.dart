@@ -340,15 +340,17 @@ class HitomiManager {
     return result;
   }
 
-  static String translate2query(String tokens) {
+  static String translate2query(String tokens, {bool filter = true}) {
     tokens = tokens.trim();
     final nn = int.tryParse(tokens.split(' ')[0]);
     if (nn != null) {
       return 'SELECT * FROM HitomiColumnModel WHERE Id=$nn';
     }
 
+    final filterExistsOnHitomi = !Settings.searchPure && filter;
+
     if (tokens.isEmpty) {
-      return 'SELECT * FROM HitomiColumnModel WHERE ${!Settings.searchPure ? 'ExistOnHitomi=1' : ''}';
+      return 'SELECT * FROM HitomiColumnModel WHERE ${filterExistsOnHitomi ? 'ExistOnHitomi=1' : ''}';
     }
 
     final split =
@@ -412,7 +414,7 @@ class HitomiManager {
             prefix = 'Class';
             break;
           case 'recent':
-            return 'SELECT * FROM HitomiColumnModel ${!Settings.searchPure ? 'ExistOnHitomi=1' : ''}';
+            return 'SELECT * FROM HitomiColumnModel ${filterExistsOnHitomi ? 'where ExistOnHitomi=1' : ''}';
         }
         if (prefix == '') return '';
         if (postfix == '') postfix = ss[1].replaceAll('_', ' ');
@@ -456,6 +458,6 @@ class HitomiManager {
       }
     }
 
-    return 'SELECT * FROM HitomiColumnModel WHERE $where ${!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''}';
+    return 'SELECT * FROM HitomiColumnModel WHERE $where ${filterExistsOnHitomi ? ' AND ExistOnHitomi=1' : ''}';
   }
 }
