@@ -22,8 +22,16 @@ class PatchModel {
 
 final patches = [
   PatchModel(
-    dateTime: DateTime(2023, 7, 7),
+    dateTime: DateTime(2023, 11, 4),
     version: '1.29 Minor',
+    contents: [
+      'supports android saf',
+      'make message search to main feature',
+    ],
+  ),
+  PatchModel(
+    dateTime: DateTime(2023, 7, 7),
+    version: '1.28.5 Patch',
     contents: [
       'fix script load error',
       'upgrade flutter-sdk',
