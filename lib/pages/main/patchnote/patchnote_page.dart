@@ -24,6 +24,7 @@ final patches = [
   PatchModel(
     dateTime: DateTime(2023, 11, 4),
     version: '1.29 Minor',
+    isMinor: true,
     contents: [
       'supports android saf',
       'make message search to main feature',
