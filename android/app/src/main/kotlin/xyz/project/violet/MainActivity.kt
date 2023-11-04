@@ -1,5 +1,7 @@
 package xyz.project.violet
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -13,6 +15,8 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugins.GeneratedPluginRegistrant
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 class MainActivity : FlutterFragmentActivity() {
     private val VOLUME_CHANNEL = "xyz.project.violet/volume"
@@ -82,6 +86,7 @@ class MainActivity : FlutterFragmentActivity() {
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, MISC_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "finishMainActivity" -> finishMainActivity(call, result)
+                "exportFile" -> exportFile(call, result)
                 else -> result.notImplemented()
             }
         }
@@ -99,5 +104,81 @@ class MainActivity : FlutterFragmentActivity() {
     private fun finishMainActivity(call: MethodCall, result: MethodChannel.Result) {
         finish()
         result.success(null)
+    }
+
+    private class ExportFileRequest(
+        val filePath: String,
+        val call: MethodCall,
+        val result: MethodChannel.Result,
+    )
+
+    private var nextExportFileRequestCode = 1000001;
+    private val exportFileRequestMap = hashMapOf<Int, ExportFileRequest>()
+
+    private fun exportFile(call: MethodCall, result: MethodChannel.Result) {
+        val filePath = call.argument<String>("filePath")
+        val mimeType = call.argument<String>("mimeType")
+        val fileNameToSaveAs = call.argument<String>("fileNameToSaveAs")
+
+        if (filePath == null) {
+            result.error("noArgument", "filePath", null)
+            return
+        }
+
+        if (mimeType == null) {
+            result.error("noArgument", "mimeType", null)
+            return
+        }
+
+        if (fileNameToSaveAs == null) {
+            result.error("noArgument", "fileNameToSaveAs", null)
+            return
+        }
+
+        try {
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = mimeType
+                putExtra(Intent.EXTRA_TITLE, fileNameToSaveAs)
+            }
+
+            exportFileRequestMap[nextExportFileRequestCode] =
+                ExportFileRequest(filePath, call, result)
+            startActivityForResult(intent, nextExportFileRequestCode++);
+        } catch (e: Throwable) {
+            result.error("exception", e.toString(), e);
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        val request = exportFileRequestMap[requestCode] ?: return
+
+        try {
+            if (resultCode != Activity.RESULT_OK) {
+                request.result.error("intentResultFail", "resultCode=$resultCode", null)
+                return
+            }
+
+            try {
+                val uri = data!!.data!!
+                val targetFileDescriptor = contentResolver.openFileDescriptor(uri, "w")
+
+                val input = FileInputStream(request.filePath)
+                val output = FileOutputStream(targetFileDescriptor!!.fileDescriptor)
+
+                input.copyTo(output)
+
+                input.close()
+                output.close()
+
+                request.result.success(null)
+            } catch (e: Throwable) {
+                request.result.error("exception", e.toString(), e);
+            }
+        } finally {
+            exportFileRequestMap.remove(requestCode)
+        }
     }
 }
