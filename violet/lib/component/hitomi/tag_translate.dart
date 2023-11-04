@@ -47,7 +47,7 @@ class TagTranslate {
             return null;
           }
 
-          if (!translateMap.containsKey(key)) {
+          if (translateMap.containsKey(key)) {
             return null;
           }
 
