@@ -160,6 +160,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
           'databasesync', SyncManager.getLatestDB().getDateTime().toString());
       await prefs.setInt('synclatest', SyncManager.getLatestDB().timestamp);
 
+      await DataBaseManager.reloadInstance();
+
       if (Settings.useOptimizeDatabase) {
         await deleteUnused();
 
@@ -241,6 +243,8 @@ class DataBaseDownloadPageState extends State<DataBaseDownloadPage> {
       setState(() {
         downloading = false;
       });
+
+      await DataBaseManager.reloadInstance();
 
       if (Settings.useOptimizeDatabase) await deleteUnused();
 
