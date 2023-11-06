@@ -436,7 +436,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                       if (!Settings.useInnerStorage &&
                           prefs.getBool('checkauthalready') == null) {
                         await prefs.setBool('checkauthalready', true);
-                        if (await Permission.storage.request() ==
+                        if (await Permission.manageExternalStorage.request() ==
                             PermissionStatus.denied) {
                           await showOkDialog(context,
                               'You cannot use downloader, if you not allow external storage permission.');
