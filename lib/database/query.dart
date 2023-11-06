@@ -87,9 +87,9 @@ class QueryManager {
         queryRaw + (!Settings.searchPure ? ' AND ExistOnHitomi=1' : ''));
 
     var qr = <String, QueryResult>{};
-    qm.results!.forEach((element) {
+    for (var element in qm.results!) {
       qr[element.id().toString()] = element;
-    });
+    }
 
     var rr = ids
         .where((e) => qr.containsKey(e.toString()))

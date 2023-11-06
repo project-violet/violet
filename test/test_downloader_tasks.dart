@@ -214,9 +214,9 @@ void main() {
     //   ),
     // );
 
-    tasks.forEach((element) {
+    for (var element in tasks) {
       print(element.url);
-    });
+    }
 
     downloader.appendTasks(tasks);
 

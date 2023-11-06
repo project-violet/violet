@@ -8,7 +8,7 @@ import 'package:violet/pages/settings/libviolet_page.dart';
 import 'package:violet/settings/settings.dart';
 
 class VioletLicensePage extends StatelessWidget {
-  const VioletLicensePage({Key? key}) : super(key: key);
+  const VioletLicensePage({super.key});
 
   @override
   Widget build(BuildContext context) {

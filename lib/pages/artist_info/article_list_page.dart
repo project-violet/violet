@@ -21,8 +21,7 @@ class ArticleListPage extends StatefulWidget {
   final List<QueryResult> cc;
   final String name;
 
-  const ArticleListPage({Key? key, required this.name, required this.cc})
-      : super(key: key);
+  const ArticleListPage({super.key, required this.name, required this.cc});
 
   @override
   State<ArticleListPage> createState() => _ArticleListPageState();
@@ -187,7 +186,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
   void _applyFilter() {
     var result = <QueryResult>[];
     var isOr = _filterController.isOr;
-    widget.cc.forEach((element) {
+    for (var element in widget.cc) {
       // key := <group>:<name>
       var succ = !_filterController.isOr;
       _filterController.tagStates.forEach((key, value) {
@@ -223,7 +222,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
         }
       });
       if (succ) result.add(element);
-    });
+    }
 
     filterResult = result;
     isFilterUsed = true;

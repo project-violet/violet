@@ -18,9 +18,9 @@ class ThemeSwitchableStateTargetStore {
 
   static void doChange() {
     Timer.run(() {
-      targets.forEach((element) {
+      for (var element in targets) {
         element.checkDirty();
-      });
+      }
     });
   }
 }

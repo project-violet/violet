@@ -10,12 +10,12 @@ import 'package:violet/style/palette.dart';
 // https://gist.github.com/collinjackson/4fddbfa2830ea3ac033e34622f278824#file-main-dart-L24
 class DotsIndicator extends AnimatedWidget {
   const DotsIndicator({
-    Key? key,
+    super.key,
     required this.controller,
     required this.itemCount,
     required this.onPageSelected,
     this.color = Colors.white,
-  }) : super(key: key, listenable: controller);
+  }) : super(listenable: controller);
 
   /// The PageController that this DotsIndicator is representing.
   final PageController controller;

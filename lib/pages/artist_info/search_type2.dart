@@ -19,7 +19,7 @@ class SearchType2 extends StatelessWidget {
   }
 
   final int nowType;
-  const SearchType2({Key? key, required this.nowType}) : super(key: key);
+  const SearchType2({super.key, required this.nowType});
 
   @override
   Widget build(BuildContext context) {

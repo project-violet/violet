@@ -8,7 +8,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class DownloadAlignType extends StatelessWidget {
-  const DownloadAlignType({Key? key}) : super(key: key);
+  const DownloadAlignType({super.key});
 
   Color getColor(int i) {
     return Settings.themeWhat

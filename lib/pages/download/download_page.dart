@@ -49,7 +49,7 @@ class DownloadPageManager {
 
 // This page must remain alive until the app is closed.
 class DownloadPage extends StatefulWidget {
-  const DownloadPage({Key? key}) : super(key: key);
+  const DownloadPage({super.key});
 
   @override
   State<DownloadPage> createState() => _DownloadPageState();
@@ -165,39 +165,40 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
 
     var queryRaw = 'SELECT * FROM HitomiColumnModel WHERE ';
     queryRaw += 'Id IN (${articles.map((e) => e).join(',')})';
-    QueryManager.query(queryRaw).then((value) async {
-      var qr = <int, QueryResult>{};
-      value.results!.forEach((element) {
-        qr[element.id()] = element;
-      });
 
-      var result = <QueryResult>[];
-      articles.forEach((element) async {
-        if (qr[element] == null) {
-          try {
-            var headers = await ScriptManager.runHitomiGetHeaderContent(
-                element.toString());
-            var hh = await http.get(
-              'https://ltn.hitomi.la/galleryblock/$element.html',
-              headers: headers,
-            );
-            var article = await HitomiParser.parseGalleryBlock(hh.body);
-            var meta = {
-              'Id': element,
-              'Title': article['Title'],
-              'Artists': article['Artists'].join('|'),
-            };
-            result.add(QueryResult(result: meta));
-            return;
-          } catch (_) {}
-        }
+    final value = await QueryManager.query(queryRaw);
+
+    var qr = <int, QueryResult>{};
+    for (var element in value.results!) {
+      qr[element.id()] = element;
+    }
+
+    var result = <QueryResult>[];
+    for (var element in articles) {
+      if (qr[element] == null) {
+        try {
+          var headers =
+              await ScriptManager.runHitomiGetHeaderContent(element.toString());
+          var hh = await http.get(
+            'https://ltn.hitomi.la/galleryblock/$element.html',
+            headers: headers,
+          );
+          var article = await HitomiParser.parseGalleryBlock(hh.body);
+          var meta = {
+            'Id': element,
+            'Title': article['Title'],
+            'Artists': article['Artists'].join('|'),
+          };
+          result.add(QueryResult(result: meta));
+        } catch (_) {}
+      } else {
         result.add(qr[element]!);
-      });
+      }
+    }
 
-      result.forEach((element) {
-        queryResults[element.id()] = element;
-      });
-    });
+    for (var element in result) {
+      queryResults[element.id()] = element;
+    }
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -696,19 +697,19 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
     var downloading = <int>[];
     var result = <int>[];
     var isOr = _filterController.isOr;
-    itemsMap.entries.forEach((element) {
+    for (var element in itemsMap.entries) {
       // 1: Pending
       // 2: Extracting
       // 3: Downloading
       // 4: Post Processing
       if (1 <= element.value.state() && element.value.state() <= 4) {
         downloading.add(element.key);
-        return;
+        continue;
       }
 
-      if (int.tryParse(element.value.url()) == null) return;
+      if (int.tryParse(element.value.url()) == null) continue;
       final qr = queryResults[int.parse(element.value.url())];
-      if (qr == null) return;
+      if (qr == null) continue;
 
       // key := <group>:<name>
       var succ = !_filterController.isOr;
@@ -745,7 +746,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
         }
       });
       if (succ) result.add(element.key);
-    });
+    }
 
     if (_filterController.tagStates.isNotEmpty) {
       filterResult = result.map((e) => itemsMap[e]!).toList();
@@ -762,12 +763,12 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
       final userlog = await user.getUserLog();
       final articlereadlog = <int, DateTime>{};
 
-      userlog.forEach((element) {
+      for (var element in userlog) {
         final id = int.tryParse(element.articleId());
         if (id == null) {
           Logger.warning(
               '[download-_applyFilter] articleId is not int type: ${element.articleId()}');
-          return;
+          continue;
         }
         if (!articlereadlog.containsKey(id)) {
           final dt = DateTime.tryParse(element.datetimeStart());
@@ -778,7 +779,7 @@ class _DownloadPageState extends ThemeSwitchableState<DownloadPage>
                 '[download-_applyFilter] datetimeStart is not DateTime type: ${element.datetimeStart()}');
           }
         }
-      });
+      }
 
       filterResult.sort((x, y) {
         if (int.tryParse(x.url()) == null) return 1;

@@ -8,7 +8,7 @@ import 'package:violet/cert/cert_data.dart';
 import 'package:violet/cert/cert_util.dart';
 
 class RootCert extends CertData {
-  RootCert({required Map<String, dynamic> data}) : super(data: data);
+  RootCert({required super.data});
 
   RSAPublicKey rsaPublic() => CertUtil.importRSAPublicKey(data['PubKey']);
 

@@ -52,8 +52,8 @@ import 'package:violet/widgets/toast.dart';
 
 class ArticleInfoPage extends StatelessWidget {
   const ArticleInfoPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -339,7 +339,7 @@ class ArticleInfoPage extends StatelessWidget {
 }
 
 class DividerWidget extends StatelessWidget {
-  const DividerWidget({Key? key}) : super(key: key);
+  const DividerWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -357,8 +357,7 @@ class DividerWidget extends StatelessWidget {
 class TagInfoAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  const TagInfoAreaWidget({Key? key, required this.queryResult})
-      : super(key: key);
+  const TagInfoAreaWidget({super.key, required this.queryResult});
 
   @override
   Widget build(BuildContext context) {
@@ -464,8 +463,7 @@ class SingleChipWidget extends StatelessWidget {
   final String name;
   final String raw;
 
-  const SingleChipWidget(this.target, this.name, this.raw, {Key? key})
-      : super(key: key);
+  const SingleChipWidget(this.target, this.name, this.raw, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -490,8 +488,7 @@ class MultiChipWidget extends StatelessWidget {
   final String name;
   final String? target;
 
-  const MultiChipWidget(this.target, this.name, this.groupName, {Key? key})
-      : super(key: key);
+  const MultiChipWidget(this.target, this.name, this.groupName, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -523,8 +520,7 @@ class MultiChipWidget extends StatelessWidget {
 class PreviewAreaWidget extends StatelessWidget {
   final QueryResult queryResult;
 
-  const PreviewAreaWidget({Key? key, required this.queryResult})
-      : super(key: key);
+  const PreviewAreaWidget({super.key, required this.queryResult});
 
   @override
   Widget build(BuildContext context) {

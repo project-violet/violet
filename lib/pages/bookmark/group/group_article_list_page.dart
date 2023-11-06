@@ -35,10 +35,10 @@ class GroupArticleListPage extends StatefulWidget {
   final int groupId;
 
   const GroupArticleListPage({
-    Key? key,
+    super.key,
     required this.name,
     required this.groupId,
-  }) : super(key: key);
+  });
 
   @override
   State<GroupArticleListPage> createState() => _GroupArticleListPageState();
@@ -97,42 +97,47 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
     nowType = prefs.getInt('bookmark_${widget.groupId}') ?? 3;
   }
 
-  void refresh() {
+  Future<void> _refreshAsync() async {
     _loadBookmarkAlignType();
-    Bookmark.getInstance().then((value) =>
-        value.getArticle().then((value) async {
-          var cc = value
-              .where((e) => e.group() == widget.groupId)
-              .toList()
-              .reversed
-              .toList();
 
-          if (cc.isEmpty) {
-            queryResult = <QueryResult>[];
-            filterResult = queryResult;
-            _rebuild();
-            return;
-          }
+    final bookmark = await Bookmark.getInstance();
+    final articles = await bookmark.getArticle();
 
-          QueryManager.queryIds(cc.map((e) => int.parse(e.article())).toList())
-              .then((value) async {
-            var qr = <String, QueryResult>{};
-            value.forEach((element) {
-              qr[element.id().toString()] = element;
-            });
+    var cc = articles
+        .where((e) => e.group() == widget.groupId)
+        .toList()
+        .reversed
+        .toList();
 
-            var result = <QueryResult>[];
-            cc.forEach((element) async {
-              var article = qr[element.article()];
-              article ??= await _tryGetArticleFromHitomi(element.article());
-              result.add(article);
-            });
+    if (cc.isEmpty) {
+      queryResult = <QueryResult>[];
+      filterResult = queryResult;
+      _rebuild();
+      return;
+    }
 
-            queryResult = result;
-            _applyFilter();
-            _rebuild();
-          });
-        }));
+    final value = await QueryManager.queryIds(
+        cc.map((e) => int.parse(e.article())).toList());
+
+    var qr = <String, QueryResult>{};
+    for (var element in value) {
+      qr[element.id().toString()] = element;
+    }
+
+    var result = <QueryResult>[];
+    for (var element in cc) {
+      var article = qr[element.article()];
+      article ??= await _tryGetArticleFromHitomi(element.article());
+      result.add(article);
+    }
+
+    queryResult = result;
+    _applyFilter();
+    _rebuild();
+  }
+
+  void refresh() {
+    _refreshAsync();
   }
 
   bool _shouldRebuild = false;
@@ -240,9 +245,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
       fabButtons: <Widget>[
         FloatingActionButton(
           onPressed: () {
-            filterResult.forEach((element) {
+            for (var element in filterResult) {
               checked.add(element.id());
-            });
+            }
             _shouldRebuild = true;
             setState(() {
               _shouldRebuild = true;
@@ -261,9 +266,9 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
                     .replaceAll('%s', checked.length.toString()),
                 Translations.of(context).trans('bookmark'))) {
               var bookmark = await Bookmark.getInstance();
-              checked.forEach((element) async {
-                bookmark.unbookmark(element);
-              });
+              for (var element in checked) {
+                await bookmark.unbookmark(element);
+              }
               checked.clear();
               refresh();
             }

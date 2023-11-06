@@ -41,10 +41,10 @@ class ArticleListItemWidget extends StatefulWidget {
   final bool isCheckMode;
 
   const ArticleListItemWidget({
-    Key? key,
+    super.key,
     this.isChecked = false,
     this.isCheckMode = false,
-  }) : super(key: key);
+  });
 
   @override
   State<ArticleListItemWidget> createState() => _ArticleListItemWidgetState();
@@ -423,9 +423,9 @@ class BodyWidget extends StatelessWidget {
   final String getxId;
 
   BodyWidget({
-    Key? key,
+    super.key,
     required this.getxId,
-  }) : super(key: key) {
+  }) {
     c = Get.find(tag: getxId);
   }
 
@@ -591,8 +591,7 @@ class TagChip extends StatelessWidget {
   final String name;
   final String group;
 
-  const TagChip({Key? key, required this.name, required this.group})
-      : super(key: key);
+  const TagChip({super.key, required this.name, required this.group});
 
   String normalize(String tag) {
     if (tag == 'groups') return 'group';
@@ -713,7 +712,7 @@ class TagChip extends StatelessWidget {
 class ModalInsideModal extends StatelessWidget {
   final bool reverse;
 
-  const ModalInsideModal({Key? key, this.reverse = false}) : super(key: key);
+  const ModalInsideModal({super.key, this.reverse = false});
 
   @override
   Widget build(BuildContext context) {

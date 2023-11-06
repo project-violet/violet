@@ -23,14 +23,14 @@ class SimilarListPage extends StatelessWidget {
   final List<Tuple2<String, double>> similarsAll;
 
   const SimilarListPage({
-    Key? key,
+    super.key,
     required this.prefix,
     required this.similarsAll,
     required this.isGroup,
     required this.isUploader,
     required this.isSeries,
     required this.isCharacter,
-  }) : super(key: key);
+  });
 
   Future<List<QueryResult>> _future(String e) async {
     var unescape = HtmlUnescape();

@@ -16,7 +16,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/widgets/toast.dart';
 
 class UserStatusCard extends StatefulWidget {
-  const UserStatusCard({Key? key}) : super(key: key);
+  const UserStatusCard({super.key});
 
   @override
   State<UserStatusCard> createState() => _UserStatusCardState();

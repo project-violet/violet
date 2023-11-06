@@ -7,7 +7,7 @@ import 'package:violet/settings/settings.dart';
 import 'package:violet/style/palette.dart';
 
 class SearchResultSelector extends StatelessWidget {
-  const SearchResultSelector({Key? key}) : super(key: key);
+  const SearchResultSelector({super.key});
 
   @override
   Widget build(BuildContext context) {

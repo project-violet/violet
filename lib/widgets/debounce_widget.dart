@@ -7,8 +7,7 @@ class DebounceWidget extends StatefulWidget {
   final Widget child;
   final Widget? loadingWidget;
 
-  const DebounceWidget({Key? key, required this.child, this.loadingWidget})
-      : super(key: key);
+  const DebounceWidget({super.key, required this.child, this.loadingWidget});
 
   @override
   State<DebounceWidget> createState() => _DebounceWidgetState();

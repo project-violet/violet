@@ -9,7 +9,7 @@ import 'package:violet/network/wrapper.dart' as http;
 import 'package:violet/pages/segment/card_panel.dart';
 
 class UserManualPage extends StatefulWidget {
-  const UserManualPage({Key? key}) : super(key: key);
+  const UserManualPage({super.key});
 
   @override
   State<UserManualPage> createState() => _UserManualPageState();

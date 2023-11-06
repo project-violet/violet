@@ -17,9 +17,9 @@ class FilterPage extends StatefulWidget {
   final List<QueryResult> queryResult;
 
   const FilterPage({
-    Key? key,
+    super.key,
     required this.queryResult,
-  }) : super(key: key);
+  });
 
   @override
   State<FilterPage> createState() => _FilterPageState();
@@ -38,7 +38,7 @@ class _FilterPageState extends State<FilterPage> {
 
   _initTagPad() {
     Map<String, int> tags = <String, int>{};
-    widget.queryResult.forEach((element) {
+    for (var element in widget.queryResult) {
       if (element.tags() != null) {
         element.tags().split('|').forEach((element) {
           if (element == '') return;
@@ -46,7 +46,7 @@ class _FilterPageState extends State<FilterPage> {
           tags[element] = tags[element]! + 1;
         });
       }
-    });
+    }
     _groupCount['tag'] = 0;
     _groupCount['female'] = 0;
     _groupCount['male'] = 0;
@@ -84,7 +84,7 @@ class _FilterPageState extends State<FilterPage> {
     if (!c.groupStates.containsKey(group)) c.groupStates[group] = false;
     _groupCount[group] = 0;
     Map<String, int> tags = <String, int>{};
-    widget.queryResult.forEach((element) {
+    for (var element in widget.queryResult) {
       if (element.result[vv] != null) {
         element.result[vv].split('|').forEach((element) {
           if (element == '') return;
@@ -92,7 +92,7 @@ class _FilterPageState extends State<FilterPage> {
           tags[element] = tags[element]! + 1;
         });
       }
-    });
+    }
     _groupCount[group] = _groupCount[group]! + tags.length;
     tags.forEach((key, value) {
       _tags.add(Tuple3<String, String, int>(group, key, value));

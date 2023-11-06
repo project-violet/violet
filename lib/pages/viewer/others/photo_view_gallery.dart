@@ -91,7 +91,7 @@ typedef PhotoViewGalleryBuilder = PhotoViewGalleryPageOptions Function(
 class VPhotoViewGallery extends StatefulWidget {
   /// Construct a gallery with static items through a list of [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery({
-    Key? key,
+    super.key,
     this.pageOptions,
     this.loadingBuilder,
     this.backgroundDecoration,
@@ -105,14 +105,13 @@ class VPhotoViewGallery extends StatefulWidget {
     this.scrollDirection = Axis.horizontal,
     this.customSize,
   })  : itemCount = null,
-        builder = null,
-        super(key: key);
+        builder = null;
 
   /// Construct a gallery with dynamic items.
   ///
   /// The builder must return a [PhotoViewGalleryPageOptions].
   const VPhotoViewGallery.builder({
-    Key? key,
+    super.key,
     this.itemCount,
     this.builder,
     this.loadingBuilder,
@@ -128,8 +127,7 @@ class VPhotoViewGallery extends StatefulWidget {
     this.customSize,
   })  : pageOptions = null,
         assert(itemCount != null),
-        assert(builder != null),
-        super(key: key);
+        assert(builder != null);
 
   /// A list of options to describe the items in the gallery
   final List<PhotoViewGalleryPageOptions>? pageOptions;

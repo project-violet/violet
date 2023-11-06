@@ -18,7 +18,7 @@ class FilterController {
   List<QueryResult> applyFilter(List<QueryResult> queryResult) {
     final result = <QueryResult>[];
 
-    queryResult.forEach((element) {
+    for (var element in queryResult) {
       // key := <group>:<name>
       var succ = !isOr;
       tagStates.forEach((key, value) {
@@ -54,7 +54,7 @@ class FilterController {
         }
       });
       if (succ) result.add(element);
-    });
+    }
 
     if (isPopulationSort) {
       Population.sortByPopulation(result);
